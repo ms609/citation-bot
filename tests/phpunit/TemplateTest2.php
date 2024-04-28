@@ -17,7 +17,7 @@ final class TemplateTest2 extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testTidy1() : void {

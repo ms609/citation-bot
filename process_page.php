@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
-@session_start(['read_and_close' => TRUE]);
+@session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 
@@ -30,7 +30,7 @@ if (isset($argv[1])) {
     report_warning('Non-string found in GET for page.');
     $pages = '';
   }
-  if (strpos($pages, '|') !== FALSE) {
+  if (strpos($pages, '|') !== false) {
     report_warning('Use the webform for multiple pages.');
     $pages = '';
   }

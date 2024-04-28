@@ -33,7 +33,7 @@ function split_author(string $value) : array {
 function clean_up_full_names(string $value) : string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " and ", ";", " ", "", ""], $value);
-  $value = trim(straighten_quotes($value, TRUE));
+  $value = trim(straighten_quotes($value, true));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
   } else {
@@ -45,7 +45,7 @@ function clean_up_full_names(string $value) : string {
 function clean_up_last_names(string $value) : string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
-  $value = trim(straighten_quotes($value, TRUE));
+  $value = trim(straighten_quotes($value, true));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
   } else {
@@ -58,7 +58,7 @@ function clean_up_last_names(string $value) : string {
 function clean_up_first_names(string $value) : string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
-  $value = trim(straighten_quotes($value, TRUE));
+  $value = trim(straighten_quotes($value, true));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
   } else {
@@ -132,11 +132,11 @@ function format_initials(string $str) : string {
 
 function is_initials(string $str) : bool {
 	$str = trim($str);
-	if (!$str) return FALSE;
-	if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) return FALSE;
-	if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) return TRUE;
-	if (mb_strtoupper($str) !== $str) return FALSE;
-	return TRUE;
+	if (!$str) return false;
+	if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) return false;
+	if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) return true;
+	if (mb_strtoupper($str) !== $str) return false;
+	return true;
 }
 
 /*
@@ -158,9 +158,9 @@ function author_is_human(string $author) : bool {
     || substr(strtolower($author),-6) === " books"
     || substr_count($author, ' ') > 3 // Even if human, hard to format
   ) {
-    return FALSE;
+    return false;
   }
-  return TRUE;
+  return true;
 }
 
 // Returns the author's name formatted as Surname, F.I.
@@ -316,7 +316,7 @@ function format_multiple_authors(string $authors) : string {
 }
 
 function under_two_authors(string $text) : bool {
-  return !(strpos($text, ';') !== FALSE  //if there is a semicolon
+  return !(strpos($text, ';') !== false  //if there is a semicolon
 	  || substr_count($text, ',') > 1  //if there is more than one comma
 	  || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
 	  );

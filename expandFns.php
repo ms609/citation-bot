@@ -9,13 +9,13 @@ final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 100000;
   public const MAX_HDL_SIZE = 1024;
-  private const BAD_DOI_ARRAY = ['10.1126/science' => TRUE,
-	'' => TRUE,
-	'10.7556/jaoa' => TRUE,
-	'10.1267/science.040579197' => TRUE,
-	'10.0000/Rubbish_bot_failure_test' => TRUE,
-	'10.0000/Rubbish_bot_failure_test2' => TRUE,
-	'10.0000/Rubbish_bot_failure_test.x' => TRUE];
+  private const BAD_DOI_ARRAY = ['10.1126/science' => true,
+	'' => true,
+	'10.7556/jaoa' => true,
+	'10.1267/science.040579197' => true,
+	'10.0000/Rubbish_bot_failure_test' => true,
+	'10.0000/Rubbish_bot_failure_test2' => true,
+	'10.0000/Rubbish_bot_failure_test.x' => true];
 
   /** @var array<bool> $cache_active */
   static public array $cache_active = [];        // DOI is in CrossRef and works
@@ -28,7 +28,7 @@ final class HandleCache {
   /** @var array<bool> $cache_hdl_bad */
   static public array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
   /** @var array<bool> $cache_hdl_null */
-  static public array $cache_hdl_null = [];      // HDL/DOI resolves to NULL
+  static public array $cache_hdl_null = [];      // HDL/DOI resolves to null
 
   public static function check_memory_use() : void {
       $usage = count(self::$cache_inactive) +
@@ -56,63 +56,63 @@ final class HandleCache {
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  if (isset(HandleCache::$cache_active[$doi])) return TRUE;
-  if (isset(HandleCache::$cache_inactive[$doi]))  return FALSE;
+  if (isset(HandleCache::$cache_active[$doi])) return true;
+  if (isset(HandleCache::$cache_inactive[$doi]))  return false;
 
   $works = doi_works($doi);
-  if ($works !== TRUE) {
+  if ($works !== true) {
     return $works;
   }
 
   $works = is_doi_active($doi);
-  if ($works === NULL) { // Temporary problem - do not cache
-    return NULL; // @codeCoverageIgnore
+  if ($works === null) { // Temporary problem - do not cache
+    return null; // @codeCoverageIgnore
   }
-  if ($works === FALSE) {
-    HandleCache::$cache_inactive[$doi] = TRUE;
-    return FALSE;
+  if ($works === false) {
+    HandleCache::$cache_inactive[$doi] = true;
+    return false;
   }
-  HandleCache::$cache_active[$doi] = TRUE;
-  return TRUE;
+  HandleCache::$cache_active[$doi] = true;
+  return true;
 }
 
 function doi_works(string $doi) : ?bool {
   $doi = trim($doi);
-  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return NULL;
-  if (isset(HandleCache::$cache_good[$doi])) return TRUE;
-  if (isset(HandleCache::$cache_hdl_bad[$doi]))  return FALSE;
-  if (isset(HandleCache::$cache_hdl_null[$doi])) return NULL;
+  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return null;
+  if (isset(HandleCache::$cache_good[$doi])) return true;
+  if (isset(HandleCache::$cache_hdl_bad[$doi]))  return false;
+  if (isset(HandleCache::$cache_hdl_null[$doi])) return null;
   HandleCache::check_memory_use();
 
   $works = is_doi_works($doi);
-  if ($works === NULL) {
+  if ($works === null) {
     if (isset(NULL_DOI_LIST[$doi])) { // These are know to be bad, so only check one time during run
-        HandleCache::$cache_hdl_bad[$doi] = TRUE;
-        return FALSE;
+        HandleCache::$cache_hdl_bad[$doi] = true;
+        return false;
     }
     // These are know to be good, but sometimes null since PDF, etc
     if (isset(NULL_DOI_BUT_GOOD[$doi])) {        // @codeCoverageIgnoreStart
-        HandleCache::$cache_good[$doi] = TRUE;
-        return TRUE;
+        HandleCache::$cache_good[$doi] = true;
+        return true;
     }
-    // These are unexpected NULLs  
-    HandleCache::$cache_hdl_null[$doi] = TRUE;
-    return NULL;                                 // @codeCoverageIgnoreEnd
+    // These are unexpected nulls  
+    HandleCache::$cache_hdl_null[$doi] = true;
+    return null;                                 // @codeCoverageIgnoreEnd
   }
-  if ($works === FALSE) {
-    HandleCache::$cache_hdl_bad[$doi] = TRUE;
-    return FALSE;
+  if ($works === false) {
+    HandleCache::$cache_hdl_bad[$doi] = true;
+    return false;
   }
-  HandleCache::$cache_good[$doi] = TRUE;
-  return TRUE;
+  HandleCache::$cache_good[$doi] = true;
+  return true;
 }
 
 function is_doi_active(string $doi) : ?bool {
-  static $ch = NULL;
-  if ($ch === NULL) {
+  static $ch = null;
+  if ($ch === null) {
      $ch = bot_curl_init(1.0,[
-       CURLOPT_HEADER => TRUE,
-       CURLOPT_NOBODY => FALSE,
+       CURLOPT_HEADER => true,
+       CURLOPT_NOBODY => false,
        CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
   }  
   $doi = trim($doi);
@@ -131,20 +131,20 @@ function is_doi_active(string $doi) : ?bool {
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);                                 // @codeCoverageIgnoreEnd
   }
-  if ($header === "" || ($response_code === 503)) return NULL;
-  if ($body === 'Resource not found.') return FALSE;
-  if ($response_code === 200) return TRUE;
-  if ($response_code === 404) return FALSE; // @codeCoverageIgnoreStart
+  if ($header === "" || ($response_code === 503)) return null;
+  if ($body === 'Resource not found.') return false;
+  if ($response_code === 200) return true;
+  if ($response_code === 404) return false; // @codeCoverageIgnoreStart
   $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
   bot_debug_log($err);
   report_warning($err);
-  return NULL;                                  // @codeCoverageIgnoreEnd
+  return null;                                  // @codeCoverageIgnoreEnd
 }
 
 function throttle_dx () : void {
   static $last = 0.0;
   $min_time = 40000.0;
-  $now = microtime(TRUE);
+  $now = microtime(true);
   $left = (int) ($min_time - ($now - $last));
   if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
@@ -153,7 +153,7 @@ function throttle_dx () : void {
 function throttle_archive () : void {
   static $last = 0.0;
   $min_time = 1000000.0; // One second
-  $now = microtime(TRUE);
+  $now = microtime(true);
   $left = (int) ($min_time - ($now - $last));
   if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
@@ -162,64 +162,64 @@ function throttle_archive () : void {
 function is_doi_works(string $doi) : ?bool {
   $doi = trim($doi);
   // And now some obvious fails
-  if (strpos($doi, '/') === FALSE) return FALSE;
-  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
-  if (preg_match('~^10\.1007/springerreference~', $doi)) return FALSE;
-  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
-  if (isset(NULL_DOI_ANNOYING[$doi])) return FALSE; // TODO - this array should be checked from time to time
+  if (strpos($doi, '/') === false) return false;
+  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) return false;
+  if (preg_match('~^10\.1007/springerreference~', $doi)) return false;
+  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return false;
+  if (isset(NULL_DOI_ANNOYING[$doi])) return false; // TODO - this array should be checked from time to time
   $registrant = $matches[1];
   // TODO this will need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
   // 14:43, January 14, 2023 version is last check
   if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
-    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-    if (preg_match('~^[^1-6]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
-    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
-    if (preg_match('~^\d\d?\d?$~', $registrant)) return FALSE;              // less than 4 digits without subcode (3 digits with subcode is legitimate)
-    if (preg_match('~^\d\d?\.[\d\.]+~', $registrant)) return FALSE;         // 1 or 2 digits with subcode
-    if ($registrant === '5555') return FALSE;                               // test registrant will never resolve
-    if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
+    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return false; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+    if (preg_match('~^[^1-6]\d\d\d\d$~', $registrant)) return false;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return false;   // 4 digits with subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return false;          // 4 digits without subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return false;          // 6 or more digits
+    if (preg_match('~^\d\d?\d?$~', $registrant)) return false;              // less than 4 digits without subcode (3 digits with subcode is legitimate)
+    if (preg_match('~^\d\d?\.[\d\.]+~', $registrant)) return false;         // 1 or 2 digits with subcode
+    if ($registrant === '5555') return false;                               // test registrant will never resolve
+    if (preg_match('~[^\d\.]~', $registrant)) return false;                 // any character that isn't a digit or a dot
   }
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
   $headers_test = get_headers_array($url);
-  if ($headers_test === FALSE) {
-     if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
-     if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
-     if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return FALSE;
-     if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
-     if (stripos($doi, '10.5047/meep.') === 0) return FALSE;
-     if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
-     if (isset(NULL_DOI_LIST[$doi])) return NULL;
-     if (isset(NULL_DOI_BUT_GOOD[$doi])) return NULL;  // @codeCoverageIgnoreStart
+  if ($headers_test === false) {
+     if (strpos($doi, '10.2277/') === 0) return false; // Rogue
+     if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return false; // Nature dropped the ball
+     if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return false;
+     if (stripos($doi, '10.3149/csm.') === 0) return false;
+     if (stripos($doi, '10.5047/meep.') === 0) return false;
+     if (stripos($doi, '10.4435/BSPI.') === 0) return false;
+     if (isset(NULL_DOI_LIST[$doi])) return null;
+     if (isset(NULL_DOI_BUT_GOOD[$doi])) return null;  // @codeCoverageIgnoreStart
      $headers_test = get_headers_array($url);
-     bot_debug_log('Got NULL for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));  // @codeCoverageIgnoreEnd
+     bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));  // @codeCoverageIgnoreEnd
   }
-  if ($headers_test === FALSE) {
+  if ($headers_test === false) {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) {  // most likely bad - note that NULL means do not add or remove doi-broken-date from pages
-     return NULL;  // @codeCoverageIgnore
+  if ($headers_test === false) {  // most likely bad - note that null means do not add or remove doi-broken-date from pages
+     return null;  // @codeCoverageIgnore
   }
   if (stripos($doi, '10.1126/scidip.') === 0) {
       if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
   }
-  if (interpret_doi_header($headers_test) !== FALSE) {
+  if (interpret_doi_header($headers_test) !== false) {
        return interpret_doi_header($headers_test);
   }
   // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
   $headers_test = get_headers_array($url);
   /** We trust previous failure, so fail and null are both false **/
-  if ($headers_test === FALSE) return FALSE;
+  if ($headers_test === false) return false;
   return (bool) interpret_doi_header($headers_test);
 }
 
 /** @param array<mixed> $headers_test **/
 function interpret_doi_header(array $headers_test) : ?bool {
-  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  if (empty($headers_test['Location']) && empty($headers_test['location'])) return false; // leads nowhere
 
   /** @psalm-suppress InvalidArrayOffset */
   $resp0 = (string) @$headers_test['0'];
@@ -228,29 +228,29 @@ function interpret_doi_header(array $headers_test) : ?bool {
   /** @psalm-suppress InvalidArrayOffset */
   $resp2 = (string) @$headers_test['2'];
 
-  if (strpos($resp2, '40') !== FALSE) {
+  if (strpos($resp2, '40') !== false) {
     if ($resp1 === 'HTTP/1.1 302 Redirected') $resp2 = ''; // https://doi.org/10.1107/S2056989021000116
     if ($resp1 === 'HTTP/1.1 301 Moved Permanently') $resp2 = ''; // https://doi.org/10.5152/UCD.2016.3683
   }
 
-  if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== FALSE || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if (stripos($resp0, '302 Found') !== FALSE || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
-  if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== FALSE) return TRUE; // grumpy
-  if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
-      if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
-	return TRUE;  // Good
-      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) {    // @codeCoverageIgnoreStart
-	if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {
-	  return TRUE;
+  if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) return false; // Bad
+  if (stripos($resp0, '302 Found') !== false || stripos($resp0, 'HTTP/1.1 302') !== false) return true;  // Good
+  if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) return true; // grumpy
+  if (stripos($resp0, '301 Moved Permanently') !== false || stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
+      if (stripos($resp1, '302 Found') !== false         || stripos($resp1, 'HTTP/1.1 302') !== false) {
+	return true;  // Good
+      } elseif (stripos($resp1, '301 Moved Permanently') !== false || stripos($resp1, 'HTTP/1.1 301') !== false) {    // @codeCoverageIgnoreStart
+	if (stripos($resp2, '200 OK') !== false         || stripos($resp2, 'HTTP/1.1 200') !== false) {
+	  return true;
 	} else {
-	  return FALSE;
+	  return false;
 	}
       } else {
-	return FALSE;
+	return false;
       }
   }
   report_minor_error("Unexpected response in is_doi_works " . echoable($resp0));
-  return NULL; // @codeCoverageIgnoreEnd
+  return null; // @codeCoverageIgnoreEnd
 }
 
 /** @param array<mixed> $headers_test **/
@@ -264,8 +264,8 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
   } elseif (isset($headers_test['Location'])) {
       return (string) $headers_test['Location'];
   } else { // @codeCoverageIgnoreStart
-      bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, TRUE)));  // Is this even possible
-      return NULL;
+      bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, true)));  // Is this even possible
+      return null;
   }        // @codeCoverageIgnoreEnd
 }
 
@@ -296,7 +296,7 @@ function sanitize_doi(string $doi) : string {
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   if ($pos = (int) strrpos($doi, '.')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], TRUE)) {
+   if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -314,7 +314,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'], TRUE)) {
+   if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'], true)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -327,7 +327,7 @@ function sanitize_doi(string $doi) : string {
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
-  if (strpos($doi, '10.1093') === 0 && doi_works($doi) === FALSE) {
+  if (strpos($doi, '10.1093') === 0 && doi_works($doi) === false) {
     if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match) ||
 	preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
 	preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
@@ -424,7 +424,7 @@ function wikify_external_text(string $title) : string {
    }
   }
   $title = safe_preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title, TRUE);
+  $title = title_capitalization($title, true);
 
   $htmlBraces  = ["&lt;", "&gt;"];
   $angleBraces = ["<", ">"];
@@ -490,7 +490,7 @@ function wikify_external_text(string $title) : string {
   }
 
   foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
-    if (strpos($title, $mathy) !== FALSE) {
+    if (strpos($title, $mathy) !== false) {
       return '<nowiki>' . $title . '</nowiki>';
     }
   }
@@ -505,7 +505,7 @@ function restore_italics (string $text) : string {
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\(\,]|species|genus| in| the|$)~', $text, $matches)) {
-     if (in_array($matches[3], [':', '.', '-', ','], TRUE)) {
+     if (in_array($matches[3], [':', '.', '-', ','], true)) {
        $pad = "";
      } else {
        $pad = " ";
@@ -573,7 +573,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
   $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
 		      ['Springer',       'Springer',                 'Springer',        'Springer'         ], $str);
-  $str = straighten_quotes($str, TRUE);
+  $str = straighten_quotes($str, true);
   $str = str_replace("′","'", $str);
   $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
   $str = safe_preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
@@ -592,12 +592,12 @@ function str_equivalent(string $str1, string $str2) : bool {
 
 // See also str_equivalent()
 function titles_are_similar(string $title1, string $title2) : bool {
-  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
+  if (!titles_are_dissimilar($title1, $title2)) return true;
   // Try again but with funky stuff mapped out of existence
   $title1 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title1));
   $title2 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title2));
-  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
-  return FALSE;
+  if (!titles_are_dissimilar($title1, $title2)) return true;
+  return false;
 }
 
 
@@ -607,13 +607,13 @@ function de_wikify(string $string) : string {
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 	// Blow away junk from OLD stuff
-	if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== FALSE) {
+	if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
 	  $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
-	  if ($possible !== NULL) {
+	  if ($possible !== null) {
 	     $inTitle = $possible;
 	  } else { // When PHP fails with unicode, try without it
 	    $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
-	    if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
+	    if ($inTitle === null) return true;                                                             // @codeCoverageIgnore
 	  }
 	}
 	// Strip diacritics before decode
@@ -682,7 +682,7 @@ function titles_simple(string $inTitle) : string {
 	$inTitle2 = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Reduce punctuation
-	$inTitle = straighten_quotes(mb_strtolower($inTitle), TRUE);
+	$inTitle = straighten_quotes(mb_strtolower($inTitle), true);
 	$inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	$inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
@@ -716,15 +716,15 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
   $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
   $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-  if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
-     (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
+  if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;')  !== false) ||
+     (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
+     (mb_strpos($str, '‹')        !== false && mb_strpos($str, '›')        !== false)) { // Only replace single angle quotes if some of both
      $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
   }
   $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-  if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
-     (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
-     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
+  if((mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
+     (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
+     (mb_strpos($str, '«')        !== false && mb_strpos($str, '»')        !== false)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
      if ($do_more){
        $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
@@ -746,26 +746,26 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
 // ============================================= Capitalization functions ======================================
 
 function title_case(string $text) : string {
-  if (stripos($text, 'www.') !== FALSE || stripos($text, 'www-') !== FALSE || stripos($text, 'http://') !== FALSE) {
+  if (stripos($text, 'www.') !== false || stripos($text, 'www-') !== false || stripos($text, 'http://') !== false) {
      return $text; // Who knows - duplicate code below
   }
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
 /** Returns a properly capitalized title.
- *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the
+ *      If $caps_after_punctuation is true (or there is an abundance of periods), it allows the
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalize after : etc.
  */
 function title_capitalization(string $in, bool $caps_after_punctuation) : string {
   // Use 'straight quotes' per WP:MOS
-  $new_case = straighten_quotes(trim($in), FALSE);
+  $new_case = straighten_quotes(trim($in), false);
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
 		       // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
 
-  if (stripos($new_case, 'www.') !== FALSE || stripos($new_case, 'www-') !== FALSE || stripos($new_case, 'http://') !== FALSE) {
+  if (stripos($new_case, 'www.') !== false || stripos($new_case, 'www-') !== false || stripos($new_case, 'http://') !== false) {
      return $new_case; // Who knows - duplicate code above
   }
 
@@ -865,7 +865,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
-  if ($its_in === $its_out && $its_in !== 0 && $its_in !== FALSE) {
+  if ($its_in === $its_out && $its_in !== 0 && $its_in !== false) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     foreach ($matches_in as $key => $_value) {
@@ -879,7 +879,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
-  if ($its_in === $its_out && $its_in !== 0 && $its_in !== FALSE) {
+  if ($its_in === $its_out && $its_in !== 0 && $its_in !== false) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     foreach ($matches_in as $key => $_value) {
@@ -948,13 +948,13 @@ function mb_ucfirst(string $string) : string
     if (mb_strlen($first) !== strlen($first)) {
       return $string;
     } else {
-      return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+      return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
     }
 }
 
 function mb_ucfirst_force(string $string) : string
 {
-    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
 }
 
 function mb_strrev(string $string, string $encode = null) : string
@@ -1031,9 +1031,9 @@ function throttle () : void {
 
 function tidy_date(string $string) : string {
   $string=trim($string);
-  if (stripos($string, 'Invalid') !== FALSE) return '';
-  if (strpos($string, '1/1/0001') !== FALSE) return '';
-  if (strpos($string, '0001-01-01') !== FALSE) return '';
+  if (stripos($string, 'Invalid') !== false) return '';
+  if (strpos($string, '1/1/0001') !== false) return '';
+  if (strpos($string, '0001-01-01') !== false) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // Not two numbers next to each other
   if (preg_match('~^\d{2}\-\-$~', $string)) return '';
   // Google sends ranges
@@ -1065,8 +1065,8 @@ function tidy_date(string $string) : string {
   $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
   $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
-  if (strpos($string, '0001-11-30') !== FALSE) return '';
-  if (strpos($string, '1969-12-31') !== FALSE) return '';
+  if (strpos($string, '0001-11-30') !== false) return '';
+  if (strpos($string, '1969-12-31') !== false) return '';
   if (str_i_same('19xx', $string)) return ''; //archive.org gives this if unknown
   if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
@@ -1107,7 +1107,7 @@ function tidy_date(string $string) : string {
     } else {
       $string = date('Y-m-d', $time);
     }
-    if (stripos($string, 'Invalid') !== FALSE) return '';
+    if (stripos($string, 'Invalid') !== false) return '';
     return $string;
   }
   if (preg_match( '~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Starts with date
@@ -1127,12 +1127,12 @@ function tidy_date(string $string) : string {
 }
 
 function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, unless on good list
-  if ($url === '') return TRUE;
-  if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
+  if ($url === '') return true;
+  if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return true;
   $test = strtolower($match[1]);
   // March 2019 Good list
-  if (in_array($test, GOOD_10_1093_DOIS, TRUE)) return TRUE;
-  return FALSE;
+  if (in_array($test, GOOD_10_1093_DOIS, true)) return true;
+  return false;
 }
 
 function bad_10_1093_doi(string $url) :bool {
@@ -1151,7 +1151,7 @@ function remove_comments(string $string) : string {
     @return array<string> **/
 function prior_parameters(string $par, array $list=[] ) : array {
   array_unshift($list, $par);
-  if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
+  if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
     $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
@@ -1228,8 +1228,8 @@ function equivalent_parameters(string $par) : array {
 }
 
 function check_doi_for_jstor(string $doi, Template $template) : void {
-  static $ch = NULL;
-  if ($ch === NULL) {
+  static $ch = null;
+  if ($ch === null) {
      $ch = bot_curl_init(1.0, []);
   }
   if ($template->has('jstor')) return;
@@ -1247,22 +1247,22 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $ris = bot_curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   if ($httpCode === 200 &&
-      stripos($ris, $doi) !== FALSE &&
-      strpos ($ris, 'Provider') !== FALSE &&
-      stripos($ris, 'No RIS data found for') === FALSE &&
-      stripos($ris, 'Block Reference') === FALSE &&
-      stripos($ris, 'A problem occurred trying to deliver RIS data') === FALSE &&
+      stripos($ris, $doi) !== false &&
+      strpos ($ris, 'Provider') !== false &&
+      stripos($ris, 'No RIS data found for') === false &&
+      stripos($ris, 'Block Reference') === false &&
+      stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
       substr_count($ris, '-') > 3) { // It is actually a working JSTOR
       $template->add_if_new('jstor', $doi);
   }
 }
 
 function can_safely_modify_dashes(string $value) : bool {
-   return((stripos($value, "http") === FALSE)
-       && (strpos($value, "[//") === FALSE)
+   return((stripos($value, "http") === false)
+       && (strpos($value, "[//") === false)
        && (substr_count($value, "<") === 0) // <span></span> stuff
-       && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === FALSE)
-       && (strpos($value, "(") === FALSE)
+       && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
+       && (strpos($value, "(") === false)
        && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
        && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.  Use "." for generic dash
@@ -1270,8 +1270,8 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(string $str1, string $str2) : bool {
-   if ($str1 === 'Eulerian Numbers') return FALSE; // very special case
-   if (0 === strcasecmp($str1, $str2)) return TRUE; // Quick non-multi-byte compare short cut
+   if ($str1 === 'Eulerian Numbers') return false; // very special case
+   if (0 === strcasecmp($str1, $str2)) return true; // Quick non-multi-byte compare short cut
    return (0 === strcmp(mb_strtoupper($str1), mb_strtoupper($str2)));
 }
 
@@ -1302,7 +1302,7 @@ function hdl_decode(string $hdl) : string {
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
-  if (($key = array_search("", $pages_in_category)) !== FALSE) {
+  if (($key = array_search("", $pages_in_category)) !== false) {
     unset($pages_in_category[$key]);
   }
   if (empty($pages_in_category)) {
@@ -1432,54 +1432,54 @@ function bot_html_footer() : void {
 }
 
   /**
-   * NULL/FALSE/String of location
+   * null/false/String of location
    **/
 function hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   $hdl = str_replace('%2F', '/', $hdl);
   // And now some obvious fails
-  if (strpos($hdl, '/') === FALSE) return FALSE;
-  if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
-  if (strpos($hdl, '123456789') === 0) return FALSE;
-  if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) return NULL;
+  if (strpos($hdl, '/') === false) return false;
+  if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== false) return false;
+  if (strpos($hdl, '123456789') === 0) return false;
+  if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) return null;
   if (isset(HandleCache::$cache_hdl_loc[$hdl])) return HandleCache::$cache_hdl_loc[$hdl];
-  if (isset(HandleCache::$cache_hdl_bad[$hdl])) return FALSE;
-  if (isset(HandleCache::$cache_hdl_null[$hdl])) return NULL;
-  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
+  if (isset(HandleCache::$cache_hdl_bad[$hdl])) return false;
+  if (isset(HandleCache::$cache_hdl_null[$hdl])) return null;
+  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === false) return false;
   $works = is_hdl_works($hdl);
-  if ($works === NULL) {
+  if ($works === null) {
     if (isset(NULL_DOI_LIST[$hdl])) {        // @codeCoverageIgnoreStart
-        HandleCache::$cache_hdl_bad[$hdl] = TRUE;  // These are know to be bad, so only check one time during run
-        return FALSE;
+        HandleCache::$cache_hdl_bad[$hdl] = true;  // These are know to be bad, so only check one time during run
+        return false;
     }
-    HandleCache::$cache_hdl_null[$hdl] = TRUE;
+    HandleCache::$cache_hdl_null[$hdl] = true;
     if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
-        bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
+        bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
     }
-    return NULL;                             // @codeCoverageIgnoreEnd
+    return null;                             // @codeCoverageIgnoreEnd
   }
-  if ($works === FALSE) {
-    HandleCache::$cache_hdl_bad[$hdl] = TRUE;
-    return FALSE;
+  if ($works === false) {
+    HandleCache::$cache_hdl_bad[$hdl] = true;
+    return false;
   }
   HandleCache::$cache_hdl_loc[$hdl] = $works;
   return $works;
 }
 
   /**
-   * Returns NULL/FALSE/String of location
+   * Returns null/false/String of location
    **/
 function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   usleep(100000);
   $url = "https://hdl.handle.net/" . $hdl;
   $headers_test = get_headers_array($url);
-  if ($headers_test === FALSE) {
+  if ($headers_test === false) {
       $headers_test = get_headers_array($url); // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad
-  if (interpret_doi_header($headers_test) === NULL) return NULL;
-  if (interpret_doi_header($headers_test) === FALSE) return FALSE;
+  if ($headers_test === false) return null; // most likely bad
+  if (interpret_doi_header($headers_test) === null) return null;
+  if (interpret_doi_header($headers_test) === false) return false;
   return get_loc_from_hdl_header($headers_test);
 }
 
@@ -1487,13 +1487,13 @@ function is_hdl_works(string $hdl) : string|null|false {
 function safe_preg_replace(string $regex, string $replace, string $old) : string {
   if ($old === "") return "";
   $new = preg_replace($regex, $replace, $old);
-  if ($new === NULL) return $old;
+  if ($new === null) return $old;
   return $new;
 }
 function safe_preg_replace_callback(string $regex, callable $replace, string $old) : string {
   if ($old === "") return "";
   $new = preg_replace_callback($regex, $replace, $old);
-  if ($new === NULL) return $old;
+  if ($new === null) return $old;
   return $new;
 }
 
@@ -1519,13 +1519,13 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
 }
 
 function convert_to_utf8(string $value) : string {
-    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], TRUE);
-    if ($encode1 === FALSE || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') return $value;
-    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], TRUE);
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 === false || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') return $value;
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
     if ($encode1 !== $encode2) return $value;
-    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], TRUE);
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
     if ($encode1 !== $encode3) return $value;
-    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
     if ($encode1 !== $encode4) return $value;
     $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
     if ($new_value == "") return $value;
@@ -1534,7 +1534,7 @@ function convert_to_utf8(string $value) : string {
 
 function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
   $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1'], TRUE);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1'], true);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
@@ -1542,7 +1542,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
   if ($encode === 'Shift_JIS') $encode = 'SJIS-win';
   if ($encode === 'big5') $encode = 'BIG-5';
-  if (in_array($encode, ['utf-8-sig', 'x-user-defined'], TRUE)) { // Known wonky ones
+  if (in_array($encode, ['utf-8-sig', 'x-user-defined'], true)) { // Known wonky ones
      return "";
   }
   $master_list = mb_list_encodings();
@@ -1551,8 +1551,8 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
     $valid[] = strtolower($enc);
   }
   try {
-   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"], TRUE) ||
-     !in_array(strtolower($encode), $valid, TRUE)) {
+   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"], true) ||
+     !in_array(strtolower($encode), $valid, true)) {
     $try = (string) @iconv($encode, "UTF-8", $title);
    } else {
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
@@ -1768,23 +1768,23 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
 
 function doi_is_bad (string $doi) : bool {
 	$doi = strtolower($doi);
-	if ($doi === '10.5284/1000184') return TRUE; // DOI for the entire database
-	if ($doi === '10.1267/science.040579197') return TRUE; // PMID test doi
-	if ($doi === '10.2307/3511692') return TRUE; // common review
-	if ($doi === '10.1377/forefront') return TRUE; // over-truncated
-	if ($doi === '10.1126/science') return TRUE; // over-truncated
-	if (strpos($doi, '10.5779/hypothesis') === 0) return TRUE; // SPAM took over
-	if (strpos($doi, '10.5555/') === 0) return TRUE; // Test DOI prefix
-	if (strpos($doi, '10.5860/choice.') === 0) return TRUE; // Paywalled book review
-	if (strpos($doi, '10.1093/law:epil') === 0) return TRUE; // Those do not work
-	if (strpos($doi, '10.1093/oi/authority') === 0) return TRUE; // Those do not work
-	if (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) return TRUE; // Has doi in the URL, but is not a doi
-	if (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) return TRUE; // Retired DOIs
-	if (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) return TRUE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
-	if (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) return TRUE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
-	if (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) return TRUE; // do's not doi's
-	if (strpos($doi, '10.48550/arxiv') === 0) return TRUE;
-	return FALSE;
+	if ($doi === '10.5284/1000184') return true; // DOI for the entire database
+	if ($doi === '10.1267/science.040579197') return true; // PMID test doi
+	if ($doi === '10.2307/3511692') return true; // common review
+	if ($doi === '10.1377/forefront') return true; // over-truncated
+	if ($doi === '10.1126/science') return true; // over-truncated
+	if (strpos($doi, '10.5779/hypothesis') === 0) return true; // SPAM took over
+	if (strpos($doi, '10.5555/') === 0) return true; // Test DOI prefix
+	if (strpos($doi, '10.5860/choice.') === 0) return true; // Paywalled book review
+	if (strpos($doi, '10.1093/law:epil') === 0) return true; // Those do not work
+	if (strpos($doi, '10.1093/oi/authority') === 0) return true; // Those do not work
+	if (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) return true; // Has doi in the URL, but is not a doi
+	if (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) return true; // Retired DOIs
+	if (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) return true; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+	if (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) return true; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+	if (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) return true; // do's not doi's
+	if (strpos($doi, '10.48550/arxiv') === 0) return true;
+	return false;
 }
 
 /** @return array<string> **/
@@ -1816,7 +1816,7 @@ function get_possible_dois(string $doi) : array {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== TRUE) {
+    if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== true) {
 	  if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
 	      $trial[] = '10.1093/ref:odnb/' . $matches[1];
 	      $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
@@ -1929,16 +1929,16 @@ function get_possible_dois(string $doi) : array {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
-    $changed = TRUE;
+    $changed = true;
     $try = $doi;
     while ($changed) {
-      $changed = FALSE;
+      $changed = false;
       if ($pos = strrpos($try, '.')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], TRUE)) {
+       if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
-	 $changed = TRUE;
+	 $changed = true;
        }
       }
       if ($pos = strrpos($try, '#')) {
@@ -1946,7 +1946,7 @@ function get_possible_dois(string $doi) : array {
        if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
-	 $changed = TRUE;
+	 $changed = true;
        }
       }
       if ($pos = strrpos($try, ';')) {
@@ -1954,21 +1954,21 @@ function get_possible_dois(string $doi) : array {
        if (strpos(strtolower($extension), ';jsessionid') === 0) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
-	 $changed = TRUE;
+	 $changed = true;
        }
       }
       if ($pos = strrpos($try, '/')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], TRUE)) {
+       if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], true)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
-	 $changed = TRUE;
+	 $changed = true;
        }
       }
       if (preg_match('~^(.+)v\d{1,2}$~', $try, $matches)) { // Versions
 	 $try = $matches[1];
 	 $trial[] = $try;
-	 $changed = TRUE;
+	 $changed = true;
       }
     }
     return $trial;
@@ -2443,7 +2443,7 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
 }
 
 function conference_doi(string $doi) : bool {
-  if (stripos($doi, '10.1007/978-3-662-44777') === 0) return FALSE; // Manual override of stuff
+  if (stripos($doi, '10.1007/978-3-662-44777') === 0) return false; // Manual override of stuff
   if (strpos($doi, '10.1109/') === 0 ||
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
@@ -2452,12 +2452,12 @@ function conference_doi(string $doi) : bool {
       stripos($doi, '10.21437/interspeech') === 0 ||
       stripos($doi, '10.21437/SLTU') === 0 ||
       stripos($doi, '10.21437/TAL') === 0 ||
-      (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
+      (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== false) ||
       stripos($doi, '10.2991/erss') === 0 ||
       stripos($doi, '10.2991/jahp') === 0) {
-	 return TRUE;
+	 return true;
   }
-  return FALSE;
+  return false;
 }
 
 function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
@@ -2505,7 +2505,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
       return $matches[1];
     }
     if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
-      if (in_array($matches[1], $days_of_week, TRUE)) {
+      if (in_array($matches[1], $days_of_week, true)) {
 	return $matches[2];
       }
     }
@@ -2534,13 +2534,13 @@ function get_headers_array(string $url) : false|array {
   static $context_insecure;
   if (!isset($context_insecure)) {
     $context_insecure = stream_context_create([
-      'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-      'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
+      'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+      'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
   }
   set_time_limit(120);
   if ($last_url === $url) {
      sleep(5);
   }
   $last_url = $url;
-  return @get_headers($url, TRUE, $context_insecure);
+  return @get_headers($url, true, $context_insecure);
 }

@@ -17,106 +17,106 @@ final class expandFnsTest extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testCapitalization1a() : void {
     $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
-    $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), TRUE));
+    $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), true));
   }
   public function testCapitalization1b() : void {
-    $this->assertSame('z/Journal', title_capitalization(title_case('z/Journal'), TRUE));
+    $this->assertSame('z/Journal', title_capitalization(title_case('z/Journal'), true));
   }
   public function testCapitalization1c() : void {
-    $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', TRUE));
+    $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', true));
   }
   public function testCapitalization1d() : void {
-    $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', TRUE));
+    $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', true));
   }
   public function testCapitalization1e() : void {
-    $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', TRUE));
+    $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', true));
   }
   public function testCapitalization2a() : void {
-    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', TRUE));
+    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
   }
   public function testCapitalization2b() : void {
-    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', TRUE));
+    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
   }
   public function testCapitalization2c() : void {
-    $this->assertSame("THIS 'A' JOURNAL mittEilUngen", title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
+    $this->assertSame("THIS 'A' JOURNAL mittEilUngen", title_capitalization("THIS `A` JOURNAL mittEilUngen", true));
   }
   public function testCapitalization3() : void {
-    $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
+    $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', true)); // Do not touch links
   }
   public function testCapitalization4() : void {
-    $this->assertSame('This is robert WWW',  title_capitalization('This is robert www' , TRUE));
+    $this->assertSame('This is robert WWW',  title_capitalization('This is robert www' , true));
   }
   public function testCapitalization5() : void {
-    $this->assertSame('This is robert http://', title_capitalization('This is robert http://', TRUE));
+    $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
   }
   public function testCapitalization6() : void {
-    $this->assertSame('This is robert www.',  title_capitalization('This is robert www.' , TRUE));
+    $this->assertSame('This is robert www.',  title_capitalization('This is robert www.' , true));
   }
   public function testCapitalization7() : void {
-    $this->assertSame('This is robert www-',  title_capitalization('This is robert www-' , TRUE));
+    $this->assertSame('This is robert www-',  title_capitalization('This is robert www-' , true));
   }
   public function testCapitalization8a() : void {
-    $this->assertSame('I the Las Vegas.  Trip.',  title_capitalization('I the las Vegas.  Trip.' , TRUE));
+    $this->assertSame('I the Las Vegas.  Trip.',  title_capitalization('I the las Vegas.  Trip.' , true));
   }
   public function testCapitalization8b() : void {
-    $this->assertSame('I the Las Vegas,  Trip.',  title_capitalization('I the las Vegas,  Trip.' , TRUE));
+    $this->assertSame('I the Las Vegas,  Trip.',  title_capitalization('I the las Vegas,  Trip.' , true));
   }
   public function testCapitalization8c() : void {
-    $this->assertSame('I the Las Vegas:  Trip.',  title_capitalization('I the las Vegas:  Trip.' , TRUE));
+    $this->assertSame('I the Las Vegas:  Trip.',  title_capitalization('I the las Vegas:  Trip.' , true));
   }
   public function testCapitalization8d() : void {
-    $this->assertSame('I the Las Vegas;  Trip.',  title_capitalization('I the las Vegas;  Trip.' , TRUE));
+    $this->assertSame('I the Las Vegas;  Trip.',  title_capitalization('I the las Vegas;  Trip.' , true));
   }
   public function testCapitalization8e() : void {
-    $this->assertSame('I the las Vegas...Trip.',  title_capitalization('I the las Vegas...Trip.' , TRUE));
+    $this->assertSame('I the las Vegas...Trip.',  title_capitalization('I the las Vegas...Trip.' , true));
   }
   public function testCapitalization9() : void {
-    $this->assertSame('SAGE Open',  title_capitalization('Sage Open' , TRUE));
+    $this->assertSame('SAGE Open',  title_capitalization('Sage Open' , true));
   }
   public function testCapitalization10() : void {
-    $this->assertSame('CA',  title_capitalization('Ca' , TRUE));
+    $this->assertSame('CA',  title_capitalization('Ca' , true));
   }
 
   public function testCapitalization11() : void {
-    $this->assertSame('The Series A and B qu',  title_capitalization('The Series a and b qu' , TRUE));
+    $this->assertSame('The Series A and B qu',  title_capitalization('The Series a and b qu' , true));
   }
 
   public function testCapitalization12() : void {
-    $this->assertSame('PEN International',  title_capitalization('Pen International' , TRUE));
+    $this->assertSame('PEN International',  title_capitalization('Pen International' , true));
   }
 
   public function testCapitalization13() : void {
-    $this->assertSame('Time Off',  title_capitalization('Time off' , TRUE));
+    $this->assertSame('Time Off',  title_capitalization('Time off' , true));
   }
 
   public function testCapitalization14() : void {
-    $this->assertSame('IT Professional',  title_capitalization('It Professional' , TRUE));
+    $this->assertSame('IT Professional',  title_capitalization('It Professional' , true));
   }
 
   public function testCapitalization15() : void {
-    $this->assertSame('JOM',  title_capitalization('Jom' , TRUE));
+    $this->assertSame('JOM',  title_capitalization('Jom' , true));
   }
 	
   public function testFrenchCapitalization1() : void {
-    $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
+    $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), true));
   }
   public function testFrenchCapitalization2() : void {
-    $this->assertSame("Phénomènes d'Évaporation d'Hydrologie", title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
+    $this->assertSame("Phénomènes d'Évaporation d'Hydrologie", title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), true));
   }
   public function testFrenchCapitalization3() : void {
-    $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica", title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
+    $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica", title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", true));
   }
 
   public function testITS() : void {
     $this->assertSame(                     "Keep case of its Its and ITS",
-		      title_capitalization("Keep case of its Its and ITS", TRUE));
+		      title_capitalization("Keep case of its Its and ITS", true));
     $this->assertSame(                     "ITS Keep case of its Its and ITS",
-		      title_capitalization("ITS Keep case of its Its and ITS", TRUE));
+		      title_capitalization("ITS Keep case of its Its and ITS", true));
   }
 
   public function testExtractDoi() : void {
@@ -196,67 +196,67 @@ final class expandFnsTest extends testBaseClass {
 
   public function testArrowAreQuotes1() : void {
     $text = "This » That";
-    $this->assertSame($text,straighten_quotes($text, TRUE));
+    $this->assertSame($text,straighten_quotes($text, true));
   }
   public function testArrowAreQuotes2() : void {
     $text = "X«Y»Z";
-    $this->assertSame('X"Y"Z',straighten_quotes($text, TRUE));
+    $this->assertSame('X"Y"Z',straighten_quotes($text, true));
   }
   public function testArrowAreQuotes3() : void {
     $text = "This › That";
-    $this->assertSame($text,straighten_quotes($text, TRUE));
+    $this->assertSame($text,straighten_quotes($text, true));
   }
   public function testArrowAreQuotes4() : void {
     $text = "X‹Y›Z";
-    $this->assertSame("X'Y'Z",straighten_quotes($text, TRUE));
+    $this->assertSame("X'Y'Z",straighten_quotes($text, true));
   }
   public function testArrowAreQuotes5() : void {
     $text = "This » That";
-    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $this->assertSame($text,straighten_quotes($text, false));
   }
   public function testArrowAreQuotes6() : void {
     $text = "X«Y»Z";
-    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $this->assertSame($text,straighten_quotes($text, false));
   }
   public function testArrowAreQuotes7() : void {
     $text = "This › That";
-    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $this->assertSame($text,straighten_quotes($text, false));
   }
   public function testArrowAreQuotes8() : void {
     $text = "X‹Y›Z";
-    $this->assertSame("X'Y'Z",straighten_quotes($text, FALSE));
+    $this->assertSame("X'Y'Z",straighten_quotes($text, false));
   }
   public function testArrowAreQuotes9() : void {
     $text = "«XY»Z";
-    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $this->assertSame($text,straighten_quotes($text, false));
   }
   public function testArrowAreQuotes10() : void {
     $text = "«XY»Z";
-    $this->assertSame('"XY"Z',straighten_quotes($text, TRUE));
+    $this->assertSame('"XY"Z',straighten_quotes($text, true));
   }
   public function testArrowAreQuotes11() : void {
     $text = "«Y»";
-    $this->assertSame('"Y"',straighten_quotes($text, TRUE));
+    $this->assertSame('"Y"',straighten_quotes($text, true));
   }
   public function testArrowAreQuotes12() : void {
     $text = "‹Y›";
-    $this->assertSame("'Y'",straighten_quotes($text, TRUE));
+    $this->assertSame("'Y'",straighten_quotes($text, true));
   }
   public function testArrowAreQuotes13() : void {
     $text = "«Y»";
-    $this->assertSame('"Y"',straighten_quotes($text, FALSE));
+    $this->assertSame('"Y"',straighten_quotes($text, false));
   }
   public function testArrowAreQuotes14() : void {
     $text = "‹Y›";
-    $this->assertSame("'Y'",straighten_quotes($text, FALSE));
+    $this->assertSame("'Y'",straighten_quotes($text, false));
   }
   public function testArrowAreQuotes15() : void {
     $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
-    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $this->assertSame($text,straighten_quotes($text, false));
   }
   public function testArrowAreQuotes16() : void {
     $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
-    $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, TRUE));
+    $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
   }
 
   // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001  // TODO - should do more than just give up and wrap in nowiki
@@ -309,37 +309,37 @@ final class expandFnsTest extends testBaseClass {
 
   // The X prevents first character caps
   public function testCapitalization_lots_more() : void { // Double check that constants are in order when we sort - paranoid
-    $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), TRUE));
-    $this->assertSame('X delle', title_capitalization(title_case('X delle'), TRUE));
-    $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), TRUE));
-    $this->assertSame('X NASA', title_capitalization(title_case('X Nasa'), TRUE));
-    $this->assertSame('X over', title_capitalization(title_case('X Over'), TRUE));
-    $this->assertSame('X und', title_capitalization(title_case('X Und'), TRUE));
-    $this->assertSame('X within', title_capitalization(title_case('X Within'), TRUE));
-    $this->assertSame('X AAPS', title_capitalization(title_case('X Aaps'), TRUE));
-    $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), TRUE));
+    $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), true));
+    $this->assertSame('X delle', title_capitalization(title_case('X delle'), true));
+    $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), true));
+    $this->assertSame('X NASA', title_capitalization(title_case('X Nasa'), true));
+    $this->assertSame('X over', title_capitalization(title_case('X Over'), true));
+    $this->assertSame('X und', title_capitalization(title_case('X Und'), true));
+    $this->assertSame('X within', title_capitalization(title_case('X Within'), true));
+    $this->assertSame('X AAPS', title_capitalization(title_case('X Aaps'), true));
+    $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), true));
   }
   public function testCapitalization_lots_more2() : void {
-    $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), TRUE));
-    $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), TRUE));
-    $this->assertSame('X eNeuro', title_capitalization(title_case('X Eneuro'), TRUE));
-    $this->assertSame('X eVolo', title_capitalization(title_case('X EVolo'), TRUE));
-    $this->assertSame('X HannahArendt.net', title_capitalization(title_case('X hannaharendt.net'), TRUE));
-    $this->assertSame('X iJournal', title_capitalization(title_case('X IJournal'), TRUE));
-    $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), TRUE));
+    $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), true));
+    $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), true));
+    $this->assertSame('X eNeuro', title_capitalization(title_case('X Eneuro'), true));
+    $this->assertSame('X eVolo', title_capitalization(title_case('X EVolo'), true));
+    $this->assertSame('X HannahArendt.net', title_capitalization(title_case('X hannaharendt.net'), true));
+    $this->assertSame('X iJournal', title_capitalization(title_case('X IJournal'), true));
+    $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), true));
   }
   public function testCapitalization_lots_more3() : void {
-    $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), TRUE));
-    $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), TRUE));
-    $this->assertSame('X mSystems', title_capitalization(title_case('X MSystems'), TRUE));
-    $this->assertSame('X PhytoKeys', title_capitalization(title_case('X Phytokeys'), TRUE));
-    $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), TRUE));
+    $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), true));
+    $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), true));
+    $this->assertSame('X mSystems', title_capitalization(title_case('X MSystems'), true));
+    $this->assertSame('X PhytoKeys', title_capitalization(title_case('X Phytokeys'), true));
+    $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), true));
   }
   public function testCapitalization_lots_more4() : void {
-    $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), TRUE));
-    $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), TRUE));
-    $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), TRUE));
-    $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), TRUE));
+    $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), true));
+    $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), true));
+    $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), true));
+    $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), true));
   }
 
   public function testCapitalization_lots_more5() : void {
@@ -351,22 +351,22 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testCapitalization_lots_more6() : void {
-    $this->assertSame('The DOS is Faster', title_capitalization('The DOS is Faster', TRUE));
-    $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', TRUE));
-    $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', TRUE));
-    $this->assertSame('The dOs is Faster', title_capitalization('The dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', FALSE));
-    $this->assertSame('DOS', title_capitalization('DOS', TRUE));
-    $this->assertSame('dos', title_capitalization('dos', TRUE));
-    $this->assertSame('DoS', title_capitalization('DoS', TRUE));
-    $this->assertSame('dOs', title_capitalization('dOs', TRUE));
+    $this->assertSame('The DOS is Faster', title_capitalization('The DOS is Faster', true));
+    $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', true));
+    $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', true));
+    $this->assertSame('The dOs is Faster', title_capitalization('The dOs is Faster', true));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', true));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', false));
+    $this->assertSame('DOS', title_capitalization('DOS', true));
+    $this->assertSame('dos', title_capitalization('dos', true));
+    $this->assertSame('DoS', title_capitalization('DoS', true));
+    $this->assertSame('dOs', title_capitalization('dOs', true));
   }
 
   public function testCapitalization_lots_more7() : void {
-    $this->assertSame('AIDS', title_capitalization('Aids', TRUE));
-    $this->assertSame('BioScience', title_capitalization('Bioscience', TRUE));
-    $this->assertSame('BioMedical Engineering OnLine', title_capitalization('Biomedical Engineering Online', TRUE));
+    $this->assertSame('AIDS', title_capitalization('Aids', true));
+    $this->assertSame('BioScience', title_capitalization('Bioscience', true));
+    $this->assertSame('BioMedical Engineering OnLine', title_capitalization('Biomedical Engineering Online', true));
   }
 
   public function testDOIWorks() : void {
@@ -430,25 +430,25 @@ final class expandFnsTest extends testBaseClass {
 	  strpos($doi, '10.1601/tx.') === 0 ||
 	  strpos($doi, '10.1601/nm.') === 0 ||
 	  strpos($doi, '10.1601/ex.') === 0) {
-        if (in_array($doi, ['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'], TRUE)) {
+        if (in_array($doi, ['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'], true)) {
           $works = doi_works($doi);
 	} else {
-	  $works = FALSE;
+	  $works = false;
 	}
       } elseif (isset(NULL_DOI_ANNOYING[$doi])) {
-        $works = FALSE;
+        $works = false;
       } else {
         $works = doi_works($doi);
       }
-      if ($works === TRUE) {
-        $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
-      } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
-        $changes = $changes . "Flagged as NULL: " . $doi . "       ";
+      if ($works === true) {
+        $changes = $changes . "Flagged as good: " . $doi . "       ";
+      } elseif ($works === null) { // These nulls are permanent and get mapped to false
+        $changes = $changes . "Flagged as null: " . $doi . "       ";
       }
     }
     foreach (NULL_DOI_ANNOYING as $doi => $value) {
       if (!isset(NULL_DOI_LIST[$doi])) {
-        $changes = $changes . "Not in main NULL list: " . $doi . "       ";
+        $changes = $changes . "Not in main null list: " . $doi . "       ";
       }
     }
     $this->assertSame("", $changes);
@@ -564,7 +564,7 @@ final class expandFnsTest extends testBaseClass {
 
   public function testcheck_memory_usage() : void {
     check_memory_usage('testcheck_memory_usage');
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testCleanDates1() : void {
