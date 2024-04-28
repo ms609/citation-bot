@@ -26,13 +26,13 @@ function junior_test(string $name) : array {
 
 /** @return array<string> **/
 function split_author(string $value) : array {
-  if (substr_count($value, ',') !== 1) return array();
+  if (substr_count($value, ',') !== 1) return [];
   return(explode(',', $value, 2));
 }
 
 function clean_up_full_names(string $value) : string {
   $value = trim($value);
-  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " and ", ";", " ", "", ""), $value);
+  $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " and ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
@@ -44,7 +44,7 @@ function clean_up_full_names(string $value) : string {
 
 function clean_up_last_names(string $value) : string {
   $value = trim($value);
-  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+  $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
@@ -57,7 +57,7 @@ function clean_up_last_names(string $value) : string {
 
 function clean_up_first_names(string $value) : string {
   $value = trim($value);
-  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+  $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
@@ -101,7 +101,7 @@ function format_surname_2(string $surname) : string {
 		return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
 	},
     mb_ereg_replace(" - ", "-", $surname));
-  $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
+  $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
   $ret = preg_replace_callback('~;\w~', function(array $matches) : string {return mb_strtolower($matches[0]);}, $ret);
   return $ret;
 }
@@ -110,7 +110,7 @@ function format_forename(string $forename) : string {
   $forename = trim($forename);
   if ($forename === '-') return '';
   if ($forename === '') return '';
-  return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
+  return str_replace([" ."], "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
 	    array $matches) : string {
 	    return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
 	 , $forename)));
@@ -133,8 +133,8 @@ function format_initials(string $str) : string {
 function is_initials(string $str) : bool {
 	$str = trim($str);
 	if (!$str) return FALSE;
-	if (strlen(str_replace(array("-", ".", ";"), "", $str)) > 3) return FALSE;
-	if (strlen(str_replace(array("-", ".", ";"), "", $str)) === 1) return TRUE;
+	if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) return FALSE;
+	if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) return TRUE;
 	if (mb_strtoupper($str) !== $str) return FALSE;
 	return TRUE;
 }
@@ -203,7 +203,7 @@ function format_author(string $author) : string {
       */
       $countAuth = count($auth);
       if ($ends_with_period) {
-	$i = array();
+	$i = [];
 	// it ends in a .
 	if (is_initials($auth[$countAuth-1])) {
 	  // it's Conway Morris S.C.
@@ -237,7 +237,7 @@ function format_author(string $author) : string {
     } else {
       // We have no punctuation! Let's delimit with spaces.
       $chunks = array_reverse(explode(" ", $author));
-      $i = array();
+      $i = [];
       foreach ($chunks as $chunk){
 	if (!$surname && !is_initials($chunk)) $surname = $chunk;
 	else array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
@@ -262,12 +262,12 @@ function format_author(string $author) : string {
 function format_multiple_authors(string $authors) : string {
   $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
-  $return = array();
+  $return = [];
   ## Split the citation into an author by author account
-  $authors = preg_replace(array("~\band\b~iu", "~[\d\+\*]+~u"), ";", $authors); //Remove "and" and affiliation symbols
+  $authors = preg_replace(["~\band\b~iu", "~[\d\+\*]+~u"], ";", $authors); //Remove "and" and affiliation symbols
 
-  $authors = str_replace(array("&nbsp;", "(", ")"), array(" "), $authors); //Remove spaces and weird punctuation
-  $authors = str_replace(array(".,", "&", "  "), ";", $authors); //Remove "and"
+  $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
+  $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
   if (preg_match("~[,;]$~", trim($authors))) $authors = substr(trim($authors), 0, strlen(trim($authors))-1); // remove trailing punctuation
 
   $authors = trim($authors);
@@ -277,7 +277,7 @@ function format_multiple_authors(string $authors) : string {
 
   $authors = explode(";", $authors);
   $savedChunk = '';
-  $bits = array();
+  $bits = [];
   if (isset($authors[1])) {
     foreach ($authors as $A){
       if (trim($A) !== "") $return[] = format_author($A);
@@ -289,7 +289,7 @@ function format_multiple_authors(string $authors) : string {
       $chunk = trim($chunk);
       if ($chunk === '') continue; // Odd things with extra commas
       $bits = explode(" ", $chunk);
-      $bitts = array();
+      $bitts = [];
       foreach ($bits as $bit){
 	if ($bit) $bitts[] = $bit;
       }
@@ -307,7 +307,7 @@ function format_multiple_authors(string $authors) : string {
   }
   $return = implode("; ", $return);
   $frags = explode(" ", $return);
-  $return = array();
+  $return = [];
   foreach ($frags as $frag){
     $return[] = is_initials($frag)?format_initials($frag):$frag;
   }
