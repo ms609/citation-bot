@@ -166,7 +166,7 @@ final class constantsTest extends testBaseClass {
       if ($leader) {
 	$leader_bits = $alpha_bits;
 	sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
-	$leader = FALSE;
+	$leader = false;
       } else {
 	$this->assertSame(count($leader_bits), count($alpha_bits));
 	array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
@@ -203,12 +203,12 @@ final class constantsTest extends testBaseClass {
       echo "\n\n" . $filename . " needs alphabetized as follows\n";
       echo $new_contents . "\n\n\n";
       $this->flush();
-      $this->assertTrue(FALSE);
+      $this->assertTrue(false);
     }
   }
 
  public function testWhiteList() : void {
-      $we_failed = FALSE;
+      $we_failed = false;
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
       $our_whitelist_sorted = $our_whitelist;
@@ -270,7 +270,7 @@ final class constantsTest extends testBaseClass {
 	 $this->flush();
 	 $we_failed = true;
       }
-      $this->assertSame(FALSE, $we_failed);
+      $this->assertFalse($we_failed);
   }
 
   public function testWhiteListNotBlacklisted() : void {
@@ -351,7 +351,7 @@ final class constantsTest extends testBaseClass {
   }
 
   public function testAuthorsFlat() {
-    $failed = FALSE;
+    $failed = false;
     $test_flat = [];
     foreach (AUTHOR_PARAMETERS as $array) {
       foreach ($array as $param) {
@@ -396,7 +396,7 @@ final class constantsTest extends testBaseClass {
   public function testNonJournalList() {
     $flat = NON_JOURNAL_WEBSITES;
     sort($flat);
-    $failed = FALSE;
+    $failed = false;
     $last = 'XXXXXXXX';
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
@@ -411,7 +411,7 @@ final class constantsTest extends testBaseClass {
 	 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
 	 $this->flush();
       }
-      if (strpos($param, '.') === FALSE) {
+      if (strpos($param, '.') === false) {
 	 $failed = true;
 	 $this->flush();
 	 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
@@ -436,7 +436,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame("END_OF_CITE_list_junk", end($italics));
     foreach ($italics as $item) {
       $spaces = substr_count($item, " ");
-      if ($spaces > $spaces_at) $in_order = FALSE;
+      if ($spaces > $spaces_at) $in_order = false;
       $spaces_at = $spaces;
       $max_spaces = max($max_spaces, $spaces);
     }
@@ -465,7 +465,7 @@ final class constantsTest extends testBaseClass {
       for ($j = $i+1; $j < count($italics); $j++) {
 	$later = $italics[$j];
 	if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
-	  $in_order = FALSE;
+	  $in_order = false;
 	  $this->flush();
 	  echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
 	  $this->flush();
@@ -485,7 +485,7 @@ final class constantsTest extends testBaseClass {
 	$this->flush();
 	echo "\n Found duplicate: $item \n";
 	$this->flush();
-	$good = FALSE;
+	$good = false;
       }
       $last = $item;
     }
@@ -502,7 +502,7 @@ final class constantsTest extends testBaseClass {
 	$this->flush();
 	echo "\n Found duplicate: $item \n";
 	$this->flush();
-	$good = FALSE;
+	$good = false;
       }
       $last = $item;
     }
@@ -558,7 +558,7 @@ final class constantsTest extends testBaseClass {
        if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
 	  $page->get_text_from($tem);
 	  $text = $page->parsed_text();
-	  if (stripos($text, 'safesubst:') === FALSE) {
+	  if (stripos($text, 'safesubst:') === false) {
 	    $errors = $errors . '   Is real:' . $convert[0];
 	  }
        }
@@ -574,7 +574,7 @@ final class constantsTest extends testBaseClass {
   public function testFreeDOI() : void {
     foreach (DOI_FREE_PREFIX as $prefix) {
       $this->assertTrue($prefix != '');
-      if (strpos($prefix, '/') === FALSE) {
+      if (strpos($prefix, '/') === false) {
 	$this->assertSame('This needs a slash', $prefix);
       }
     }
