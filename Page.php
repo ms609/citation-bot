@@ -26,15 +26,15 @@ class Page {
   protected string $read_at = '';
   protected string $start_text = '';
   protected int $lastrevid = 0;
-  protected bool $page_error = FALSE;
-  protected static bool $told_fast = FALSE;
+  protected bool $page_error = false;
+  protected static bool $told_fast = false;
   public    static string $last_title = '';
 
   function __construct() {
       $this->construct_modifications_array();
       if (!self::$told_fast) {
 	 if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
-	 self::$told_fast = TRUE;
+	 self::$told_fast = true;
       }
   }
 
@@ -48,7 +48,7 @@ class Page {
       $message = "Error: Could not fetch page.";
       if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info;
       report_warning(echoable($message));
-      return FALSE;
+      return false;
       // @codeCoverageIgnoreEnd
     }
     foreach ($details->query->pages as $p) {
@@ -57,23 +57,23 @@ class Page {
     }
     if (!isset($my_details)) {
       report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
+      return false;                                                    // @codeCoverageIgnore
     }
     $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : '';
 
     $details = $my_details;
     if (isset($details->invalid)) {
       report_warning("Page invalid: " . (isset($details->invalidreason) ? echoable((string) $details->invalidreason) : ''));
-      return FALSE;
+      return false;
     }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
        report_warning("Could not even get the page.  Perhaps non-existent?");
-       return FALSE;
+       return false;
     }
 
     if (!isset($details->title)) {
        report_warning("Could not even get the page title.");  // @codeCoverageIgnore
-       return FALSE;                                          // @codeCoverageIgnore
+       return false;                                          // @codeCoverageIgnore
     }
 
     if (!empty($details->protection)) {
@@ -82,11 +82,11 @@ class Page {
        foreach ($the_protections as $protects) {
 	 if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
 	   $the_level = (string) $protects->level;
-	   if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], TRUE)) {
+	   if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], true)) {
 	     ;  // We are good
-	   } elseif (in_array($the_level, ["sysop", "templateeditor"], TRUE)) {
+	   } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
 	     report_warning("Page is protected.");
-	     return FALSE;
+	     return false;
 	   } else {
 	     report_minor_error("Unexpected protection status: " . echoable($the_level));  // @codeCoverageIgnore
 	   }
@@ -102,7 +102,7 @@ class Page {
 
     if ($this->text === '') {
        report_warning('Page '  . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
-       return FALSE;                                                                          // @codeCoverageIgnore
+       return false;                                                                          // @codeCoverageIgnore
     }
     $this->start_text = $this->text;
     $this->set_date_pattern();
@@ -116,9 +116,9 @@ class Page {
 	   bot_debug_log($this->title . " is probably not a redirect");
 	}
       }
-      return FALSE; // @codeCoverageIgnoreEnd
+      return false; // @codeCoverageIgnoreEnd
     }
-    return TRUE;
+    return true;
   }
 
   public function parse_text(string $text) : void {
@@ -153,7 +153,7 @@ class Page {
       default:        $api = $identifier;
     }
     for ($i = 0; $i < count($templates); $i++) {
-      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, TRUE)) {
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, true)) {
 	if ($templates[$i]->has($identifier)
 	&& !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
 	    $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
@@ -171,11 +171,11 @@ class Page {
 
   public function expand_text() : bool {
     set_time_limit(120);
-    $this->page_error = FALSE;
+    $this->page_error = false;
     $this->announce_page();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
-      return FALSE;
+      return false;
     }
 
     // COMMENTS AND NOWIKI ETC. //
@@ -195,7 +195,7 @@ class Page {
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       $this->text = $this->start_text;
-      return FALSE;
+      return false;
     }
     $citation_count = substr_count($this->text, '{{cite ') +
 		      substr_count($this->text, '{{Cite ') +
@@ -285,7 +285,7 @@ class Page {
     if ($this->page_error) {
       $this->text = $this->start_text;
       if ($this->title !== "") bot_debug_log($this->title . " page failed");
-      return FALSE;
+      return false;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
     Template::$date_style = $this->date_style;
@@ -306,11 +306,11 @@ class Page {
     report_phase('Remedial work to prepare citations');
     foreach ($all_templates as $this_template) {
       set_time_limit(120);
-      if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, TRUE)) {
+      if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, true)) {
 	$our_templates[] = $this_template;
 	$this_template->correct_param_mistakes();
 	$this_template->prepare();
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, TRUE)) {
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
 	$our_templates_slight[] = $this_template;
 	$this_template->correct_param_mistakes();
 	$this_template->prepare(); // does very little
@@ -320,14 +320,14 @@ class Page {
 	$this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
 	if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
 	$our_templates_ieee[] = $this_template;
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, TRUE)) { // No capitalization of thesis, etc.
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) { // No capitalization of thesis, etc.
 	$our_templates_slight[] = $this_template;
 	$this_template->clean_google_books();
 	$this_template->correct_param_mistakes();
 	$this_template->get_identifiers_from_url();
 	$this_template->tidy();
 	$this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL, TRUE)) {
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL, true)) {
 	$our_templates_slight[] = $this_template;
 	$this_template->rename('chapterurl', 'chapter-url');
       } elseif ($this_template->wikiname() === 'cite magazine' || $this_template->wikiname() === 'cite periodical') {
@@ -336,7 +336,7 @@ class Page {
 	    $this_template->rename('work', 'magazine');
 	}
 	if ($this_template->has('magazine')) {
-	  $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine')), TRUE));
+	  $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine')), true));
 	}
 	$this_template->correct_param_mistakes();
 	$this_template->prepare(); // does very little
@@ -376,7 +376,7 @@ class Page {
 	  ($this_template->has('year') || $this_template->has('date')) &&
 	  ($this_template->has('page') || $this_template->has('pages')) &&
 	  $this_template->has('title')) {
-	$this_template->change_name_to('cite journal', TRUE, TRUE);
+	$this_template->change_name_to('cite journal', true, true);
       }
       if ($this_template->has('url')) {
 	$the_url = $this_template->get('url');
@@ -405,8 +405,8 @@ class Page {
       $this_template->get_doi_from_semanticscholar();
       $this_template->find_pmid();
       if ($this_template->blank('bibcode') ||
-	  stripos($this_template->get('bibcode'), 'arxiv') !== FALSE ||
-	  stripos($this_template->get('bibcode'), 'tmp') !== FALSE) {
+	  stripos($this_template->get('bibcode'), 'arxiv') !== false ||
+	  stripos($this_template->get('bibcode'), 'tmp') !== false) {
 	$no_arxiv = $this_template->blank('arxiv');
 	$this_template->expand_by_adsabs(); // Try to get a bibcode
 	if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
@@ -424,7 +424,7 @@ class Page {
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
     foreach ($all_templates as $this_template) {
-      if (in_array($this_template->wikiname(), $issn_templates, TRUE)) {
+      if (in_array($this_template->wikiname(), $issn_templates, true)) {
 	$this_template->use_issn();
       }
     }
@@ -451,11 +451,11 @@ class Page {
 	}
       }
     }
-    $log_bad_chapter = FALSE;
+    $log_bad_chapter = false;
     foreach ($all_templates as $this_template) {
       if ($this_template->has('chapter')) {
-	if (in_array($this_template->wikiname(), ['cite journal', 'cite news'], TRUE)) {
-	  $log_bad_chapter = TRUE;
+	if (in_array($this_template->wikiname(), ['cite journal', 'cite news'], true)) {
+	  $log_bad_chapter = true;
 	}
       }
     }
@@ -505,7 +505,7 @@ class Page {
     $this->replace_object($comments); unset($comments);
     set_time_limit(120);
 
-    if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
+    if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       if ($this->title !== "") bot_debug_log($this->title . " page failed"); // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
@@ -535,7 +535,7 @@ class Page {
       unset($op);
     }
     unset($altered_list);
-    if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== FALSE) {
+    if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== false) {
       $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
@@ -572,12 +572,12 @@ class Page {
 
     if ((count($this->modifications["deletions"]) !== 0)
     && (
-	(($pos = array_search('url', $this->modifications["deletions"])) !== FALSE)
-     || (($pos = array_search('chapter-url', $this->modifications["deletions"])) !== FALSE)
-     || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== FALSE)
+	(($pos = array_search('url', $this->modifications["deletions"])) !== false)
+     || (($pos = array_search('chapter-url', $this->modifications["deletions"])) !== false)
+     || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== false)
 	)
     ) {
-	if (strpos($auto_summary, 'chapter-url') !== FALSE) {
+	if (strpos($auto_summary, 'chapter-url') !== false) {
 	  $auto_summary .= "Removed or converted URL. ";
 	} else {
 	  $auto_summary .= "Removed URL that duplicated identifier. ";
@@ -585,13 +585,13 @@ class Page {
 	unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
-    && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE || ($pos = array_search('access-date', $this->modifications["deletions"])) !== FALSE)
+    && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== false || ($pos = array_search('access-date', $this->modifications["deletions"])) !== false)
     ) {
       $auto_summary .= "Removed access-date with no URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
-    && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== FALSE
+    && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== false
     ) {
       $auto_summary .= "Changed bare reference to CS1/2. ";
       unset($this->modifications["deletions"][$pos]);
@@ -612,7 +612,7 @@ class Page {
     if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
       $auto_summary .= 'Upgrade ISBN10 to 13. ';
     }
-    if (stripos($auto_summary, 'template') !== FALSE) {
+    if (stripos($auto_summary, 'template') !== false) {
       foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
 		'book reference', 'Book reference', 'citejournal', 'Citejournal', 'citeweb', 'Citeweb',
 		'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
@@ -638,18 +638,18 @@ class Page {
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
     /** @var array<bool> $failures */
-    static $failures = [FALSE, FALSE, FALSE, FALSE, FALSE];
+    static $failures = [false, false, false, false, false];
     if ($this->allow_bots()) {
       $failures[0] = $failures[1];
       $failures[1] = $failures[2];
       $failures[2] = $failures[3];
       $failures[3] = $failures[4];
-      $failures[4] = FALSE;
+      $failures[4] = false;
       throttle(); // This is only writing.  Not pages that are left unchanged
       if ($api->write_page($this->title, $this->text,
 	      $this->edit_summary() . $edit_summary_end,
 	      $this->lastrevid, $this->read_at)) {
-	return TRUE;
+	return true;
       } elseif (!TRAVIS) { // @codeCoverageIgnoreStart
 	sleep(9);  // could be database being locked
 	report_info("Trying to write again after waiting");
@@ -657,23 +657,23 @@ class Page {
 	      $this->edit_summary() . $edit_summary_end,
 	      $this->lastrevid, $this->read_at);
 	 if ($return) {
-	   return TRUE;
+	   return true;
 	 } else {
-	   $failures[4] = TRUE;
+	   $failures[4] = true;
 	   if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
 	      report_error("Five failures in a row -- shutting down the bot on page " . echoable($this->title));
 	   }
 	   sleep(4);
-	   return FALSE;
+	   return false;
 	 }
       } else {
-	return FALSE;
+	return false;
       }
       // @codeCoverageIgnoreEnd
     } else {
       report_warning("Can't write to " . echoable($this->title) .
 	" - prohibited by {{bots}} template.");
-      return FALSE;
+      return false;
     }
   }
 
@@ -701,7 +701,7 @@ class Page {
       }
     }
 
-    $preg_ok = TRUE;
+    $preg_ok = true;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
 	/** @var WikiThings|Template $obj */
@@ -709,7 +709,7 @@ class Page {
 	try {
 	  $obj->parse_text($match[0]);
 	} catch (Exception $e) {
-	  $this->page_error = TRUE;
+	  $this->page_error = true;
 	  $this->text = $text;
 	  return $objects;
 	}
@@ -722,7 +722,7 @@ class Page {
 	$objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE && isset($regexp)) {
+    if ($preg_ok === false && isset($regexp)) {
       // @codeCoverageIgnoreStart
       $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
       while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
@@ -730,7 +730,7 @@ class Page {
 	try {
 	  $obj->parse_text($match[0]);
 	} catch (Exception $e) {
-	  $this->page_error = TRUE;
+	  $this->page_error = true;
 	  $this->text = $text;
 	  return $objects;
 	}
@@ -745,9 +745,9 @@ class Page {
       // @codeCoverageIgnoreEnd
     }
 
-    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.
+    if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
 	// @codeCoverageIgnoreStart
-	$this->page_error = TRUE;
+	$this->page_error = true;
 	report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
 	if ($class === "Template") {
 	  echo "<p><h3>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters, or unclosed comment)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
@@ -787,27 +787,27 @@ class Page {
 
   protected function allow_bots() : bool {
     if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {  // When testing the bot on a specific page, allow "editing"
-      return TRUE; // @codeCoverageIgnore
+      return true; // @codeCoverageIgnore
     }
     // see {{bots}} and {{nobots}}
     $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
-      return FALSE;
+      return false;
     }
     if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
-      return TRUE;
+      return true;
     }
     if (preg_match('~\{\{(bots\|allow=.*?)\}\}~iS', $this->text)) {
-      return FALSE;
+      return false;
     }
-    return TRUE;
+    return true;
   }
 
   protected function set_name_list_style() : void {
 
    // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
-    $name_list_style = NULL;
+    $name_list_style = null;
     $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
     if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
       $s = strtolower($matches[1]); // We ONLY deal with first one
@@ -816,7 +816,7 @@ class Page {
       elseif ($s === 'amp')     {$name_list_style = NAME_LIST_STYLE_AMP;}
       elseif ($s !== '')        {bot_debug_log('Weird name-list-style found: ' . echoable($s));}
     }
-    if ($name_list_style !== NULL) {
+    if ($name_list_style !== null) {
       $this->name_list_style = $name_list_style;
     } else {
       $this->name_list_style = NAME_LIST_STYLE_DEFAULT;
@@ -852,7 +852,7 @@ class Page {
     $this->modifications['additions'] = [];
     $this->modifications['deletions'] = [];
     $this->modifications['modifications'] = [];
-    $this->modifications['dashes'] = FALSE;
-    $this->modifications['names'] = FALSE;
+    $this->modifications['dashes'] = false;
+    $this->modifications['names'] = false;
   }
 }
