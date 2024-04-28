@@ -21,7 +21,7 @@ function junior_test(string $name) : array {
   if (substr($name, -1) === ",") {
     $name = substr($name, 0, -1);
   }
-  return array($name, $junior);
+  return [$name, $junior];
 }
 
 /** @return array<string> **/
