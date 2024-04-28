@@ -16,7 +16,7 @@ final class zoteroTest extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testZoteroExpansion_biorxiv1() : void {
@@ -883,7 +883,7 @@ final class zoteroTest extends testBaseClass {
     $tmp_array = array($template);
     expand_templates_from_archives($tmp_array);
     for ($x = 0; $x <= 10; $x++) {
-      if ($template->get2('title') == NULL) {
+      if ($template->get2('title') == null) {
 	sleep(2); // Sometimes fails for no good reason
 	expand_templates_from_archives($tmp_array);
       }
@@ -907,7 +907,7 @@ final class zoteroTest extends testBaseClass {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get2('journal'));
-    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== FALSE);// Sometimes includes a journal of....
+    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== false);// Sometimes includes a journal of....
    });
   }
 
@@ -955,7 +955,7 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
     $expanded = $this->process_page($text);
-    $this->assertTrue(TRUE); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
+    $this->assertTrue(true); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
     // In future we should use this match to expand citation.
    });
   }
@@ -983,7 +983,7 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{cite journal|chapterurl=https://biodiversitylibrary.org/page/32550604}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertTrue($expanded->get2('volume') === NULL || $expanded->get2('volume') === '4');
+    $this->assertTrue($expanded->get2('volume') === null || $expanded->get2('volume') === '4');
    });
   }
 
