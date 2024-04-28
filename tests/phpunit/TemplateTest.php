@@ -2978,8 +2978,8 @@ EP - 999 }}';
     $title1 = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
     $title2 = "RELICS: A Candidate ''z'' ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
     $title3 = "RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
-    if (in_array($title, [$title1, $title2, $title3], TRUE)) {
-       $this->assertTrue(TRUE);
+    if (in_array($title, [$title1, $title2, $title3], true)) {
+       $this->assertTrue(true);
     } else {
        $this->assertTrue($title); // What did we get
     }
@@ -3600,18 +3600,18 @@ EP - 999 }}';
   public function testlooksLikeBookReview() : void {
     $text='{{cite journal|journal=X|url=book}}';
     $template = $this->make_citation($text);
-    $record = (object) NULL;
+    $record = (object) null;
     $this->assertFalse($template->looksLikeBookReview($record));
 
     $text='{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
     $template = $this->make_citation($text);
-    $record = (object) NULL;
+    $record = (object) null;
     $record->year = '2000';
     $this->assertFalse($template->looksLikeBookReview($record));
 
     $text='{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
     $template = $this->make_citation($text);
-    $record = (object) NULL;
+    $record = (object) null;
     $record->year = '2000';
     $this->assertTrue($template->looksLikeBookReview($record));
   }
@@ -3925,12 +3925,12 @@ EP - 999 }}';
     $template->add('title', 'Thus');
     $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
     $array = $template->modifications();
-    $expected = array ( 'modifications' =>  array ( 0 => 'title',  ),
+    $expected =       [ 'modifications' =>  array ( 0 => 'title',  ),
 			'additions' =>  array ( 0 => 'title',  ),
 			'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
 			'changeonly' => array (  ),
-			'dashes' => FALSE,
-			'names' => FALSE,);
+			'dashes' => false,
+			'names' => false];
     $this->assertEqualsCanonicalizing($expected, $array);
     $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
   }
