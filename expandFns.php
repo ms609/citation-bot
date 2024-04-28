@@ -18,17 +18,17 @@ final class HandleCache {
 	'10.0000/Rubbish_bot_failure_test.x' => true];
 
   /** @var array<bool> $cache_active */
-  static public array $cache_active = [];        // DOI is in CrossRef and works
+  public static array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<bool> $cache_inactive */
-  static public array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
+  public static array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
   /** @var array<bool> $cache_good */
-  static public array $cache_good = [];          // DOI works
+  public static array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
-  static public array $cache_hdl_loc = [];       // Final HDL location URL
+  public static array $cache_hdl_loc = [];       // Final HDL location URL
   /** @var array<bool> $cache_hdl_bad */
-  static public array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
+  public static array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
   /** @var array<bool> $cache_hdl_null */
-  static public array $cache_hdl_null = [];      // HDL/DOI resolves to null
+  public static array $cache_hdl_null = [];      // HDL/DOI resolves to null
 
   public static function check_memory_use() : void {
       $usage = count(self::$cache_inactive) +

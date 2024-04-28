@@ -343,7 +343,7 @@ final class WikipediaBot {
   }
 
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-  static public function is_redirect(string $page) : int {
+  public static function is_redirect(string $page) : int {
     $res = self::QueryAPI([
 	"action" => "query",
 	"prop" => "info",
@@ -372,7 +372,7 @@ final class WikipediaBot {
   }
 
   /** @param array<string> $params **/
-  static private function QueryAPI(array $params) : string {
+  private static function QueryAPI(array $params) : string {
    try {
     $params['format'] = 'json';
 
@@ -404,7 +404,7 @@ final class WikipediaBot {
   // @codeCoverageIgnoreEnd
   }
 
-  static public function ReadDetails(string $title) : object {
+  public static function ReadDetails(string $title) : object {
       $details = self::QueryAPI([
 	    'action'=>'query',
 	    'prop'=>'info',
@@ -415,11 +415,11 @@ final class WikipediaBot {
     return (object) @json_decode($details);
   }
 
-  static public function get_links(string $title) : string {
+  public static function get_links(string $title) : string {
      return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
 
-  static public function GetAPage(string $title) : string {
+  public static function GetAPage(string $title) : string {
     curl_setopt_array(self::$ch_logout,
 	      [CURLOPT_HTTPGET => true,
 	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
@@ -434,7 +434,7 @@ final class WikipediaBot {
   }
 
 
-  static public function is_valid_user(string $user) : bool {
+  public static function is_valid_user(string $user) : bool {
     if (!$user) return false;
     $query = [
 	 "action" => "query",
@@ -460,14 +460,14 @@ final class WikipediaBot {
     return true;
   }
 
-  static public function NonStandardMode() : bool {
+  public static function NonStandardMode() : bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
 
   private function get_the_user_internal() : string {
     return $this->the_user;
   }
-  static public function GetLastUser() : string {
+  public static function GetLastUser() : string {
     if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
     return '';  // @codeCoverageIgnore
   }
