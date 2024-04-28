@@ -2,7 +2,7 @@
 declare(strict_types=1);
 /** https://en.wikipedia.org/wiki/Module:Format_ISBN/data **/
 
-const ISBN_HYPHEN_POS = array(  //  RangeMessage timestamp: 2024-04-02T05:38:23 BST
+const ISBN_HYPHEN_POS = [  //  RangeMessage timestamp: 2024-04-02T05:38:23 BST
 	'9780199999999' => [1, 2, 6],                    //  English language
 	'9780227999999' => [1, 3, 5],
 	'9780228999999' => [1, 4, 4],
@@ -1539,4 +1539,4 @@ const ISBN_HYPHEN_POS = array(  //  RangeMessage timestamp: 2024-04-02T05:38:23 
 	'9798909999999' => [1, 5, 3],
 	'9798989999999' => [1, 7, 1],
 	'9798992999999' => [1, 7, 1],
-	);
+	];
