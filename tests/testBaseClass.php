@@ -7,10 +7,10 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 
 final class TestPage extends Page {
   function __construct() {
-    $bad_functions = array('__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
+    $bad_functions =      ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
 			   'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero', '{closure}',
 			   'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
-			   'expand_via_zotero', 'reference_to_template', 'fill_cache', ''); // Some of these should never occur
+			   'expand_via_zotero', 'reference_to_template', 'fill_cache', '']; // Some of these should never occur
     $trace = debug_backtrace();
     $i = 0;
     while (in_array($trace[$i]['function'], $bad_functions, TRUE)) {
@@ -108,7 +108,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function make_citation(string $text) : Template {
     $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
     $this->flush();
-    Template::$all_templates = array();
+    Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
@@ -133,7 +133,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
     $this->flush();
-    Template::$all_templates = array();
+    Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
     $page = new TestPage();
     $page->parse_text($text);
