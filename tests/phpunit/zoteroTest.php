@@ -259,7 +259,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data = (object) ['title' => 'not found']
+    $zotero_data = (object) ['title' => 'not found'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
