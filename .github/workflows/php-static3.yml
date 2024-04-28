@@ -48,4 +48,4 @@ jobs:
       run: php -d memory_limit=2000M ./vendor/bin/phpinsights
 
     - name: PHP deptrac
-      run: vendor/bin/deptrac init && vendor/bin/deptrac
+      run: vendor/bin/deptrac init && ./vendor/bin/deptrac
