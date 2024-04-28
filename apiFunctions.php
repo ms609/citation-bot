@@ -18,9 +18,9 @@ final class AdsAbsControl {
   private static int $big_counter = 0;
   private static int $small_counter = 0;
   /** @var array<string> $doi2bib **/
-  private static array $doi2bib = array();
+  private static array $doi2bib = [];
   /** @var array<string> $bib2doi **/
-  private static array $bib2doi = array();
+  private static array $bib2doi = [];
 
   public static function big_gave_up_yet() : bool {
     self::$big_counter = max(self::$big_counter - 1, 0);
@@ -117,7 +117,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
 	$this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
-		case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
+		case "Title":   $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
 	break;  case "PubDate": if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
 				    $this_template->add_if_new('year', $match[1], 'entrez');
 				}
@@ -197,8 +197,8 @@ function query_bibcode_api(array $bibcodes, array &$templates) : void { adsabs_a
   @param array<Template> $templates
 **/
 function expand_arxiv_templates (array &$templates) : void {  // Pointer to save memory
-  $ids = array();
-  $arxiv_templates = array();
+  $ids = [];
+  $arxiv_templates = [];
   foreach ($templates as $this_template) {
     if ($this_template->wikiname() === 'cite arxiv') {
       $this_template->rename('arxiv', 'eprint');
@@ -536,7 +536,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
       if (strpos($doi, '10.7817/jameroriesoci') === FALSE || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
 	$template->add_if_new("year", (string) $crossRef->year, 'crossref');
       }
-      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
+      if (   $template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) // If editors present, authors may not be desired
 	  && $crossRef->contributors->contributor
 	) {
 	$au_i = 0;
@@ -1034,12 +1034,12 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 	throttle_archive();
 	curl_setopt($ch, CURLOPT_URL, $archive_url);
 	$raw_html = bot_curl_exec($ch);
-	foreach (array('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+	foreach (    ['~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
 		      '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
 		      '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
 		      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
 		      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
-		      '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~') as $regex) {
+		      '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~'] as $regex) {
 	  set_time_limit(120); // Slow regex sometimes
 	  if ($raw_html && preg_match($regex, $raw_html, $match)) {
 	   set_time_limit(120);
@@ -1233,7 +1233,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     }
   }
-  return (object) array('numFound' => 0);
+  return (object) ['numFound' => 0];
   // @codeCoverageIgnoreEnd
 }
 
@@ -1264,9 +1264,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
    if ($ch === NULL) {
       $ch = bot_curl_init(1.0,
 	       [CURLOPT_POST => TRUE,
-	       CURLOPT_HTTPHEADER => array(
-	       "Content-Type: application/x-www-form-urlencoded",
-		     "Accept: application/xml")
+	        CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
 	       ]);
    }
    curl_setopt_array($ch,
@@ -1371,8 +1369,8 @@ function expand_book_adsabs(Template $template, object $record) : void {
 function query_adsabs(string $options) : object {
     set_time_limit(120);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
-    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
+    if (AdsAbsControl::small_gave_up_yet()) return (object) ['numFound' => 0];
+    if (!PHP_ADSABSAPIKEY) return (object) ['numFound' => 0];
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
 		  . ".adsabs.harvard.edu/v1/search/query"
 		  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
