@@ -2593,7 +2593,7 @@ final class Template {
 	  query_pmid_api([$pm], $this->this_array);
 	} elseif ($pm = $this->get('pmc')) {
 	  report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
-	  query_pmc_api([$pm] $this->this_array);
+	  query_pmc_api([$pm], $this->this_array);
 	}
 	$this->this_array = [];
   }
