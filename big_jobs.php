@@ -21,9 +21,9 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
   $user = str_replace(["'", "=", '"', "/"], ["", "", "", "_"], $user); // Sanitize more
   $file = $start . $user . $version;
   @clearstatcache();
-  @clearstatcache(TRUE, $start);
-  @clearstatcache(TRUE, $file);
-  @clearstatcache(TRUE, $file . '_kill_job');
+  @clearstatcache(true, $start);
+  @clearstatcache(true, $file);
+  @clearstatcache(true, $file . '_kill_job');
   return $file;
 }
 
@@ -47,7 +47,7 @@ function big_jobs_check_overused(int $page_count) : void {
    exit();
  }
  $lock_file = fopen($fn, 'x+');
- if ($lock_file === FALSE) {
+ if ($lock_file === false) {
    echo '<div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div>';
    bot_html_footer();
    exit();
@@ -73,7 +73,7 @@ function big_jobs_check_killed() : void {
 }
 
 function big_jobs_kill() : bool {
- if (!file_exists(big_jobs_name())) return FALSE;
+ if (!file_exists(big_jobs_name())) return false;
  hard_touch(big_jobs_name() . '_kill_job');
- return TRUE;
+ return true;
 }
