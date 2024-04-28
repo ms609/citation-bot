@@ -15,17 +15,17 @@ const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 
 //Common replacements
-const HTML_DECODE = array("[", "]", "<", ">", " ");
-const HTML_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "+");
+const HTML_DECODE = ["[", "]", "<", ">", " "];
+const HTML_ENCODE = ["&#x5B;", "&#x5D;", "&#60;", "&#62;", "+"];
 
-const HTML_DECODE_DOI = array("[", "]", "<", ">");
-const HTML_ENCODE_DOI = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
+const HTML_DECODE_DOI = ["[", "]", "<", ">"];
+const HTML_ENCODE_DOI = ["&#x5B;", "&#x5D;", "&#60;", "&#62;"];
 
-const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
-const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
+const DOT_ENCODE = [".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29"];
+const DOT_DECODE = ["/", "[", "{", "}", "]", "<", ">", ";", "(", ")"];
 
-const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
-const DOI_URL_DECODE = array("#", "<", ">");
+const DOI_URL_ENCODE = ["%23", "%3C", "%3E"];
+const DOI_URL_DECODE = ["#", "<", ">"];
 
 const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
