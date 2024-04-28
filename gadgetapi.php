@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 set_time_limit(120);
-ignore_user_abort(FALSE); // Dies if cannot connect back to client, should be the default
+ignore_user_abort(false); // Dies if cannot connect back to client, should be the default
 
 try {
  @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
