@@ -185,7 +185,7 @@ const AUTHOR_PARAMETERS = [
 96=>['surname96','forename96','initials96','first96','last96','author96','author96-last','author-last96','author96-first','author-first96','author-given96','author96-given','given96','author-surname96','author96-surname'],
 97=>['surname97','forename97','initials97','first97','last97','author97','author97-last','author-last97','author97-first','author-first97','author-given97','author97-given','given97','author-surname97','author97-surname'],
 98=>['surname98','forename98','initials98','first98','last98','author98','author98-last','author-last98','author98-first','author-first98','author-given98','author98-given','given98','author-surname98','author98-surname'],
-99=>['surname99','forename99','initials99','first99','last99','author99','author99-last','author-last99','author99-first','author-first99','author-given99','author99-given','given99','author-surname99','author99-surname')
+99=>['surname99','forename99','initials99','first99','last99','author99','author99-last','author-last99','author99-first','author-first99','author-given99','author99-given','given99','author-surname99','author99-surname']
 ];
 const FLATTENED_AUTHOR_PARAMETERS = ['surname', 'forename', 'initials', 'others',
     'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first',
