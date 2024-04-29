@@ -8,9 +8,9 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 final class TestPage extends Page {
   function __construct() {
     $bad_functions =      ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
-			   'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero', '{closure}',
-			   'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
-			   'expand_via_zotero', 'reference_to_template', 'fill_cache', '']; // Some of these should never occur
+                           'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero', '{closure}',
+                           'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
+                           'expand_via_zotero', 'reference_to_template', 'fill_cache', '']; // Some of these should never occur
     $trace = debug_backtrace();
     $i = 0;
     while (in_array($trace[$i]['function'], $bad_functions, true)) {
@@ -47,7 +47,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_bibcode = false;
     }
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-	!getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+        !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
        $this->testing_skip_wiki = true;
     } else {
        $this->testing_skip_wiki = false;
@@ -84,12 +84,12 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $this->assertNull(null);
     } else {
       try {
-	AdsAbsControl::big_back_on();
-	AdsAbsControl::small_back_on();
-	$function();
+        AdsAbsControl::big_back_on();
+        AdsAbsControl::small_back_on();
+        $function();
       } finally {
-	AdsAbsControl::big_give_up();
-	AdsAbsControl::small_give_up();
+        AdsAbsControl::big_give_up();
+        AdsAbsControl::small_give_up();
       }
     }
   }
@@ -98,10 +98,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function requires_zotero(callable $function) : void {
       try {
     usleep(300000); // Reduce failures
-	Zotero::unblock_zotero();
-	$function();
+        Zotero::unblock_zotero();
+        $function();
       } finally {
-	Zotero::block_zotero();
+        Zotero::block_zotero();
       }
   }
 
