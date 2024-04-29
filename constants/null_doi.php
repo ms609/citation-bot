@@ -151,7 +151,6 @@ const NULL_DOI_LIST =
 '10.1063/1.2803618' => true,
 '10.1067/mpd.2000.106225' => true,
 '10.1068/p2952' => true,
-'10.1071/bt12225' => true,
 '10.1080/00855920310002717' => true,
 '10.1080/01485010152104026' => true,
 '10.1080/02786820300981' => true,
@@ -3851,7 +3850,6 @@ const NULL_DOI_LIST =
 '10.5424/fs/2011201-9136' => true,
 '10.5424/sjar/200806s1-391' => true,
 '10.5428/pcar20120511' => true,
-'10.54302/mausam.v65i3.1041' => true,
 '10.5445/IR/1000023476' => true,
 '10.5465/AMR.2011.65554783' => true,
 '10.5581/1516-8484.20110123' => true,
@@ -3914,6 +3912,8 @@ const NULL_DOI_BUT_GOOD = [       // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.1071/bt12225' => true,
+'10.54302/mausam.v65i3.1041' => true,
 '10.1001/archneur.1989.00520400097026' => true,
 '10.1001/archpsyc.60.5.497' => true,
 '10.1001/jama.2020.6019' => true,
