@@ -2700,7 +2700,7 @@ EP - 999 }}';
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
     $this->assertSame(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"),
-			str_replace(' ', '', $expanded->get('title')));
+		        str_replace(' ', '', $expanded->get('title')));
     $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
     // Should be able to drop /full from DOI in URL
     $expanded = $this->process_citation($text);
