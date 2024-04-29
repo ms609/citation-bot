@@ -46,34 +46,34 @@ const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0) : int {
-	if ($down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
-	     bot_debug_log("Absurdly large curl");
-	     return 1;  // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
-	}
-	return 0;
+    if ($down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
+         bot_debug_log("Absurdly large curl");
+         return 1;  // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
+    }
+    return 0;
 }
 /** @param array<mixed> $ops **/
 function bot_curl_init(float $time, array $ops) : CurlHandle {
-	$ch = curl_init();
-	// 1 - Global Defaults
-	curl_setopt_array($ch, [
-		CURLOPT_FOLLOWLOCATION => true,
-		CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
-		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
-		CURLOPT_USERAGENT => BOT_USER_AGENT,
-		CURLOPT_AUTOREFERER => true,
-		CURLOPT_REFERER => "https://en.wikipedia.org",
-		CURLOPT_COOKIESESSION => true,
-		CURLOPT_RETURNTRANSFER => true,
-		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
-		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
-		CURLOPT_NOPROGRESS => false,
-	// 2 - Default Time by ratio
-		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
-		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
-	// 3 - Specific options and overrides of defaults
-	curl_setopt_array($ch, $ops);
-	return $ch;
+    $ch = curl_init();
+    // 1 - Global Defaults
+    curl_setopt_array($ch, [
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
+        CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_AUTOREFERER => true,
+        CURLOPT_REFERER => "https://en.wikipedia.org",
+        CURLOPT_COOKIESESSION => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
+        CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
+        CURLOPT_NOPROGRESS => false,
+    // 2 - Default Time by ratio
+        CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
+        CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
+    // 3 - Specific options and overrides of defaults
+    curl_setopt_array($ch, $ops);
+    return $ch;
 }
 
 function bot_curl_exec(CurlHandle $ch) : string {
