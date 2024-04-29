@@ -77,7 +77,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
 	   // This could only be tainted input if OAuth server itself was hacked, so flag as safe
 	   /** @psalm-taint-escape header */
 	   $where = trim($_GET['return']);
-	   return_to_sender($where);
+       return_to_sender($where);
 	}
 	return_to_sender();
    }
@@ -90,8 +90,8 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 try {
       if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) throw new Exception('Webserver URL variables not set');
       $proto = (
-	 (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-	 (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+		(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+		(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
       ) ? "https://" : "http://";
       $newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $client->setCallback($newcallback);
