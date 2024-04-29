@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // Source: http://www.tilman.de/programme/mathparser/substitutions.txt
 // This list previously includes some items twice.  That was okay, but some static analyis tools will complained, so non-used ones have been removed
- const MML_TAGS = array (
+ const MML_TAGS = [
   '<msqrt>'  => '\sqrt{',
   '<mi>'     => '',
   '</mi>'    => '',
@@ -269,6 +269,5 @@ declare(strict_types=1);
   '&colon;' =>  ':',
   '&ApplyFunction;' =>  '',
   '&squ;'   =>  '',
-
-  );
+  ];
 
