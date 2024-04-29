@@ -24,7 +24,7 @@ final class AdsAbsControl {
 
   public static function big_gave_up_yet() : bool {
     self::$big_counter = max(self::$big_counter - 1, 0);
-    return (self::$big_counter !== 0);
+    return self::$big_counter !== 0;
   }
   public static function big_give_up() : void {
     self::$big_counter = 1000;
@@ -35,7 +35,7 @@ final class AdsAbsControl {
 
   public static function small_gave_up_yet() : bool {
     self::$small_counter = max(self::$small_counter - 1, 0);
-    return (self::$small_counter !== 0);
+    return self::$small_counter !== 0;
   }
   public static function small_give_up() : void {
     self::$small_counter = 1000;
