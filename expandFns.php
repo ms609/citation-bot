@@ -2652,3 +2652,35 @@ function simplify_google_search(string $url) : string {
    $url= $url . $hash;
    return $url;
   }
+
+  function addISBNdashes(string $isbn) : string {
+    if (substr_count($isbn, '-') > 1) return $isbn;
+    $new = str_replace('-', '', $isbn);
+    if (strlen($new) === 10) {
+        $num = 9780000000000 + (int) str_ireplace('x','9', $new);
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
+            }
+        }
+        if (!isset($split)) return $isbn; // Paranoid
+        $v = $split;
+        return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
+        // split = SKIP3, $v[0], $v[1], $v[2], 1
+    } elseif (strlen($new) === 13) {
+        $num = (int) $new;
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
+            }
+        }
+        if (!isset($split)) return $isbn; // Paranoid
+        $v = $split;
+        return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+        // split = 3, $v[0], $v[1], $v[2], 1
+    } else {
+        return $isbn;
+    }
+  }
