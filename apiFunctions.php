@@ -132,7 +132,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
 	    $subItem = (string) $subItem;
 	    if (preg_match('~^\d~', $subItem)) { // Author started with a number, skip all remaining authors.
 	      break;   // @codeCoverageIgnore
-	    } elseif ( "CollectiveName" === (string) $key) { // This is often really long string of gibberish
+	    } elseif ((string) $key === "CollectiveName") { // This is often really long string of gibberish
 	      break;   // @codeCoverageIgnore
 	    } elseif (strlen($subItem) > 100) {
 	      break;   // @codeCoverageIgnore
