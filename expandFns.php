@@ -2544,3 +2544,143 @@ function get_headers_array(string $url) : false|array {
   $last_url = $url;
   return @get_headers($url, true, $context_insecure);
 }
+
+
+function simplify_google_search(string $url) : string {
+   if (stripos($url, 'q=') === false) return $url;  // Not a search
+   if (preg_match('~^https?://.*google.com/search/~', $url)) return $url; // Not a search if the slash is there
+   $orig_url = $url;
+   $hash = '';
+   if (strpos($url, "#")) {
+     $url_parts = explode("#", $url, 2);
+     $url = $url_parts[0];
+     $hash = "#" . $url_parts[1];
+   }
+
+   $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
+   array_shift($url_parts);
+   $url = "https://www.google.com/search?";
+
+   foreach ($url_parts as $part) {
+     $part_start = explode("=", $part, 2);
+     $part_start0 = $part_start[0];
+     if (isset($part_start[1]) && $part_start[1] === '') {
+       $part_start0 = "donotaddmeback"; // Do not add blank ones
+       $part_start1 = '';
+       $it_is_blank = true;
+     } elseif (empty($part_start[1])) {
+       $part_start1 = '';
+       $it_is_blank = true;
+     } else {
+       $part_start1 = $part_start[1];
+       $it_is_blank = false;
+     }
+     switch ($part_start0) {
+       case "aq": case "aqi": case "bih": case "biw": case "client":
+       case "as": case "useragent": case "as_brr":
+       case "ei": case "ots": case "sig": case "source": case "lr":
+       case "sa": case "oi": case "ct": case "id":  case "cd":
+       case "oq": case "rls": case "sourceid": case "ved":
+       case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
+       case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
+       case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
+       case "prmd": case "dpr": case "newwindow": case "gs_ssp":
+       case "spell": case "shndl": case "sugexp": case "donotaddmeback":
+       case "usg": case "fir": case "entrypoint": case "as_qdr":
+       case "as_drrb": case "as_minm":  case "as_mind": case "as_maxm":
+       case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
+       case "iflsig": case "tab": case "sqi": case "noj":
+       case "hs": case "es_sm": case "site": case "btnmeta_news_search":
+       case "channel": case "espv": case "cad": case "gs_sm":
+       case "imgil": case "ins": case "npsic=": case "rflfq": case "lei":
+       case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
+       case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
+       case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
+       case "aql":
+          break;
+       case "as_occt":
+          if ($it_is_blank || str_i_same($part_start1, 'any')) break;
+          $url .=  $part . "&" ;
+          break;
+       case "cf":
+          if ($it_is_blank || str_i_same($part_start1, 'all')) break;
+          $url .=  $part . "&" ;
+          break;
+       case "cs":
+          if ($it_is_blank || str_i_same($part_start1, '0')) break;
+          $url .=  $part . "&" ;
+          break;
+       case "btnK":
+          if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) break;
+          $url .=  $part . "&" ;
+          break;
+       case "as_epq":
+          if ($it_is_blank) break;
+          $url .=  $part . "&" ;
+          break;
+       case "btnG":
+          if ($it_is_blank || str_i_same($part_start1, 'Search')) break;
+          $url .=  $part . "&" ;
+          break;
+       case "rct":
+          if ($it_is_blank || str_i_same($part_start1, 'j')) break; // default
+          $url .=  $part . "&" ;
+          break;
+       case "resnum":
+          if ($it_is_blank || str_i_same($part_start1, '11')) break; // default
+          $url .=  $part . "&" ;
+          break;
+       case "ie": case "oe":
+          if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break; // UTF-8 is the default
+          $url .=  $part . "&" ;
+          break;
+       case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
+       case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb": case "gbv":
+       case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q": case "kponly":
+          $url .=  $part . "&" ;
+          break;
+       default:
+          // @codeCoverageIgnoreStart
+          report_minor_error("Unexpected Google URL component:  " . echoable($part) . " in " . echoable($orig_url));
+          $url .=  $part . "&" ;
+          break;
+          // @codeCoverageIgnoreEnd
+     }
+   }
+
+   if (substr($url, -1) === "&") $url = substr($url, 0, -1);  //remove trailing &
+   $url= $url . $hash;
+   return $url;
+  }
+
+  function addISBNdashes(string $isbn) : string {
+    if (substr_count($isbn, '-') > 1) return $isbn;
+    $new = str_replace('-', '', $isbn);
+    if (strlen($new) === 10) {
+        $num = 9780000000000 + (int) str_ireplace('x','9', $new);
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
+            }
+        }
+        if (!isset($split)) return $isbn; // Paranoid
+        $v = $split;
+        return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
+        // split = SKIP3, $v[0], $v[1], $v[2], 1
+    } elseif (strlen($new) === 13) {
+        $num = (int) $new;
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
+            }
+        }
+        if (!isset($split)) return $isbn; // Paranoid
+        $v = $split;
+        return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+        // split = 3, $v[0], $v[1], $v[2], 1
+    } else {
+        return $isbn;
+    }
+  }
