@@ -464,7 +464,7 @@ final class TemplateTest extends testBaseClass {
     $template = $this->process_citation($text);
     $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
   }
-	
+        
   public function testOxLit() : void {
     $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
@@ -720,10 +720,10 @@ final class TemplateTest extends testBaseClass {
 
   public function testArxivExpansion() : void {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
-	  . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
-	  . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
-	  . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
-	  ;
+          . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
+          . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
+          . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
+          ;
     $expanded = $this->process_page($text);
     $templates = $expanded->extract_object('Template');
     $this->assertSame('cite journal', $templates[0]->wikiname());
@@ -1189,7 +1189,7 @@ final class TemplateTest extends testBaseClass {
 
   public function testPublisherRemoval() : void {
     foreach (['Google News Archive', '[[Google]]', 'Google News',
-		   'Google.com', '[[Google News]]'] as $publisher) {
+                   'Google.com', '[[Google News]]'] as $publisher) {
       $text = "{{cite journal | publisher = $publisher|url=http://google/}}";
       $prepared = $this->prepare_citation($text);
       $this->assertNull($prepared->get2('publisher'));
@@ -2476,7 +2476,7 @@ EP - 999 }}';
     $text = '{{Cite journal |journal=In Journal Titles: a word following punctuation needs capitals. Of course.}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('In Journal Titles: A Word Following Punctuation Needs Capitals. Of Course.',
-			$prepared->get2('journal'));
+                        $prepared->get2('journal'));
   }
 
   public function testExistingWikiText() : void { // checks for formating in tidy() not breaking things
@@ -2700,12 +2700,12 @@ EP - 999 }}';
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
     $this->assertSame(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"),
-		        str_replace(' ', '', $expanded->get('title')));
+                        str_replace(' ', '', $expanded->get('title')));
     $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
     // Should be able to drop /full from DOI in URL
     $expanded = $this->process_citation($text);
     $this->assertSame(str_replace(' ', '', "''Cryptosporidiumhominis''n.Sp.(Apicomplexa:Cryptosporidiidae)from''Homosapiens''"),
-			str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
+                        str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }
 
   public function testSICI() : void {
@@ -3545,11 +3545,11 @@ EP - 999 }}';
 
   public function testJunkData() : void {
     $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|journal=JSTOR|pmid=1974135}} " .
-	    "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
-	    "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
-	    "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
-	    "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
-	    "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
+            "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
+            "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
+            "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
+            "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
+            "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
     $page = $this->process_page($text);
     if (substr_count($page->parsed_text(), 'JSTOR') !== 0) {
         sleep(3);
@@ -3926,11 +3926,11 @@ EP - 999 }}';
     $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
     $array = $template->modifications();
     $expected =       [ 'modifications' =>  [0 => 'title',  ],
-			'additions' =>  [0 => 'title',  ],
-			'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
-			'changeonly' => [],
-			'dashes' => false,
-			'names' => false];
+                        'additions' =>  [0 => 'title',  ],
+                        'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
+                        'changeonly' => [],
+                        'dashes' => false,
+                        'names' => false];
     $this->assertEqualsCanonicalizing($expected, $array);
     $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
   }
