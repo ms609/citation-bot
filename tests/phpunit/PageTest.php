@@ -217,8 +217,7 @@ final class PageTest extends testBaseClass {
       $writeTestPage = 'User:Blocked Testing Account/writetest';
       $page->get_text_from($writeTestPage);
       $origText = $page->parsed_text();
-      $trialCitation = '{{Cite journal | title Bot Testing | ' .
-        'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
+      $trialCitation = '{{Cite journal | title Bot Testing | doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
       $page->overwrite_text($trialCitation);
       $page_result = $page->write($api, "Testing bot write function");
       if (TRAVIS && !$page_result) {

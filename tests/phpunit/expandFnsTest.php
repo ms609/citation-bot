@@ -113,9 +113,9 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testITS() : void {
-    $this->assertSame(                     "Keep case of its Its and ITS",
+    $this->assertSame(             "Keep case of its Its and ITS",
               title_capitalization("Keep case of its Its and ITS", true));
-    $this->assertSame(                     "ITS Keep case of its Its and ITS",
+    $this->assertSame(             "ITS Keep case of its Its and ITS",
               title_capitalization("ITS Keep case of its Its and ITS", true));
   }
 
