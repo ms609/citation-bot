@@ -5337,7 +5337,7 @@ final class Template {
 			 } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
 				 $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
 			 } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
-				 $this->set($param, $this->simplify_google_search($this->get($param)));
+				 $this->set($param, simplify_google_search($this->get($param)));
 			 } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
 				 $this->set($param, $matches[1]);
 			 } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
