@@ -78,22 +78,22 @@ final class WikipediaBot {
     }
     if (isset($response->error)) {
       if ((string) @$response->error->code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
-	report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
+        report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
       } elseif (strpos((string) @$response->error->info, 'The database has been automatically locked') !== false) {
-	report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
+        report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
       } elseif (strpos((string) @$response->error->info, 'abusefilter-warning-predatory') !== false) {
-	report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
-	return true;
+        report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
+        return true;
       } elseif (strpos((string) @$response->error->info, 'protected') !== false) {
-	report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
-	return true;
+        report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
+        return true;
       } elseif (strpos((string) @$response->error->info, 'Wikipedia:Why create an account') !== false) {
-	report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
+        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
       } elseif (strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== false) {
-	report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
+        report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
       } else {
-	bot_debug_log(html_entity_decode((string) @$response->error->info)); // Good to know about about these things
-	report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
+        bot_debug_log(html_entity_decode((string) @$response->error->info)); // Good to know about about these things
+        report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
       }
       sleep (10);
       return false;
@@ -120,10 +120,10 @@ final class WikipediaBot {
     $authenticationHeader = $request->toHeader();
 
     try {
-	  curl_setopt_array(self::$ch_write, [
-	    CURLOPT_POSTFIELDS => http_build_query($params),
-	    CURLOPT_HTTPHEADER => [$authenticationHeader],
-	  ]);
+          curl_setopt_array(self::$ch_write, [
+            CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_HTTPHEADER => [$authenticationHeader],
+          ]);
 
       $data = @curl_exec(self::$ch_write);
       if ($data === false)
@@ -136,14 +136,14 @@ final class WikipediaBot {
       $ret = @json_decode($data);
       unset($data);
       if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
-	(string) $ret->error->code === 'assertuserfailed' ||
-	stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
-	stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
-	stripos((string) $ret->error->info, 'protected') !== false ||
-	stripos((string) $ret->error->info, 'Nonce already used') !== false))
+        (string) $ret->error->code === 'assertuserfailed' ||
+        stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
+        stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
+        stripos((string) $ret->error->info, 'protected') !== false ||
+        stripos((string) $ret->error->info, 'Nonce already used') !== false))
       ) {
-	unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
-	return $this->fetch($params, $depth+1);
+        unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
+        return $this->fetch($params, $depth+1);
 
       }         // @codeCoverageIgnoreEnd
       return self::ret_okay($ret) ? $ret : null;
@@ -164,12 +164,12 @@ final class WikipediaBot {
     }
 
     $response = $this->fetch([
-	    'action' => 'query',
-	    'prop' => 'info|revisions',
-	    'rvprop' => 'timestamp',
-	    'meta' => 'tokens',
-	    'titles' => $page
-	  ]);
+            'action' => 'query',
+            'prop' => 'info|revisions',
+            'rvprop' => 'timestamp',
+            'meta' => 'tokens',
+            'titles' => $page
+    ]);
 
     $myPage = self::response2page($response);
     if ($myPage === null) return false;
@@ -183,32 +183,32 @@ final class WikipediaBot {
     }  // This returns true so that we do not try again
 
     if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
-	report_warning('unable to get bot tokens');     // @codeCoverageIgnore
-	return false;                                   // @codeCoverageIgnore
+        report_warning('unable to get bot tokens');     // @codeCoverageIgnore
+        return false;                                   // @codeCoverageIgnore
     }
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
       $auth_token = @json_decode( $this->user_client->makeOAuthCall(
-	$this->user_token,
+        $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
       if ($auth_token === null) {
-	report_error('unable to get user tokens');
+        report_error('unable to get user tokens');
       }
     }                              // @codeCoverageIgnoreEnd
     $submit_vars = [
-	"action" => "edit",
-	"title" => $page,
-	"text" => $text,
-	"summary" => $editSummary,
-	"notminor" => "1",
-	"bot" => "1",
-	"basetimestamp" => $baseTimeStamp,
-	"starttimestamp" => $startedEditing,
-	"nocreate" => "1",
-	"watchlist" => "nochange",
-	'token' => $auth_token,
+        "action" => "edit",
+        "title" => $page,
+        "text" => $text,
+        "summary" => $editSummary,
+        "notminor" => "1",
+        "bot" => "1",
+        "basetimestamp" => $baseTimeStamp,
+        "starttimestamp" => $startedEditing,
+        "nocreate" => "1",
+        "watchlist" => "nochange",
+        'token' => $auth_token,
     ];
     $result = $this->fetch($submit_vars);
 
@@ -216,10 +216,10 @@ final class WikipediaBot {
 
     if (HTML_OUTPUT) {
       report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
-	. WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
-	. echoable($myPage->title) . '</a></span>');                  // @codeCoverageIgnore
+        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
+        . echoable($myPage->title) . '</a></span>');                  // @codeCoverageIgnore
     } else {
-	report_inline("\n Written to " . echoable($myPage->title) . ". \n");
+        report_inline("\n Written to " . echoable($myPage->title) . ". \n");
     }
     return true;
   }
@@ -231,12 +231,12 @@ final class WikipediaBot {
     }
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
-	report_warning(echoable((string) $response->warnings->prop->{'*'}));
-	return null;
+        report_warning(echoable((string) $response->warnings->prop->{'*'}));
+        return null;
       }
       if (isset($response->warnings->info)) {
-	report_warning(echoable((string) $response->warnings->info->{'*'}));
-	return null;
+        report_warning(echoable((string) $response->warnings->info->{'*'}));
+        return null;
       }
     }
     if (!isset($response->batchcomplete)) {
@@ -264,16 +264,16 @@ final class WikipediaBot {
   public static function resultsGood(?object $result) : bool {
     if (isset($result->error)) {
       report_warning("Write error: " .
-		    echoable(mb_strtoupper($result->error->code)) . ": " .
-		    str_replace(["You ", " have "], ["This bot ", " has "],
-		    echoable((string) @$result->error->info)));
+                    echoable(mb_strtoupper($result->error->code)) . ": " .
+                    str_replace(["You ", " have "], ["This bot ", " has "],
+                    echoable((string) @$result->error->info)));
       return false;
     } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
       report_error("Write error: We encountered a captcha, so can't be properly logged in.");  // @codeCoverageIgnore
     } elseif (empty($result->edit->result)) { // Includes results === null
       report_warning("Unhandled write error.  Please copy this output and " .
-		    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
-		    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+                    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
+                    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
       sleep(5);
       return false;
     } elseif ($result->edit->result !== "Success") {
@@ -297,30 +297,30 @@ final class WikipediaBot {
       $res = self::QueryAPI($vars);
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
-	foreach ($res->query->categorymembers as $page) {
-	  // We probably only want to visit pages in the main namespace
-	  if (stripos($page->title, 'talk:') === false &&
-	      stripos($page->title, 'Special:') === false &&
-	      stripos($page->title, '/doc') === false &&
-	      stripos($page->title, 'Template:') === false &&
-	      stripos($page->title, 'Mediawiki:') === false &&
-	      stripos($page->title, 'help:') === false &&
-	      stripos($page->title, 'Gadget:') === false &&
-	      stripos($page->title, 'Portal:') === false &&
-	      stripos($page->title, 'timedtext:') === false &&
-	      stripos($page->title, 'module:') === false &&
-	      stripos($page->title, 'category:') === false &&
-	      stripos($page->title, 'Wikipedia:') === false &&
-	      stripos($page->title, 'Gadget definition:') === false &&
-	      stripos($page->title, 'Topic:') === false &&
-	      stripos($page->title, 'Education Program:') === false &&
-	      stripos($page->title, 'Book:') === false) {
-	    $list[] = $page->title;
-	  }
-	}
+        foreach ($res->query->categorymembers as $page) {
+          // We probably only want to visit pages in the main namespace
+          if (stripos($page->title, 'talk:') === false &&
+              stripos($page->title, 'Special:') === false &&
+              stripos($page->title, '/doc') === false &&
+              stripos($page->title, 'Template:') === false &&
+              stripos($page->title, 'Mediawiki:') === false &&
+              stripos($page->title, 'help:') === false &&
+              stripos($page->title, 'Gadget:') === false &&
+              stripos($page->title, 'Portal:') === false &&
+              stripos($page->title, 'timedtext:') === false &&
+              stripos($page->title, 'module:') === false &&
+              stripos($page->title, 'category:') === false &&
+              stripos($page->title, 'Wikipedia:') === false &&
+              stripos($page->title, 'Gadget definition:') === false &&
+              stripos($page->title, 'Topic:') === false &&
+              stripos($page->title, 'Education Program:') === false &&
+              stripos($page->title, 'Book:') === false) {
+            $list[] = $page->title;
+          }
+        }
       } else {
-	report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
-	return [];                                                                     // @codeCoverageIgnore
+        report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
+        return [];                                                                     // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : false;
     } while ($vars["cmcontinue"]);
@@ -329,14 +329,14 @@ final class WikipediaBot {
 
   public static function get_last_revision(string $page) : string {
     $res = self::QueryAPI([
-	"action" => "query",
-	"prop" => "revisions",
-	"titles" => $page,
+        "action" => "query",
+        "prop" => "revisions",
+        "titles" => $page,
       ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
-	report_minor_error("Failed to get article's last revision for " . echoable($page));      // @codeCoverageIgnore
-	return '';                                                                     // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision for " . echoable($page));      // @codeCoverageIgnore
+        return '';                                                                     // @codeCoverageIgnore
     }
     $page = self::reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
@@ -345,28 +345,28 @@ final class WikipediaBot {
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   public static function is_redirect(string $page) : int {
     $res = self::QueryAPI([
-	"action" => "query",
-	"prop" => "info",
-	"titles" => $page,
-	]);
+        "action" => "query",
+        "prop" => "info",
+        "titles" => $page,
+        ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
-	report_warning("Failed to get redirect status");    // @codeCoverageIgnore
-	return -1;                                          // @codeCoverageIgnore
+        report_warning("Failed to get redirect status");    // @codeCoverageIgnore
+        return -1;                                          // @codeCoverageIgnore
     }
     $res = self::reset($res->query->pages);
     return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
   }
   public static function redirect_target(string $page) : ?string {
     $res = self::QueryAPI([
-	"action" => "query",
-	"redirects" => "1",
-	"titles" => $page,
-	]);
+        "action" => "query",
+        "redirects" => "1",
+        "titles" => $page,
+        ]);
     $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
-	report_warning("Failed to get redirect target");     // @codeCoverageIgnore
-	return null;                                         // @codeCoverageIgnore
+        report_warning("Failed to get redirect target");     // @codeCoverageIgnore
+        return null;                                         // @codeCoverageIgnore
     }
     return (string) $res->query->redirects[0]->to;
   }
@@ -376,11 +376,11 @@ final class WikipediaBot {
    try {
     $params['format'] = 'json';
 
-	    curl_setopt_array(self::$ch_logout, [
-		CURLOPT_POST => true,
-		CURLOPT_POSTFIELDS => http_build_query($params),
-		CURLOPT_URL => API_ROOT,
-	  ]);
+            curl_setopt_array(self::$ch_logout, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query($params),
+                CURLOPT_URL => API_ROOT,
+          ]);
 
     $data = @curl_exec(self::$ch_logout);
     if ($data === false)
@@ -406,12 +406,12 @@ final class WikipediaBot {
 
   public static function ReadDetails(string $title) : object {
       $details = self::QueryAPI([
-	    'action'=>'query',
-	    'prop'=>'info',
-	    'titles'=> $title,
-	    'curtimestamp'=>'true',
-	    'inprop' => 'protection',
-	  ]);
+            'action'=>'query',
+            'prop'=>'info',
+            'titles'=> $title,
+            'curtimestamp'=>'true',
+            'inprop' => 'protection',
+          ]);
     return (object) @json_decode($details);
   }
 
@@ -421,8 +421,8 @@ final class WikipediaBot {
 
   public static function GetAPage(string $title) : string {
     curl_setopt_array(self::$ch_logout,
-	      [CURLOPT_HTTPGET => true,
-	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+              [CURLOPT_HTTPGET => true,
+               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $text = @curl_exec(self::$ch_logout);
     if ($text === false)
     {   // @codeCoverageIgnoreStart
@@ -437,10 +437,10 @@ final class WikipediaBot {
   public static function is_valid_user(string $user) : bool {
     if (!$user) return false;
     $query = [
-	 "action" => "query",
-	 "usprop" => "blockinfo",
-	 "list" => "users",
-	 "ususers" => $user,
+         "action" => "query",
+         "usprop" => "blockinfo",
+         "list" => "users",
+         "ususers" => $user,
       ];
     $response = self::QueryAPI($query);
     if (strpos($response, '"userid"')  === false) { // try again if weird
@@ -479,13 +479,13 @@ final class WikipediaBot {
   private function authenticate_user() : void {
     @setcookie(session_name(),session_id(),time()+(7*24*3600), "", "", true, true); // 7 days
     if (isset($_SESSION['citation_bot_user_id']) &&
-	isset($_SESSION['access_key']) &&
-	isset($_SESSION['access_secret']) &&
-	is_string($_SESSION['citation_bot_user_id']) &&
-	self::is_valid_user($_SESSION['citation_bot_user_id'])) {
-	  $this->the_user = $_SESSION['citation_bot_user_id'];
-	  $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-	  return;
+        isset($_SESSION['access_key']) &&
+        isset($_SESSION['access_secret']) &&
+        is_string($_SESSION['citation_bot_user_id']) &&
+        self::is_valid_user($_SESSION['citation_bot_user_id'])) {
+          $this->the_user = $_SESSION['citation_bot_user_id'];
+          $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+          return;
     }
     @session_start(); // Need write access
     unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
@@ -496,7 +496,7 @@ final class WikipediaBot {
       $ident = $this->user_client->identify($this->user_token);
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
-	report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)) . '  If this is the wrong wiki (default en), then try again, and it should work.');
+        report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)) . '  If this is the wrong wiki (default en), then try again, and it should work.');
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
