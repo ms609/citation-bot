@@ -90,7 +90,8 @@ if (file_exists('env.php')) {
 }
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
-  exit 'Unable to set encoding';
+  echo 'Unable to set encoding';
+  exit;
 }
 
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
