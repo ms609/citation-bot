@@ -14,7 +14,7 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 	  " EJNMMI ", " el ", " else ", " EMBO ", " en ", " EPJ ", " ESMO ",
 	  " et ", " EURASIP ", " FASEB ", " FDA ", " FEBS ", " FEMS ", " for ",
 	  " from ", " för ", " før ", " für ", " GSA ", " HIV ", " HLA ",
-	  " HortScience ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " IEICE ",
+      " HortScience ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " IEICE ",
 	  " IETF ", " if ", " ILR ", " in ", " INFLIBNET ", " into ", " is ",
 	  " ISPRS ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", " las ",
 	  " le ", " les ", " los ", " LRTAP ", " M.A. ", " M.D. ", " medRxiv ",
