@@ -3706,7 +3706,7 @@ final class Template {
 	}
 	$new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
 	if ($new_name === $this->wikiname()) return;
-	if ($this->has('conference') && 'cite conference' === $this->wikiname()) return; // Need to lose conference first
+	if ($this->has('conference') && $this->wikiname() === 'cite conference') return; // Need to lose conference first
 	if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME, true) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
 		($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
 		($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME, true)) // In rare cases when we are positive that cite news is really cite journal
@@ -4058,7 +4058,7 @@ final class Template {
 			  $this->forget('chapter');
 			  return; // Nonsense to have both.
 			}
-			if ('Cultural Advice' === $this->get('chapter') &&
+			if ($this->get('chapter') === 'Cultural Advice' &&
 				strpos($this->get('url') . $this->get('chapter-url'), 'anu.edu.au') !== false) {
 			  $this->forget('chapter');
 			  return;
@@ -6464,7 +6464,7 @@ final class Template {
 		  $this->rename('journal', 'title');
 	  }
 	  if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== false &&
-	      'Surtees Society' !== $this->get('series') && !preg_match('~^\d+$~',$this->get('series'))) {
+		  $this->get('series') !== 'Surtees Society' && !preg_match('~^\d+$~',$this->get('series'))) {
 		  $this->forget('series');
 	  }
 
