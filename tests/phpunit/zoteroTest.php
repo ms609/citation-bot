@@ -884,8 +884,8 @@ final class zoteroTest extends testBaseClass {
     expand_templates_from_archives($tmp_array);
     for ($x = 0; $x <= 10; $x++) {
       if ($template->get2('title') == null) {
-	sleep(2); // Sometimes fails for no good reason
-	expand_templates_from_archives($tmp_array);
+    sleep(2); // Sometimes fails for no good reason
+    expand_templates_from_archives($tmp_array);
       }
     }
     $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get2('title'));
