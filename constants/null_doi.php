@@ -3775,7 +3775,6 @@ const NULL_DOI_LIST =
 '10.4435/BSPI.2018.11' => true, // spam site
 '10.46426/jp2kp.v20i1.42' => true, // parked domain
 '10.46426/jp2kp.v20i2.49' => true, // parked domain
-'10.47176/mjiri.36.113' => true,
 '10.48495/M613MZ00F' => true,
 '10.48495/tm70mz48v' => true,
 '10.5047/meep.2019.00701.0001' => true,
@@ -3917,6 +3916,7 @@ const NULL_DOI_LIST =
 '10.9775/kvfd.2010.2081' => true,
 '10.9775/kvfd.2012.5341' => true,
 '10.9775/kvfd.2014.12722' => true,
+'10.19088/K4D.2022.060' => true,
 ];
 
 const NULL_DOI_BUT_GOOD = [       // TODO - these need to be manually double checked once in a great while.
@@ -3924,6 +3924,8 @@ const NULL_DOI_BUT_GOOD = [       // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.5414/CNP58376' => true,
+'10.47176/mjiri.36.113' => true,
 '10.1001/archneur.1989.00520400097026' => true,
 '10.1001/archpsyc.60.5.497' => true,
 '10.1001/jama.2020.6019' => true,
