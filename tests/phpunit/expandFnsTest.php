@@ -101,7 +101,7 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization15() : void {
     $this->assertSame('JOM',  title_capitalization('Jom' , true));
   }
-	
+
   public function testFrenchCapitalization1() : void {
     $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), true));
   }
@@ -114,9 +114,9 @@ final class expandFnsTest extends testBaseClass {
 
   public function testITS() : void {
     $this->assertSame(                     "Keep case of its Its and ITS",
-		      title_capitalization("Keep case of its Its and ITS", true));
+              title_capitalization("Keep case of its Its and ITS", true));
     $this->assertSame(                     "ITS Keep case of its Its and ITS",
-		      title_capitalization("ITS Keep case of its Its and ITS", true));
+              title_capitalization("ITS Keep case of its Its and ITS", true));
   }
 
   public function testExtractDoi() : void {
@@ -427,14 +427,14 @@ final class expandFnsTest extends testBaseClass {
       }
       // Deal with super common ones that flood the list
       if (strpos($doi, '10.5353/th_') === 0 ||
-	  strpos($doi, '10.1601/tx.') === 0 ||
-	  strpos($doi, '10.1601/nm.') === 0 ||
-	  strpos($doi, '10.1601/ex.') === 0) {
+      strpos($doi, '10.1601/tx.') === 0 ||
+      strpos($doi, '10.1601/nm.') === 0 ||
+      strpos($doi, '10.1601/ex.') === 0) {
         if (in_array($doi, ['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'], true)) {
           $works = doi_works($doi);
-	} else {
-	  $works = false;
-	}
+    } else {
+      $works = false;
+    }
       } elseif (isset(NULL_DOI_ANNOYING[$doi])) {
         $works = false;
       } else {
@@ -663,5 +663,5 @@ final class expandFnsTest extends testBaseClass {
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
     $this->assertSame($url_out, $url_in);
   }
-	
+    
 }
