@@ -458,7 +458,7 @@ function wikify_external_text(string $title) : string {
       static function (array $matches) : string {return "'''" . $matches[1] . "'''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-      static function (array $matches) : string {return "''" . $matches[1] . "''");},
+      static function (array $matches) : string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
       static function (array $matches) : string {return "''" . $matches[1] . "''";},
