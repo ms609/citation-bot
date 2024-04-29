@@ -1592,7 +1592,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	    quietly('report_inaction', "Not converting ASIN URL: redundant to existing ISBN.");
 	  } else {
 	    quietly('report_modification', "Converting URL to ASIN template");
-	    $template->set('id', $template->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace([".co.", ".com.", "."] "", $match['domain']) . "}}");
+	    $template->set('id', $template->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace([".co.", ".com.", "."], "", $match['domain']) . "}}");
 	  }
 	  if (is_null($url_sent)) {
 	    $template->forget($url_type); // will forget accessdate too
