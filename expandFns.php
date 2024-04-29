@@ -1398,7 +1398,7 @@ function check_memory_usage(string $where) : void {
  * @codeCoverageIgnore
  */
 function bot_html_header() : void {
-  echo '<!DOCTYPE html>
+  echo ('<!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
   <title>Citation Bot: running</title>
@@ -1416,7 +1416,7 @@ function bot_html_header() : void {
   </header>
 
   <pre id="botOutput">
-   ';
+   ');
   if (ini_get('pcre.jit') === '0') {
     report_warning('PCRE JIT Disabled');
   }
