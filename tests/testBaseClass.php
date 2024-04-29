@@ -97,7 +97,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Speeds up non-zotero tests
   protected function requires_zotero(callable $function) : void {
       try {
-    usleep(300000); // Reduce failures
+        usleep(300000); // Reduce failures
         Zotero::unblock_zotero();
         $function();
       } finally {
