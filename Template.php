@@ -1792,7 +1792,7 @@ final class Template {
 			 $value = '978-0-19-' . substr($value, 6, 6) . '-' . substr($value, 12, 1);
 		  }
 		  if (strlen($value) > 19) return false; // Two ISBNs
-		  $value = self::addISBNdashes($value);
+		  $value = addISBNdashes($value);
 		  return $this->add($param_name, $value);
 		}
 		return false;
@@ -7476,37 +7476,5 @@ final class Template {
 	 } else {
 	   $this->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
 	 }
-  }
-
-  public static function addISBNdashes(string $isbn) : string {
-	if (substr_count($isbn, '-') > 1) return $isbn;
-	$new = str_replace('-', '', $isbn);
-	if (strlen($new) === 10) {
-		$num = 9780000000000 + (int) str_ireplace('x','9', $new);
-		foreach (ISBN_HYPHEN_POS as $k => $v) {
-			if ($num <= (int) $k) {
-				$split = $v;
-				break;
-			}
-		}
-		if (!isset($split)) return $isbn; // Paranoid
-		$v = $split;
-		return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
-		// split = SKIP3, $v[0], $v[1], $v[2], 1
-	} elseif (strlen($new) === 13) {
-		$num = (int) $new;
-		foreach (ISBN_HYPHEN_POS as $k => $v) {
-			if ($num <= (int) $k) {
-				$split = $v;
-				break;
-			}
-		}
-		if (!isset($split)) return $isbn; // Paranoid
-		$v = $split;
-		return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
-		// split = 3, $v[0], $v[1], $v[2], 1
-	} else {
-		return $isbn;
-	}
   }
 }
