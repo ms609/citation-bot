@@ -29,6 +29,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
 ## Coding conventions
 
   * We indent using two spaces (soft tabs)
+  * Template.php is the only PHP file that should have tabs in it (this keeps it under the GitHub size limit)
   * Constants are named using CAPITALS, functions and variables using under_scores()
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
