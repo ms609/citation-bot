@@ -14,23 +14,23 @@ if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr
 if ($category === '' && isset($_GET["cat"])) {
    $try = trim(urldecode((string) $_GET["cat"]));
    if (in_array($try, [
-		       'CS1 maint: PMC format',
-		       'CS1 maint: date format',
-		       'CS1 maint: MR format',
-		       'CS1 maint: bibcode',
-		       'CS1 maint: PMC embargo expired',
-		       'CS1 maint: extra punctuation',
-		       'CS1 maint: unflagged free DOI',
-		       'Articles with missing Cite arXiv inputs',
-		       'CS1 errors: DOI',
-		       'CS1 errors: dates',
-		       'CS1 errors: extra text: edition',
-		       'CS1 errors: extra text: issue',
-		       'CS1 errors: extra text: pages',
-		       'CS1 errors: extra text: volume',
-		       'CS1 errors: chapter ignored',
-		       'CS1 errors: invisible characters',
-		], true)) $category = $try;
+               'CS1 maint: PMC format',
+               'CS1 maint: date format',
+               'CS1 maint: MR format',
+               'CS1 maint: bibcode',
+               'CS1 maint: PMC embargo expired',
+               'CS1 maint: extra punctuation',
+               'CS1 maint: unflagged free DOI',
+               'Articles with missing Cite arXiv inputs',
+               'CS1 errors: DOI',
+               'CS1 errors: dates',
+               'CS1 errors: extra text: edition',
+               'CS1 errors: extra text: issue',
+               'CS1 errors: extra text: pages',
+               'CS1 errors: extra text: volume',
+               'CS1 errors: chapter ignored',
+               'CS1 errors: invisible characters',
+        ], true)) $category = $try;
 }
 
 bot_html_header();
