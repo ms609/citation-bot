@@ -17,7 +17,7 @@ final class PageTest extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testPageChangeSummary1() : void {
@@ -107,7 +107,7 @@ final class PageTest extends testBaseClass {
 
   public function testBotReadNonExistant() : void {
       $page = new TestPage();
-      $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
+      $this->assertFalse($page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
   }
 
   public function testDontCrashOnDates() : void { // See zotero test testRespectDates for actually making sure that it is used
@@ -123,7 +123,7 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $text = '{{mdy}}{{dmy}}{{cite web}}';
       $page = $this->process_page($text);
-      $this->assertNull(NULL);
+      $this->assertNull(null);
   }
 
    public function testDontCrashOnVanNames() : void { // Goofy ones too
@@ -139,7 +139,7 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
       $page = $this->process_page($text);
-      $this->assertNull(NULL);
+      $this->assertNull(null);
   }
 
   public function testVancNames1() : void {
@@ -198,17 +198,17 @@ final class PageTest extends testBaseClass {
 
   public function testBotReadRedirect() : void {
       $page = new TestPage();
-      $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB'));
+      $this->assertFalse($page->get_text_from('Wikipedia:UCB'));
   }
 
   public function testBotReadInvalidNamespace() : void {
       $page = new TestPage();
-      $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd'));
+      $this->assertFalse($page->get_text_from('Bogus:UCBdfasdsfasdfd'));
   }
 
   public function testBotReadInvalidPage() : void {
       $page = new TestPage();
-      $this->assertSame(FALSE, $page->get_text_from('.'));
+      $this->assertFalse($page->get_text_from('.'));
   }
 
   public function testBotExpandWrite() : void {
@@ -251,7 +251,7 @@ final class PageTest extends testBaseClass {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
-      $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
+      $this->assertFalse($page->write($api, "Testing bot write function"));
   }
 
   public function testNobots2() : void {
@@ -259,7 +259,7 @@ final class PageTest extends testBaseClass {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
-      $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
+      $this->assertFalse($page->write($api, "Testing bot write function"));
   }
 
   public function testEmptyPage() : void {

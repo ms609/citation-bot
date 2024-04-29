@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 set_time_limit(120);
-ignore_user_abort(FALSE); // Dies if cannot connect back to client, should be the default
+ignore_user_abort(false); // Dies if cannot connect back to client, should be the default
 
 try {
  @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
@@ -45,10 +45,10 @@ try {
    * @psalm-taint-escape html
    * @psalm-taint-escape has_quotes
    */
- $result = array(
+ $result = [
    'expandedtext' => $newText,
    'editsummary' => $editSummary
- );
+ ];
  unset($newText, $editSummary);
  ob_end_clean();
 

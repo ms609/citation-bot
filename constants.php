@@ -15,17 +15,17 @@ const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 
 //Common replacements
-const HTML_DECODE = array("[", "]", "<", ">", " ");
-const HTML_ENCODE = array("&#x5B;", "&#x5D;", "&#60;", "&#62;", "+");
+const HTML_DECODE = ["[", "]", "<", ">", " "];
+const HTML_ENCODE = ["&#x5B;", "&#x5D;", "&#60;", "&#62;", "+"];
 
-const HTML_DECODE_DOI = array("[", "]", "<", ">");
-const HTML_ENCODE_DOI = array("&#x5B;", "&#x5D;", "&#60;", "&#62;");
+const HTML_DECODE_DOI = ["[", "]", "<", ">"];
+const HTML_ENCODE_DOI = ["&#x5B;", "&#x5D;", "&#60;", "&#62;"];
 
-const DOT_ENCODE = array(".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29");
-const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
+const DOT_ENCODE = [".2F", ".5B", ".7B", ".7D", ".5D", ".3C", ".3E", ".3B", ".28", ".29"];
+const DOT_DECODE = ["/", "[", "{", "}", "]", "<", ">", ";", "(", ")"];
 
-const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
-const DOI_URL_DECODE = array("#", "<", ">");
+const DOI_URL_ENCODE = ["%23", "%3C", "%3E"];
+const DOI_URL_DECODE = ["#", "<", ">"];
 
 const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
@@ -57,17 +57,17 @@ function bot_curl_init(float $time, array $ops) : CurlHandle {
 	$ch = curl_init();
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [
-		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_FOLLOWLOCATION => true,
 		CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
 		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
-		CURLOPT_AUTOREFERER => TRUE,
+		CURLOPT_AUTOREFERER => true,
 		CURLOPT_REFERER => "https://en.wikipedia.org",
-		CURLOPT_COOKIESESSION => TRUE,
-		CURLOPT_RETURNTRANSFER => TRUE,
+		CURLOPT_COOKIESESSION => true,
+		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
 		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
-		CURLOPT_NOPROGRESS => FALSE,
+		CURLOPT_NOPROGRESS => false,
 	// 2 - Default Time by ratio
 		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
 		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);

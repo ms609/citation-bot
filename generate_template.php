@@ -19,11 +19,11 @@ if (!is_string($param) || !is_string($value)) {
 }
 if (strlen($value) < 3) exit('Unset parameter error</pre></body></html>');
 if (strlen($value) > 100) exit('Excessive parameter error</pre></body></html>');
-if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
+if ((strpos($value, "'") !== false ) || (strpos($value, '"') !== false ) || (strpos($value, "|") !== false ) || (strpos($value, " ") !== false )) {
      exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
 }
 $param = mb_strtolower($param);
-if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], TRUE)) exit('Unexpected parameter passed</pre></body></html>');
+if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) exit('Unexpected parameter passed</pre></body></html>');
 
 $t = new Template();
 $t->parse_text('{{cite web }}');

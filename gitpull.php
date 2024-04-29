@@ -2,7 +2,7 @@
 declare(strict_types=1);
 set_time_limit(120);
 
-ob_implicit_flush(TRUE);
+ob_implicit_flush(true);
 
 require_once 'html_headers.php';
 

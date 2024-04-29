@@ -17,14 +17,14 @@ final class constantsTest extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testConstantsDefined() : void {
     $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
-      $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(mb_ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
+      $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(mb_ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), true)));
       // Verify that they are padded with a space
       $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
       $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  0, 1));
@@ -65,34 +65,34 @@ final class constantsTest extends testBaseClass {
   }
 
   public function testForDisasters() :void { // Did we get things out of order and cause a disaster?
-    $this->assertSame('BJPsych', title_capitalization('Bjpsych', TRUE));
-    $this->assertSame('HortScience', title_capitalization('Hortscience', TRUE));
-    $this->assertSame('TheMarker', title_capitalization('Themarker', TRUE));
-    $this->assertSame('Algebra i Analiz', title_capitalization('Algebra I Analiz', TRUE));
-    $this->assertSame('ChemSystemsChem', title_capitalization('Chemsystemschem', TRUE));
-    $this->assertSame('hessenARCHÄOLOGIE', title_capitalization('HessenARCHÄOLOGIE', TRUE));
-    $this->assertSame('Ocean Science Journal : OSJ', title_capitalization('Ocean Science Journal : Osj', TRUE));
-    $this->assertSame('Starine Jugoslavenske akademije znanosti i umjetnosti', title_capitalization('Starine Jugoslavenske Akademije Znanosti I Umjetnosti', TRUE));
-    $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Voor De Geschiedenis Der Nederlanden', TRUE));
-    $this->assertSame('Zprávy o zasedání Král. čes. společnosti nauk v Praze', title_capitalization('Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze', TRUE));
+    $this->assertSame('BJPsych', title_capitalization('Bjpsych', true));
+    $this->assertSame('HortScience', title_capitalization('Hortscience', true));
+    $this->assertSame('TheMarker', title_capitalization('Themarker', true));
+    $this->assertSame('Algebra i Analiz', title_capitalization('Algebra I Analiz', true));
+    $this->assertSame('ChemSystemsChem', title_capitalization('Chemsystemschem', true));
+    $this->assertSame('hessenARCHÄOLOGIE', title_capitalization('HessenARCHÄOLOGIE', true));
+    $this->assertSame('Ocean Science Journal : OSJ', title_capitalization('Ocean Science Journal : Osj', true));
+    $this->assertSame('Starine Jugoslavenske akademije znanosti i umjetnosti', title_capitalization('Starine Jugoslavenske Akademije Znanosti I Umjetnosti', true));
+    $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Voor De Geschiedenis Der Nederlanden', true));
+    $this->assertSame('Zprávy o zasedání Král. čes. společnosti nauk v Praze', title_capitalization('Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze', true));
   }
 
   public function testImplicitConstants() : void {
     // Consonants
-    $this->assertSame('X', title_capitalization('x', TRUE));
-    $this->assertSame('Xz', title_capitalization('xz', TRUE));
-    $this->assertSame('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE));
-    $this->assertSame('XZZZ', title_capitalization('xzzz', TRUE));
+    $this->assertSame('X', title_capitalization('x', true));
+    $this->assertSame('Xz', title_capitalization('xz', true));
+    $this->assertSame('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', true));
+    $this->assertSame('XZZZ', title_capitalization('xzzz', true));
     // Both
-    $this->assertSame('Xzza', title_capitalization('xzza', TRUE));
+    $this->assertSame('Xzza', title_capitalization('xzza', true));
     // Vowels
-    $this->assertSame('AEIOU', title_capitalization('aeiou', TRUE));
+    $this->assertSame('AEIOU', title_capitalization('aeiou', true));
     // Y is neither
-    $this->assertSame('Aeiouy', title_capitalization('aeiouy', TRUE));
-    $this->assertSame('Xzzzy', title_capitalization('xzzzy', TRUE));
+    $this->assertSame('Aeiouy', title_capitalization('aeiouy', true));
+    $this->assertSame('Xzzzy', title_capitalization('xzzzy', true));
     // Relationship Status = It's Complicated :-)
-    $this->assertSame('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE));
-    $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(mb_ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
+    $this->assertSame('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', true));
+    $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(mb_ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), true));
   }
 
   public function testConstantsOrder() : void {
@@ -144,14 +144,14 @@ final class constantsTest extends testBaseClass {
 			     JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
 			     PREFER_ISSUES);
     foreach ($big_array as $actual) {
-      if (!in_array($actual, ["sign up "], TRUE)) {
+      if (!in_array($actual, ["sign up "], true)) {
        $this->assertSame(trim($actual), $actual);
       }
     }
   }
 
   public function testAtoZ() : void {
-    $leader = TRUE;
+    $leader = true;
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
     $filename = __DIR__ . '/../../constants/capitalization.php';
@@ -166,12 +166,12 @@ final class constantsTest extends testBaseClass {
       if ($leader) {
 	$leader_bits = $alpha_bits;
 	sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
-	$leader = FALSE;
+	$leader = false;
       } else {
 	$this->assertSame(count($leader_bits), count($alpha_bits));
 	array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
-	$leader_bits = NULL;
-	$leader = TRUE;
+	$leader_bits = null;
+	$leader = true;
       }
       $bits_length = array_map('strlen', $alpha_bits);
       $bit_length = current($bits_length);
@@ -197,18 +197,18 @@ final class constantsTest extends testBaseClass {
     $new_contents = implode($start_alpha, $sections);
 
     if (preg_replace('/\s+/','', $new_contents) == preg_replace('/\s+/','', $old_contents)) {
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     } else {
       $this->flush();
       echo "\n\n" . $filename . " needs alphabetized as follows\n";
       echo $new_contents . "\n\n\n";
       $this->flush();
-      $this->assertTrue(FALSE);
+      $this->assertTrue(false);
     }
   }
 
  public function testWhiteList() : void {
-      $we_failed = FALSE;
+      $we_failed = false;
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
       $our_whitelist_sorted = $our_whitelist;
@@ -217,14 +217,14 @@ final class constantsTest extends testBaseClass {
       $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
-      $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
+      $patent_whitelist =      ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
 				'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
 				'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
 				'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
 				'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
 				'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-				'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
-      $their_whitelist = array_merge(array('CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'),
+				'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+      $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
 				     $patent_whitelist, $their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
       $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
@@ -238,21 +238,21 @@ final class constantsTest extends testBaseClass {
 	 echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
 	 print_r($our_internal_extra);
 	 $this->flush();
-	 $we_failed = TRUE;
+	 $we_failed = true;
       }
       if (count($our_extra) !== 0) {
 	 $this->flush();
 	 echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
 	 print_r($our_extra);
 	 $this->flush();
-	 $we_failed = TRUE;
+	 $we_failed = true;
       }
       if (count($our_missing) !== 0) {
 	 $this->flush();
 	 echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
 	 print_r($our_missing);
 	 $this->flush();
-	 $we_failed = TRUE;
+	 $we_failed = true;
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
 	 $this->flush();
@@ -268,9 +268,9 @@ final class constantsTest extends testBaseClass {
 	   }
 	 }
 	 $this->flush();
-	 $we_failed = TRUE;
+	 $we_failed = true;
       }
-      $this->assertSame(FALSE, $we_failed);
+      $this->assertFalse($we_failed);
   }
 
   public function testWhiteListNotBlacklisted() : void {
@@ -311,7 +311,7 @@ final class constantsTest extends testBaseClass {
   public function testDead() : void {
     $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
     if (empty($overlap)) {
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     } else {
       $this->flush();
       print_r($overlap);
@@ -323,7 +323,7 @@ final class constantsTest extends testBaseClass {
   public function testMagazinesAndNot() : void {
     $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
     if (empty($overlap)) {
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     } else {
       $this->flush();
       print_r($overlap);
@@ -332,7 +332,7 @@ final class constantsTest extends testBaseClass {
     }
     $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
     if (empty($overlap)) {
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     } else {
       $this->flush();
       print_r($overlap);
@@ -341,7 +341,7 @@ final class constantsTest extends testBaseClass {
     }
     $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
     if (empty($overlap)) {
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     } else {
       $this->flush();
       print_r($overlap);
@@ -351,7 +351,7 @@ final class constantsTest extends testBaseClass {
   }
 
   public function testAuthorsFlat() {
-    $failed = FALSE;
+    $failed = false;
     $test_flat = [];
     foreach (AUTHOR_PARAMETERS as $array) {
       foreach ($array as $param) {
@@ -367,7 +367,7 @@ final class constantsTest extends testBaseClass {
        echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
        print_r($extra_flat);
        $this->flush();
-       $failed = TRUE;
+       $failed = true;
     }
     if (!empty($missing_flat)) {
        $this->flush();
@@ -376,7 +376,7 @@ final class constantsTest extends testBaseClass {
        echo "\n expected \n";
        print_r($test_flat);
        $this->flush();
-       $failed = TRUE;
+       $failed = true;
     }
     if (count($flat) !== count(array_unique($flat))) {
        $this->flush();
@@ -388,7 +388,7 @@ final class constantsTest extends testBaseClass {
 	 $last = $param;
        }
        $this->flush();
-       $failed = TRUE;
+       $failed = true;
     }
     $this->assertFalse($failed);
   }
@@ -396,29 +396,29 @@ final class constantsTest extends testBaseClass {
   public function testNonJournalList() {
     $flat = NON_JOURNAL_WEBSITES;
     sort($flat);
-    $failed = FALSE;
+    $failed = false;
     $last = 'XXXXXXXX';
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
-	 $failed = TRUE;
+	 $failed = true;
 	 $this->flush();
 	 echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
 	 $this->flush();
       }
       if ($param === $last) {
-	 $failed = TRUE;
+	 $failed = true;
 	 $this->flush();
 	 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
 	 $this->flush();
       }
-      if (strpos($param, '.') === FALSE) {
-	 $failed = TRUE;
+      if (strpos($param, '.') === false) {
+	 $failed = true;
 	 $this->flush();
 	 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
 	 $this->flush();
       }
       if (preg_match('~\s~', $param) !== 0) {
-	 $failed = TRUE;
+	 $failed = true;
 	 $this->flush();
 	 echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
 	 $this->flush();
@@ -429,14 +429,14 @@ final class constantsTest extends testBaseClass {
   }
 
   public function testItalicsOrder() : void {
-    $in_order = TRUE;
+    $in_order = true;
     $spaces_at = 99999999;
     $max_spaces = 0;
     $italics = explode("|", ITALICS_LIST);
     $this->assertSame("END_OF_CITE_list_junk", end($italics));
     foreach ($italics as $item) {
       $spaces = substr_count($item, " ");
-      if ($spaces > $spaces_at) $in_order = FALSE;
+      if ($spaces > $spaces_at) $in_order = false;
       $spaces_at = $spaces;
       $max_spaces = max($max_spaces, $spaces);
     }
@@ -458,14 +458,14 @@ final class constantsTest extends testBaseClass {
     $this->assertTrue($in_order);
 
     // If we have "Specius" before "Speciusia" that is bad
-    $in_order = TRUE;
+    $in_order = true;
     $italics = explode("|", ITALICS_LIST);
     for ($i = 0; $i < count($italics); $i++) {
       $early = $italics[$i];
       for ($j = $i+1; $j < count($italics); $j++) {
 	$later = $italics[$j];
 	if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
-	  $in_order = FALSE;
+	  $in_order = false;
 	  $this->flush();
 	  echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
 	  $this->flush();
@@ -479,13 +479,13 @@ final class constantsTest extends testBaseClass {
     $italics = explode("|", ITALICS_LIST);
     sort($italics);
     $last = "123412341234";
-    $good = TRUE;
+    $good = true;
     foreach ($italics as $item) {
       if ($item === $last) {
 	$this->flush();
 	echo "\n Found duplicate: $item \n";
 	$this->flush();
-	$good = FALSE;
+	$good = false;
       }
       $last = $item;
     }
@@ -496,13 +496,13 @@ final class constantsTest extends testBaseClass {
     $italics = CAMEL_CASE;
     sort($italics);
     $last = "123412341234";
-    $good = TRUE;
+    $good = true;
     foreach ($italics as $item) {
       if ($item === $last) {
 	$this->flush();
 	echo "\n Found duplicate: $item \n";
 	$this->flush();
-	$good = FALSE;
+	$good = false;
       }
       $last = $item;
     }
@@ -558,7 +558,7 @@ final class constantsTest extends testBaseClass {
        if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
 	  $page->get_text_from($tem);
 	  $text = $page->parsed_text();
-	  if (stripos($text, 'safesubst:') === FALSE) {
+	  if (stripos($text, 'safesubst:') === false) {
 	    $errors = $errors . '   Is real:' . $convert[0];
 	  }
        }
@@ -574,7 +574,7 @@ final class constantsTest extends testBaseClass {
   public function testFreeDOI() : void {
     foreach (DOI_FREE_PREFIX as $prefix) {
       $this->assertTrue($prefix != '');
-      if (strpos($prefix, '/') === FALSE) {
+      if (strpos($prefix, '/') === false) {
 	$this->assertSame('This needs a slash', $prefix);
       }
     }

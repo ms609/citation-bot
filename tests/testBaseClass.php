@@ -7,13 +7,13 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 
 final class TestPage extends Page {
   function __construct() {
-    $bad_functions = array('__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
+    $bad_functions =      ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
 			   'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero', '{closure}',
 			   'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
-			   'expand_via_zotero', 'reference_to_template', 'fill_cache', ''); // Some of these should never occur
+			   'expand_via_zotero', 'reference_to_template', 'fill_cache', '']; // Some of these should never occur
     $trace = debug_backtrace();
     $i = 0;
-    while (in_array($trace[$i]['function'], $bad_functions, TRUE)) {
+    while (in_array($trace[$i]['function'], $bad_functions, true)) {
        $i++; // Climb stack to find useful name
     }
     $this->title = $trace[$i]['function'];
@@ -35,17 +35,22 @@ final class TestPage extends Page {
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  private $testing_skip_bibcode= FALSE;
-  private $testing_skip_wiki   = FALSE;
+  private bool $testing_skip_bibcode;
+  private bool $testing_skip_wiki;
 
   function __construct() {
     parent::__construct();
 
-   // Non-trusted builds
-    if (!PHP_ADSABSAPIKEY) $this->testing_skip_bibcode = TRUE;
+    if (!PHP_ADSABSAPIKEY) {
+       $this->testing_skip_bibcode = true;
+    } else {
+       $this->testing_skip_bibcode = false;
+    }
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
 	!getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-       $this->testing_skip_wiki = TRUE;
+       $this->testing_skip_wiki = true;
+    } else {
+       $this->testing_skip_wiki = false;
     }
 
     AdsAbsControl::small_give_up();
@@ -60,7 +65,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $this->flush();
       echo 'A'; // For API, since W is taken
       $this->flush();
-      $this->assertNull(NULL);
+      $this->assertNull(null);
     } else {
       $function();
     }
@@ -76,7 +81,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       AdsAbsControl::big_give_up();
       AdsAbsControl::small_back_on();
       AdsAbsControl::small_give_up();
-      $this->assertNull(NULL);
+      $this->assertNull(null);
     } else {
       try {
 	AdsAbsControl::big_back_on();
@@ -103,7 +108,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function make_citation(string $text) : Template {
     $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
     $this->flush();
-    Template::$all_templates = array();
+    Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
@@ -128,7 +133,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
     $this->flush();
-    Template::$all_templates = array();
+    Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
     $page = new TestPage();
     $page->parse_text($text);

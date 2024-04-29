@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
-@session_start(['read_and_close' => TRUE]);
+@session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 
@@ -30,7 +30,7 @@ if ($category === '' && isset($_GET["cat"])) {
 		       'CS1 errors: extra text: volume',
 		       'CS1 errors: chapter ignored',
 		       'CS1 errors: invisible characters',
-		], TRUE)) $category = $try;
+		], true)) $category = $try;
 }
 
 bot_html_header();

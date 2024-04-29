@@ -3,7 +3,7 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
-ob_implicit_flush(TRUE);
+ob_implicit_flush(true);
 flush();
 
 if (file_exists('git_pull.lock')) {
@@ -28,7 +28,7 @@ function bot_debug_log(string $log_this) : void {
 
 if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
-  if (!in_array($wiki_base, ['en', 'simple'], TRUE)) {
+  if (!in_array($wiki_base, ['en', 'simple'], true)) {
      exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
   }
 } else {
@@ -43,35 +43,35 @@ require_once 'constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
-define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) @$_SERVER['argv'][0], 'phpunit') !== FALSE));
+define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
 if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
-  define('EDIT_AS_USER', TRUE);
+  define('EDIT_AS_USER', true);
 }
 
 if (TRAVIS || isset($argv)) {
-  define("HTML_OUTPUT", FALSE);
+  define("HTML_OUTPUT", false);
 } else {
-  define("HTML_OUTPUT", TRUE);
+  define("HTML_OUTPUT", true);
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
-  define("FLUSHING_OKAY", TRUE);
+if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === false) {
+  define("FLUSHING_OKAY", true);
 } else {
-  define("FLUSHING_OKAY", FALSE);
+  define("FLUSHING_OKAY", false);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv, TRUE))) {
-  define("SLOW_MODE", TRUE);
+if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv, true))) {
+  define("SLOW_MODE", true);
 } else {
-  define("SLOW_MODE", FALSE);
+  define("SLOW_MODE", false);
 }
 
-if (isset($argv) && in_array('--savetofiles', $argv, TRUE)) {
-  define("SAVETOFILES_MODE", TRUE);
+if (isset($argv) && in_array('--savetofiles', $argv, true)) {
+  define("SAVETOFILES_MODE", true);
 } else {
-  define("SAVETOFILES_MODE", FALSE);
+  define("SAVETOFILES_MODE", false);
 }
 
 if (file_exists('env.php')) {
@@ -94,7 +94,7 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
-if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== FALSE)) { // Willing to take slight performance penalty on Gadget
+if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== false)) { // Willing to take slight performance penalty on Gadget
   ini_set("pcre.jit", "0");
 }
 
@@ -107,9 +107,9 @@ if ($env_limit_action !== '') {
 unset($env_limit_action);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
-  define("HEADER_S2", array("x-api-key: " . (string) getenv("PHP_S2APIKEY")));
+  define("HEADER_S2", ["x-api-key: " . (string) getenv("PHP_S2APIKEY")]);
 } else {
-  define("HEADER_S2", array());
+  define("HEADER_S2", []);
 }
 
 // see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information

@@ -16,7 +16,7 @@ final class zoteroTest extends testBaseClass {
 
   public function testFillCache() : void {
     $this->fill_cache();
-    $this->assertTrue(TRUE);
+    $this->assertTrue(true);
   }
 
   public function testZoteroExpansion_biorxiv1() : void {
@@ -259,7 +259,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data = (object) array('title' => 'not found');
+    $zotero_data = (object) ['title' => 'not found'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
@@ -270,7 +270,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'NOT FOUND');
+    $zotero_data[0] = (object) ['title' => 'NOT FOUND'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
@@ -281,15 +281,15 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'oup accepted manuscript', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) ['title' => 'oup accepted manuscript', 'itemType' => 'webpage'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
-    $zotero_data[0] = (object) array('bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff');
+    $zotero_data[0] = (object) ['bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
-    $zotero_data[0] = (object) array('publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff');
+    $zotero_data[0] = (object) ['publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
@@ -300,7 +300,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'JoeJoe', 'title' => 'Billy', 'itemType' => 'bookSection');
+    $zotero_data[0] = (object) ['bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'JoeJoe', 'title' => 'Billy', 'itemType' => 'bookSection'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite book', $template->wikiname());
@@ -314,7 +314,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'journalArticle');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'journalArticle'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite web', $template->wikiname()); // Does not change because no work parameter is set
@@ -326,7 +326,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'magazineArticle');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'magazineArticle'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite magazine', $template->wikiname());
@@ -338,7 +338,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'blogPost');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'blogPost'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite web', $template->wikiname());
@@ -350,7 +350,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'film');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'film'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite web', $template->wikiname());
@@ -362,7 +362,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'thesis', 'university' => 'IowaIowa', 'thesisType' => 'Masters');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'thesis', 'university' => 'IowaIowa', 'thesisType' => 'Masters'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite thesis', $template->wikiname());
@@ -376,7 +376,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = 'http://cnn.com/story';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite news', $template->wikiname());
@@ -391,7 +391,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = 'http://cnn.com/story';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite news', $template->wikiname());
@@ -406,7 +406,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617 PMCID: PMC4233402');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617 PMCID: PMC4233402'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('25408617', $template->get2('pmid'));
@@ -418,7 +418,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617, 25408617');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617, 25408617'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('25408617', $template->get2('pmid'));
@@ -429,7 +429,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'IMDb ID: nm321432123');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'IMDb ID: nm321432123'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -440,7 +440,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = NO_DATE_WEBSITES[1];
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'date' => '2010');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'date' => '2010'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertNull($template->get2('date'));
@@ -452,7 +452,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'bookSection');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'bookSection'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite book', $template->wikiname());
@@ -464,8 +464,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $author[0] = array(0 => 'This is not a human author by any stretch of the imagination correspondent corporation', 1 => 'correspondent');
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
+    $author[0] = [0 => 'This is not a human author by any stretch of the imagination correspondent corporation', 1 => 'correspondent'];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'author' => $author];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -477,7 +477,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'DOI' => 'http://dx.doi.org/10.1021/acs.analchem.8b04567' );
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'DOI' => 'http://dx.doi.org/10.1021/acs.analchem.8b04567' ];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('10.1021/acs.analchem.8b04567', $template->get2('doi'));
@@ -488,8 +488,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $creators[0] = (object) array('creatorType' => 'editor', 'firstName' => "Joe", "lastName" => "");
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $creators[0] = (object) ['creatorType' => 'editor', 'firstName' => "Joe", "lastName" => ""];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -501,8 +501,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $creators[0] = (object) array('creatorType' => 'translator', 'firstName' => "Joe", "lastName" => "");
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $creators[0] = (object) ['creatorType' => 'translator', 'firstName' => "Joe", "lastName" => ""];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -514,7 +514,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => "������Junk�����������", 'itemType' => 'webpage');
+    $zotero_data[0] = (object) ['title' => "������Junk�����������", 'itemType' => 'webpage'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertNull($template->get2('title'));
@@ -525,7 +525,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'type: dataset');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'type: dataset'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -536,8 +536,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $creators[0] = (object) array('creatorType' => 'author', 'firstName' => "Joe", "lastName" => "");
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $creators[0] = (object) ['creatorType' => 'author', 'firstName' => "Joe", "lastName" => ""];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -549,10 +549,10 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $author[0] = array(0 => 'Smith', 1 => '');
-    $author[1] = array(0 => 'Johnson', 1 => '');
-    $author[2] = array(0 => 'Jackson', 1 => '');
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'author' => $author);
+    $author[0] = [0 => 'Smith', 1 => ''];
+    $author[1] = [0 => 'Johnson', 1 => ''];
+    $author[2] = [0 => 'Jackson', 1 => ''];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'author' => $author];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Billy', $template->get2('title'));
@@ -586,8 +586,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $creators[0] = (object) array('creatorType' => 'author', 'firstName' => "Joe", "lastName" => "");
-    $zotero_data[0] = (object) array('title' => 'Central Authentication Service', 'itemType' => 'report', 'creators' => $creators);
+    $creators[0] = (object) ['creatorType' => 'author', 'firstName' => "Joe", "lastName" => ""];
+    $zotero_data[0] = (object) ['title' => 'Central Authentication Service', 'itemType' => 'report', 'creators' => $creators];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
@@ -598,7 +598,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'DOI: 10.1038/546031a');
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'DOI: 10.1038/546031a'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('10.1038/546031a', $template->get2('doi'));
@@ -619,7 +619,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'journalArticle', 'publicationTitle' => "X");
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'journalArticle', 'publicationTitle' => "X"];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite journal', $template->wikiname());
@@ -632,7 +632,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X");
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X"];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite news', $template->wikiname());
@@ -645,7 +645,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = strtotime('12 December 2010');
     $url = '';
-    $zotero_data[0] = (object) array('date' => '12 December 2020', 'title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X");
+    $zotero_data[0] = (object) ['date' => '12 December 2020', 'title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X"];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
@@ -657,7 +657,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = 'https://www.sciencedirect.com/science/article/pii/S0024379512004405';
     $url_kind = 'url';
-    $zotero_data[0] = (object) array('title' => 'Geometry of the Welch bounds', 'itemType' => 'journalArticle', 'DOI' => '10.1016/j.laa.2012.05.036');
+    $zotero_data[0] = (object) ['title' => 'Geometry of the Welch bounds', 'itemType' => 'journalArticle', 'DOI' => '10.1016/j.laa.2012.05.036'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertNotNull($template->get2('url')); // Used to drop when gets doi
@@ -669,7 +669,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'journalArticle', 'publicationTitle' => 'nationalpost');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'journalArticle', 'publicationTitle' => 'nationalpost'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('National Post', $template->get2('journal'));
@@ -680,7 +680,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'journalArticle', 'publicationTitle' => 'financialpost');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'journalArticle', 'publicationTitle' => 'financialpost'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('Financial Post', $template->get2('journal'));
@@ -691,7 +691,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'Learn New Stuff | Hello theee| THE DAILY STAR', 'itemType' => 'journalArticle');
+    $zotero_data[0] = (object) ['title' => 'Learn New Stuff | Hello theee| THE DAILY STAR', 'itemType' => 'journalArticle'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('The Daily Star', $template->get2('journal'));
@@ -703,7 +703,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = 'www.edu.au';
-    $zotero_data[0] = (object) array('title' => 'Cultural Advice', 'itemType' => 'journalArticle');
+    $zotero_data[0] = (object) ['title' => 'Cultural Advice', 'itemType' => 'journalArticle'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertNull($template->get2('journal'));
@@ -715,7 +715,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '222.sfdb.org';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'webpage', 'pages' => '34-55');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'webpage', 'pages' => '34-55'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('sfdb.org', $template->get2('website'));
@@ -727,7 +727,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'webpage', 'extra' => 'ADS Bibcode: 1234asdfghjklqwerty');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'webpage', 'extra' => 'ADS Bibcode: 1234asdfghjklqwerty'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('1234asdfghjklqwerty', $template->get2('bibcode'));
@@ -738,7 +738,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'newspaperArticle', 'publicationTitle' => 'United States Census Bureau');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'newspaperArticle', 'publicationTitle' => 'United States Census Bureau'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('United States Census Bureau', $template->get2('publisher'));
@@ -749,7 +749,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = 'http://nature.org/';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'report');
+    $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'report'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('cite journal', $template->wikiname());
@@ -760,13 +760,13 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $creators[0] = (object) array('creatorType' => 'translator', 'firstName' => "JoeT", "lastName" => "SmithT");
-    $creators[1] = (object) array('creatorType' => 'editor', 'firstName' => "JoeE", "lastName" => "SmithE");
-    $creators[2] = (object) array('creatorType' => 'author', 'firstName' => "JoeA", "lastName" => "SmithA");
-    $creators[3] = (object) array('creatorType' => 'translator', 'firstName' => "JoeTX", "lastName" => "SmithTX");
-    $creators[4] = (object) array('creatorType' => 'editor', 'firstName' => "JoeEX", "lastName" => "SmithEX");
-    $creators[5] = (object) array('creatorType' => 'author', 'firstName' => "JoeAX", "lastName" => "SmithAX");
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $creators[0] = (object) ['creatorType' => 'translator', 'firstName' => "JoeT", "lastName" => "SmithT"];
+    $creators[1] = (object) ['creatorType' => 'editor', 'firstName' => "JoeE", "lastName" => "SmithE"];
+    $creators[2] = (object) ['creatorType' => 'author', 'firstName' => "JoeA", "lastName" => "SmithA"];
+    $creators[3] = (object) ['creatorType' => 'translator', 'firstName' => "JoeTX", "lastName" => "SmithTX"];
+    $creators[4] = (object) ['creatorType' => 'editor', 'firstName' => "JoeEX", "lastName" => "SmithEX"];
+    $creators[5] = (object) ['creatorType' => 'author', 'firstName' => "JoeAX", "lastName" => "SmithAX"];
+    $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('{{cite web|id=|title=Billy|translator1=Smitht, Joet|editor1=Smithe, Joee|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor2=Smithex, Joeex|translator2=Smithtx, Joetx}}', $template->parsed_text());
@@ -777,7 +777,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55');
+    $zotero_data[0] = (object) ['title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('34–55', $template->get2('pages'));
@@ -788,7 +788,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55');
+    $zotero_data[0] = (object) ['title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('34–55', $template->get2('pages'));
@@ -799,7 +799,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This is the title of the chapter', 'year', 'pages' => '34-55');
+    $zotero_data[0] = (object) ['title' => 'This is the title of the chapter', 'year', 'pages' => '34-55'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('34–55', $template->get2('pages'));
@@ -810,7 +810,7 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
-    $zotero_data[0] = (object) array('title' => 'This is the title of the chapter', 'extra' => 'PMID: 12345 OCLC: 7777 Open Library ID: OL1234M');
+    $zotero_data[0] = (object) ['title' => 'This is the title of the chapter', 'extra' => 'PMID: 12345 OCLC: 7777 Open Library ID: OL1234M'];
     $zotero_response = json_encode($zotero_data);
     Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame('12345', $template->get2('pmid'));
@@ -880,10 +880,10 @@ final class zoteroTest extends testBaseClass {
    public function testUseArchive1() : void {
     $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    $tmp_array = array($template);
+    $tmp_array = [$template];
     expand_templates_from_archives($tmp_array);
     for ($x = 0; $x <= 10; $x++) {
-      if ($template->get2('title') == NULL) {
+      if ($template->get2('title') == null) {
 	sleep(2); // Sometimes fails for no good reason
 	expand_templates_from_archives($tmp_array);
       }
@@ -893,7 +893,7 @@ final class zoteroTest extends testBaseClass {
    public function testUseArchive2() : void {
     $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    $tmp_array = array($template);
+    $tmp_array = [$template];
     expand_templates_from_archives($tmp_array);
     $this->assertNull($template->get2('title'));
   }
@@ -907,7 +907,7 @@ final class zoteroTest extends testBaseClass {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get2('journal'));
-    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== FALSE);// Sometimes includes a journal of....
+    $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== false);// Sometimes includes a journal of....
    });
   }
 
@@ -955,7 +955,7 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
     $expanded = $this->process_page($text);
-    $this->assertTrue(TRUE); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
+    $this->assertTrue(true); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
     // In future we should use this match to expand citation.
    });
   }
@@ -983,7 +983,7 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{cite journal|chapterurl=https://biodiversitylibrary.org/page/32550604}}';
     $expanded = $this->expand_via_zotero($text);
-    $this->assertTrue($expanded->get2('volume') === NULL || $expanded->get2('volume') === '4');
+    $this->assertTrue($expanded->get2('volume') === null || $expanded->get2('volume') === '4');
    });
   }
 
