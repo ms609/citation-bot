@@ -241,7 +241,7 @@ final class Template {
 	while (preg_match($PIPE_REGEX, $text)) {
 	  $text = preg_replace_callback($PIPE_REGEX,
 		  function(array $matches) : string {
-			 return($matches[1] . PIPE_PLACEHOLDER . $matches[2]);
+			 return $matches[1] . PIPE_PLACEHOLDER . $matches[2];
 		  },
 		  $text);
 	}
@@ -861,12 +861,12 @@ final class Template {
 	}
 	if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) { // Assume book
 	  if ($this->display_authors() >= $this->number_of_authors()) return true;
-	  return (!(
+	  return !(
 			  $this->has('isbn')
 		  &&  $this->has('title')
 		  && ($this->has('date') || $this->has('year'))
 		  && $two_authors
-	  ));
+	  );
 	}
 	if ($this->wikiname() === 'cite conference') { // cite conference uses very different parameters
 	  if ($this->has('title') && ($this->has('conference') || $this->has('book-title') || $this->has('chapter'))) {
@@ -886,8 +886,8 @@ final class Template {
 	  return true; // Should consider changing the work parameter, since {{citation}} uses the work parameter type to determine format :-(
 	}
 
-	return (!(
-			 ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine') || $this->has('trans-work') || $this->has('script-work'))
+	return !(
+		($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine') || $this->has('trans-work') || $this->has('script-work'))
 		  &&  $this->has('volume')
 		  && ($this->has('issue') || $this->has('number'))
 		  &&  $this->has('title')
@@ -895,7 +895,7 @@ final class Template {
 		  && $two_authors
 		  && $this->get('journal') !== 'none'
 		  && $this->get('title') !== 'none'
-	));
+	);
   }
 
   public function profoundly_incomplete(string $url = '') : bool {
@@ -911,29 +911,29 @@ final class Template {
 
 	if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
 	  if ($this->display_authors() >= $this->number_of_authors()) return true;
-	  return (!(
+	  return !(
 		$this->has('isbn')
 		&&  $this->has('title')
 		&&  $has_date
-	  ));
+	  );
 	}
 
 	if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) !== $url) { // A website that will never give a volume
-		  return (!(
+		  return !(
 			 ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('trans-work') || $this->has('script-work') ||
 			  $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
 			  $this->has('magazine')|| $this->has('encyclopedia') || $this->has('encyclopaedia') ||
 			  $this->has('contribution'))
 		  &&  $this->has('title')
 		  &&  $has_date
-	));
+	);
 	}
-	return (!(
+	return !(
 			 ($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work'))
 		  &&  $this->has('volume')
 		  &&  $this->has('title')
 		  &&  $has_date
-	));
+	);
   }
 
   /**
@@ -3615,7 +3615,7 @@ final class Template {
 
   /** @return array<string> */
   public function initial_author_params() : array { return $this->initial_author_params; }
-  public function had_initial_author() : bool {return (is_array($this->initial_author_params) && (sizeof($this->initial_author_params)>0));}
+  public function had_initial_author() : bool {return is_array($this->initial_author_params) && (sizeof($this->initial_author_params)>0);}
 
   protected function join_params() : string {
 	if ((self::$name_list_style === NAME_LIST_STYLE_VANC) && !$this->had_initial_author() && !$this->had_initial_editor)
@@ -3706,7 +3706,7 @@ final class Template {
 	}
 	$new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
 	if ($new_name === $this->wikiname()) return;
-	if ($this->has('conference') && 'cite conference' === $this->wikiname()) return; // Need to lose conference first
+	if ($this->has('conference') && $this->wikiname() === 'cite conference') return; // Need to lose conference first
 	if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME, true) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
 		($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
 		($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME, true)) // In rare cases when we are positive that cite news is really cite journal
@@ -4058,7 +4058,7 @@ final class Template {
 			  $this->forget('chapter');
 			  return; // Nonsense to have both.
 			}
-			if ('Cultural Advice' === $this->get('chapter') &&
+			if ($this->get('chapter') === 'Cultural Advice' &&
 				strpos($this->get('url') . $this->get('chapter-url'), 'anu.edu.au') !== false) {
 			  $this->forget('chapter');
 			  return;
@@ -6464,7 +6464,7 @@ final class Template {
 		  $this->rename('journal', 'title');
 	  }
 	  if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== false &&
-	      'Surtees Society' !== $this->get('series') && !preg_match('~^\d+$~',$this->get('series'))) {
+		  $this->get('series') !== 'Surtees Society' && !preg_match('~^\d+$~',$this->get('series'))) {
 		  $this->forget('series');
 	  }
 
@@ -6732,7 +6732,7 @@ final class Template {
 	foreach (['last', 'surname', 'last1', 'surname1'] as $surname_param) {
 	  $surname = $this->get($surname_param);
 	  if ($surname) {
-		return ($surname . ', ' . $forenames);
+		return $surname . ', ' . $forenames;
 	  }
 	}
 	return '';

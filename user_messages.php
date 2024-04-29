@@ -48,7 +48,7 @@ function report_error(string $text) : never {
      report_warning($text); // To the user
      trigger_error($text);  // System Logfile
   }
-  exit();  // @codeCoverageIgnoreEnd
+  exit;  // @codeCoverageIgnoreEnd
 }
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart

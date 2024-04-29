@@ -146,7 +146,7 @@ final class WikipediaBot {
 	return $this->fetch($params, $depth+1);
 
       }         // @codeCoverageIgnoreEnd
-      return (self::ret_okay($ret)) ? $ret : null;
+      return self::ret_okay($ret) ? $ret : null;
     // @codeCoverageIgnoreStart
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
@@ -355,7 +355,7 @@ final class WikipediaBot {
 	return -1;                                          // @codeCoverageIgnore
     }
     $res = self::reset($res->query->pages);
-    return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
+    return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
   }
   public static function redirect_target(string $page) : ?string {
     $res = self::QueryAPI([
@@ -394,7 +394,7 @@ final class WikipediaBot {
        sleep(4);                                       // @codeCoverageIgnore
        $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
     }
-    return (self::ret_okay(@json_decode( $data))) ? $data : '';
+    return self::ret_okay(@json_decode($data)) ? $data : '';
     // @codeCoverageIgnoreStart
    } catch(Exception $E) {
       report_warning("Exception caught!!\n");

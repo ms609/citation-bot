@@ -18,18 +18,18 @@ if (is_string(@$_POST['linkpage'])) {
 } else {
   report_warning(' Error in passing of linked page name ');
   bot_html_footer();
-  exit();
+  exit;
 }
 
 $page_name = str_replace(' ', '_', trim($page_name));
 if ($page_name === '') {
   report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
   bot_html_footer();
-  exit();
+  exit;
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
   bot_html_footer();
-  exit();
+  exit;
 }
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
@@ -40,14 +40,14 @@ unset($page_name);
 if ($json === '') {
   report_warning(' Error getting page list');
   bot_html_footer();
-  exit();
+  exit;
 }
 $array = @json_decode($json, true);
 unset($json);
 if ($array === false || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   bot_html_footer();
-  exit();
+  exit;
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 unset($array);
@@ -66,5 +66,5 @@ $pages_in_category = array_unique($pages_in_category);
 
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 
-exit();
+exit;
 ?>

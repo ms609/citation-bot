@@ -44,7 +44,7 @@ if ($category) {
   if (empty($pages_in_category)) {
     report_warning('Category appears to be empty');
     bot_html_footer();
-    exit();
+    exit;
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
   shuffle($pages_in_category);
@@ -58,7 +58,7 @@ if ($category) {
     }
     echo "\n\n";
     bot_html_footer();
-    exit();
+    exit;
   }
   unset($total, $category);
   edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
@@ -72,5 +72,5 @@ if ($category) {
   }
   bot_html_footer();
 }
-exit();
+exit;
 ?>

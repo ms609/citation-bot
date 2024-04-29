@@ -8,7 +8,8 @@ flush();
 
 if (file_exists('git_pull.lock')) {
   sleep(5);
-  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>');
+  echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
+  exit;
 }
 
 /*
@@ -29,7 +30,8 @@ function bot_debug_log(string $log_this) : void {
 if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
   if (!in_array($wiki_base, ['en', 'simple'], true)) {
-     exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
+     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
+     exit;
   }
 } else {
   $wiki_base = 'en';
@@ -78,7 +80,7 @@ if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
   ob_start();
   /** @psalm-suppress MissingFile */
-  include_once('env.php');
+  include_once 'env.php';
   $env_output = trim(ob_get_contents());
   if ($env_output) {
     bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
@@ -88,7 +90,8 @@ if (file_exists('env.php')) {
 }
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
-  exit('Unable to set encoding');
+  echo 'Unable to set encoding';
+  exit;
 }
 
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
@@ -125,7 +128,7 @@ unset($nlm_email, $nlm_apikey, $nlm_tool);
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
     echo '</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>';
-    exit();
+    exit;
   }
 }
 

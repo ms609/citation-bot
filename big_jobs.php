@@ -44,13 +44,13 @@ function big_jobs_check_overused(int $page_count) : void {
  if (file_exists($fn)) {
    echo '<div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div>';
    bot_html_footer();
-   exit();
+   exit;
  }
  $lock_file = fopen($fn, 'x+');
  if ($lock_file === false) {
    echo '<div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div>';
    bot_html_footer();
-   exit();
+   exit;
  }
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
@@ -65,7 +65,7 @@ function big_jobs_check_killed() : void {
    echo '<div style="text-align:center"><h1>Run killed as requested.</h1></div>';
    bot_html_footer();
    hard_unlink($kfile);
-   exit(); // Shutdown will close and delete lockfile
+   exit; // Shutdown will close and delete lockfile
  }
  if (file_exists($lfile)) {
    hard_touch($lfile);

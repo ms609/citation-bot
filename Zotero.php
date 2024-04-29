@@ -279,7 +279,7 @@ private static function zotero_request(string $url) : string {
   set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
-    if (self::ZOTERO_GIVE_UP === self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
+    if (self::$zotero_failures_count === self::ZOTERO_GIVE_UP) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
   /** @psalm-taint-escape ssrf */
