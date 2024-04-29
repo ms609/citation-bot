@@ -39,9 +39,9 @@ final class constantsTest extends testBaseClass {
     for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
       // Verify that they match
       if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
-	$this->assertSame(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
+        $this->assertSame(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
       } else {  // Weaker test for things with internal spaces or an & symbol (PHP 7.3 and 5.6 treat & differently)
-	$this->assertSame(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
+        $this->assertSame(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
       }
       // Verify that they are padded with a space
       $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
@@ -107,9 +107,9 @@ final class constantsTest extends testBaseClass {
 
   public function testAllLowerCase() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
-			     PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-			     JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
-			     PREFER_ISSUES);
+                             PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES);
     foreach ($big_array as $actual) {
       $this->assertSame(strtolower($actual), $actual);
     }
@@ -126,12 +126,12 @@ final class constantsTest extends testBaseClass {
 
   public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
-			     PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-			     JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
-			     PREFER_ISSUES, PARAMETER_LIST, LOTS_OF_EDITORS,
-			     TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS, TEMPLATES_VCITE,
-			     TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
-			     TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
+                             PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES, PARAMETER_LIST, LOTS_OF_EDITORS,
+                             TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS, TEMPLATES_VCITE,
+                             TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
+                             TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
     foreach ($big_array as $actual) {
       $this->assertSame(mb_strtolower($actual), strtolower($actual));
       $this->assertSame(mb_strtoupper($actual), strtoupper($actual));
@@ -140,9 +140,9 @@ final class constantsTest extends testBaseClass {
 
   public function testNoSpacesOnEnds() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
-			     PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-			     JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
-			     PREFER_ISSUES);
+                             PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES);
     foreach ($big_array as $actual) {
       if (!in_array($actual, ["sign up "], true)) {
        $this->assertSame(trim($actual), $actual);
@@ -164,14 +164,14 @@ final class constantsTest extends testBaseClass {
       $alpha_bits = preg_split('~(?<="),~', $alpha_bit);
       $alpha_bits = array_map('trim', $alpha_bits);
       if ($leader) {
-	$leader_bits = $alpha_bits;
-	sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
-	$leader = false;
+                $leader_bits = $alpha_bits;
+                sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
+                $leader = false;
       } else {
-	$this->assertSame(count($leader_bits), count($alpha_bits));
-	array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
-	$leader_bits = null;
-	$leader = true;
+                $this->assertSame(count($leader_bits), count($alpha_bits));
+                array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
+                $leader_bits = null;
+                $leader = true;
       }
       $bits_length = array_map('strlen', $alpha_bits);
       $bit_length = current($bits_length);
@@ -185,9 +185,9 @@ final class constantsTest extends testBaseClass {
        $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
        if ($line_length > 76) {
-	 $alphaed .= $new_line;
-	 $line_length = 10;
-	}
+         $alphaed .= $new_line;
+         $line_length = 10;
+       }
       }
       if ($alphaed == $new_line) $alphaed = '';
       $section = $alphaed . substr($section, $alpha_end);
@@ -218,14 +218,14 @@ final class constantsTest extends testBaseClass {
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
       $patent_whitelist =      ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
-				'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
-				'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
-				'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
-				'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
-				'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-				'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+                                'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
+                                'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
+                                'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
+                                'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
+                                'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
+                                'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
       $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
-				     $patent_whitelist, $their_whitelist);
+                                     $patent_whitelist, $their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
       $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
@@ -234,41 +234,41 @@ final class constantsTest extends testBaseClass {
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
 
       if (count($our_internal_extra) !== 0) {
-	 $this->flush();
-	 echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
-	 print_r($our_internal_extra);
-	 $this->flush();
-	 $we_failed = true;
+         $this->flush();
+         echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
+         print_r($our_internal_extra);
+         $this->flush();
+         $we_failed = true;
       }
       if (count($our_extra) !== 0) {
-	 $this->flush();
-	 echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
-	 print_r($our_extra);
-	 $this->flush();
-	 $we_failed = true;
+         $this->flush();
+         echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+         print_r($our_extra);
+         $this->flush();
+         $we_failed = true;
       }
       if (count($our_missing) !== 0) {
-	 $this->flush();
-	 echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
-	 print_r($our_missing);
-	 $this->flush();
-	 $we_failed = true;
+         $this->flush();
+         echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+         print_r($our_missing);
+         $this->flush();
+         $we_failed = true;
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
-	 $this->flush();
-	 echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
-	 $length = 0;
-	 echo "  ";
-	 foreach($our_whitelist_sorted as $value) {
-	   echo "'" . $value . "', ";
-	   $length = $length + strlen($value) + 4;
-	   if ($length > 76) {
-	     $length = 0;
-	     echo "\n  ";
-	   }
-	 }
-	 $this->flush();
-	 $we_failed = true;
+         $this->flush();
+         echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+         $length = 0;
+         echo "  ";
+         foreach($our_whitelist_sorted as $value) {
+           echo "'" . $value . "', ";
+           $length = $length + strlen($value) + 4;
+           if ($length > 76) {
+             $length = 0;
+             echo "\n  ";
+           }
+         }
+         $this->flush();
+         $we_failed = true;
       }
       $this->assertFalse($we_failed);
   }
@@ -283,26 +283,26 @@ final class constantsTest extends testBaseClass {
       $text = '{{citation | ' . $value . ' = Z123Z }}';
       $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
       $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate',  'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ',    '| pp = Z123Z ',    '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '],  // Put spaces on end to not change chapter-url-access and such
-			  ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
+                          ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
       $text = str_replace(['| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z '], '', $text);
       $text = str_replace(['displayeditors',  'editor1mask',  'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
-			  ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
+                          ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
       $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
-			  ['editor1-link', 'editor1-link', 'subject-link1'], $text);
+                          ['editor1-link', 'editor1-link', 'subject-link1'], $text);
       $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city',     'editorlink',  ' editors ='],
-			  ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
+                          ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
       $text = str_replace(['episodelink',  'mailinglist',  'mapurl',  'serieslink' , 'coauthor '],
-			  ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ], $text);
+                          ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ], $text);
       $text = str_replace(['titlelink',  'nocat',       'nocat',       ' embargo',          'conferenceurl',  'contributionurl',  'laydate',  'laysource',  'layurl',  'sectionurl',  'seriesno',  'timecaption',  'titlelink'],
-			  ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
+                          ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
       $text = str_replace(['subjectlink',  'transcripturl',  '| name = ',   'extrait'],
-			  ['subject-link', 'transcript-url', '| author = ', 'quote'  ], $text);
+                          ['subject-link', 'transcript-url', '| author = ', 'quote'  ], $text);
       if ($prepared->get('doi') === 'Z123Z') {
-	$prepared->forget('doi-broken-date');
+        $prepared->forget('doi-broken-date');
       }
       if (!str_i_same($text, $prepared->parsed_text())) {
-	 $orig .= $text;
-	 $new .= $prepared->parsed_text();
+         $orig .= $text;
+         $new .= $prepared->parsed_text();
       }
     }
     $this->assertSame($orig, $new);
@@ -355,7 +355,7 @@ final class constantsTest extends testBaseClass {
     $test_flat = [];
     foreach (AUTHOR_PARAMETERS as $array) {
       foreach ($array as $param) {
-	$test_flat[] = $param;
+        $test_flat[] = $param;
       }
     }
     $flat = FLATTENED_AUTHOR_PARAMETERS;
@@ -384,8 +384,8 @@ final class constantsTest extends testBaseClass {
        sort($flat);
        $last = 'XXXXXXXX';
        foreach ($flat as $param) {
-	 if ($param === $last) echo "\n" . $param . "\n";
-	 $last = $param;
+         if ($param === $last) echo "\n" . $param . "\n";
+         $last = $param;
        }
        $this->flush();
        $failed = true;
@@ -400,28 +400,28 @@ final class constantsTest extends testBaseClass {
     $last = 'XXXXXXXX';
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
-	 $failed = true;
-	 $this->flush();
-	 echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-	 $this->flush();
+         $failed = true;
+         $this->flush();
+         echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $this->flush();
       }
       if ($param === $last) {
-	 $failed = true;
-	 $this->flush();
-	 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-	 $this->flush();
+         $failed = true;
+         $this->flush();
+         echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $this->flush();
       }
       if (strpos($param, '.') === false) {
-	 $failed = true;
-	 $this->flush();
-	 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-	 $this->flush();
+         $failed = true;
+         $this->flush();
+         echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $this->flush();
       }
       if (preg_match('~\s~', $param) !== 0) {
-	 $failed = true;
-	 $this->flush();
-	 echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-	 $this->flush();
+         $failed = true;
+         $this->flush();
+         echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $this->flush();
       }
       $last = $param;
     }
@@ -446,11 +446,11 @@ final class constantsTest extends testBaseClass {
       echo "\n";
       echo "const ITALICS_LIST =\n";
       for ($i = $max_spaces; $i > -1 ; $i--) {
-	foreach ($italics as $item) {
-	   if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
-	      echo ' "' . $item . '|" .' . "\n";
-	   }
-	}
+        foreach ($italics as $item) {
+           if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
+              echo ' "' . $item . '|" .' . "\n";
+           }
+        }
       }
       echo ' "END_OF_CITE_list_junk";' . "\n";
       $this->flush();
@@ -463,13 +463,13 @@ final class constantsTest extends testBaseClass {
     for ($i = 0; $i < count($italics); $i++) {
       $early = $italics[$i];
       for ($j = $i+1; $j < count($italics); $j++) {
-	$later = $italics[$j];
-	if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
-	  $in_order = false;
-	  $this->flush();
-	  echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
-	  $this->flush();
-	}
+        $later = $italics[$j];
+        if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
+          $in_order = false;
+          $this->flush();
+          echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
+          $this->flush();
+        }
       }
     }
     $this->assertTrue($in_order);
@@ -482,10 +482,10 @@ final class constantsTest extends testBaseClass {
     $good = true;
     foreach ($italics as $item) {
       if ($item === $last) {
-	$this->flush();
-	echo "\n Found duplicate: $item \n";
-	$this->flush();
-	$good = false;
+        $this->flush();
+        echo "\n Found duplicate: $item \n";
+        $this->flush();
+        $good = false;
       }
       $last = $item;
     }
@@ -499,10 +499,10 @@ final class constantsTest extends testBaseClass {
     $good = true;
     foreach ($italics as $item) {
       if ($item === $last) {
-	$this->flush();
-	echo "\n Found duplicate: $item \n";
-	$this->flush();
-	$good = false;
+        $this->flush();
+        echo "\n Found duplicate: $item \n";
+        $this->flush();
+        $good = false;
       }
       $last = $item;
     }
@@ -556,16 +556,16 @@ final class constantsTest extends testBaseClass {
        $tem = str_replace(' ', '_', $tem);
        // Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis
        if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
-	  $page->get_text_from($tem);
-	  $text = $page->parsed_text();
-	  if (stripos($text, 'safesubst:') === false) {
-	    $errors = $errors . '   Is real:' . $convert[0];
-	  }
+          $page->get_text_from($tem);
+          $text = $page->parsed_text();
+          if (stripos($text, 'safesubst:') === false) {
+            $errors = $errors . '   Is real:' . $convert[0];
+          }
        }
        $tem = 'Template:' . $convert[1];
        $tem = str_replace(' ', '_', $tem);
        if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
-	  $errors = $errors . '   In now a redirect:' . $convert[1];
+          $errors = $errors . '   In now a redirect:' . $convert[1];
        }
     }
     $this->assertSame("", $errors); // We want a list of all of them
@@ -575,7 +575,7 @@ final class constantsTest extends testBaseClass {
     foreach (DOI_FREE_PREFIX as $prefix) {
       $this->assertTrue($prefix != '');
       if (strpos($prefix, '/') === false) {
-	$this->assertSame('This needs a slash', $prefix);
+        $this->assertSame('This needs a slash', $prefix);
       }
     }
   }
