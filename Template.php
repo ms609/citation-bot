@@ -3267,7 +3267,7 @@ final class Template {
 		  $replace_pos = strrpos($dat, $match[1]) + strlen($match[1]);
 		  $dat = trim(substr($dat, $replace_pos));
 		}
-	  } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+	  } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace([" ", "-"], "", $dat), $match)) {
 		$the_isbn = str_split($match[1]);
 		preg_match('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
 					   . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
@@ -3277,7 +3277,7 @@ final class Template {
 				   '~', $dat, $match); // Crazy to deal with dashes and spaces
 		$this->add_if_new('isbn', $match[0]);
 		$dat = trim(str_replace($match[0], '', $dat));
-	  } elseif (preg_match("~(?<!\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
+	  } elseif (preg_match("~(?<!\d)(\d{13})(?!\d)~", str_replace([" ", "-"], "", $dat), $match)) {
 		$the_isbn = str_split($match[1]);
 		preg_match('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
 					   . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
@@ -3329,7 +3329,7 @@ final class Template {
 	  $this->add_if_new($the_type, $the_data);
 	  $id = str_replace($the_all, '', $id);
 	}
-	if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+	if (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
 	  for ($i = 0; $i < count($matches[1]); $i++) {
 		$subtemplate = self::$all_templates[$matches[1][$i]];
 		$subtemplate_name = $subtemplate->wikiname();
@@ -7564,7 +7564,7 @@ final class Template {
 
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
 	 $tmp = $this->parsed_text();
-	 while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {
+	 while (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {
 	   for ($i = 0; $i < count($matches[1]); $i++) {
 		 $subtemplate = self::$all_templates[$matches[1][$i]];
 		 $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);
