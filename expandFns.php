@@ -385,7 +385,7 @@ function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
   $title = safe_preg_replace_callback('~(?:\$\$)([^\$]+)(?:\$\$)~iu',
-      static function (array $matches) : string {return ("<math>" . $matches[1] . "</math>");},
+      static function (array $matches) : string {return "<math>" . $matches[1] . "</math>";},
       $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {
@@ -452,19 +452,19 @@ function wikify_external_text(string $title) : string {
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
     $title = safe_preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      static function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      static function (array $matches) : string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      static function (array $matches) : string {return ("'''" . $matches[1] . "'''");},
+      static function (array $matches) : string {return "'''" . $matches[1] . "'''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-      static function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      static function (array $matches) : string {return "''" . $matches[1] . "'');},
       $title);
     $title = safe_preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
-      static function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      static function (array $matches) : string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
-      static function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      static function (array $matches) : string {return "''" . $matches[1] . "''";},
       $title);
   }
 
@@ -654,7 +654,7 @@ function titles_simple(string $inTitle) : string {
 	// Failure leads to null or empty strings!!!!
 	// Leading Chapter # -   Use callback to make sure there are a few characters after this
 	$inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
-	    static function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
+	    static function (array $matches) : string {return $matches[1];}, trim($inTitle));
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Chapter number at start
 	$inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
@@ -959,7 +959,7 @@ function mb_ucfirst_force(string $string) : string
 
 function mb_strrev(string $string, string $encode = null) : string
 {
-    $chars = mb_str_split($string, 1, $encode ?: mb_internal_encoding());
+    $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
     return implode('', array_reverse($chars));
 }
 
@@ -1258,7 +1258,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
 }
 
 function can_safely_modify_dashes(string $value) : bool {
-   return((stripos($value, "http") === false)
+   return (stripos($value, "http") === false)
        && (strpos($value, "[//") === false)
        && (substr_count($value, "<") === 0) // <span></span> stuff
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
@@ -1266,13 +1266,13 @@ function can_safely_modify_dashes(string $value) : bool {
        && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
        && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.  Use "." for generic dash
-       && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
+       && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1); // 2005-A used in {{sfn}} junk
 }
 
 function str_i_same(string $str1, string $str2) : bool {
    if ($str1 === 'Eulerian Numbers') return false; // very special case
-   if (0 === strcasecmp($str1, $str2)) return true; // Quick non-multi-byte compare short cut
-   return (0 === strcmp(mb_strtoupper($str1), mb_strtoupper($str2)));
+   if (strcasecmp($str1, $str2) === 0) return true; // Quick non-multi-byte compare short cut
+   return strcmp(mb_strtoupper($str1), mb_strtoupper($str2)) === 0;
 }
 
 function doi_encode (string $doi) : string {
@@ -1398,7 +1398,7 @@ function check_memory_usage(string $where) : void {
  * @codeCoverageIgnore
  */
 function bot_html_header() : void {
-  echo('<!DOCTYPE html>
+  echo '<!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
   <title>Citation Bot: running</title>
@@ -1416,7 +1416,7 @@ function bot_html_header() : void {
   </header>
 
   <pre id="botOutput">
-   ');
+   ';
   if (ini_get('pcre.jit') === '0') {
     report_warning('PCRE JIT Disabled');
   }
