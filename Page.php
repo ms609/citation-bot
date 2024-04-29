@@ -17,18 +17,18 @@ require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
 class Page {
 
-  protected string $text = '';
+  private string $text = '';
   protected string $title = '';
   /** @var array<mixed> $modifications **/
-  protected array $modifications = [];
-  protected int $date_style = DATES_WHATEVER;
-  protected int $name_list_style = NAME_LIST_STYLE_DEFAULT;
-  protected string $read_at = '';
-  protected string $start_text = '';
-  protected int $lastrevid = 0;
-  protected bool $page_error = false;
-  protected static bool $told_fast = false;
-  public    static string $last_title = '';
+  private array $modifications = [];
+  private int $date_style = DATES_WHATEVER;
+  private int $name_list_style = NAME_LIST_STYLE_DEFAULT;
+  private string $read_at = '';
+  private string $start_text = '';
+  private int $lastrevid = 0;
+  private bool $page_error = false;
+  private static bool $told_fast = false;
+  public static string $last_title = '';
 
   function __construct() {
       $this->construct_modifications_array();
@@ -765,7 +765,7 @@ class Page {
   }
 
   /** @param array<WikiThings|Template> $objects **/
-  protected function replace_object(array &$objects) : void {  // Pointer to save memory
+  private function replace_object(array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
       foreach (array_reverse($objects) as $obj) {
@@ -774,7 +774,7 @@ class Page {
     }
   }
 
-  protected function announce_page() : void {
+  private function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title === '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>"
@@ -785,7 +785,7 @@ class Page {
 	"\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
 
-  protected function allow_bots() : bool {
+  private function allow_bots() : bool {
     if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {  // When testing the bot on a specific page, allow "editing"
       return true; // @codeCoverageIgnore
     }
@@ -803,7 +803,7 @@ class Page {
     return true;
   }
 
-  protected function set_name_list_style() : void {
+  private function set_name_list_style() : void {
 
    // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
@@ -823,7 +823,7 @@ class Page {
     }
   }
 
-  protected function set_date_pattern() : void {
+  private function set_date_pattern() : void {
     // see {{use_mdy_dates}} and {{use_dmy_dates}}
     $date_style = DATES_WHATEVER;
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
@@ -847,7 +847,7 @@ class Page {
     $this->date_style = $date_style;
   }
 
-  protected function construct_modifications_array() : void {
+  private function construct_modifications_array() : void {
     $this->modifications['changeonly'] = [];
     $this->modifications['additions'] = [];
     $this->modifications['deletions'] = [];

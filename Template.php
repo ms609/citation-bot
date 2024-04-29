@@ -22,25 +22,25 @@ final class Template {
   public static int $date_style = DATES_WHATEVER;
   public static int $name_list_style = NAME_LIST_STYLE_DEFAULT;
   /** @psalm-suppress PropertyNotSetInConstructor */
-  protected string $rawtext;  // Must start out as unset
+  private string $rawtext;  // Must start out as unset
   public string $last_searched_doi = '';
-  protected string $example_param = '';
-  protected string $name = '';
+  private string $example_param = '';
+  private string $name = '';
   /** @var array<Parameter> $param */
-  protected array $param = [];
+  private array $param = [];
   /** @var array<string> $initial_param */
-  protected array $initial_param = [];
+  private array $initial_param = [];
   /** @var array<string> $initial_author_params */
-  protected array $initial_author_params = [];
-  protected string $initial_name = '';
-  protected bool $doi_valid = false;
-  protected bool $had_initial_editor = false;
-  protected bool $had_initial_publisher = false;
-  protected bool $mod_dashes = false;
-  protected bool $mod_names = false;
-  protected bool $no_initial_doi = false;
+  private array $initial_author_params = [];
+  private string $initial_name = '';
+  private bool $doi_valid = false;
+  private bool $had_initial_editor = false;
+  private bool $had_initial_publisher = false;
+  private bool $mod_dashes = false;
+  private bool $mod_names = false;
+  private bool $no_initial_doi = false;
   /** @var array<array<string>> $used_by_api **/
-  protected array $used_by_api = [
+  private array $used_by_api = [
 			   'adsabs'   => [],
 			   'arxiv'    => [],
 			   'crossref' => [],
@@ -235,7 +235,7 @@ final class Template {
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
-  protected function split_params(string $text) : void {
+  private function split_params(string $text) : void {
 	// Replace | characters that are inside template parameter/value pairs
 	$PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
 	while (preg_match($PIPE_REGEX, $text)) {
@@ -1963,7 +1963,7 @@ final class Template {
 	return Zotero::find_indentifiers_in_urls($this, $url_sent);
   }
 
-  protected function get_doi_from_text() : void {
+  private function get_doi_from_text() : void {
 	set_time_limit(120);
 	if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
 	  if (stripos($this->rawtext, 'oxforddnb.com') !== false) return; // generally bad, and not helpful
@@ -2110,7 +2110,7 @@ final class Template {
   }
 
   /** @return array{0: string, 1: int, 2: array<string>} */
-  protected function query_pubmed() : array {
+  private function query_pubmed() : array {
 /*
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
  * Returns an array:
@@ -2143,7 +2143,7 @@ final class Template {
 
   /** @param array<string> $terms
 	  @return array{0: string, 1: int, 2: array<string>} */
-  protected function do_pumbed_query(array $terms) : array {
+  private function do_pumbed_query(array $terms) : array {
 	set_time_limit(120);
   /* do_query
    *
@@ -2620,7 +2620,7 @@ final class Template {
 	$this->get_semanticscholar_url($doi);
   }
 
-  protected function get_semanticscholar_url(string $doi) : void {
+  private function get_semanticscholar_url(string $doi) : void {
    static $ch = null;
    if ($ch === null) {
      $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
@@ -2876,7 +2876,7 @@ final class Template {
 	return;
   }
 
-  protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
+  private function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
 	static $ch = null;
 	if ($ch === null) {
 		$ch = bot_curl_init(1.0, []);
@@ -2957,7 +2957,7 @@ final class Template {
 	return false;
   }
 
-  protected function google_book_details(string $gid) : void {
+  private function google_book_details(string $gid) : void {
 	static $ch = null;
 	if ($ch === null) {
 	   $ch = bot_curl_init(1.0, []);
@@ -3033,7 +3033,7 @@ final class Template {
   }
 
   ### parameter processing
-  protected function parameter_names_to_lowercase() : void {
+  private function parameter_names_to_lowercase() : void {
 	if (empty($this->param)) return;
 	$keys = array_keys($this->param);
 	foreach ($keys as $the_key) {
@@ -3041,7 +3041,7 @@ final class Template {
 	}
   }
 
-  protected function use_unnamed_params() : void {
+  private function use_unnamed_params() : void {
 	if (empty($this->param)) return;
 
 	$param_occurrences = [];
@@ -3307,7 +3307,7 @@ final class Template {
 	unset ($p); // Destroy pointer to be safe
   }
 
-  protected function id_to_param(): void {
+  private function id_to_param(): void {
 	set_time_limit(120);
 	$id = $this->get('id');
 	if (trim($id)) {
@@ -3506,7 +3506,7 @@ final class Template {
    }
 }
 
-  protected function correct_param_spelling() : void {
+  private function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
   set_time_limit(120);
@@ -3617,7 +3617,7 @@ final class Template {
   public function initial_author_params() : array { return $this->initial_author_params; }
   public function had_initial_author() : bool {return is_array($this->initial_author_params) && (sizeof($this->initial_author_params)>0);}
 
-  protected function join_params() : string {
+  private function join_params() : string {
 	if ((self::$name_list_style === NAME_LIST_STYLE_VANC) && !$this->had_initial_author() && !$this->had_initial_editor)
 	{
 	  $vanc_attribs = ['vauthors', 'veditors'];
@@ -6697,14 +6697,14 @@ final class Template {
 /***
  * Functions to retrieve values that may be specified in various ways
  ***/
-  protected function display_authors() : int {
+  private function display_authors() : int {
 	if (($da = $this->get('display-authors')) === '') {
 	  $da = $this->get('displayauthors');
 	}
 	return ctype_digit($da) ? (int) $da : 0;
   }
 
-  protected function number_of_authors() : int {
+  private function number_of_authors() : int {
 	$max = 0;
 	foreach ($this->param as $p) {
 	  if (preg_match('~(?:author|last|first|forename|initials|surname|given)(\d+)~', $p->param, $matches)) {
@@ -6738,7 +6738,7 @@ final class Template {
 	return '';
   }
 
-  protected function first_surname() : string {
+  private function first_surname() : string {
 	// Fetch the surname of the first author only
 	if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
 	  return $first_author[0];
@@ -6774,8 +6774,8 @@ final class Template {
 	return '';
   }
 
-  /** @return ?array<string> **/
-  protected function page_range() : ?array {
+  /** @return array<string> **/
+  private function page_range() : array {
 	preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
 	return $pagenos;
   }
@@ -6891,11 +6891,11 @@ final class Template {
 	return false;
   }
 
-  protected function param_with_index(int $i) : ?Parameter {
+  private function param_with_index(int $i) : ?Parameter {
 	return (isset($this->param[$i])) ? $this->param[$i] : null;
   }
 
-  protected function param_value(int $i) : string {
+  private function param_value(int $i) : string {
 	$item = $this->param_with_index($i);
 	if (is_null($item)) return ''; // id={{arxiv}} and other junk
 	return $item->val;
@@ -6910,7 +6910,7 @@ final class Template {
 	return $ret;
   }
 
-  protected function get_param_key (string $needle) : ?int {
+  private function get_param_key (string $needle) : ?int {
 	if (empty($this->param)) return null;
 	foreach ($this->param as $i => $p) {
 	  if ($p->param === $needle) return $i;
@@ -7168,7 +7168,7 @@ final class Template {
 	return $ret;
   }
 
-  protected function isbn10Toisbn13(string $isbn10, bool $ignore_year = false) : string {
+  private function isbn10Toisbn13(string $isbn10, bool $ignore_year = false) : string {
 	$isbn10 = trim($isbn10);  // Remove leading and trailing spaces
 	$test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
 	if (strlen($test) < 10 || strlen ($test) > 13) return $isbn10;
@@ -7195,7 +7195,7 @@ final class Template {
   }
 
   /** @return ?array<string> **/
-  protected function inline_doi_information() : ?array {
+  private function inline_doi_information() : ?array {
 	if ($this->name !== "doi-inline") return null;
 	if (count($this->param) !==2) return null;
 	$vals = [];
@@ -7204,7 +7204,7 @@ final class Template {
 	return $vals;
   }
 
-  protected function get_inline_doi_from_title() : void {
+  private function get_inline_doi_from_title() : void {
 	 if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~i", $this->get('title'), $match)) {
 	   if ($inline_doi = self::$all_templates[$match[1]]->inline_doi_information()) {
 		 if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
@@ -7218,7 +7218,7 @@ final class Template {
 	 }
   }
 
-  protected function volume_issue_demix(string $data, string $param) : void {
+  private function volume_issue_demix(string $data, string $param) : void {
 	 if ($param === 'year') return;
 	 if (!in_array($param, ['volume','issue','number'], true)) {
 	   report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
@@ -7326,7 +7326,7 @@ final class Template {
 	 }
   }
 
-  protected function simplify_google_search(string $url) : string {
+  private function simplify_google_search(string $url) : string {
 	  if (stripos($url, 'q=') === false) return $url;  // Not a search
 	  if (preg_match('~^https?://.*google.com/search/~', $url)) return $url; // Not a search if the slash is there
 	  $orig_url = $url;
