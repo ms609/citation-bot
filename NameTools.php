@@ -83,23 +83,23 @@ function format_surname(string $surname) : string {
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
   if (mb_substr($surname, 0, 2) === "o'") {
-	return "O'" . format_surname_2(mb_substr($surname, 2));
+    return "O'" . format_surname_2(mb_substr($surname, 2));
   } elseif (mb_substr($surname, 0, 2) === "mc") {
-	return "Mc" . format_surname_2(mb_substr($surname, 2));
+    return "Mc" . format_surname_2(mb_substr($surname, 2));
   } elseif (mb_substr($surname, 0, 3) === "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
-	return "Mac" . format_surname_2(mb_substr($surname, 3));
+    return "Mac" . format_surname_2(mb_substr($surname, 3));
   } elseif (mb_substr($surname, 0, 1) === "&") {
-	return "&" . format_surname_2(mb_substr($surname, 1));
+    return "&" . format_surname_2(mb_substr($surname, 1));
   } else {
-	return format_surname_2($surname); // Case of surname
+    return format_surname_2($surname); // Case of surname
   }
 }
 
 function format_surname_2(string $surname) : string {
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
-	function(array $matches) : string {
-		return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
-	},
+    function(array $matches) : string {
+        return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+    },
     mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
   $ret = preg_replace_callback('~;\w~', function(array $matches) : string {return mb_strtolower($matches[0]);}, $ret);
@@ -111,9 +111,9 @@ function format_forename(string $forename) : string {
   if ($forename === '-') return '';
   if ($forename === '') return '';
   return str_replace([" ."], "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
-	    array $matches) : string {
-	    return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
-	 , $forename)));
+        array $matches) : string {
+        return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
+     , $forename)));
 }
 
 /* format_initials
@@ -124,19 +124,19 @@ function format_forename(string $forename) : string {
  */
 function format_initials(string $str) : string {
   $str = trim($str);
-	if ($str === "") return "";
-	$end = (substr($str, strlen($str)-1) === ";") ? ";" : '';
-	preg_match_all("~\w~u", $str, $match);
-	return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
+    if ($str === "") return "";
+    $end = (substr($str, strlen($str)-1) === ";") ? ";" : '';
+    preg_match_all("~\w~u", $str, $match);
+    return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 
 function is_initials(string $str) : bool {
-	$str = trim($str);
-	if (!$str) return false;
-	if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) return false;
-	if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) return true;
-	if (mb_strtoupper($str) !== $str) return false;
-	return true;
+    $str = trim($str);
+    if (!$str) return false;
+    if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) return false;
+    if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) return true;
+    if (mb_strtoupper($str) !== $str) return false;
+    return true;
 }
 
 /*
@@ -203,44 +203,44 @@ function format_author(string $author) : string {
       */
       $countAuth = count($auth);
       if ($ends_with_period) {
-	$i = [];
-	// it ends in a .
-	if (is_initials($auth[$countAuth-1])) {
-	  // it's Conway Morris S.C.
-	  foreach (explode(" ", $auth[0]) as $bit){
-	    if (is_initials($bit)) $i[] = format_initials($bit); else $surname .= "$bit ";
-	  }
-	  unset($auth[0]);
-	  foreach ($auth as $bit){
-	    if (is_initials($bit)) {
-	      $i[] = format_initials($bit) . '.';
-	    } else {
-	      $i[] = $bit;
-	    }
-	  }
-	} else {
-	  foreach ($auth as $A) {
-	    if (is_initials($A)) {
-		$i[] = format_initials($A) . '.';
-	    } else {
-		$i[] = $A;
-	    }
-	  }
-	}
-	$fore = mb_strtoupper(implode(" ", $i));
+    $i = [];
+    // it ends in a .
+    if (is_initials($auth[$countAuth-1])) {
+      // it's Conway Morris S.C.
+      foreach (explode(" ", $auth[0]) as $bit){
+        if (is_initials($bit)) $i[] = format_initials($bit); else $surname .= "$bit ";
+      }
+      unset($auth[0]);
+      foreach ($auth as $bit){
+        if (is_initials($bit)) {
+          $i[] = format_initials($bit) . '.';
+        } else {
+          $i[] = $bit;
+        }
+      }
+    } else {
+      foreach ($auth as $A) {
+        if (is_initials($A)) {
+        $i[] = format_initials($A) . '.';
+        } else {
+        $i[] = $A;
+        }
+      }
+    }
+    $fore = mb_strtoupper(implode(" ", $i));
       } else {
-	// it ends with the surname
-	$surname = $auth[$countAuth-1];
-	unset($auth[$countAuth-1]);
-	$fore = implode(".", $auth);
+    // it ends with the surname
+    $surname = $auth[$countAuth-1];
+    unset($auth[$countAuth-1]);
+    $fore = implode(".", $auth);
       }
     } else {
       // We have no punctuation! Let's delimit with spaces.
       $chunks = array_reverse(explode(" ", $author));
       $i = [];
       foreach ($chunks as $chunk){
-	if (!$surname && !is_initials($chunk)) $surname = $chunk;
-	else array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
+    if (!$surname && !is_initials($chunk)) $surname = $chunk;
+    else array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
       }
       $fore = implode(" ", $i);
     }
@@ -291,14 +291,14 @@ function format_multiple_authors(string $authors) : string {
       $bits = explode(" ", $chunk);
       $bitts = [];
       foreach ($bits as $bit){
-	if ($bit) $bitts[] = $bit;
+    if ($bit) $bitts[] = $bit;
       }
       $bits = $bitts; unset($bitts);
       if (isset($bits[1]) || $savedChunk) {
-	$return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
-	$savedChunk = '';
+    $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
+    $savedChunk = '';
       } else {
-	$savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
+    $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
       }
     }
   }
@@ -317,9 +317,9 @@ function format_multiple_authors(string $authors) : string {
 
 function under_two_authors(string $text) : bool {
   return !(strpos($text, ';') !== false  //if there is a semicolon
-	  || substr_count($text, ',') > 1  //if there is more than one comma
-	  || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
-	  );
+      || substr_count($text, ',') > 1  //if there is more than one comma
+      || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
+      );
 }
 
 /* split_authors
