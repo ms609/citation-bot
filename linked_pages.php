@@ -54,11 +54,11 @@ unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
-	$linked_page = (string) $link['*'];
-	$linked_page = str_replace(' ', '_', $linked_page);
-	if(!in_array($linked_page, AVOIDED_LINKS, true) && stripos($linked_page, 'disambiguation') === false) {
-	    $pages_in_category[] = $linked_page;
-	}
+        $linked_page = (string) $link['*'];
+        $linked_page = str_replace(' ', '_', $linked_page);
+        if(!in_array($linked_page, AVOIDED_LINKS, true) && stripos($linked_page, 'disambiguation') === false) {
+            $pages_in_category[] = $linked_page;
+        }
     }
 }
 unset($links);
