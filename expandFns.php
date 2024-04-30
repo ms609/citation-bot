@@ -7,7 +7,7 @@ require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  private const MAX_CACHE_SIZE = 100000;
+  public const MAX_CACHE_SIZE = 100000;
   public const MAX_HDL_SIZE = 1024;
   private const BAD_DOI_ARRAY = ['10.1126/science' => true,
         '' => true,
