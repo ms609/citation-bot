@@ -779,10 +779,10 @@ class Page {
   private function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title === '') return;
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>"
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"
         . echoable($this->title)
-        . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
-        . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
+        . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
+        . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
         . "&action=history' style='font-weight:bold;'>history</a> ",
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
