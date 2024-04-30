@@ -153,6 +153,7 @@ class Page {
       case 'jstor':   $api = 'jstor';    break;
       default:
           report_error('expand_templates_from_identifier got: ' . $identifier);
+          exit;
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, true)) {
