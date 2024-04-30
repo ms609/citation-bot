@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 [
+'10.1308/003588405X71054' => true, // page not found
 '10.2174/092986712804485719' => true, // Cloud error
 '10.1001/jama.275.17.1339' => true, // 404
 '10.1080/10798587.2007.10642974' => true, // Spam
@@ -312,7 +313,6 @@ const NULL_DOI_LIST =
 '10.14496/dia.7104343513.14' => true,
 '10.1474/GGA.2005-01.0-05.0005' => true,
 '10.1489/1544-581X(2004)072<0169:LOLSTP>2.0.CO;2' => true,
-'10.14989/doctor.k19250' => true,
 '10.1511/2006.61.412' => true, // goes to wrong page
 '10.1515/crll.1878.84.242' => true,
 '10.1515/vzoo-2017-0029' => true, // page not found
@@ -3889,7 +3889,6 @@ const NULL_DOI_LIST =
 '10.5944/etfv.7.1994.3007' => true,
 '10.5944/rllcgv.vol.5.1996.5735' => true,
 '10.5944/signa.vol31.2022.29451' => true,
-'10.5958/2230-732X.2014.00258.7' => true,
 '10.6019/blueprint_20130405' => true,
 '10.6072/H0.MP.A004235.01' => true,
 '10.7146/cns.v6i0.122249' => true,
@@ -3926,6 +3925,8 @@ const NULL_DOI_BUT_GOOD = [       // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.14989/doctor.k19250' => true,
+'10.5958/2230-732X.2014.00258.7' => true,
 '10.1001/archneur.1989.00520400097026' => true,
 '10.1001/archpsyc.60.5.497' => true,
 '10.1001/jama.2020.6019' => true,
