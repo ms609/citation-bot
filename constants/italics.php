@@ -433,7 +433,7 @@ const CAMEL_CASE =      ['DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad', 'kaSenzangakhona', 'BioChirality', 'DeGeer',
                          'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
                          'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology', 'PhotonIcs',
-                         'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma', 'MiniVess',
+                         'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma', 'MiniVess', 'GlobeCom',
                        ];
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
