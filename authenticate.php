@@ -7,12 +7,11 @@ require_once 'html_headers.php';
 
 require_once 'setup.php';
 
-// To use the oauthclient library, run:
-// composer require mediawiki/oauthclient
-use MediaWiki\OAuthClient\Consumer;
-use MediaWiki\OAuthClient\Token;
+// To use the oauthclient library, run: composer require mediawiki/oauthclient
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\Consumer;
+use MediaWiki\OAuthClient\Token;
 
 // The two ways we leave this script
 function death_time(string $err) : never {
