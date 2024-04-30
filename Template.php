@@ -1040,7 +1040,7 @@ final class Template {
 
 	switch ($param_name) {
 	  ### EDITORS
-	  case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
+	  case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match):
 		if ($this->had_initial_editor) return false;
 		if (stripos($this->get('doi'), '10.1093/gmo') !== false) return false;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return false; // Existing incompatible data
@@ -1050,7 +1050,7 @@ final class Template {
 		}
 		return false;
 
-	  case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match) :
+	  case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match):
 		if ($this->had_initial_editor) return false;
 		if (stripos($this->get('doi'), '10.1093/gmo') !== false) return false;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return false; // Existing incompatible data
@@ -1059,7 +1059,7 @@ final class Template {
 		}
 		return false;
 
-	  case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match) :
+	  case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match):
 		if ($this->had_initial_editor) return false;
 		if (stripos($this->get('doi'), '10.1093/gmo') !== false) return false;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return false; // Existing incompatible data
@@ -1069,7 +1069,7 @@ final class Template {
 		return false;
 
 	  #TRANSLATOR
-	  case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
+	  case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match):
 		if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return false; // Existing incompatible data
 		if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
 		  return $this->add($param_name, clean_up_full_names($value));

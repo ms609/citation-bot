@@ -339,7 +339,7 @@ final class WikipediaBot {
         return '';                                                                     // @codeCoverageIgnore
     }
     $page = self::reset($res->query->pages);
-    return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
+    return isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '';
   }
 
   // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
