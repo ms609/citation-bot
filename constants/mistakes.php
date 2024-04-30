@@ -596,6 +596,10 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
   "прізвище4" => "last4",
   "рік" => "year",
   "сторінки" => "pages",
+  "websiter" => "website",
+  "çalıwebsite" => "website",
+  "deaadurl" => "deadurl",
+  "аrchiveurl" => "archive-url",
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
