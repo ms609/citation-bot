@@ -14,7 +14,7 @@ function query_pmid_api (array $pmids, array &$templates) : void { entrez_api($p
 function query_pmc_api  (array $pmcs, array &$templates) : void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  const MAX_CACHE_SIZE = 50000;
+  private const MAX_CACHE_SIZE = 50000;
   private static int $big_counter = 0;
   private static int $small_counter = 0;
   /** @var array<string> $doi2bib **/

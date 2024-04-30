@@ -52,7 +52,7 @@ final class Template {
   /** @var array<Template> $this_array */
   private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
 
-  function __construct() {
+  public function __construct() {
 	 ; // Construction is in parse_text() and above in variable initialization
   }
 

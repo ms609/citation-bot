@@ -30,7 +30,7 @@ class Page {
   private static bool $told_fast = false;
   public static string $last_title = '';
 
-  function __construct() {
+  public function __construct() {
       $this->construct_modifications_array();
       if (!self::$told_fast) {
          if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
