@@ -240,7 +240,7 @@ final class Template {
 	$PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
 	while (preg_match($PIPE_REGEX, $text)) {
 	  $text = preg_replace_callback($PIPE_REGEX,
-		  function(array $matches) : string {
+		  static function(array $matches) : string {
 			 return $matches[1] . PIPE_PLACEHOLDER . $matches[2];
 		  },
 		  $text);
