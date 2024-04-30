@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 [
+'10.3846/cpc.2017.286' => true, // File not found
 '10.1308/003588405X71054' => true, // page not found
 '10.2174/092986712804485719' => true, // Cloud error
 '10.1001/jama.275.17.1339' => true, // 404
@@ -3651,7 +3652,7 @@ const NULL_DOI_LIST =
 '10.3828/978-0-85323-605-4' => true,
 '10.3828/978-0-85323-752-5' => true,
 '10.3828/aj.2016.3' => true,
-'10.3846/cpc.2017.286' => true,
+'10.3846/cpc.2017.286' => true, // File not found
 '10.3920/978-90-8686-728-8_4' => true,
 '10.3934/mbe' => true, // 404
 '10.3949/ccjm.75.7.474' => true, // Doi not found on website
