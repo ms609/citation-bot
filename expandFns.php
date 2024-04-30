@@ -1176,7 +1176,7 @@ function prior_parameters(string $par, array $list=[] ) : array {
     case 'year': case 'date':         return prior_parameters('series', $list);
     case 'volume':                    return prior_parameters('year', array_merge(['date'], $list));
     case 'issue': case 'number':      return prior_parameters('volume', $list);
-    case 'page' : case 'pages':       return prior_parameters('issue', array_merge(['number'], $list));
+    case 'page': case 'pages':       return prior_parameters('issue', array_merge(['number'], $list));
     case 'location': case 'publisher': case 'edition': return prior_parameters('page', array_merge(['pages'], $list));
     case 'doi':                       return prior_parameters('location', array_merge(['publisher', 'edition'], $list));
     case 'doi-broken-date':           return prior_parameters('doi', $list);
@@ -1185,7 +1185,7 @@ function prior_parameters(string $par, array $list=[] ) : array {
     case 'pmid':                      return prior_parameters('jstor', $list);
     case 'pmc':                       return prior_parameters('pmid', $list);
     case 'pmc-embargo-date':          return prior_parameters('pmc', $list);
-    case 'arxiv': case 'eprint': case 'class' : return prior_parameters('pmc-embargo-date', $list);
+    case 'arxiv': case 'eprint': case 'class': return prior_parameters('pmc-embargo-date', $list);
     case 'bibcode':                   return prior_parameters('arxiv', array_merge(['eprint', 'class'], $list));
     case 'hdl':                       return prior_parameters('bibcode', $list);
     case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc':
