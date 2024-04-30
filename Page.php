@@ -152,7 +152,8 @@ class Page {
       case 'url':     $api = 'zotero';   break;
       case 'jstor':   $api = 'jstor';    break;
       default:
-          report_error('expand_templates_from_identifier got: ' . $identifier);
+          $api = $identifier;
+          report_error('expand_templates_from_identifier got: ' . $api);
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, true)) {
