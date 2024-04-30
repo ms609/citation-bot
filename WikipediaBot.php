@@ -38,7 +38,7 @@ final class WikipediaBot {
         CURLOPT_FAILONERROR => true ]);
   }
 
-  function __construct() {
+  public function __construct() {
     // setup.php must already be run at this point
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
@@ -342,7 +342,7 @@ final class WikipediaBot {
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
 
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+  // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   public static function is_redirect(string $page) : int {
     $res = self::QueryAPI([
         "action" => "query",
