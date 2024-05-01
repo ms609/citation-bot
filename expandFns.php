@@ -195,6 +195,11 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.5047/meep.') === 0) return false;
      if (stripos($doi, '10.4435/BSPI.') === 0) return false;
      if (isset(NULL_DOI_LIST[$doi])) return null;
+     foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+        if (stripos($doi, $bad_start) === 0) {
+          return false; // all gone
+        }
+     }
      if (isset(NULL_DOI_BUT_GOOD[$doi])) return null;  // @codeCoverageIgnoreStart
      $headers_test = get_headers_array($url);
      bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));  // @codeCoverageIgnoreEnd
@@ -1452,6 +1457,12 @@ function hdl_works(string $hdl) : string|null|false {
     if (isset(NULL_DOI_LIST[$hdl])) {        // @codeCoverageIgnoreStart
         HandleCache::$cache_hdl_bad[$hdl] = true;  // These are know to be bad, so only check one time during run
         return false;
+    }
+    foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+       if (stripos($hdl, $bad_start) === 0) {
+           HandleCache::$cache_hdl_bad[$hdl] = true;  // all bad
+           return false;
+       }
     }
     HandleCache::$cache_hdl_null[$hdl] = true;
     if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
