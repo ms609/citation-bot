@@ -82,10 +82,6 @@ const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Las
 ];
 const NULL_DOI_LIST = /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/ /** ===================================================================================== **/
 [
-
-
-
-
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1007/978-3-7643-8140-0_245' => true,
     '10.1007/BF00162691' => true,
@@ -9951,5 +9947,3 @@ const NULL_HDL_BUT_KNOWN = [ // Do not report these, since they work usually
     '2292/5526' => true,
     '2318/1651769' => true,
 ];
-
-
