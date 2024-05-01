@@ -29,13 +29,13 @@ final class WikipediaBot {
     $init_done = true;
     // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
     self::$ch_write  = bot_curl_init(1.0,
-       [CURLOPT_FAILONERROR => true,
-        CURLOPT_POST => true,
-        CURLOPT_REFERER => "https://citations.toolforge.org/",
-        CURLOPT_URL => API_ROOT]);
+          [CURLOPT_FAILONERROR => true,
+          CURLOPT_POST => true,
+          CURLOPT_REFERER => "https://citations.toolforge.org/",
+          CURLOPT_URL => API_ROOT]);
     self::$ch_logout = bot_curl_init(1.0,
-       [CURLOPT_REFERER => "https://citations.toolforge.org/",
-        CURLOPT_FAILONERROR => true ]);
+          [CURLOPT_REFERER => "https://citations.toolforge.org/",
+          CURLOPT_FAILONERROR => true ]);
   }
 
   public function __construct() {
@@ -121,8 +121,8 @@ final class WikipediaBot {
 
     try {
           curl_setopt_array(self::$ch_write, [
-            CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_HTTPHEADER => [$authenticationHeader],
+              CURLOPT_POSTFIELDS => http_build_query($params),
+              CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
 
       $data = @curl_exec(self::$ch_write);
@@ -164,11 +164,11 @@ final class WikipediaBot {
     }
 
     $response = $this->fetch([
-            'action' => 'query',
-            'prop' => 'info|revisions',
-            'rvprop' => 'timestamp',
-            'meta' => 'tokens',
-            'titles' => $page
+        'action' => 'query',
+        'prop' => 'info|revisions',
+        'rvprop' => 'timestamp',
+        'meta' => 'tokens',
+        'titles' => $page
     ]);
 
     $myPage = self::response2page($response);
@@ -287,10 +287,10 @@ final class WikipediaBot {
   public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
-      "cmtitle" => "Category:$cat", // Don't urlencode.
-      "action" => "query",
-      "cmlimit" => "500",
-      "list" => "categorymembers",
+        "cmtitle" => "Category:$cat", // Don't urlencode.
+        "action" => "query",
+        "cmlimit" => "500",
+        "list" => "categorymembers",
     ];
 
     do {
@@ -406,12 +406,12 @@ final class WikipediaBot {
 
   public static function ReadDetails(string $title) : object {
       $details = self::QueryAPI([
-            'action'=>'query',
-            'prop'=>'info',
-            'titles'=> $title,
-            'curtimestamp'=>'true',
-            'inprop' => 'protection',
-          ]);
+        'action'=>'query',
+        'prop'=>'info',
+        'titles'=> $title,
+        'curtimestamp'=>'true',
+       'inprop' => 'protection',
+      ]);
     return (object) @json_decode($details);
   }
 
@@ -437,11 +437,11 @@ final class WikipediaBot {
   public static function is_valid_user(string $user) : bool {
     if (!$user) return false;
     $query = [
-         "action" => "query",
-         "usprop" => "blockinfo",
-         "list" => "users",
-         "ususers" => $user,
-      ];
+       "action" => "query",
+       "usprop" => "blockinfo",
+       "list" => "users",
+       "ususers" => $user,
+    ];
     $response = self::QueryAPI($query);
     if (strpos($response, '"userid"')  === false) { // try again if weird
       sleep(5);

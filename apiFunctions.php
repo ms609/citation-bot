@@ -363,11 +363,12 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
 
   report_action("Expanding from BibCodes via AdsAbs API");
-  $curl_opts=[CURLOPT_URL => $adsabs_url,
-              CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-              CURLOPT_HEADER => true,
-              CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
+  $curl_opts=[
+      CURLOPT_URL => $adsabs_url,
+      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+      CURLOPT_HEADER => true,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
   $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
   if (!isset($response->docs)) return;
 
@@ -1034,12 +1035,13 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = bot_curl_exec($ch);
-        foreach (    ['~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                      '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
-                      '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
-                      '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~'] as $regex) {
+        foreach ([
+            '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+            '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
+            '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
+            '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+            '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
+            '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~'] as $regex) {
           set_time_limit(120); // Slow regex sometimes
           if ($raw_html && preg_match($regex, $raw_html, $match)) {
            set_time_limit(120);
@@ -1262,15 +1264,15 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
    static $ch = null;
    if ($ch === null) {
-      $ch = bot_curl_init(1.0,
-               [CURLOPT_POST => true,
-                CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
-               ]);
+      $ch = bot_curl_init(1.0, [
+                          CURLOPT_POST => true,
+                          CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
+                          ]);
    }
-   curl_setopt_array($ch,
-               [CURLOPT_URL => $url,
-                CURLOPT_POSTFIELDS => $post,
-               ]);
+   curl_setopt_array($ch, [
+                     CURLOPT_URL => $url,
+                     CURLOPT_POSTFIELDS => $post,
+                     ]);
    $output = bot_curl_exec($ch);
    $xml = @simplexml_load_string($output);
    if ($xml === false) $xml = null;
@@ -1375,9 +1377,10 @@ function query_adsabs(string $options) : object {
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
-    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-                CURLOPT_HEADER => true,
-                CURLOPT_URL => $adsabs_url];
+    $curl_opts=[
+        CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+        CURLOPT_HEADER => true,
+        CURLOPT_URL => $adsabs_url];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     return $response;
 }
