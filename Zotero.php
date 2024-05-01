@@ -28,16 +28,15 @@ public static function create_ch_zotero() : void {
   if ($is_setup) return;
   $is_setup = true;
   if (TRAVIS) {
-          $time = 3.0;
+    $time = 3.0;
   } else {
-          $time = 1.0; // @codeCoverageIgnore
+    $time = 1.0; // @codeCoverageIgnore
   }
-  self::$zotero_ch = bot_curl_init($time,
-         [CURLOPT_URL => CITOID_ZOTERO,
-          CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Cache-Control: no-cache, must-revalidate']]);
+  self::$zotero_ch = bot_curl_init($time, [
+     CURLOPT_URL => CITOID_ZOTERO,
+     CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Cache-Control: no-cache, must-revalidate']]);
 
-  self::$ch_ieee = bot_curl_init($time,
-         [CURLOPT_USERAGENT => 'curl']); // IEEE now requires JavaScript, unless you specify curl
+  self::$ch_ieee = bot_curl_init($time, [CURLOPT_USERAGENT => 'curl']); // IEEE requires JavaScript, unless curl is specified
 
   self::$ch_jstor = bot_curl_init($time, []);
 
