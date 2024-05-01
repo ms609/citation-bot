@@ -424,17 +424,6 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_DOI_LIST as $doi => $value) {
       if (isset(NULL_DOI_BUT_GOOD[$doi])) {
         $changes = $changes . "In Both: " . $doi . "        ";
-      }
-      // Deal with super common ones that flood the list
-      if (strpos($doi, '10.5353/th_') === 0 ||
-      strpos($doi, '10.1601/tx.') === 0 ||
-      strpos($doi, '10.1601/nm.') === 0 ||
-      strpos($doi, '10.1601/ex.') === 0) {
-        if (in_array($doi, ['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'], true)) {
-          $works = doi_works($doi);
-    } else {
-      $works = false;
-    }
       } elseif (isset(NULL_DOI_ANNOYING[$doi])) {
         $works = false;
       } else {
@@ -449,6 +438,15 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_DOI_ANNOYING as $doi => $value) {
       if (!isset(NULL_DOI_LIST[$doi])) {
         $changes = $changes . "Not in main null list: " . $doi . "       ";
+      }
+    }
+    // Deal with super common ones that flood the list
+    foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'] as $doi) {
+      $works = doi_works($doi);
+      if ($works === null) {
+        $changes = $changes . "Flagged as null: " . $doi . "       ";
+      } elseif ($works === true) {
+        $changes = $changes . "Flagged as good: " . $doi . "       ";
       }
     }
     $this->assertSame("", $changes);
