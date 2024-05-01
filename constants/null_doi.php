@@ -82,7 +82,7 @@ const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Las
 ];
 
 const NULL_DOI_STARTS_BAD = [
-    '10.1601/tx.'
+    '10.1601/tx.',
     '10.1601/nm.',
     '10.1601/ex.',
     '10.5353/th_',
