@@ -42,7 +42,7 @@ const HANDLES_HOSTS = [
 const HANDLES_PATHS = [
     '/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
     '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
-    ''/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
+    '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
     '/repository/bitstream/handle/', '/repository/handle/',
     '/tools/dspace/load/\?file=/repository/bitstream/handle/',
     '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
