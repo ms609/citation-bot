@@ -2,25 +2,34 @@
 declare(strict_types=1);
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const HAS_NO_VOLUME = ["zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
+const HAS_NO_VOLUME = [
+    "zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
     "international astronomical union circular", "yale french studies", "capjournal",
     "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
-    "european journal of taxonomy", "international journal of the sociology of language"];  // Some journals have issues only, no volume numbers
+    "european journal of taxonomy", "international journal of the sociology of language",
+    ];  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = ["special papers in palaeontology", "oceanic linguistics special publications",
-    "cahiers balkaniques", "res historica", "archaeological reports"];  // Some journals have volumes only, no issue numbers
+const HAS_NO_ISSUE = [
+    "special papers in palaeontology", "oceanic linguistics special publications",
+    "cahiers balkaniques", "res historica", "archaeological reports",
+    ];  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = ["illinois classical studies"]; // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = ["mammalian species", "bulletin of the united states national museum"];
 const CONFERENCE_LIST = ["Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference"];
-const BAD_ACCEPTED_MANUSCRIPT_TITLES = ["oup accepted manuscript", "placeholder for bad pdf file",
+const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
+    "oup accepted manuscript", "placeholder for bad pdf file",
     "placeholder", "symbolic placeholder", "[placeholder]",
-    "placeholder for arabic language transliteration", "article not found"];
-const BAD_AUTHORS = ["unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
+    "placeholder for arabic language transliteration", "article not found",
+    ];
+const BAD_AUTHORS = [
+    "unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
     "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
     "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais',
     "radio", "rundfunk", "news agencies" , "object", 'united states. interstate commerce commission',
-    "(:unav)"];
-const NON_HUMAN_AUTHORS = ['collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
+    "(:unav)",
+    ];
+const NON_HUMAN_AUTHORS = [
+    'collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
     'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
     'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
     'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
@@ -29,12 +38,14 @@ const NON_HUMAN_AUTHORS = ['collaborat', 'reporter', 'journalist', 'corresponden
     'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit', 'county',
     'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies',
     'european central', 'central bank', 'commission', 'interstate', 'commerce'];
-const BAD_PUBLISHERS = ['london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
+const BAD_PUBLISHERS = [
+    'london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
     'no publisher specified', 'unknown', 'publisher not identified', 'report'];
 
 const ARE_WORKS = ['medrxiv', 'ietf datatracker']; // Things with dois that should be {{cite document|work=THIS}}
 
-const PUBLISHERS_ARE_WORKS = ['the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
+const PUBLISHERS_ARE_WORKS = [
+    'the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
     'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
     'the star', 'washington post', 'the washington post', 'the tribune',
     'los angeles times', 'la times', 'the la times', 'htmlgiant', 'the los angeles times',
@@ -58,20 +69,23 @@ const PUBLISHERS_ARE_WORKS = ['the san diego union-tribune', 'forbes', 'salon', 
     'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
     'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
     'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
-    'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com'
+    'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com',
     // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????    'abc news', 'nbc news', 'cbs news', 'bbc news'
     ]; // LOWER CASE!  WWW not there too!
 
 const WORKS_ARE_PUBLISHERS = ['united states census bureau']; // LOWER CASE!
 
-const DUBIOUS_JOURNALS = ['oup academic', 'fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist',
+const DUBIOUS_JOURNALS = [
+    'oup academic', 'fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist',
     'national institute of standards and technology']; // Things we add, but only if publisher and agency are both blank
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
-const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
+const PUBLISHER_ENDINGS = [
+    "books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
     'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = ["unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
+const BAD_TITLES = [
+    "unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
     "ssrn electronic journal", "dissertations available from proquest",
     "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
     "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
@@ -88,17 +102,21 @@ const BAD_TITLES = ["unknown", "missing", "arxiv e-prints", "arxiv mathematics e
     "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
     "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
     "optica publishing group", "digital library - pdf document", "explore census data"];
-const IN_PRESS_ALIASES = ["in press", "inpress", "pending", "published",
+const IN_PRESS_ALIASES = [
+    "in press", "inpress", "pending", "published",
     "published online", "no-no", "n/a", "online ahead of print",
     "unpublished", "unknown", "tba", "forthcoming", "in the press",
     "na", "submitted", "tbd", "missing"];
-const NON_JOURNAL_BIBCODES = ['arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
+const NON_JOURNAL_BIBCODES = [
+    'arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
     'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
     'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.'];
-const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'google book',
+const NON_PUBLISHERS = [
+    'books.google', 'google books', 'google news', 'google.co', 'google book',
     'zenodo', 'archive.org', 'citeseerx.ist.psu.edu', 'archive.fo', 'archive.today',
     'hdl.handle.net', 'pub med', 'researchgate']; // Google Inc is a valid publisher, however.
-const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
+const BAD_ZOTERO_TITLES = [
+    'Browse publications', 'Central Authentication Service', 'http://', 'https://',
     'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
     ' Log In', 'Log In ', 'Sign in', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
     'domain for sale', 'website for sale', 'domain is for sale', 'website is for sale',
@@ -134,7 +152,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
     'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
     'bluehost.com', 'Validate User', 'Document unavailable', 'Preview unavailable' ];
 
-const CANONICAL_PUBLISHER_URLS = ['elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
+const CANONICAL_PUBLISHER_URLS = [
+    'elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
     'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
     'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
     'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
@@ -155,11 +174,13 @@ const CANONICAL_PUBLISHER_URLS = ['elsevier.com', 'springer.com', 'sciencedirect
     //  Below are sites that are simply DOI resolvers, like dx.doi.org
     'doi.library.ubc.ca'];
 
-const PROXY_HOSTS_TO_ALWAYS_DROP = ['proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+const PROXY_HOSTS_TO_ALWAYS_DROP = [
+    'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
     '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com',
     'journals.royalsociety.org', '.idm.oclc.org']; // Drop these if there is a valid DOI
 
-const PROXY_HOSTS_TO_DROP = ['proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+const PROXY_HOSTS_TO_DROP = [
+    'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
     '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
     'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
     'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
@@ -183,7 +204,8 @@ const WEB_NEWSPAPERS = [
 
 const HOSTS_TO_NOT_ADD  = ['this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org'];
 
-const HOSTNAME_MAP  = ['public.ebookcentral.proquest.com' => '[[ProQuest]]',
+const HOSTNAME_MAP  = [
+    'public.ebookcentral.proquest.com' => '[[ProQuest]]',
     'proquest.com' => '[[ProQuest]]',
     'search.proquest.com' => '[[ProQuest]]',
     'cnn.com' => '[[CNN]]',
@@ -412,7 +434,8 @@ const HOSTNAME_MAP  = ['public.ebookcentral.proquest.com' => '[[ProQuest]]',
     'theweek.in' => '[[The Week (Indian magazine)|The Week]]',
     ]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
-const NO_DATE_WEBSITES = ['wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
+const NO_DATE_WEBSITES = [
+    'wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
     'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
     'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
     'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
@@ -420,9 +443,11 @@ const NO_DATE_WEBSITES = ['wikipedia.org', 'web.archive.org', 'perma-archives.or
     'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
     'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
     'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com', 'officialcharts.com',
-    'ecb.europa.eu/stats', 'ballotbox.scot'];
+    'ecb.europa.eu/stats', 'ballotbox.scot',
+    ];
 
-const ZOTERO_AVOID_REGEX = ["twitter\.",    // This should be {{cite tweet}}
+const ZOTERO_AVOID_REGEX = [
+    "twitter\.",    // This should be {{cite tweet}}
     // Zotero seems to be doing better now "youtube\.", "youtu\.be",
     "books\.google\.",    // We have special google books code
     "google\.com/search",    // Google search results
@@ -485,7 +510,8 @@ const ZOTERO_AVOID_REGEX = ["twitter\.",    // This should be {{cite tweet}}
     "explore\.bl\.uk/primo_library", // Fails 100%
     "weblio\.jp/", // just scrapes other website like wiki and has bogus issue and volume numbers
     ];
-const NON_JOURNAL_WEBSITES = ['-news.co.uk/', '.ajc.com/', '.al.com/',
+const NON_JOURNAL_WEBSITES = [
+    '-news.co.uk/', '.ajc.com/', '.al.com/',
     '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
     '.google.com/', '.ign.com/', '.jd.com/', '.mic.com/', '.newsbank.com/',
     '.nj.com/', '.pbs.org/', '.qq.com/', '.rt.com/', '.svg.com/', '.time.com/',
