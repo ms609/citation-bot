@@ -41,14 +41,14 @@ final class Template {
   private bool $no_initial_doi = false;
   /** @var array<array<string>> $used_by_api **/
   private array $used_by_api = [
-			   'adsabs'   => [],
-			   'arxiv'    => [],
-			   'crossref' => [],
-			   'dx'       => [],
-			   'entrez'   => [],
-			   'jstor'    => [],
-			   'zotero'   => [],
-			];
+      'adsabs'   => [],
+      'arxiv'    => [],
+      'crossref' => [],
+      'dx'       => [],
+      'entrez'   => [],
+      'jstor'    => [],
+      'zotero'   => [],
+  ];
   /** @var array<Template> $this_array */
   private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
 
@@ -785,7 +785,7 @@ final class Template {
 		$this->tidy();
 		// Fix up URLs hiding in identifiers
 		foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr',
-				  'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
+                 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
 		  if ($this->has($possible)) {
 			 $url = $this->get($possible);
 			 if (stripos($url, 'CITATION_BOT') === false &&
@@ -1045,7 +1045,7 @@ final class Template {
 		if (stripos($this->get('doi'), '10.1093/gmo') !== false) return false;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return false; // Existing incompatible data
 		if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
-						  'editor-last' . $match[1], 'editor-first' . $match[1]])) {
+            'editor-last' . $match[1], 'editor-first' . $match[1]])) {
 		  return $this->add($param_name, clean_up_full_names($value));
 		}
 		return false;
@@ -1988,14 +1988,14 @@ final class Template {
 	report_action("Checking CrossRef database for doi. ");
 	$page_range = $this->page_range();
 	$data = [
-	  'title'      => de_wikify($this->get('title')),
-	  'journal'    => de_wikify($this->get('journal')),
-	  'author'     => $this->first_surname(),
-	  'year'       => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
-	  'volume'     => $this->get('volume'),
-	  'start_page' => isset($page_range[1]) ? $page_range[1] : null,
-	  'end_page'   => isset($page_range[2]) ? $page_range[2] : null,
-	  'issn'       => $this->get('issn')
+		'title'      => de_wikify($this->get('title')),
+		'journal'    => de_wikify($this->get('journal')),
+		'author'     => $this->first_surname(),
+		'year'       => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
+		'volume'     => $this->get('volume'),
+		'start_page' => isset($page_range[1]) ? $page_range[1] : null,
+		'end_page'   => isset($page_range[2]) ? $page_range[2] : null,
+		'issn'       => $this->get('issn')
 	];
 
 	if ($data['year'] < 1900 || $data['year'] > ((int) date("Y") + 3)) {
@@ -3713,11 +3713,11 @@ final class Template {
 	) {
 	  if ($new_name === 'cite arxiv') {
 		if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate',
-						   'translator', 'translator1','translator1-first', 'translator1-given',
-						   'translator1-last','translator1-surname', 'translator-first',
-						   'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
-						   'translator-last1','translator-surname', 'translator-surname1',
-						   'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
+			'translator', 'translator1','translator1-first', 'translator1-given',
+			'translator1-last','translator1-surname', 'translator-first',
+			'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
+			'translator-last1','translator-surname', 'translator-surname1',
+			'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
 		$new_name = 'cite arXiv';  // Without the capital X is the alias
 	  }
 	  if (stripos($this->name, '#invoke:') !== false) {
