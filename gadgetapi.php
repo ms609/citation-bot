@@ -45,10 +45,8 @@ try {
    * @psalm-taint-escape html
    * @psalm-taint-escape has_quotes
    */
- $result = [
-   'expandedtext' => $newText,
-   'editsummary' => $editSummary
- ];
+ $result = ['expandedtext' => $newText, 'editsummary' => $editSummary];
+ 
  unset($newText, $editSummary);
  ob_end_clean();
 
