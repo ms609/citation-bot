@@ -609,7 +609,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     "مسار" => "url",
     "مسار أرشيف" => "archive-url",
     "path" => "url",
-    "titl" => "title",  
+    "titl" => "title",
+    "archive path" => "archive-url",
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
