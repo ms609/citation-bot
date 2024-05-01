@@ -9,13 +9,14 @@ final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 100000;
   public const MAX_HDL_SIZE = 1024;
-  private const BAD_DOI_ARRAY = ['10.1126/science' => true,
-        '' => true,
-        '10.7556/jaoa' => true,
-        '10.1267/science.040579197' => true,
-        '10.0000/Rubbish_bot_failure_test' => true,
-        '10.0000/Rubbish_bot_failure_test2' => true,
-        '10.0000/Rubbish_bot_failure_test.x' => true];
+  private const BAD_DOI_ARRAY = [
+      '10.1126/science' => true,
+      '' => true,
+      '10.7556/jaoa' => true,
+      '10.1267/science.040579197' => true,
+      '10.0000/Rubbish_bot_failure_test' => true,
+      '10.0000/Rubbish_bot_failure_test2' => true,
+      '10.0000/Rubbish_bot_failure_test.x' => true];
 
   /** @var array<bool> $cache_active */
   public static array $cache_active = [];        // DOI is in CrossRef and works
@@ -1201,9 +1202,9 @@ function prior_parameters(string $par, array $list=[] ) : array {
         return prior_parameters('url', $list);
     case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date':
         return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
-        'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
-        'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-        'transcripturl', 'URL'],$list));
+            'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
+            'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
+            'transcripturl', 'URL'],$list));
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
@@ -2534,8 +2535,8 @@ function get_headers_array(string $url) : false|array {
   static $context_insecure;
   if (!isset($context_insecure)) {
     $context_insecure = stream_context_create([
-      'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
-      'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
+        'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+        'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
   }
   set_time_limit(120);
   if ($last_url === $url) {
