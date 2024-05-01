@@ -600,6 +600,16 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     "çalıwebsite" => "website",
     "deaadurl" => "deadurl",
     "аrchiveurl" => "archive-url",
+    "cognom" => "last",
+    "consulta" => "access-date",
+    "nom" => "first",
+    "publicació" => "work",
+    "pàgines" => "pages",
+    "تاريخ أرشيف" => "archive-date",
+    "مسار" => "url",
+    "مسار أرشيف" => "archive-url",
+    "path" => "url",
+    "titl" => "title",  
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
