@@ -146,14 +146,24 @@ class Page {
     set_time_limit(120);
     switch ($identifier) {
       case 'pmid':
-      case 'pmc':     $api = 'entrez';   break;
-      case 'bibcode': $api = 'adsabs';   break;
-      case 'doi':     $api = 'crossref'; break;
-      case 'url':     $api = 'zotero';   break;
-      case 'jstor':   $api = 'jstor';    break;
+      case 'pmc':
+        $api = 'entrez';
+        break;
+      case 'bibcode':
+        $api = 'adsabs';
+        break;
+      case 'doi':
+        $api = 'crossref';
+        break;
+      case 'url':
+        $api = 'zotero';
+        break;
+      case 'jstor':
+        $api = 'jstor';
+        break;
       default:
-          $api = $identifier;
-          report_error('expand_templates_from_identifier got: ' . $api);
+        $api = $identifier;
+        report_error('expand_templates_from_identifier got: ' . $api);
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, true)) {
@@ -740,7 +750,7 @@ class Page {
         /** @var non-empty-string $separator */
         $separator = $match[0];
         $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
-        unset($separator, $text, $match);    
+        unset($separator, $text, $match);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         unset($exploded);
         $objects[] = $obj;

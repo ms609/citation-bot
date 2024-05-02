@@ -75,7 +75,7 @@ final class AdsAbsControl {
       self::$bib2doi = [];
       gc_collect_cycles();
   }
-        
+
 }
 
 /**
@@ -221,14 +221,14 @@ function expand_arxiv_templates (array &$templates) : void {  // Pointer to save
 function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save memory
   static $ch = null;
   if ($ch === null) {
-      $ch = bot_curl_init(1.0, []);     
+      $ch = bot_curl_init(1.0, []);
   }
   set_time_limit(120);
   if (count($ids) === 0) return;
   report_action("Getting data from arXiv API");
   /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
-  curl_setopt($ch, CURLOPT_URL, $request);                                                
+  curl_setopt($ch, CURLOPT_URL, $request);
   $response = bot_curl_exec($ch);
   if ($response) {
     $xml = @simplexml_load_string(
@@ -671,7 +671,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        }
        if ($data == '') return;
        $template->add_if_new($name, (string) $data, 'dx');
-       return; 
+       return;
      };
      if (!$doi) return;
      /** @psalm-taint-escape ssrf */
