@@ -269,7 +269,6 @@ const NULL_DOI_LIST = /** Double check before removing - for example, these are 
     '10.12744/ijnpt.2017.1.0025-0040' => true,
     '10.12788/ajo.2018.0018' => true,
     '10.12970/2311-1755.2015.03.02.2' => true, // spam
-    '10.13053/cys-27-2-4418' => true,
     '10.1308/003588405X71054' => true, // page not found
     '10.13176/11.106' => true,
     '10.13176/11.54' => true,
@@ -823,6 +822,7 @@ const NULL_DOI_BUT_GOOD = [ // TODO - these need to be manually double checked o
  // You can use hdl.handle.org to show you the final url - russia and other countries firewall
  // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
  /** ========================================================================================================================================================================== **/
+    '10.13053/cys-27-2-4418' => true,
     '10.19088/K4D.2022.060' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
