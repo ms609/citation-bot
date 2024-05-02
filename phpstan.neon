@@ -1,17 +1,17 @@
 parameters:
-	level: 6
-	dynamicConstantNames:
-		- HTML_OUTPUT
-		- SLOW_MODE
-		- FLUSHING_OKAY
-		- TRAVIS
-		- EDIT_AS_USER
-		- BIG_JOB_MODE
-		- MAX_TRIES
-		- MAX_PAGES
-		- WIKI_ROOT
-		- API_ROOT
-		- NLM_LOGIN
-		- SAVETOFILES_MODE
-		- BOT_USER_AGENT
+    level: 6
+    dynamicConstantNames:
+        - HTML_OUTPUT
+        - SLOW_MODE
+        - FLUSHING_OKAY
+        - TRAVIS
+        - EDIT_AS_USER
+        - BIG_JOB_MODE
+        - MAX_TRIES
+        - MAX_PAGES
+        - WIKI_ROOT
+        - API_ROOT
+        - NLM_LOGIN
+        - SAVETOFILES_MODE
+        - BOT_USER_AGENT
 
