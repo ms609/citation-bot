@@ -28,7 +28,7 @@ const MML_TAGS = [
     '<mtable>' => '\matrix{%BLOCKS%}',
     '<mtr>' => '%BLOCKS%\cr',
     '<mtd>' => '%BLOCK1%&',*/
-         
+
     '&dot;' => '\cdot',
     '&middot;' => '\cdot',
     '&times;' => '\times',
@@ -40,7 +40,7 @@ const MML_TAGS = [
     '&lt;' => '<',
     '&gt;' => '>',
     '&InvisibleTimes;' => '',
-         
+
     // Pfeile
     '&harr;' => '\leftrightarrow',
     '&larr;' => '\leftarrow',
@@ -48,10 +48,10 @@ const MML_TAGS = [
     '&hArr;' => '\Leftrightarrow',
     '&lArr;' => '\Leftarrow',
     '&rArr;' => '\Rightarrow',
-         
+
     // dynamische Zeichen
     '&dd;' => 'd',
-         
+
     // griechisches Alphabet
     '&alpha;' => '\alpha',
     '&beta;' => '\beta',
