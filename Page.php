@@ -740,7 +740,7 @@ class Page {
         /** @var non-empty-string $separator */
         $separator = $match[0];
         $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
-        unset($separator, $text, $match);    
+        unset($separator, $text, $match);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         unset($exploded);
         $objects[] = $obj;
