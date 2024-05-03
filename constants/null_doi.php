@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
-[
+// TODO - manually check these from time to time - Last Check 10 MAR 2024
+const NULL_DOI_ANNOYING = [
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1080/10798587.2007.10642974' => true, // Spam
     '10.1139/gen-41-4-543' => true, // Journal in general
@@ -89,8 +89,8 @@ const NULL_DOI_STARTS_BAD = [
     '10.5353/th_',
 ];
 
-const NULL_DOI_LIST = /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/ /** ===================================================================================== **/
-[
+ /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
+const NULL_DOI_LIST = [
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1007/978-3-7643-8140-0_245' => true,
     '10.1007/BF00162691' => true,
@@ -816,11 +816,12 @@ const NULL_DOI_LIST = /** Double check before removing - for example, these are 
     '10.9775/kvfd.2014.12722' => true,
 ];
 
-const NULL_DOI_BUT_GOOD = [ // TODO - these need to be manually double checked once in a great while.
  // Note that a failed url on one computer does not mean it is gone, it might just be you
  // You can use hdl.handle.org to show you the final url - russia and other countries firewall
  // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
- /** ========================================================================================================================================================================== **/
+ /** ========================================================================================================================================================================== */
+ // TODO - these need to be manually double checked once in a great while.
+const NULL_DOI_BUT_GOOD = [
     '10.31096/wua033-pls90b070' => true,
     '10.13053/cys-27-2-4418' => true,
     '10.19088/K4D.2022.060' => true,
