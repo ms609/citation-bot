@@ -21,13 +21,13 @@ final class HandleCache {
   /** @var array<bool> $cache_active */
   public static array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<bool> $cache_inactive */
-  public static array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
+  public static array $cache_inactive = [];     // DOI either is not in CrossRef or does not work
   /** @var array<bool> $cache_good */
   public static array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
   public static array $cache_hdl_loc = [];       // Final HDL location URL
   /** @var array<bool> $cache_hdl_bad */
-  public static array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
+  public static array $cache_hdl_bad = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
   /** @var array<bool> $cache_hdl_null */
   public static array $cache_hdl_null = [];      // HDL/DOI resolves to null
 
@@ -44,10 +44,10 @@ final class HandleCache {
   }
   public static function free_memory() : void {
       self::$cache_active = [];
-      self::$cache_inactive  = [];
+      self::$cache_inactive = [];
       self::$cache_good = [];
       self::$cache_hdl_loc = [];
-      self::$cache_hdl_bad  = self::BAD_DOI_ARRAY;
+      self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
       self::$cache_hdl_null = [];
       gc_collect_cycles();
   }
@@ -432,7 +432,7 @@ function wikify_external_text(string $title) : string {
   $title = safe_preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, true);
 
-  $htmlBraces  = ["&lt;", "&gt;"];
+  $htmlBraces = ["&lt;", "&gt;"];
   $angleBraces = ["<", ">"];
   $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
@@ -639,9 +639,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
     $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
           "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
           "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
-    $inTitle  = str_replace($drops, "", $inTitle);
+    $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
-    $dbTitle  = str_replace($drops, "", $dbTitle);
+    $dbTitle = str_replace($drops, "", $dbTitle);
   // This will convert &delta into delta
     return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
           ? (strlen($inTitle) !== strlen($dbTitle)
@@ -898,14 +898,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
     $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
-    $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
+    $replace = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
     $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
   }
 
   // 42th, 33rd, 1st, ...
   if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
     $replace_me = $matches[0];
-    $replace    = strtolower($matches[0]);
+    $replace = strtolower($matches[0]);
     $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
   }
 
@@ -1532,7 +1532,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url) : string {
-   $in  = [' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}'];
+   $in = [' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}'];
    $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
    return str_replace($in, $out, $url);
 }
@@ -1636,19 +1636,72 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             break;
           case "id":
             break; // Don't "remove redundant"
-          case "as": case "useragent": case "as_brr": case "hl":
-          case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
-          case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
-          case "sa": case "oi": case "ct": case "client": case "redir_esc":
-          case "callback": case "jscmd": case "bibkeys": case "newbks": case "gbpv":
-          case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
-          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is": case "pccc":
-          case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
-          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
-          case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
-          case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
-          case "as_drrb_is": case "sourceid": case "btnG": case "rls": case "ov2":
-          case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
+          // These all go away
+          case "ei":
+          case "ots":
+          case "sig":
+          case "source":
+          case "lr":
+          case "ved":
+          case "gs_lcp":
+          case "sxsrf":
+          case "gfe_rd":
+          case "gws_rd":
+          case "sa":
+          case "oi":
+          case "ct":
+          case "client":
+          case "redir_esc":
+          case "callback":
+          case "jscmd":
+          case "bibkeys":
+          case "newbks":
+          case "gbpv":
+          case "newbks_redir":
+          case "resnum":
+          case "ci":
+          case "surl":
+          case "safe":
+          case "as_maxm_is":
+          case "as_maxy_is":
+          case "f":
+          case "as_minm_is":
+          case "pccc":
+          case "as_miny_is":
+          case "authuser":
+          case "cad":
+          case "focus":
+          case "pjf":
+          case "gl":
+          case "ovdme":
+          case "sqi":
+          case "w":
+          case "rview":
+          case "":
+          case "kptab":
+          case "pgis":
+          case "ppis":
+          case "output":
+          case "gboemv":
+          case "ie":
+          case "nbsp;":
+          case "fbclid":
+          case "num":
+          case "oe":
+          case "pli":
+          case "prev":
+          case "vid":
+          case "view":
+          case "as_drrb_is":
+          case "sourceid":
+          case "btnG":
+          case "rls":
+          case "ov2":
+          case "buy":
+          case "edge":
+          case "zoom":
+          case "img":
+          case "as_pt":
             $removed_parts .= $part;
             $removed_redundant++;
             break;
@@ -1672,7 +1725,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
             $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
-            $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
+            $dum_q = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
             if ($dum_dq !== $dum_q) {
               $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
               unset($book_array['dq']);
@@ -2610,26 +2663,96 @@ function simplify_google_search(string $url) : string {
        $it_is_blank = false;
      }
      switch ($part_start0) {
-       case "aq": case "aqi": case "bih": case "biw": case "client":
-       case "as": case "useragent": case "as_brr":
-       case "ei": case "ots": case "sig": case "source": case "lr":
-       case "sa": case "oi": case "ct": case "id":  case "cd":
-       case "oq": case "rls": case "sourceid": case "ved":
-       case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
-       case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
-       case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-       case "prmd": case "dpr": case "newwindow": case "gs_ssp":
-       case "spell": case "shndl": case "sugexp": case "donotaddmeback":
-       case "usg": case "fir": case "entrypoint": case "as_qdr":
-       case "as_drrb": case "as_minm":  case "as_mind": case "as_maxm":
-       case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
-       case "iflsig": case "tab": case "sqi": case "noj":
-       case "hs": case "es_sm": case "site": case "btnmeta_news_search":
-       case "channel": case "espv": case "cad": case "gs_sm":
-       case "imgil": case "ins": case "npsic=": case "rflfq": case "lei":
-       case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
-       case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-       case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
+       // Stuff that gets dropped
+       case "aq":
+       case "aqi":
+       case "bih":
+       case "biw":
+       case "client":
+       case "as":
+       case "useragent":
+       case "as_brr":
+       case "ei":
+       case "ots":
+       case "sig":
+       case "source":
+       case "lr":
+       case "sa":
+       case "oi":
+       case "ct":
+       case "id":
+       case "cd":
+       case "oq":
+       case "rls":
+       case "sourceid":
+       case "ved":
+       case "aqs":
+       case "gs_l":
+       case "uact":
+       case "tbo":
+       case "tbs":
+       case "num":
+       case "redir_esc":
+       case "gs_lcp":
+       case "sxsrf":
+       case "gfe_rd":
+       case "gws_rd":
+       case "rlz":
+       case "sclient":
+       case "prmd":
+       case "dpr":
+       case "newwindow":
+       case "gs_ssp":
+       case "spell":
+       case "shndl":
+       case "sugexp":
+       case "donotaddmeback":
+       case "usg":
+       case "fir":
+       case "entrypoint":
+       case "as_qdr":
+       case "as_drrb":
+       case "as_minm":
+        case "as_mind":
+       case "as_maxm":
+       case "as_maxd":
+       case "kgs":
+       case "ictx":
+       case "shem":
+       case "vet":
+       case "iflsig":
+       case "tab":
+       case "sqi":
+       case "noj":
+       case "hs":
+       case "es_sm":
+       case "site":
+       case "btnmeta_news_search":
+       case "channel":
+       case "espv":
+       case "cad":
+       case "gs_sm":
+       case "imgil":
+       case "ins":
+       case "npsic=":
+       case "rflfq":
+       case "lei":
+       case "rlha":
+       case "rldoc":
+       case "rldimm":
+       case "npsic":
+       case "phdesc":
+       case "prmdo":
+       case "ssui":
+       case "lqi":
+       case "rlst":
+       case "pf":
+       case "authuser":
+       case "gsas":
+       case "ned":
+       case "pz":
+       case "e":
+       case "surl":
        case "aql":
           break;
        case "as_occt":
