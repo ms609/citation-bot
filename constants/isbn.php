@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-/** https://en.wikipedia.org/wiki/Module:Format_ISBN/data **/
+/** https://en.wikipedia.org/wiki/Module:Format_ISBN/data */
 
 const ISBN_HYPHEN_POS = [  //  RangeMessage timestamp: 2024-04-02T05:38:23 BST
     '9780199999999' => [1, 2, 6],    //  English language

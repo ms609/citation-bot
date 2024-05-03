@@ -8,7 +8,8 @@ require_once 'constants.php';    // @codeCoverageIgnore
  * Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
-/** @return array<string> dsfasfa*/
+
+/** @return array<string> */
 function junior_test(string $name) : array {
   $junior = substr($name, -3) === " Jr" ?" Jr" : "";
   if ($junior) {
