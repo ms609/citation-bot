@@ -7,12 +7,12 @@ const HAS_NO_VOLUME = [
     "international astronomical union circular", "yale french studies", "capjournal",
     "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
     "european journal of taxonomy", "international journal of the sociology of language",
-    ];  // Some journals have issues only, no volume numbers
+];  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
 const HAS_NO_ISSUE = [
     "special papers in palaeontology", "oceanic linguistics special publications",
     "cahiers balkaniques", "res historica", "archaeological reports",
-    ];  // Some journals have volumes only, no issue numbers
+];  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = ["illinois classical studies"]; // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = ["mammalian species", "bulletin of the united states national museum"];
 const CONFERENCE_LIST = ["Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference"];
@@ -20,14 +20,14 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     "oup accepted manuscript", "placeholder for bad pdf file",
     "placeholder", "symbolic placeholder", "[placeholder]",
     "placeholder for arabic language transliteration", "article not found",
-    ];
+];
 const BAD_AUTHORS = [
     "unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
     "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
     "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais',
     "radio", "rundfunk", "news agencies" , "object", 'united states. interstate commerce commission',
     "(:unav)",
-    ];
+];
 const NON_HUMAN_AUTHORS = [
     'collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
     'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
@@ -71,7 +71,7 @@ const PUBLISHERS_ARE_WORKS = [
     'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
     'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com',
     // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????    'abc news', 'nbc news', 'cbs news', 'bbc news'
-    ]; // LOWER CASE!  WWW not there too!
+]; // LOWER CASE!  WWW not there too!
 
 const WORKS_ARE_PUBLISHERS = ['united states census bureau']; // LOWER CASE!
 
@@ -82,26 +82,26 @@ const DUBIOUS_JOURNALS = [
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = [
-    "books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
-    'museum', "press", "publishers", "publishing", 'science'];
+    'books', 'corporation', 'centre', 'center', 'company', 'inc.', 'inc', 'magazines',
+    'museum', 'press', 'publishers', 'publishing', 'science'];
 const BAD_TITLES = [
-    "unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
-    "ssrn electronic journal", "dissertations available from proquest",
-    "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
-    "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
-    "shibboleth authentication request", "nookmarkable url intermediate page",
-    "google books", "rte.ie", "loading", "google book", "just a moment",
-    "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
-    "openid transaction in progress", 'download limit exceeded', 'privacy settings',
-    "untitled-1", "untitled-2", "professional paper", "zbmath", 'economics working paper archive',
-    "theses and dissertations available from proquest", "proquest ebook central", "report",
-    "bloomberg - are you a robot?", "page not found", "free live sex cams",
-    "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
-    "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
-    "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
-    "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
-    "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
-    "optica publishing group", "digital library - pdf document", "explore census data"];
+    'unknown', 'missing', 'arxiv e-prints', 'arxiv mathematics e-prints',
+    'ssrn electronic journal', 'dissertations available from proquest',
+    'ebscohost login',  'library login', 'google groups', 'sciencedirect', 'cur_title',
+    'wordpress › error', 'ssrn temporarily unavailable', 'log in - proquest',
+    'shibboleth authentication request', 'nookmarkable url intermediate page',
+    'google books', 'rte.ie', 'loading', 'google book', 'just a moment',
+    'the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.',
+    'openid transaction in progress', 'download limit exceeded', 'privacy settings',
+    'untitled-1', 'untitled-2', 'professional paper', 'zbmath', 'economics working paper archive',
+    'theses and dissertations available from proquest', 'proquest ebook central', 'report',
+    'bloomberg - are you a robot?', 'page not found', 'free live sex cams',
+    'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
+    'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
+    'redirect notice', 'oxford music online', 'trove - archived webpage', 'pagina inicia',
+    '404 not found', '404页面', 'sign up ', 'index of /home', 'usa today - today\'s breaking news, us & world news',
+    '403 unauthorized', '404错误', 'internal server error', 'error', '404', 'error - lexisnexis® publisher',
+    'optica publishing group', 'digital library - pdf document', 'explore census data'];
 const IN_PRESS_ALIASES = [
     "in press", "inpress", "pending", "published",
     "published online", "no-no", "n/a", "online ahead of print",
@@ -447,69 +447,69 @@ const NO_DATE_WEBSITES = [
     ];
 
 const ZOTERO_AVOID_REGEX = [
-    "twitter\.",    // This should be {{cite tweet}}
-    // Zotero seems to be doing better now "youtube\.", "youtu\.be",
-    "books\.google\.",    // We have special google books code
-    "google\.com/search",    // Google search results
-    "jstor\.org/stable/",    // We have special jstor code
-    "ned\.ipac\.caltech\.edu", // Gives no real title
-    "pep\-web\.org",    // Does not parse very well at all
-    "ezproxy", "arkive\.org", "bloomberg\.com/tosv2.html",  // Junk
-    "worldcat\.org",    // Should use parameters and google instead
-    "kyobobook\.co\.kr",    // Bookstore that give junk
-    "facebook\.com",    // login and junk
-    "leighrayment\.com",    // highjacked
-    "seapower\-digital\.com",  // highjacked
-    "scholarlycommons\.pacific\.edu\/euler\-works", // returns journal reference to works, not the actual work
-    "miar\.ub\.edu\/issn", // ISSN description, not actually the journal
-    "britishnewspaperarchive\.co\.uk", // Requires registration
-    "pressreader\.com", // Bad titles
-    "ebooks\.adelaide\.edu\.au", // Dead
-    "tnmaps\.tn\.nic\.in", // maps
-    "lincstothepast\.com",
-    "elonet\.finna\.fi", // Zotero cannot handle this data-base well at all
-    "washingtonpost\.com", // Fails 100%
-    "cagematch\.net", // Fails 100%
-    "www\.cbc\.ca", // Fails 100%
-    "www\.emporis\.com", // Fails 100%
-    "usnews\.com", // Fails 100%
-    "www\.ascap\.com", // Fails 100%
-    "www\.thefutoncritic\.com", // Fails 100%
-    "www\.bom\.gov\.au", // Fails 100%
-    "www\.dailytelegraph\.com\.au", // Fails 100%
-    "www\.pwinsider\.com", // Fails 100%
-    "www\.wrecksite\.eu", // Fails 100%
-    "www\.heraldsun\.com\.au", // Fails 100%
-    "www\.neighbourhood\.statistics\.gov\.uk", // Fails 100%
-    "www\.playbill\.com", // Fails 100%
-    "olympics\.com", // Fails 100%
-    "www\.legislation\.gov\.uk", // Fails 100%
-    "stats\.espncricinfo\.com", // Fails 100%
-    "www\.almasdarnews\.com", // Fails 100%
-    "www\.encyclopedia\.com", // Fails 100%
-    "swedishcharts\.com", // Fails 100%
-    "www\.teamusa\.org", // Fails 100%
-    "www\.couriermail\.com\.au", // Fails 100%
-    "www\.faa\.gov", // Fails 100%
-    "www\.hockeydb\.com", // Fails 100%
-    "info\.hazu\.hr", // Fails 100%
-    "australian-charts\.com", // Fails 100%
-    "startribune\.newspapers\.com", // Fails 100%
-    "www\.olympic\.org", // Fails 100%
-    "www\.billboard-japan\.com", // Fails 100%
-    "www\.censusindia\.gov\.in", // Fails 100%
-    "censusindia\.gov\.in", // Fails 100%
-    "charts\.nz", // Fails 100%
-    "radiomap\.eu", // Fails 100%
-    "www\.virtualwall\.org", // Fails 100%
-    "steubencourier\.com", // USA Today highjakced
-    "biodiversity\.org\.au", // Zotero gives bad data
-    "timea\.rice\.edu", // gone
-    "findarticles\.com", // Gone
-    "myprivacy\.dpgmedia\.nl", // blocker
-    "explore\.bl\.uk/primo_library", // Fails 100%
-    "weblio\.jp/", // just scrapes other website like wiki and has bogus issue and volume numbers
-    ];
+    'twitter\.',    // This should be {{cite tweet}}
+    // Zotero seems to be doing better now 'youtube\.', 'youtu\.be',
+    'books\.google\.',    // We have special google books code
+    'google\.com/search',    // Google search results
+    'jstor\.org/stable/',    // We have special jstor code
+    'ned\.ipac\.caltech\.edu', // Gives no real title
+    'pep\-web\.org',    // Does not parse very well at all
+    'ezproxy', 'arkive\.org', 'bloomberg\.com/tosv2.html',  // Junk
+    'worldcat\.org',    // Should use parameters and google instead
+    'kyobobook\.co\.kr',    // Bookstore that give junk
+    'facebook\.com',    // login and junk
+    'leighrayment\.com',    // highjacked
+    'seapower\-digital\.com',  // highjacked
+    'scholarlycommons\.pacific\.edu\/euler\-works', // returns journal reference to works, not the actual work
+    'miar\.ub\.edu\/issn', // ISSN description, not actually the journal
+    'britishnewspaperarchive\.co\.uk', // Requires registration
+    'pressreader\.com', // Bad titles
+    'ebooks\.adelaide\.edu\.au', // Dead
+    'tnmaps\.tn\.nic\.in', // maps
+    'lincstothepast\.com',
+    'elonet\.finna\.fi', // Zotero cannot handle this data-base well at all
+    'washingtonpost\.com', // Fails 100%
+    'cagematch\.net', // Fails 100%
+    'www\.cbc\.ca', // Fails 100%
+    'www\.emporis\.com', // Fails 100%
+    'usnews\.com', // Fails 100%
+    'www\.ascap\.com', // Fails 100%
+    'www\.thefutoncritic\.com', // Fails 100%
+    'www\.bom\.gov\.au', // Fails 100%
+    'www\.dailytelegraph\.com\.au', // Fails 100%
+    'www\.pwinsider\.com', // Fails 100%
+    'www\.wrecksite\.eu', // Fails 100%
+    'www\.heraldsun\.com\.au', // Fails 100%
+    'www\.neighbourhood\.statistics\.gov\.uk', // Fails 100%
+    'www\.playbill\.com', // Fails 100%
+    'olympics\.com', // Fails 100%
+    'www\.legislation\.gov\.uk', // Fails 100%
+    'stats\.espncricinfo\.com', // Fails 100%
+    'www\.almasdarnews\.com', // Fails 100%
+    'www\.encyclopedia\.com', // Fails 100%
+    'swedishcharts\.com', // Fails 100%
+    'www\.teamusa\.org', // Fails 100%
+    'www\.couriermail\.com\.au', // Fails 100%
+    'www\.faa\.gov', // Fails 100%
+    'www\.hockeydb\.com', // Fails 100%
+    'info\.hazu\.hr', // Fails 100%
+    'australian-charts\.com', // Fails 100%
+    'startribune\.newspapers\.com', // Fails 100%
+    'www\.olympic\.org', // Fails 100%
+    'www\.billboard-japan\.com', // Fails 100%
+    'www\.censusindia\.gov\.in', // Fails 100%
+    'censusindia\.gov\.in', // Fails 100%
+    'charts\.nz', // Fails 100%
+    'radiomap\.eu', // Fails 100%
+    'www\.virtualwall\.org', // Fails 100%
+    'steubencourier\.com', // USA Today highjakced
+    'biodiversity\.org\.au', // Zotero gives bad data
+    'timea\.rice\.edu', // gone
+    'findarticles\.com', // Gone
+    'myprivacy\.dpgmedia\.nl', // blocker
+    'explore\.bl\.uk/primo_library', // Fails 100%
+    'weblio\.jp/', // just scrapes other website like wiki and has bogus issue and volume numbers
+];
 const NON_JOURNAL_WEBSITES = [
     '-news.co.uk/', '.ajc.com/', '.al.com/',
     '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
@@ -972,29 +972,29 @@ const JOURNAL_IS_BOOK_SERIES = [
     'advances in anatomy embryology and cell biology',
     'adv anat embryol cell biol',
     'handbook of the birds of the world'
-    ];
+];
 
 const ALWAYS_BAD_TITLES = [
-    "Bloomberg - Are you a robot?",
-    "Page not found",
-    "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
-    "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
-    "Register &#124; British Newspaper Archive",
-    "PressReader.com - Your favorite newspapers and magazines.",
-    "PressReader.com - Your favorite newspapers and magazines",
-    "PressReader.com - Connecting People Through News",
-    "PressReader.com - Connecting People Through News.",
-    "PressReader.com – Your favorite newspapers and magazines.",
-    "PressReader.com – Your favorite newspapers and magazines",
-    "PressReader.com – Connecting People Through News",
-    "PressReader.com – Connecting People Through News.",
-    "PressReader.com - Digital Newspaper & Magazine Subscriptions",
-    "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
-    "PressReader.com – Digital Newspaper & Magazine Subscriptions",
-    "How to access research remotely",
-    "Log In - ProQuest",
-    "DPG Media Privacy Gate",
-    ];
+    'Bloomberg - Are you a robot?',
+    'Page not found',
+    'Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews',
+    'Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com',
+    'Register &#124; British Newspaper Archive',
+    'PressReader.com - Your favorite newspapers and magazines.',
+    'PressReader.com - Your favorite newspapers and magazines',
+    'PressReader.com - Connecting People Through News',
+    'PressReader.com - Connecting People Through News.',
+    'PressReader.com – Your favorite newspapers and magazines.',
+    'PressReader.com – Your favorite newspapers and magazines',
+    'PressReader.com – Connecting People Through News',
+    'PressReader.com – Connecting People Through News.',
+    'PressReader.com - Digital Newspaper & Magazine Subscriptions',
+    'PressReader.com - Digital Newspaper & Magazine Subscriptions.',
+    'PressReader.com – Digital Newspaper & Magazine Subscriptions',
+    'How to access research remotely',
+    'Log In - ProQuest',
+    'DPG Media Privacy Gate',
+];
 
 const DOI_FREE_PREFIX = ['10.1100/', '10.11131/', '10.11569/', '10.11647/', '10.11648/', '10.1186/', '10.12688/',
     '10.12703/', '10.12715/', '10.12998/', '10.13105/', '10.1371/', '10.14293/', '10.14303/', '10.15215/',
@@ -1016,4 +1016,3 @@ const DOI_FREE_PREFIX = ['10.1100/', '10.11131/', '10.11569/', '10.11647/', '10.
     '10.1210/jendso', '10.4249/', '10.5210/', '10.3847/', '10.22323/', '10.15347/', '10.1074/', '10.1194/',
     '10.7759/cureus.', '10.1099/acmi', '10.1099/mic', '10.1099/00221287', '10.1099/mgen', '10.1045/',
     '10.1096/', '10.1016/j.heliyon'];
-
