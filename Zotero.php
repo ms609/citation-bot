@@ -10,7 +10,7 @@ const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero
 /**
   @param array<string> $_ids
   @param array<Template> $templates
-**/
+*/
 function query_url_api(array $_ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($templates);
 }
@@ -60,7 +60,7 @@ public static function unblock_zotero() : void {
 
 /**
   @param array<Template> $templates
-**/
+*/
 public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
   foreach ($templates as $template) {
    if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
@@ -114,7 +114,7 @@ public static function query_url_api_class(array &$templates) : void { // Pointe
 
 /**
   @param array<Template> $templates
-**/
+*/
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
 
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
@@ -152,7 +152,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 
 /**
   @param array<Template> $templates
-**/
+*/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   foreach ($templates as $template) {
