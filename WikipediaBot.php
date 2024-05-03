@@ -102,7 +102,7 @@ final class WikipediaBot {
   }
 
   /** @phpstan-impure
-      @param array<mixed> $params **/
+      @param array<mixed> $params */
   private function fetch(array $params, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
@@ -156,7 +156,7 @@ final class WikipediaBot {
     // @codeCoverageIgnoreEnd
   }
 
-  /** @phpstan-impure **/
+  /** @phpstan-impure */
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
@@ -283,7 +283,7 @@ final class WikipediaBot {
     return true;
   }
 
-  /** @return array<string> **/
+  /** @return array<string> */
   public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
@@ -371,7 +371,7 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
 
-  /** @param array<string> $params **/
+  /** @param array<string> $params */
   private static function QueryAPI(array $params) : string {
    try {
     $params['format'] = 'json';
