@@ -2,349 +2,349 @@
 declare(strict_types=1);
 
 const ITALICS_LIST =
-    "Night of the Living Dead|" .
-    "The Dream of the Rood|" .
-    "Encyclopedia of Inorganic Chemistry|" .
-    "Diagnostic and statistical manual|" .
-    "Opus Caroli \(Libri Carolini\)|" .
-    "The City Of God|" .
-    "Miseducation of the Negro|" .
-    "The Book of Illusions|" .
-    "Capitalism, Socialism and Democracy|" .
-    "Magnalia Christi Americana|" .
-    "Sydney morning herald|" .
-    "Chronicle\(s\) of Ioannina|" .
-    "Homo sapiens sapiens|" .
-    "Trypanosoma brucei gambiense|" .
-    "Star Trek: Voyager|" .
-    "Notechis scutatus scutatus|" .
-    "Myrmecia reticulata \(Chlorophyta\)|" .
-    "Fried Green Tomatoes|" .
-    "Game of Thrones|" .
-    "The Double-Cross System|" .
-    "Catalogue of Women|" .
-    "Biomphalaria sudanica sudanic|" .
-    "Tyrannotitan chubutensis|" .
-    "Escherichia coli|" .
-    "Bugulasensu lato|" .
-    "Massospondylus carinatus|" .
-    "Adenanthera pavonina|" .
-    "Burkholderia pseudomallei|" .
-    "Helicobacter pylori|" .
-    "Drosophila silvestris|" .
-    "Luzula nivea|" .
-    "Myrmecia reticulata|" .
-    "Aedes koreicus|" .
-    "Aedes japonicus|" .
-    "Ustilago maydis|" .
-    "Plasmodium falciparum|" .
-    "Agaricus blazei|" .
-    "Fusarium venenatum|" .
-    "Aspergillus nidulans|" .
-    "Trichoderma pseudokoningii|" .
-    "Vitis Vinifera|" .
-    "Mycoplasma pneumoniaein|" .
-    "Inonotus radiatus|" .
-    "Plasmodium berghei|" .
-    "Dunkleosteus terrelli|" .
-    "Mycoplasma genitalium|" .
-    "In Vitro|" .
-    "Australopithecus afarensis|" .
-    "Tabula Rasa|" .
-    "Zoanthus sociathus|" .
-    "Seize Mai|" .
-    "Schistosoma mansoni|" .
-    "Platydemus manokwari|" .
-    "Melanodrymia aurantiaca|" .
-    "Paramphislomum cervi|" .
-    "Bacillus pumilus|" .
-    "Citipati Osmolskae|" .
-    "Sui Generis|" .
-    "Betta splendens|" .
-    "Mesonauta acora|" .
-    "Entobdella Soleae|" .
-    "Pterophyllum scalare|" .
-    "Communist Manifesto|" .
-    "Bacillus thuringiensis|" .
-    "Magnosaurus nethercombensis|" .
-    "Star Trek|" .
-    "Meringosphaera mediterranea|" .
-    "Candida albicansas|" .
-    "Candida albicans|" .
-    "Tyrannosaurus rex|" .
-    "Dolichorhynchops bonneri|" .
-    "Staphylococcus aureus|" .
-    "Pericope Adulterae|" .
-    "Ranunculus auricomus|" .
-    "Aspergillus fumigatus|" .
-    "Tachycineta bicolor|" .
-    "Entamoeba histolytica|" .
-    "Fusarium pseudograminearum|" .
-    "Caenorhabditis elegans|" .
-    "Serratia marcescens|" .
-    "Bicyclus anynana|" .
-    "Argiope argentata|" .
-    "Saccharomyces boulardiiin|" .
-    "Bacillus anthracis|" .
-    "Bargmannia elongata|" .
-    "Phialella zappai|" .
-    "Onychiurus fimats|" .
-    "Phialella fragilis|" .
-    "Skeletonema costatum|" .
-    "Salmonella typhimurium|" .
-    "Drosophila melanogaster|" .
-    "Polycotylus latipinnis|" .
-    "Coprosma lucida|" .
-    "Mycobacterium tuberculosis|" .
-    "Ariolimax californicus|" .
-    "Streptococcus pneumoniae|" .
-    "In Vivo|" .
-    "A\. dolichophallus|" .
-    "Necrodes littoralis|" .
-    "Stachybotrys chartarum|" .
-    "Ras Lilas|" .
-    "Yarrowia lipolytica|" .
-    "Stichodactyla helianthusas|" .
-    "Schistocephalus solidus|" .
-    "Pyrobaculum calidifontis|" .
-    "Arabidopsis thaliana|" .
-    "Fahraeusodus adentatus|" .
-    "Homo sapiens|" .
-    "Xylella fastidiosa|" .
-    "Listeria monocytogenes|" .
-    "Halszkaraptor escuilliei|" .
-    "Mycoplasma pneumoniae|" .
-    "Paradisaea Raggiana|" .
-    "Rothia mucilaginosa|" .
-    "Brachiosaurus altithorax|" .
-    "Saccharomyces cerevisiae|" .
-    "Plutella xylostella|" .
-    "Bromus laevipes|" .
-    "Trypanosoma brucei|" .
-    "Hulsanpes perlei|" .
-    "Buitreraptor gonzalezorum|" .
-    "Bellusaurus sui|" .
-    "Sinovenator changii|" .
-    "Thermomonospora fusca|" .
-    "Diplocynodon levantinicum|" .
-    "Nedcolbertia justinhofmanni|" .
-    "Clostridium botulinum|" .
-    "Bactrocera dorsalis|" .
-    "Umm al-Kitāb|" .
-    "Acrocomia mexicana|" .
-    "Brachylophosaurus canadensis|" .
-    "Agaricus hondensis|" .
-    "Campylobacter jejuni|" .
-    "Actinomyces bovis|" .
-    "Diplodocus carnegii|" .
-    "Balaur bondoc|" .
-    "Screbinodus ornatus|" .
-    "Rg Veda|" .
-    "Homo erectus|" .
-    "Piveteauia madagascariensis|" .
-    "Aspergillus terreus|" .
-    "Ignicoccus hospitalis|" .
-    "Watsonulus eugnathoides|" .
-    "Cardiodectes bellottii|" .
-    "Opus Caroli|" .
-    "Libri Carolini|" .
-    "Dibamus taylori|" .
-    "Nanoarchaeum equitans|" .
-    "Les Noces|" .
-    "Batillipes mirusand|" .
-    "Batillipes noerrevangi|" .
-    "Robustichthys luopingensis|" .
-    "Uroplectes ansiedippenaarae|" .
-    "Perccottus glenii|" .
-    "Tornieria africana|" .
-    "Ilex asprella|" .
-    "Physcomitrella patens|" .
-    "Carcharhinus brachyurus|" .
-    "C\. obscurus|" .
-    "Sphyrna zygaena|" .
-    "China Daily|" .
-    "Tabula Peutingeriana|" .
-    "Diamond Sutra|" .
-    "Gasterophilus pecorum|" .
-    "Oxycarenus laetus|" .
-    "Flemingia macrophylla|" .
-    "Suuwassea emilieae|" .
-    "Endoxocrinus parrae|" .
-    "Ganoderma applanatum|" .
-    "Burkholderia mallei|" .
-    "Prionailurus viverrinus|" .
-    "Homo habilis|" .
-    "Glycine tomentella|" .
-    "Culcita schmideliana|" .
-    "Squilla armata|" .
-    "Saurosuchus galilei|" .
-    "Lathamus discolor|" .
-    "Gymondinium pseudopalustre|" .
-    "Woloszynskia apiculata|" .
-    "Symbiodinium microadriaticum|" .
-    "Alligator sinensis|" .
-    "Lesothosaurus diagnosticus|" .
-    "Galeamopus pabsti|" .
-    "Enfants Terribles|" .
-    "Puntius sophore|" .
-    "Murraya koenigii|" .
-    "Pseudomonas aeruginosa|" .
-    "Cherax destructor|" .
-    "Cocos nucifera|" .
-    "Chironomus riparius|" .
-    "Acathamoeba castellanii|" .
-    "Ainiktozoon loganense|" .
-    "Panthera palaeosinensis|" .
-    "Paraponera clavata|" .
-    "Lycium barbarum|" .
-    "Poria cocos|" .
-    "Emiliania huxleyi|" .
-    "Res Publica|" .
-    "de Novo|" .
-    "Boscia angustifolia|" .
-    "Angelica sinensis|" .
-    "Dilophosaurus wetherilli|" .
-    "Scutarx deltatylus|" .
-    "Vernonia amygdalina|" .
-    "Loa loa|" .
-    "Ixodes scapularis|" .
-    "Homo nalediin|" .
-    "Homo naledi|" .
-    "Helicobacter Pylori|" .
-    "Streptococcus diacetilactis|" .
-    "Panax ginseng|" .
-    "Leuconostoc citrovorum|" .
-    "Lynx pardinus|" .
-    "Oenococcus oeni|" .
-    "Pristionchus|" .
-    "Arabidopsis|" .
-    "Realpolitik|" .
-    "Paratirolites|" .
-    "Arianops|" .
-    "Ottoia|" .
-    "Onychites|" .
-    "Loxosceles|" .
-    "Diplocynodon|" .
-    "Leveillula|" .
-    "Lewisepeira|" .
-    "Daspletosaurus|" .
-    "Pohlerodus|" .
-    "Diaphera|" .
-    "Hyloscirtus|" .
-    "Micrapis|" .
-    "Pseudomonas|" .
-    "Baryonyx|" .
-    "Athrips|" .
-    "Monacha|" .
-    "Plesiosorex|" .
-    "Amazona|" .
-    "Malassezia|" .
-    "Bushiellas|" .
-    "Godartiana|" .
-    "Hapalotremus|" .
-    "Orcus|" .
-    "Phialella|" .
-    "Schistocephalus|" .
-    "Philometra|" .
-    "Armillaria|" .
-    "Neurospora|" .
-    "Symphysodon|" .
-    "Beggiatoa|" .
-    "Ascomycota|" .
-    "Puffinus|" .
-    "Mycena|" .
-    "Aspergillus|" .
-    "Ricinus|" .
-    "Grammia|" .
-    "Apatosaurus|" .
-    "Candidatus|" .
-    "Phytophthora|" .
-    "Chrysops|" .
-    "Lophiomeryx|" .
-    "Bachitherium|" .
-    "Anoplotherium|" .
-    "Saltatorellota|" .
-    "Adenanthos|" .
-    "Thraustochytrium|" .
-    "Rhaponticum|" .
-    "Luzula|" .
-    "Arthropleura|" .
-    "Leuzea|" .
-    "Ureaplasma|" .
-    "Euschistus|" .
-    "Brachygastra|" .
-    "Gaojiashania|" .
-    "Boreogomphodon|" .
-    "Noideattella|" .
-    "Tolegnaro|" .
-    "Cannabis|" .
-    "Drosophila|" .
-    "Duyfken|" .
-    "Polyptychodon|" .
-    "Haratin|" .
-    "Limulus|" .
-    "Eschata|" .
-    "Dianthus|" .
-    "Arthoniais|" .
-    "Arthropterygius|" .
-    "Acacia|" .
-    "Cerastes|" .
-    "Berardiusin|" .
-    "Ilustrado|" .
-    "Keśin|" .
-    "Synorichthys|" .
-    "Clusia|" .
-    "Sinamia|" .
-    "Cambaytherium|" .
-    "Ignicoccus|" .
-    "Hencke|" .
-    "Batillipes|" .
-    "Chenopodium|" .
-    "Diplodocus|" .
-    "Hipparchs|" .
-    "Lepidobatrachus|" .
-    "Uroplectes|" .
-    "Euroscaptor|" .
-    "Montifringilla|" .
-    "Leucosticte|" .
-    "Aglyptorhynchus|" .
-    "Phidiana|" .
-    "Egertonia|" .
-    "Dapedium|" .
-    "Pycnodus|" .
-    "Metaceratodus|" .
-    "Erwinia|" .
-    "Lactobacillus|" .
-    "Candidain|" .
-    "Candida|" .
-    "Lasalichthys|" .
-    "Dicynodon|" .
-    "Iudaea-Palestina|" .
-    "Cymbeline|" .
-    "Gordonia|" .
-    "Symbiodinium|" .
-    "Dhammapada|" .
-    "Xenopusembryo|" .
-    "Chlamydomonas|" .
-    "Anaplecta|" .
-    "Arumberia|" .
-    "Ridda|" .
-    "Dictyochloropsis|" .
-    "Laccognathus|" .
-    "Stereum|" .
-    "Karma|" .
-    "Cena|" .
-    "Satyricon|" .
-    "Nakbain|" .
-    "Nakba|" .
-    "Saurichthys|" .
-    "Analects|" .
-    "Leishmania|" .
-    "tryA|" .
-    "Rangifer|" .
-    "Graphidaceae|" .
-    "Bacillus|" .
-    "END_OF_CITE_list_junk";
+    'Night of the Living Dead|' .
+    'The Dream of the Rood|' .
+    'Encyclopedia of Inorganic Chemistry|' .
+    'Diagnostic and statistical manual|' .
+    'Opus Caroli \(Libri Carolini\)|' .
+    'The City Of God|' .
+    'Miseducation of the Negro|' .
+    'The Book of Illusions|' .
+    'Capitalism, Socialism and Democracy|' .
+    'Magnalia Christi Americana|' .
+    'Sydney morning herald|' .
+    'Chronicle\(s\) of Ioannina|' .
+    'Homo sapiens sapiens|' .
+    'Trypanosoma brucei gambiense|' .
+    'Star Trek: Voyager|' .
+    'Notechis scutatus scutatus|' .
+    'Myrmecia reticulata \(Chlorophyta\)|' .
+    'Fried Green Tomatoes|' .
+    'Game of Thrones|' .
+    'The Double-Cross System|' .
+    'Catalogue of Women|' .
+    'Biomphalaria sudanica sudanic|' .
+    'Tyrannotitan chubutensis|' .
+    'Escherichia coli|' .
+    'Bugulasensu lato|' .
+    'Massospondylus carinatus|' .
+    'Adenanthera pavonina|' .
+    'Burkholderia pseudomallei|' .
+    'Helicobacter pylori|' .
+    'Drosophila silvestris|' .
+    'Luzula nivea|' .
+    'Myrmecia reticulata|' .
+    'Aedes koreicus|' .
+    'Aedes japonicus|' .
+    'Ustilago maydis|' .
+    'Plasmodium falciparum|' .
+    'Agaricus blazei|' .
+    'Fusarium venenatum|' .
+    'Aspergillus nidulans|' .
+    'Trichoderma pseudokoningii|' .
+    'Vitis Vinifera|' .
+    'Mycoplasma pneumoniaein|' .
+    'Inonotus radiatus|' .
+    'Plasmodium berghei|' .
+    'Dunkleosteus terrelli|' .
+    'Mycoplasma genitalium|' .
+    'In Vitro|' .
+    'Australopithecus afarensis|' .
+    'Tabula Rasa|' .
+    'Zoanthus sociathus|' .
+    'Seize Mai|' .
+    'Schistosoma mansoni|' .
+    'Platydemus manokwari|' .
+    'Melanodrymia aurantiaca|' .
+    'Paramphislomum cervi|' .
+    'Bacillus pumilus|' .
+    'Citipati Osmolskae|' .
+    'Sui Generis|' .
+    'Betta splendens|' .
+    'Mesonauta acora|' .
+    'Entobdella Soleae|' .
+    'Pterophyllum scalare|' .
+    'Communist Manifesto|' .
+    'Bacillus thuringiensis|' .
+    'Magnosaurus nethercombensis|' .
+    'Star Trek|' .
+    'Meringosphaera mediterranea|' .
+    'Candida albicansas|' .
+    'Candida albicans|' .
+    'Tyrannosaurus rex|' .
+    'Dolichorhynchops bonneri|' .
+    'Staphylococcus aureus|' .
+    'Pericope Adulterae|' .
+    'Ranunculus auricomus|' .
+    'Aspergillus fumigatus|' .
+    'Tachycineta bicolor|' .
+    'Entamoeba histolytica|' .
+    'Fusarium pseudograminearum|' .
+    'Caenorhabditis elegans|' .
+    'Serratia marcescens|' .
+    'Bicyclus anynana|' .
+    'Argiope argentata|' .
+    'Saccharomyces boulardiiin|' .
+    'Bacillus anthracis|' .
+    'Bargmannia elongata|' .
+    'Phialella zappai|' .
+    'Onychiurus fimats|' .
+    'Phialella fragilis|' .
+    'Skeletonema costatum|' .
+    'Salmonella typhimurium|' .
+    'Drosophila melanogaster|' .
+    'Polycotylus latipinnis|' .
+    'Coprosma lucida|' .
+    'Mycobacterium tuberculosis|' .
+    'Ariolimax californicus|' .
+    'Streptococcus pneumoniae|' .
+    'In Vivo|' .
+    'A\. dolichophallus|' .
+    'Necrodes littoralis|' .
+    'Stachybotrys chartarum|' .
+    'Ras Lilas|' .
+    'Yarrowia lipolytica|' .
+    'Stichodactyla helianthusas|' .
+    'Schistocephalus solidus|' .
+    'Pyrobaculum calidifontis|' .
+    'Arabidopsis thaliana|' .
+    'Fahraeusodus adentatus|' .
+    'Homo sapiens|' .
+    'Xylella fastidiosa|' .
+    'Listeria monocytogenes|' .
+    'Halszkaraptor escuilliei|' .
+    'Mycoplasma pneumoniae|' .
+    'Paradisaea Raggiana|' .
+    'Rothia mucilaginosa|' .
+    'Brachiosaurus altithorax|' .
+    'Saccharomyces cerevisiae|' .
+    'Plutella xylostella|' .
+    'Bromus laevipes|' .
+    'Trypanosoma brucei|' .
+    'Hulsanpes perlei|' .
+    'Buitreraptor gonzalezorum|' .
+    'Bellusaurus sui|' .
+    'Sinovenator changii|' .
+    'Thermomonospora fusca|' .
+    'Diplocynodon levantinicum|' .
+    'Nedcolbertia justinhofmanni|' .
+    'Clostridium botulinum|' .
+    'Bactrocera dorsalis|' .
+    'Umm al-Kitāb|' .
+    'Acrocomia mexicana|' .
+    'Brachylophosaurus canadensis|' .
+    'Agaricus hondensis|' .
+    'Campylobacter jejuni|' .
+    'Actinomyces bovis|' .
+    'Diplodocus carnegii|' .
+    'Balaur bondoc|' .
+    'Screbinodus ornatus|' .
+    'Rg Veda|' .
+    'Homo erectus|' .
+    'Piveteauia madagascariensis|' .
+    'Aspergillus terreus|' .
+    'Ignicoccus hospitalis|' .
+    'Watsonulus eugnathoides|' .
+    'Cardiodectes bellottii|' .
+    'Opus Caroli|' .
+    'Libri Carolini|' .
+    'Dibamus taylori|' .
+    'Nanoarchaeum equitans|' .
+    'Les Noces|' .
+    'Batillipes mirusand|' .
+    'Batillipes noerrevangi|' .
+    'Robustichthys luopingensis|' .
+    'Uroplectes ansiedippenaarae|' .
+    'Perccottus glenii|' .
+    'Tornieria africana|' .
+    'Ilex asprella|' .
+    'Physcomitrella patens|' .
+    'Carcharhinus brachyurus|' .
+    'C\. obscurus|' .
+    'Sphyrna zygaena|' .
+    'China Daily|' .
+    'Tabula Peutingeriana|' .
+    'Diamond Sutra|' .
+    'Gasterophilus pecorum|' .
+    'Oxycarenus laetus|' .
+    'Flemingia macrophylla|' .
+    'Suuwassea emilieae|' .
+    'Endoxocrinus parrae|' .
+    'Ganoderma applanatum|' .
+    'Burkholderia mallei|' .
+    'Prionailurus viverrinus|' .
+    'Homo habilis|' .
+    'Glycine tomentella|' .
+    'Culcita schmideliana|' .
+    'Squilla armata|' .
+    'Saurosuchus galilei|' .
+    'Lathamus discolor|' .
+    'Gymondinium pseudopalustre|' .
+    'Woloszynskia apiculata|' .
+    'Symbiodinium microadriaticum|' .
+    'Alligator sinensis|' .
+    'Lesothosaurus diagnosticus|' .
+    'Galeamopus pabsti|' .
+    'Enfants Terribles|' .
+    'Puntius sophore|' .
+    'Murraya koenigii|' .
+    'Pseudomonas aeruginosa|' .
+    'Cherax destructor|' .
+    'Cocos nucifera|' .
+    'Chironomus riparius|' .
+    'Acathamoeba castellanii|' .
+    'Ainiktozoon loganense|' .
+    'Panthera palaeosinensis|' .
+    'Paraponera clavata|' .
+    'Lycium barbarum|' .
+    'Poria cocos|' .
+    'Emiliania huxleyi|' .
+    'Res Publica|' .
+    'de Novo|' .
+    'Boscia angustifolia|' .
+    'Angelica sinensis|' .
+    'Dilophosaurus wetherilli|' .
+    'Scutarx deltatylus|' .
+    'Vernonia amygdalina|' .
+    'Loa loa|' .
+    'Ixodes scapularis|' .
+    'Homo nalediin|' .
+    'Homo naledi|' .
+    'Helicobacter Pylori|' .
+    'Streptococcus diacetilactis|' .
+    'Panax ginseng|' .
+    'Leuconostoc citrovorum|' .
+    'Lynx pardinus|' .
+    'Oenococcus oeni|' .
+    'Pristionchus|' .
+    'Arabidopsis|' .
+    'Realpolitik|' .
+    'Paratirolites|' .
+    'Arianops|' .
+    'Ottoia|' .
+    'Onychites|' .
+    'Loxosceles|' .
+    'Diplocynodon|' .
+    'Leveillula|' .
+    'Lewisepeira|' .
+    'Daspletosaurus|' .
+    'Pohlerodus|' .
+    'Diaphera|' .
+    'Hyloscirtus|' .
+    'Micrapis|' .
+    'Pseudomonas|' .
+    'Baryonyx|' .
+    'Athrips|' .
+    'Monacha|' .
+    'Plesiosorex|' .
+    'Amazona|' .
+    'Malassezia|' .
+    'Bushiellas|' .
+    'Godartiana|' .
+    'Hapalotremus|' .
+    'Orcus|' .
+    'Phialella|' .
+    'Schistocephalus|' .
+    'Philometra|' .
+    'Armillaria|' .
+    'Neurospora|' .
+    'Symphysodon|' .
+    'Beggiatoa|' .
+    'Ascomycota|' .
+    'Puffinus|' .
+    'Mycena|' .
+    'Aspergillus|' .
+    'Ricinus|' .
+    'Grammia|' .
+    'Apatosaurus|' .
+    'Candidatus|' .
+    'Phytophthora|' .
+    'Chrysops|' .
+    'Lophiomeryx|' .
+    'Bachitherium|' .
+    'Anoplotherium|' .
+    'Saltatorellota|' .
+    'Adenanthos|' .
+    'Thraustochytrium|' .
+    'Rhaponticum|' .
+    'Luzula|' .
+    'Arthropleura|' .
+    'Leuzea|' .
+    'Ureaplasma|' .
+    'Euschistus|' .
+    'Brachygastra|' .
+    'Gaojiashania|' .
+    'Boreogomphodon|' .
+    'Noideattella|' .
+    'Tolegnaro|' .
+    'Cannabis|' .
+    'Drosophila|' .
+    'Duyfken|' .
+    'Polyptychodon|' .
+    'Haratin|' .
+    'Limulus|' .
+    'Eschata|' .
+    'Dianthus|' .
+    'Arthoniais|' .
+    'Arthropterygius|' .
+    'Acacia|' .
+    'Cerastes|' .
+    'Berardiusin|' .
+    'Ilustrado|' .
+    'Keśin|' .
+    'Synorichthys|' .
+    'Clusia|' .
+    'Sinamia|' .
+    'Cambaytherium|' .
+    'Ignicoccus|' .
+    'Hencke|' .
+    'Batillipes|' .
+    'Chenopodium|' .
+    'Diplodocus|' .
+    'Hipparchs|' .
+    'Lepidobatrachus|' .
+    'Uroplectes|' .
+    'Euroscaptor|' .
+    'Montifringilla|' .
+    'Leucosticte|' .
+    'Aglyptorhynchus|' .
+    'Phidiana|' .
+    'Egertonia|' .
+    'Dapedium|' .
+    'Pycnodus|' .
+    'Metaceratodus|' .
+    'Erwinia|' .
+    'Lactobacillus|' .
+    'Candidain|' .
+    'Candida|' .
+    'Lasalichthys|' .
+    'Dicynodon|' .
+    'Iudaea-Palestina|' .
+    'Cymbeline|' .
+    'Gordonia|' .
+    'Symbiodinium|' .
+    'Dhammapada|' .
+    'Xenopusembryo|' .
+    'Chlamydomonas|' .
+    'Anaplecta|' .
+    'Arumberia|' .
+    'Ridda|' .
+    'Dictyochloropsis|' .
+    'Laccognathus|' .
+    'Stereum|' .
+    'Karma|' .
+    'Cena|' .
+    'Satyricon|' .
+    'Nakbain|' .
+    'Nakba|' .
+    'Saurichthys|' .
+    'Analects|' .
+    'Leishmania|' .
+    'tryA|' .
+    'Rangifer|' .
+    'Graphidaceae|' .
+    'Bacillus|' .
+    'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
 
