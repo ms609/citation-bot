@@ -21,13 +21,13 @@ final class HandleCache {
   /** @var array<bool> $cache_active */
   public static array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<bool> $cache_inactive */
-  public static array $cache_inactive dfasfdsfa = [];     // DOI either is not in CrossRef or does not work
+  public static array $cache_inactive = [];     // DOI either is not in CrossRef or does not work
   /** @var array<bool> $cache_good */
   public static array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
   public static array $cache_hdl_loc = [];       // Final HDL location URL
   /** @var array<bool> $cache_hdl_bad */
-  public static array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
+  public static array $cache_hdl_bad = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
   /** @var array<bool> $cache_hdl_null */
   public static array $cache_hdl_null = [];      // HDL/DOI resolves to null
 
@@ -44,10 +44,10 @@ final class HandleCache {
   }
   public static function free_memory() : void {
       self::$cache_active = [];
-      self::$cache_inactive  = [];
+      self::$cache_inactive = [];
       self::$cache_good = [];
       self::$cache_hdl_loc = [];
-      self::$cache_hdl_bad  = self::BAD_DOI_ARRAY;
+      self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
       self::$cache_hdl_null = [];
       gc_collect_cycles();
   }
@@ -218,12 +218,12 @@ function is_doi_works(string $doi) : ?bool {
   }
   // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
   $headers_test = get_headers_array($url);
-  /** We trust previous failure, so fail and null are both false **/
+  /** We trust previous failure, so fail and null are both false */
   if ($headers_test === false) return false;
   return (bool) interpret_doi_header($headers_test);
 }
 
-/** @param array<mixed> $headers_test **/
+/** @param array<mixed> $headers_test */
 function interpret_doi_header(array $headers_test) : ?bool {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return false; // leads nowhere
 
@@ -259,7 +259,7 @@ function interpret_doi_header(array $headers_test) : ?bool {
   return null; // @codeCoverageIgnoreEnd
 }
 
-/** @param array<mixed> $headers_test **/
+/** @param array<mixed> $headers_test */
 function get_loc_from_hdl_header(array $headers_test) : ?string {
   if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
       return (string) $headers_test['Location'][0];  // @codeCoverageIgnore
@@ -277,7 +277,7 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
 
 /** @psalm-suppress UnusedParam
     @param array<string> $ids
-    @param array<Template> $templates **/
+    @param array<Template> $templates */
 function query_jstor_api(array $ids, array &$templates) : void { // $ids not used   // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_jstor($template);
@@ -432,7 +432,7 @@ function wikify_external_text(string $title) : string {
   $title = safe_preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, true);
 
-  $htmlBraces  = ["&lt;", "&gt;"];
+  $htmlBraces = ["&lt;", "&gt;"];
   $angleBraces = ["<", ">"];
   $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
@@ -506,7 +506,7 @@ function wikify_external_text(string $title) : string {
 function restore_italics (string $text) : string {
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   // <em> tags often go missing around species names in CrossRef
-  /** $old = $text; **/
+  /** $old = $text; */
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
@@ -639,9 +639,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
     $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
           "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
           "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
-    $inTitle  = str_replace($drops, "", $inTitle);
+    $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
-    $dbTitle  = str_replace($drops, "", $dbTitle);
+    $dbTitle = str_replace($drops, "", $dbTitle);
   // This will convert &delta into delta
     return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
           ? (strlen($inTitle) !== strlen($dbTitle)
@@ -825,14 +825,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     static function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
-  /** French l'Words and d'Words  **/
+  /** French l'Words and d'Words */
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
     static function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
     ' ' . $new_case
   );
 
-  /** Italian dell'xxx words **/
+  /** Italian dell'xxx words */
   $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
     static function (array $matches) : string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
@@ -898,14 +898,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
     $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
-    $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
+    $replace = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
     $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
   }
 
   // 42th, 33rd, 1st, ...
   if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
     $replace_me = $matches[0];
-    $replace    = strtolower($matches[0]);
+    $replace = strtolower($matches[0]);
     $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
   }
 
@@ -1154,7 +1154,7 @@ function remove_comments(string $string) : string {
 }
 
 /** @param array<string> $list
-    @return array<string> **/
+    @return array<string> */
 function prior_parameters(string $par, array $list=[] ) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
@@ -1240,7 +1240,7 @@ function prior_parameters(string $par, array $list=[] ) : array {
   }
 }
 
-/** @return array<string> **/
+/** @return array<string> */
 function equivalent_parameters(string $par) : array {
   switch ($par) {
     case 'author': case 'authors': case 'author1': case 'last1':
@@ -1326,7 +1326,7 @@ function hdl_decode(string $hdl) : string {
 
 // @codeCoverageIgnoreStart
 
-/** @param array<string> $pages_in_category **/
+/** @param array<string> $pages_in_category */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
@@ -1459,9 +1459,7 @@ function bot_html_footer() : void {
    echo "\n";
 }
 
-  /**
-   * null/false/String of location
-   **/
+  /** null/false/String of location */
 function hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   $hdl = str_replace('%2F', '/', $hdl);
@@ -1500,9 +1498,7 @@ function hdl_works(string $hdl) : string|null|false {
   return $works;
 }
 
-  /**
-   * Returns null/false/String of location
-   **/
+  /** Returns null/false/String of location */
 function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   usleep(100000);
@@ -1532,7 +1528,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url) : string {
-   $in  = [' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}'];
+   $in = [' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}'];
    $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
    return str_replace($in, $out, $url);
 }
@@ -1602,7 +1598,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
-/** @param array<string> $gid **/
+/** @param array<string> $gid */
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
@@ -1636,19 +1632,72 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             break;
           case "id":
             break; // Don't "remove redundant"
-          case "as": case "useragent": case "as_brr": case "hl":
-          case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
-          case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
-          case "sa": case "oi": case "ct": case "client": case "redir_esc":
-          case "callback": case "jscmd": case "bibkeys": case "newbks": case "gbpv":
-          case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
-          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is": case "pccc":
-          case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
-          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
-          case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
-          case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
-          case "as_drrb_is": case "sourceid": case "btnG": case "rls": case "ov2":
-          case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
+          // These all go away
+          case "ei":
+          case "ots":
+          case "sig":
+          case "source":
+          case "lr":
+          case "ved":
+          case "gs_lcp":
+          case "sxsrf":
+          case "gfe_rd":
+          case "gws_rd":
+          case "sa":
+          case "oi":
+          case "ct":
+          case "client":
+          case "redir_esc":
+          case "callback":
+          case "jscmd":
+          case "bibkeys":
+          case "newbks":
+          case "gbpv":
+          case "newbks_redir":
+          case "resnum":
+          case "ci":
+          case "surl":
+          case "safe":
+          case "as_maxm_is":
+          case "as_maxy_is":
+          case "f":
+          case "as_minm_is":
+          case "pccc":
+          case "as_miny_is":
+          case "authuser":
+          case "cad":
+          case "focus":
+          case "pjf":
+          case "gl":
+          case "ovdme":
+          case "sqi":
+          case "w":
+          case "rview":
+          case "":
+          case "kptab":
+          case "pgis":
+          case "ppis":
+          case "output":
+          case "gboemv":
+          case "ie":
+          case "nbsp;":
+          case "fbclid":
+          case "num":
+          case "oe":
+          case "pli":
+          case "prev":
+          case "vid":
+          case "view":
+          case "as_drrb_is":
+          case "sourceid":
+          case "btnG":
+          case "rls":
+          case "ov2":
+          case "buy":
+          case "edge":
+          case "zoom":
+          case "img":
+          case "as_pt":
             $removed_parts .= $part;
             $removed_redundant++;
             break;
@@ -1672,7 +1721,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
             $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
-            $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
+            $dum_q = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
             if ($dum_dq !== $dum_q) {
               $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
               unset($book_array['dq']);
@@ -1821,7 +1870,7 @@ function doi_is_bad (string $doi) : bool {
     return false;
 }
 
-/** @return array<string> **/
+/** @return array<string> */
 function get_possible_dois(string $doi) : array {
     $trial = [];
     $trial[] = $doi;
@@ -2561,7 +2610,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
     return $input;
 }
 
-/** @return false|array<mixed> **/
+/** @return false|array<mixed> */
 function get_headers_array(string $url) : false|array {
   static $last_url = "none yet";
   // Allow cheap journals to work
@@ -2610,26 +2659,96 @@ function simplify_google_search(string $url) : string {
        $it_is_blank = false;
      }
      switch ($part_start0) {
-       case "aq": case "aqi": case "bih": case "biw": case "client":
-       case "as": case "useragent": case "as_brr":
-       case "ei": case "ots": case "sig": case "source": case "lr":
-       case "sa": case "oi": case "ct": case "id":  case "cd":
-       case "oq": case "rls": case "sourceid": case "ved":
-       case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
-       case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
-       case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-       case "prmd": case "dpr": case "newwindow": case "gs_ssp":
-       case "spell": case "shndl": case "sugexp": case "donotaddmeback":
-       case "usg": case "fir": case "entrypoint": case "as_qdr":
-       case "as_drrb": case "as_minm":  case "as_mind": case "as_maxm":
-       case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
-       case "iflsig": case "tab": case "sqi": case "noj":
-       case "hs": case "es_sm": case "site": case "btnmeta_news_search":
-       case "channel": case "espv": case "cad": case "gs_sm":
-       case "imgil": case "ins": case "npsic=": case "rflfq": case "lei":
-       case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
-       case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-       case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
+       // Stuff that gets dropped
+       case "aq":
+       case "aqi":
+       case "bih":
+       case "biw":
+       case "client":
+       case "as":
+       case "useragent":
+       case "as_brr":
+       case "ei":
+       case "ots":
+       case "sig":
+       case "source":
+       case "lr":
+       case "sa":
+       case "oi":
+       case "ct":
+       case "id":
+       case "cd":
+       case "oq":
+       case "rls":
+       case "sourceid":
+       case "ved":
+       case "aqs":
+       case "gs_l":
+       case "uact":
+       case "tbo":
+       case "tbs":
+       case "num":
+       case "redir_esc":
+       case "gs_lcp":
+       case "sxsrf":
+       case "gfe_rd":
+       case "gws_rd":
+       case "rlz":
+       case "sclient":
+       case "prmd":
+       case "dpr":
+       case "newwindow":
+       case "gs_ssp":
+       case "spell":
+       case "shndl":
+       case "sugexp":
+       case "donotaddmeback":
+       case "usg":
+       case "fir":
+       case "entrypoint":
+       case "as_qdr":
+       case "as_drrb":
+       case "as_minm":
+        case "as_mind":
+       case "as_maxm":
+       case "as_maxd":
+       case "kgs":
+       case "ictx":
+       case "shem":
+       case "vet":
+       case "iflsig":
+       case "tab":
+       case "sqi":
+       case "noj":
+       case "hs":
+       case "es_sm":
+       case "site":
+       case "btnmeta_news_search":
+       case "channel":
+       case "espv":
+       case "cad":
+       case "gs_sm":
+       case "imgil":
+       case "ins":
+       case "npsic=":
+       case "rflfq":
+       case "lei":
+       case "rlha":
+       case "rldoc":
+       case "rldimm":
+       case "npsic":
+       case "phdesc":
+       case "prmdo":
+       case "ssui":
+       case "lqi":
+       case "rlst":
+       case "pf":
+       case "authuser":
+       case "gsas":
+       case "ned":
+       case "pz":
+       case "e":
+       case "surl":
        case "aql":
           break;
        case "as_occt":

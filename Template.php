@@ -40,7 +40,7 @@ final class Template
  private bool $mod_dashes = false;
  private bool $mod_names = false;
  private bool $no_initial_doi = false;
- /** @var array<array<string>> $used_by_api **/
+ /** @var array<array<string>> $used_by_api */
  private array $used_by_api = [
   'adsabs' => [],
   'arxiv' => [],
@@ -968,7 +968,7 @@ final class Template
   }
  }
 
- /** @param array<string> $param **/
+ /** @param array<string> $param */
  public function api_has_used(string $api, array $param): bool
  {
   if (!isset($this->used_by_api[$api])) {
@@ -5634,7 +5634,7 @@ final class Template
        $this->set('issue', $matches[1]);
       }
      }
-     /** if (doi_works($doi)) { We are flagging free dois even when the do not work, since template does this right now **/
+     /** if (doi_works($doi)) { We are flagging free dois even when the do not work, since template does this right now */
      foreach (DOI_FREE_PREFIX as $prefix) {
       if (strpos($doi, $prefix) === 0) {
        $this->add_if_new('doi-access', 'free');
@@ -5646,8 +5646,8 @@ final class Template
       $this->add_if_new('doi-access', 'free');
      }
      unset($year);
-     /** } **/
-     if (/** doi_works($doi) && **/ strpos($doi, '10.1073/pnas') === 0) {
+     /** } */
+     if (/** doi_works($doi) && */ strpos($doi, '10.1073/pnas') === 0) {
       $template_year = $this->year();
       if ($template_year === '') {
        $template_year = $this->get('publication-date');
@@ -8007,7 +8007,7 @@ final class Template
     }
    }
   }
-  **/
+  */
    } elseif ($this->has('publisher')) {
     foreach (WORK_ALIASES as $worky) {
      if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) {
@@ -8247,9 +8247,9 @@ final class Template
   }
  }
 
- /***
+ /**
   * Functions to retrieve values that may be specified in various ways
-  ***/
+  */
  private function display_authors(): int
  {
   if (($da = $this->get('display-authors')) === '') {
@@ -8338,7 +8338,7 @@ final class Template
   return '';
  }
 
- /** @return array<string> **/
+ /** @return array<string> */
  private function page_range(): array
  {
   preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
@@ -8699,7 +8699,7 @@ final class Template
   }
  }
 
- /** @return array<mixed> **/
+ /** @return array<mixed> */
  public function modifications(): array
  {
   if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
@@ -8818,7 +8818,7 @@ final class Template
   return $isbn13;
  }
 
- /** @return ?array<string> **/
+ /** @return ?array<string> */
  private function inline_doi_information(): ?array
  {
   if ($this->name !== "doi-inline") {
