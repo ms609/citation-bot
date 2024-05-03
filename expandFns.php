@@ -218,12 +218,12 @@ function is_doi_works(string $doi) : ?bool {
   }
   // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
   $headers_test = get_headers_array($url);
-  /** We trust previous failure, so fail and null are both false **/
+  /** We trust previous failure, so fail and null are both false */
   if ($headers_test === false) return false;
   return (bool) interpret_doi_header($headers_test);
 }
 
-/** @param array<mixed> $headers_test **/
+/** @param array<mixed> $headers_test */
 function interpret_doi_header(array $headers_test) : ?bool {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return false; // leads nowhere
 
@@ -259,7 +259,7 @@ function interpret_doi_header(array $headers_test) : ?bool {
   return null; // @codeCoverageIgnoreEnd
 }
 
-/** @param array<mixed> $headers_test **/
+/** @param array<mixed> $headers_test */
 function get_loc_from_hdl_header(array $headers_test) : ?string {
   if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
       return (string) $headers_test['Location'][0];  // @codeCoverageIgnore
@@ -277,7 +277,7 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
 
 /** @psalm-suppress UnusedParam
     @param array<string> $ids
-    @param array<Template> $templates **/
+    @param array<Template> $templates */
 function query_jstor_api(array $ids, array &$templates) : void { // $ids not used   // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_jstor($template);
@@ -506,7 +506,7 @@ function wikify_external_text(string $title) : string {
 function restore_italics (string $text) : string {
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   // <em> tags often go missing around species names in CrossRef
-  /** $old = $text; **/
+  /** $old = $text; */
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
@@ -825,14 +825,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     static function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
-  /** French l'Words and d'Words  **/
+  /** French l'Words and d'Words */
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
     static function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
     ' ' . $new_case
   );
 
-  /** Italian dell'xxx words **/
+  /** Italian dell'xxx words */
   $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
     static function (array $matches) : string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
@@ -1154,7 +1154,7 @@ function remove_comments(string $string) : string {
 }
 
 /** @param array<string> $list
-    @return array<string> **/
+    @return array<string> */
 function prior_parameters(string $par, array $list=[] ) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
@@ -1240,7 +1240,7 @@ function prior_parameters(string $par, array $list=[] ) : array {
   }
 }
 
-/** @return array<string> **/
+/** @return array<string> */
 function equivalent_parameters(string $par) : array {
   switch ($par) {
     case 'author': case 'authors': case 'author1': case 'last1':
@@ -1326,7 +1326,7 @@ function hdl_decode(string $hdl) : string {
 
 // @codeCoverageIgnoreStart
 
-/** @param array<string> $pages_in_category **/
+/** @param array<string> $pages_in_category */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
@@ -1459,9 +1459,7 @@ function bot_html_footer() : void {
    echo "\n";
 }
 
-  /**
-   * null/false/String of location
-   **/
+  /** null/false/String of location */
 function hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   $hdl = str_replace('%2F', '/', $hdl);
@@ -1500,9 +1498,7 @@ function hdl_works(string $hdl) : string|null|false {
   return $works;
 }
 
-  /**
-   * Returns null/false/String of location
-   **/
+  /** Returns null/false/String of location */
 function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   usleep(100000);
@@ -1602,7 +1598,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
-/** @param array<string> $gid **/
+/** @param array<string> $gid */
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
@@ -1821,7 +1817,7 @@ function doi_is_bad (string $doi) : bool {
     return false;
 }
 
-/** @return array<string> **/
+/** @return array<string> */
 function get_possible_dois(string $doi) : array {
     $trial = [];
     $trial[] = $doi;
@@ -2561,7 +2557,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
     return $input;
 }
 
-/** @return false|array<mixed> **/
+/** @return false|array<mixed> */
 function get_headers_array(string $url) : false|array {
   static $last_url = "none yet";
   // Allow cheap journals to work
