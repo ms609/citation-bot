@@ -7,19 +7,19 @@ require_once 'Template.php';         // @codeCoverageIgnore
 require_once 'NameTools.php';        // @codeCoverageIgnore
 
 /** @param array<string> $pmids
-    @param array<Template> $templates **/
+    @param array<Template> $templates */
 function query_pmid_api (array $pmids, array &$templates) : void { entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 /** @param array<string> $pmcs
-    @param array<Template> $templates **/
+    @param array<Template> $templates */
 function query_pmc_api  (array $pmcs, array &$templates) : void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   private const MAX_CACHE_SIZE = 50000;
   private static int $big_counter = 0;
   private static int $small_counter = 0;
-  /** @var array<string> $doi2bib **/
+  /** @var array<string> $doi2bib */
   private static array $doi2bib = [];
-  /** @var array<string> $bib2doi **/
+  /** @var array<string> $bib2doi */
   private static array $bib2doi = [];
 
   public static function big_gave_up_yet() : bool {
@@ -81,7 +81,7 @@ final class AdsAbsControl {
 /**
   @param array<string> $ids
   @param array<Template> $templates
-**/
+*/
 function entrez_api(array $ids, array &$templates, string $db) : void {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return;
@@ -190,12 +190,12 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
 /**
   @param array<string> $bibcodes
   @param array<Template> $templates
-**/
+*/
 function query_bibcode_api(array $bibcodes, array &$templates) : void { adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
 /**
   @param array<Template> $templates
-**/
+*/
 function expand_arxiv_templates (array &$templates) : void {  // Pointer to save memory
   $ids = [];
   $arxiv_templates = [];
@@ -217,7 +217,7 @@ function expand_arxiv_templates (array &$templates) : void {  // Pointer to save
 /**
   @param array<string> $ids
   @param array<Template> $templates
-**/
+*/
 function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save memory
   static $ch = null;
   if ($ch === null) {
@@ -322,7 +322,7 @@ function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save m
 /**
   @param array<string> $ids
   @param array<Template> $templates
-**/
+*/
 function adsabs_api(array $ids, array &$templates, string $identifier) : void {  // Pointer to save memory
   set_time_limit(120);
   if (count($ids) === 0) return;
@@ -420,7 +420,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
 }
 
 /** @param array<string> $_ids
-    @param array<Template> $templates **/
+    @param array<Template> $templates */
 function query_doi_api(array $_ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
@@ -995,7 +995,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 /**
   @param array<Template> $templates
-**/
+*/
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   static $ch = null;
   set_time_limit(120);
@@ -1104,7 +1104,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-/** @param array<int|string|bool|array<string>> $curl_opts **/
+/** @param array<int|string|bool|array<string>> $curl_opts */
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
     $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
@@ -1206,7 +1206,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);  // @codeCoverageIgnore
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
-      return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE **/
+      return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE */
     } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
       throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
     } else {
