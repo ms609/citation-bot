@@ -21,7 +21,7 @@ final class HandleCache {
   /** @var array<bool> $cache_active */
   public static array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<bool> $cache_inactive */
-  public static array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
+  public static array $cache_inactive dfasfdsfa = [];     // DOI either is not in CrossRef or does not work
   /** @var array<bool> $cache_good */
   public static array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
