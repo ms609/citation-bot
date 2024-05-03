@@ -27,7 +27,7 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
   return $file;
 }
 
-/** @param resource $lock_file **/
+/** @param resource $lock_file */
 function big_jobs_we_died($lock_file) : void {
   @fclose($lock_file);
   hard_unlink(big_jobs_name());
