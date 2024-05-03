@@ -573,7 +573,6 @@ const NULL_DOI_LIST = /** Double check before removing - for example, these are 
     '10.30762/empirisma.v25i1.732' => true,
     '10.30883/jba.v29i2.375' => true, // Localhost
     '10.31057/2314.3908.v5.n2.17761' => true,
-    '10.31096/wua033-pls90b070' => true,
     '10.3116/20775679/14/1/45/2013' => true,
     '10.3129/can.j.ophthalmol.i07-044' => true,
     '10.3134/ehtj.08.008' => true, // Spam site
@@ -822,6 +821,7 @@ const NULL_DOI_BUT_GOOD = [ // TODO - these need to be manually double checked o
  // You can use hdl.handle.org to show you the final url - russia and other countries firewall
  // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
  /** ========================================================================================================================================================================== **/
+    '10.31096/wua033-pls90b070' => true,
     '10.13053/cys-27-2-4418' => true,
     '10.19088/K4D.2022.060' => true,
     '10.1001/archneur.1989.00520400097026' => true,
