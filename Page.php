@@ -138,9 +138,7 @@ class Page {
   }
   // $identifier: parameter to send to api_function, e.g. "pmid"
   // $templates: array of pointers to the templates
-/**
-  @param array<Template> $templates
-**/
+/** @param array<Template> $templates */
   public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
     $ids = [];
     set_time_limit(120);
