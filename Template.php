@@ -8247,7 +8247,7 @@ final class Template
   }
  }
 
- /***
+ /**
   * Functions to retrieve values that may be specified in various ways
   */
  private function display_authors(): int
