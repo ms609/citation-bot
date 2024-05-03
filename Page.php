@@ -19,7 +19,7 @@ class Page {
 
   protected string $text = '';
   protected string $title = '';
-  /** @var array<mixed> $modifications **/
+  /** @var array<mixed> $modifications */
   private array $modifications = [];
   private int $date_style = DATES_WHATEVER;
   private int $name_list_style = NAME_LIST_STYLE_DEFAULT;
@@ -692,7 +692,7 @@ class Page {
 
   /** @return array<WikiThings|Template>
       @param class-string $class
-  **/
+  */
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
@@ -777,7 +777,7 @@ class Page {
     return $objects;
   }
 
-  /** @param array<WikiThings|Template> $objects **/
+  /** @param array<WikiThings|Template> $objects */
   private function replace_object(array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
