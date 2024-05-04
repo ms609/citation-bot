@@ -104,11 +104,12 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
    report_info("Found match for $db identifier " . echoable((string) $document->Id));
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+   $an_id = (string) $an_id;
    if (!array_key_exists($template_key, $templates)) {
-       bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . (string) $an_id); // @codeCoverageIgnore
-       $an_id = -3333;  // @codeCoverageIgnore
+       bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id); // @codeCoverageIgnore
+       $an_id = '-3333';  // @codeCoverageIgnore
    }
-   if ($an_id === $document->Id) {
+   if ($an_id === (string) $document->Id) {
     $this_template = $templates[$template_key];
     $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
 
@@ -389,6 +390,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+      $an_id = (string) $an_id;
       if (isset($record->bibcode) && strtolower($an_id) === strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
          $this_template = $templates[$template_key];
          if (isset($record->citation_bot_new_bibcode)) {
