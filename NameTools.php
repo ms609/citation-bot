@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require_once 'constants.php';    // @codeCoverageIgnore
@@ -7,13 +8,14 @@ require_once 'constants.php';    // @codeCoverageIgnore
  * Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
+
 /** @return array<string> */
 function junior_test(string $name) : array {
-  $junior = (substr($name, -3) === " Jr")?" Jr":"";
+  $junior = substr($name, -3) === " Jr" ?" Jr" : "";
   if ($junior) {
     $name = substr($name, 0, -3);
   } else {
-    $junior = (substr($name, -4) === " Jr.")?" Jr.":"";
+    $junior = substr($name, -4) === " Jr." ? " Jr." : "";
     if ($junior) {
       $name = substr($name, 0, -4);
     }
@@ -108,7 +110,7 @@ function format_surname_2(string $surname) : string {
     static function(array $matches) : string {
         return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
     },
-    mb_ereg_replace(" - ", "-", $surname));
+  mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
   $ret = preg_replace_callback('~;\w~', static function(array $matches) : string {return mb_strtolower($matches[0]);}, $ret);
   return $ret;
@@ -139,7 +141,7 @@ function format_initials(string $str) : string {
     if ($str === "") {
       return "";
     }
-    $end = (substr($str, strlen($str)-1) === ";") ? ";" : '';
+    $end = substr($str, strlen($str)-1) === ";" ? ";" : '';
     preg_match_all("~\w~u", $str, $match);
     return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
@@ -231,7 +233,7 @@ function format_author(string $author) : string {
             if (is_initials($bit)) {
               $i[] = format_initials($bit);
             } else {
-              $surname .= "$bit ";
+              $surname .= "{$bit} ";
             }
           }
           unset($auth[0]);
@@ -309,20 +311,27 @@ function format_multiple_authors(string $authors) : string {
   $bits = [];
   if (isset($authors[1])) {
     foreach ($authors as $A){
-      if (trim($A) !== "") $return[] = format_author($A);
+      if (trim($A) !== "") {
+        $return[] = format_author($A);
+      }
     }
   } else {
     //Use commas as delimiters
     $chunks = explode(",", $authors[0]);
     foreach ($chunks as $chunk){
       $chunk = trim($chunk);
-      if ($chunk === '') continue; // Odd things with extra commas
+      if ($chunk === '') {
+        continue; // Odd things with extra commas
+      }
       $bits = explode(" ", $chunk);
       $bitts = [];
       foreach ($bits as $bit){
-        if ($bit) $bitts[] = $bit;
+        if ($bit) {
+          $bitts[] = $bit;
+        }
       }
-      $bits = $bitts; unset($bitts);
+      $bits = $bitts;
+      unset($bitts);
       if (isset($bits[1]) || $savedChunk) {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = '';
@@ -340,8 +349,7 @@ function format_multiple_authors(string $authors) : string {
   foreach ($frags as $frag){
     $return[] = is_initials($frag)?format_initials($frag):$frag;
   }
-  $returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
-  return $returnString;
+  return preg_replace("~;$~", "", trim(implode(" ", $return)));
 }
 
 function under_two_authors(string $text) : bool {
