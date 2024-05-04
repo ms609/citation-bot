@@ -1622,7 +1622,17 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id": case "bsq":
+          case "dq":
+          case "pg":
+          case "lpg":
+          case "q":
+          case "printsec":
+          case "cd":
+          case "vq":
+          case "jtp":
+          case "sitesec":
+          case "article_id":
+          case "bsq":
             if (empty($part_start[1])) {
                 $removed_redundant++;
                 $removed_parts .= $part;
@@ -1633,6 +1643,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "id":
             break; // Don't "remove redundant"
           // These all go away
+          case "hl":
           case "ei":
           case "ots":
           case "sig":
@@ -2787,9 +2798,25 @@ function simplify_google_search(string $url) : string {
           if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break; // UTF-8 is the default
           $url .=  $part . "&" ;
           break;
-       case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
-       case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb": case "gbv":
-       case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q": case "kponly":
+       case "hl":
+       case "safe":
+       case "q":
+       case "tbm":
+       case "start":
+       case "ludocid":
+       case "cshid":
+       case "stick":
+       case "as_eq":
+       case "kgmid":
+       case "as_drrb":
+       case "gbv":
+       case "as_scoring":
+       case "gl":
+       case "rllag":
+       case "lsig":
+       case "lpsid":
+       case "as_q":
+       case "kponly":
           $url .=  $part . "&" ;
           break;
        default:
