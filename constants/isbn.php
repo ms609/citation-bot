@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 /** https://en.wikipedia.org/wiki/Module:Format_ISBN/data */
-
-const ISBN_HYPHEN_POS = [  //  RangeMessage timestamp: 2024-05-03T05:31:04 BST
+const ISBN_TIME_STAMP_USED = 'RangeMessage timestamp: 2024-05-03T05:31:04 BST';
+const ISBN_HYPHEN_POS = [
     '9780199999999' => [1, 2, 6],    //  English language
     '9780227999999' => [1, 3, 5],
     '9780228999999' => [1, 4, 4],
