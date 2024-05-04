@@ -1050,7 +1050,7 @@ final class Template
    }
   }
 
-  if ($this->wikiname() == 'cite book' || ($this->wikiname() == 'citation' && $this->has('isbn'))) {
+  if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) {
    // Assume book
    if ($this->display_authors() >= $this->number_of_authors()) {
     return true;
@@ -3421,7 +3421,7 @@ final class Template
      }
    }
    unset($ris_part[0]);
-   if ($ris_parameter && (($ris_parameter == 'url' && !$add_url) || $this->add_if_new($ris_parameter, trim(implode($ris_part))))) {
+   if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $this->add_if_new($ris_parameter, trim(implode($ris_part))))) {
     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
    }
   }
@@ -3600,7 +3600,7 @@ final class Template
     }
     preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
     $host_name = (string) @$match[1]; // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
-    if ($host_name == '') {
+    if ($host_name === '') {
      return 'no_slash';
     }
     if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) {
@@ -5895,7 +5895,7 @@ final class Template
        $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
        $this->set($param, '[[' . $periodical . ']]');
        $new_periodical = title_capitalization(mb_ucwords($periodical), true);
-       if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' && str_replace(['(', ')'], '', $periodical) == $periodical && $new_periodical != $periodical) {
+       if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' && str_replace(['(', ')'], '', $periodical) === $periodical && $new_periodical !== $periodical) {
         $now = WikipediaBot::is_redirect($periodical);
         if ($now === -1) {
          // Dead link
@@ -5915,7 +5915,7 @@ final class Template
         $human_text = $matches[1];
        }
        $new_linked_text = title_capitalization(mb_ucwords($linked_text), true);
-       if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') === ' ' . $linked_text . ' ' && str_replace(['(', ')'], '', $linked_text) == $linked_text && $new_linked_text != $linked_text) {
+       if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') === ' ' . $linked_text . ' ' && str_replace(['(', ')'], '', $linked_text) === $linked_text && $new_linked_text !== $linked_text) {
         $now = WikipediaBot::is_redirect($linked_text);
         if ($now === -1) {
          $linked_text = $new_linked_text; // Dead to something
