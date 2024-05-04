@@ -596,6 +596,6 @@ final class constantsTest extends testBaseClass {
   public function testForISBNListUpdates() : void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
       $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
       $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
-      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-04-02T05:38:23 BST'));
+      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-05-03T05:31:04 BST'));
   }
 }
