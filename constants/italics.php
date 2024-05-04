@@ -434,6 +434,7 @@ const CAMEL_CASE =    ['DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn
     'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology', 'PhotonIcs',
     'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma', 'MiniVess', 'GlobeCom',
+    'ASHRAE GreenGuide',
     ];
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
@@ -464,7 +465,7 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
     "Qusayr AmraArt and the", " ofDrosophilamotor circuits", "Understanding GenocideThe Social", "New Supreme CourtNational and",
     "the Limits of EmpireOpium and", "Roman EmpireVolume I: Maximilian", "History DerailedCentral and Eastern ",
     " Last CampaignBritain and the ", " and ConditionalsNew and Revised ", "Programmed Cell Death,General Principles forStudying Cell Death",
-    "Thriving in AmericaCapitalism and",
+    "Thriving in AmericaCapitalism and", " Social WorkHuman Rights",
 ];
 const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
@@ -494,5 +495,5 @@ const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnet
     "Qusayr Amra: Art and the", " of ''Drosophila'' motor circuits", "Understanding Genocide: The Social", "New Supreme Court: National and",
     "the Limits of Empire: Opium and", "Roman Empire: Volume I: Maximilian", "History Derailed: Central and Eastern ",
     " Last Campaign: Britain and the ", " and Conditionals: New and Revised ", "Programmed Cell Death, General Principles for Studying Cell Death",
-    "Thriving in America: Capitalism and",
+    "Thriving in America: Capitalism and", " Social Work: Human Rights",
 ];
