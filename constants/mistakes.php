@@ -611,6 +611,13 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     "path" => "url",
     "titl" => "title",
     "archive path" => "archive-url",
+    "wesite" => "website",
+    "en ligne le acc" =>  date",
+    "pg" => "page",
+    "publusher" => "publisher",
+    "accesss-datet" => "access-date",
+    "acessdate" => "accessdate",
+    "archive-seekurl" => "archive-url",
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
