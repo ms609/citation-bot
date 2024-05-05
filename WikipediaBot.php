@@ -461,10 +461,12 @@ final class WikipediaBot {
     }
     if ($response === '') return false;
     $response = str_replace(["\r", "\n"], '', $response);  // paranoid
-    if (strpos($response, '"invalid"') !== false) return false; // IP Address and similar stuff
-    if (strpos($response, '"blockid"') !== false) return false; // Valid but blocked
-    if (strpos($response, '"missing"') !== false) return false; // No such account
-    if (strpos($response, '"userid"')  === false) return false; // Double check, should actually never return false here
+    if (strpos($response, '"invalid"') !== false || // IP Address and similar stuff
+        strpos($response, '"blockid"') !== false || // Valid but blocked
+        strpos($response, '"missing"') !== false || // No such account
+        strpos($response, '"userid"')  === false) { // should actually never return false here
+      return false;
+    }
     return true;
   }
 
@@ -476,7 +478,9 @@ final class WikipediaBot {
     return $this->the_user;
   }
   public static function GetLastUser() : string {
-    if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
+    if(isset(self::$last_WikipediaBot)) {
+      return self::$last_WikipediaBot->get_the_user_internal();
+    }
     return '';  // @codeCoverageIgnore
   }
 
