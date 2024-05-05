@@ -720,42 +720,43 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      }
      if (str_ends_with((string) @$json['title'], '.PDF')) unset($json['title']);
      if (str_ends_with((string) @$json['title'], '.pdf')) unset($json['title']);
-     if (@$json['type'] == 'article-journal' ||
-         @$json['type'] == 'journal-article' ||
-         @$json['type'] == 'article' ||
-         @$json['type'] == 'proceedings-article' ||
-         @$json['type'] == 'conference-paper' ||
-         @$json['type'] == 'entry' ||
-         (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
+     $type = (string) @$json['type'];
+     if ($type === 'article-journal' ||
+         $type === 'journal-article' ||
+         $type === 'article' ||
+         $type === 'proceedings-article' ||
+         $type === 'conference-paper' ||
+         $type === 'entry' ||
+         ($type === '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
-     } elseif (@$json['type'] == 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
+     } elseif ($type === 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
        $try_to_add_it('journal', @$json['container-title']);   // @codeCoverageIgnore
        $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
+     } elseif ($type === 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
        $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
+     } elseif ($type === 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
        $try_to_add_it('work', @$json['container-title']);      // @codeCoverageIgnore
        $try_to_add_it('title', @$json['title']);               // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book' || @$json['type'] == 'edited-book') {
+     } elseif ($type === 'monograph' || $type === 'book' || $type === 'edited-book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'reference-book') { // VERY rare
+     } elseif ($type === 'reference-book') { // VERY rare
        $try_to_add_it('title', @$json['title']);                 // @codeCoverageIgnore
        $try_to_add_it('title', @$json['container-title']);       // @codeCoverageIgnore
        $try_to_add_it('chapter', @$json['original-title']);      // @codeCoverageIgnore
        $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
        $try_to_add_it('publisher', @$json['publisher']);         // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'chapter' ||
-               @$json['type'] == 'book-chapter') {
+     } elseif ($type === 'chapter' ||
+               $type === 'book-chapter') {
        $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'other') {
+     } elseif ($type === 'other') {
        if (isset($json['container-title'])) {
          $try_to_add_it('title', @$json['container-title']);
          $try_to_add_it('chapter', @$json['title']);
@@ -764,7 +765,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        }
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'dataset') {
+     } elseif ($type === 'dataset') {
        $try_to_add_it('type', 'Data Set');
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
@@ -773,11 +774,11 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
-     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic' || @$json['type'] == 'report' || @$json['type'] == 'report-component') {  // Add what we can where we can
+     } elseif ($type === '' || $type === 'graphic' || $type === 'report' || $type === 'report-component') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'thesis' || @$json['type'] == 'dissertation' || @$json['type'] == 'dissertation-thesis') {
+     } elseif ($type === 'thesis' || $type === 'dissertation' || $type === 'dissertation-thesis') {
        $template->change_name_to('cite thesis');
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
@@ -785,12 +786,12 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
-     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant' || @$json['type'] == 'song' || @$json['type'] == 'motion_picture') { // posted-content is from bioRxiv
+     } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture') { // posted-content is from bioRxiv
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
-       report_minor_error('dx.doi.org returned unexpected data type ' . echoable((string) @$json['type']) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return;
 }
