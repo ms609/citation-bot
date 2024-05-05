@@ -10,7 +10,7 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 
 require_once 'setup.php';
 
-if (count($_GET) !== 1) exit('Exactly one parameters must be passed</pre></body></html>');
+if (count($_GET) !== 1) exit('Exactly one paramete rs must be passed</pre></body></html>');
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
 
