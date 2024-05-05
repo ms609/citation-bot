@@ -20,10 +20,9 @@ check_blocked();
 
 if (isset($argv[1])) {
   $pages = $argv[1];
-  if ($pages === 'page_list.txt' ) $pages = trim((string) @file_get_contents('page_list.txt' ));
-  if ($pages === 'page_list1.txt') $pages = trim((string) @file_get_contents('page_list1.txt'));
-  if ($pages === 'page_list2.txt') $pages = trim((string) @file_get_contents('page_list2.txt'));
-  if ($pages === 'page_list3.txt') $pages = trim((string) @file_get_contents('page_list3.txt'));
+  if (in_array($pages, ['page_list.txt', 'page_list2.txt'])) {
+    $pages = trim((string) @file_get_contents($pages));
+  }
 } elseif (isset($_GET["page"])) {
   $pages = $_GET["page"];
   if (!is_string($pages)) {
