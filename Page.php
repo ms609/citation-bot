@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
+
 /*
- * Page contains methods that will do most of the higher-level work of expanding citations
- * on the wikipage associated with the Page object.
- * Provides functions to read, parse, expand text (using Template and Comment)
- * handle collected page modifications, and save the edited page text
- * to the wiki.
+ * Page contains methods that will do most of the higher-level work of expanding
+ * citations on the wikipage associated with the Page object.
+ * Provides functions to read, parse, expand text,
+ * handle collected page modifications, and save the edited page text.
  */
 
 require_once 'Comment.php';       // @codeCoverageIgnore
@@ -15,6 +15,7 @@ require_once 'expandFns.php';     // @codeCoverageIgnore
 require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
+
 class Page {
 
   protected string $text = '';

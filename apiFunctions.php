@@ -85,9 +85,9 @@ final class AdsAbsControl {
 function entrez_api(array $ids, array &$templates, string $db) : void {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return;
-  if ($ids == ['XYZ']) return; // junk data from test suite
-  if ($ids == ['1']) return; // junk data from test suite
-  if ($ids == ['']) return; // junk data from test suite
+  if ($ids === ['XYZ']) return; // junk data from test suite
+  if ($ids === ['1']) return; // junk data from test suite
+  if ($ids === ['']) return; // junk data from test suite
   if ($db !== 'pubmed' && $db !== 'pmc') {
     report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
   }
@@ -104,11 +104,12 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
    report_info("Found match for $db identifier " . echoable((string) $document->Id));
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+   $an_id = (string) $an_id;
    if (!array_key_exists($template_key, $templates)) {
-       bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . (string) $an_id); // @codeCoverageIgnore
-       $an_id = -3333;  // @codeCoverageIgnore
+       bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id); // @codeCoverageIgnore
+       $an_id = '-3333';  // @codeCoverageIgnore
    }
-   if ($an_id == $document->Id) {
+   if ($an_id === (string) $document->Id) {
     $this_template = $templates[$template_key];
     $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
 
@@ -545,13 +546,13 @@ function expand_by_doi(Template $template, bool $force = false) : void {
 
         foreach ($crossRef->contributors->contributor as $author) {
           if (strtoupper((string) $author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
-          if ($author["contributor_role"] == 'editor') {
+          if ((string) $author["contributor_role"] === 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
               $template->add_if_new("editor-last$ed_i", format_surname((string) $author->surname), 'crossref');
               $template->add_if_new("editor-first$ed_i", format_forename((string) $author->given_name), 'crossref');
             }
-          } elseif ($author['contributor_role'] == 'author' && $add_authors) {
+          } elseif ((string) $author['contributor_role'] === 'author' && $add_authors) {
             ++$au_i;
             $template->add_if_new("last$au_i", format_surname((string) $author->surname), 'crossref');
             $template->add_if_new("first$au_i", format_forename((string) $author->given_name), 'crossref');
@@ -665,8 +666,9 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
          if (!isset($data['0']) || isset($data['1'])) return; // @codeCoverageIgnore
          $data = $data['0'];                                  // @codeCoverageIgnore
        }
-       if ($data == '') return;
-       $template->add_if_new($name, (string) $data, 'dx');
+       $data = (string) $data;
+       if ($data === '') return;
+       $template->add_if_new($name, $data, 'dx');
        return;
      };
      if (!$doi) return;
@@ -686,7 +688,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      }
      $json = @json_decode($data, true);
      unset($data);
-     if($json == false) return;
+     if($json === false || $json === null) return;
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes null, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
@@ -1067,7 +1069,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             foreach ($encode as $pos_encode) {
                 if (!$cleaned) {
                   $try = smart_decode($title, $pos_encode, $archive_url);
-                  if ($try != "") {
+                  if ($try !== "") {
                     $title = $try;
                     $cleaned = true;
                   }

@@ -3,6 +3,7 @@
 // https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js
 
 declare(strict_types=1);
+
 set_time_limit(120);
 ignore_user_abort(false); // Dies if cannot connect back to client, should be the default
 
@@ -32,11 +33,15 @@ try {
  $page->parse_text($originalText);
  $page->expand_text();
  $newText = $page->parsed_text();
- if ($newText === "") throw new Exception('text lost');  // @codeCoverageIgnore
+ if ($newText === "") {
+  throw new Exception('text lost');  // @codeCoverageIgnore
+ }
 
  //Modify edit summary to identify bot-assisted edits
  if ($newText !== $originalText) {
-   if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+   if ($editSummary) {
+    $editSummary .= ' | '; // Add pipe if already something there.
+   }
    $editSummary .=  str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
  }
  unset($originalText, $page);

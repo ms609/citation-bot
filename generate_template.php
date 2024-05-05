@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
+
 set_time_limit(120);
-// outputs a Wikipedia reference from a DOI
-// usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
+
+// usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
 require_once 'html_headers.php';
 
@@ -10,20 +11,33 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 
 require_once 'setup.php';
 
-if (count($_GET) !== 1) exit('Exactly one paramete rs must be passed</pre></body></html>');
+if (count($_GET) !== 1) {
+    echo 'Exactly one parameters must be passed</pre></body></html>';
+    exit;
+}
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
 
 if (!is_string($param) || !is_string($value)) {
-    exit('Invalid parameter type error for passed parameter</pre></body></html>'); // @codeCoverageIgnore
+    echo 'Invalid parameter type error for passed parameter</pre></body></html>';
+    exit;
 }
-if (strlen($value) < 3) exit('Unset parameter error</pre></body></html>');
-if (strlen($value) > 100) exit('Excessive parameter error</pre></body></html>');
+if (strlen($value) < 3) {
+    echo 'Unset parameter error</pre></body></html>';
+    exit;
+}
+if (strlen($value) > 100) {
+    exit('Excessive parameter error</pre></body></html>');
+}
 if ((strpos($value, "'") !== false ) || (strpos($value, '"') !== false ) || (strpos($value, "|") !== false ) || (strpos($value, " ") !== false )) {
-     exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
+    echo 'Invalid parameter value error</pre></body></html>';
+    exit;
 }
 $param = mb_strtolower($param);
-if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) exit('Unexpected parameter passed</pre></body></html>');
+if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) {
+   echo 'Unexpected parameter passed</pre></body></html>';
+   exit;
+}
 
 $t = new Template();
 $t->parse_text('{{cite web }}');

@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
@@ -120,8 +121,12 @@ if ((string) getenv("PHP_S2APIKEY") !== "") {
 $nlm_tool = "WikipediaCitationBot";
 $nlm_apikey = (string) getenv("NLM_APIKEY");
 $nlm_email = (string) getenv("NLM_EMAIL");
-if (!(strpos($nlm_email, '@') > 0)) $nlm_email = PUBMEDUSERNAME;
-if (strlen($nlm_apikey) < 8) $nlm_apikey = ""; // Probably "xxxxx"
+if (!(strpos($nlm_email, '@') > 0)) {
+  $nlm_email = PUBMEDUSERNAME;
+}
+if (strlen($nlm_apikey) < 8) {
+  $nlm_apikey = "";
+}
 define ("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
 unset($nlm_email, $nlm_apikey, $nlm_tool);
 

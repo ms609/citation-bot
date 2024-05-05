@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 const REGEXP_PLAIN_WIKILINK = '~\[\[([^|\[\]]+?)\]\]~';
 const REGEXP_PLAIN_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\]\]$~';
 // Matches: [1], target; [2], display text

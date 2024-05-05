@@ -4,7 +4,9 @@ declare(strict_types=1);
 require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
-  if (!TRAVIS || defined("TRAVIS_PRINT")) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
+  if (!TRAVIS || defined("TRAVIS_PRINT")) {
+    echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
+  }
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
@@ -35,7 +37,12 @@ function report_warning(string $text) : void  { user_notice("  !", "warning", $t
 function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
 function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
-function report_inline(string $text) : void { if ((!TRAVIS && defined('BIG_JOB_MODE')) || defined("TRAVIS_PRINT")) echo " $text"; }
+
+function report_inline(string $text) : void {
+  if ((!TRAVIS && defined('BIG_JOB_MODE')) || defined("TRAVIS_PRINT")) {
+    echo " $text";
+  }
+}
 // call report_warning to give users a message before we die
 function report_error(string $text) : never {
   // @codeCoverageIgnoreStart
