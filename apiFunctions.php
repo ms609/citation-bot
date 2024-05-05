@@ -714,13 +714,17 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
           }
        }
      }
-     // Publisher hiding as journal name - defective data
-     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
-        unset($json['container-title']);   // @codeCoverageIgnore
-     }
-     if (str_ends_with((string) @$json['title'], '.PDF')) unset($json['title']);
-     if (str_ends_with((string) @$json['title'], '.pdf')) unset($json['title']);
+
      $type = (string) @$json['type'];
+     $json_title = (string) @$json['title'];
+     $json_publisher = (string) @$json['publisher'];
+     $json_container_title = (string) @$json['container-title'];
+     $json_location =(string) @$json['publisher-location'];
+     $json_original_title = (string) @$json['original-title'];
+     $json_issn = (string) @$json['issn'];
+     if (str_ends_with($json_title, '.PDF')) $json_title = '';
+     if (str_ends_with($json_title, '.pdf')) $json_title = '';
+     if ($json_publisher === $json_container_title) $json_container_title = ''; // Publisher hiding as journal name - defective data
      if ($type === 'article-journal' ||
          $type === 'journal-article' ||
          $type === 'article' ||
@@ -728,68 +732,68 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
          $type === 'conference-paper' ||
          $type === 'entry' ||
          ($type === '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
-       $try_to_add_it('journal', @$json['container-title']);
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
+       $try_to_add_it('journal', $json_container_title);
+       $try_to_add_it('title', $json_title);
+       $try_to_add_it('issn', $json_issn); // Will not add if journal is set
      } elseif ($type === 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
-       $try_to_add_it('journal', @$json['container-title']);   // @codeCoverageIgnore
-       $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
+       $try_to_add_it('journal', $json_container_title);   // @codeCoverageIgnore
+       $try_to_add_it('issn', $json_issn);                 // @codeCoverageIgnore
      } elseif ($type === 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
-       $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
+       $try_to_add_it('issn', $json_issn);                 // @codeCoverageIgnore
      } elseif ($type === 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
-       $try_to_add_it('work', @$json['container-title']);      // @codeCoverageIgnore
-       $try_to_add_it('title', @$json['title']);               // @codeCoverageIgnore
+       $try_to_add_it('work', $json_container_title);      // @codeCoverageIgnore
+       $try_to_add_it('title', $json_title);               // @codeCoverageIgnore
      } elseif ($type === 'monograph' || $type === 'book' || $type === 'edited-book') {
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('title', $json_title);
+       $try_to_add_it('title', $json_container_title);// Usually not set, but just in case this instead of title is set
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
      } elseif ($type === 'reference-book') { // VERY rare
-       $try_to_add_it('title', @$json['title']);                 // @codeCoverageIgnore
-       $try_to_add_it('title', @$json['container-title']);       // @codeCoverageIgnore
-       $try_to_add_it('chapter', @$json['original-title']);      // @codeCoverageIgnore
-       $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
-       $try_to_add_it('publisher', @$json['publisher']);         // @codeCoverageIgnore
+       $try_to_add_it('title', $json_title);                 // @codeCoverageIgnore
+       $try_to_add_it('title', $json_container_title);       // @codeCoverageIgnore
+       $try_to_add_it('chapter', $json_original_title);      // @codeCoverageIgnore
+       $try_to_add_it('location', $json_location); // @codeCoverageIgnore
+       $try_to_add_it('publisher', $json_publisher);         // @codeCoverageIgnore
      } elseif ($type === 'chapter' ||
                $type === 'book-chapter') {
-       $try_to_add_it('title', @$json['container-title']);
-       $try_to_add_it('chapter', @$json['title']);
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('title', $json_container_title);
+       $try_to_add_it('chapter', $json_title);
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
      } elseif ($type === 'other') {
        if (isset($json['container-title'])) {
-         $try_to_add_it('title', @$json['container-title']);
-         $try_to_add_it('chapter', @$json['title']);
+         $try_to_add_it('title', $json_container_title);
+         $try_to_add_it('chapter', $json_title);
        } else {
-         $try_to_add_it('title', @$json['title']);
+         $try_to_add_it('title', $json_title);
        }
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
      } elseif ($type === 'dataset') {
        $try_to_add_it('type', 'Data Set');
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('title', $json_title);
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
        if (!isset($json['categories']['1']) &&
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
      } elseif ($type === '' || $type === 'graphic' || $type === 'report' || $type === 'report-component') {  // Add what we can where we can
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('title', $json_title);
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
      } elseif ($type === 'thesis' || $type === 'dissertation' || $type === 'dissertation-thesis') {
        $template->change_name_to('cite thesis');
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+       $try_to_add_it('title', $json_title);
+       $try_to_add_it('location', $json_location);
+       $try_to_add_it('publisher', $json_publisher);
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
      } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture') { // posted-content is from bioRxiv
-       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('title', $json_title);
      } else {
-       $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
+       $try_to_add_it('title', $json_title);                                                 // @codeCoverageIgnore
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
        report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
