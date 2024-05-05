@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.1387/ijdb.140230fl' => true, // Nothing
+    '10.3969/j.issn.1009-086x.2022.02.002' => true, // Nothing
+    '10.4103/JCSR.JCSR_83_20' => true, // journal
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1080/10798587.2007.10642974' => true, // Spam
     '10.1139/gen-41-4-543' => true, // Journal in general
@@ -94,10 +97,10 @@ const NULL_DOI_LIST = [
     '10.1093/applin/1.1.1' => true,
     '10.1080/11024150201680030' => true,
     '10.15640/rhps.v3n2a5' => true,
-    '10.1387/ijdb.140230fl' => true,
+    '10.1387/ijdb.140230fl' => true, // Nothing
     '10.22520/tubaar.2019.25.004' => true,
     '10.1525/jps.1975.4.2.00p02962' => true,
-    '10.3969/j.issn.1009-086x.2022.02.002' => true,
+    '10.3969/j.issn.1009-086x.2022.02.002' => true, // Nothing
     '10.31377/HAW.V17I0.67' => true,
     '10.2307/25155490' => true,
     '10.25120/etropic.18.1.2019.3672' => true,
