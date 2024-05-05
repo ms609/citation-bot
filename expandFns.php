@@ -57,8 +57,12 @@ final class HandleCache {
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  if (isset(HandleCache::$cache_active[$doi])) return true;
-  if (isset(HandleCache::$cache_inactive[$doi]))  return false;
+  if (isset(HandleCache::$cache_active[$doi])) {
+    return true;
+  }
+  if (isset(HandleCache::$cache_inactive[$doi])) {
+    return false;
+  }
 
   $works = doi_works($doi);
   if ($works !== true) {
@@ -79,23 +83,22 @@ function doi_active(string $doi) : ?bool {
 
 function doi_works(string $doi) : ?bool {
   $doi = trim($doi);
-  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return null;
-  if (isset(HandleCache::$cache_good[$doi])) return true;
-  if (isset(HandleCache::$cache_hdl_bad[$doi]))  return false;
-  if (isset(HandleCache::$cache_hdl_null[$doi])) return null;
+  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
+    return null;
+  }
+  if (isset(HandleCache::$cache_good[$doi])) {
+    return true;
+  }
+  if (isset(HandleCache::$cache_hdl_bad[$doi])) {
+    return false;
+  }
+  if (isset(HandleCache::$cache_hdl_null[$doi])) {
+    return null;
+  }
   HandleCache::check_memory_use();
 
   $works = is_doi_works($doi);
   if ($works === null) {
-    if (isset(NULL_DOI_LIST[$doi])) { // These are know to be bad, so only check one time during run
-        HandleCache::$cache_hdl_bad[$doi] = true;
-        return false;
-    }
-    // These are know to be good, but sometimes null since PDF, etc
-    if (isset(NULL_DOI_BUT_GOOD[$doi])) {        // @codeCoverageIgnoreStart
-        HandleCache::$cache_good[$doi] = true;
-        return true;
-    }
     // These are unexpected nulls
     HandleCache::$cache_hdl_null[$doi] = true;
     return null;                                 // @codeCoverageIgnoreEnd
@@ -132,14 +135,22 @@ function is_doi_active(string $doi) : ?bool {
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);                                 // @codeCoverageIgnoreEnd
   }
-  if ($header === "" || ($response_code === 503)) return null;
-  if ($body === 'Resource not found.') return false;
-  if ($response_code === 200) return true;
-  if ($response_code === 404) return false; // @codeCoverageIgnoreStart
+  if ($header === "" || ($response_code === 503)) {
+    return null;
+  }
+  if ($body === 'Resource not found.'){
+    return false;
+  }
+  if ($response_code === 200) {
+    return true;
+  }
+  if ($response_code === 404) { // @codeCoverageIgnoreStart
+    return false;
+  }
   $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
   bot_debug_log($err);
   report_warning($err);
-  return null;                                  // @codeCoverageIgnoreEnd
+  return null;                  // @codeCoverageIgnoreEnd
 }
 
 function throttle_dx () : void {
@@ -163,44 +174,60 @@ function throttle_archive () : void {
 function is_doi_works(string $doi) : ?bool {
   $doi = trim($doi);
   // And now some obvious fails
-  if (strpos($doi, '/') === false) return false;
-  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) return false;
-  if (preg_match('~^10\.1007/springerreference~', $doi)) return false;
-  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return false;
-  if (isset(NULL_DOI_ANNOYING[$doi])) return false; // TODO - this array should be checked from time to time
+  if (strpos($doi, '/') === false){
+    return false;
+  }
+  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) {
+    return false;
+  }
+  if (preg_match('~^10\.1007/springerreference~', $doi)) {
+    return false;
+  }
+  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) {
+    return false;
+  }
+  if (isset(NULL_DOI_ANNOYING[$doi])) {
+    return false;
+  }
   $registrant = $matches[1];
   // TODO this will need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
   // 14:43, January 14, 2023 version is last check
   if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
-    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return false; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-    if (preg_match('~^[^1-6]\d\d\d\d$~', $registrant)) return false;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
-    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return false;   // 4 digits with subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return false;          // 4 digits without subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return false;          // 6 or more digits
-    if (preg_match('~^\d\d?\d?$~', $registrant)) return false;              // less than 4 digits without subcode (3 digits with subcode is legitimate)
-    if (preg_match('~^\d\d?\.[\d\.]+~', $registrant)) return false;         // 1 or 2 digits with subcode
-    if ($registrant === '5555') return false;                               // test registrant will never resolve
-    if (preg_match('~[^\d\.]~', $registrant)) return false;                 // any character that isn't a digit or a dot
+    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+        preg_match('~^[^1-6]\d\d\d\d$~', $registrant) ||        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+        preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||   // 4 digits with subcode (0xxx); accepts: 1000–9999
+        preg_match('~^[^1-9]\d\d\d$~', $registrant) ||          // 4 digits without subcode (0xxx); accepts: 1000–9999
+        preg_match('~^\d\d\d\d\d\d+~', $registrant) ||          // 6 or more digits
+        preg_match('~^\d\d?\d?$~', $registrant) ||              // less than 4 digits without subcode (3 digits with subcode is legitimate)
+        preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||         // 1 or 2 digits with subcode
+        $registrant === '5555' ||                               // test registrant will never resolve
+        preg_match('~[^\d\.]~', $registrant)) return false;     // any character that isn't a digit or a dot
   }
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
   $headers_test = get_headers_array($url);
   if ($headers_test === false) {
-     if (strpos($doi, '10.2277/') === 0) return false; // Rogue
-     if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return false; // Nature dropped the ball
-     if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return false;
-     if (stripos($doi, '10.3149/csm.') === 0) return false;
-     if (stripos($doi, '10.5047/meep.') === 0) return false;
-     if (stripos($doi, '10.4435/BSPI.') === 0) return false;
-     if (isset(NULL_DOI_LIST[$doi])) return null;
+     if (strpos($doi, '10.2277/') === 0 || // Rogue
+         preg_match('~^10\.1038/nature\d{5}$~i', $doi) || // Nature dropped the ball
+         stripos($doi, '10.17312/harringtonparkpress/') === 0 ||
+         stripos($doi, '10.3149/csm.') === 0 ||
+         stripos($doi, '10.5047/meep.') === 0 ||
+         stripos($doi, '10.4435/BSPI.') === 0) {
+       return false;
+     }
+     if (isset(NULL_DOI_LIST[$doi])) {
+       return false;
+     }
      foreach (NULL_DOI_STARTS_BAD as $bad_start) {
         if (stripos($doi, $bad_start) === 0) {
           return false; // all gone
         }
      }
-     if (isset(NULL_DOI_BUT_GOOD[$doi])) return null;  // @codeCoverageIgnoreStart
+     if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+       return true;  // @codeCoverageIgnoreStart
+     }
      $headers_test = get_headers_array($url);
      bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));  // @codeCoverageIgnoreEnd
   }
@@ -1862,22 +1889,24 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
 
 function doi_is_bad (string $doi) : bool {
     $doi = strtolower($doi);
-    if ($doi === '10.5284/1000184') return true; // DOI for the entire database
-    if ($doi === '10.1267/science.040579197') return true; // PMID test doi
-    if ($doi === '10.2307/3511692') return true; // common review
-    if ($doi === '10.1377/forefront') return true; // over-truncated
-    if ($doi === '10.1126/science') return true; // over-truncated
-    if (strpos($doi, '10.5779/hypothesis') === 0) return true; // SPAM took over
-    if (strpos($doi, '10.5555/') === 0) return true; // Test DOI prefix
-    if (strpos($doi, '10.5860/choice.') === 0) return true; // Paywalled book review
-    if (strpos($doi, '10.1093/law:epil') === 0) return true; // Those do not work
-    if (strpos($doi, '10.1093/oi/authority') === 0) return true; // Those do not work
-    if (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) return true; // Has doi in the URL, but is not a doi
-    if (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) return true; // Retired DOIs
-    if (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) return true; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
-    if (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) return true; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
-    if (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) return true; // do's not doi's
-    if (strpos($doi, '10.48550/arxiv') === 0) return true;
+    if ($doi === '10.5284/1000184' || // DOI for the entire database
+        $doi === '10.1267/science.040579197' || //  PMID test doi
+        $doi === '10.2307/3511692' || //  common review
+        $doi === '10.1377/forefront' || // / over-truncated
+        $doi === '10.1126/science' || //  // over-truncated
+        strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
+        strpos($doi, '10.5555/') === 0 || // Test DOI prefix
+        strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
+        strpos($doi, '10.1093/law:epil') === 0 || // Those do not work
+        strpos($doi, '10.1093/oi/authority') === 0 || // Those do not work
+        (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) || // Has doi in the URL, but is not a doi
+        (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) || // Retired DOIs
+        (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) || // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
+        strpos($doi, '10.48550/arxiv') === 0) {
+          return true;
+    }
     return false;
 }
 
