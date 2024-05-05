@@ -1585,7 +1585,7 @@ function convert_to_utf8(string $value) : string {
     $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
     if ($encode1 !== $encode4) return $value;
     $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
-    if ($new_value == "") return $value;
+    if ($new_value === "") return $value;
     return $new_value;
 }
 
@@ -1619,7 +1619,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   } catch (ValueError $v) {
        $try = "";
   }                        // @codeCoverageIgnoreEnd
-  if ($try == "") {
+  if ($try === "") {
        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
   }
   return $try;
