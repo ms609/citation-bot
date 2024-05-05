@@ -25,7 +25,9 @@ final class WikipediaBot {
 
   public static function make_ch() : void {
     static $init_done = false;
-    if ($init_done) return;
+    if ($init_done) {
+      return;
+    }
     $init_done = true;
     // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
     self::$ch_write  = bot_curl_init(1.0,
@@ -105,8 +107,12 @@ final class WikipediaBot {
       @param array<mixed> $params */
   private function fetch(array $params, int $depth = 1) : ?object {
     set_time_limit(120);
-    if ($depth > 1) sleep($depth+2);
-    if ($depth > 4) return null;
+    if ($depth > 1) {
+      sleep($depth+2);
+    }
+    if ($depth > 4) {
+      return null;
+    }
     $params['format'] = 'json';
 
     $token = $this->bot_token;
@@ -172,7 +178,9 @@ final class WikipediaBot {
     ]);
 
     $myPage = self::response2page($response);
-    if ($myPage === null) return false;
+    if ($myPage === null) {
+      return false;
+    }
 
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
 
