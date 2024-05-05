@@ -791,7 +791,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
-       report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type . ' for ' . doi_link($doi));     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type . ' for ' . doi_link($doi)));     // @codeCoverageIgnore
      }
      return;
 }
