@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /*
  * Parameter includes parsing functions to extract parameters, values, and metadata
  * from templates.

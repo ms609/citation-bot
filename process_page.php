@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
+
 set_time_limit(120);
 @session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
-
 require_once 'setup.php';
 
 $api = new WikipediaBot();

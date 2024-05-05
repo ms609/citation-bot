@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
+
 set_time_limit(120);
-// outputs a Wikipedia reference from a DOI
-// usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
+
+// usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
 require_once 'html_headers.php';
 

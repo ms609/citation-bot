@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /*
  * Handle most aspects of citation templates
  * add_if_new() is generally called to add or sometimes overwrite parameters.

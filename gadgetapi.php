@@ -3,6 +3,7 @@
 // https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js
 
 declare(strict_types=1);
+
 set_time_limit(120);
 ignore_user_abort(false); // Dies if cannot connect back to client, should be the default
 
