@@ -1888,7 +1888,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
 }
 
 function doi_is_bad (string $doi) : bool {
-    $doi = strtolower($doi)
+    $doi = strtolower($doi);
     if ($doi === '10.5284/1000184' || // DOI for the entire database
         $doi === '10.1267/science.040579197' || //  PMID test doi
         $doi === '10.2307/3511692' || //  common review
