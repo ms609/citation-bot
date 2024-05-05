@@ -4387,7 +4387,7 @@ final class Template
    $id = str_replace($the_all, '', $id);
   }
   if (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
-   $num_placeholders = count($matches[1])
+   $num_placeholders = count($matches[1]);
    for ($i = 0; $i < $num_placeholders; $i++) {
     $subtemplate = self::$all_templates[$matches[1][$i]];
     $subtemplate_name = $subtemplate->wikiname();
