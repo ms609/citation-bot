@@ -1277,11 +1277,7 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
    } else {
       report_error("Invalid type passed to get_entrez_xml: " . echoable($type));  // @codeCoverageIgnore
    }
-   $xml = xml_post($url, $request);
-   if ($xml === null) {
-      sleep(1); // @codeCoverageIgnore
-   }
-   return $xml;
+   return xml_post($url, $request);
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
 function xml_post(string $url, string $post): ?SimpleXMLElement {
@@ -1298,7 +1294,10 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
                      ]);
    $output = bot_curl_exec($ch);
    $xml = @simplexml_load_string($output);
-   if ($xml === false) $xml = null;
+   if ($xml === false) {
+       sleep(1);
+       return null;
+   }
    return $xml;
 }
 
