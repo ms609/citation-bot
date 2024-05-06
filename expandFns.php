@@ -419,7 +419,7 @@ function wikify_external_text(string $title): string {
   $replacement = [];
   $placeholder = [];
   $title = safe_preg_replace_callback('~(?:\$\$)([^\$]+)(?:\$\$)~iu',
-      static function (array $matches) : string {return "<math>" . $matches[1] . "</math>";},
+      static function (array $matches): string {return "<math>" . $matches[1] . "</math>";},
       $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $num_matches = count($matches[0]);
@@ -487,19 +487,19 @@ function wikify_external_text(string $title): string {
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
     $title = safe_preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      static function (array $matches) : string {return "''" . $matches[1] . "''";},
+      static function (array $matches): string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      static function (array $matches) : string {return "'''" . $matches[1] . "'''";},
+      static function (array $matches): string {return "'''" . $matches[1] . "'''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-      static function (array $matches) : string {return "''" . $matches[1] . "''";},
+      static function (array $matches): string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
-      static function (array $matches) : string {return "''" . $matches[1] . "''";},
+      static function (array $matches): string {return "''" . $matches[1] . "''";},
       $title);
     $title = safe_preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
-      static function (array $matches) : string {return "''" . $matches[1] . "''";},
+      static function (array $matches): string {return "''" . $matches[1] . "''";},
       $title);
   }
 
@@ -691,7 +691,7 @@ function titles_simple(string $inTitle): string {
     // Failure leads to null or empty strings!!!!
     // Leading Chapter # -   Use callback to make sure there are a few characters after this
     $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
-        static function (array $matches) : string {
+        static function (array $matches): string {
           return $matches[1];
         }, trim($inTitle));
     if ($inTitle2 !== "") $inTitle = $inTitle2;
@@ -818,10 +818,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
   $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui",
-      static function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
+      static function (array $matches): string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
   $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui",
-      static function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
+      static function (array $matches): string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
@@ -838,10 +838,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // When there are lots of periods, then they probably mark abbreviations, not sentence ends
     // We should therefore capitalize after each punctuation character.
     $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
-      static function (array $matches) : string {return mb_strtoupper($matches[0]);},
+      static function (array $matches): string {return mb_strtoupper($matches[0]);},
       $new_case);
     $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
-      static function (array $matches) : string {return mb_strtoupper($matches[0]);},
+      static function (array $matches): string {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
@@ -849,26 +849,26 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
   $new_case = safe_preg_replace_callback(
     "~ \([a-z]~u" /* uppercase after parenthesis */,
-    static function (array $matches) : string {return mb_strtoupper($matches[0]);},
+    static function (array $matches): string {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
 
   $new_case = safe_preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */,
-    static function (array $matches) : string {return mb_strtolower($matches[0]);},
+    static function (array $matches): string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
   /** French l'Words and d'Words */
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    static function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
+    static function (array $matches): string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
     ' ' . $new_case
   );
 
   /** Italian dell'xxx words */
   $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
-    static function (array $matches) : string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
+    static function (array $matches): string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
     $new_case
   );
 
@@ -885,7 +885,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
   // Catch some specific epithets, which should be lowercase
   $new_case = safe_preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    static function (array $matches) : string {return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);},
+    static function (array $matches): string {return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);},
     $new_case);
 
   // "des" at end is "Des" for Design not german "The"
@@ -945,19 +945,19 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
-    static function (array $matches) : string {return " Part " . strtoupper($matches[1]) . ": ";},
+    static function (array $matches): string {return " Part " . strtoupper($matches[1]) . ": ";},
     $new_case);
   $new_case = safe_preg_replace_callback(
     "~ part ([xvi]+) ~iu",
-    static function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
+    static function (array $matches): string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
   $new_case = safe_preg_replace_callback(
     "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
-    static function (array $matches) : string {return strtoupper($matches[0]);},
+    static function (array $matches): string {return strtoupper($matches[0]);},
     $new_case);
   $new_case = safe_preg_replace_callback(
     "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
-    static function (array $matches) : string {return strtoupper($matches[0]);},
+    static function (array $matches): string {return strtoupper($matches[0]);},
     $new_case);
   $new_case = trim($new_case);
   // Special cases - Only if the full title
@@ -981,7 +981,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
   return $new_case;
 }
 
-function mb_ucfirst(string $string) : string
+function mb_ucfirst(string $string): string
 {
     $first = mb_substr($string, 0, 1);
     if (mb_strlen($first) !== strlen($first)) {
@@ -991,18 +991,18 @@ function mb_ucfirst(string $string) : string
     }
 }
 
-function mb_ucfirst_force(string $string) : string
+function mb_ucfirst_force(string $string): string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
 }
 
-function mb_strrev(string $string, string $encode = null) : string
+function mb_strrev(string $string, string $encode = null): string
 {
     $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
     return implode('', array_reverse($chars));
 }
 
-function mb_ucwords(string $string) : string
+function mb_ucwords(string $string): string
 {
    if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
       $output = '';
@@ -1175,7 +1175,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
   return false;
 }
 
-function bad_10_1093_doi(string $url) :bool {
+function bad_10_1093_doi(string $url):bool {
   return !not_bad_10_1093_doi($url);
 }
 
