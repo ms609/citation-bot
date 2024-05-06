@@ -294,7 +294,7 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
   } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
       return (string) $headers_test['location'][0];  // @codeCoverageIgnore
   } elseif (isset($headers_test['location'])) {
-      return(string) $headers_test['location'];
+      return (string) $headers_test['location'];
   } elseif (isset($headers_test['Location'])) {
       return (string) $headers_test['Location'];
   } else { // @codeCoverageIgnoreStart
