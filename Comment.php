@@ -16,7 +16,7 @@ abstract class WikiThings {
     $this->rawtext = $text;
   }
 
-  public function parsed_text() : string {
+  public function parsed_text(): string {
     return $this->rawtext;
   }
 }
