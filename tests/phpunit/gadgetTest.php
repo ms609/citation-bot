@@ -14,12 +14,12 @@ final class gadgetTest extends testBaseClass {
    }
   }
 
-  public function testFillCache() : void {
+  public function testFillCache(): void {
     $this->fill_cache();
     $this->assertTrue(true);
   }
 
-  public function testGadget() : void {
+  public function testGadget(): void {
       $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';

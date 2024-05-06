@@ -5,16 +5,16 @@ declare(strict_types=1);
 // Paranoid - trying to be atomic without non-portable locks etc.
 
 // "hard" as in "try hard" and ignore errors
-function hard_touch(string $file) : void {
+function hard_touch(string $file): void {
   touch($file);
   @fclose(@fopen($file, 'a')); // Do something else to file
 }
 
-function hard_unlink(string $file) : void {
+function hard_unlink(string $file): void {
   @unlink($file);
 }
 
-function big_jobs_name() : string { // NEVER save this string. Always use this function so that clearstatcache is called
+function big_jobs_name(): string { // NEVER save this string. Always use this function so that clearstatcache is called
   $version = "_1"; // So we can reset everyone, and we are 100% sure we do not get just the directory name
   $start = "/dev/shm/"; // Avoid .nfs*** files, and auto-delete when container dies
   $user = (string) @$_SESSION['citation_bot_user_id'];
@@ -29,12 +29,12 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
 }
 
 /** @param resource $lock_file */
-function big_jobs_we_died($lock_file) : void {
+function big_jobs_we_died($lock_file): void {
   @fclose($lock_file);
   hard_unlink(big_jobs_name());
 }
 
-function big_jobs_check_overused(int $page_count) : void {
+function big_jobs_check_overused(int $page_count): void {
  static $lock_file; // Force file handle to stay open
  if (!HTML_OUTPUT) return;
  if ($page_count < 50) return; // Used to be BIG_RUN constant
@@ -57,7 +57,7 @@ function big_jobs_check_overused(int $page_count) : void {
  register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
 }
 
-function big_jobs_check_killed() : void {
+function big_jobs_check_killed(): void {
  if (!HTML_OUTPUT) return;
  if (!defined('BIG_JOB_MODE')) return;
  $lfile = big_jobs_name();
@@ -73,7 +73,7 @@ function big_jobs_check_killed() : void {
  }
 }
 
-function big_jobs_kill() : bool {
+function big_jobs_kill(): bool {
  if (!file_exists(big_jobs_name())) return false;
  hard_touch(big_jobs_name() . '_kill_job');
  return true;

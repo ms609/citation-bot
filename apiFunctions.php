@@ -9,10 +9,10 @@ require_once 'NameTools.php';        // @codeCoverageIgnore
 
 /** @param array<string> $pmids
     @param array<Template> $templates */
-function query_pmid_api (array $pmids, array &$templates) : void { entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmid_api (array $pmids, array &$templates): void { entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 /** @param array<string> $pmcs
     @param array<Template> $templates */
-function query_pmc_api  (array $pmcs, array &$templates) : void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
+function query_pmc_api  (array $pmcs, array &$templates): void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   private const MAX_CACHE_SIZE = 50000;
@@ -23,29 +23,29 @@ final class AdsAbsControl {
   /** @var array<string> $bib2doi */
   private static array $bib2doi = [];
 
-  public static function big_gave_up_yet() : bool {
+  public static function big_gave_up_yet(): bool {
     self::$big_counter = max(self::$big_counter - 1, 0);
     return self::$big_counter !== 0;
   }
-  public static function big_give_up() : void {
+  public static function big_give_up(): void {
     self::$big_counter = 1000;
   }
-  public static function big_back_on() : void {
+  public static function big_back_on(): void {
     self::$big_counter = 0;
   }
 
-  public static function small_gave_up_yet() : bool {
+  public static function small_gave_up_yet(): bool {
     self::$small_counter = max(self::$small_counter - 1, 0);
     return self::$small_counter !== 0;
   }
-  public static function small_give_up() : void {
+  public static function small_give_up(): void {
     self::$small_counter = 1000;
   }
-  public static function small_back_on() : void {
+  public static function small_back_on(): void {
     self::$small_counter = 0;
   }
 
-  public static function add_doi_map(string $bib, string $doi) : void {
+  public static function add_doi_map(string $bib, string $doi): void {
     self::check_memory_use();
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
@@ -58,20 +58,20 @@ final class AdsAbsControl {
        if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) self::$doi2bib[$doi] = $bib;
     }
   }
-  public static function get_doi2bib(string $doi) : string {
+  public static function get_doi2bib(string $doi): string {
     return (string) @self::$doi2bib[$doi];
   }
-  public static function get_bib2doi(string $bib) : string {
+  public static function get_bib2doi(string $bib): string {
     return (string) @self::$bib2doi[$bib];
   }
 
-  public static function check_memory_use() : void {
+  public static function check_memory_use(): void {
       $usage = count(self::$doi2bib) + count(self::$bib2doi);
       if ($usage > self::MAX_CACHE_SIZE) {
         self::free_memory(); // @codeCoverageIgnore
       }
   }
-  public static function free_memory() : void {
+  public static function free_memory(): void {
       self::$doi2bib = [];
       self::$bib2doi = [];
       gc_collect_cycles();
@@ -83,7 +83,7 @@ final class AdsAbsControl {
   @param array<string> $ids
   @param array<Template> $templates
 */
-function entrez_api(array $ids, array &$templates, string $db) : void {   // Pointer to save memory
+function entrez_api(array $ids, array &$templates, string $db): void {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return;
   if ($ids === ['XYZ']) return; // junk data from test suite
@@ -209,12 +209,12 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
   @param array<string> $bibcodes
   @param array<Template> $templates
 */
-function query_bibcode_api(array $bibcodes, array &$templates) : void { adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
+function query_bibcode_api(array $bibcodes, array &$templates): void { adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
 /**
   @param array<Template> $templates
 */
-function expand_arxiv_templates (array &$templates) : void {  // Pointer to save memory
+function expand_arxiv_templates (array &$templates): void {  // Pointer to save memory
   $ids = [];
   $arxiv_templates = [];
   foreach ($templates as $this_template) {
@@ -236,7 +236,7 @@ function expand_arxiv_templates (array &$templates) : void {  // Pointer to save
   @param array<string> $ids
   @param array<Template> $templates
 */
-function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save memory
+function arxiv_api(array $ids, array &$templates): void {  // Pointer to save memory
   static $ch = null;
   if ($ch === null) {
       $ch = bot_curl_init(1.0, []);
@@ -341,7 +341,7 @@ function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save m
   @param array<string> $ids
   @param array<Template> $templates
 */
-function adsabs_api(array $ids, array &$templates, string $identifier) : void {  // Pointer to save memory
+function adsabs_api(array $ids, array &$templates, string $identifier): void {  // Pointer to save memory
   set_time_limit(120);
   if (count($ids) === 0) return;
 
@@ -439,14 +439,14 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
 
 /** @param array<string> $_ids
     @param array<Template> $templates */
-function query_doi_api(array $_ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
+function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
   return;
 }
 
-function expand_by_doi(Template $template, bool $force = false) : void {
+function expand_by_doi(Template $template, bool $force = false): void {
   set_time_limit(120);
   // Because it can recover rarely used parameters such as editors, series & isbn,
   // there will be few instances where it could not in principle be profitable to
@@ -603,7 +603,7 @@ function expand_by_doi(Template $template, bool $force = false) : void {
   return;
 }
 
-function query_crossref(string $doi) : ?object {
+function query_crossref(string $doi): ?object {
   static $ch = null;
   if ($ch === null) {
     $ch = bot_curl_init(1.0, []);
@@ -659,7 +659,7 @@ function query_crossref(string $doi) : ?object {
   return null;                                                                       // @codeCoverageIgnore
 }
 
-function expand_doi_with_dx(Template $template, string $doi) : void {
+function expand_doi_with_dx(Template $template, string $doi): void {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -815,7 +815,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      return;
 }
 
-function expand_by_jstor(Template $template) : void {
+function expand_by_jstor(Template $template): void {
   static $ch = null;
   if ($ch === null) {
     $ch = bot_curl_init(1.0, []);
@@ -927,7 +927,7 @@ function expand_by_jstor(Template $template) : void {
   return;
 }
 
-function getS2CID(string $url) : string {
+function getS2CID(string $url): string {
   static $ch = null;
   if ($ch === null) {
     $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
@@ -957,7 +957,7 @@ function getS2CID(string $url) : string {
   return $s2cid;
 }
 
-function ConvertS2CID_DOI(string $s2cid) : string {
+function ConvertS2CID_DOI(string $s2cid): string {
   static $ch = null;
   if ($ch === null) {
     $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
@@ -993,7 +993,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
   }
 }
 
-function get_semanticscholar_license(string $s2cid) : ?bool {
+function get_semanticscholar_license(string $s2cid): ?bool {
     static $ch = null;
     if ($ch === null) {
       $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
@@ -1012,7 +1012,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 /**
   @param array<Template> $templates
 */
-function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
+function expand_templates_from_archives(array &$templates): void { // This is done very late as a latch ditch effort  // Pointer to save memory
   static $ch = null;
   set_time_limit(120);
   if ($ch === null) {
@@ -1129,7 +1129,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 }
 
 /** @param array<int|string|bool|array<string>> $curl_opts */
-function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
+function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): object {
   try {
     $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
     $return = bot_curl_exec($ch);
@@ -1263,7 +1263,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
   // @codeCoverageIgnoreEnd
 }
 
-function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
+function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
    $request = NLM_LOGIN;
    if ($type === "esearch_pubmed") {
@@ -1285,7 +1285,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    return $xml;
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
-function xml_post(string $url, string $post) : ?SimpleXMLElement {
+function xml_post(string $url, string $post): ?SimpleXMLElement {
    static $ch = null;
    if ($ch === null) {
       $ch = bot_curl_init(1.0, [
@@ -1303,7 +1303,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
    return $xml;
 }
 
-function process_bibcode_data(Template $this_template, object $record) : void {
+function process_bibcode_data(Template $this_template, object $record): void {
     $this_template->record_api_usage('adsabs', 'bibcode');
     if (!isset($record->title[0])) return;
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
@@ -1370,7 +1370,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
     }
 }
 
-function expand_book_adsabs(Template $template, object $record) : void {
+function expand_book_adsabs(Template $template, object $record): void {
     set_time_limit(120);
     if (isset($record->year)) {
       $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
@@ -1392,7 +1392,7 @@ function expand_book_adsabs(Template $template, object $record) : void {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-function query_adsabs(string $options) : object {
+function query_adsabs(string $options): object {
     set_time_limit(120);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) ['numFound' => 0];
@@ -1410,7 +1410,7 @@ function query_adsabs(string $options) : object {
 }
 
 // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-function CrossRefTitle(string $doi) : string {
+function CrossRefTitle(string $doi): string {
      static $ch = null;
      if ($ch === null) {
         $ch = bot_curl_init(1.0,

@@ -12,11 +12,11 @@ abstract class WikiThings {
   public const TREAT_IDENTICAL_SEPARATELY = false;  // The contents of theses items never get edited, so this is safe
   private string $rawtext; // Uninitialized.  Will crash if read before set; which is good.
 
-  public function parse_text(string $text) : void {
+  public function parse_text(string $text): void {
     $this->rawtext = $text;
   }
 
-  public function parsed_text() : string {
+  public function parsed_text(): string {
     return $this->rawtext;
   }
 }

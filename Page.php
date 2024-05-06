@@ -40,7 +40,7 @@ class Page {
       }
   }
 
-  public function get_text_from(string $title) : bool {
+  public function get_text_from(string $title): bool {
     $this->construct_modifications_array(); // Could be new page
 
     $details = WikipediaBot::ReadDetails($title);
@@ -123,7 +123,7 @@ class Page {
     return true;
   }
 
-  public function parse_text(string $text) : void {
+  public function parse_text(string $text): void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
@@ -135,13 +135,13 @@ class Page {
     $this->lastrevid = 0;
   }
 
-  public function parsed_text() : string {
+  public function parsed_text(): string {
     return $this->text;
   }
   // $identifier: parameter to send to api_function, e.g. "pmid"
   // $templates: array of pointers to the templates
 /** @param array<Template> $templates */
-  public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
+  public function expand_templates_from_identifier(string $identifier, array &$templates): void { // Pointer to save memory
     $ids = [];
     set_time_limit(120);
     switch ($identifier) {
@@ -183,7 +183,7 @@ class Page {
     }
   }
 
-  public function expand_text() : bool {
+  public function expand_text(): bool {
     set_time_limit(120);
     $this->page_error = false;
     $this->announce_page();
@@ -547,7 +547,7 @@ class Page {
                   str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
   }
 
-  public function edit_summary() : string {
+  public function edit_summary(): string {
     $auto_summary = "";
     $altered_list = $this->modifications["changeonly"];
     if (count($altered_list) !== 0) {
@@ -661,7 +661,7 @@ class Page {
     return $auto_summary;
   }
 
-  public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+  public function write(WikipediaBot $api, string $edit_summary_end = ''): bool {
     /** @var array<bool> $failures */
     static $failures = [false, false, false, false, false];
     if ($this->allow_bots()) {
@@ -705,7 +705,7 @@ class Page {
   /** @return array<WikiThings|Template>
       @param class-string $class
   */
-  public function extract_object(string $class) : array {
+  public function extract_object(string $class): array {
     $i = 0;
     $text = $this->text;
     /** @var array<string> $regexp_in */
@@ -790,7 +790,7 @@ class Page {
   }
 
   /** @param array<WikiThings|Template> $objects */
-  private function replace_object(array &$objects) : void {  // Pointer to save memory
+  private function replace_object(array &$objects): void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
       foreach (array_reverse($objects) as $obj) {
@@ -799,7 +799,7 @@ class Page {
     }
   }
 
-  private function announce_page() : void {
+  private function announce_page(): void {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title === '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"
@@ -810,7 +810,7 @@ class Page {
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
 
-  private function allow_bots() : bool {
+  private function allow_bots(): bool {
     if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {  // When testing the bot on a specific page, allow "editing"
       return true; // @codeCoverageIgnore
     }
@@ -828,7 +828,7 @@ class Page {
     return true;
   }
 
-  private function set_name_list_style() : void {
+  private function set_name_list_style(): void {
 
    // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
@@ -848,7 +848,7 @@ class Page {
     }
   }
 
-  private function set_date_pattern() : void {
+  private function set_date_pattern(): void {
     // see {{use_mdy_dates}} and {{use_dmy_dates}}
     $date_style = DATES_WHATEVER;
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
@@ -872,7 +872,7 @@ class Page {
     $this->date_style = $date_style;
   }
 
-  private function construct_modifications_array() : void {
+  private function construct_modifications_array(): void {
     $this->modifications['changeonly'] = [];
     $this->modifications['additions'] = [];
     $this->modifications['deletions'] = [];

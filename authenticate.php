@@ -15,7 +15,7 @@ use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 
 // The two ways we leave this script
-function death_time(string $err) : never {
+function death_time(string $err): never {
   @session_start(); // Need write access
   unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
   @session_write_close(); // Paranoid
@@ -23,7 +23,7 @@ function death_time(string $err) : never {
   exit(0);
 }
 
-function return_to_sender(string $where = 'https://citations.toolforge.org/') : never {
+function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
   @session_write_close(); // Paranoid
   $where = preg_replace('~\s+~', '', $where);  // Security paranoia
   header("Location: " . $where);

@@ -12,7 +12,7 @@ const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero
   @param array<string> $_ids
   @param array<Template> $templates
 */
-function query_url_api(array $_ids, array &$templates) : void {  // Pointer to save memory
+function query_url_api(array $_ids, array &$templates): void {  // Pointer to save memory
    Zotero::query_url_api_class($templates);
 }
 
@@ -30,7 +30,7 @@ final class Zotero {
   private static CurlHandle $ch_pii;
   private static int $zotero_failures_count = 0;
 
-public static function create_ch_zotero() : void {
+public static function create_ch_zotero(): void {
   static $is_setup = false;
   if ($is_setup) return;
   $is_setup = true;
@@ -57,18 +57,18 @@ public static function create_ch_zotero() : void {
 
 }
 
-public static function block_zotero() : void {
+public static function block_zotero(): void {
   self::$zotero_failures_count = 1000000;
 }
 
-public static function unblock_zotero() : void {
+public static function unblock_zotero(): void {
   self::$zotero_failures_count = 0;
 }
 
 /**
   @param array<Template> $templates
 */
-public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
+public static function query_url_api_class(array &$templates): void { // Pointer to save memory
   foreach ($templates as $template) {
    if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
      if ($template->blank('doi')) {
@@ -122,7 +122,7 @@ public static function query_url_api_class(array &$templates) : void { // Pointe
 /**
   @param array<Template> $templates
 */
-public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
+public static function query_ieee_webpages(array &$templates): void {  // Pointer to save memory
 
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -160,7 +160,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 /**
   @param array<Template> $templates
 */
-public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
+public static function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
@@ -281,7 +281,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
   }
 }
 
-private static function zotero_request(string $url) : string {
+private static function zotero_request(string $url): string {
   set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
@@ -317,7 +317,7 @@ private static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template $template, ?string $url = null) : void {
+public static function expand_by_zotero(Template $template, ?string $url = null): void {
   $access_date = 0;
   if (is_null($url)) {
      if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'], true)) return;
@@ -386,7 +386,7 @@ public static function expand_by_zotero(Template $template, ?string $url = null)
   return;
 }
 
-public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date) : void {
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date): void {
   if ($zotero_response === self::ERROR_DONE) return;  // Error message already printed in zotero_request()
 
   switch (trim($zotero_response)) {
@@ -1038,7 +1038,7 @@ public static function process_zotero_response(string $zotero_response, Template
   return;
 }
 
-public static function url_simplify(string $url) : string {
+public static function url_simplify(string $url): string {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
@@ -1054,7 +1054,7 @@ public static function url_simplify(string $url) : string {
   return $url;
 }
 
-public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = null) : bool {
+public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
     set_time_limit(120);
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
@@ -1809,14 +1809,14 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
  }
 
  // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
- private static function is_bad_author(string $aut) : bool {
+ private static function is_bad_author(string $aut): bool {
    if ($aut === '|') return true;
    $aut = strtolower($aut);
    if ($aut === 'published') return true;
    return false;
  }
 
- public static function get_doi_from_pii(string $pii) : string {
+ public static function get_doi_from_pii(string $pii): string {
    curl_setopt(self::$ch_pii, CURLOPT_URL, "https://api.elsevier.com/content/object/pii/" . $pii);
    $ch_return = (string) bot_curl_exec(self::$ch_pii);
    if (preg_match('~<prism:doi>(10\..+)<\/prism:doi>~', $ch_return, $match)) {
