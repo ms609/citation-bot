@@ -164,7 +164,8 @@ class Page {
         $api = $identifier;
         report_error('expand_templates_from_identifier got: ' . $api);
     }
-    for ($i = 0; $i < count($templates); $i++) {
+    $num_template = count($templates);
+    for ($i = 0; $i < $num_template; $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, true)) {
         if ($templates[$i]->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {

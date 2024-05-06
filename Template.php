@@ -4387,7 +4387,8 @@ final class Template
    $id = str_replace($the_all, '', $id);
   }
   if (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
-   for ($i = 0; $i < count($matches[1]); $i++) {
+   $num_placeholders = count($matches[1]);
+   for ($i = 0; $i < $num_placeholders; $i++) {
     $subtemplate = self::$all_templates[$matches[1][$i]];
     $subtemplate_name = $subtemplate->wikiname();
     switch ($subtemplate_name) {
@@ -8541,7 +8542,8 @@ final class Template
   foreach (array_reverse($insert_after) as $after) {
    if (($after_key = $this->get_param_key($after)) !== null) {
     $keys = array_keys($this->param);
-    for ($prior_pos = 0; $prior_pos < count($keys); $prior_pos++) {
+    $keys_count = count($keys);
+    for ($prior_pos = 0; $prior_pos < $keys_count; $prior_pos++) {
      if ($keys[$prior_pos] === $after_key) {
       if ($prior_pos > $prior_pos_best) {
        $prior_pos_best = $prior_pos;
@@ -9190,7 +9192,8 @@ final class Template
   // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
   $tmp = $this->parsed_text();
   while (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {
-   for ($i = 0; $i < count($matches[1]); $i++) {
+   $num_matches = count($matches[1]);
+   for ($i = 0; $i < $num_matches; $i++) {
     $subtemplate = self::$all_templates[$matches[1][$i]];
     $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);
    }

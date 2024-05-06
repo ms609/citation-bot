@@ -421,7 +421,8 @@ function wikify_external_text(string $title) : string {
       static function (array $matches) : string {return "<math>" . $matches[1] . "</math>";},
       $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
-    for ($i = 0; $i < count($matches[0]); $i++) {
+    $num_matches = count($matches[0]);
+    for ($i = 0; $i < $num_matches; $i++) {
       $replacement[$i] = '<math>' .
         str_replace(array_keys(MML_TAGS), array_values(MML_TAGS),
           str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
@@ -518,7 +519,8 @@ function wikify_external_text(string $title) : string {
      $title = trim($title," \t\n\r\0");
   }
 
-  for ($i = 0; $i < count($replacement); $i++) {
+  $num_replace = count($replacement);
+  for ($i = 0; $i < $num_replace; $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
   }
 
@@ -566,7 +568,8 @@ function sanitize_string(string $str) : string {
   $placeholder = [];
   $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
   if ($math_templates_present) {
-    for ($i = 0; $i < count($math_hits[0]); $i++) {
+    $num_maths = count($math_hits[0]);
+    for ($i = 0; $i < $num_maths; $i++) {
       $replacement[$i] = $math_hits[0][$i];
       $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
     }
@@ -1080,7 +1083,8 @@ function tidy_date(string $string) : string {
   // Huge amount of character cleaning
   if (strlen($string) !== mb_strlen($string)) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
-    for ($i = 0; $i < mb_strlen($string); $i++) {
+    $the_str_length = mb_strlen($string);
+    for ($i = 0; $i < $the_str_length; $i++) {
        $char = mb_substr($string,$i,1);
        if (mb_strlen($char) === strlen($char)) {
           $cleaned .= $char;
