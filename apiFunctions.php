@@ -119,16 +119,30 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
-                case "Title":   $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "PubDate": if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
-                                    $this_template->add_if_new('year', $match[1], 'entrez');
-                                }
-        break;  case "FullJournalName": $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
-        break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');
-        break;  case "Pages":   $this_template->add_if_new('pages', (string) $item, 'entrez');
-        break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
-        break;  case "AuthorList":
+        case "Title":
+          $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
+          break;
+        case "PubDate":
+          if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
+              $this_template->add_if_new('year', $match[1], 'entrez');
+          }
+          break;
+        case "FullJournalName":
+          $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
+          break;
+        case "Volume":
+          $this_template->add_if_new('volume', (string) $item, 'entrez');
+          break;
+        case "Issue":
+          $this_template->add_if_new('issue', (string) $item, 'entrez');
+          break;
+        case "Pages":
+          $this_template->add_if_new('pages', (string) $item, 'entrez');
+          break;
+        case "PmId":
+          $this_template->add_if_new('pmid', (string) $item, 'entrez');
+          break;
+        case "AuthorList":
           $i = 0;
           foreach ($item->Item as $key => $subItem) {
             $subItem = (string) $subItem;
@@ -156,8 +170,10 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
               $this_template->add_if_new("author$i", $subItem, 'entrez');
             }
           }
-        break; case "LangList": case 'ISSN':
-        break; case "ArticleIds":
+          break;
+        case "LangList": case 'ISSN':
+          break;
+        case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
