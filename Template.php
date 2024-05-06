@@ -8452,8 +8452,7 @@ final class Template
   // like get() only includes (( ))
   foreach ($this->param as $parameter_i) {
    if ($parameter_i->param === $name) {
-    $the_val = $parameter_i->val;
-    return $the_val;
+    return $parameter_i->val;
    }
   }
   return '';

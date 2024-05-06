@@ -97,10 +97,9 @@ function bibcode_link(string $id): string {
 }
 
 function doi_link(string $doi): string {
-  $return = HTML_OUTPUT
+  return HTML_OUTPUT
     ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
     : echoable($doi);
-  return $return;
 }
 
 function jstor_link(string $id): string {
