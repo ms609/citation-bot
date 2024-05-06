@@ -69,7 +69,7 @@ function clean_up_first_names(string $value): string {
     $value = sanitize_string($value);
   }
   if (mb_strlen($value) === 1) {
-    $value = $value . '.';
+    $value .= '.';
   } elseif (mb_substr($value, -2, 1) === " ") {
     if (mb_strlen($value) === 3) { // Special case for "F M" -- add dots to both
       $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
