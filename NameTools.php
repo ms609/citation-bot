@@ -10,7 +10,7 @@ require_once 'constants.php';    // @codeCoverageIgnore
  */
 
 /** @return array<string> */
-function junior_test(string $name) : array {
+function junior_test(string $name): array {
   $junior = substr($name, -3) === " Jr" ?" Jr" : "";
   if ($junior) {
     $name = substr($name, 0, -3);
@@ -27,14 +27,14 @@ function junior_test(string $name) : array {
 }
 
 /** @return array<string> */
-function split_author(string $value) : array {
+function split_author(string $value): array {
   if (substr_count($value, ',') !== 1) {
     return [];
   }
   return explode(',', $value, 2);
 }
 
-function clean_up_full_names(string $value) : string {
+function clean_up_full_names(string $value): string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " and ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, true));
@@ -46,7 +46,7 @@ function clean_up_full_names(string $value) : string {
   return $value;
 }
 
-function clean_up_last_names(string $value) : string {
+function clean_up_last_names(string $value): string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, true));
@@ -59,7 +59,7 @@ function clean_up_last_names(string $value) : string {
   return $value;
 }
 
-function clean_up_first_names(string $value) : string {
+function clean_up_first_names(string $value): string {
   $value = trim($value);
   $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
   $value = trim(straighten_quotes($value, true));
@@ -80,7 +80,7 @@ function clean_up_first_names(string $value) : string {
   return $value;
 }
 
-function format_surname(string $surname) : string {
+function format_surname(string $surname): string {
   $surname = trim($surname);
   if ($surname === '-') {
     return '';
@@ -105,7 +105,7 @@ function format_surname(string $surname) : string {
   }
 }
 
-function format_surname_2(string $surname) : string {
+function format_surname_2(string $surname): string {
   $ret = mb_ereg_replace(" - ", "-", $surname);
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
     static function(array $matches) : string {
@@ -121,7 +121,7 @@ function format_surname_2(string $surname) : string {
   return $ret;
 }
 
-function format_forename(string $forename) : string {
+function format_forename(string $forename): string {
   $forename = trim($forename);
   if ($forename === '-') {
     return '';
@@ -141,7 +141,7 @@ function format_forename(string $forename) : string {
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
  */
-function format_initials(string $str) : string {
+function format_initials(string $str): string {
   $str = trim($str);
     if ($str === "") {
       return "";
@@ -151,7 +151,7 @@ function format_initials(string $str) : string {
     return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 
-function is_initials(string $str) : bool {
+function is_initials(string $str): bool {
     $str = trim($str);
     if (!$str) {
       return false;
@@ -172,7 +172,7 @@ function is_initials(string $str) : bool {
  * author_is_human
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
-function author_is_human(string $author) : bool {
+function author_is_human(string $author): bool {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
@@ -193,7 +193,7 @@ function author_is_human(string $author) : bool {
 }
 
 // Returns the author's name formatted as Surname, F.I.
-function format_author(string $author) : string {
+function format_author(string $author): string {
 
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
   $surname = '';
@@ -293,7 +293,7 @@ function format_author(string $author) : string {
   return trim($full_name);
 }
 
-function format_multiple_authors(string $authors) : string {
+function format_multiple_authors(string $authors): string {
   $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
   $return = [];
@@ -357,7 +357,7 @@ function format_multiple_authors(string $authors) : string {
   return preg_replace("~;$~", "", trim(implode(" ", $return)));
 }
 
-function under_two_authors(string $text) : bool {
+function under_two_authors(string $text): bool {
   return !(strpos($text, ';') !== false  //if there is a semicolon
       || substr_count($text, ',') > 1  //if there is more than one comma
       || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
@@ -369,7 +369,7 @@ function under_two_authors(string $text) : bool {
  * check this using under_two_authors()
  */
 /** @return array<string> */
-function split_authors(string $str) : array {
+function split_authors(string $str): array {
   if (strpos($str, ';')) {
     return explode(';', $str);
   }
