@@ -50,7 +50,7 @@ const BOT_CONNECTION_TIMEOUT = 10;
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0) : int {
     if ($down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
          bot_debug_log("Absurdly large curl");
-         return 1;  // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
+         return 1;  // If $down exceeds max-size of 128MB, returning non-0 closes the connection!
     }
     return 0;
 }
