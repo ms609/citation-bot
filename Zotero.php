@@ -241,8 +241,12 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $ch_return = bot_curl_exec(self::$ch_dx);
           if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
             $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
-            if (stripos($redirectedUrl_doi, 'cookie') !== false) break;
-            if (stripos($redirectedUrl_doi, 'denied') !== false) break;
+            if (stripos($redirectedUrl_doi, 'cookie') !== false) {
+              break;
+            }
+            if (stripos($redirectedUrl_doi, 'denied') !== false) {
+              break;
+            }
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
             $url_short         = self::url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
@@ -864,7 +868,9 @@ public static function process_zotero_response(string $zotero_response, Template
       if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . (string)($i+1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                       isset($result->rights) ? (string) $result->rights : '', false);
       $i++;
-     if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
+     if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) {
+       break; // Break out if nothing added
+     }
   }
   unset($i);
 
@@ -891,7 +897,7 @@ public static function process_zotero_response(string $zotero_response, Template
            ) {
           $template->change_name_to('cite book');
         }
-        break;
+      break;
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
@@ -902,12 +908,12 @@ public static function process_zotero_response(string $zotero_response, Template
            (str_ireplace('/blog/', '', $url) === $url)) {
           $template->change_name_to('cite journal');
         }
-        break;
+      break;
       case 'magazineArticle':
         if($template->wikiname() === 'cite web') {
           $template->change_name_to('cite magazine');
         }
-        break;
+      break;
       case 'newspaperArticle':
         if ($template->wikiname() === 'cite web') {
            $test_data = $template->get('work') . $template->get('website') .
@@ -918,14 +924,14 @@ public static function process_zotero_response(string $zotero_response, Template
               $template->change_name_to('cite news');
            }
         }
-        break;
+      break;
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
         if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
           $template->add_if_new('type' , (string) $result->thesisType); // Prefer type since it exists in cite journal too
         }
-        break;
+      break;
 
       case 'email': // Often uses subject, not title
       case 'webpage':
@@ -959,7 +965,7 @@ public static function process_zotero_response(string $zotero_response, Template
           // Probably tick people off too
       case 'dictionaryEntry':  // @codeCoverageIgnore
         // Nothing special that we know of yet
-        break;
+      break;
 
       default:                                                                         // @codeCoverageIgnore
         report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url));  // @codeCoverageIgnore
@@ -978,19 +984,19 @@ public static function process_zotero_response(string $zotero_response, Template
           switch ($creatorType) {
             case 'author': case 'contributor': case 'artist':
               $authorParam = 'author' . (string) ++$author_i;
-              break;
+            break;
             case 'editor':
               $authorParam = 'editor' . (string) ++$editor_i;
-              break;
+            break;
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
-              break;
+            break;
             case 'reviewedAuthor':   // @codeCoverageIgnore
               $authorParam = '';      // @codeCoverageIgnore
-              break;                  // @codeCoverageIgnore
+            break;                  // @codeCoverageIgnore
             case 'performer': // http://catalog.nypl.org/search/o77059475
               $authorParam = '';
-              break;
+            break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
@@ -1000,13 +1006,17 @@ public static function process_zotero_response(string $zotero_response, Template
             if (self::is_bad_author((string) $result->creators[$i]->firstName)) $result->creators[$i]->firstName  ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', false);
-             // Break out if nothing added
+             // leave loop out if nothing added
             if ((strpos($authorParam, 'author') === 0) &&
-                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) break;
-            if ((strpos($authorParam, 'editor') === 0) &&
-                     $template->blank(['editor' . (string)($editor_i)])) break;
-            if ((strpos($authorParam, 'translator') === 0) &&
-                     $template->blank(['translator' . (string)($translator_i)])) break;
+                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) {
+              break;
+            }
+            if ((strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string)($editor_i)])) {
+              break;
+            }
+            if ((strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string)($translator_i)])) {
+              break;
+            }
          }
         }
         $i++;
