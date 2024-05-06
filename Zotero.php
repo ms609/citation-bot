@@ -963,7 +963,7 @@ public static function process_zotero_response(string $zotero_response, Template
       // "Books" are often bogus
       $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
       while (isset($result->creators[$i])) {
-        $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
+        $creatorType = $result->creators[$i]->creatorType ?? 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
           switch ($creatorType) {
             case 'author': case 'contributor': case 'artist':
