@@ -325,11 +325,6 @@ const NULL_DOI_LIST = [
     '10.14240/jmhs.v5i1.81' => true,
     '10.14334/wartazoa.v27i4.1692' => true,
     '10.14421/ajis.2010.481.129-164' => true, // Parked domain
-    '10.14430/arctic1336' => true,
-    '10.14430/arctic1529' => true,
-    '10.14430/arctic4643' => true,
-    '10.14430/arctic645' => true,
-    '10.14430/arctic760' => true,
     '10.14496/dia.51040851169.29' => true,
     '10.14496/dia.7104343513.14' => true,
     '10.1474/GGA.2005-01.0-05.0005' => true,
@@ -847,6 +842,11 @@ const NULL_DOI_LIST = [
  /** ========================================================================================================================================================================== */
  // TODO - these need to be manually double checked once in a great while.
 const NULL_DOI_BUT_GOOD = [
+    '10.14430/arctic1336' => true,
+    '10.14430/arctic1529' => true,
+    '10.14430/arctic4643' => true,
+    '10.14430/arctic645' => true,
+    '10.14430/arctic760' => true,
     '10.1891/1946-6560.1.3.332' => true,
     '10.6093/UNINA/FEDOA/11892' => true,
     '10.1001/archneur.1989.00520400097026' => true,
