@@ -4397,7 +4397,7 @@ final class Template
       if ($subtemplate->get('id')) {
        $archive_parameter = trim($subtemplate->get('archive') ? $subtemplate->get('archive') . '/' : '');
        $this->add_if_new('arxiv', $archive_parameter . $subtemplate->get('id'));
-      } elseif (!is_null($subtemplate->param_with_index(1))) {
+      } elseif ($subtemplate->has_multiple_params()) {
        $this->add_if_new('arxiv', trim($subtemplate->param_value(0)) . "/" . trim($subtemplate->param_value(1)));
       } else {
        $this->add_if_new('arxiv', $subtemplate->param_value(0));
@@ -4443,22 +4443,22 @@ final class Template
        report_info("{{JSTOR}} named parameters are not supported: cannot convert.");
        break;
       }
-      if ($subtemplate_name === 'oclc' && !is_null($subtemplate->param_with_index(1))) {
+      if ($subtemplate_name === 'oclc' && $subtemplate->has_multiple_params()) {
        report_info("{{OCLC}} has multiple parameters: cannot convert.");
        report_info(echoable($subtemplate->parsed_text()));
        break;
       }
-      if ($subtemplate_name === 'issn' && !is_null($subtemplate->param_with_index(1))) {
+      if ($subtemplate_name === 'issn' && $subtemplate->has_multiple_params()) {
        report_info("{{ISSN}} has multiple parameters: cannot convert.");
        report_info(echoable($subtemplate->parsed_text()));
        break;
       }
-      if ($subtemplate_name === 'ismn' && !is_null($subtemplate->param_with_index(1))) {
+      if ($subtemplate_name === 'ismn' && $subtemplate->has_multiple_params()) {
        report_info("{{ISMN}} has multiple parameters: cannot convert.");
        report_info(echoable($subtemplate->parsed_text()));
        break;
       }
-      if ($subtemplate_name === 'biorxiv' && !is_null($subtemplate->param_with_index(1))) {
+      if ($subtemplate_name === 'biorxiv' && $subtemplate->has_multiple_params()) {
        report_info("{{biorxiv}} has multiple parameters: cannot convert.");
        report_info(echoable($subtemplate->parsed_text()));
        break;
@@ -8469,18 +8469,16 @@ final class Template
   return false;
  }
 
- private function param_with_index(int $i): ?Parameter
- {
-  return $this->param[$i] ?? null;
+ private function has_multiple_params(): bool {
+   return isset($this->param[1]);
  }
 
  private function param_value(int $i): string
  {
-  $item = $this->param_with_index($i);
-  if (is_null($item)) {
-   return '';
-  } // id={{arxiv}} and other junk
-  return $item->val;
+  if (isset($this->param[$i])) {
+   return $this->param[$i]->val;
+  }
+  return '';
  }
 
  public function get_without_comments_and_placeholders(string $name): string
