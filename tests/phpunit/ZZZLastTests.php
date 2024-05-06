@@ -14,12 +14,12 @@ final class ZZZLastTests extends testBaseClass {
    }
   }
 
-  public function testFillCache() : void {
+  public function testFillCache(): void {
     $this->fill_cache();
     $this->assertTrue(true);
   }
 
-  public function testFlushCacheAtEnd() : void {
+  public function testFlushCacheAtEnd(): void {
     HandleCache::free_memory();
     AdsAbsControl::free_memory();
     $this->assertTrue(true);
