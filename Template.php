@@ -6781,8 +6781,9 @@ final class Template
      }
      if ($this->blank('url') && $this->blank(CHAPTER_ALIASES_AND_SCRIPT)) {
       $this->rename($param, 'url');
-      $param = 'url'; // passes down to next area
+      $param = 'url';
      }
+     // passes down to next area
     case 'url':
      if ($this->blank($param)) {
       return;
