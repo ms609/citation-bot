@@ -21,7 +21,13 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE';
   private static int $zotero_announced = 0;
-  private static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi, $ch_pii;
+  private static CurlHandle $zotero_ch;
+  private static CurlHandle $ch_ieee;
+  private static CurlHandle $ch_jstor;
+  private static CurlHandle $ch_dx;
+  private static CurlHandle $ch_pmc;
+  private static CurlHandle $ch_doi;
+  private static CurlHandle $ch_pii;
   private static int $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void {
