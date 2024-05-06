@@ -1084,7 +1084,7 @@ function tidy_date(string $string) : string {
   if (strlen($string) !== mb_strlen($string)) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
     $the_str_length = mb_strlen($string);
-    for ($i = 0; $i <$the_str_length; $i++) {
+    for ($i = 0; $i < $the_str_length; $i++) {
        $char = mb_substr($string,$i,1);
        if (mb_strlen($char) === strlen($char)) {
           $cleaned .= $char;
