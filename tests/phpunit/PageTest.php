@@ -229,7 +229,7 @@ final class PageTest extends testBaseClass {
         $page->get_text_from($writeTestPage);
         $this->assertSame($trialCitation, $page->parsed_text());
       }
-      $this->requires_secrets(function() : void {
+      $this->requires_secrets(function(): void {
        $this->assertTrue(TRAVIS || $page_result); // If we have tokens and are not in TRAVIS, then should have worked
       });
       $page->overwrite_text($trialCitation);
