@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /** https://en.wikipedia.org/wiki/Module:Format_ISBN/data */

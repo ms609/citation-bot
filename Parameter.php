@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /*
@@ -10,7 +11,11 @@ require_once 'user_messages.php';  // @codeCoverageIgnore
 require_once 'constants.php';      // @codeCoverageIgnore
 
 final class Parameter {
-  public string $pre = '', $param = '', $eq = '', $val = '', $post = '';
+  public string $pre = '';
+  public string $param = '';
+  public string $eq = '';
+  public string $val = '';
+  public string $post = '';
 
 /*
  * Breaks a citation template down to component parts.

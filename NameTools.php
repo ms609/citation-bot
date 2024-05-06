@@ -106,13 +106,18 @@ function format_surname(string $surname) : string {
 }
 
 function format_surname_2(string $surname) : string {
+  $ret = mb_ereg_replace(" - ", "-", $surname);
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
     static function(array $matches) : string {
         return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
     },
-  mb_ereg_replace(" - ", "-", $surname));
+    $ret);
   $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
-  $ret = preg_replace_callback('~;\w~', static function(array $matches) : string {return mb_strtolower($matches[0]);}, $ret);
+  $ret = preg_replace_callback('~;\w~',
+    static function(array $matches) : string {
+      return mb_strtolower($matches[0]);
+     },
+     $ret);
   return $ret;
 }
 

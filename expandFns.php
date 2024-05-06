@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require_once 'constants.php';     // @codeCoverageIgnore
@@ -690,7 +691,9 @@ function titles_simple(string $inTitle) : string {
     // Failure leads to null or empty strings!!!!
     // Leading Chapter # -   Use callback to make sure there are a few characters after this
     $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
-        static function (array $matches) : string {return $matches[1];}, trim($inTitle));
+        static function (array $matches) : string {
+          return $matches[1];
+        }, trim($inTitle));
     if ($inTitle2 !== "") $inTitle = $inTitle2;
     // Chapter number at start
     $inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
@@ -921,7 +924,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     foreach ($matches_in as $key => $_value) {
       if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
           $matches_in[$key][1] === $matches_out[$key][1]) {
-        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); ; // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
       }
     }
   }

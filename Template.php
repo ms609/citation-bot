@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /*
@@ -2728,8 +2729,8 @@ final class Template
    'author' => $this->first_surname(),
    'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
    'volume' => $this->get('volume'),
-   'start_page' => isset($page_range[1]) ? $page_range[1] : null,
-   'end_page' => isset($page_range[2]) ? $page_range[2] : null,
+   'start_page' => (string) @$page_range[1],
+   'end_page' => (string) @$page_range[2],
    'issn' => $this->get('issn'),
   ];
 
@@ -6780,8 +6781,9 @@ final class Template
      }
      if ($this->blank('url') && $this->blank(CHAPTER_ALIASES_AND_SCRIPT)) {
       $this->rename($param, 'url');
-      $param = 'url'; // passes down to next area
+      $param = 'url';
      }
+     // passes down to next area
     case 'url':
      if ($this->blank($param)) {
       return;

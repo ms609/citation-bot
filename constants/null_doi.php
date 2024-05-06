@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
@@ -454,7 +455,6 @@ const NULL_DOI_LIST = [
     '10.18809/jbms.2016.0108' => true,
     '10.18809/jbms.2017.0101' => true,
     '10.18845/tm.v28i3.2407' => true,
-    '10.1891/1946-6560.1.3.332' => true,
     '10.1900/RDS.2009.6.203' => true, // Spam
     '10.19137/qs.v19i1.963' => true,
     '10.19153/cleiej.8.2.1' => true,
@@ -847,6 +847,7 @@ const NULL_DOI_LIST = [
  /** ========================================================================================================================================================================== */
  // TODO - these need to be manually double checked once in a great while.
 const NULL_DOI_BUT_GOOD = [
+    '10.1891/1946-6560.1.3.332' => true,
     '10.6093/UNINA/FEDOA/11892' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,

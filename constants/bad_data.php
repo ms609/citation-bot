@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // Some data we get from outside sources is bad or at least mis-defined
