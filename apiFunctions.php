@@ -953,8 +953,7 @@ function getS2CID(string $url) : string {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return '';                                         // @codeCoverageIgnore
   }
-  $s2cid = (string) $json->corpusId;
-  return $s2cid;
+  return (string) $json->corpusId;
 }
 
 function ConvertS2CID_DOI(string $s2cid) : string {
@@ -1405,8 +1404,7 @@ function query_adsabs(string $options) : object {
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => true,
         CURLOPT_URL => $adsabs_url];
-    $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
-    return $response;
+    return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
 
 // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
