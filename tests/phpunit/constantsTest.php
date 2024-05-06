@@ -64,7 +64,7 @@ final class constantsTest extends testBaseClass {
     }
   }
 
-  public function testForDisasters() :void { // Did we get things out of order and cause a disaster?
+  public function testForDisasters(): void { // Did we get things out of order and cause a disaster?
     $this->assertSame('BJPsych', title_capitalization('Bjpsych', true));
     $this->assertSame('HortScience', title_capitalization('Hortscience', true));
     $this->assertSame('TheMarker', title_capitalization('Themarker', true));
