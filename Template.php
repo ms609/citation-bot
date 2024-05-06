@@ -2729,8 +2729,8 @@ final class Template
    'author' => $this->first_surname(),
    'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
    'volume' => $this->get('volume'),
-   'start_page' => $page_range[1] ?? null,
-   'end_page' => $page_range[2] ?? null,
+   'start_page' => (string) @$page_range[1],
+   'end_page' => (string) @$page_range[2],
    'issn' => $this->get('issn'),
   ];
 
