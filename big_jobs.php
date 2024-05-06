@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // Paranoid - trying to be atomic without non-portable locks etc.

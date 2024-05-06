@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024

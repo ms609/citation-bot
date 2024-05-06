@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require_once 'constants.php';        // @codeCoverageIgnore
@@ -118,16 +119,30 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
-                case "Title":   $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "PubDate": if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
-                                    $this_template->add_if_new('year', $match[1], 'entrez');
-                                }
-        break;  case "FullJournalName": $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
-        break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');
-        break;  case "Pages":   $this_template->add_if_new('pages', (string) $item, 'entrez');
-        break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
-        break;  case "AuthorList":
+        case "Title":
+          $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
+          break;
+        case "PubDate":
+          if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
+              $this_template->add_if_new('year', $match[1], 'entrez');
+          }
+          break;
+        case "FullJournalName":
+          $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
+          break;
+        case "Volume":
+          $this_template->add_if_new('volume', (string) $item, 'entrez');
+          break;
+        case "Issue":
+          $this_template->add_if_new('issue', (string) $item, 'entrez');
+          break;
+        case "Pages":
+          $this_template->add_if_new('pages', (string) $item, 'entrez');
+          break;
+        case "PmId":
+          $this_template->add_if_new('pmid', (string) $item, 'entrez');
+          break;
+        case "AuthorList":
           $i = 0;
           foreach ($item->Item as $key => $subItem) {
             $subItem = (string) $subItem;
@@ -155,8 +170,10 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
               $this_template->add_if_new("author$i", $subItem, 'entrez');
             }
           }
-        break; case "LangList": case 'ISSN':
-        break; case "ArticleIds":
+          break;
+        case "LangList": case 'ISSN':
+          break;
+        case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
@@ -1195,10 +1212,10 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       if (isset($decoded->error->trace)) {
         bot_debug_log("AdsAbs website returned a stack trace - URL was:  " . $adsabs_url);
         throw new Exception("AdsAbs website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
-        (isset($decoded->error->code) ? $decoded->error->code : 999));
+        ($decoded->error->code ?? 999));
       } else {
          throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
-        (isset($decoded->error->code) ? $decoded->error->code : 999));
+        ($decoded->error->code ?? 999));
       }
       // @codeCoverageIgnoreEnd
     }

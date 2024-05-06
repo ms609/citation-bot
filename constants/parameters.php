@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 const TEMPLATES_WE_PROCESS = [
