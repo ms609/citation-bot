@@ -24,7 +24,7 @@ final class WikipediaBot {
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
 
-  public static function make_ch() : void {
+  public static function make_ch(): void {
     static $init_done = false;
     if ($init_done) {
       return;
@@ -66,14 +66,14 @@ final class WikipediaBot {
     self::$last_WikipediaBot = $this;
   }
 
-  public function get_the_user() : string {
+  public function get_the_user(): string {
     if ($this->the_user === '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user;
   }
 
-  public static function ret_okay(?object $response) : bool { // We send back true for thing that are page specific
+  public static function ret_okay(?object $response): bool { // We send back true for thing that are page specific
     if (is_null($response)) {
       report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
       sleep(10);
@@ -106,7 +106,7 @@ final class WikipediaBot {
 
   /** @phpstan-impure
       @param array<mixed> $params */
-  private function fetch(array $params, int $depth = 1) : ?object {
+  private function fetch(array $params, int $depth = 1): ?object {
     set_time_limit(120);
     if ($depth > 1) {
       sleep($depth+2);
@@ -164,7 +164,7 @@ final class WikipediaBot {
   }
 
   /** @phpstan-impure */
-  public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
+  public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
       return false;                                                                             // @codeCoverageIgnore
@@ -233,7 +233,7 @@ final class WikipediaBot {
     return true;
   }
 
-  public static function response2page(?object $response) : ?object {
+  public static function response2page(?object $response): ?object {
     if ($response === null) {
       report_warning("Write request failed");
       return null;
@@ -270,7 +270,7 @@ final class WikipediaBot {
     return $myPage;
   }
 
-  public static function resultsGood(?object $result) : bool {
+  public static function resultsGood(?object $result): bool {
     if (isset($result->error)) {
       report_warning("Write error: " .
                     echoable(mb_strtoupper($result->error->code)) . ": " .
@@ -293,7 +293,7 @@ final class WikipediaBot {
   }
 
   /** @return array<string> */
-  public static function category_members(string $cat) : array {
+  public static function category_members(string $cat): array {
     $list = [];
     $vars = [
         "cmtitle" => "Category:$cat", // Don't urlencode.
@@ -336,7 +336,7 @@ final class WikipediaBot {
     return $list;
   }
 
-  public static function get_last_revision(string $page) : string {
+  public static function get_last_revision(string $page): string {
     $res = self::QueryAPI([
         "action" => "query",
         "prop" => "revisions",
@@ -352,7 +352,7 @@ final class WikipediaBot {
   }
 
   // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-  public static function is_redirect(string $page) : int {
+  public static function is_redirect(string $page): int {
     $res = self::QueryAPI([
         "action" => "query",
         "prop" => "info",
@@ -366,7 +366,7 @@ final class WikipediaBot {
     $res = self::reset($res->query->pages);
     return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
   }
-  public static function redirect_target(string $page) : ?string {
+  public static function redirect_target(string $page): ?string {
     $res = self::QueryAPI([
         "action" => "query",
         "redirects" => "1",
@@ -381,7 +381,7 @@ final class WikipediaBot {
   }
 
   /** @param array<string> $params */
-  private static function QueryAPI(array $params) : string {
+  private static function QueryAPI(array $params): string {
    try {
     $params['format'] = 'json';
 
@@ -413,7 +413,7 @@ final class WikipediaBot {
   // @codeCoverageIgnoreEnd
   }
 
-  public static function ReadDetails(string $title) : object {
+  public static function ReadDetails(string $title): object {
       $details = self::QueryAPI([
         'action'=>'query',
         'prop'=>'info',
@@ -424,11 +424,11 @@ final class WikipediaBot {
     return (object) @json_decode($details);
   }
 
-  public static function get_links(string $title) : string {
+  public static function get_links(string $title): string {
      return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
 
-  public static function GetAPage(string $title) : string {
+  public static function GetAPage(string $title): string {
     curl_setopt_array(self::$ch_logout,
               [CURLOPT_HTTPGET => true,
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
@@ -443,7 +443,7 @@ final class WikipediaBot {
   }
 
 
-  public static function is_valid_user(string $user) : bool {
+  public static function is_valid_user(string $user): bool {
     if (!$user) return false;
     $query = [
        "action" => "query",
@@ -471,14 +471,14 @@ final class WikipediaBot {
     return true;
   }
 
-  public static function NonStandardMode() : bool {
+  public static function NonStandardMode(): bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
 
-  private function get_the_user_internal() : string {
+  private function get_the_user_internal(): string {
     return $this->the_user;
   }
-  public static function GetLastUser() : string {
+  public static function GetLastUser(): string {
     if(isset(self::$last_WikipediaBot)) {
       return self::$last_WikipediaBot->get_the_user_internal();
     }
@@ -489,7 +489,7 @@ final class WikipediaBot {
  * Human interaction needed
  * @codeCoverageIgnore
  */
-  private function authenticate_user() : void {
+  private function authenticate_user(): void {
     @setcookie(session_name(),session_id(),time()+(7*24*3600), "", "", true, true); // 7 days
     if (isset($_SESSION['citation_bot_user_id']) &&
         isset($_SESSION['access_key']) &&
@@ -533,7 +533,7 @@ final class WikipediaBot {
     exit(0);
   }
 
-  private static function reset(object &$obj) : object { // Make PHP 8 happy
+  private static function reset(object &$obj): object { // Make PHP 8 happy
      $arr = (array) $obj;
      return (object) reset($arr);
   }
