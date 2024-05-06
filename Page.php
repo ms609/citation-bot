@@ -331,8 +331,11 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
-        if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
+        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('deadurl');
+        if ($this_template->wikiname() === 'cite conference') {
+          $our_templates_conferences[] = $this_template;
+        }
         $our_templates_ieee[] = $this_template;
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) { // No capitalization of thesis, etc.
         $our_templates_slight[] = $this_template;
@@ -340,7 +343,8 @@ class Page {
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('deadurl');
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL, true)) {
         $our_templates_slight[] = $this_template;
         $this_template->rename('chapterurl', 'chapter-url');
@@ -357,7 +361,8 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('deadurl');
       } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
@@ -369,11 +374,13 @@ class Page {
       } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
         $this_template->clean_google_books();
         $this_template->correct_param_mistakes();
-        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('deadurl');
         $this_template->tidy_parameter('title');
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
-        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('deadurl');
         $this_template->tidy_parameter('title');
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
       }
@@ -544,7 +551,11 @@ class Page {
     $auto_summary = "";
     $altered_list = $this->modifications["changeonly"];
     if (count($altered_list) !== 0) {
-      if (count($altered_list)===1) {$op = "Altered";} else {$op = "Alter:";}
+      if (count($altered_list)===1) {
+        $op = "Altered";
+      } else {
+        $op = "Alter:";
+      }
       $auto_summary .= $op . " " . implode(", ", $altered_list) . ". ";
       unset($op);
     }
