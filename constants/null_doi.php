@@ -812,7 +812,6 @@ const NULL_DOI_LIST = [
     '10.5944/signa.vol31.2022.29451' => true,
     '10.6019/blueprint_20130405' => true,
     '10.6072/H0.MP.A004235.01' => true,
-    '10.6093/UNINA/FEDOA/11892' => true,
     '10.7146/cns.v6i0.122249' => true,
     '10.7146/cns.v6i0.122251' => true,
     '10.7152/bippa.v15i0.11537' => true,
@@ -848,6 +847,7 @@ const NULL_DOI_LIST = [
  /** ========================================================================================================================================================================== */
  // TODO - these need to be manually double checked once in a great while.
 const NULL_DOI_BUT_GOOD = [
+    '10.6093/UNINA/FEDOA/11892' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
     '10.1001/jama.2020.6019' => true,
