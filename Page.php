@@ -60,7 +60,7 @@ class Page {
       report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
       return false;                                                    // @codeCoverageIgnore
     }
-    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : '';
+    $this->read_at = $details->curtimestamp ?? '';
 
     $details = $my_details;
     if (isset($details->invalid)) {
