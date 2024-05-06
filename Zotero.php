@@ -962,7 +962,10 @@ public static function process_zotero_response(string $zotero_response, Template
     if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], true)) {
       // Websites often have non-authors listed in metadata
       // "Books" are often bogus
-      $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
+      $i = 0;
+      $author_i = 0;
+      $editor_i = 0;
+      $translator_i = 0;
       while (isset($result->creators[$i])) {
         $creatorType = $result->creators[$i]->creatorType ?? 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
