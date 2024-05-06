@@ -7,24 +7,24 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class apiFunctionsTest extends testBaseClass {
 
-  protected function setUp() : void {
+  protected function setUp(): void {
    if (BAD_PAGE_API !== '') {
      $this->markTestSkipped();
    }
   }
 
-  public function testFillCache() : void {
+  public function testFillCache(): void {
     $this->fill_cache();
     $this->assertTrue(true);
   }
 
-  public function testS2CIDlicenseFalse() : void {
+  public function testS2CIDlicenseFalse(): void {
     sleep(1);
     $this->assertFalse(get_semanticscholar_license('94502986'));
   }
 
-  public function testAdsabsApi() : void {
-    $this->requires_bibcode(function() : void {
+  public function testAdsabsApi(): void {
+    $this->requires_bibcode(function(): void {
       $bibcodes = [
        '2017NatCo...814879F', // 0
        '1974JPal...48..524M', // 1
@@ -89,14 +89,14 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $page->parsed_text($text));
   }
 
-  public function testArxivDateUpgradeSeesDate1() : void {
+  public function testArxivDateUpgradeSeesDate1(): void {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
   }
 
-  public function testExpansion_doi_not_from_crossrefRG() : void {
+  public function testExpansion_doi_not_from_crossrefRG(): void {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->get2('title'));
@@ -104,7 +104,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Aoibhinn Ni Shuilleabhain', $expanded->get2('author1'));
   }
 
-   public function testExpansion_doi_not_from_crossrefJapanJournal() : void {
+   public function testExpansion_doi_not_from_crossrefJapanJournal(): void {
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get2('title'));
@@ -115,79 +115,79 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Hideki', $expanded->get2('first1'));
   }
   // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
-  public function testExpansion_doi_not_from_crossrefBook() : void {
+  public function testExpansion_doi_not_from_crossrefBook(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
      $this->assertSame('{{Cite book| date=1996 | isbn=978-0-521-57290-3 | last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | publisher=Cambridge University Press }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefBookChapter() : void {
+  public function testExpansion_doi_not_from_crossrefBookChapter(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
      $this->assertSame('{{Cite book| date=2001 | isbn=978-0-471-97514-4 | title=Internetworking LANs and WANs | chapter=Network Concepts | publisher=Wiley }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefDataCiteSubsets() : void {
+  public function testExpansion_doi_not_from_crossrefDataCiteSubsets(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
      $this->assertSame('{{Cite journal| date=2009 | last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797 }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() : void {
+  public function testExpansion_doi_not_from_crossrefDataCiteEarthquake(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
      $this->assertSame('{{Cite journal| date=2009 | author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() : void {
+  public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
      $this->assertSame('{{Cite book| date=2008 | last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | publisher=Pangaea }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossrefDataCitevideo() : void {
+  public function testExpansion_doi_not_from_crossrefDataCitevideo(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3207/2959859860');
      $this->assertSame('{{Cite journal| date=2009 | last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_fISTIC_Journal() : void {
+  public function testExpansion_doi_not_from_crossref_fISTIC_Journal(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
      $this->assertSame('{{Cite journal| date=2012 | volume=28 | issue=3 | last1=Yu | first1=ZHANG | last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_fISTIC_Data() : void {
+  public function testExpansion_doi_not_from_crossref_fISTIC_Data(): void {
       $expanded = $this->make_citation('{{Cite journal}}');
       expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
       $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_ISTIC_Thesis() : void {
+  public function testExpansion_doi_not_from_crossref_ISTIC_Thesis(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7666/d.y351065');
      $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_JaLC_Journal() : void {
+  public function testExpansion_doi_not_from_crossref_JaLC_Journal(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
      $this->assertSame('{{Cite journal| date=2009 | volume=7 | last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_JaLC_Journal2() : void {
+  public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
      $this->assertSame('{{Cite journal| date=2013 | volume=2 | last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー }}', $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_mEDRA_Journal() : void {
+  public function testExpansion_doi_not_from_crossref_mEDRA_Journal(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1430/8105');
      $this->assertSame("{{Cite journal| date=2002 | issue=4 | author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria }}", $expanded->parsed_text());
   }
 
-  public function testExpansion_doi_not_from_crossref_mEDRA_Monograph() : void {
+  public function testExpansion_doi_not_from_crossref_mEDRA_Monograph(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
      $this->assertSame('{{Cite journal| date=2004 | last1=Attanasio | first1=Piero | title=The use of Doi in eContent value chain | publisher=mEDRA }}', $expanded->parsed_text());
@@ -195,7 +195,7 @@ final class apiFunctionsTest extends testBaseClass {
 
   // http://doi.airiti.com/
   // They allow you to easily find the RA, but they seem to no longer do meta-data http://www.airitischolar.com/doi/WhichRA/index.jsp
-  public function testExpansion_doi_not_from_crossref_airiti_journal() : void {
+  public function testExpansion_doi_not_from_crossref_airiti_journal(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
      if ($expanded->parsed_text() === '{{Cite journal}}') {
@@ -206,21 +206,21 @@ final class apiFunctionsTest extends testBaseClass {
   }
 
   // http://www.eidr.org/
-  public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie() : void {
+  public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
      $this->assertSame('{{Cite journal| date=2018 | last1=Coogler | first1=Ryan | title=Black Panther }}', $expanded->parsed_text());
   }
 
   // http://www.kisti.re.kr/eng/
-  public function testExpansion_doi_not_from_crossref_kisti_journal() : void {
+  public function testExpansion_doi_not_from_crossref_kisti_journal(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
      $this->assertSame('{{Cite journal| date=2011 | volume=28 | issue=2 | last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management }}', $expanded->parsed_text());
   }
 
   // https://publications.europa.eu/en/
-  public function testExpansion_doi_not_from_crossref_europa_monograph() : void {
+  public function testExpansion_doi_not_from_crossref_europa_monograph(): void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
      if ($expanded->has('author1')) {
@@ -230,7 +230,7 @@ final class apiFunctionsTest extends testBaseClass {
      }
   }
 
-  public function testComplexCrossRef() : void {
+  public function testComplexCrossRef(): void {
      $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get2('chapter'));
@@ -238,7 +238,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Automata, Languages, and Programming', $expanded->get2('title'));
   }
 
-   public function testThesisDOI() : void {
+   public function testThesisDOI(): void {
      $doi = '10.17077/etd.g638o927';
      $text = "{{cite journal|doi=$doi}}";
      $template = $this->make_citation($text);
@@ -251,60 +251,60 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('Lisa Anne', $template->get2('first1'));
   }
 
-   public function testJstor1() : void {
+   public function testJstor1(): void {
      $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertSame('832414', $template->get2('jstor'));
    }
 
-   public function testJstor2() : void {
+   public function testJstor2(): void {
      $text = "{{cite journal|jstor=832414?seq=1234}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertNull($template->get2('url'));
    }
 
-   public function testJstor3() : void {
+   public function testJstor3(): void {
      $text = "{{cite journal|jstor=123 123}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertSame($text, $template->parsed_text());
    }
 
-   public function testJstor4() : void {
+   public function testJstor4(): void {
      $text = "{{cite journal|jstor=i832414}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertSame($text, $template->parsed_text());
    }
 
-   public function testJstor5() : void {
+   public function testJstor5(): void {
      $text = "{{cite journal|jstor=4059223|title=This is not the right title}}";
      $template = $this->make_citation($text);
      expand_by_jstor($template);
      $this->assertSame($text, $template->parsed_text());
   }
 
-  public function testCrossRefAddSeries1() : void {
+  public function testCrossRefAddSeries1(): void {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
      $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
   }
-  public function testCrossRefAddSeries2() : void {
+  public function testCrossRefAddSeries2(): void {
     // Kind of messed up, but "matches" enough to expand
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
      $template = $this->process_citation($text);
      $this->assertSame("2008", $template->get2('date'));
   }
 
-  public function testCrossRefAddEditors() : void {
+  public function testCrossRefAddEditors(): void {
      $text = "{{Cite book | doi = 10.1117/12.135408}}";
      $template = $this->process_citation($text);
      $this->assertSame("Kopera", $template->get2('editor-last1'));
   }
 
-  public function testBibcodeData1() : void {
+  public function testBibcodeData1(): void {
      $text = "{{Cite book | bibcode = 2017NatCo...814879F}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -340,7 +340,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('10.1038/ncomms14879',  $template->get2('doi'));
   }
 
-  public function testBibcodeData2() : void {
+  public function testBibcodeData2(): void {
      $text = "{{Cite book | bibcode = 1996GSAB..108..195R}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -373,7 +373,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertNull($template->get2('pages')); // Added letters
   }
 
-  public function testBibcodeData3() : void {
+  public function testBibcodeData3(): void {
      $text = "{{Cite book | bibcode = 2000A&A...361..952H}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -399,7 +399,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('952', $template->get2('page') . $template->get2('pages'));
   }
 
-  public function testBibcodeData4() : void {
+  public function testBibcodeData4(): void {
      $text = "{{Cite book | bibcode = 1995Sci...267...77R}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -424,7 +424,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('10.1126/science.267.5194.77',  $template->get2('doi'));
   }
 
-  public function testBibcodeData5() : void {
+  public function testBibcodeData5(): void {
      $text = "{{Cite book | bibcode = 1995Geo....23..967E}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -455,7 +455,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',  $template->get2('doi'));
   }
 
-  public function testBibcodeData6() : void {
+  public function testBibcodeData6(): void {
      $text = "{{Cite book | bibcode = 1974JPal...48..524M}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -475,7 +475,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('1974',  $template->get2('date'));
   }
 
-  public function testBibcodeData7() : void {
+  public function testBibcodeData7(): void {
      $text = "{{Cite book | bibcode = 1966Natur.211..116M}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -501,7 +501,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('10.1038/211116a0',  $template->get2('doi'));
   }
 
-  public function testBibcodeData8() : void {
+  public function testBibcodeData8(): void {
      $text = "{{Cite book | bibcode = 1995astro.ph..8159B}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -529,7 +529,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('astro-ph/9508159',  $template->get2('arxiv') . $template->get2('eprint'));
   }
 
-  public function testBibcodeData9() : void {
+  public function testBibcodeData9(): void {
      $text = "{{Cite book | bibcode = 1932Natur.129Q..18.}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -554,7 +554,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('10.1038/129018a0',  $template->get2('doi'));
   }
 
-  public function testBibcodeData10() : void {
+  public function testBibcodeData10(): void {
      $text = "{{Cite book | bibcode = 2019arXiv190502552Q}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -586,7 +586,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('1905.02552',  $template->get2('arxiv') . $template->get2('eprint'));
   }
 
-  public function testBibcodeData11() : void {
+  public function testBibcodeData11(): void {
      $text = "{{Cite book | bibcode = 2003....book.......}}";
      $template = $this->make_citation($text);
      $results = (object) [];
@@ -595,7 +595,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertNull($template->get2('year'));
   }
 
-  public function testBibcodeData12() : void {
+  public function testBibcodeData12(): void {
      $text = "{{Cite book | bibcode = 1958ses..book.....S}}";
      $template = $this->make_citation($text);
      $results = (object) [
@@ -621,7 +621,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('structure and evolution of the stars', strtolower($template->get2('title')));
   }
 
-  public function testBibCodeCache() : void {
+  public function testBibCodeCache(): void {
     AdsAbsControl::add_doi_map('2014ApPhA.116..403G', '10.1007/s00339-014-8468-2');
 
     $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
@@ -643,7 +643,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame('2014ApPhA.116..403G', $prepared->get2('bibcode'));
   }
 
-  public function testBibCodeCache2() : void {
+  public function testBibCodeCache2(): void {
     AdsAbsControl::add_doi_map('2000AAS...19713707B', 'X');
 
     $text = "{{cite journal| bibcode=2000AAS...19713707B}}";
@@ -665,68 +665,68 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertNull($prepared->get2('bibcode'));
   }
 
-  public function testJstorGoofyRIS() : void {
+  public function testJstorGoofyRIS(): void {
     $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
     $prepared = $this->process_citation($text);
     $this->assertSame('Kornbluh', $prepared->get2('last1'));
   }
 
-  public function testCleanUpArchives() : void {
+  public function testCleanUpArchives(): void {
     $text = "{{cite book| title=Archived Copy| script-title=Kornbluh}}";
     $prepared = $this->process_citation($text);
     $this->assertSame('Kornbluh', $prepared->get2('script-title'));
     $this->assertNull($prepared->get2('title'));
   }
 
-  public function testBlankTypeFromDX1() : void {
+  public function testBlankTypeFromDX1(): void {
     $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
     $prepared = $this->process_citation($text);
     $this->assertSame('2015', $prepared->get2('date'));
   }
 
-  public function testBlankTypeFromDX2() : void {
+  public function testBlankTypeFromDX2(): void {
     $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
     $prepared = $this->process_citation($text);
     $this->assertSame('Collins', $prepared->get2('last1'));
   }
 
-  public function testGetBadDoiFromArxiv() : void { // If this DOI starts working or arXiv removes it, then this test will fail and not cover code anymore
+  public function testGetBadDoiFromArxiv(): void { // If this DOI starts working or arXiv removes it, then this test will fail and not cover code anymore
     $text = '{{citation |arxiv=astro-ph/9708005 |last1=Steeghs |first1=D. |last2=Harlaftis |first2=E. T. |last3=Horne |first3=Keith |title=Spiral structure in the accretion disc of the binary IP Pegasi |year=1997  |doi= |doi-broken-date= }}';
     $prepared = $this->process_citation($text);
     $this->assertSame('10.1093/mnras/290.2.L28', $prepared->get2('doi'));
     $this->assertNotNull($prepared->get2('doi-broken-date')); // The DOI has to not work for this test to cover the code where a title and arxiv exist and a doi is found, but the doi does not add a title
   }
 
-  public function testCrossRefAlternativeAPI() : void {
+  public function testCrossRefAlternativeAPI(): void {
     $text = "{{cite journal| doi=10.1080/00222938700771131 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
     $prepared = $this->process_citation($text);
     $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
   }
 
-  public function testCrossRefAlternativeAPI2() : void {
+  public function testCrossRefAlternativeAPI2(): void {
     $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley }}";
     $prepared = $this->process_citation($text);
     $this->assertSame($text, $prepared->parsed_text());
   }
 
-  public function testCrossRefAlternativeAPI3() : void {
+  public function testCrossRefAlternativeAPI3(): void {
     $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics }}";
     $prepared = $this->process_citation($text);
     $this->assertSame($text, $prepared->parsed_text());
   }
 
-  public function testCrossRefAlternativeAPI4() : void {
+  public function testCrossRefAlternativeAPI4(): void {
     $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven}}";
     $prepared = $this->process_citation($text);
     $this->assertSame($text, $prepared->parsed_text());
   }
 
-  public function testS2CIDlicenseTrue() : void {
+  public function testS2CIDlicenseTrue(): void {
     sleep(2);
     $this->assertTrue(get_semanticscholar_license('52813129'));
   }
 
-  public function testUse_ISSN() : void {
+  public function testUse_ISSN(): void {
     $prepared = $this->process_citation('{{cite news|issn=0140-0460 }}');
     $this->assertSame('[[The Times]]', $prepared->get2('newspaper')); 
 

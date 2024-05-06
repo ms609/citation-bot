@@ -19,7 +19,7 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
-function bot_debug_log(string $log_this) : void {
+function bot_debug_log(string $log_this): void {
   @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
   if (function_exists('echoable')) {
      // Avoid making a new huge string, so do not combine
@@ -131,7 +131,7 @@ if (strlen($nlm_apikey) < 8) {
 define ("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
 unset($nlm_email, $nlm_apikey, $nlm_tool);
 
-function check_blocked() : void {
+function check_blocked(): void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
     echo '</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>';
     exit;

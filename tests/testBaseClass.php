@@ -21,11 +21,11 @@ final class TestPage extends Page {
     parent::__construct();
   }
 
-  public function overwrite_text(string $text) : void {
+  public function overwrite_text(string $text): void {
     $this->text = $text;
   }
 
-  public function parse_text(string $text) : void { // Save title from test name
+  public function parse_text(string $text): void { // Save title from test name
     $save_title = $this->title;
     parent::parse_text($text);
     $this->title = $save_title;
@@ -60,7 +60,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $this->flush();
   }
 
-  protected function requires_secrets(callable $function) : void {
+  protected function requires_secrets(callable $function): void {
     if ($this->testing_skip_wiki) {
       $this->flush();
       echo 'A'; // For API, since W is taken
@@ -72,7 +72,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   // Only routines that absolutely need bibcode access since we are limited
-  protected function requires_bibcode(callable $function) : void {
+  protected function requires_bibcode(callable $function): void {
     if ($this->testing_skip_bibcode) {
       $this->flush();
       echo 'B';
@@ -95,7 +95,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   // Speeds up non-zotero tests
-  protected function requires_zotero(callable $function) : void {
+  protected function requires_zotero(callable $function): void {
       try {
         usleep(300000); // Reduce failures
         Zotero::unblock_zotero();
@@ -105,7 +105,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       }
   }
 
-  protected function make_citation(string $text) : Template {
+  protected function make_citation(string $text): Template {
     $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
     $this->flush();
     Template::$all_templates = [];
@@ -117,13 +117,13 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $template;
   }
 
-  protected function prepare_citation(string $text) : Template {
+  protected function prepare_citation(string $text): Template {
     $template = $this->make_citation($text);
     $template->prepare();
     return $template;
   }
 
-  protected function process_citation(string $text) : Template {
+  protected function process_citation(string $text): Template {
     $page = $this->process_page($text);
     $expanded_text = $page->parsed_text();
     $template = new Template();
@@ -131,7 +131,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $template;
   }
 
-  protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
+  protected function process_page(string $text): TestPage { // Only used if more than just a citation template
     $this->flush();
     Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
@@ -141,28 +141,28 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $page;
   }
 
-  protected function parameter_parse_text_helper(string $text) : Parameter {
+  protected function parameter_parse_text_helper(string $text): Parameter {
     $this->flush();
     $parameter = new Parameter();
     $parameter->parse_text($text);
     return $parameter;
   }
 
-  protected function getDateAndYear(Template $input) : ?string {
+  protected function getDateAndYear(Template $input): ?string {
     // Generates string that makes debugging easy and will throw error
     if (is_null($input->get2('year'))) return $input->get2('date') ; // Might be null too
     if (is_null($input->get2('date'))) return $input->get2('year') ;
     return 'Date is ' . $input->get2('date') . ' and year is ' . $input->get2('year');
   }
 
-  protected function expand_via_zotero(string $text) :  Template {
+  protected function expand_via_zotero(string $text): Template {
     $expanded = $this->make_citation($text);
     Zotero::expand_by_zotero($expanded);
     $expanded->tidy();
     return $expanded;
   }
 
-  protected function reference_to_template(string $text) : Template {
+  protected function reference_to_template(string $text): Template {
     $this->flush();
     $text=trim($text);
     if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
@@ -174,7 +174,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  protected function flush() : void {
+  protected function flush(): void {
      if (ob_get_level() > 0) { 
        ob_end_flush();
        ob_start();
@@ -182,7 +182,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
      flush();
   }
 
-  protected function fill_cache() : void { // Name is outdated
+  protected function fill_cache(): void { // Name is outdated
     Zotero::create_ch_zotero();
     $wb = new WikipediaBot();
     unset($wb);

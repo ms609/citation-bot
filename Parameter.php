@@ -22,7 +22,7 @@ final class Parameter {
  * Expects that any instances of "|" in $text will have been replaced with
  * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
  */
-  public function parse_text(string $text) : void {
+  public function parse_text(string $text): void {
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
     // Split the text before the '=' into constituent parts:
@@ -75,7 +75,7 @@ final class Parameter {
 /*
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
  */
-  public function parsed_text() : string {
+  public function parsed_text(): string {
     if ($this->param && empty($this->eq)) {              // code used to do this
       report_error('Missing equals in parameter');       // @codeCoverageIgnore
     }
