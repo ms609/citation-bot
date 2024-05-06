@@ -320,7 +320,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     }
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    $int_time = strtotime((string) $entry->published)
+    $int_time = strtotime((string) $entry->published);
     if ($int_time) {
        $this_template->add_if_new("year", date("Y", $int_time), 'arxiv');
     }
