@@ -2728,8 +2728,8 @@ final class Template
    'author' => $this->first_surname(),
    'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
    'volume' => $this->get('volume'),
-   'start_page' => isset($page_range[1]) ? $page_range[1] : null,
-   'end_page' => isset($page_range[2]) ? $page_range[2] : null,
+   'start_page' => $page_range[1] ?? null,
+   'end_page' => $page_range[2] ?? null,
    'issn' => $this->get('issn'),
   ];
 
@@ -8469,7 +8469,7 @@ final class Template
 
  private function param_with_index(int $i): ?Parameter
  {
-  return isset($this->param[$i]) ? $this->param[$i] : null;
+  return $this->param[$i] ?? null;
  }
 
  private function param_value(int $i): string
