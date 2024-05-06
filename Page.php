@@ -48,7 +48,7 @@ class Page {
     if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info;
+      if (isset($details->error->info))  $message .= " " . (string) $details->error->info;
       report_warning(echoable($message));
       return false;
       // @codeCoverageIgnoreEnd
@@ -595,12 +595,20 @@ class Page {
       }
     }
 
-    if ((count($this->modifications["deletions"]) !== 0)
-    && (
-        (($pos = array_search('url', $this->modifications["deletions"])) !== false)
-     || (($pos = array_search('chapter-url', $this->modifications["deletions"])) !== false)
-     || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== false)
-        )
+    $pos1 = array_search('url', $this->modifications["deletions"]);
+    $pos2 = array_search('chapter-url', $this->modifications["deletions"]);
+    $pos3 = array_search('chapterurl', $this->modifications["deletions"]);
+    if ($pos1 !== false) {
+      unset($this->modifications["deletions"][$pos1]);
+    }
+    if ($pos2 !== false) {
+      unset($this->modifications["deletions"][$pos2]);
+    }
+    if ($pos3 !== false) {
+      unset($this->modifications["deletions"][$pos3]);
+    }
+    if ((count($this->modifications["deletions"]) !== 0) &&
+        ($pos1 !== false || $pos2 !== false || $pos3 !== false)
     ) {
         if (strpos($auto_summary, 'chapter-url') !== false) {
           $auto_summary .= "Removed or converted URL. ";
@@ -609,15 +617,19 @@ class Page {
         }
         unset($this->modifications["deletions"][$pos]);
     }
-    if ((count($this->modifications["deletions"]) !== 0)
-    && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== false || ($pos = array_search('access-date', $this->modifications["deletions"])) !== false)
-    ) {
-      $auto_summary .= "Removed access-date with no URL. ";
-      unset($this->modifications["deletions"][$pos]);
+    $pos1 = array_search('accessdate', $this->modifications["deletions"]);
+    $pos2 = array_search('access-date', $this->modifications["deletions"]);
+    if ($pos1 !== false) {
+      unset($this->modifications["deletions"][$pos1]);
     }
-    if ((count($this->modifications["deletions"]) !== 0)
-    && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== false
-    ) {
+    if ($pos2 !== false) {
+      unset($this->modifications["deletions"][$pos2]);
+    }
+    if ((count($this->modifications["deletions"]) !== 0) && ($pos1 !== false || $pos2 !== false)) {
+      $auto_summary .= "Removed access-date with no URL. ";
+    }
+    $pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"]);
+    if ((count($this->modifications["deletions"]) !== 0) && $pos!== false) {
       $auto_summary .= "Changed bare reference to CS1/2. ";
       unset($this->modifications["deletions"][$pos]);
     }
@@ -654,7 +666,7 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    $auto_summary = $auto_summary . "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
+    $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
     if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
       $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);  // @codeCoverageIgnore
     }
