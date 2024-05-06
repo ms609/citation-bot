@@ -159,7 +159,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                 $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
                 if (strpos($first, '.') && substr($first, -1) !== '.') {
-                  $first = $first . '.';
+                  $first .= '.';
                 }
                 $i++;
                 $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
@@ -320,7 +320,8 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     }
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    if ($int_time = strtotime((string)$entry->published)) {
+    $int_time = strtotime((string) $entry->published)
+    if ($int_time) {
        $this_template->add_if_new("year", date("Y", $int_time), 'arxiv');
     }
 
@@ -721,7 +722,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
      if (isset($json['author'])) {
        $i = 0;
        foreach ($json['author'] as $auth) {
-          $i = $i + 1;
+          $i += 1;
           $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
           if (in_array($full_name, BAD_AUTHORS, true)) break;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
@@ -884,12 +885,12 @@ function expand_by_jstor(Template $template): void {
         if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
         switch (trim($ris_part[0])) {
           case "T1":
-            $new_title = $new_title . trim($ris_part[1]);
-            $got_count = $got_count + 10;
+            $new_title .= trim($ris_part[1]);
+            $got_count += 10;
             break;
           case "TI":
             $new_title = trim($ris_part[1]) . $new_title;
-            $got_count = $got_count + 100;
+            $got_count += 100;
             break;
         default:
           break;
@@ -1422,7 +1423,7 @@ function CrossRefTitle(string $doi): string {
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
           if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
-             $title = $title . ": " . (string) $json->message->subtitle[0];
+             $title .= ": " . (string) $json->message->subtitle[0];
           }
           return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
      } else {
