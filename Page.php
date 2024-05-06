@@ -615,7 +615,6 @@ class Page {
         } else {
           $auto_summary .= "Removed URL that duplicated identifier. ";
         }
-        unset($this->modifications["deletions"][$pos]);
     }
     $pos1 = array_search('accessdate', $this->modifications["deletions"]);
     $pos2 = array_search('access-date', $this->modifications["deletions"]);
