@@ -40,7 +40,7 @@ class Page {
       }
   }
 
-  public function get_text_from(string $title) : bool {
+  public function get_text_from(string $title): bool {
     $this->construct_modifications_array(); // Could be new page
 
     $details = WikipediaBot::ReadDetails($title);
@@ -123,7 +123,7 @@ class Page {
     return true;
   }
 
-  public function parse_text(string $text) : void {
+  public function parse_text(string $text): void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
@@ -141,7 +141,7 @@ class Page {
   // $identifier: parameter to send to api_function, e.g. "pmid"
   // $templates: array of pointers to the templates
 /** @param array<Template> $templates */
-  public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
+  public function expand_templates_from_identifier(string $identifier, array &$templates): void { // Pointer to save memory
     $ids = [];
     set_time_limit(120);
     switch ($identifier) {
@@ -661,7 +661,7 @@ class Page {
     return $auto_summary;
   }
 
-  public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+  public function write(WikipediaBot $api, string $edit_summary_end = ''): bool {
     /** @var array<bool> $failures */
     static $failures = [false, false, false, false, false];
     if ($this->allow_bots()) {
@@ -705,7 +705,7 @@ class Page {
   /** @return array<WikiThings|Template>
       @param class-string $class
   */
-  public function extract_object(string $class) : array {
+  public function extract_object(string $class): array {
     $i = 0;
     $text = $this->text;
     /** @var array<string> $regexp_in */
@@ -790,7 +790,7 @@ class Page {
   }
 
   /** @param array<WikiThings|Template> $objects */
-  private function replace_object(array &$objects) : void {  // Pointer to save memory
+  private function replace_object(array &$objects): void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
       foreach (array_reverse($objects) as $obj) {
