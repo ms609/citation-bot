@@ -976,7 +976,9 @@ public static function process_zotero_response(string $zotero_response, Template
         $creatorType = $result->creators[$i]->creatorType ?? 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
           switch ($creatorType) {
-            case 'author': case 'contributor': case 'artist':
+            case 'author':
+            case 'contributor':
+            case 'artist':
               $authorParam = 'author' . (string) ++$author_i;
               break;
             case 'editor':
