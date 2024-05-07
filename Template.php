@@ -1214,7 +1214,7 @@ final class Template
   $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
 
   switch ($param_name) {
-   ### EDITORS
+   // EDITORS
    case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match):
     if ($this->had_initial_editor) {
      return false;
@@ -1260,7 +1260,7 @@ final class Template
     }
     return false;
 
-   #TRANSLATOR
+   // TRANSLATOR
    case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match):
     if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) {
      return false;
@@ -1270,7 +1270,7 @@ final class Template
     }
     return false;
 
-   ### AUTHORS
+   // AUTHORS
    case "author":
    case "author1":
    case "last1":
@@ -1673,7 +1673,7 @@ final class Template
     }
     return $this->add('pmc-embargo-date', $value);
 
-   ### DATE AND YEAR ###
+   // DATE AND YEAR
 
    case "date":
     if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
@@ -1727,7 +1727,7 @@ final class Template
     }
     return false;
 
-   ### JOURNAL IDENTIFIERS ###
+   // JOURNAL IDENTIFIERS
 
    case 'issn':
     if ($this->blank(["journal", "periodical", "work", $param_name]) && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
@@ -1954,8 +1954,8 @@ final class Template
     }
     return false;
 
-   ###  ARTICLE LOCATORS ###
-   ### (page, volume etc) ###
+   //  ARTICLE LOCATORS
+   // (page, volume etc)
 
    case 'title':
     if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
@@ -2195,7 +2195,7 @@ final class Template
     }
     return false;
 
-   ###  ARTICLE IDENTIFIERS
+   //  ARTICLE IDENTIFIERS
 
    case 'url':
     // look for identifiers in URL - might be better to add a PMC parameter, say
@@ -4013,7 +4013,7 @@ final class Template
   return;
  }
 
- ### parameter processing
+ // parameter processing
  private function parameter_names_to_lowercase(): void
  {
   if (empty($this->param)) {
@@ -4069,7 +4069,7 @@ final class Template
    foreach ($this->param as $param_key => $p) {
     if ($need_one && !empty($p->param)) {
      if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) {
-      # URL ending ~ xxx.com/?para=val
+      // URL ending ~ xxx.com/?para=val
       $val = $p->val;
       $param = $p->param;
       $this->param[$param_key]->val = $param . '=' . $val;
@@ -4186,7 +4186,7 @@ final class Template
    }
 
    if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) {
-    # Takes priority over more tentative matches
+    // Takes priority over more tentative matches
     report_add("Found URL floating in template; setting url");
     $url = $match[0];
     if ($this->blank('url')) {
@@ -7477,7 +7477,7 @@ final class Template
     // No break here: pages, issue and year (the previous case) should be treated in this fashion.
     case 'pages':
     case 'page':
-    case 'pp': # And case 'year': case 'issue':, following from previous
+    case 'pp': // And cases 'year' and'issue' following from previous
      $value = $this->get($param);
      $value = str_replace('--', '-', $value);
      if (str_i_same('null', $value)) {

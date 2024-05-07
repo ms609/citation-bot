@@ -1194,9 +1194,13 @@ function prior_parameters(string $par, array $list=[] ): array {
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
     $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
-      case 'first': case 'initials': case 'forename':
+      case 'first':
+      case 'initials':
+      case 'forename':
         return ['last' . $match[2], 'surname' . $match[2], 'author' . $before];
-      case 'last': case 'surname': case 'author':
+      case 'last':
+      case 'surname':
+      case 'author':
         return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before];
       default:
         $base = $match[1] . $before;
@@ -1204,29 +1208,49 @@ function prior_parameters(string $par, array $list=[] ): array {
     }
   }
   switch ($par) {
-    case 'author': case 'authors':
+    case 'author':
+    case 'authors':
       return $list;
     case 'dummy':
       return $list;
-    case 'title': case 'others': case 'display-editors': case 'displayeditors': case 'display-authors': case 'displayauthors': case 'author-link':
+    case 'title':
+    case 'others':
+    case 'display-editors':
+    case 'displayeditors':
+    case 'display-authors':
+    case 'displayauthors':
+    case 'author-link':
       return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-    case 'title-link':case 'titlelink':
+    case 'title-link':
+    case 'titlelink':
       return prior_parameters('title', $list);
     case 'chapter':
       return prior_parameters('title-link', array_merge(['titlelink'], $list));
-    case 'journal': case 'work': case 'newspaper': case 'website': case 'magazine': case 'periodical': case 'encyclopedia': case 'encyclopaedia':
+    case 'journal':
+    case 'work':
+    case 'newspaper':
+    case 'website':
+    case 'magazine':
+    case 'periodical':
+    case 'encyclopedia':
+    case 'encyclopaedia':
       return prior_parameters('chapter', $list);
     case 'series':
       return prior_parameters('journal', array_merge(['work', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia'], $list));
-    case 'year': case 'date':
+    case 'year':
+    case 'date':
       return prior_parameters('series', $list);
     case 'volume':
       return prior_parameters('year', array_merge(['date'], $list));
-    case 'issue': case 'number':
+    case 'issue':
+    case 'number':
       return prior_parameters('volume', $list);
-    case 'page': case 'pages':
+    case 'page':
+    case 'pages':
       return prior_parameters('issue', array_merge(['number'], $list));
-    case 'location': case 'publisher': case 'edition':
+    case 'location':
+    case 'publisher':
+    case 'edition':
       return prior_parameters('page', array_merge(['pages'], $list));
     case 'doi':
       return prior_parameters('location', array_merge(['publisher', 'edition'], $list));
@@ -1242,31 +1266,67 @@ function prior_parameters(string $par, array $list=[] ): array {
       return prior_parameters('pmid', $list);
     case 'pmc-embargo-date':
       return prior_parameters('pmc', $list);
-    case 'arxiv': case 'eprint': case 'class':
+    case 'arxiv':
+    case 'eprint':
+    case 'class':
       return prior_parameters('pmc-embargo-date', $list);
     case 'bibcode':
       return prior_parameters('arxiv', array_merge(['eprint', 'class'], $list));
     case 'hdl':
       return prior_parameters('bibcode', $list);
-    case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc':
+    case 'isbn':
+    case 'biorxiv':
+    case 'citeseerx':
+    case 'jfm':
+    case 'zbl':
+    case 'mr':
+    case 'osti':
+    case 'ssrn':
+    case 'rfc':
        return prior_parameters('hdl', $list);
-    case 'lccn': case 'issn': case 'ol': case 'oclc': case 'asin': case 's2cid':
+    case 'lccn':
+    case 'issn':
+    case 'ol':
+    case 'oclc':
+    case 'asin':
+    case 's2cid':
        return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
     case 'url':
         return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
-    case 'chapter-url': case 'article-url': case 'chapterurl': case 'conference-url': case 'conferenceurl':
-    case 'contribution-url': case 'contributionurl': case 'entry-url': case 'event-url': case 'eventurl': case 'lay-url':
-    case 'layurl': case 'map-url': case 'mapurl': case 'section-url': case 'sectionurl': case 'transcript-url':
-    case 'transcripturl': case 'URL':
+    case 'chapter-url':
+    case 'article-url':
+    case 'chapterurl':
+    case 'conference-url':
+    case 'conferenceurl':
+    case 'contribution-url':
+    case 'contributionurl':
+    case 'entry-url':
+    case 'event-url':
+    case 'eventurl':
+    case 'lay-url':
+    case 'layurl':
+    case 'map-url':
+    case 'mapurl':
+    case 'section-url':
+    case 'sectionurl':
+    case 'transcript-url':
+    case 'transcripturl':
+    case 'URL':
         return prior_parameters('url', $list);
-    case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date':
+    case 'archive-url':
+    case 'archiveurl':
+    case 'accessdate':
+    case 'access-date':
         return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
             'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
             'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
             'transcripturl', 'URL'],$list));
-    case 'archive-date': case 'archivedate':
+    case 'archive-date':
+    case 'archivedate':
       return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
-    case 'id': case 'type': case 'via':
+    case 'id':
+    case 'type':
+    case 'via':
       return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
       bot_debug_log("prior_parameters missed: " . $par);
@@ -1277,12 +1337,19 @@ function prior_parameters(string $par, array $list=[] ): array {
 /** @return array<string> */
 function equivalent_parameters(string $par): array {
   switch ($par) {
-    case 'author': case 'authors': case 'author1': case 'last1':
+    case 'author':
+    case 'authors':
+    case 'author1':
+    case 'last1':
       return FLATTENED_AUTHOR_PARAMETERS;
-    case 'pmid': case 'pmc':
+    case 'pmid':
+    case 'pmc':
       return ['pmc', 'pmid'];
-    case 'page_range': case 'start_page': case 'end_page': # From doi_crossref
-    case 'pages': case 'page':
+    case 'page_range':
+    case 'start_page':
+    case 'end_page': // From doi_crossref
+    case 'pages':
+    case 'page':
       return ['page_range', 'pages', 'page', 'end_page', 'start_page'];
     default:
       return [$par];
@@ -1926,7 +1993,9 @@ function get_possible_dois(string $doi): array {
       case ".":
         // Missing a terminal 'x'?
         $trial[] = $doi . "x";
-      case ",": case ";": case "\"":
+      case ",":
+      case ";":
+      case "\"":
         // Or is this extra punctuation copied in?
         $trial[] = substr($doi, 0, -1);
     }
@@ -2830,7 +2899,8 @@ function simplify_google_search(string $url): string {
           if ($it_is_blank || str_i_same($part_start1, '11')) break; // default
           $url .=  $part . "&" ;
           break;
-       case "ie": case "oe":
+       case "ie":
+       case "oe":
           if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break; // UTF-8 is the default
           $url .=  $part . "&" ;
           break;
