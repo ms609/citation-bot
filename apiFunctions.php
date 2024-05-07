@@ -55,7 +55,9 @@ final class AdsAbsControl {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
        self::$bib2doi[$bib] = $doi;
-       if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) self::$doi2bib[$doi] = $bib;
+       if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
+           self::$doi2bib[$doi] = $bib;
+       }
     }
   }
   public static function get_doi2bib(string $doi): string {
@@ -85,10 +87,12 @@ final class AdsAbsControl {
 */
 function entrez_api(array $ids, array &$templates, string $db): void {   // Pointer to save memory
   set_time_limit(120);
-  if (!count($ids)) return;
-  if ($ids === ['XYZ']) return; // junk data from test suite
-  if ($ids === ['1']) return; // junk data from test suite
-  if ($ids === ['']) return; // junk data from test suite
+  if (!count($ids) ||
+      $ids === ['XYZ'] ||
+      $ids === ['1'] ||
+      $ids === ['']) {
+      return; // junk data from test suite
+  }
   if ($db !== 'pubmed' && $db !== 'pmc') {
     report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
   }
@@ -245,7 +249,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
       $ch = bot_curl_init(1.0, []);
   }
   set_time_limit(120);
-  if (count($ids) === 0) return;
+  if (count($ids) === 0) {
+      return;
+  }
   report_action("Getting data from arXiv API");
   /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
@@ -288,9 +294,13 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         expand_by_doi($this_template);
         if ($this_template->blank('title')) {
             $this_template->set('title', $the_arxiv_title);
-            if ($the_arxiv_contribution !== '') $this_template->set('contribution', $the_arxiv_contribution);
+            if ($the_arxiv_contribution !== '') {
+                $this_template->set('contribution', $the_arxiv_contribution);
+            }
         } else {
-            if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) $this_template->forget('contribution');
+            if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) {
+                $this_template->forget('contribution');
+            }
         }
         unset($the_arxiv_title);
         unset($the_arxiv_contribution);
@@ -307,7 +317,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
       } else {
         $this_template->add_if_new("author$i", $name, 'arxiv');
       }
-      if ($this_template->blank(["last$i", "first$i", "author$i"])) $i--;  // Deal with authors that are empty or just a colon as in https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=2112.04678
+      if ($this_template->blank(["last$i", "first$i", "author$i"])) {
+          $i--;  // Deal with authors that are empty or just a colon as in https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=2112.04678
+      }
     }
     $the_title = (string) $entry->title;
     // arXiv fixes these when it sees them
@@ -347,7 +359,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
 */
 function adsabs_api(array $ids, array &$templates, string $identifier): void {  // Pointer to save memory
   set_time_limit(120);
-  if (count($ids) === 0) return;
+  if (count($ids) === 0) {
+      return;
+  }
 
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== false || strlen($bibcode) !== 19) {
@@ -359,7 +373,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
-      if (doi_works($doi)) $template->add_if_new('doi', $doi);
+      if (doi_works($doi)) {
+          $template->add_if_new('doi', $doi);
+      }
     }
   }
 
@@ -374,9 +390,11 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
       break;
     }
   }
-  if ($NONE_IS_INCOMPLETE) return;
-  if (AdsAbsControl::big_gave_up_yet()) return;
-  if (!PHP_ADSABSAPIKEY) return;
+  if ($NONE_IS_INCOMPLETE ||
+      AdsAbsControl::big_gave_up_yet() ||
+      !PHP_ADSABSAPIKEY) {
+      return;
+  }
 
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
@@ -392,7 +410,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
       CURLOPT_CUSTOMREQUEST => 'POST',
       CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
   $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
-  if (!isset($response->docs)) return;
+  if (!isset($response->docs)) {
+      return;
+  }
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
     $record = (object) $record; // Make static analysis happy
@@ -456,11 +476,15 @@ function expand_by_doi(Template $template, bool $force = false): void {
   // there will be few instances where it could not in principle be profitable to
   // run this function, so we don't check this first.
 
-  if (!$template->verify_doi()) return;
+  if (!$template->verify_doi()) {
+      return;
+  }
   $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi === $template->last_searched_doi) return;
   $template->last_searched_doi = $doi;
-  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return; // We do not use DOI's that are just an ISSN.
+  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+      return;
+  }
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       $template->add_if_new('jstor', substr($doi, 8));
   }
@@ -515,8 +539,12 @@ function expand_by_doi(Template $template, bool $force = false): void {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title)) report_info("  Possible new title: " . str_replace("\n", "", echoable((string) $crossRef->series_title)));
-          if (isset($crossRef->article_title)) report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
+          if (isset($crossRef->series_title)) {
+              report_info("  Possible new title: " . str_replace("\n", "", echoable((string) $crossRef->series_title)));
+          }
+          if (isset($crossRef->article_title)) {
+              report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
+          }
           foreach (THINGS_THAT_ARE_TITLES as $possible) {
            if ($template->has($possible)) {
               report_info("  Existing old title: " .  echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
@@ -527,9 +555,15 @@ function expand_by_doi(Template $template, bool $force = false): void {
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
-      if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
-      if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
-      if ($template->has('book-title')) unset($crossRef->volume_title);
+      if ((string) @$crossRef->volume_title === 'Professional Paper') {
+          unset($crossRef->volume_title);
+      }
+      if ((string) @$crossRef->series_title === 'Professional Paper') {
+          unset($crossRef->series_title);
+      }
+      if ($template->has('book-title')) {
+          unset($crossRef->volume_title);
+      }
 
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
         if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
@@ -566,7 +600,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
         $add_authors = $existing_author === '' || author_is_human($existing_author);
 
         foreach ($crossRef->contributors->contributor as $author) {
-          if (strtoupper((string) $author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
+          if (strtoupper((string) $author->surname) === '&NA;') {
+              break; // No Author, leave loop now!  Have only seen upper-case in the wild
+          }
           if ((string) $author["contributor_role"] === 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
@@ -582,7 +618,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
       }
       $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
       $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
-      if ((int)$crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
+      if ((int)$crossRef->volume > 0) {
+          $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
+      }
       if (((strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
@@ -612,7 +650,9 @@ function query_crossref(string $doi): ?object {
   if ($ch === null) {
     $ch = bot_curl_init(1.0, []);
   }
-  if (strpos($doi, '10.2307') === 0) return null; // jstor API is better
+  if (strpos($doi, '10.2307') === 0) {
+      return null; // jstor API is better
+  }
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   /** @psalm-taint-escape ssrf */
@@ -675,24 +715,36 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
              [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
      }
-     if (strpos($doi, '10.2307') === 0) return; // jstor API is better
-     if (strpos($doi, '10.24436') === 0) return; // They have horrible meta-data
-     if (strpos($doi, '10.5284/1028203') === 0) return; // database
+     if (strpos($doi, '10.2307') === 0 || // jstor API is better
+         strpos($doi, '10.24436') === 0 || // They have horrible meta-data
+         strpos($doi, '10.5284/1028203') === 0) { // database
+         return;
+     }
      set_time_limit(120);
      /** @param array|string|null|int $data */
      $try_to_add_it = function(string $name, $data) use($template): void {
-       if ($template->has($name)) return; // Not worth updating based upon DX
-       if (is_null($data)) return;
+       if ($template->has($name)) {
+           return; // Not worth updating based upon DX
+       }
+       if (is_null($data)) {
+           return;
+       }
        while (is_array($data)) {
-         if (!isset($data['0']) || isset($data['1'])) return; // @codeCoverageIgnore
-         $data = $data['0'];                                  // @codeCoverageIgnore
+         if (!isset($data['0']) || isset($data['1'])) {
+             return;
+         }
+         $data = $data['0'];
        }
        $data = (string) $data;
-       if ($data === '') return;
+       if ($data === '') {
+           return;
+       }
        $template->add_if_new($name, $data, 'dx');
        return;
      };
-     if (!$doi) return;
+     if (!$doi) {
+         return;
+     }
      /** @psalm-taint-escape ssrf */
      $doi = trim($doi);
      curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
@@ -727,7 +779,9 @@ function expand_doi_with_dx(Template $template, string $doi): void {
        foreach ($json['author'] as $auth) {
           $i += 1;
           $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
-          if (in_array($full_name, BAD_AUTHORS, true)) break;
+          if (in_array($full_name, BAD_AUTHORS, true)) {
+              break;
+          }
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
              $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
           } else {
@@ -741,8 +795,10 @@ function expand_doi_with_dx(Template $template, string $doi): void {
      if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
         unset($json['container-title']);   // @codeCoverageIgnore
      }
-     if (str_ends_with((string) @$json['title'], '.PDF')) unset($json['title']);
-     if (str_ends_with((string) @$json['title'], '.pdf')) unset($json['title']);
+     if (str_ends_with((string) @$json['title'], '.PDF') ||
+         str_ends_with((string) @$json['title'], '.pdf')) {
+         unset($json['title']);
+     }
      $type = (string) @$json['type'];
      if ($type === 'article-journal' ||
          $type === 'journal-article' ||
@@ -825,7 +881,9 @@ function expand_by_jstor(Template $template): void {
     $ch = bot_curl_init(1.0, []);
   }
   set_time_limit(120);
-  if ($template->incomplete() === false) return;
+  if ($template->incomplete() === false) {
+      return;
+  }
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
   } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
@@ -838,8 +896,12 @@ function expand_by_jstor(Template $template): void {
   }
   /** @psalm-taint-escape ssrf */
   $jstor = trim($jstor);
-  if (strpos($jstor, ' ') !== false) return ; // Comment/template found
-  if (substr($jstor, 0, 1) === 'i') return ; // We do not want i12342 kind
+  if (strpos($jstor, ' ') !== false) {
+      return ; // Comment/template found
+  }
+  if (substr($jstor, 0, 1) === 'i') {
+      return ; // We do not want i12342 kind
+  }
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
   $dat = bot_curl_exec($ch);
   if ($dat === '') {
@@ -885,7 +947,9 @@ function expand_by_jstor(Template $template): void {
       $new_title = ': ';
       foreach ($ris as $ris_line) {
         $ris_part = explode(" - ", $ris_line . " ", 2);
-        if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
+        if (!isset($ris_part[1])) {
+            $ris_part[0] = ""; // Ignore
+        }
         switch (trim($ris_part[0])) {
           case "T1":
             $new_title .= trim($ris_part[1]);
@@ -910,7 +974,9 @@ function expand_by_jstor(Template $template): void {
     if ($bad_data) {
        report_info('Old title did not match for ' . jstor_link($jstor));
        foreach ($ris as $ris_line) {
-         if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
+         if (!isset($ris_part[1])) {
+             $ris_part[0] = ""; // Ignore
+         }
          $ris_part = explode(" - ", $ris_line . " ", 2);
          switch (trim($ris_part[0])) {
            case "T1":
@@ -1007,11 +1073,19 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
-    if ($response === '') return null;
-    if (stripos($response, 'Paper not found') !== false) return false;
+    if ($response === '') {
+        return null;
+    }
+    if (stripos($response, 'Paper not found') !== false) {
+        return false;
+    }
     $oa = @json_decode($response);
-    if ($oa === false) return null;
-    if (isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) return true;
+    if ($oa === false) {
+        return null;
+    }
+    if (isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
+        return true;
+    }
     return false;
 }
 
@@ -1148,7 +1222,9 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
     }
     $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from AdsAbs website');
+    if ($http_response_code === 0 || $header_length === 0) {
+        throw new Exception('Size of zero from AdsAbs website');
+    }
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     unset($return);
@@ -1310,9 +1386,13 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
 
 function process_bibcode_data(Template $this_template, object $record): void {
     $this_template->record_api_usage('adsabs', 'bibcode');
-    if (!isset($record->title[0])) return;
+    if (!isset($record->title[0])) {
+        return;
+    }
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
-    if (stripos((string) $record->title[0], 'book') !== false && stripos((string) $record->title[0], 'review') !== false) unset($record->author); // often book author
+    if (stripos((string) $record->title[0], 'book') !== false && stripos((string) $record->title[0], 'review') !== false) {
+        unset($record->author); // often book author
+    }
     $i = 0;
     if (isset($record->author)) {
      foreach ($record->author as $author) {
@@ -1326,7 +1406,9 @@ function process_bibcode_data(Template $this_template, object $record): void {
         // Do nothing
       } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
        if (substr($journal_start, 0, 13) === 'eprint arxiv:') {               //@codeCoverageIgnore
-          if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
+          if (isset($record->arxivclass)) {
+              $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
+          }
           $this_template->add_if_new('arxiv', substr($journal_start, 13));     //@codeCoverageIgnore
         }
       } else {
@@ -1345,9 +1427,15 @@ function process_bibcode_data(Template $this_template, object $record): void {
        unset($record->page); // Probably is journal without pages, but article numbers and got mis-encoded
       }
     }
-    if (isset($record->volume)) $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
-    if (isset($record->issue)) $this_template->add_if_new('issue', (string) $record->issue, 'adsabs');
-    if (isset($record->year)) $this_template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year), 'adsabs');
+    if (isset($record->volume)) {
+        $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
+    }
+    if (isset($record->issue)) {
+        $this_template->add_if_new('issue', (string) $record->issue, 'adsabs');
+    }
+    if (isset($record->year)) {
+        $this_template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year), 'adsabs');
+    }
     if (isset($record->page)) {
       $dum = implode('–', $record->page);
       if (preg_match('~^[\-\–\d]+$~u', $dum)) {
@@ -1359,7 +1447,9 @@ function process_bibcode_data(Template $this_template, object $record): void {
       foreach ($record->identifier as $recid) {
         $recid = (string) $recid;
         if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-           if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
+           if (isset($record->arxivclass)) {
+               $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
+           }
            $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
         }
       }
@@ -1368,7 +1458,9 @@ function process_bibcode_data(Template $this_template, object $record): void {
       $doi = (string) @$record->doi[0];
       if (doi_works($doi)) {
         $this_template->add_if_new('doi', $doi);
-        if ($this_template->has('bibcode')) AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+        if ($this_template->has('bibcode')) {
+            AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+        }
       }
     } elseif ($this_template->has('bibcode')) { // Slow mode looks for existent bibcodes
       AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');
@@ -1400,8 +1492,12 @@ function expand_book_adsabs(Template $template, object $record): void {
 function query_adsabs(string $options): object {
     set_time_limit(120);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::small_gave_up_yet()) return (object) ['numFound' => 0];
-    if (!PHP_ADSABSAPIKEY) return (object) ['numFound' => 0];
+    if (AdsAbsControl::small_gave_up_yet()) {
+        return (object) ['numFound' => 0];
+    }
+    if (!PHP_ADSABSAPIKEY) {
+        return (object) ['numFound' => 0];
+    }
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
