@@ -245,7 +245,7 @@ public static function drop_urls_that_match_dois(array &$templates): void {  // 
             if (stripos($redirectedUrl_doi, 'denied') !== false) break;
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
             $url_short         = self::url_simplify($url);
-            if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
+            if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
                  $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore
             }
             if (stripos($url_short, $redirectedUrl_doi) !== false ||
@@ -356,18 +356,18 @@ public static function expand_by_zotero(Template $template, ?string $url = null)
 
   if (!$template->profoundly_incomplete($url)) return; // Only risk unvetted data if there's little good data to sully
 
-  if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== false) return; // That's a bad url
+  if (stripos($url, 'CITATION_BOT_PLACEHOLDER') !== false) return; // That's a bad url
 
   // Clean up URLs
-  if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~i', $url, $matches)) { // remove .PDF from Nature urls
+  if (preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~i', $url, $matches)) { // remove .PDF from Nature urls
      $url = $matches[1];  // @codeCoverageIgnore
   }
-  if(preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
+  if (preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
      $url = $matches[1];
   }
 
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return;
+  if (preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return;
 
   // Is it actually a URL.  Zotero will search for non-url things too!
   if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return;  // Just a host name
@@ -719,7 +719,7 @@ public static function process_zotero_response(string $zotero_response, Template
     }
   }
 
-  if ( isset($result->DOI) && $template->blank('doi')) {
+  if (isset($result->DOI) && $template->blank('doi')) {
     if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
        $result->DOI = $matches[1];
     }
@@ -741,11 +741,11 @@ public static function process_zotero_response(string $zotero_response, Template
     }
   }
 
-  if ( isset($result->ISBN)) $template->add_if_new('isbn'   , $result->ISBN);
+  if (isset($result->ISBN)) $template->add_if_new('isbn'   , $result->ISBN);
   if ($access_date && isset($result->date)) {
     $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
-    if($new_date) { // can compare
-      if($new_date > $access_date) {
+    if ($new_date) { // can compare
+      if ($new_date > $access_date) {
         report_info("URL appears to have changed since access-date " . echoable($url));
         return;
       }
@@ -776,12 +776,12 @@ public static function process_zotero_response(string $zotero_response, Template
       unset($result->title); // A warning, not a title
   }
   if ($template->has('title')) {
-     if(isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
+     if (isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
         unset($result->title);
      }
   }
   if ($template->has('chapter')) {
-     if(isset($result->title) && titles_are_similar($template->get('chapter'), (string) $result->title)) {
+     if (isset($result->title) && titles_are_similar($template->get('chapter'), (string) $result->title)) {
         unset($result->title);
      }
   }
@@ -796,8 +796,8 @@ public static function process_zotero_response(string $zotero_response, Template
     }
   }
 
-  if ( isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
-  if ( isset($result->pages)) {
+  if (isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
+  if (isset($result->pages)) {
      $pos_pages = (string) $result->pages;
      if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
         $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
@@ -807,7 +807,7 @@ public static function process_zotero_response(string $zotero_response, Template
      }
   }
   if (isset($result->itemType) && $result->itemType === 'newspaperArticle') {
-    if ( isset($result->publicationTitle)) {
+    if (isset($result->publicationTitle)) {
        $new_title = (string) $result->publicationTitle;
        if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS, true)) {
           $template->add_if_new('publisher', $new_title);
@@ -816,7 +816,7 @@ public static function process_zotero_response(string $zotero_response, Template
        }
     }
   } else {
-    if ( isset($result->publicationTitle)) {
+    if (isset($result->publicationTitle)) {
       if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
           (stripos((string) $result->publicationTitle, ' edition') === false)) {  // Do not add if "journal" includes "edition"
          if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
@@ -835,7 +835,7 @@ public static function process_zotero_response(string $zotero_response, Template
         }
      }
   }
-  if ( isset($result->date) && strlen((string) $result->date)>3) {
+  if (isset($result->date) && strlen((string) $result->date)>3) {
     $new_date = tidy_date((string) $result->date);
     if (stripos($url, 'indiatimes') !== false) { // "re-posted" website all at once
         $maybe_date = (int) strtotime($new_date);
@@ -847,7 +847,7 @@ public static function process_zotero_response(string $zotero_response, Template
     }
     if ($new_date) $template->add_if_new('date', $new_date);
   }
-  if ( isset($result->series) && stripos($url, '.acm.org')===false)  $template->add_if_new('series' , (string) $result->series);
+  if (isset($result->series) && stripos($url, '.acm.org')===false)  $template->add_if_new('series' , (string) $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
       if (self::is_bad_author((string) @$result->author[$i][1])) unset($result->author[$i][1]);
@@ -855,7 +855,7 @@ public static function process_zotero_response(string $zotero_response, Template
       $i++;
   }
   unset($i);
-  if ( isset($result->author[0]) && !isset($result->author[1]) &&
+  if (isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
     unset($result->author[0]); // Do not add a single non-human author
   }
@@ -895,7 +895,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if(($template->wikiname() === 'cite web') &&
+        if (($template->wikiname() === 'cite web') &&
            (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) &&
            !$template->blank(WORK_ALIASES) &&
            (str_ireplace('breakingnews', '', $url) === $url) &&
@@ -904,7 +904,7 @@ public static function process_zotero_response(string $zotero_response, Template
         }
         break;
       case 'magazineArticle':
-        if($template->wikiname() === 'cite web') {
+        if ($template->wikiname() === 'cite web') {
           $template->change_name_to('cite magazine');
         }
         break;
@@ -1571,7 +1571,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
-        if (   preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
+        if (preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
           quietly('report_modification', "Converting URL to arXiv parameter");
