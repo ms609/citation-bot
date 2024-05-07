@@ -7477,7 +7477,7 @@ final class Template
     // No break here: pages, issue and year (the previous case) should be treated in this fashion.
     case 'pages':
     case 'page':
-    case 'pp': # And case 'year': case 'issue':, following from previous
+    case 'pp': // And cases 'year' and'issue' following from previous
      $value = $this->get($param);
      $value = str_replace('--', '-', $value);
      if (str_i_same('null', $value)) {
