@@ -48,7 +48,7 @@ class Page {
     if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info;
+      if (isset($details->error->info))  $message .= " " . (string) $details->error->info;
       report_warning(echoable($message));
       return false;
       // @codeCoverageIgnoreEnd
@@ -654,7 +654,7 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    $auto_summary = $auto_summary . "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
+    $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
     if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
       $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);  // @codeCoverageIgnore
     }

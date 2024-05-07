@@ -284,7 +284,7 @@ public static function drop_urls_that_match_dois(array &$templates): void {  // 
 private static function zotero_request(string $url): string {
   set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
-    self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
+    self::$zotero_failures_count -= 1;                            // @codeCoverageIgnore
     if (self::$zotero_failures_count === self::ZOTERO_GIVE_UP) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
@@ -305,10 +305,10 @@ private static function zotero_request(string $url): string {
     // @codeCoverageIgnoreStart
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== false) {
-      self::$zotero_failures_count = self::$zotero_failures_count + 1;
+      self::$zotero_failures_count += 1;
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
-        self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
+        self::$zotero_failures_count += self::ZOTERO_SKIPS;
       }
     }
     $zotero_response = self::ERROR_DONE;
@@ -1045,7 +1045,7 @@ public static function url_simplify(string $url): string {
   if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
     $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
   }
-  $url = $url . '/';
+  $url .= '/';
   $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
                      ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
   $url = substr($url, 0, -1); // Remove the ending slash we added
@@ -1352,7 +1352,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       }
     }
     if (stripos($url, 'oxforddnb.com') !== false) return false; // generally bad, and not helpful
-    if ($doi = extract_doi($url)[1]) {
+    $doi = extract_doi($url)[1];
+    if ($doi) {
       if (bad_10_1093_doi($doi)) return false;
       $old_jstor = $template->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $template);

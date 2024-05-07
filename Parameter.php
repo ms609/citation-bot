@@ -54,7 +54,7 @@ final class Parameter {
     }
     // Comments before parameter names
     while (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
-      $this->pre = $this->pre . $match[0];
+      $this->pre .= $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
     // Comments after parameter names
