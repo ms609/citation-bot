@@ -3143,8 +3143,8 @@ function simplify_google_search(string $url): string {
                 break;
             }
         }
-        if (!isset($split)) return {
-          $isbn; // Paranoid
+        if (!isset($split)) {
+          return $isbn; // Paranoid
         }
         $v = $split;
         return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
