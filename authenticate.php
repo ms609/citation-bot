@@ -69,7 +69,9 @@ unset($_SESSION['access_key'], $_SESSION['access_secret']);
 if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) && is_string(@$_SESSION['request_secret']) ) {
    try {
     $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
-    if (empty($accessToken->key) || empty($accessToken->secret)) throw new Exception('OAuth complete() call failed');
+    if (empty($accessToken->key) || empty($accessToken->secret)) {
+      throw new Exception('OAuth complete() call failed');
+    }
     $_SESSION['access_key'] = $accessToken->key;
     $_SESSION['access_secret'] = $accessToken->secret;
     unset($_SESSION['request_key'], $_SESSION['request_secret']);
@@ -88,7 +90,9 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
 try {
-      if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) throw new Exception('Webserver URL variables not set');
+      if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
+        throw new Exception('Webserver URL variables not set');
+      }
       $proto = (
         (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')

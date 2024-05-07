@@ -36,8 +36,9 @@ function big_jobs_we_died($lock_file): void {
 
 function big_jobs_check_overused(int $page_count): void {
  static $lock_file; // Force file handle to stay open
- if (!HTML_OUTPUT) return;
- if ($page_count < 50) return; // Used to be BIG_RUN constant
+ if (!HTML_OUTPUT || $page_count < 50) {
+   return;
+ }
  $fn = big_jobs_name();
  if (file_exists($fn) && (fileatime($fn) < (time()-3600))) { // More than an hour
     hard_unlink($fn);
@@ -58,8 +59,9 @@ function big_jobs_check_overused(int $page_count): void {
 }
 
 function big_jobs_check_killed(): void {
- if (!HTML_OUTPUT) return;
- if (!defined('BIG_JOB_MODE')) return;
+ if (!HTML_OUTPUT || !defined('BIG_JOB_MODE')) {
+   return;
+ }
  $lfile = big_jobs_name();
  $kfile =  $lfile . '_kill_job';
  if (file_exists($kfile)) {
@@ -74,7 +76,9 @@ function big_jobs_check_killed(): void {
 }
 
 function big_jobs_kill(): bool {
- if (!file_exists(big_jobs_name())) return false;
+ if (!file_exists(big_jobs_name())) {
+   return false;
+ }
  hard_touch(big_jobs_name() . '_kill_job');
  return true;
 }

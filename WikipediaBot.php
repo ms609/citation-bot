@@ -221,7 +221,9 @@ final class WikipediaBot {
     ];
     $result = $this->fetch($submit_vars);
 
-    if (!self::resultsGood($result)) return false;
+    if (!self::resultsGood($result)) {
+      return false;
+    }
 
     if (HTML_OUTPUT) {
       report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
@@ -442,9 +444,10 @@ final class WikipediaBot {
     return (string) $text;
   }
 
-
   public static function is_valid_user(string $user): bool {
-    if (!$user) return false;
+    if (!$user) {
+      return false;
+    }
     $query = [
        "action" => "query",
        "usprop" => "blockinfo",
@@ -460,7 +463,9 @@ final class WikipediaBot {
       sleep(10);
       $response = self::QueryAPI($query);
     }
-    if ($response === '') return false;
+    if ($response === '') {
+      return false;
+    }
     $response = str_replace(["\r", "\n"], '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== false || // IP Address and similar stuff
         strpos($response, '"blockid"') !== false || // Valid but blocked

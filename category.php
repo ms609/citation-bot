@@ -29,17 +29,21 @@ const GET_IS_OKAY = [
 
 $api = new WikipediaBot();
 $category = '';
-if (is_string(@$_POST["cat"])) $category = trim($_POST["cat"]);
-if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr($category, 9));
+if (is_string(@$_POST["cat"])) {
+    $category = trim($_POST["cat"]);
+}
+if (strtolower(substr($category, 0, 9)) === 'category:') {
+    $category = trim(substr($category, 9));
+}
 if ($category === '' && isset($_GET["cat"])) {
    $try = trim(urldecode((string) $_GET["cat"]));
-   if (in_array($try, GET_IS_OKAY, true)) $category = $try;
+   if (in_array($try, GET_IS_OKAY, true)) {
+       $category = $try;
+   }
 }
 
 bot_html_header();
-
 check_blocked();
-
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
 
 if ($category) {
