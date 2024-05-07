@@ -736,29 +736,29 @@ function titles_simple(string $inTitle): string {
           return $matches[1];
         }, trim($inTitle));
     // Chapter number at start
-    $inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
+    $inTitle = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
     // Trailing "a review"
-    $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+    $inTitle = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
     // Strip trailing Online
-    $inTitle2 = safe_preg_replace('~ Online$~iu', '', $inTitle);
+    $inTitle = safe_preg_replace('~ Online$~iu', '', $inTitle);
     // Strip trailing (Third Edition)
-    $inTitle2 = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+    $inTitle = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
     // Strip leading International Symposium on
-    $inTitle2 = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
+    $inTitle = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
     // Strip leading the
-    $inTitle2 = safe_preg_replace('~^The ~iu', '', $inTitle);
+    $inTitle = safe_preg_replace('~^The ~iu', '', $inTitle);
     // Strip trailing
-    $inTitle2 = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
-    $inTitle2 = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
-    $inTitle2 = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
+    $inTitle = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
+    $inTitle = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
     // Reduce punctuation
     $inTitle = straighten_quotes(mb_strtolower($inTitle), true);
-    $inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+    $inTitle = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
     $inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
     // Retracted
-    $inTitle2 = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
-    $inTitle2 = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
-    $inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
     // Drop normal quotes
     $inTitle = str_replace(["'", '"'], "", $inTitle);
     // Strip trailing periods
