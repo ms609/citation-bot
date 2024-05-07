@@ -35,7 +35,9 @@ class Page {
   public function __construct() {
       $this->construct_modifications_array();
       if (!self::$told_fast) {
-         if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
+         if (!SLOW_MODE) {
+           report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
+         }
          self::$told_fast = true;
       }
   }
@@ -48,7 +50,9 @@ class Page {
     if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error->info))  $message .= " " . (string) $details->error->info;
+      if (isset($details->error->info)) {
+        $message .= " " . (string) $details->error->info;
+      }
       report_warning(echoable($message));
       return false;
       // @codeCoverageIgnoreEnd
@@ -276,13 +280,15 @@ class Page {
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       static function(array $matches): string  {
                         $UPPER = mb_strtoupper($matches[0]);
-                        if (substr_count($UPPER, 'HTTP') !== 1) return $matches[0]; // more than one url
-                        if (substr_count($UPPER, 'SEE ALSO') !== 0) return $matches[0];
-                        if (substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0) return $matches[0];
-                        if (substr_count($UPPER, '{{CITE') !== 0) return $matches[0];
-                        if (substr_count($UPPER, '{{CITATION') !== 0) return $matches[0];
-                        if (substr_count($UPPER, '{{ CITE') !== 0) return $matches[0];
-                        if (substr_count($UPPER, '{{ CITATION') !== 0) return $matches[0];
+                        if (substr_count($UPPER, 'HTTP') !== 1 || // more than one url
+                            substr_count($UPPER, 'SEE ALSO') !== 0 ||
+                            substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
+                            substr_count($UPPER, '{{CITE') !== 0 ||
+                            substr_count($UPPER, '{{CITATION') !== 0 ||
+                            substr_count($UPPER, '{{ CITE') !== 0 ||
+                            substr_count($UPPER, '{{ CITATION') !== 0) {
+                          return $matches[0];
+                        }
                         return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6] ;},
                       $this->text
                       );
@@ -298,7 +304,9 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
-      if ($this->title !== "") bot_debug_log($this->title . " page failed");
+      if ($this->title !== "") {
+        bot_debug_log($this->title . " page failed");
+      }
       return false;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -516,14 +524,22 @@ class Page {
     $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
 
     set_time_limit(120);
-    $this->replace_object($singlebrack); unset($singlebrack);
-    $this->replace_object($triplebrack); unset($triplebrack);
-    $this->replace_object($preformated); unset($preformated);
-    $this->replace_object($musicality); unset($musicality);
-    $this->replace_object($mathematics); unset($mathematics);
-    $this->replace_object($chemistry); unset($chemistry);
-    $this->replace_object($nowiki); unset($nowiki);
-    $this->replace_object($comments); unset($comments);
+    $this->replace_object($singlebrack);
+    unset($singlebrack);
+    $this->replace_object($triplebrack);
+    unset($triplebrack);
+    $this->replace_object($preformated);
+    unset($preformated);
+    $this->replace_object($musicality);
+    unset($musicality);
+    $this->replace_object($mathematics);
+    unset($mathematics);
+    $this->replace_object($chemistry);
+    unset($chemistry);
+    $this->replace_object($nowiki);
+    unset($nowiki);
+    $this->replace_object($comments);
+    unset($comments);
     set_time_limit(120);
 
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
@@ -566,8 +582,12 @@ class Page {
     if (count($this->modifications['additions']) !== 0) {
       /** @var array<string> $addns */
       $addns = $this->modifications["additions"];
-      if (count($addns)===1) {$op = "Added";} else {$op = "Add:";}
-      $auto_summary .= $op." ";
+      if (count($addns)===1) {
+        $op = "Added";
+      } else {
+        $op = "Add:";
+      }
+      $auto_summary .= $op . " ";
       unset($op);
       $min_au = 9999;
       $max_au = 0;
@@ -801,7 +821,9 @@ class Page {
 
   private function announce_page(): void {
     $url_encoded_title =  urlencode($this->title);
-    if ($url_encoded_title === '') return;
+    if ($url_encoded_title === ''){
+      return;
+    }
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"
         . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
