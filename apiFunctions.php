@@ -171,12 +171,14 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
             }
           }
           break;
-        case "LangList": case 'ISSN':
+        case "LangList":
+        case 'ISSN':
           break;
         case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
-              case "pubmed": case "pmid":
+              case "pubmed":
+              case "pmid":
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new("pmid", $match[0], 'entrez');
                 break;
@@ -190,7 +192,8 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                             // @codeCoverageIgnore
                 }
                 break;
-              case "doi": case "pii":
+              case "doi":
+              case "pii":
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
                   $this_template->add_if_new('doi', $match[0], 'entrez');
                 }
@@ -909,7 +912,10 @@ function expand_by_jstor(Template $template): void {
          if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
          $ris_part = explode(" - ", $ris_line . " ", 2);
          switch (trim($ris_part[0])) {
-           case "T1": case "TI": case "T2": case "BT":
+           case "T1":
+           case "TI":
+           case "T2":
+           case "BT":
             $new_title = trim($ris_part[1]);
             report_info("  Possible new title: " .  echoable($new_title));
            default: // @codeCoverageIgnore
