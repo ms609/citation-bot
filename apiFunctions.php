@@ -106,23 +106,24 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
   }
 
   // A few PMC do not have any data, just pictures of stuff
-  if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-   report_info("Found match for $db identifier " . echoable((string) $document->Id));
-   foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-   $an_id = (string) $an_id;
-   if (!array_key_exists($template_key, $templates)) {
+  if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) {
+   foreach($xml->DocSum as $document) {
+    report_info("Found match for $db identifier " . echoable((string) $document->Id));
+    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+     $an_id = (string) $an_id;
+     if (!array_key_exists($template_key, $templates)) {
        bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id); // @codeCoverageIgnore
        $an_id = '-3333';  // @codeCoverageIgnore
-   }
-   if ($an_id === (string) $document->Id) {
-    $this_template = $templates[$template_key];
-    $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
+     }
+     if ($an_id === (string) $document->Id) {
+      $this_template = $templates[$template_key];
+      $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
 
-    foreach ($document->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
+      foreach ($document->Item as $item) {
+       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
-      }
-      switch ($item["Name"]) {
+       }
+       switch ($item["Name"]) {
         case "Title":
           $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
           break;
@@ -204,9 +205,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
             }
           }
         break;
+       }
       }
+     }
     }
-   }
    }
   }
   return;
@@ -289,7 +291,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         // Move outdated/bad arXiv title out of the way
         $the_arxiv_title = $this_template->get('title');
         $the_arxiv_contribution = $this_template->get('contribution');
-        if ($the_arxiv_contribution !== '') $this_template->set('contribution', '');
+        if ($the_arxiv_contribution !== '') {
+            $this_template->set('contribution', '');
+        }
         $this_template->set('title', '');
         expand_by_doi($this_template);
         if ($this_template->blank('title')) {
@@ -480,7 +484,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
       return;
   }
   $doi = $template->get_without_comments_and_placeholders('doi');
-  if ($doi === $template->last_searched_doi) return;
+  if ($doi === $template->last_searched_doi) {
+      return;
+  }
   $template->last_searched_doi = $doi;
   if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
       return;
@@ -491,7 +497,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
-      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) return ;
+      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+          return ;
+      }
       if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
         $bad_data = true;
         $new = (string) $crossRef->article_title;
@@ -761,7 +769,9 @@ function expand_doi_with_dx(Template $template, string $doi): void {
      }
      $json = @json_decode($data, true);
      unset($data);
-     if($json === false || $json === null) return;
+     if($json === false || $json === null) {
+         return;
+     }
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes null, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
@@ -869,7 +879,9 @@ function expand_doi_with_dx(Template $template, string $doi): void {
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
-       if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
+       if (!HTML_OUTPUT) {
+           print_r($json);                                                         // @codeCoverageIgnore
+       }
        report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return;
@@ -925,7 +937,9 @@ function expand_by_jstor(Template $template): void {
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ", 2);
-      if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
+      if (!isset($ris_part[1])) {
+          $ris_part[0] = ""; // Ignore
+      }
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
@@ -1182,7 +1196,9 @@ function expand_templates_from_archives(array &$templates): void { // This is do
               $good_title = false;
             }
             foreach (BAD_ZOTERO_TITLES as $bad_title) {
-               if (mb_stripos($title, $bad_title) !== false) $good_title = false;
+               if (mb_stripos($title, $bad_title) !== false) {
+                   $good_title = false;
+               }
             }
             if ($good_title) {
               $old = $template->get('title');
