@@ -544,7 +544,9 @@ class Page {
 
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
-      if ($this->title !== "") bot_debug_log($this->title . " page failed"); // @codeCoverageIgnore
+      if ($this->title !== "") {
+        bot_debug_log($this->title . " page failed");
+      }
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
 
@@ -595,11 +597,19 @@ class Page {
       $max_ed = 0;
       while ($add = array_pop($addns)) {
         if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
-          if ($match[1] < $min_ed) $min_ed = $match[1];
-          if ($match[1] > $max_ed) $max_ed = $match[1];
+          if ($match[1] < $min_ed) {
+            $min_ed = $match[1];
+          }
+          if ($match[1] > $max_ed) {
+            $max_ed = $match[1];
+          }
         } elseif (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
-          if ($match[1] < $min_au) $min_au = $match[1];
-          if ($match[1] > $max_au) $max_au = $match[1];
+          if ($match[1] < $min_au) {
+            $min_au = $match[1];
+          }
+          if ($match[1] > $max_au) {
+            $max_au = $match[1];
+          }
         } else {
           $auto_summary .= $add . ', ';
         }
