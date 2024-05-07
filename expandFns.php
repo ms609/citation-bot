@@ -196,18 +196,20 @@ function is_doi_works(string $doi): ?bool {
   }
   $registrant = $matches[1];
   // TODO this will need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
-  // 14:43, January 14, 2023 version is last check
+  // 16:42, November 25, 2023 version is last check
   if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
     if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-        preg_match('~^[^1-6]\d\d\d\d$~', $registrant) ||        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+        preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
         preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||   // 4 digits with subcode (0xxx); accepts: 1000–9999
         preg_match('~^[^1-9]\d\d\d$~', $registrant) ||          // 4 digits without subcode (0xxx); accepts: 1000–9999
         preg_match('~^\d\d\d\d\d\d+~', $registrant) ||          // 6 or more digits
         preg_match('~^\d\d?\d?$~', $registrant) ||              // less than 4 digits without subcode (3 digits with subcode is legitimate)
         preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||         // 1 or 2 digits with subcode
         $registrant === '5555' ||                               // test registrant will never resolve
-        preg_match('~[^\d\.]~', $registrant)) return false;     // any character that isn't a digit or a dot
+        preg_match('~[^\d\.]~', $registrant)) {                 // any character that isn't a digit or a dot
+      return false;
+    }
   }
   throttle_dx();
 
@@ -1168,15 +1170,21 @@ function tidy_date(string $string): string {
   }
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
-      if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
+      if (strlen($matches[1]) === 1) {
+        $matches[1] = '0' . $matches[1];
+      }
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
     } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
-      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
+      if (strlen($matches[2]) === 1) {
+        $matches[2] = '0' . $matches[2];
+      }
       return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
     } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
       return '';
     } elseif ($matches[1] === $matches[2]) {
-      if (strlen($matches[2]) === 1) $matches[2] = '0' . $matches[2];
+      if (strlen($matches[2]) === 1) {
+        $matches[2] = '0' . $matches[2];
+      }
       return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
     } else {
       return $matches[3];// do not know. just give year
@@ -1250,7 +1258,9 @@ function tidy_date(string $string): string {
 }
 
 function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unless on good list
-  if ($url === '') return true;
+  if ($url === '') {
+    return true;
+  }
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
     return true;
   }
@@ -3065,7 +3075,9 @@ function simplify_google_search(string $url): string {
           $url .=  $part . "&" ;
           break;
        case "as_epq":
-          if ($it_is_blank) break;
+          if ($it_is_blank) {
+            break;
+          }
           $url .=  $part . "&" ;
           break;
        case "btnG":
