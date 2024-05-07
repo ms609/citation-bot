@@ -3157,9 +3157,9 @@ function simplify_google_search(string $url): string {
                 break;
             }
         }
-        if (!isset($split)) :
+        if (!isset($split)) {
           return $isbn; // Paranoid
-          }
+        }
         $v = $split;
         return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
         // split = 3, $v[0], $v[1], $v[2], 1
