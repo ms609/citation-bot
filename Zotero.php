@@ -895,7 +895,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if ($template->wikiname() === 'cite web') &&
+        if (($template->wikiname() === 'cite web') &&
            (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) &&
            !$template->blank(WORK_ALIASES) &&
            (str_ireplace('breakingnews', '', $url) === $url) &&
