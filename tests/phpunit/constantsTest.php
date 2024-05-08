@@ -176,7 +176,7 @@ final class constantsTest extends testBaseClass {
       $bits_length = array_map('strlen', $alpha_bits);
       $bit_length = current($bits_length);
       $chunk_length = 0;
-      $new_line = "\n          ";
+      $new_line = "\n    ";
       $alphaed = $new_line;
       $line_length = 10;
       array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
@@ -184,7 +184,7 @@ final class constantsTest extends testBaseClass {
        $bit = next($alpha_bits);
        $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
-       if ($line_length > 76) {
+       if ($line_length > 56) {
          $alphaed .= $new_line;
          $line_length = 10;
        }
