@@ -8831,7 +8831,7 @@ final class Template
   return $isbn13;
  }
 
- /** @return ?array<string> */
+ /** @return array<string> */
  private function inline_doi_information(): array
  {
   if ($this->name !== "doi-inline") {
