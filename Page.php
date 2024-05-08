@@ -625,31 +625,44 @@ class Page {
       }
     }
 
-    if ((count($this->modifications["deletions"]) !== 0)
-    && (
-        (($pos = array_search('url', $this->modifications["deletions"])) !== false)
-     || (($pos = array_search('chapter-url', $this->modifications["deletions"])) !== false)
-     || (($pos = array_search('chapterurl', $this->modifications["deletions"])) !== false)
-        )
-    ) {
-        if (strpos($auto_summary, 'chapter-url') !== false) {
-          $auto_summary .= "Removed or converted URL. ";
-        } else {
-          $auto_summary .= "Removed URL that duplicated identifier. ";
-        }
-        unset($this->modifications["deletions"][$pos]);
-    }
-    if ((count($this->modifications["deletions"]) !== 0)
-    && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== false || ($pos = array_search('access-date', $this->modifications["deletions"])) !== false)
-    ) {
+    if (count($this->modifications["deletions"]) !== 0) {
+     $pos1 = array_search('url', $this->modifications["deletions"]);
+     if ($pos1 !== false) {
+      unset($this->modifications["deletions"][$pos1]);
+     }
+     $pos2 = array_search('chapter-url', $this->modifications["deletions"]);
+     if ($pos2 !== false) {
+      unset($this->modifications["deletions"][$pos2]);
+     }
+     $pos3 = array_search('chapterurl', $this->modifications["deletions"]);
+     if ($pos3 !== false) {
+      unset($this->modifications["deletions"][$pos3]);
+     }
+     $pos4 = array_search('accessdate', $this->modifications["deletions"]);
+     if ($pos4 !== false) {
+      unset($this->modifications["deletions"][$pos4]);
+     }
+     $pos5 = array_search('access-date', $this->modifications["deletions"]);
+     if ($pos5 !== false) {
+      unset($this->modifications["deletions"][$pos5]);
+     }
+     $pos6 = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"]);
+     if ($pos6 !== false) {
+      unset($this->modifications["deletions"][$pos6]);
+     }
+     if ($pos1 !==false || $pos2 !==false || $pos3 !==false) {
+      if (strpos($auto_summary, 'chapter-url') !== false) {
+       $auto_summary .= "Removed or converted URL. ";
+      } else {
+       $auto_summary .= "Removed URL that duplicated identifier. ";
+      }
+     }
+     if ($pos4 !== false || $pos5 !== false) {
       $auto_summary .= "Removed access-date with no URL. ";
-      unset($this->modifications["deletions"][$pos]);
-    }
-    if ((count($this->modifications["deletions"]) !== 0)
-    && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== false
-    ) {
+     }
+     if ($pos6 !== false) {
       $auto_summary .= "Changed bare reference to CS1/2. ";
-      unset($this->modifications["deletions"][$pos]);
+     }
     }
     $auto_summary .= ((count($this->modifications["deletions"]) !==0)
       ? "Removed parameters. "
