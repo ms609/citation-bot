@@ -1554,7 +1554,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
   }
   $total = count($pages_in_category);
   if ($total > MAX_PAGES) {
-    report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) MAX_PAGES);
     bot_html_footer();
     return;
   }
