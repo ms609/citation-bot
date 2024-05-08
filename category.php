@@ -56,7 +56,8 @@ if (!$category) {
     bot_html_footer();
 }
 
-$pages_in_category = shuffle(array_unique(WikipediaBot::category_members($category)));
+$pages_in_category = array_unique(WikipediaBot::category_members($category));
+shuffle($pages_in_category);
 $total = count($pages_in_category);
 if ($total === 1) {
     report_warning('Category appears to be empty');
