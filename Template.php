@@ -2873,7 +2873,8 @@ final class Template
    * [0] => PMID of first matching result
    * [1] => total number of results
    */
-  if ($doi = $this->get_without_comments_and_placeholders('doi')) {
+  $doi = $this->get_without_comments_and_placeholders('doi');
+  if ($doi) {
    if (doi_works($doi)) {
     $results = $this->do_pumbed_query(["doi"]);
     if ($results[1] !== 0) {
@@ -2926,7 +2927,8 @@ final class Template
   foreach ($terms as $term) {
    $term = mb_strtolower($term);
    if ($term === "title") {
-    if ($data = $this->get_without_comments_and_placeholders('title')) {
+    $data = $this->get_without_comments_and_placeholders('title');
+    if ($data) {
      $key = 'Title';
      $data = straighten_quotes($data, true);
      $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
@@ -2940,29 +2942,34 @@ final class Template
      }
     }
    } elseif ($term === "page") {
-    if ($pages = $this->page_range()) {
+    $pages = $this->page_range();
+    if ($pages) {
      $val = $pages[1];
      $key = 'Pagination';
      $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
     }
    } elseif ($term === "surname") {
-    if ($val = $this->first_surname()) {
+    $val = $this->first_surname();
+    if ($val) {
      $key = 'Author';
      $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
     }
    } elseif ($term === "year") {
     $key = 'Publication Date';
-    if ($val = $this->year()) {
+    $val = $this->year();
+    if ($val) {
      $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
     }
    } elseif ($term === "doi") {
     $key = 'AID';
-    if ($val = $this->get_without_comments_and_placeholders($term)) {
+    $val = $this->get_without_comments_and_placeholders($term);
+    if ($val) {
      $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
     }
    } else {
     $key = $key_index[$term]; // Will crash if bad data is passed
-    if ($val = $this->get_without_comments_and_placeholders($term)) {
+    $val = $this->get_without_comments_and_placeholders($term);
+    if ($val) {
      if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
       $val = $matches[1]; // @codeCoverageIgnore
      } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
@@ -3459,12 +3466,14 @@ final class Template
    return;
   }
   $this->this_array = [$this];
-  if ($pm = $this->get('pmid')) {
-   report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
-   query_pmid_api([$pm], $this->this_array);
-  } elseif ($pm = $this->get('pmc')) {
-   report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
-   query_pmc_api([$pm], $this->this_array);
+  $pmid = $this->get('pmid');
+  $pmc = $this->get('pmc');
+  if ($pmid) {
+   report_action('Checking ' . pubmed_link('pmid', $pmid) . ' for more details');
+   query_pmid_api([$pmid], $this->this_array);
+  } elseif ($pmc) {
+   report_action('Checking ' . pubmed_link('pmc', $pmc) . ' for more details');
+   query_pmc_api([$pmc], $this->this_array);
   }
   $this->this_array = [];
  }
@@ -8255,7 +8264,8 @@ final class Template
   */
  private function display_authors(): int
  {
-  if (($da = $this->get('display-authors')) === '') {
+  $da = $this->get('display-authors');
+  if ($da === '') {
    $da = $this->get('displayauthors');
   }
   return ctype_digit($da) ? (int) $da : 0;
@@ -8527,7 +8537,8 @@ final class Template
   if ($this->get($par) !== $this->get3($par)) {
    return false;
   }
-  if (($pos = $this->get_param_key($par)) !== null) {
+  $pos = $this->get_param_key($par);
+  if ($pos !== null) {
    $this->param[$pos]->val = $val;
    return true;
   }
@@ -8539,7 +8550,8 @@ final class Template
   $insert_after = prior_parameters($par);
   $prior_pos_best = -1;
   foreach (array_reverse($insert_after) as $after) {
-   if (($after_key = $this->get_param_key($after)) !== null) {
+   $after_key = $this->get_param_key($after);
+   if ($after_key !== null) {
     $keys = array_keys($this->param);
     $keys_count = count($keys);
     for ($prior_pos = 0; $prior_pos < $keys_count; $prior_pos++) {
@@ -8819,14 +8831,14 @@ final class Template
   return $isbn13;
  }
 
- /** @return ?array<string> */
- private function inline_doi_information(): ?array
+ /** @return array<string> */
+ private function inline_doi_information(): array
  {
   if ($this->name !== "doi-inline") {
-   return null;
+   return [];
   }
   if (count($this->param) !== 2) {
-   return null;
+   return [];
   }
   $vals = [];
   $vals[0] = $this->param[0]->parsed_text();
@@ -8837,7 +8849,8 @@ final class Template
  private function get_inline_doi_from_title(): void
  {
   if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~i", $this->get('title'), $match)) {
-   if ($inline_doi = self::$all_templates[$match[1]]->inline_doi_information()) {
+   $inline_doi = self::$all_templates[$match[1]]->inline_doi_information();
+   if ($inline_doi) {
     if ($this->add_if_new('doi', trim($inline_doi[0]))) {
      // Add doi
      $this->set('title', trim($inline_doi[1]));
