@@ -65,9 +65,9 @@ function big_jobs_check_killed(): void {
  $lfile = big_jobs_name();
  $kfile =  $lfile . '_kill_job';
  if (file_exists($kfile)) {
+   hard_unlink($kfile);
    echo '<div style="text-align:center"><h1>Run killed as requested.</h1></div>';
    bot_html_footer();
-   hard_unlink($kfile);
    exit; // Shutdown will close and delete lockfile
  }
  if (file_exists($lfile)) {
