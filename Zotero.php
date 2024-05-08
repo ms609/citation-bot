@@ -1267,8 +1267,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     // semanticscholar
     if (stripos($url, 'semanticscholar.org') !== false) {
        $s2cid = getS2CID($url);
-       if ($s2cid === '') return {
-         false;
+       if ($s2cid === '') {
+         return false;
        }
        if ($template->has('s2cid') && $s2cid !== $template->get('s2cid')) {
           report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
