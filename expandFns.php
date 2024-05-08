@@ -349,25 +349,29 @@ function sanitize_doi(string $doi): string {
   $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
-  if ($pos = (int) strrpos($doi, '.')) {
+  $pos = (int) strrpos($doi, '.');
+  if ($pos) {
    $extension = (string) substr($doi, $pos);
    if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
-  if ($pos = (int) strrpos($doi, '#')) {
+  $pos = (int) strrpos($doi, '#');
+  if ($pos) {
    $extension = (string) substr($doi, $pos);
    if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
-  if ($pos = (int) strrpos($doi, ';')) {
+  $pos = (int) strrpos($doi, ';');
+  if ($pos) {
    $extension = (string) substr($doi, $pos);
    if (strpos(strtolower($extension), ';jsessionid') === 0) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
-  if ($pos = (int) strrpos($doi, '/')) {
+  $pos = (int) strrpos($doi, '/');
+  if ($pos) {
    $extension = (string) substr($doi, $pos);
    if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'], true)) {
       $doi = (string) substr($doi, 0, $pos);
@@ -1472,7 +1476,8 @@ function check_doi_for_jstor(string $doi, Template $template): void {
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
-  if ($pos = strpos($doi, '?')) {
+  $pos = strpos($doi, '?');
+  if ($pos) {
       $doi = substr($doi, 0, $pos);
   }
   curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
@@ -1538,7 +1543,8 @@ function hdl_decode(string $hdl): string {
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
-  if (($key = array_search("", $pages_in_category)) !== false) {
+  $key = array_search("", $pages_in_category);
+  if ($key !== false) {
     unset($pages_in_category[$key]);
   }
   if (empty($pages_in_category)) {
@@ -2307,7 +2313,8 @@ function get_possible_dois(string $doi): array {
     $try = $doi;
     while ($changed) {
       $changed = false;
-      if ($pos = strrpos($try, '.')) {
+      $pos = strrpos($try, '.');
+      if ($pos) {
        $extension = substr($try, $pos);
        if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
          $try = substr($try, 0, $pos);
@@ -2315,7 +2322,8 @@ function get_possible_dois(string $doi): array {
          $changed = true;
        }
       }
-      if ($pos = strrpos($try, '#')) {
+      $pos = strrpos($try, '#');
+      if ($pos) {
        $extension = substr($try, $pos);
        if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
          $try = substr($try, 0, $pos);
@@ -2323,7 +2331,8 @@ function get_possible_dois(string $doi): array {
          $changed = true;
        }
       }
-      if ($pos = strrpos($try, ';')) {
+      $pos = strrpos($try, ';');
+      if ($pos) {
        $extension = substr($try, $pos);
        if (strpos(strtolower($extension), ';jsessionid') === 0) {
          $try = substr($try, 0, $pos);
@@ -2331,7 +2340,8 @@ function get_possible_dois(string $doi): array {
          $changed = true;
        }
       }
-      if ($pos = strrpos($try, '/')) {
+      $pos = strrpos($try, '/');
+      if ($pos) {
        $extension = substr($try, $pos);
        if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], true)) {
          $try = substr($try, 0, $pos);
