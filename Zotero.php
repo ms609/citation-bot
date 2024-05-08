@@ -83,7 +83,9 @@ public static function query_url_api_class(array &$templates): void { // Pointer
    }
   }
 
-  if (!SLOW_MODE) return; // Zotero takes time
+  if (!SLOW_MODE) {
+    return; // Zotero takes time
+  }
 
   self::$zotero_announced = 1;
   foreach ($templates as $template) {
@@ -102,14 +104,24 @@ public static function query_url_api_class(array &$templates): void { // Pointer
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         if ($template->has('citeseerx')) self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+         if ($template->has('citeseerx')) {
+           self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+         }
          //  Has a CAPCHA --  if ($template->has('jfm'))
          //  Has a CAPCHA --  if ($template->has('zbl'))
          //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
-         if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
-         if ($template->has('osti'))      self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
-         if ($template->has('rfc'))       self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
-         if ($template->has('ssrn'))      self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+         if ($template->has('hdl')) {
+           self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
+         }
+         if ($template->has('osti')) {
+           self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
+         }
+         if ($template->has('rfc')) {
+           self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
+         }
+         if ($template->has('ssrn')) {
+           self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+         }
        }
        if ($template->has('doi')) {
          $doi = $template->get('doi');
@@ -292,15 +304,19 @@ public static function drop_urls_that_match_dois(array &$templates): void {  // 
 private static function zotero_request(string $url): string {
   set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
-    self::$zotero_failures_count -= 1;                            // @codeCoverageIgnore
-    if (self::$zotero_failures_count === self::ZOTERO_GIVE_UP) self::$zotero_failures_count = 0; // @codeCoverageIgnore
+    self::$zotero_failures_count -= 1;
+    if (self::$zotero_failures_count === self::ZOTERO_GIVE_UP) {
+      self::$zotero_failures_count = 0;
+    }
   }
 
   /** @psalm-taint-escape ssrf */
   $the_url = CITOID_ZOTERO . urlencode($url);
   curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
 
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+    return self::ERROR_DONE;
+  }
 
   $delay = max(min(100000*(1+self::$zotero_failures_count), 10), 0); // 0.10 seconds delay, with paranoid bounds checks
   usleep($delay);
@@ -597,7 +613,9 @@ public static function process_zotero_response(string $zotero_response, Template
 
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      if (!isset($result->DOI)) $result->DOI = trim($matches[1]);
+      if (!isset($result->DOI)) {
+        $result->DOI = trim($matches[1]);
+      }
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
     if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
@@ -893,9 +911,13 @@ public static function process_zotero_response(string $zotero_response, Template
            $new_date = '';
         }
     }
-    if ($new_date) $template->add_if_new('date', $new_date);
+    if ($new_date) {
+      $template->add_if_new('date', $new_date);
+    }
   }
-  if (isset($result->series) && stripos($url, '.acm.org')===false)  $template->add_if_new('series' , (string) $result->series);
+  if (isset($result->series) && stripos($url, '.acm.org')===false) {
+    $template->add_if_new('series' , (string) $result->series);
+  }
   $i = 0;
   while (isset($result->author[$i])) {
       if (self::is_bad_author((string) @$result->author[$i][1])) {
@@ -1056,17 +1078,24 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-            if (self::is_bad_author((string) $result->creators[$i]->lastName)) $result->creators[$i]->lastName  ='';
-            if (self::is_bad_author((string) $result->creators[$i]->firstName)) $result->creators[$i]->firstName  ='';
+            if (self::is_bad_author((string) $result->creators[$i]->lastName)) {
+              $result->creators[$i]->lastName  ='';
+            }
+            if (self::is_bad_author((string) $result->creators[$i]->firstName)) {
+              $result->creators[$i]->firstName  ='';
+            }
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', false);
              // Break out if nothing added
-            if ((strpos($authorParam, 'author') === 0) &&
-                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) break;
-            if ((strpos($authorParam, 'editor') === 0) &&
-                     $template->blank(['editor' . (string)($editor_i)])) break;
-            if ((strpos($authorParam, 'translator') === 0) &&
-                     $template->blank(['translator' . (string)($translator_i)])) break;
+            if ((strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) {
+              break;
+            }
+            if ((strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string)($editor_i)])) {
+              break;
+            }
+            if ((strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string)($translator_i)])) {
+              break;
+            }
          }
         }
         $i++;
@@ -1077,14 +1106,18 @@ public static function process_zotero_response(string $zotero_response, Template
        if ($template->wikiname() === 'cite news') {
           $template->rename('publisher', 'agency'); // special template parameter just for them
        }
-       if (stripos(trim($template->get('author')), 'Associated Press') === 0) $template->forget('author'); // all too common
+       if (stripos(trim($template->get('author')), 'Associated Press') === 0) {
+         $template->forget('author'); // all too common
+       }
     }
     if (stripos(trim($template->get('publisher')), 'Reuters') !== false &&
         stripos($url, 'reuters.org') === false  ) {
        if ($template->wikiname() === 'cite news') {
           $template->rename('publisher', 'agency'); // special template parameter just for them
        }
-       if (stripos(trim($template->get('author')), 'Reuters') === 0) $template->forget('author'); // all too common
+       if (stripos(trim($template->get('author')), 'Reuters') === 0) {
+         $template->forget('author'); // all too common
+       }
     }
   }
   if ($template->wikiname() === 'cite web') {
@@ -1234,7 +1267,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     // semanticscholar
     if (stripos($url, 'semanticscholar.org') !== false) {
        $s2cid = getS2CID($url);
-       if ($s2cid === '') return false;
+       if ($s2cid === '') return {
+         false;
+       }
        if ($template->has('s2cid') && $s2cid !== $template->get('s2cid')) {
           report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
           return false;
@@ -1326,7 +1361,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] === $template->get('jstor')) {
          if (is_null($url_sent)) {
-           if ($template->has_good_free_copy()) $template->forget($url_type);
+           if ($template->has_good_free_copy()) {
+             $template->forget($url_type);
+           }
          }
          return false;
        } elseif ($template->blank('jstor')) {
@@ -1337,7 +1374,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               stripos($dat, 'Block Reference') === false &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === false &&
               substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
-            if (is_null($url_sent) && $template->has_good_free_copy()) $template->forget($url_type);
+            if (is_null($url_sent) && $template->has_good_free_copy()) {
+              $template->forget($url_type);
+            }
             return $template->add_if_new('jstor', $matches[1]);
           }
           unset($dat);
@@ -1345,7 +1384,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
      }
      if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
        if (is_null($url_sent)) {
-         if ($template->has_good_free_copy()) $template->forget($url_type);
+         if ($template->has_good_free_copy()) {
+           $template->forget($url_type);
+         }
        }
        return false;
      }
@@ -1353,7 +1394,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
        $template->add_if_new('jstor', $matches[1]);
        if (is_null($url_sent)) {
-         if ($template->has_good_free_copy()) $template->forget($url_type);
+         if ($template->has_good_free_copy()) {
+           $template->forget($url_type);
+         }
        }
        return false;
     }
@@ -1395,13 +1438,17 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if (doi_works($match[1]) && !doi_works($doi)) {
           $template->set('doi', $match[1]);
           if (is_null($url_sent)) {
-            if ($template->has_good_free_copy()) $template->forget($url_type);
+            if ($template->has_good_free_copy()) {
+              $template->forget($url_type);
+            }
           }
           return true;
         }
         if (!doi_works($match[1]) && doi_works($doi)) {
           if (is_null($url_sent)) {
-             if ($template->has_good_free_copy()) $template->forget($url_type);
+             if ($template->has_good_free_copy()) {
+               $template->forget($url_type);
+             }
           }
           return false;
         }
@@ -1487,7 +1534,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
-          if ($template->has_good_free_copy()) $template->forget($url_type);
+          if ($template->has_good_free_copy()) {
+            $template->forget($url_type);
+          }
         }
         if ($template->has('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
@@ -1495,7 +1544,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
           $template->set('jstor', urldecode($match[1]));
         }
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+        if ($template->wikiname() === 'cite web') {
+          $template->change_name_to('cite journal');
+        }
         return true;
       } else {
         return false; // Jstor URL yielded nothing
@@ -1574,7 +1625,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             }
             return false; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           }
-          if ($template->blank('pmid')) quietly('report_modification', "Converting URL to PMID parameter");
+          if ($template->blank('pmid')) {
+            quietly('report_modification', "Converting URL to PMID parameter");
+          }
           if (is_null($url_sent)) {
             if ($template->has_good_free_copy()) {
               $template->forget($url_type);
@@ -1660,7 +1713,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) {
             $template->forget($url_type);
-            if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+            if ($template->wikiname() === 'cite web') {
+              $template->change_name_to('cite journal');
+            }
           }
         }
         return $template->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
@@ -1734,7 +1789,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               break;
             }
           }
-          if ($handle1 === false) return false;
+          if ($handle1 === false) {
+            return false;
+          }
           // file path
           $handle = false;
           foreach (HANDLES_PATHS as $handle_path) {
@@ -1743,7 +1800,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               break;
             }
           }
-          if ($handle === false) return false;
+          if ($handle === false) {
+            return false;
+          }
           // Trim off session stuff - urlappend seems to be used for page numbers and such
           $handle = str_ireplace('%3B', ';', $handle);
           while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|;ui=embed)~',
@@ -1831,7 +1890,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
-               if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+               if ($template->wikiname() === 'cite web') {
+                 $template->change_name_to('cite journal');
+               }
              }
           }
           return $template->add_if_new('jfm', $match[1]);
