@@ -152,19 +152,19 @@ class Page {
       case 'pmid':
       case 'pmc':
         $api = 'entrez';
-        break;
+      break;
       case 'bibcode':
         $api = 'adsabs';
-        break;
+      break;
       case 'doi':
         $api = 'crossref';
-        break;
+      break;
       case 'url':
         $api = 'zotero';
-        break;
+      break;
       case 'jstor':
         $api = 'jstor';
-        break;
+      break;
       default:
         $api = $identifier;
         report_error('expand_templates_from_identifier got: ' . $api);
