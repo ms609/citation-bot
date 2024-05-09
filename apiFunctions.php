@@ -126,27 +126,27 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
        switch ($item["Name"]) {
         case "Title":
           $this_template->add_if_new('title',  str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
-          break;
+        break;
         case "PubDate":
           if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
               $this_template->add_if_new('year', $match[1], 'entrez');
           }
-          break;
+        break;
         case "FullJournalName":
           $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
-          break;
+        break;
         case "Volume":
           $this_template->add_if_new('volume', (string) $item, 'entrez');
-          break;
+        break;
         case "Issue":
           $this_template->add_if_new('issue', (string) $item, 'entrez');
-          break;
+        break;
         case "Pages":
           $this_template->add_if_new('pages', (string) $item, 'entrez');
-          break;
+        break;
         case "PmId":
           $this_template->add_if_new('pmid', (string) $item, 'entrez');
-          break;
+        break;
         case "AuthorList":
           $i = 0;
           foreach ($item->Item as $key => $subItem) {
@@ -175,10 +175,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
               $this_template->add_if_new("author$i", $subItem, 'entrez');
             }
           }
-          break;
+        break;
         case "LangList":
         case 'ISSN':
-          break;
+        break;
         case "ArticleIds":
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
@@ -186,17 +186,17 @@ function entrez_api(array $ids, array &$templates, string $db): void {   // Poin
               case "pmid":
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new("pmid", $match[0], 'entrez');
-                break;
+              break;
               case "pmc":
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new('pmc', $match[0], 'entrez');
-                break;
+              break;
               case "pmcid":
                 if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
                    $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));  // @codeCoverageIgnore
                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                             // @codeCoverageIgnore
                 }
-                break;
+              break;
               case "doi":
               case "pii":
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
@@ -951,9 +951,9 @@ function expand_by_jstor(Template $template): void {
               $bad_data = false;
             }
           }
-          break;
+        break;
         default:
-          break;
+        break;
       }
     }
     if ($bad_data) { // Now for TI: T1 existing titles (title followed by sub-title)
@@ -968,12 +968,12 @@ function expand_by_jstor(Template $template): void {
           case "T1":
             $new_title .= trim($ris_part[1]);
             $got_count += 10;
-            break;
+          break;
           case "TI":
             $new_title = trim($ris_part[1]) . $new_title;
             $got_count += 100;
-            break;
-        default:
+          break;
+          default:
           break;
         }
       }
