@@ -44,40 +44,35 @@ if ($category === '' && isset($_GET["cat"])) {
 
 bot_html_header();
 check_blocked();
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
 
-if ($category) {
-  $pages_in_category = WikipediaBot::category_members($category);
-  if (empty($pages_in_category)) {
+if (!$category) {
+    if (isset($_POST["cat"])) {
+        report_warning("Invalid category on the webform.");
+    } elseif (isset($_GET["cat"])) {
+        report_warning("You must specify the category using the webform.  Got: " . echoable($_GET["cat"]));
+    } else {
+        report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
+    }
+    bot_html_footer();
+}
+
+$pages_in_category = array_unique(WikipediaBot::category_members($category));
+shuffle($pages_in_category);
+$total = count($pages_in_category);
+if ($total === 1) {
     report_warning('Category appears to be empty');
     bot_html_footer();
-    exit;
-  }
-  $pages_in_category = array_unique($pages_in_category); // Paranoid
-  shuffle($pages_in_category);
-
-  $total = count($pages_in_category);
-  if ($total > intval(MAX_PAGES / 4)) {
-    report_warning( 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+} elseif ($total > intval(MAX_PAGES / 4)) {
+    report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
        echo echoable((string) $page_title) . "\n";
     }
     echo "\n\n";
     bot_html_footer();
-    exit;
-  }
-  unset($total, $category);
-  edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 } else {
-  if (isset($_POST["cat"])) {
-    report_warning("Invalid category on the webform.");
-  } elseif (isset($_GET["cat"])) {
-    report_warning("You must specify the category using the webform.  Got: " . echoable($_GET["cat"]));
-  } else {
-    report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
-  }
-  bot_html_footer();
+    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
+    edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 }
-exit;
+    
 ?>
