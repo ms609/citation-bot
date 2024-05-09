@@ -354,7 +354,7 @@ final class Template
       $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year'); // @codeCoverageIgnore
       $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date'); // @codeCoverageIgnore
      }
-     break;
+    break;
     case "cite journal":
      $this->use_sici();
    }
@@ -3335,40 +3335,40 @@ final class Template
      } else {
       $ris_parameter = "title";
      }
-     break;
+    break;
     case "TI":
      $ris_parameter = "title";
      if ($ris_book && $has_T2) {
       $ris_parameter = "chapter";
      }
-     break;
+    break;
     case "AU":
      $ris_authors++;
      $ris_parameter = "author$ris_authors";
      $ris_part[1] = format_author($ris_part[1]);
-     break;
+    break;
     case "Y1":
      $ris_parameter = "date";
-     break;
+    break;
     case "PY":
      $ris_parameter = "date";
      $ris_part[1] = preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1]));
-     break;
+    break;
     case "SP": // Deal with start pages later
      $start_page = trim($ris_part[1]);
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-     break;
+    break;
     case "EP": // Deal with end pages later
      $end_page = trim($ris_part[1]);
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-     break;
+    break;
     case "DO":
      $ris_parameter = doi_active($ris_part[1]) ? "doi" : false;
-     break;
+    break;
     case "JO":
     case "JF":
      $ris_parameter = "journal";
-     break;
+    break;
     case "T2":
     case "BT":
      if ($ris_book) {
@@ -3376,28 +3376,28 @@ final class Template
      } else {
       $ris_parameter = "journal";
      }
-     break;
+    break;
     case "VL":
      $ris_parameter = "volume";
-     break;
+    break;
     case "IS":
      $ris_parameter = "issue";
-     break;
+    break;
     case "RI": // Deal with review titles later
      $ris_review = "Reviewed work: " . trim($ris_part[1]); // Get these from JSTOR
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-     break;
+    break;
     case "SN": // Deal with ISSN later
      $ris_issn = trim($ris_part[1]);
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-     break;
+    break;
     case "UR":
      $ris_parameter = "url";
-     break;
+    break;
     case "PB": // Deal with publisher later
      $ris_publisher = trim($ris_part[1]); // Get these from JSTOR
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-     break;
+    break;
     case "M3":
     case "N1":
     case "N2":
@@ -3422,7 +3422,7 @@ final class Template
     case "Database: JSTOR":
     case "Content: text/plain; charset=\"UTF-8\"":
      $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
-     break;
+    break;
     default:
      if (isset($ris_part[1])) {
       report_minor_error("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1]))); // @codeCoverageIgnore
@@ -4117,34 +4117,34 @@ final class Template
        $this->add_if_new('author' . (string) ++$endnote_authors, format_author($endnote_datum));
        $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
        $endnote_parameter = false;
-       break;
+      break;
       case "D":
        $endnote_parameter = "date";
-       break;
+      break;
       case "I":
        $endnote_parameter = "publisher";
-       break;
+      break;
       case "C":
        $endnote_parameter = "location";
-       break;
+      break;
       case "J":
        $endnote_parameter = "journal";
-       break;
+      break;
       case "N":
        $endnote_parameter = "issue";
-       break;
+      break;
       case "P":
        $endnote_parameter = "pages";
-       break;
+      break;
       case "T":
        $endnote_parameter = "title";
-       break;
+      break;
       case "U":
        $endnote_parameter = "url";
-       break;
+      break;
       case "V":
        $endnote_parameter = "volume";
-       break;
+      break;
       case "@": // ISSN / ISBN
        if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_line, $matches)) {
         $endnote_datum = $matches[1];
@@ -4155,7 +4155,7 @@ final class Template
        } else {
         $endnote_parameter = false;
        }
-       break;
+      break;
       case "R": // Resource identifier... *may* be DOI but probably isn't always.
        $matches = extract_doi($endnote_datum)[1];
        if ($matches !== '') {
@@ -4164,14 +4164,14 @@ final class Template
        } else {
         $endnote_parameter = false;
        }
-       break;
+      break;
       case "8": // Date
       case "0": // Citation type
       case "X": // Abstract
       case "M": // Object identifier
        $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
        $endnote_parameter = false;
-       break;
+      break;
       default:
        $endnote_parameter = false;
      }
@@ -4412,7 +4412,7 @@ final class Template
        $this->add_if_new('arxiv', $subtemplate->param_value(0));
       }
       $id = str_replace($matches[0][$i], '', $id);
-      break;
+     break;
      case "asin":
      case "oclc":
      case "bibcode":
@@ -4486,7 +4486,7 @@ final class Template
       if ($did_it) {
        $id = str_replace($matches[0][$i], '', $id);
       }
-      break;
+     break;
 
      // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
      case "proquest":
@@ -4612,7 +4612,7 @@ final class Template
      case "lccn8": // Assume not normal template for a reason
      case "google books": // Usually done for fancy formatting and because already has title-link/url
      case "url": // Untrustable: used by bozos
-      break;
+     break;
      default:
       report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
     }
@@ -4955,7 +4955,7 @@ final class Template
     case 'cite journal':
      $this->rename('eprint', 'arxiv');
      $this->forget('class');
-     break;
+    break;
    }
   }
   if ($new_name === 'cite book' && $this->wikiname() === 'cite book') {
@@ -7201,11 +7201,13 @@ final class Template
      switch ($this->wikiname()) {
       case 'cite book':
        $work_becomes = 'title';
-       break;
+      break;
       case 'cite journal':
        $work_becomes = 'journal';
-       break;
-      // case 'cite web': $work_becomes = 'website'; break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
+      break;
+      // case 'cite web':
+      // $work_becomes = 'website';
+      // break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
       default:
        $work_becomes = 'work';
      }
