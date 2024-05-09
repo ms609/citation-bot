@@ -1917,9 +1917,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             } else {
                 $book_array[$part_start[0]] = $part_start[1];
             }
-            break;
+          break;
           case "id":
-            break; // Don't "remove redundant"
+          break; // Don't "remove redundant"
           // These all go away
           case "hl":
           case "ei":
@@ -1989,7 +1989,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "as_pt":
             $removed_parts .= $part;
             $removed_redundant++;
-            break;
+          break;
           default:
             if ($removed_redundant !== 0) {
               $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
@@ -3059,62 +3059,62 @@ function simplify_google_search(string $url): string {
        case "e":
        case "surl":
        case "aql":
-          break;
+       break;
        case "as_occt":
           if ($it_is_blank || str_i_same($part_start1, 'any')) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "cf":
           if ($it_is_blank || str_i_same($part_start1, 'all')) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "cs":
           if ($it_is_blank || str_i_same($part_start1, '0')) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "btnK":
           if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "as_epq":
           if ($it_is_blank) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "btnG":
           if ($it_is_blank || str_i_same($part_start1, 'Search')) {
             break;
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "rct":
           if ($it_is_blank || str_i_same($part_start1, 'j')) {
             break; // default
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "resnum":
           if ($it_is_blank || str_i_same($part_start1, '11')) {
             break; // default
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "ie":
        case "oe":
           if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
             break; // UTF-8 is the default
           }
           $url .=  $part . "&" ;
-          break;
+       break;
        case "hl":
        case "safe":
        case "q":
@@ -3135,12 +3135,11 @@ function simplify_google_search(string $url): string {
        case "as_q":
        case "kponly":
           $url .=  $part . "&" ;
-          break;
+       break;
        default:
           // @codeCoverageIgnoreStart
           report_minor_error("Unexpected Google URL component:  " . echoable($part) . " in " . echoable($orig_url));
           $url .=  $part . "&" ;
-          break;
           // @codeCoverageIgnoreEnd
      }
    }
