@@ -969,7 +969,7 @@ public static function process_zotero_response(string $zotero_response, Template
            ) {
           $template->change_name_to('cite book');
         }
-        break;
+      break;
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
@@ -980,12 +980,12 @@ public static function process_zotero_response(string $zotero_response, Template
            (str_ireplace('/blog/', '', $url) === $url)) {
           $template->change_name_to('cite journal');
         }
-        break;
+      break;
       case 'magazineArticle':
         if ($template->wikiname() === 'cite web') {
           $template->change_name_to('cite magazine');
         }
-        break;
+      break;
       case 'newspaperArticle':
         if ($template->wikiname() === 'cite web') {
            $test_data = $template->get('work') . $template->get('website') .
@@ -996,7 +996,7 @@ public static function process_zotero_response(string $zotero_response, Template
               $template->change_name_to('cite news');
            }
         }
-        break;
+      break;
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) {
@@ -1005,7 +1005,7 @@ public static function process_zotero_response(string $zotero_response, Template
         if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
           $template->add_if_new('type' , (string) $result->thesisType); // Prefer type since it exists in cite journal too
         }
-        break;
+      break;
 
       case 'email': // Often uses subject, not title
       case 'webpage':
@@ -1039,7 +1039,7 @@ public static function process_zotero_response(string $zotero_response, Template
           // Probably tick people off too
       case 'dictionaryEntry':  // @codeCoverageIgnore
         // Nothing special that we know of yet
-        break;
+      break;
 
       default:                                                                         // @codeCoverageIgnore
         report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url));  // @codeCoverageIgnore
@@ -1060,19 +1060,19 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'contributor':
             case 'artist':
               $authorParam = 'author' . (string) ++$author_i;
-              break;
+            break;
             case 'editor':
               $authorParam = 'editor' . (string) ++$editor_i;
-              break;
+            break;
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
-              break;
+            break;
             case 'reviewedAuthor':   // @codeCoverageIgnore
               $authorParam = '';      // @codeCoverageIgnore
-              break;                  // @codeCoverageIgnore
+            break;                  // @codeCoverageIgnore
             case 'performer': // http://catalog.nypl.org/search/o77059475
               $authorParam = '';
-              break;
+            break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
