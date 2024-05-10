@@ -457,10 +457,9 @@ const CAMEL_CASE = [
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide',
-    ];
+];
 
 const ITALICS_HARDCODE_IN  = [
-
     "The Myth ofPiers Plowman",
     "BioelectromagnetismPrinciples and Applications",
     "Practice inThe Nice Valour",
@@ -572,6 +571,7 @@ const ITALICS_HARDCODE_IN  = [
     "Thriving in AmericaCapitalism and",
     " Social WorkHuman Rights",
 ];
+
 const ITALICS_HARDCODE_OUT = [
     "The Myth of ''Piers Plowman''",
     "Bioelectromagnetism: Principles and Applications",

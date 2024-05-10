@@ -8,7 +8,8 @@ const TEMPLATES_WE_PROCESS = [
     'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'cite url', 'citepaper', 'citation journal',
     'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter', 'web cite', 'book cite',
     'book reference', 'cit web', 'cit book', 'cite-book', 'cite-web', 'cit journal', 'cit news',
-    'web reference', 'cite citation', 'cite contribution', 'cite ebook', 'cite manual'];
+    'web reference', 'cite citation', 'cite contribution', 'cite ebook', 'cite manual',
+];
 const TEMPLATES_WE_SLIGHTLY_PROCESS = ['cite news', 'cite newspaper', 'cite article', 'citenews', 'cite new'];
 const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite biorxiv', 'cite conference'];
 const TEMPLATES_WE_RENAME  = ['cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website'];
@@ -22,7 +23,8 @@ const TEMPLATES_WE_CHAPTER_URL = [
     'history of taron', 'the muslims of medieval italy', 'emperor michael palaeologus and the west',
     'arts of armenia', 'a history of palestine, 634–1099', 'baghdad during the abbasid caliphate',
     'baghdad during the abbasid caliphate', 'the cambridge history of china', 'cambridge history of iran',
-    'essays on the latin orient', 'cambridge history of egypt'];
+    'essays on the latin orient', 'cambridge history of egypt',
+];
 const TEMPLATES_VCITE = ['vcite book', 'vcite conference', 'vcite journal', 'vcite news', 'vcite web'];
 const TEMPLATES_WE_HARV = [
     'cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dnbie', 'cite americana', 'cite eb1911', 'cite techreport',
@@ -75,18 +77,21 @@ const TEMPLATES_WE_HARV = [
     'cite newsgroup', 'the history of al-tabari', 'cite newgenbio', 'white-passenger-1985',
     'saunders-merging lines', 'dorin-north western', 'cambridge history of iran', 'quick-stations', 'irs-el',
     'cite bede he', 'cite court', 'google books', 'date', 'cite arnold hague convoy database',
-    'cite ahcd', 'me-ref', 'slomon-new york central', 'cite archive'];
+    'cite ahcd', 'me-ref', 'slomon-new york central', 'cite archive',
+];
 
 // 'url' must be the first element, it is assumed elsewhere in the code
 const ALL_URL_TYPES = [
     'url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
     'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
     'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-    'transcripturl', 'URL']; // Some of these are no longer valid
+    'transcripturl', 'URL',
+]; // Some of these are no longer valid
 
 const DATES_TO_CLEAN = [
     'air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
-    'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'orig-date', 'doi-broken-date'];
+    'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'orig-date', 'doi-broken-date',
+];
 
 const THINGS_THAT_ARE_TITLES = ['chapter', 'title', 'series', 'trans-title', 'book-title', 'contribution'];
 
@@ -405,7 +410,7 @@ const LOTS_OF_EDITORS = ['editor', 'editor-last', 'veditor', 'editor-surname', '
 const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
 const ARXIV_ALIASES = ['arxiv', 'eprint'];
 const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
-const CHAPTER_ALIASES =            ['chapter', 'contribution', 'article', 'entry', 'section'];
+const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
 const CHAPTER_ALIASES_AND_SCRIPT = ['chapter', 'contribution', 'article', 'entry', 'section', 'script-chapter'];
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
@@ -428,7 +433,8 @@ const ALL_ALIASES = [
     DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,
     FIRST_FORENAME_ALIASES, FIRST_EDITOR_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
     TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS, ACCESS_ALIASES,
-    ISBN_ALIASES, LANG_ALIASES, TYPE_ALIASES, LOTS_OF_EDITORS, LOCATIONS_AND_SUCH];
+    ISBN_ALIASES, LANG_ALIASES, TYPE_ALIASES, LOTS_OF_EDITORS, LOCATIONS_AND_SUCH,
+];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
