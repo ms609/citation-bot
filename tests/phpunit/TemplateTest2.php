@@ -1737,7 +1737,7 @@ final class TemplateTest2 extends testBaseClass {
         public function testRefComment(): void {
         $text = "{{cite web|ref=harv <!--       -->}}";
         $template = $this->process_citation($text);
-        $this->assertSame('<!--     -->', $template->get2('ref'));
+        $this->assertSame('<!--       -->', $template->get2('ref'));
         }
 
         public function testCleanBloomArchives(): void {
