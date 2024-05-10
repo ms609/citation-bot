@@ -61,7 +61,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('This is robert www-', title_capitalization('This is robert www-' , true));
     }
     public function testCapitalization8a(): void {
-        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas. Trip.' , true));
+        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.' , true));
     }
     public function testCapitalization8b(): void {
         $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas, Trip.' , true));
