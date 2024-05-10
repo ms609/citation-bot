@@ -38,8 +38,9 @@ const HANDLES_HOSTS = [
     'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
     'researchonline.federation.edu.au', 'scholarspace.manoa.hawaii.edu', 'orbi.uliege.be',
     'repositorio.uasb.edu.ec', 'shodhganga.inflibnet.ac.in', 'www.tara.tcd.ie', 'conservancy.umn.edu',
-    'library.oapen.org'];
-// Order here could matter
+    'library.oapen.org',
+];
+// Order here DOES matter
 // YOU MUST escape the RegEx
 const HANDLES_PATHS = [
     '/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
@@ -48,4 +49,5 @@ const HANDLES_PATHS = [
     '/repository/bitstream/handle/', '/repository/handle/',
     '/tools/dspace/load/\?file=/repository/bitstream/handle/',
     '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
-    '/vital/access/HandleResolver/'];
+    '/vital/access/HandleResolver/',
+];
