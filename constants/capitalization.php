@@ -32,7 +32,8 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ",
     " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */
     // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
-    " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A "];
+    " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ",
+];
 const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
     " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ",
     " Ai ", " Aiaa ", " Aiche ", " Aip ", " Ajhg ", " Al ", " An ", " And ",
@@ -63,8 +64,11 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ",
     " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */
     // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
-    " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a "];
-    // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
+    " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ",
+];
+
+// For ones that start with lower-case, include both ELife and Elife versions in misspelled array
+
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AA Files ",
     " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ",
@@ -462,4 +466,5 @@ const MAP_DIACRITICS = ["À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "ʊ"=>"upsilon", "ʋ"=>"v", "ʌ"=>"v", "ʍ"=>"w", "ʎ"=>"y", "ʐ"=>"z",
     "ʑ"=>"z", "ʒ"=>"ezh", "ʓ"=>"ezh", "ʚ"=>"e", "ʞ"=>"k", "ʠ"=>"q",
     "ʣ"=>"dz", "ʤ"=>"dezh", "ʥ"=>"dz", "ʦ"=>"ts", "ʧ"=>"tesh",
-    "ʨ"=>"tc", "ʩ"=>"feng", "ʪ"=>"ls", "ʫ"=>"lz", "ʮ"=>"h", "ʯ"=>"h"];
+    "ʨ"=>"tc", "ʩ"=>"feng", "ʪ"=>"ls", "ʫ"=>"lz", "ʮ"=>"h", "ʯ"=>"h",
+];
