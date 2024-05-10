@@ -146,7 +146,8 @@ const BAD_PUBLISHERS = [
 ];
 
 const ARE_WORKS = [
-    "medrxiv", "ietf datatracker"
+    "medrxiv",
+    "ietf datatracker"
 ]; // Things with dois that should be {{cite document|work=THIS}}
 
 const PUBLISHERS_ARE_WORKS = [
@@ -2368,7 +2369,10 @@ const NO_PUBLISHER_NEEDED = [
     "forbes magazine",
 ]; // lowercase axact matches
 
-const ENCYCLOPEDIA_WEB = ["plato.stanford.edu", "britannica.com"];
+const ENCYCLOPEDIA_WEB = [
+    "plato.stanford.edu",
+    "britannica.com"
+];
 
 const GOOD_10_1093_DOIS = [
     // March 2019 list
