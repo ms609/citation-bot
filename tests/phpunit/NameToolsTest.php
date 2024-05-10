@@ -32,7 +32,7 @@ final class NameToolsTest extends testBaseClass {
         $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
     }
     public function testFormatMultipleAuthors3(): void { // Spaces
-        $authors = 'M.A. Smith M.A. Smith';
+        $authors = 'M.A. Smith  M.A. Smith';
         $result=format_multiple_authors($authors);
         $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
     }
