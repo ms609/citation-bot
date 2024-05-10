@@ -42,7 +42,7 @@ try {
         if ($editSummary) {
            $editSummary .= ' | '; // Add pipe if already something there.
         }
-        $editSummary .=    str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
+        $editSummary .= str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
     }
     unset($originalText, $page);
 
