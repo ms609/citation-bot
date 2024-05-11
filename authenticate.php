@@ -16,50 +16,47 @@ use MediaWiki\OAuthClient\Token;
 
 // The two ways we leave this script
 function death_time(string $err): never {
-  @session_start(); // Need write access
-  unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
-  @session_write_close(); // Paranoid
-  echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . $err . '</main></body></html>';
-  exit(0);
+    @session_start();
+    unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . $err . '</main></body></html>';
+    exit;
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
-  @session_write_close(); // Paranoid
-  $where = preg_replace('~\s+~', '', $where);  // Security paranoia
-  header("Location: " . $where);
-  exit(0);
+    header("Location: " . preg_replace('~\s+~', '', $where));
+    exit;
 }
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
-  death_time("Citation Bot's authorization tokens not configured");
+    death_time("Citation Bot's authorization tokens not configured");
 }
 
 try {
-  $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+    $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
 }
 catch (Throwable $e) {
-  death_time("Citation Bot Could not contact meta.wikimedia.org");
+    death_time("Citation Bot Could not contact meta.wikimedia.org");
 }
 
 try {
-  $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-  $conf->setUserAgent(BOT_USER_AGENT);
-  $client = new Client($conf);
-  unset($conf);
+    $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
+    $conf->setUserAgent(BOT_USER_AGENT);
+    $client = new Client($conf);
+    unset($conf);
 }
 catch (Throwable $e) {
-  death_time("Citation Bot's internal authorization tokens did not work");
+    death_time("Citation Bot's internal authorization tokens did not work");
 }
 
 // Existing Access Grant - verify that it works since we are here anyway
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
-   try {
-      $client->makeOAuthCall(
-      new Token($_SESSION['access_key'], $_SESSION['access_secret']),
-     'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json');
-      return_to_sender();
-   }
-   catch (Throwable $e) { ; }
+    try {
+        $token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+        $auth_url = 'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json';
+        $client->makeOAuthCall($token, $auth_url);
+        return_to_sender();
+    }
+    catch (Throwable $e) { ; }
 }
 // clear anything left over that did not work
 @session_start(); // Need write access
@@ -67,24 +64,24 @@ unset($_SESSION['access_key'], $_SESSION['access_secret']);
 
 // New Incoming Access Grant
 if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) && is_string(@$_SESSION['request_secret']) ) {
-   try {
-    $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
-    if (empty($accessToken->key) || empty($accessToken->secret)) {
-      throw new Exception('OAuth complete() call failed');
+    try {
+        $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
+        if (empty($accessToken->key) || empty($accessToken->secret)) {
+            throw new Exception('OAuth complete() call failed');
+        }
+        $_SESSION['access_key'] = $accessToken->key;
+        $_SESSION['access_secret'] = $accessToken->secret;
+        unset($_SESSION['request_key'], $_SESSION['request_secret']);
+        if (is_string(@$_GET['return'])) {
+            // This could only be tainted input if OAuth server itself was hacked, so flag as safe
+            /** @psalm-taint-escape header */
+            $where = trim($_GET['return']);
+            return_to_sender($where);
+        }
+        return_to_sender();
     }
-    $_SESSION['access_key'] = $accessToken->key;
-    $_SESSION['access_secret'] = $accessToken->secret;
-    unset($_SESSION['request_key'], $_SESSION['request_secret']);
-    if (is_string(@$_GET['return'])) {
-       // This could only be tainted input if OAuth server itself was hacked, so flag as safe
-       /** @psalm-taint-escape header */
-       $where = trim($_GET['return']);
-       return_to_sender($where);
-    }
-    return_to_sender();
-   }
-   catch (Throwable $e) { ; }
-   death_time("Incoming authorization tokens did not work - try again please");
+    catch (Throwable $e) { ; }
+    death_time("Incoming authorization tokens did not work - try again please");
 }
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
