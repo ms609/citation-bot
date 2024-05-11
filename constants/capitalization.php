@@ -423,8 +423,7 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' U S a ',
 ];
 
-// For ones that start with lower-case,
-    include both ELife and Elife versions in misspelled array
+// For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' (and the Middle East) ',
