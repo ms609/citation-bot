@@ -164,30 +164,25 @@ final class constantsTest extends testBaseClass {
             $alpha_bits = preg_split('~(?<="),~', $alpha_bit);
             $alpha_bits = array_map('trim', $alpha_bits);
             if ($leader) {
-                            $leader_bits = $alpha_bits;
-                            sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
-                            $leader = false;
+                $leader_bits = $alpha_bits;
+                sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
+                $leader = false;
             } else {
-                            $this->assertSame(count($leader_bits), count($alpha_bits));
-                            array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
-                            $leader_bits = null;
-                            $leader = true;
+                $this->assertSame(count($leader_bits), count($alpha_bits));
+                array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
+                $leader_bits = null;
+                $leader = true;
             }
             $bits_length = array_map('strlen', $alpha_bits);
             $bit_length = current($bits_length);
             $chunk_length = 0;
             $new_line = "\n    ";
             $alphaed = $new_line;
-            $line_length = 10;
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
             foreach ($bits_length as $bit_length) {
-             $bit = next($alpha_bits);
-             $alphaed .= $bit ? ($bit . ", ") : '';
-             $line_length += $bit_length + 2;
-             if ($line_length > 56) {
-                 $alphaed .= $new_line;
-                 $line_length = 10;
-             }
+                $bit = next($alpha_bits);
+                $alphaed .= $bit ? ($bit . ", ") : '';
+                $alphaed .= $new_line;
             }
             if ($alphaed == $new_line) $alphaed = '';
             $section = $alphaed . substr($section, $alpha_end);
@@ -217,13 +212,13 @@ final class constantsTest extends testBaseClass {
             $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
             preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
             $their_whitelist = $matches[1];
-            $patent_whitelist =      ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
-                                            'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
-                                            'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
-                                            'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
-                                            'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
-                                            'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-                                            'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+            $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
+                                 'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
+                                 'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
+                                 'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
+                                 'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
+                                 'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
+                                 'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
             $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
                                                  $patent_whitelist, $their_whitelist);
             $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
@@ -257,15 +252,8 @@ final class constantsTest extends testBaseClass {
             if ($our_whitelist !== $our_whitelist_sorted) {
                  $this->flush();
                  echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
-                 $length = 0;
-                 echo "  ";
                  foreach($our_whitelist_sorted as $value) {
-                     echo "'" . $value . "', ";
-                     $length = $length + strlen($value) + 4;
-                     if ($length > 76) {
-                         $length = 0;
-                         echo "\n  ";
-                     }
+                     echo "    '" . $value . "',\n";
                  }
                  $this->flush();
                  $we_failed = true;
@@ -279,24 +267,26 @@ final class constantsTest extends testBaseClass {
         $new = '';
         foreach($whitelist as $value) {
             $value = str_replace('#', '1', $value);
-            if (stripos($value, '_bot')) $value = 'title'; // basically skip it
+            if (stripos($value, '_bot')) {
+                $value = 'title'; // basically skip it
+            }
             $text = '{{citation | ' . $value . ' = Z123Z }}';
             $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
             $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate',  'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ',    '| pp = Z123Z ',    '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '],  // Put spaces on end to not change chapter-url-access and such
-                                      ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
+                                ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
             $text = str_replace(['| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z '], '', $text);
             $text = str_replace(['displayeditors',  'editor1mask',  'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
-                                      ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
+                                ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
             $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
-                                      ['editor1-link', 'editor1-link', 'subject-link1'], $text);
+                                ['editor1-link', 'editor1-link', 'subject-link1'], $text);
             $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city',     'editorlink',  ' editors ='],
-                                      ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
+                                ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
             $text = str_replace(['episodelink',  'mailinglist',  'mapurl',  'serieslink' , 'coauthor '],
-                                      ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ], $text);
+                                ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ], $text);
             $text = str_replace(['titlelink',  'nocat',       'nocat',       ' embargo',          'conferenceurl',  'contributionurl',  'laydate',  'laysource',  'layurl',  'sectionurl',  'seriesno',  'timecaption',  'titlelink'],
-                                      ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
+                                ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
             $text = str_replace(['subjectlink',  'transcripturl',  '| name = ',   'extrait'],
-                                      ['subject-link', 'transcript-url', '| author = ', 'quote'  ], $text);
+                                ['subject-link', 'transcript-url', '| author = ', 'quote'  ], $text);
             if ($prepared->get('doi') === 'Z123Z') {
                 $prepared->forget('doi-broken-date');
             }

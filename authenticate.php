@@ -87,19 +87,15 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
 try {
-      if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
-          throw new Exception('Webserver URL variables not set');
-      }
-      $proto = (
-        (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-      ) ? "https://" : "http://";
-      $newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-      $client->setCallback($newcallback);
-      list( $authUrl, $token ) = $client->initiate();
-      $_SESSION['request_key'] = $token->key;
-      $_SESSION['request_secret'] = $token->secret;
-      return_to_sender($authUrl);
+    if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
+        throw new Exception('Webserver URL variables not set');
+    }
+    $newcallback = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $client->setCallback($newcallback);
+    list( $authUrl, $token ) = $client->initiate();
+    $_SESSION['request_key'] = $token->key;
+    $_SESSION['request_secret'] = $token->secret;
+    return_to_sender($authUrl);
 }
 catch (Throwable $e) { ; }
 death_time("Unable to initiate OAuth.");
