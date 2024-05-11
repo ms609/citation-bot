@@ -46,7 +46,7 @@ const TEMPLATES_WE_HARV = [
     'solomon-vintage diesel', 'solomon-north american locomotives', 'cite sep',
     'wegman-illustrated', 'zimmermann-santa fe', 'glischinski-santa fe', 'disraeliref', 'cite map',
     'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs', 'cite liner notes',
-    'setton-a history of the crusades', "cite appletons'", 'cite dnb12', 'cite newsletter',
+    'setton-a history of the crusades', 'cite appletons\'', 'cite dnb12', 'cite newsletter',
     'the cambridge history of iran', 'drury historical guide 1985', 'cite dgrbm', 'cite nie',
     'herr-ln', 'complete book of north american railroading', 'catholic', 'gilliland', 'cite eb1922',
     'cite audb', 'cite serial', 'solomon-csx', 'skeptoid', 'colledge', 'cite nuttall',
