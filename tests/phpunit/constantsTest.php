@@ -161,7 +161,7 @@ final class constantsTest extends testBaseClass {
             $alpha_end = stripos($section, $end_alpha);
             if (!$alpha_end) continue;
             $alpha_bit = substr($section, 0, $alpha_end);
-            $alpha_bits = preg_split('~(?<="),~', $alpha_bit);
+            $alpha_bits = preg_split('~(?<=\'),~', $alpha_bit);
             $alpha_bits = array_map('trim', $alpha_bits);
             if ($leader) {
                 $leader_bits = $alpha_bits;
@@ -202,63 +202,63 @@ final class constantsTest extends testBaseClass {
         }
     }
 
- public function testWhiteList(): void {
-            $we_failed = false;
-            $our_original_whitelist = PARAMETER_LIST;
-            $our_whitelist = array_unique($our_original_whitelist);
-            $our_whitelist_sorted = $our_whitelist;
-            sort($our_whitelist_sorted);
+    public function testWhiteList(): void {
+        $we_failed = false;
+        $our_original_whitelist = PARAMETER_LIST;
+        $our_whitelist = array_unique($our_original_whitelist);
+        $our_whitelist_sorted = $our_whitelist;
+        sort($our_whitelist_sorted);
 
-            $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
-            preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
-            $their_whitelist = $matches[1];
-            $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
-                                 'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
-                                 'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
-                                 'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
-                                 'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
-                                 'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-                                 'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
-            $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
-                                                 $patent_whitelist, $their_whitelist);
-            $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
-            $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
+        $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
+        preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
+        $their_whitelist = $matches[1];
+        $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
+                             'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
+                             'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
+                             'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
+                             'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
+                             'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
+                             'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+        $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
+                                             $patent_whitelist, $their_whitelist);
+        $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
+        $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
-            $our_extra = array_diff($our_whitelist, $their_whitelist);
-            $our_missing = array_diff($their_whitelist, $our_whitelist);
-            $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
+        $our_extra = array_diff($our_whitelist, $their_whitelist);
+        $our_missing = array_diff($their_whitelist, $our_whitelist);
+        $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
 
-            if (count($our_internal_extra) !== 0) {
-                 $this->flush();
-                 echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
-                 print_r($our_internal_extra);
-                 $this->flush();
-                 $we_failed = true;
-            }
-            if (count($our_extra) !== 0) {
-                 $this->flush();
-                 echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
-                 print_r($our_extra);
-                 $this->flush();
-                 $we_failed = true;
-            }
-            if (count($our_missing) !== 0) {
-                 $this->flush();
-                 echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
-                 print_r($our_missing);
-                 $this->flush();
-                 $we_failed = true;
-            }
-            if ($our_whitelist !== $our_whitelist_sorted) {
-                 $this->flush();
-                 echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
-                 foreach($our_whitelist_sorted as $value) {
-                     echo "    '" . $value . "',\n";
-                 }
-                 $this->flush();
-                 $we_failed = true;
-            }
-            $this->assertFalse($we_failed);
+        if (count($our_internal_extra) !== 0) {
+             $this->flush();
+             echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
+             print_r($our_internal_extra);
+             $this->flush();
+             $we_failed = true;
+        }
+        if (count($our_extra) !== 0) {
+             $this->flush();
+             echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+             print_r($our_extra);
+             $this->flush();
+             $we_failed = true;
+        }
+        if (count($our_missing) !== 0) {
+             $this->flush();
+             echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+             print_r($our_missing);
+             $this->flush();
+             $we_failed = true;
+        }
+        if ($our_whitelist !== $our_whitelist_sorted) {
+             $this->flush();
+             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+             foreach($our_whitelist_sorted as $value) {
+                 echo "    '" . $value . "',\n";
+             }
+             $this->flush();
+             $we_failed = true;
+        }
+        $this->assertFalse($we_failed);
     }
 
     public function testWhiteListNotBlacklisted(): void {
