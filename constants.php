@@ -70,15 +70,15 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
         CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
         CURLOPT_NOPROGRESS => false,
-    // 2 - Default Time by ratio
+        // 2 - Default Time by ratio
         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
-    // 3 - Specific options and overrides of defaults
+        // 3 - Specific options and overrides of defaults
     curl_setopt_array($ch, $ops);
     return $ch;
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
-  curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::$last_title);
-  return (string) @curl_exec($ch);
+    curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::$last_title);
+    return (string) @curl_exec($ch);
 }
