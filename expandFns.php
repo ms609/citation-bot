@@ -33,24 +33,24 @@ final class HandleCache {
     public static array $cache_hdl_null = [];            // HDL/DOI resolves to null
 
     public static function check_memory_use(): void {
-            $usage = count(self::$cache_inactive) +
-                             count(self::$cache_active) +
-                             count(self::$cache_good) +
-                             count(self::$cache_hdl_bad) +
-                             10*count(self::$cache_hdl_loc) + // These include a path too
-                             count(self::$cache_hdl_null);
-            if ($usage > self::MAX_CACHE_SIZE) {
-                self::free_memory();    // @codeCoverageIgnore
-            }
+        $usage = count(self::$cache_inactive) +
+                        count(self::$cache_active) +
+                        count(self::$cache_good) +
+                        count(self::$cache_hdl_bad) +
+                        10*count(self::$cache_hdl_loc) + // These include a path too
+                        count(self::$cache_hdl_null);
+        if ($usage > self::MAX_CACHE_SIZE) {
+            self::free_memory();    // @codeCoverageIgnore
+        }
     }
     public static function free_memory(): void {
-            self::$cache_active = [];
-            self::$cache_inactive = [];
-            self::$cache_good = [];
-            self::$cache_hdl_loc = [];
-            self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
-            self::$cache_hdl_null = [];
-            gc_collect_cycles();
+        self::$cache_active = [];
+        self::$cache_inactive = [];
+        self::$cache_good = [];
+        self::$cache_hdl_loc = [];
+        self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
+        self::$cache_hdl_null = [];
+        gc_collect_cycles();
     }
 }
 
@@ -115,10 +115,10 @@ function doi_works(string $doi): ?bool {
 function is_doi_active(string $doi): ?bool {
     static $ch = null;
     if ($ch === null) {
-            $ch = bot_curl_init(1.0,[
-                CURLOPT_HEADER => true,
-                CURLOPT_NOBODY => false,
-                CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+        $ch = bot_curl_init(1.0,[
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => false,
+            CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
     $doi = trim($doi);
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
@@ -216,41 +216,41 @@ function is_doi_works(string $doi): ?bool {
     $url = "https://doi.org/" . doi_encode($doi);
     $headers_test = get_headers_array($url);
     if ($headers_test === false) {
-            if (strpos($doi, '10.2277/') === 0 || // Rogue
-                    preg_match('~^10\.1038/nature\d{5}$~i', $doi) || // Nature dropped the ball
-                    stripos($doi, '10.17312/harringtonparkpress/') === 0 ||
-                    stripos($doi, '10.3149/csm.') === 0 ||
-                    stripos($doi, '10.5047/meep.') === 0 ||
-                    stripos($doi, '10.4435/BSPI.') === 0) {
-                return false;
+        if (strpos($doi, '10.2277/') === 0 || // Rogue
+                preg_match('~^10\.1038/nature\d{5}$~i', $doi) || // Nature dropped the ball
+                stripos($doi, '10.17312/harringtonparkpress/') === 0 ||
+                stripos($doi, '10.3149/csm.') === 0 ||
+                stripos($doi, '10.5047/meep.') === 0 ||
+                stripos($doi, '10.4435/BSPI.') === 0) {
+            return false;
+        }
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+            if (stripos($doi, $bad_start) === 0) {
+                return false; // all gone
             }
-            if (isset(NULL_DOI_LIST[$doi])) {
-                return false;
-            }
-            foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-                if (stripos($doi, $bad_start) === 0) {
-                    return false; // all gone
-                }
-            }
-            if (isset(NULL_DOI_BUT_GOOD[$doi])) {
-                return true;     // @codeCoverageIgnoreStart
-            }
-            $headers_test = get_headers_array($url);
-            bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));     // @codeCoverageIgnoreEnd
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;     // @codeCoverageIgnoreStart
+        }
+        $headers_test = get_headers_array($url);
+        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));     // @codeCoverageIgnoreEnd
     }
     if ($headers_test === false) {
-            $headers_test = get_headers_array($url);     // @codeCoverageIgnore
+        $headers_test = get_headers_array($url);     // @codeCoverageIgnore
     }
     if ($headers_test === false) {  // most likely bad - note that null means do not add or remove doi-broken-date from pages
-            return null;     // @codeCoverageIgnore
+        return null;     // @codeCoverageIgnore
     }
     if (stripos($doi, '10.1126/scidip.') === 0) {
-            if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {
-                unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
-            }
+        if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {
+            unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
+        }
     }
     if (interpret_doi_header($headers_test) !== false) {
-                return interpret_doi_header($headers_test);
+        return interpret_doi_header($headers_test);
     }
     // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
     $headers_test = get_headers_array($url);
@@ -292,17 +292,17 @@ function interpret_doi_header(array $headers_test): ?bool {
         return true; // grumpy
     }
     if (stripos($resp0, '301 Moved Permanently') !== false || stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
-            if (stripos($resp1, '302 Found') !== false               || stripos($resp1, 'HTTP/1.1 302') !== false) {
-                return true;    // Good
-            } elseif (stripos($resp1, '301 Moved Permanently') !== false || stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
-                if (stripos($resp2, '200 OK') !== false                 || stripos($resp2, 'HTTP/1.1 200') !== false) {
-                    return true;
-                } else {
-                    return false;
-                }
+        if (stripos($resp1, '302 Found') !== false               || stripos($resp1, 'HTTP/1.1 302') !== false) {
+            return true;    // Good
+        } elseif (stripos($resp1, '301 Moved Permanently') !== false || stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
+            if (stripos($resp2, '200 OK') !== false                 || stripos($resp2, 'HTTP/1.1 200') !== false) {
+                return true;
             } else {
                 return false;
             }
+        } else {
+            return false;
+        }
     }
     report_minor_error("Unexpected response in is_doi_works " . echoable($resp0));
     return null; // @codeCoverageIgnoreEnd
@@ -311,22 +311,22 @@ function interpret_doi_header(array $headers_test): ?bool {
 /** @param array<mixed> $headers_test */
 function get_loc_from_hdl_header(array $headers_test): ?string {
     if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
-            return (string) $headers_test['Location'][0];    // @codeCoverageIgnore
+        return (string) $headers_test['Location'][0];    // @codeCoverageIgnore
     } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
-            return (string) $headers_test['location'][0];    // @codeCoverageIgnore
+        return (string) $headers_test['location'][0];    // @codeCoverageIgnore
     } elseif (isset($headers_test['location'])) {
-            return (string) $headers_test['location'];
+        return (string) $headers_test['location'];
     } elseif (isset($headers_test['Location'])) {
-            return (string) $headers_test['Location'];
+        return (string) $headers_test['Location'];
     } else { // @codeCoverageIgnoreStart
-            bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, true)));    // Is this even possible
-            return null;
+        bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, true)));    // Is this even possible
+        return null;
     }                // @codeCoverageIgnoreEnd
 }
 
 /** @psalm-suppress UnusedParam
-        @param array<string> $ids
-        @param array<Template> $templates */
+    @param array<string> $ids
+    @param array<Template> $templates */
 function query_jstor_api(array $ids, array &$templates): void { // $ids not used     // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_jstor($template);
@@ -393,10 +393,10 @@ function sanitize_doi(string $doi): string {
                 preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
                 preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
                 preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
-                $new_doi = $match[1];
-                if (doi_works($new_doi)) {
-                    $doi = $new_doi;
-                }
+            $new_doi = $match[1];
+            if (doi_works($new_doi)) {
+                $doi = $new_doi;
+            }
         }
     }
     return $doi;
@@ -415,8 +415,7 @@ function extract_doi(string $text): array {
         $doi = $match[1];
         if (preg_match(
                     "~^(.*?)(/abstract|/e?pdf|/full|/figure|/default|</span>|[\s\|\"\?]|</).*+$~",
-                    $doi, $new_match)
-                ) {
+                    $doi, $new_match)) {
             $doi = $new_match[1];
         }
         $doi_candidate = sanitize_doi($doi);
@@ -481,12 +480,12 @@ function wikify_external_text(string $title): string {
         } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
             ;
         } else { // Multiple periods and at least one space
-        $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
-        $last_word = mb_substr($title, $last_word_start);
-        if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
+            $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
+            $last_word = mb_substr($title, $last_word_start);
+            if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
                 mb_substr($title, $last_word_start-2, 1) !== '.') {
-            $title = mb_substr($title, 0, -1);
-        }
+                $title = mb_substr($title, 0, -1);
+            }
         }
     }
     $title = safe_preg_replace('~[\*]$~', '', $title);
@@ -511,7 +510,7 @@ function wikify_external_text(string $title): string {
     if (preg_match("~^\. (.+)$~", $title, $matches)) {
         $title = trim($matches[1]);
     }
- if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
+    if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
         $title = trim($matches[1] . ".");
     }
     $title_orig = '';
@@ -546,9 +545,9 @@ function wikify_external_text(string $title): string {
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     if (mb_strlen($title) === strlen($title)) {
-            $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+        $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
     } else {
-            $title = trim($title," \t\n\r\0");
+        $title = trim($title," \t\n\r\0");
     }
 
     $num_replace = count($replacement);
@@ -572,12 +571,12 @@ function restore_italics (string $text): string {
     $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
     $text = trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
     while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\(\,]|species|genus| in| the|$)~', $text, $matches)) {
-            if (in_array($matches[3], [':', '.', '-', ','], true)) {
-                $pad = "";
-            } else {
-                $pad = " ";
-            }
-            $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
+        if (in_array($matches[3], [':', '.', '-', ','], true)) {
+            $pad = "";
+        } else {
+            $pad = " ";
+        }
+        $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
     }
     $text = trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
     $padded = ' '. $text . ' ';
@@ -682,104 +681,103 @@ function titles_are_similar(string $title1, string $title2): bool {
     return false;
 }
 
-
 function de_wikify(string $string): string {
     return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"],    $string));
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
         // Blow away junk from OLD stuff
-        if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
-            $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
-            if ($possible !== null) {
-                    $inTitle = $possible;
-            } else { // When PHP fails with unicode, try without it
-                $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
-                if ($inTitle === null) {
-                    return true;
-                }
+    if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
+        $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
+        if ($possible !== null) {
+                $inTitle = $possible;
+        } else { // When PHP fails with unicode, try without it
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
+            if ($inTitle === null) {
+                return true;
             }
         }
-        // Strip diacritics before decode
-        $inTitle = strip_diacritics($inTitle);
-        $dbTitle = strip_diacritics($dbTitle);
-        // always decode new data
-        $dbTitle = titles_simple(htmlentities(html_entity_decode($dbTitle)));
-        // old data both decoded and not
-        $inTitle2 = titles_simple($inTitle);
-        $inTitle = titles_simple(htmlentities(html_entity_decode($inTitle)));
-        $dbTitle = strip_diacritics($dbTitle);
-        $inTitle = strip_diacritics($inTitle);
-        $inTitle2 = strip_diacritics($inTitle2);
-        $dbTitle = mb_strtolower($dbTitle);
-        $inTitle = mb_strtolower($inTitle);
-        $inTitle2 = mb_strtolower($inTitle2);
-        $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
-                    "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
-                    "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
-        $inTitle = str_replace($drops, "", $inTitle);
-        $inTitle2 = str_replace($drops, "", $inTitle2);
-        $dbTitle = str_replace($drops, "", $dbTitle);
+    }
+    // Strip diacritics before decode
+    $inTitle = strip_diacritics($inTitle);
+    $dbTitle = strip_diacritics($dbTitle);
+    // always decode new data
+    $dbTitle = titles_simple(htmlentities(html_entity_decode($dbTitle)));
+    // old data both decoded and not
+    $inTitle2 = titles_simple($inTitle);
+    $inTitle = titles_simple(htmlentities(html_entity_decode($inTitle)));
+    $dbTitle = strip_diacritics($dbTitle);
+    $inTitle = strip_diacritics($inTitle);
+    $inTitle2 = strip_diacritics($inTitle2);
+    $dbTitle = mb_strtolower($dbTitle);
+    $inTitle = mb_strtolower($inTitle);
+    $inTitle2 = mb_strtolower($inTitle2);
+    $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
+                "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
+                "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
+    $inTitle = str_replace($drops, "", $inTitle);
+    $inTitle2 = str_replace($drops, "", $inTitle2);
+    $dbTitle = str_replace($drops, "", $dbTitle);
     // This will convert &delta into delta
-        return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                    ? (strlen($inTitle) !== strlen($dbTitle)
-                || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-                    : (levenshtein($inTitle, $dbTitle) > 3)
-        )
-        &&
-        ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
-                    ? (strlen($inTitle2) !== strlen($dbTitle)
-                || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
-                    : (levenshtein($inTitle2, $dbTitle) > 3)
-        );
+    return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
+                ? (strlen($inTitle) !== strlen($dbTitle)
+            || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+                : (levenshtein($inTitle, $dbTitle) > 3)
+    )
+    &&
+    ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
+                ? (strlen($inTitle2) !== strlen($dbTitle)
+            || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
+                : (levenshtein($inTitle2, $dbTitle) > 3)
+    );
 }
 
 function titles_simple(string $inTitle): string {
-        // Failure leads to null or empty strings!!!!
-        // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
-                static function (array $matches): string {
-                    return $matches[1];
-                }, trim($inTitle));
-        // Chapter number at start
-        $inTitle = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
-        // Trailing "a review"
-        $inTitle = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
-        // Strip trailing Online
-        $inTitle = safe_preg_replace('~ Online$~iu', '', $inTitle);
-        // Strip trailing (Third Edition)
-        $inTitle = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        // Strip leading International Symposium on
-        $inTitle = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
-        // Strip leading the
-        $inTitle = safe_preg_replace('~^The ~iu', '', $inTitle);
-        // Strip trailing
-        $inTitle = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
-        $inTitle = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
-        $inTitle = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
-        // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower($inTitle), true);
-        $inTitle = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
-        $inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
-        // Retracted
-        $inTitle = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
-        $inTitle = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
-        $inTitle = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
-        // Drop normal quotes
-        $inTitle = str_replace(["'", '"'], "", $inTitle);
-        // Strip trailing periods
-        $inTitle = trim(rtrim($inTitle, '.'));
-        // &
-        $inTitle = str_replace(" & ", " and ", $inTitle);
-        $inTitle = str_replace(" / ", " and ", $inTitle);
-        // greek
-        $inTitle = strip_diacritics($inTitle);
-        $inTitle = str_remove_irrelevant_bits($inTitle);
-        return $inTitle;
+    // Failure leads to null or empty strings!!!!
+    // Leading Chapter # -   Use callback to make sure there are a few characters after this
+    $inTitle = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+            static function (array $matches): string {
+                return $matches[1];
+            }, trim($inTitle));
+    // Chapter number at start
+    $inTitle = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
+    // Trailing "a review"
+    $inTitle = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+    // Strip trailing Online
+    $inTitle = safe_preg_replace('~ Online$~iu', '', $inTitle);
+    // Strip trailing (Third Edition)
+    $inTitle = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+    // Strip leading International Symposium on
+    $inTitle = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
+    // Strip leading the
+    $inTitle = safe_preg_replace('~^The ~iu', '', $inTitle);
+    // Strip trailing
+    $inTitle = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
+    $inTitle = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
+    // Reduce punctuation
+    $inTitle = straighten_quotes(mb_strtolower($inTitle), true);
+    $inTitle = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+    $inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
+    // Retracted
+    $inTitle = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+    $inTitle = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
+    // Drop normal quotes
+    $inTitle = str_replace(["'", '"'], "", $inTitle);
+    // Strip trailing periods
+    $inTitle = trim(rtrim($inTitle, '.'));
+    // &
+    $inTitle = str_replace(" & ", " and ", $inTitle);
+    $inTitle = str_replace(" / ", " and ", $inTitle);
+    // greek
+    $inTitle = strip_diacritics($inTitle);
+    $inTitle = str_remove_irrelevant_bits($inTitle);
+    return $inTitle;
 }
 
 function strip_diacritics (string $input): string {
-        return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
+    return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
 function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
@@ -799,18 +797,18 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     if((mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«')               !== false && mb_strpos($str, '»')                !== false)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
-            if ($do_more){
+        if ($do_more){
                 $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
-            } else { // Only outer funky quotes, not inner quotes
-                if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
+        } else { // Only outer funky quotes, not inner quotes
+            if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
                     preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
-                ) {
-                    $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
-                    $str = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
-                } else {
-                    ; // No change
-                }
+            ) {
+                $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
+                $str = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
+            } else {
+                ; // No change
             }
+        }
     }
     $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
     $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
@@ -821,7 +819,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 
 function title_case(string $text): string {
     if (stripos($text, 'www.') !== false || stripos($text, 'www-') !== false || stripos($text, 'http://') !== false) {
-            return $text; // Who knows - duplicate code below
+        return $text; // Who knows - duplicate code below
     }
     return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
@@ -835,12 +833,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // Use 'straight quotes' per WP:MOS
     $new_case = straighten_quotes(trim($in), false);
     if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
-            return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
+        return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                                              // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
     }
 
     if (stripos($new_case, 'www.') !== false || stripos($new_case, 'www-') !== false || stripos($new_case, 'http://') !== false) {
-            return $new_case; // Who knows - duplicate code above
+        return $new_case; // Who knows - duplicate code above
     }
 
     if ($new_case === mb_strtoupper($new_case)
@@ -1024,40 +1022,40 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
 function mb_ucfirst(string $string): string
 {
-        $first = mb_substr($string, 0, 1);
-        if (mb_strlen($first) !== strlen($first)) {
-            return $string;
-        } else {
-            return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
-        }
+    $first = mb_substr($string, 0, 1);
+    if (mb_strlen($first) !== strlen($first)) {
+        return $string;
+    } else {
+        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+    }
 }
 
 function mb_ucfirst_force(string $string): string
 {
-        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
 }
 
 function mb_strrev(string $string, string $encode = null): string
 {
-        $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
-        return implode('', array_reverse($chars));
+    $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
+    return implode('', array_reverse($chars));
 }
 
 function mb_ucwords(string $string): string
 {
-        if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
-            $output = '';
-            while ($match = mb_ereg_search_regs()) {
-                    $output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
-            }
-            return $output;
-        } else {
-            return $string;  // @codeCoverageIgnore
+    if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
+        $output = '';
+        while ($match = mb_ereg_search_regs()) {
+            $output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
         }
+        return $output;
+    } else {
+        return $string;  // @codeCoverageIgnore
+    }
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
-        return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
+    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
 function remove_brackets(string $string): string {
@@ -1087,7 +1085,7 @@ function throttle (): void {
                 AdsAbsControl::free_memory();
                 $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
                 $mem_used0 = (string) $mem_used;
-                bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
+            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
         }                                                                                                                // @codeCoverageIgnoreEnd
     } else {
         bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
@@ -1132,23 +1130,23 @@ function tidy_date(string $string): string {
     }
     // Google sends ranges
     if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
-            if ($matches[1] === $matches[3]) {
-                return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
-            } else {
-                return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
-            }
+        if ($matches[1] === $matches[3]) {
+            return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+        } else {
+            return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+        }
     }
     // Huge amount of character cleaning
     if (strlen($string) !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
         $cleaned = '';
         $the_str_length = mb_strlen($string);
         for ($i = 0; $i < $the_str_length; $i++) {
-                $char = mb_substr($string,$i,1);
-                if (mb_strlen($char) === strlen($char)) {
-                    $cleaned .= $char;
-                } else {
-                    $cleaned .= '-';
-                }
+            $char = mb_substr($string,$i,1);
+            if (mb_strlen($char) === strlen($char)) {
+                $cleaned .= $char;
+            } else {
+                $cleaned .= '-';
+            }
         }
         $string = $cleaned;
     }
@@ -1384,16 +1382,16 @@ function prior_parameters(string $par, array $list=[] ): array {
         case 'osti':
         case 'ssrn':
         case 'rfc':
-                return prior_parameters('hdl', $list);
+            return prior_parameters('hdl', $list);
         case 'lccn':
         case 'issn':
         case 'ol':
         case 'oclc':
         case 'asin':
         case 's2cid':
-                return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
+            return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
         case 'url':
-                return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
+            return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
         case 'chapter-url':
         case 'article-url':
         case 'chapterurl':
@@ -1413,12 +1411,12 @@ function prior_parameters(string $par, array $list=[] ): array {
         case 'transcript-url':
         case 'transcripturl':
         case 'URL':
-                return prior_parameters('url', $list);
+            return prior_parameters('url', $list);
         case 'archive-url':
         case 'archiveurl':
         case 'accessdate':
         case 'access-date':
-                return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
+            return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
                         'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                         'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                         'transcripturl', 'URL'],$list));
@@ -1460,7 +1458,7 @@ function equivalent_parameters(string $par): array {
 function check_doi_for_jstor(string $doi, Template $template): void {
     static $ch = null;
     if ($ch === null) {
-            $ch = bot_curl_init(1.0, []);
+        $ch = bot_curl_init(1.0, []);
     }
     if ($template->has('jstor')) {
         return;
@@ -1490,47 +1488,47 @@ function check_doi_for_jstor(string $doi, Template $template): void {
             stripos($ris, 'Block Reference') === false &&
             stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
             substr_count($ris, '-') > 3) { // It is actually a working JSTOR
-            $template->add_if_new('jstor', $doi);
+        $template->add_if_new('jstor', $doi);
     }
 }
 
 function can_safely_modify_dashes(string $value): bool {
-        return (stripos($value, "http") === false)
-                && (strpos($value, "[//") === false)
-                && (substr_count($value, "<") === 0) // <span></span> stuff
-                && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
-                && (strpos($value, "(") === false)
-                && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
-                && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
-                && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
-                && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1); // 2005-A used in {{sfn}} junk
+    return (stripos($value, "http") === false)
+            && (strpos($value, "[//") === false)
+            && (substr_count($value, "<") === 0) // <span></span> stuff
+            && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
+            && (strpos($value, "(") === false)
+            && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
+            && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
+            && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
+            && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1); // 2005-A used in {{sfn}} junk
 }
 
 function str_i_same(string $str1, string $str2): bool {
-        if ($str1 === 'Eulerian Numbers') {
-            return false; // very special case
-        }
-        if (strcasecmp($str1, $str2) === 0) {
-            return true; // Quick non-multi-byte compare short cut
-        }
-        return strcmp(mb_strtoupper($str1), mb_strtoupper($str2)) === 0;
+    if ($str1 === 'Eulerian Numbers') {
+        return false; // very special case
+    }
+    if (strcasecmp($str1, $str2) === 0) {
+        return true; // Quick non-multi-byte compare short cut
+    }
+    return strcmp(mb_strtoupper($str1), mb_strtoupper($str2)) === 0;
 }
 
 function doi_encode (string $doi): string {
-        /** @psalm-taint-escape html
-                @psalm-taint-escape has_quotes
-                @psalm-taint-escape ssrf */
-        $doi = urlencode($doi);
-        $doi = str_replace('%2F', '/', $doi);
-        return $doi;
+    /** @psalm-taint-escape html
+        @psalm-taint-escape has_quotes
+        @psalm-taint-escape ssrf */
+    $doi = urlencode($doi);
+    $doi = str_replace('%2F', '/', $doi);
+    return $doi;
 }
 
 function hdl_decode(string $hdl): string {
-        $hdl = urldecode($hdl);
-        $hdl = str_replace(';', '%3B', $hdl);
-        $hdl = str_replace('#', '%23', $hdl);
-        $hdl = str_replace(' ', '%20', $hdl);
-        return $hdl;
+    $hdl = urldecode($hdl);
+    $hdl = str_replace(';', '%3B', $hdl);
+    $hdl = str_replace('#', '%23', $hdl);
+    $hdl = str_replace(' ', '%20', $hdl);
+    return $hdl;
 }
 
 /**
@@ -1567,47 +1565,45 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         big_jobs_check_killed();
         $done++;
         if ($page->get_text_from($page_title) && $page->expand_text()) {
-            if (SAVETOFILES_MODE)
-            {
-        // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
-        // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
-        $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
-        report_phase("Saving to file " . echoable($filename));
-        $body = $page->parsed_text();
-        $bodylen = strlen($body);
-        if (file_put_contents($filename, $body)===$bodylen)
-        {
-            report_phase("Saved to file " . echoable($filename));
-        } else {
-            report_warning("Save to file failed.");
-        }
-        unset($body);
+            if (SAVETOFILES_MODE) {
+                // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
+                // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
+                $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
+                report_phase("Saving to file " . echoable($filename));
+                $body = $page->parsed_text();
+                $bodylen = strlen($body);
+                if (file_put_contents($filename, $body)===$bodylen) {
+                    report_phase("Saved to file " . echoable($filename));
+                } else {
+                    report_warning("Save to file failed.");
+                }
+                unset($body);
             } else {
-        report_phase("Writing to " . echoable($page_title) . '... ');
-        $attempts = 0;
-        if ($total === 1) {
-            $edit_sum = $edit_summary_end;
-        } else {
-            $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
-        }
-        while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
-            ++$attempts;
-        }
-        if ($attempts < MAX_TRIES) {
-            $last_rev = WikipediaBot::get_last_revision($page_title);
-            html_echo(
-            "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-            . $last_rev . ">diff</a>" .
-            " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>",
-            "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=". $last_rev . "\n");
-            $final_edit_overview .=
-                "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-            . $last_rev . ">diff</a>" .
-            " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
-        } else {
-            report_warning("Write failed.");
-            $final_edit_overview .= "\n Write failed.            " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
-        }
+                report_phase("Writing to " . echoable($page_title) . '... ');
+                $attempts = 0;
+                if ($total === 1) {
+                    $edit_sum = $edit_summary_end;
+                } else {
+                    $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
+                }
+                while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
+                    ++$attempts;
+                }
+                if ($attempts < MAX_TRIES) {
+                    $last_rev = WikipediaBot::get_last_revision($page_title);
+                    html_echo(
+                    "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+                    . $last_rev . ">diff</a>" .
+                    " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>",
+                    "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=". $last_rev . "\n");
+                    $final_edit_overview .=
+                        "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+                    . $last_rev . ">diff</a>" .
+                    " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+                } else {
+                    report_warning("Write failed.");
+                    $final_edit_overview .= "\n Write failed.            " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+                }
             }
         } else {
             report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
@@ -1633,14 +1629,14 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
 // @codeCoverageIgnoreEnd
 
 function check_memory_usage(string $where): void {
-        $mem_used = (int) (memory_get_usage() / 1048576);
-        if ($mem_used > 24) {
-            bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
-        }
-        $mem_used = (int) (memory_get_peak_usage() / 1048576);
-        if ($mem_used > 128) {
-            bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where);
-        }
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if ($mem_used > 24) {
+        bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+    }
+    $mem_used = (int) (memory_get_peak_usage() / 1048576);
+    if ($mem_used > 128) {
+        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+    }
 }
 
 /**
@@ -1648,7 +1644,8 @@ function check_memory_usage(string $where): void {
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    echo ('<!DOCTYPE html>
+    echo (
+'<!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
     <title>Citation Bot: running</title>
@@ -1665,8 +1662,8 @@ function bot_html_header(): void {
         </p>
     </header>
 
-    <pre id="botOutput">
-        ');
+    <pre id="botOutput">'
+);
     if (ini_get('pcre.jit') === '0') {
         report_warning('PCRE JIT Disabled');
     }
@@ -1677,13 +1674,13 @@ function bot_html_header(): void {
  * @codeCoverageIgnore
  */
 function bot_html_footer(): void {
-        if (HTML_OUTPUT) {
-            echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
-        }
-        echo "\n";
+    if (HTML_OUTPUT) {
+        echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    }
+    echo "\n";
 }
 
-    /** null/false/String of location */
+/** null/false/String of location */
 function hdl_works(string $hdl): string|null|false {
     $hdl = trim($hdl);
     $hdl = str_replace('%2F', '/', $hdl);
@@ -1715,18 +1712,18 @@ function hdl_works(string $hdl): string|null|false {
     $works = is_hdl_works($hdl);
     if ($works === null) {
         if (isset(NULL_DOI_LIST[$hdl])) {                // @codeCoverageIgnoreStart
-                HandleCache::$cache_hdl_bad[$hdl] = true;    // These are know to be bad, so only check one time during run
-                return false;
+            HandleCache::$cache_hdl_bad[$hdl] = true;    // These are know to be bad, so only check one time during run
+            return false;
         }
         foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-                if (stripos($hdl, $bad_start) === 0) {
-                     HandleCache::$cache_hdl_bad[$hdl] = true;  // all bad
-                     return false;
-                }
+            if (stripos($hdl, $bad_start) === 0) {
+                HandleCache::$cache_hdl_bad[$hdl] = true;  // all bad
+                return false;
+            }
         }
         HandleCache::$cache_hdl_null[$hdl] = true;
         if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
-                bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
+            bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
         }
         return null;                                                         // @codeCoverageIgnoreEnd
     }
@@ -1745,7 +1742,7 @@ function is_hdl_works(string $hdl): string|null|false {
     $url = "https://hdl.handle.net/" . $hdl;
     $headers_test = get_headers_array($url);
     if ($headers_test === false) {
-            $headers_test = get_headers_array($url); // @codeCoverageIgnore
+        $headers_test = get_headers_array($url); // @codeCoverageIgnore
     }
     if ($headers_test === false) {
         return null; // most likely bad
@@ -1782,48 +1779,48 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url): string {
-        $in = [' '   , '"'  , "'"    , '<'  ,'>'     , '['  , ']'    , '{'  , '|'    , '}'];
-        $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
-        return str_replace($in, $out, $url);
+    $in = [' '   , '"'  , "'"    , '<'  ,'>'     , '['  , ']'    , '{'  , '|'    , '}'];
+    $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
+    return str_replace($in, $out, $url);
 }
 
 function numberToRomanRepresentation(int $number): string { // https://stackoverflow.com/questions/14994941/numbers-to-roman-numbers-with-php
-        $map = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
-        $returnValue = '';
-        while ($number > 0) {
-                foreach ($map as $roman => $int) {
-                        if($number >= $int) {
-                                $number -= $int;
-                                $returnValue .= $roman;
-                                break;
-                        }
-                }
+    $map = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
+    $returnValue = '';
+    while ($number > 0) {
+        foreach ($map as $roman => $int) {
+            if($number >= $int) {
+                $number -= $int;
+                $returnValue .= $roman;
+                break;
+            }
         }
-        return $returnValue;
+    }
+    return $returnValue;
 }
 
 function convert_to_utf8(string $value): string {
-        $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
-        if ($encode1 === false || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') {
-            return $value;
-        }
-        $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
-        if ($encode1 !== $encode2) {
-            return $value;
-        }
-        $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
-        if ($encode1 !== $encode3) {
-            return $value;
-        }
-        $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
-        if ($encode1 !== $encode4) {
-            return $value;
-        }
-        $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
-        if ($new_value === "") {
-            return $value;
-        }
-        return $new_value;
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 === false || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') {
+        return $value;
+    }
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 !== $encode2) {
+        return $value;
+    }
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 !== $encode3) {
+        return $value;
+    }
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
+    if ($encode1 !== $encode4) {
+        return $value;
+    }
+    $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
+    if ($new_value === "") {
+        return $value;
+    }
+    return $new_value;
 }
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
@@ -1855,24 +1852,24 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     try {
         if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"], true) ||
             !in_array(strtolower($encode), $valid, true)) {
-        $try = (string) @iconv($encode, "UTF-8", $title);
+            $try = (string) @iconv($encode, "UTF-8", $title);
         } else {
-        $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+            $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
         }
     } catch (Exception $e) { // @codeCoverageIgnoreStart
-                $try = "";
+        $try = "";
     } catch (ValueError $v) {
-                $try = "";
+        $try = "";
     }                                                // @codeCoverageIgnoreEnd
     if ($try === "") {
-                bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
+        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
     }
     return $try;
 }
 
 /** @param array<string> $gid */
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid): void { // PASS BY REFERENCE!!!!!!
-        $removed_redundant = 0;
+    $removed_redundant = 0;
     $hash = '';
     $removed_parts ='';
     $url = str_replace('&quot;', '"', $url);
@@ -1912,10 +1909,10 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             case "article_id":
             case "bsq":
                 if (empty($part_start[1])) {
-                        $removed_redundant++;
-                        $removed_parts .= $part;
+                    $removed_redundant++;
+                    $removed_parts .= $part;
                 } else {
-                        $book_array[$part_start[0]] = $part_start[1];
+                    $book_array[$part_start[0]] = $part_start[1];
                 }
                 break;
             case "id":
@@ -2197,633 +2194,633 @@ function get_possible_dois(string $doi): array {
         $trial[] = $match[2];
     }
     if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== true) {
-            if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
-                    $trial[] = '10.1093/ref:odnb/' . $matches[1];
-                    $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
-                    $trial[] = '10.1093/ref:odnb/' . $matches[1];
-                    $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/benz/9780199773787.article.B' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acref/9780195301731.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/ww/9780199540884.013.U' . $matches[2];
-            }
-            if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gmo/9781561592630.article.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gmo/9781561592630.article.A' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gmo/9781561592630.article.O' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gmo/9781561592630.article.L' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/gmo/9781561592630.article.J' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780199366439.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190228613.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780199389414.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780199329175.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190277734.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190846626.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190228620.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780199340378.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190854584.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780199381135.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190236557.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190228637.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/acrefore/9780190201098.013.' . $matches[1];
-            }
-            if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
-                if ($matches[1] === $matches[2]) {
-                    $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
-                }
-            }
-            if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
-                $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
-            }
-            if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
-                if ($matches[1] === $matches[2]) {
-                    $trial[] = '10.1093/oso/' . $matches[1] . '.001.0001';
-                }
-            }
-            if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
-                if ($matches[1] === $matches[2]) {
-                    $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
-                    $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
-                    $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.'  . $matches[3];
-                    $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.0' . $matches[3];
-                }
+        if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/ref:odnb/' . $matches[1];
+            $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/ref:odnb/' . $matches[1];
+            $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/benz/9780199773787.article.B' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acref/9780195301731.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/ww/9780199540884.013.U' . $matches[2];
+        }
+        if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gmo/9781561592630.article.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+        }
+        if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+                $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
             }
         }
-        $replacements = ["&lt;" => "<", "&gt;" => ">"];
-        if (preg_match("~&[lg]t;~", $doi)) {
-            $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+        if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
         }
-        $changed = true;
-        $try = $doi;
-        while ($changed) {
-            $changed = false;
-            $pos = strrpos($try, '.');
-            if ($pos) {
-                $extension = substr($try, $pos);
-                if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
-                    $try = substr($try, 0, $pos);
-                    $trial[] = $try;
-                    $changed = true;
-                }
-            }
-            $pos = strrpos($try, '#');
-            if ($pos) {
-                $extension = substr($try, $pos);
-                if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
-                    $try = substr($try, 0, $pos);
-                    $trial[] = $try;
-                    $changed = true;
-                }
-            }
-            $pos = strrpos($try, ';');
-            if ($pos) {
-                $extension = substr($try, $pos);
-                if (strpos(strtolower($extension), ';jsessionid') === 0) {
-                    $try = substr($try, 0, $pos);
-                    $trial[] = $try;
-                    $changed = true;
-                }
-            }
-            $pos = strrpos($try, '/');
-            if ($pos) {
-                $extension = substr($try, $pos);
-                if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], true)) {
-                    $try = substr($try, 0, $pos);
-                    $trial[] = $try;
-                    $changed = true;
-                }
-            }
-            if (preg_match('~^(.+)v\d{1,2}$~', $try, $matches)) { // Versions
-                    $try = $matches[1];
-                    $trial[] = $try;
-                    $changed = true;
+        if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+                $trial[] = '10.1093/oso/' . $matches[1] . '.001.0001';
             }
         }
-        return $trial;
+        if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.'  . $matches[3];
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.0' . $matches[3];
+            }
+        }
+    }
+    $replacements = ["&lt;" => "<", "&gt;" => ">"];
+    if (preg_match("~&[lg]t;~", $doi)) {
+        $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    }
+    $changed = true;
+    $try = $doi;
+    while ($changed) {
+        $changed = false;
+        $pos = strrpos($try, '.');
+        if ($pos) {
+            $extension = substr($try, $pos);
+            if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
+                $try = substr($try, 0, $pos);
+                $trial[] = $try;
+                $changed = true;
+            }
+        }
+        $pos = strrpos($try, '#');
+        if ($pos) {
+            $extension = substr($try, $pos);
+            if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+                $try = substr($try, 0, $pos);
+                $trial[] = $try;
+                $changed = true;
+            }
+        }
+        $pos = strrpos($try, ';');
+        if ($pos) {
+            $extension = substr($try, $pos);
+            if (strpos(strtolower($extension), ';jsessionid') === 0) {
+                $try = substr($try, 0, $pos);
+                $trial[] = $try;
+                $changed = true;
+            }
+        }
+        $pos = strrpos($try, '/');
+        if ($pos) {
+            $extension = substr($try, $pos);
+            if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], true)) {
+                $try = substr($try, 0, $pos);
+                $trial[] = $try;
+                $changed = true;
+            }
+        }
+        if (preg_match('~^(.+)v\d{1,2}$~', $try, $matches)) { // Versions
+            $try = $matches[1];
+            $trial[] = $try;
+            $changed = true;
+        }
+    }
+    return $trial;
 }
 
 function clean_up_oxford_stuff(Template $template, string $param): void {
-            if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
-                     $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
-            }
+    if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
+        $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
+    }
 
-            if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
-                if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
-                    $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
-                } elseif ($matches[2] === $matches[3]) {
-                    $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+    if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
+        if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+            $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+        } elseif ($matches[2] === $matches[3]) {
+            $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+        }
+    }
+    if (preg_match('~^(https?://(?:[\.+]|)oxfordmusiconline\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
+        if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+            $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+        } elseif ($matches[2] === $matches[3]) {
+            $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+        }
+    }
+
+    while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    while (preg_match('~^(https?://oxfordreference\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/ref:odnb/' . $matches[1];
+        if (!doi_works($new_doi)) {
+            $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
+        }
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-861412-8');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+        $the_title = $template->get('title');
+        if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                preg_match('~^(.+) # # # (?:CITATION_BOT_PLACEHOLDER_TEMPLATE|citation_bot_placeholder_template) \d+ # # # Oxford Dictionary of National Biography$~i', $the_title, $matches) ||
+                preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
+            $template->set('title', trim($matches[1]));
+        }
+    }
+
+    if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-860669-7');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-977378-7');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+    if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-884446-05-4');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+    if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-884446-05-4');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-530173-1');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[2];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', $matches[1]);
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-56159-263-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-56159-263-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-56159-263-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-56159-263-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-1-56159-263-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|latinamericanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-936643-9');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|communication/)(?:view|abstract)/10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+            if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-022861-3');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|environmentalscience/)(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-938941-4');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|americanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-932917-5');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|africanhistory/)(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-027773-4');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|internationalstudies/)(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-084662-6');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|climatescience/)(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-022862-0');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|religion/)(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-934037-8');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|anthropology/)(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-085458-4');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|classics/)(?:view|abstract)/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-938113-5');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|psychology/)(?:view|abstract)/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-023655-7');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|politics/)(?:view|abstract)/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-022863-7');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxfordre\.com/(?:|literature/)(?:view|abstract)/10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-020109-8');
+            if ($template->has('doi') && $template->has('doi-broken-date')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+            } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/(oso|acprof:oso)/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $template->get($param), $matches)) {
+        if ($matches[2] === $matches[3]) {
+            $template->add_if_new('isbn', $matches[2]);
+            $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . str_pad($matches[4], 4, "0", STR_PAD_LEFT);
+            if (doi_works($new_doi)) {
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
                 }
             }
-            if (preg_match('~^(https?://(?:[\.+]|)oxfordmusiconline\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
-                if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
-                    $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
-                } elseif ($matches[2] === $matches[3]) {
-                    $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+        }
+    }
+
+    if (preg_match('~^https?://(?:www\.|)oxfordmedicine\.com/(?:view|abstract)/10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $template->get($param), $matches)) {
+        $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+        if (doi_works($new_doi)) {
+            $template->add_if_new('isbn', '978-0-19-959254-8');
+            if ($template->has('doi') && ($template->has('doi-broken-date') || $template->get('doi') === '10.1093/med/9780199592548.001.0001')) {
+                $template->set('doi', '');
+                $template->forget('doi-broken-date');
+                $template->add_if_new('doi', $new_doi);
+             } elseif ($template->blank('doi')) {
+                $template->add_if_new('doi', $new_doi);
+            }
+        }
+    }
+
+    if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $template->get($param), $matches)) {
+        if ($matches[1] === $matches[2]) {
+            $template->add_if_new('isbn', $matches[1]);
+            $new_doi = '10.1093/oso/' . $matches[1] . '.001.0001';
+            if (doi_works($new_doi)) {
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
                 }
             }
+        }
+    }
 
-            while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            while (preg_match('~^(https?://oxfordreference\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-                     $template->set($param, $matches[1]);
-            }
-            if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/ref:odnb/' . $matches[1];
-                    if (!doi_works($new_doi)) {
-                        $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
-                    }
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-861412-8');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-                    $the_title = $template->get('title');
-                    if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
-                            preg_match('~^(.+) # # # (?:CITATION_BOT_PLACEHOLDER_TEMPLATE|citation_bot_placeholder_template) \d+ # # # Oxford Dictionary of National Biography$~i', $the_title, $matches) ||
-                            preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
-                            preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
-                        $template->set('title', trim($matches[1]));
-                    }
-            }
-
-            if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-860669-7');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-977378-7');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-            if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-884446-05-4');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-            if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-884446-05-4');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-530173-1');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[2];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', $matches[1]);
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-56159-263-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-56159-263-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-56159-263-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-56159-263-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-1-56159-263-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|latinamericanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-936643-9');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|communication/)(?:view|abstract)/10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190228613.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-022861-3');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|environmentalscience/)(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780199389414.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-938941-4');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|americanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780199329175.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-932917-5');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|africanhistory/)(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-027773-4');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|internationalstudies/)(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-084662-6');
-                     if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|climatescience/)(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-022862-0');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                             $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|religion/)(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-934037-8');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                             $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|anthropology/)(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-085458-4');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|classics/)(?:view|abstract)/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-938113-5');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|psychology/)(?:view|abstract)/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-023655-7');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|politics/)(?:view|abstract)/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-022863-7');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxfordre\.com/(?:|literature/)(?:view|abstract)/10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $template->get($param), $matches)) {
-                    $new_doi = '10.1093/acrefore/9780190201098.013.' . $matches[1];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', '978-0-19-020109-8');
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-            }
-
-            if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/(oso|acprof:oso)/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $template->get($param), $matches)) {
-                if ($matches[2] === $matches[3]) {
-                    $template->add_if_new('isbn', $matches[2]);
-                    $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . str_pad($matches[4], 4, "0", STR_PAD_LEFT);
-                    if (doi_works($new_doi)) {
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                        }
-                    }
+    if (preg_match('~^https?://(?:www\.|)oxfordhandbooks\.com/(?:view|abstract)/10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $template->get($param), $matches)) {
+        if ($matches[1] === $matches[2]) {
+            $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+            if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', $matches[1]);
+                if (($template->has('doi') && $template->has('doi-broken-date')) || ($template->get('doi') === '10.1093/oxfordhb/9780199552238.001.0001')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
                 }
             }
-
-            if (preg_match('~^https?://(?:www\.|)oxfordmedicine\.com/(?:view|abstract)/10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $template->get($param), $matches)) {
-                $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
-                if (doi_works($new_doi)) {
-                    $template->add_if_new('isbn', '978-0-19-959254-8');
-                    if ($template->has('doi') && ($template->has('doi-broken-date') || $template->get('doi') === '10.1093/med/9780199592548.001.0001')) {
-                            $template->set('doi', '');
-                            $template->forget('doi-broken-date');
-                            $template->add_if_new('doi', $new_doi);
-                     } elseif ($template->blank('doi')) {
-                            $template->add_if_new('doi', $new_doi);
-                    }
-                }
-            }
-
-            if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $template->get($param), $matches)) {
-                if ($matches[1] === $matches[2]) {
-                    $template->add_if_new('isbn', $matches[1]);
-                    $new_doi = '10.1093/oso/' . $matches[1] . '.001.0001';
-                    if (doi_works($new_doi)) {
-                        if ($template->has('doi') && $template->has('doi-broken-date')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                             $template->add_if_new('doi', $new_doi);
-                        }
-                    }
-                }
-            }
-
-            if (preg_match('~^https?://(?:www\.|)oxfordhandbooks\.com/(?:view|abstract)/10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $template->get($param), $matches)) {
-                if ($matches[1] === $matches[2]) {
-                    $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
-                    if (doi_works($new_doi)) {
-                        $template->add_if_new('isbn', $matches[1]);
-                        if (($template->has('doi') && $template->has('doi-broken-date')) || ($template->get('doi') === '10.1093/oxfordhb/9780199552238.001.0001')) {
-                                $template->set('doi', '');
-                                $template->forget('doi-broken-date');
-                                $template->add_if_new('doi', $new_doi);
-                         } elseif ($template->blank('doi')) {
-                                $template->add_if_new('doi', $new_doi);
-                         }
-                    }
-                }
-            }
+        }
+    }
 }
 
 function conference_doi(string $doi): bool {
@@ -2831,88 +2828,88 @@ function conference_doi(string $doi): bool {
         return false; // Manual override of stuff
     }
     if (strpos($doi, '10.1109/') === 0 ||
-            strpos($doi, '10.1145/') === 0 ||
-            strpos($doi, '10.1117/') === 0 ||
-            strpos($doi, '10.2991/') === 0 ||
-            stripos($doi, '10.21437/Eurospeech') === 0 ||
-            stripos($doi, '10.21437/interspeech') === 0 ||
-            stripos($doi, '10.21437/SLTU') === 0 ||
-            stripos($doi, '10.21437/TAL') === 0 ||
-            (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== false) ||
-            stripos($doi, '10.2991/erss') === 0 ||
-            stripos($doi, '10.2991/jahp') === 0) {
-                    return true;
+        strpos($doi, '10.1145/') === 0 ||
+        strpos($doi, '10.1117/') === 0 ||
+        strpos($doi, '10.2991/') === 0 ||
+        stripos($doi, '10.21437/Eurospeech') === 0 ||
+        stripos($doi, '10.21437/interspeech') === 0 ||
+        stripos($doi, '10.21437/SLTU') === 0 ||
+        stripos($doi, '10.21437/TAL') === 0 ||
+        (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== false) ||
+        stripos($doi, '10.2991/erss') === 0 ||
+        stripos($doi, '10.2991/jahp') === 0) {
+        return true;
     }
     return false;
 }
 
 function clean_dates(string $input): string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
-        if ($input === '0001-11-30') {
-            return '';
+    if ($input === '0001-11-30') {
+        return '';
+    }
+    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+    $months_seasons = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
+    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
+        return $matches[1] . '–' . $matches[2];
+    }
+    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
+        return $matches[1];
+    }
+    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
+        return $matches[1];
+    }
+    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
+        return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+        return $matches[1] . ' – ' . $matches[2];
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
+        return $matches[1] . ' ' . $matches[2];
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+        return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
+        return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
+        return $matches[1] . ',' . $matches[2];
+    }
+    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+        return $matches[1];
+    }
+    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
+        return $matches[1];
+    }
+    if (preg_match('~^(\d+ [A-Z][a-z]+ \d{4})\.$~', $input, $matches)) { // 8 December 2022. (period on end)
+        return $matches[1];
+    }
+    if (preg_match('~^0(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // 08 December 2022 - leading zero
+        return $matches[1];
+    }
+    if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
+        if (in_array($matches[1], $days_of_week, true)) {
+            return $matches[2];
         }
-        $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
-        $months_seasons = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
-        $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
-        if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
+    }
+    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
+        $first = (int) $matches[1];
+        $second = (int) $matches[2];
+        if ($second === $first+1) {
             return $matches[1] . '–' . $matches[2];
         }
-        if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
-            return $matches[1];
-        }
-        if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
-            return $matches[1];
-        }
-        if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
-            return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
-        }
-        if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
-            return $matches[1] . ' – ' . $matches[2];
-        }
-        if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
-            return $matches[1] . ' ' . $matches[2];
-        }
-        if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
-            return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
-        }
-        if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
-            return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
-        }
-        if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
-            return $matches[1] . ',' . $matches[2];
-        }
-        if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
-            return $matches[1];
-        }
-        if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
-            return $matches[1];
-        }
-        if (preg_match('~^(\d+ [A-Z][a-z]+ \d{4})\.$~', $input, $matches)) { // 8 December 2022. (period on end)
-            return $matches[1];
-        }
-        if (preg_match('~^0(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // 08 December 2022 - leading zero
-            return $matches[1];
-        }
-        if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
-            if (in_array($matches[1], $days_of_week, true)) {
-                return $matches[2];
-            }
-        }
-        if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
-            $first = (int) $matches[1];
-            $second = (int) $matches[2];
-            if ($second === $first+1) {
-                return $matches[1] . '–' . $matches[2];
-            }
-        }
+    }
 
-        if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
-            $year = $matches[1];
-            $month = (int) $matches[2];
-            if ($month > 0 && $month < 13) {
-                return $months_seasons[$month-1] . ' ' . $year;
-            }
+    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
+        $year = $matches[1];
+        $month = (int) $matches[2];
+        if ($month > 0 && $month < 13) {
+            return $months_seasons[$month-1] . ' ' . $year;
         }
-        return $input;
+    }
+    return $input;
 }
 
 /** @return false|array<mixed> */
@@ -2927,7 +2924,7 @@ function get_headers_array(string $url): false|array {
     }
     set_time_limit(120);
     if ($last_url === $url) {
-            sleep(5);
+        sleep(5);
     }
     $last_url = $url;
     return @get_headers($url, true, $context_insecure);
@@ -3158,34 +3155,34 @@ function addISBNdashes(string $isbn): string {
     }
     $new = str_replace('-', '', $isbn);
     if (strlen($new) === 10) {
-            $num = 9780000000000 + (int) str_ireplace('x','9', $new);
-            foreach (ISBN_HYPHEN_POS as $k => $v) {
-                    if ($num <= (int) $k) {
-                            $split = $v;
-                            break;
-                    }
+        $num = 9780000000000 + (int) str_ireplace('x','9', $new);
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
             }
-            if (!isset($split)) {
-                return $isbn; // Paranoid
-            }
-            $v = $split;
-            return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
-            // split = SKIP3, $v[0], $v[1], $v[2], 1
+        }
+        if (!isset($split)) {
+            return $isbn; // Paranoid
+        }
+        $v = $split;
+        return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
+        // split = SKIP3, $v[0], $v[1], $v[2], 1
     } elseif (strlen($new) === 13) {
-            $num = (int) $new;
-            foreach (ISBN_HYPHEN_POS as $k => $v) {
-                    if ($num <= (int) $k) {
-                            $split = $v;
-                            break;
-                    }
+        $num = (int) $new;
+        foreach (ISBN_HYPHEN_POS as $k => $v) {
+            if ($num <= (int) $k) {
+                $split = $v;
+                break;
             }
-            if (!isset($split)) {
-                return $isbn; // Paranoid
-            }
-            $v = $split;
-            return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
-            // split = 3, $v[0], $v[1], $v[2], 1
+        }
+        if (!isset($split)) {
+            return $isbn; // Paranoid
+        }
+        $v = $split;
+        return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+        // split = 3, $v[0], $v[1], $v[2], 1
     } else {
-            return $isbn;
+        return $isbn;
     }
 }
