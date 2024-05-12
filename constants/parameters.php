@@ -302,7 +302,7 @@ const FLATTENED_AUTHOR_PARAMETERS = ['surname', 'forename', 'initials', 'others'
     'surname96','forename96','initials96','first96','last96','author96','author96-last','author-last96','author96-first','author-first96','author-given96','author96-given','given96','author-surname96','author96-surname',
     'surname97','forename97','initials97','first97','last97','author97','author97-last','author-last97','author97-first','author-first97','author-given97','author97-given','given97','author-surname97','author97-surname',
     'surname98','forename98','initials98','first98','last98','author98','author98-last','author-last98','author98-first','author-first98','author-given98','author98-given','given98','author-surname98','author98-surname',
-    'surname99','forename99','initials99','first99','last99','author99','author99-last','author-last99','author99-first','author-first99','author-given99','author99-given','given99','author-surname99','author99-surname'
+    'surname99','forename99','initials99','first99','last99','author99','author99-last','author-last99','author99-first','author-first99','author-given99','author99-given','given99','author-surname99','author99-surname',
 ];
 
 const LOTS_OF_EDITORS = ['editor', 'editor-last', 'veditor', 'editor-surname', 'editor-given', 'editor-mask', 'editor-link',
@@ -404,7 +404,7 @@ const LOTS_OF_EDITORS = ['editor', 'editor-last', 'veditor', 'editor-surname', '
     'editor96', 'editor96-first', 'editor96-given', 'editor96-last', 'editor96-link', 'editor96-mask', 'editor96-surname', 'editor-first96', 'editor-given96', 'editor-last96', 'editor-link96', 'editor-mask96', 'editor-surname96',
     'editor97', 'editor97-first', 'editor97-given', 'editor97-last', 'editor97-link', 'editor97-mask', 'editor97-surname', 'editor-first97', 'editor-given97', 'editor-last97', 'editor-link97', 'editor-mask97', 'editor-surname97',
     'editor98', 'editor98-first', 'editor98-given', 'editor98-last', 'editor98-link', 'editor98-mask', 'editor98-surname', 'editor-first98', 'editor-given98', 'editor-last98', 'editor-link98', 'editor-mask98', 'editor-surname98',
-    'editor99', 'editor99-first', 'editor99-given', 'editor99-last', 'editor99-link', 'editor99-mask', 'editor99-surname', 'editor-first99', 'editor-given99', 'editor-last99', 'editor-link99', 'editor-mask99', 'editor-surname99'
+    'editor99', 'editor99-first', 'editor99-given', 'editor99-last', 'editor99-link', 'editor99-mask', 'editor99-surname', 'editor-first99', 'editor-given99', 'editor-last99', 'editor-link99', 'editor-mask99', 'editor-surname99',
 ];
 
 const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
@@ -537,12 +537,10 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'citation', 'name', 'reference', 'book', 'tile', 'data', 'abruf-verborgen', 'kommentar',
     'call-hidden', 'call', 'sins', 'filedate', 'style', 'sib', 'curator', 'titleerg',
     'rowspan', 'archiv-bot', 'collection', 'published', 'area', 'source', 'extrait',
-    '-date', 'citeweb', 'pmic', 'cid', 'bisn', 'definition'
+    '-date', 'citeweb', 'pmic', 'cid', 'bisn', 'definition',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work
 // web could be website or url, tile could be time or title
 // list should not be changed to last, name should not become time, etc.
-
-
