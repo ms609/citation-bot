@@ -177,21 +177,21 @@ final class constantsTest extends testBaseClass {
             $bit_length = current($bits_length);
             $chunk_length = 0;
             $new_line = "\n    ";
-            $alphaed = '';
+            $alphaed = $new_line;
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
             foreach ($bits_length as $bit_length) {
                 $bit = next($alpha_bits);
                 $alphaed .= $bit ? ($bit . ",") : '';
                 $alphaed .= $new_line;
             }
-            if ($alphaed == $new_line) $alphaed = '';
+            if ($alphaed === $new_line) $alphaed = '';
             $section = $alphaed . substr($section, $alpha_end);
         }
         unset ($section); // Destroy pointer to be safe
 
         $new_contents = implode($start_alpha, $sections);
 
-        if (preg_replace('/\s+/','', $new_contents) == preg_replace('/\s+/','', $old_contents)) {
+        if (preg_replace('/\s+/','', $new_contents) === preg_replace('/\s+/','', $old_contents)) {
             $this->assertTrue(true);
         } else {
             $this->flush();
