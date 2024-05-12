@@ -928,8 +928,7 @@ const HOSTNAME_MAP = [
     'thestatesman.com' => '[[The Statesman (India)|The Statesman]]',
     'dailysabah.com' => '[[Daily Sabah]]',
     'ibm.com' => '[[IBM]]',
-    'ieee.org' =>
-        '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
+    'ieee.org' => '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
     'bandera.inquirer.net' => '[[Inquirer Bandera|Bandera]]',
     'inquirer.net' => '[[Philippine Daily Inquirer]]',
     'mb.com.ph' => '[[Manila Bulletin]]',
