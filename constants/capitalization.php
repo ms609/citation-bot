@@ -1559,7 +1559,7 @@ const OBVIOUS_FOREIGN_WORDS = [
     ' Teplovoznaja ',
     ' Tjaga ',
     ' Aarbøger ',
-     ' Oldkyndighed ',
+    ' Oldkyndighed ',
     ' Histori ',
     ' Les Publications ',
     'ische ',
