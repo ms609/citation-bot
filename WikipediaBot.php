@@ -127,10 +127,10 @@ final class WikipediaBot {
         $authenticationHeader = $request->toHeader();
 
         try {
-                    curl_setopt_array(self::$ch_write, [
-                            CURLOPT_POSTFIELDS => http_build_query($params),
-                            CURLOPT_HTTPHEADER => [$authenticationHeader],
-                    ]);
+            curl_setopt_array(self::$ch_write, [
+                CURLOPT_POSTFIELDS => http_build_query($params),
+                CURLOPT_HTTPHEADER => [$authenticationHeader],
+            ]);
 
             $data = @curl_exec(self::$ch_write);
             if ($data === false)
@@ -200,24 +200,24 @@ final class WikipediaBot {
         if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
             $auth_token = @json_decode( $this->user_client->makeOAuthCall(
                 $this->user_token,
-             API_ROOT . '?action=query&meta=tokens&format=json'
+                API_ROOT . '?action=query&meta=tokens&format=json'
              ) )->query->tokens->csrftoken;
             if ($auth_token === null) {
                 report_error('unable to get user tokens');
             }
         }                              // @codeCoverageIgnoreEnd
         $submit_vars = [
-                "action" => "edit",
-                "title" => $page,
-                "text" => $text,
-                "summary" => $editSummary,
-                "notminor" => "1",
-                "bot" => "1",
-                "basetimestamp" => $baseTimeStamp,
-                "starttimestamp" => $startedEditing,
-                "nocreate" => "1",
-                "watchlist" => "nochange",
-                'token' => $auth_token,
+            "action" => "edit",
+            "title" => $page,
+            "text" => $text,
+            "summary" => $editSummary,
+            "notminor" => "1",
+            "bot" => "1",
+            "basetimestamp" => $baseTimeStamp,
+            "starttimestamp" => $startedEditing,
+            "nocreate" => "1",
+            "watchlist" => "nochange",
+            'token' => $auth_token,
         ];
         $result = $this->fetch($submit_vars);
 
@@ -227,10 +227,10 @@ final class WikipediaBot {
 
         if (HTML_OUTPUT) {
             report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
-                . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
-                . echoable($myPage->title) . '</a></span>');                  // @codeCoverageIgnore
+                . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"  // @codeCoverageIgnore
+                . echoable($myPage->title) . '</a></span>');                // @codeCoverageIgnore
         } else {
-                report_inline("\n Written to " . echoable($myPage->title) . ". \n");
+            report_inline("\n Written to " . echoable($myPage->title) . ". \n");
         }
         return true;
     }
@@ -298,10 +298,10 @@ final class WikipediaBot {
     public static function category_members(string $cat): array {
         $list = [];
         $vars = [
-                "cmtitle" => "Category:$cat", // Don't urlencode.
-                "action" => "query",
-                "cmlimit" => "500",
-                "list" => "categorymembers",
+            "cmtitle" => "Category:$cat", // Don't urlencode.
+            "action" => "query",
+            "cmlimit" => "500",
+            "list" => "categorymembers",
         ];
 
         do {
@@ -340,9 +340,9 @@ final class WikipediaBot {
 
     public static function get_last_revision(string $page): string {
         $res = self::QueryAPI([
-                "action" => "query",
-                "prop" => "revisions",
-                "titles" => $page,
+            "action" => "query",
+            "prop" => "revisions",
+            "titles" => $page,
         ]);
         $res = @json_decode($res);
         if (!isset($res->query->pages)) {
@@ -356,10 +356,10 @@ final class WikipediaBot {
     // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
     public static function is_redirect(string $page): int {
         $res = self::QueryAPI([
-                "action" => "query",
-                "prop" => "info",
-                "titles" => $page,
-                ]);
+            "action" => "query",
+            "prop" => "info",
+            "titles" => $page,
+            ]);
         $res = @json_decode($res);
         if (!isset($res->query->pages)) {
             report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -370,10 +370,10 @@ final class WikipediaBot {
     }
     public static function redirect_target(string $page): ?string {
         $res = self::QueryAPI([
-                "action" => "query",
-                "redirects" => "1",
-                "titles" => $page,
-                ]);
+            "action" => "query",
+            "redirects" => "1",
+            "titles" => $page,
+            ]);
         $res = @json_decode($res);
         if (!isset($res->query->redirects[0]->to)) {
             report_warning("Failed to get redirect target");     // @codeCoverageIgnore
@@ -387,14 +387,14 @@ final class WikipediaBot {
      try {
         $params['format'] = 'json';
         curl_setopt_array(self::$ch_logout, [
-                                CURLOPT_POST => true,
-                                CURLOPT_POSTFIELDS => http_build_query($params),
-                                CURLOPT_URL => API_ROOT,
+                            CURLOPT_POST => true,
+                            CURLOPT_POSTFIELDS => http_build_query($params),
+                            CURLOPT_URL => API_ROOT,
         ]);
 
         $data = @curl_exec(self::$ch_logout);
-        if ($data === false)
-        {   // @codeCoverageIgnoreStart
+        if ($data === false) {
+            // @codeCoverageIgnoreStart
             $errnoInt = curl_errno(self::$ch_logout);
             $errorStr = curl_error(self::$ch_logout);
             report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
@@ -407,26 +407,26 @@ final class WikipediaBot {
         return self::ret_okay(@json_decode($data)) ? $data : '';
         // @codeCoverageIgnoreStart
      } catch(Exception $E) {
-            report_warning("Exception caught!!\n");
-            report_info("Response: ". echoable($E->getMessage()));
+        report_warning("Exception caught!!\n");
+        report_info("Response: ". echoable($E->getMessage()));
      }
      return '';
     // @codeCoverageIgnoreEnd
     }
 
     public static function ReadDetails(string $title): object {
-            $details = self::QueryAPI([
-                'action'=>'query',
-                'prop'=>'info',
-                'titles'=> $title,
-                'curtimestamp'=>'true',
-             'inprop' => 'protection',
-            ]);
+        $details = self::QueryAPI([
+            'action'=>'query',
+            'prop'=>'info',
+            'titles'=> $title,
+            'curtimestamp'=>'true',
+            'inprop' => 'protection',
+        ]);
         return (object) @json_decode($details);
     }
 
     public static function get_links(string $title): string {
-         return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+        return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
     }
 
     public static function GetAPage(string $title): string {
@@ -434,8 +434,8 @@ final class WikipediaBot {
                             [CURLOPT_HTTPGET => true,
                              CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
         $text = @curl_exec(self::$ch_logout);
-        if ($text === false)
-        {   // @codeCoverageIgnoreStart
+        if ($text === false) {
+            // @codeCoverageIgnoreStart
             $errnoInt = curl_errno(self::$ch_logout);
             $errorStr = curl_error(self::$ch_logout);
             report_warning('Curl error #'.$errnoInt.' on getting Wikipedia page '.$title.': '.$errorStr);
@@ -538,7 +538,7 @@ final class WikipediaBot {
     }
 
     private static function reset(object &$obj): object { // Make PHP 8 happy
-         $arr = (array) $obj;
-         return (object) reset($arr);
+        $arr = (array) $obj;
+        return (object) reset($arr);
     }
 }
