@@ -1433,7 +1433,9 @@ final class Zotero {
                 if (is_null($url_sent)) {
                     report_warning('doi.org URL does not match existing DOI parameter, investigating...');
                 }
-                if ($doi !== $template->get3('doi')) return false;
+                if ($doi !== $template->get3('doi')) {
+                    return false;
+                }
                 if (doi_works($match[1]) && !doi_works($doi)) {
                     $template->set('doi', $match[1]);
                     if (is_null($url_sent)) {
