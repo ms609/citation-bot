@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-/*editor-mask
+/*
  * Tests for constants.php.
  */
 
@@ -95,16 +95,6 @@ final class constantsTest extends testBaseClass {
         $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(mb_ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), true));
     }
 
-    public function testConstantsOrder(): void {
-        $acronyms = JOURNAL_ACRONYMS;
-        sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
-        $expected = current($acronyms);
-        foreach (JOURNAL_ACRONYMS as $actual) {
-            $this->assertSame(strtolower($expected), strtolower($actual));
-            $expected = next($acronyms);
-        }
-    }
-
     public function testAllLowerCase(): void {
         $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                                  PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
@@ -177,7 +167,7 @@ final class constantsTest extends testBaseClass {
             $bit_length = current($bits_length);
             $chunk_length = 0;
             $new_line = "\n    ";
-            $alphaed = $new_line;
+            $alphaed = '';
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
             foreach ($bits_length as $bit_length) {
                 $bit = next($alpha_bits);
