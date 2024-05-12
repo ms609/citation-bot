@@ -1812,23 +1812,23 @@ final class Zotero {
                 $handle = hdl_decode($handle);
                 if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {
                     if (hdl_works($matches[1])) {
-                            $handle = $matches[1];
+                        $handle = $matches[1];
                     }
                 }
                 // Verify that it works as a hdl - first with urlappend, since that is often page numbers
                 if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
                     if (hdl_works($handle) === false) {
-                            $handle = $matches[1];  // @codeCoverageIgnore
+                        $handle = $matches[1];  // @codeCoverageIgnore
                     } elseif (hdl_works($handle) === null && (hdl_works($matches[1]) === null || hdl_works($matches[1]) === false)) {
-                            ; // Do nothing
+                        ; // Do nothing
                     } elseif (hdl_works($handle) === null) {
-                            $handle = $matches[1]; // @codeCoverageIgnore
+                        $handle = $matches[1]; // @codeCoverageIgnore
                     } else { // Both work
-                            $long = hdl_works($handle);
-                            $short = hdl_works($matches[1]);
-                            if ($long === $short) { // urlappend does nothing
-                                $handle = $matches[1]; // @codeCoverageIgnore
-                            }
+                        $long = hdl_works($handle);
+                        $short = hdl_works($matches[1]);
+                        if ($long === $short) { // urlappend does nothing
+                            $handle = $matches[1]; // @codeCoverageIgnore
+                        }
                     }
                 }
                 while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
@@ -1860,7 +1860,7 @@ final class Zotero {
                 }
                 if (is_null($url_sent)) {
                     if ($template->has_good_free_copy()) {
-                    	$template->forget($url_type);
+                        $template->forget($url_type);
                     }
                 }
                 if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)  // Might be padded with stuff
@@ -1875,12 +1875,12 @@ final class Zotero {
                         quietly('report_modification', "Converting URL to ZBL parameter");
                     }
                     if (is_null($url_sent)) {
-                            if ($template->has_good_free_copy()) {
-                                $template->forget($url_type);
-                                if ($template->wikiname() === 'cite web') {
-                                    $template->change_name_to('cite journal');
-                                }
+                        if ($template->has_good_free_copy()) {
+                            $template->forget($url_type);
+                            if ($template->wikiname() === 'cite web') {
+                                $template->change_name_to('cite journal');
                             }
+                        }
                     }
                     return $template->add_if_new('zbl', $match[1]);
                     } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
@@ -1888,12 +1888,12 @@ final class Zotero {
                         quietly('report_modification', "Converting URL to JFM parameter");
                     }
                     if (is_null($url_sent)) {
-                            if ($template->has_good_free_copy()) {
-                                $template->forget($url_type);
-                                if ($template->wikiname() === 'cite web') {
-                                    $template->change_name_to('cite journal');
-                                }
+                        if ($template->has_good_free_copy()) {
+                            $template->forget($url_type);
+                            if ($template->wikiname() === 'cite web') {
+                                $template->change_name_to('cite journal');
                             }
+                        }
                     }
                     return $template->add_if_new('jfm', $match[1]);
                 }
@@ -1941,7 +1941,7 @@ final class Zotero {
                         if ($template->has_good_free_copy()) {
                             $template->forget($url_type);
                             if ($template->wikiname() === 'cite web') {
-                            	$template->change_name_to('cite journal');
+                                $template->change_name_to('cite journal');
                             }
                         }
                     }
@@ -2024,19 +2024,19 @@ final class Zotero {
                 }
             }
             /// THIS MUST BE LAST
-    	}
+        }
         return false ;
     }
     
     // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
     private static function is_bad_author(string $aut): bool {
-		if ($aut === '|') {
-			return true;
-		}
-		$aut = strtolower($aut);
-		if ($aut === 'published') {
-			return true;
-		}
+        if ($aut === '|') {
+            return true;
+        }
+        $aut = strtolower($aut);
+        if ($aut === 'published') {
+            return true;
+        }
         return false;
     }
     
