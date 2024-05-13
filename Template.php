@@ -1762,6 +1762,12 @@ final class Template
     if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) {
      return false;
     }
+    if (preg_match('~International Workshop~', $value)) {
+     return false;
+    }
+    if (preg_match('~ Held at ~', $value)) {
+     return false;
+    }
     if ($value === 'Wiley Online Library') {
      return false;
     }
