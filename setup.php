@@ -104,7 +104,13 @@ if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadget
 }
 
 if (isset($_REQUEST['PHP_ADSABSAPIKEY'])) {
-    define('PHP_ADSABSAPIKEY', (string) $_REQUEST['PHP_ADSABSAPIKEY']);
+    $key = (string) $_REQUEST['PHP_ADSABSAPIKEY'];
+    $key = trim($key);
+    if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
+        define('PHP_ADSABSAPIKEY', $key);
+    } else {
+        exit;
+    }
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
