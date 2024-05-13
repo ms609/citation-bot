@@ -5200,7 +5200,7 @@ final class Template
 
     case 'author':
      $the_author = $this->get($param);
-     if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'], true)) {
+     if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'], true) && $this->wikiname() !== 'cite book') {
       $this->rename('author' . $pmatch[2], 'agency');
       if ($pmatch[2] === '1' || $pmatch[2] === '') {
        $this->forget('author-link');
