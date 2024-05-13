@@ -2266,7 +2266,11 @@ final class Template
     if (preg_match(REGEXP_DOI, $value, $match)) {
      if ($this->blank($param_name)) {
       if ($this->wikiname() === 'cite arxiv') {
-       $this->change_name_to('cite journal');
+       if (doi_works($value)) {
+        $this->change_name_to('cite journal');
+       } else {
+        return false; // We get bad ones
+       }
       }
       $this->add('doi', $match[0]);
       return true;
