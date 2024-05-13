@@ -475,7 +475,6 @@ const NULL_DOI_LIST = [
     '10.19113/sdufbed.31424' => true,
     '10.19137/qs.v19i1.963' => true,
     '10.19153/cleiej.8.2.1' => true,
-    '10.19182/bft2010.303.a20454' => true, // bad gateway
     '10.1920/wp.ifs.2022.3622' => true,
     '10.20960/nh.27' => true,
     '10.20960/nh.559' => true,
@@ -668,7 +667,6 @@ const NULL_DOI_LIST = [
     '10.3828/aj.2016.3' => true,
     '10.3846/cpc.2017.286' => true, // File not found
     '10.3920/978-90-8686-728-8_4' => true,
-    '10.3934/dcds.2007.19.531' => true,
     '10.3934/mbe' => true, // 404
     '10.3949/ccjm.75.7.474' => true, // Doi not found on website
     '10.3969/j.issn.1009-086x.2022.02.002' => true, // Nothing
@@ -881,6 +879,8 @@ const NULL_DOI_LIST = [
  /** ========================================================================================================================================================================== */
  // TODO - these need to be manually double checked once in a great while.
 const NULL_DOI_BUT_GOOD = [
+    '10.3934/dcds.2007.19.531' => true,
+    '10.19182/bft2010.303.a20454' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
     '10.1001/jama.2020.6019' => true,
