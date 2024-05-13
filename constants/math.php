@@ -271,4 +271,3 @@ const MML_TAGS = [
     '&ApplyFunction;' => '',
     '&squ;' => '',
 ];
-

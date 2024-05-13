@@ -628,7 +628,8 @@ const COMMON_MISTAKES_TOOL = [
     'authorlink' => 'author-link',
     'origyear' => 'orig-date',
     'origdate' => 'orig-date',
-    'airdate' => 'air-date'];
+    'airdate' => 'air-date',
+];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
 const TEMPLATE_CONVERSIONS = [

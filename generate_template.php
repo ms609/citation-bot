@@ -30,7 +30,7 @@ if (strlen($value) < 3) {
 if (strlen($value) > 100) {
     exit('Excessive parameter error</pre></body></html>');
 }
-if ((strpos($value, "'") !== false ) || (strpos($value, '"') !== false ) || (strpos($value, "|") !== false ) || (strpos($value, " ") !== false )) {
+if ((strpos($value, "'") !== false) || (strpos($value, '"') !== false) || (strpos($value, "|") !== false) || (strpos($value, " ") !== false)) {
     echo 'Invalid parameter value error</pre></body></html>';
     exit;
 }

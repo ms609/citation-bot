@@ -147,7 +147,7 @@ const BAD_PUBLISHERS = [
 
 const ARE_WORKS = [
     'medrxiv',
-    'ietf datatracker'
+    'ietf datatracker',
 ]; // Things with dois that should be {{cite document|work=THIS}}
 
 const PUBLISHERS_ARE_WORKS = [
@@ -2370,7 +2370,7 @@ const NO_PUBLISHER_NEEDED = [
 
 const ENCYCLOPEDIA_WEB = [
     'plato.stanford.edu',
-    'britannica.com'
+    'britannica.com',
 ];
 
 const GOOD_10_1093_DOIS = [
