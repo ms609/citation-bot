@@ -203,6 +203,7 @@ const ITALICS_LIST =
     'Res Publica|' .
     'de Novo|' .
     'Boscia angustifolia|' .
+    'Cephalotes atratus|' .
     'Angelica sinensis|' .
     'Dilophosaurus wetherilli|' .
     'Scutarx deltatylus|' .
