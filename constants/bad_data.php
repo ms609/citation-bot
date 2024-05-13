@@ -132,6 +132,7 @@ const NON_HUMAN_AUTHORS = [
     'commission',
     'interstate',
     'commerce',
+    'academy',
 ];
 const BAD_PUBLISHERS = [
     'london',
