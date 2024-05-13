@@ -619,6 +619,20 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'accesss-datet' => 'access-date',
     'acessdate' => 'accessdate',
     'archive-seekurl' => 'archive-url',
+    'accecssdate' => 'access-date',
+    'accesadate' => 'access-date',
+    'access-daye' => 'access-date',
+    'accessdtae' => 'access-date',
+    'datte' => 'date',
+    'editorfirst' => 'editor-first',
+    'publiser' => 'publisher',
+    'published-date' => 'publication-date',
+    'translòator-first' => 'translator-first',
+    'urkl' => 'url',
+    'urstatus' => 'url-status',
+    'works' => 'work',
+    'archive-dat' => 'archive-date',
+    'زبان' => 'language',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
