@@ -21,6 +21,8 @@ const HAS_NO_VOLUME = [
     'european journal of taxonomy',
     'international journal of the sociology of language',
     'mycokeys',
+    'past & present',
+    'past and present',
 ]; // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
 const HAS_NO_ISSUE = [
