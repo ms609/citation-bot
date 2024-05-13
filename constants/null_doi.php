@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.1001/jama.275.2.134' => true, // 404
     '10.1001/jama.275.17.1339' => true, // 404
+    '10.1128/mcb.14.11.7643' => true, // error 404
+    '10.1128/mcb.2.3.221' => true, // error 404
+    '10.1128/mcb.4.11.2455' => true, // error 404
     '10.1080/10798587.2007.10642974' => true, // Spam
     '10.1139/gen-41-4-543' => true, // Journal in general
     '10.12738/estp.2015.5' => true, // domain for sale
@@ -96,7 +100,7 @@ const NULL_DOI_STARTS_BAD = [
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
     '10.1001/jama.275.17.1339' => true, // 404
-    '10.1001/jama.275.2.134' => true,
+    '10.1001/jama.275.2.134' => true, // 404
     '10.1007/978-3-7643-8140-0_245' => true,
     '10.1007/BF00162691' => true,
     '10.1007/BF00162818' => true,
@@ -213,9 +217,9 @@ const NULL_DOI_LIST = [
     '10.11157/rsrr1-2-412' => true,
     '10.1127/zma/82/1998/1' => true,
     '10.1128/jmbe.v11.i1.154' => true,
-    '10.1128/mcb.14.11.7643' => true,
-    '10.1128/mcb.2.3.221' => true,
-    '10.1128/mcb.4.11.2455' => true,
+    '10.1128/mcb.14.11.7643' => true, // error 404
+    '10.1128/mcb.2.3.221' => true, // error 404
+    '10.1128/mcb.4.11.2455' => true, // error 404
     '10.1136/vr.100.12.237' => true,
     '10.1136/vr.100.12.243' => true,
     '10.1136/vr.103.4.64' => true,
