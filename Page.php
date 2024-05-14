@@ -18,7 +18,6 @@ require_once 'Zotero.php';              // @codeCoverageIgnore
 require_once 'constants.php';           // @codeCoverageIgnore
 
 class Page {
-
     protected string $text = '';
     protected string $title = '';
     /** @var array<mixed> $modifications */
