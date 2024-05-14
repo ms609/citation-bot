@@ -116,23 +116,20 @@ function format_surname_2(string $surname): string {
     $ret = preg_replace_callback('~;\w~',
         static function(array $matches): string {
             return mb_strtolower($matches[0]);
-         },
-         $ret);
+        },
+        $ret);
     return $ret;
 }
 
 function format_forename(string $forename): string {
     $forename = trim($forename);
-    if ($forename === '-') {
-        return '';
-    }
-    if ($forename === '') {
+    if ($forename === '-' || $forename === '') {
         return '';
     }
     return str_replace([" ."], "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
-            static function(
-                array $matches): string {
-                return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);},
+            static function(array $matches): string {
+                return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+            },
             $forename)));
 }
 
@@ -149,7 +146,7 @@ function format_initials(string $str): string {
         }
         $end = substr($str, strlen($str)-1) === ";" ? ";" : '';
         preg_match_all("~\w~u", $str, $match);
-        return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
+        return mb_strtoupper(implode(".", $match[0]) . ".") . $end;
 }
 
 function is_initials(string $str): bool {
@@ -180,12 +177,12 @@ function author_is_human(string $author): bool {
         || substr(strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
-        || substr(strtolower($author),-4) === " inc"
-        || substr(strtolower($author),-5) === " inc."
-        || substr(strtolower($author),-4) === " llc"
-        || substr(strtolower($author),-5) === " llc."
-        || substr(strtolower($author),-5) === " book"
-        || substr(strtolower($author),-6) === " books"
+        || substr(strtolower($author), -4) === " inc"
+        || substr(strtolower($author), -5) === " inc."
+        || substr(strtolower($author), -4) === " llc"
+        || substr(strtolower($author), -5) === " llc."
+        || substr(strtolower($author), -5) === " book"
+        || substr(strtolower($author), -6) === " books"
         || substr_count($author, ' ') > 3 // Even if human, hard to format
     ) {
         return false;
@@ -361,8 +358,7 @@ function format_multiple_authors(string $authors): string {
 function under_two_authors(string $text): bool {
     return !(strpos($text, ';') !== false  //if there is a semicolon
             || substr_count($text, ',') > 1  //if there is more than one comma
-            || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
-            );
+            || substr_count($text, ',') < substr_count(trim($text), ' '));  //if the number of commas is less than the number of spaces in the trimmed string
 }
 
 /* split_authors

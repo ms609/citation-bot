@@ -11,13 +11,13 @@ final class HandleCache {
     private const MAX_CACHE_SIZE = 100000;
     public const MAX_HDL_SIZE = 1024;
     private const BAD_DOI_ARRAY = [
-            '10.1126/science' => true,
-            '' => true,
-            '10.7556/jaoa' => true,
-            '10.1267/science.040579197' => true,
-            '10.0000/Rubbish_bot_failure_test' => true,
-            '10.0000/Rubbish_bot_failure_test2' => true,
-            '10.0000/Rubbish_bot_failure_test.x' => true];
+        '10.1126/science' => true,
+        '' => true,
+        '10.7556/jaoa' => true,
+        '10.1267/science.040579197' => true,
+        '10.0000/Rubbish_bot_failure_test' => true,
+        '10.0000/Rubbish_bot_failure_test2' => true,
+        '10.0000/Rubbish_bot_failure_test.x' => true];
 
     /** @var array<bool> $cache_active */
     public static array $cache_active = [];              // DOI is in CrossRef and works
@@ -115,7 +115,7 @@ function doi_works(string $doi): ?bool {
 function is_doi_active(string $doi): ?bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0,[
+        $ch = bot_curl_init(1.0, [
             CURLOPT_HEADER => true,
             CURLOPT_NOBODY => false,
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
@@ -198,7 +198,7 @@ function is_doi_works(string $doi): ?bool {
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 16:42, November 25, 2023 version is last check
     if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-        $registrant = substr($registrant,3);
+        $registrant = substr($registrant, 3);
         if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
                 preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||                // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
                 preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||       // 4 digits with subcode (0xxx); accepts: 1000–9999
@@ -236,7 +236,7 @@ function is_doi_works(string $doi): ?bool {
             return true;     // @codeCoverageIgnoreStart
         }
         $headers_test = get_headers_array($url);
-        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));     // @codeCoverageIgnoreEnd
+        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));     // @codeCoverageIgnoreEnd
     }
     if ($headers_test === false) {
         $headers_test = get_headers_array($url);     // @codeCoverageIgnore
@@ -324,10 +324,9 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
     }                // @codeCoverageIgnoreEnd
 }
 
-/** @psalm-suppress UnusedParam
-    @param array<string> $ids
+/** @param array<string> $_ids
     @param array<Template> $templates */
-function query_jstor_api(array $ids, array &$templates): void { // $ids not used     // Pointer to save memory
+function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_jstor($template);
     }
@@ -466,7 +465,7 @@ function wikify_external_text(string $title): string {
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-    $title = safe_preg_replace("~\s+~"," ", $title);    // Remove all white spaces before
+    $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6);
     }
@@ -713,8 +712,8 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = mb_strtolower($inTitle);
     $inTitle2 = mb_strtolower($inTitle2);
     $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
-                "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
-                "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
+            "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
+            "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
     $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
@@ -722,14 +721,12 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
                 ? (strlen($inTitle) !== strlen($dbTitle)
             || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-                : (levenshtein($inTitle, $dbTitle) > 3)
-    )
+                : (levenshtein($inTitle, $dbTitle) > 3))
     &&
     ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
                 ? (strlen($inTitle2) !== strlen($dbTitle)
             || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
-                : (levenshtein($inTitle2, $dbTitle) > 3)
-    );
+                : (levenshtein($inTitle2, $dbTitle) > 3));
 }
 
 function titles_simple(string $inTitle): string {
@@ -803,10 +800,10 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
                     preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
             ) {
-                $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
-                $str = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
+                $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', '"', $str);
+                $str = safe_preg_replace('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
             } else {
-                ; // No change
+                // No change
             }
         }
     }
@@ -913,7 +910,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
     // This should be capitalized
-    $new_case = str_replace(['(new Series)', '(new series)'] , ['(New Series)', '(New Series)'], $new_case);
+    $new_case = str_replace(['(new Series)', '(new series)'], ['(New Series)', '(New Series)'], $new_case);
 
     // Catch some specific epithets, which should be lowercase
     $new_case = safe_preg_replace_callback(
@@ -1090,7 +1087,7 @@ function throttle (): void {
     } else {
         bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
     }
-    $phase = $phase + 1;
+    $phase += 1;
     if ($phase < $cycles) {
         return;
     } else {
@@ -1141,7 +1138,7 @@ function tidy_date(string $string): string {
         $cleaned = '';
         $the_str_length = mb_strlen($string);
         for ($i = 0; $i < $the_str_length; $i++) {
-            $char = mb_substr($string,$i,1);
+            $char = mb_substr($string, $i, 1);
             if (mb_strlen($char) === strlen($char)) {
                 $cleaned .= $char;
             } else {
@@ -1151,7 +1148,7 @@ function tidy_date(string $string): string {
         $string = $cleaned;
     }
     $string = safe_preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
-    $string = safe_preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceding white space and other dash
+    $string = safe_preg_replace('~[\s\-]*\-[\s\-]*~', '-', $string); // Combine dash with any following or preceding white space and other dash
     $string = safe_preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
     $string = trim($string);
     // End of character clean-up
@@ -1198,7 +1195,7 @@ function tidy_date(string $string): string {
     }
     if (preg_match('~^\-?\d+$~', $string)) {
         $string = intval($string);
-        if ($string < -2000 || $string > (int)date("Y") + 10) {
+        if ($string < -2000 || $string > (int) date("Y") + 10) {
             return ''; // A number that is not a year; probably garbage
         }
         if ($string > -2 && $string < 2) {
@@ -1213,7 +1210,7 @@ function tidy_date(string $string): string {
     if ($time) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
-        if ($year < -2000 || $year > (int)date("Y") + 10) {
+        if ($year < -2000 || $year > (int) date("Y") + 10) {
             return ''; // We got an invalid year
         }
         if ($year < 100 && $year > -100) {
@@ -1244,7 +1241,7 @@ function tidy_date(string $string): string {
 
     // Dates with dots -- convert to slashes and try again.
     if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
-        if (intval($matches[3]) < ((int) date("y")+2)) {
+        if (intval($matches[3]) < ((int) date("y") + 2)) {
             $matches[3] = (int) $matches[3] + 2000;
         }
         if (intval($matches[3]) < 100)  {
@@ -1274,7 +1271,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
     return false;
 }
 
-function bad_10_1093_doi(string $url):bool {
+function bad_10_1093_doi(string $url): bool {
     return !not_bad_10_1093_doi($url);
 }
 
@@ -1287,8 +1284,8 @@ function remove_comments(string $string): string {
 }
 
 /** @param array<string> $list
-        @return array<string> */
-function prior_parameters(string $par, array $list=[] ): array {
+    @return array<string> */
+function prior_parameters(string $par, array $list=[]): array {
     array_unshift($list, $par);
     if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
@@ -1417,9 +1414,9 @@ function prior_parameters(string $par, array $list=[] ): array {
         case 'accessdate':
         case 'access-date':
             return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
-                        'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
-                        'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                        'transcripturl', 'URL'],$list));
+                'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
+                'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
+                'transcripturl', 'URL'], $list));
         case 'archive-date':
         case 'archivedate':
             return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
@@ -1500,8 +1497,8 @@ function can_safely_modify_dashes(string $value): bool {
             && (strpos($value, "(") === false)
             && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
             && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
-            && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
-            && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1); // 2005-A used in {{sfn}} junk
+            && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u', $value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
+            && (preg_match('~^\d{4}\-[a-zA-Z]+$~u', $value) !== 1); // 2005-A used in {{sfn}} junk
 }
 
 function str_i_same(string $str1, string $str2): bool {
@@ -1669,13 +1666,9 @@ function bot_html_header(): void {
     }
 }
 
-/**
- * Only on webpage
- * @codeCoverageIgnore
- */
 function bot_html_footer(): void {
     if (HTML_OUTPUT) {
-        echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+        echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>'; // @codeCoverageIgnore
     }
     echo "\n";
 }
@@ -1723,7 +1716,7 @@ function hdl_works(string $hdl): string|null|false {
         }
         HandleCache::$cache_hdl_null[$hdl] = true;
         if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
-            bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
+            bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($hdl)));
         }
         return null;                                                         // @codeCoverageIgnoreEnd
     }
@@ -3056,62 +3049,62 @@ function simplify_google_search(string $url): string {
             case "e":
             case "surl":
             case "aql":
-            break;
+                break;
             case "as_occt":
-            if ($it_is_blank || str_i_same($part_start1, 'any')) {
+                if ($it_is_blank || str_i_same($part_start1, 'any')) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "cf":
-            if ($it_is_blank || str_i_same($part_start1, 'all')) {
+                if ($it_is_blank || str_i_same($part_start1, 'all')) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "cs":
-            if ($it_is_blank || str_i_same($part_start1, '0')) {
+                if ($it_is_blank || str_i_same($part_start1, '0')) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "btnK":
-            if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
+                if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "as_epq":
-            if ($it_is_blank) {
+                if ($it_is_blank) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "btnG":
-            if ($it_is_blank || str_i_same($part_start1, 'Search')) {
+                if ($it_is_blank || str_i_same($part_start1, 'Search')) {
+                    break;
+                }
+                $url .=  $part . "&" ;
                 break;
-            }
-            $url .=  $part . "&" ;
-            break;
             case "rct":
-            if ($it_is_blank || str_i_same($part_start1, 'j')) {
-                break; // default
-            }
-            $url .=  $part . "&" ;
-            break;
+                if ($it_is_blank || str_i_same($part_start1, 'j')) {
+                    break; // default
+                }
+                $url .=  $part . "&" ;
+                break;
             case "resnum":
-            if ($it_is_blank || str_i_same($part_start1, '11')) {
-                break; // default
-            }
-            $url .=  $part . "&" ;
-            break;
+                if ($it_is_blank || str_i_same($part_start1, '11')) {
+                    break; // default
+                }
+                $url .=  $part . "&" ;
+                break;
             case "ie":
             case "oe":
-            if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
-                break; // UTF-8 is the default
-            }
-            $url .=  $part . "&" ;
-            break;
+                if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
+                    break; // UTF-8 is the default
+                }
+                $url .=  $part . "&" ;
+                break;
             case "hl":
             case "safe":
             case "q":
@@ -3131,13 +3124,13 @@ function simplify_google_search(string $url): string {
             case "lpsid":
             case "as_q":
             case "kponly":
-            $url .=  $part . "&" ;
-            break;
+                $url .=  $part . "&" ;
+                break;
             default:
             // @codeCoverageIgnoreStart
-            report_minor_error("Unexpected Google URL component:    " . echoable($part) . " in " . echoable($orig_url));
-            $url .=  $part . "&" ;
-            break;
+                report_minor_error("Unexpected Google URL component:    " . echoable($part) . " in " . echoable($orig_url));
+                $url .=  $part . "&" ;
+                break;
             // @codeCoverageIgnoreEnd
         }
     }
@@ -3145,7 +3138,7 @@ function simplify_google_search(string $url): string {
     if (substr($url, -1) === "&") {
         $url = substr($url, 0, -1); //remove trailing &
     }
-    $url= $url . $hash;
+    $url .= $hash;
     return $url;
 }
 
@@ -3155,7 +3148,7 @@ function addISBNdashes(string $isbn): string {
     }
     $new = str_replace('-', '', $isbn);
     if (strlen($new) === 10) {
-        $num = 9780000000000 + (int) str_ireplace('x','9', $new);
+        $num = 9780000000000 + (int) str_ireplace('x', '9', $new);
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
                 $split = $v;
