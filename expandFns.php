@@ -795,7 +795,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
                 $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
-                    preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
+                    preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
             ) {
                 $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', '"', $str);
                 $str = safe_preg_replace('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
@@ -1222,7 +1222,7 @@ function tidy_date(string $string): string {
         }
         return $string;
     }
-    if (preg_match( '~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) {
+    if (preg_match('~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) {
         return tidy_date($matches[1]); // Starts with date
     }
     if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~', $string, $matches)) {
@@ -2049,10 +2049,10 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             $book_array['pg'] = $book_array['lpg'];
             unset($book_array['lpg']);
     }
-    if (preg_match('~^&(.*)$~', $hash, $matcher) ){
+    if (preg_match('~^&(.*)$~', $hash, $matcher)){
         $hash = $matcher[1];
     }
-    if (preg_match('~^(.*)&$~', $hash, $matcher) ){
+    if (preg_match('~^(.*)&$~', $hash, $matcher)){
         $hash = $matcher[1];
     }
     if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)){
