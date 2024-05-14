@@ -31,13 +31,13 @@ final class WikipediaBot {
         $init_done = true;
         // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         self::$ch_write  = bot_curl_init(1.0,
-                    [CURLOPT_FAILONERROR => true,
-                    CURLOPT_POST => true,
-                    CURLOPT_REFERER => "https://citations.toolforge.org/",
-                    CURLOPT_URL => API_ROOT]);
+                [CURLOPT_FAILONERROR => true,
+                CURLOPT_POST => true,
+                CURLOPT_REFERER => "https://citations.toolforge.org/",
+                CURLOPT_URL => API_ROOT,
+                ]);
         self::$ch_logout = bot_curl_init(1.0,
-                    [CURLOPT_REFERER => "https://citations.toolforge.org/",
-                    CURLOPT_FAILONERROR => true ]);
+                [CURLOPT_REFERER => "https://citations.toolforge.org/", CURLOPT_FAILONERROR => true ]);
     }
 
     public function __construct() {
@@ -170,11 +170,11 @@ final class WikipediaBot {
         }
 
         $response = $this->fetch([
-                'action' => 'query',
-                'prop' => 'info|revisions',
-                'rvprop' => 'timestamp',
-                'meta' => 'tokens',
-                'titles' => $page
+            'action' => 'query',
+            'prop' => 'info|revisions',
+            'rvprop' => 'timestamp',
+            'meta' => 'tokens',
+            'titles' => $page
         ]);
 
         $myPage = self::response2page($response);
@@ -386,9 +386,9 @@ final class WikipediaBot {
      try {
         $params['format'] = 'json';
         curl_setopt_array(self::$ch_logout, [
-                            CURLOPT_POST => true,
-                            CURLOPT_POSTFIELDS => http_build_query($params),
-                            CURLOPT_URL => API_ROOT,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_URL => API_ROOT,
         ]);
 
         $data = @curl_exec(self::$ch_logout);
@@ -447,10 +447,10 @@ final class WikipediaBot {
             return false;
         }
         $query = [
-             "action" => "query",
-             "usprop" => "blockinfo",
-             "list" => "users",
-             "ususers" => $user,
+            "action" => "query",
+            "usprop" => "blockinfo",
+            "list" => "users",
+            "ususers" => $user,
         ];
         $response = self::QueryAPI($query);
         if (strpos($response, '"userid"')  === false) { // try again if weird
