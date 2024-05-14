@@ -204,7 +204,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                     }
                                 }
                             }
-                        break;
+                            break;
                         }
                     }
                 }
@@ -997,6 +997,7 @@ function expand_by_jstor(Template $template): void {
                     case "BT":
                         $new_title = trim($ris_part[1]);
                         report_info("    Possible new title: " . echoable($new_title));
+                        break;
                     default: // @codeCoverageIgnore
                 }
             }
