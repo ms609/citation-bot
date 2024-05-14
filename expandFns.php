@@ -2160,6 +2160,7 @@ function get_possible_dois(string $doi): array {
         case ".":
             // Missing a terminal 'x'?
             $trial[] = $doi . "x";
+            // Or maybe perios is bad idea?
         case ",":
         case ";":
         case "\"":
