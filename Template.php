@@ -948,9 +948,9 @@ final class Template
   if ($this->blank(DISPLAY_AUTHORS)) {
    $i = 2;
    while (!$this->blank(['author' . (string) $i, 'last' . (string) $i])) {
-    $i = $i + 1;
+    $i++;
    }
-   $i = $i - 1;
+   $i--;
    if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . (string) $i))) {
     $this->rename('author' . (string) $i, 'display-authors', 'etal');
    }
@@ -2234,7 +2234,7 @@ final class Template
     }
     $chap = '';
     foreach (CHAPTER_ALIASES as $alias) {
-     $chap = $chap . $this->get($alias);
+     $chap .= $this->get($alias);
     }
     if (preg_match('~\[\[.+\]\]~', $chap)) {
      return false;
@@ -2421,7 +2421,7 @@ final class Template
      $bibcode_pad = 19 - strlen($value);
      if ($bibcode_pad > 0) {
       // Paranoid, don't want a negative value, if bibcodes get longer
-      $value = $value . str_repeat(".", $bibcode_pad); // Add back on trailing periods
+      $value .= str_repeat(".", $bibcode_pad); // Add back on trailing periods
      }
      if (stripos($value, 'arxiv') !== false) {
       if ($this->has('arxiv') || $this->has('eprint')) {
@@ -3979,7 +3979,8 @@ final class Template
     if (preg_match('~^.+ \(.+\)$~', (string) $author)) {
      break;
     } // State or territory
-    $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', true);
+    ++$i;
+    $this->validate_and_add('author' . (string) $i, str_replace("___", ":", (string) $author), '', '', true);
     if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) {
      $i--;
     } // It did not get added
@@ -4106,7 +4107,8 @@ final class Template
   foreach ($this->param as &$p) {
    // Protect them from being overwritten
    if (empty($p->param)) {
-    $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count++;
+    $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count;
+    $blank_count++;
     $p->eq = ' = ';
    }
   }
@@ -4124,7 +4126,8 @@ final class Template
      $endnote_datum = trim((string) substr($endnote_line, 2)); // Cast to string in case of false
      switch ($endnote_linetype) {
       case "A":
-       $this->add_if_new('author' . (string) ++$endnote_authors, format_author($endnote_datum));
+       ++$endnote_authors;
+       $this->add_if_new('author' . (string) $endnote_authors, format_author($endnote_datum));
        $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
        $endnote_parameter = false;
        break;
@@ -6537,7 +6540,7 @@ final class Template
       } else {
        $lower = "";
        foreach (WORK_ALIASES as $worky) {
-        $lower = $lower . strtolower($this->get($worky));
+        $lower .= strtolower($this->get($worky));
        }
        if (strpos($lower, 'sify') !== false) {
         $this->forget($param);
@@ -6556,7 +6559,7 @@ final class Template
       } else {
        $lower = "";
        foreach (WORK_ALIASES as $worky) {
-        $lower = $lower . strtolower($this->get($worky));
+        $lower .= strtolower($this->get($worky));
        }
        if (strpos($lower, 'bollywoodhungama') !== false || strpos($lower, 'bollywood hungama') !== false) {
         $this->forget($param);
@@ -8599,7 +8602,7 @@ final class Template
   $pos = $this->get_param_key($par);
   if ($pos !== null) {
    // Could be zero which is "false"
-   $this->param[$pos]->val = $this->param[$pos]->val . $val;
+   $this->param[$pos]->val .= $val;
   } else {
    $this->set($par, $val);
   }
