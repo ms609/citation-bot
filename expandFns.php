@@ -11,13 +11,13 @@ final class HandleCache {
     private const MAX_CACHE_SIZE = 100000;
     public const MAX_HDL_SIZE = 1024;
     private const BAD_DOI_ARRAY = [
-            '10.1126/science' => true,
-            '' => true,
-            '10.7556/jaoa' => true,
-            '10.1267/science.040579197' => true,
-            '10.0000/Rubbish_bot_failure_test' => true,
-            '10.0000/Rubbish_bot_failure_test2' => true,
-            '10.0000/Rubbish_bot_failure_test.x' => true];
+        '10.1126/science' => true,
+        '' => true,
+        '10.7556/jaoa' => true,
+        '10.1267/science.040579197' => true,
+        '10.0000/Rubbish_bot_failure_test' => true,
+        '10.0000/Rubbish_bot_failure_test2' => true,
+        '10.0000/Rubbish_bot_failure_test.x' => true];
 
     /** @var array<bool> $cache_active */
     public static array $cache_active = [];              // DOI is in CrossRef and works
@@ -115,7 +115,7 @@ function doi_works(string $doi): ?bool {
 function is_doi_active(string $doi): ?bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0,[
+        $ch = bot_curl_init(1.0, [
             CURLOPT_HEADER => true,
             CURLOPT_NOBODY => false,
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
@@ -198,7 +198,7 @@ function is_doi_works(string $doi): ?bool {
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 16:42, November 25, 2023 version is last check
     if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-        $registrant = substr($registrant,3);
+        $registrant = substr($registrant, 3);
         if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
                 preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||                // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
                 preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||       // 4 digits with subcode (0xxx); accepts: 1000–9999
@@ -236,7 +236,7 @@ function is_doi_works(string $doi): ?bool {
             return true;     // @codeCoverageIgnoreStart
         }
         $headers_test = get_headers_array($url);
-        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));     // @codeCoverageIgnoreEnd
+        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));     // @codeCoverageIgnoreEnd
     }
     if ($headers_test === false) {
         $headers_test = get_headers_array($url);     // @codeCoverageIgnore
@@ -324,10 +324,9 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
     }                // @codeCoverageIgnoreEnd
 }
 
-/** @psalm-suppress UnusedParam
-    @param array<string> $ids
+/** @param array<string> $ids
     @param array<Template> $templates */
-function query_jstor_api(array $ids, array &$templates): void { // $ids not used     // Pointer to save memory
+function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_jstor($template);
     }
@@ -466,7 +465,7 @@ function wikify_external_text(string $title): string {
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-    $title = safe_preg_replace("~\s+~"," ", $title);    // Remove all white spaces before
+    $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6);
     }
