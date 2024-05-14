@@ -92,7 +92,7 @@ try {
     }
     $newcallback = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $client->setCallback($newcallback);
-    list( $authUrl, $token ) = $client->initiate();
+    [$authUrl, $token] = $client->initiate();
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
     return_to_sender($authUrl);
