@@ -13,7 +13,6 @@ require_once 'user_messages.php';  // @codeCoverageIgnore
 require_once 'constants.php';      // @codeCoverageIgnore
 
 final class WikipediaBot {
-
     private Consumer $bot_consumer;
     private Token $bot_token;
     private Consumer $user_consumer;
