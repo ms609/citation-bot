@@ -1029,7 +1029,7 @@ function mb_ucfirst_force(string $string): string
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
 }
 
-function mb_strrev(string $string, string $encode = null): string
+function mb_strrev(string $string, string $encode = ''): string
 {
     $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
     return implode('', array_reverse($chars));
@@ -1058,7 +1058,7 @@ function remove_brackets(string $string): string {
 
 // ============================================= Wikipedia functions ======================================
 
-function throttle (): void {
+function throttle(): void {
     static $last_write_time = 0;
     static $phase = 0;
     $cycles = 20;    // Check every this many writes
