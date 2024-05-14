@@ -54,7 +54,6 @@ final class HandleCache {
     }
 }
 
-
 // ============================================= DOI functions ======================================
 function doi_active(string $doi): ?bool {
     $doi = trim($doi);
@@ -64,12 +63,10 @@ function doi_active(string $doi): ?bool {
     if (isset(HandleCache::$cache_inactive[$doi])) {
         return false;
     }
-
     $works = doi_works($doi);
     if ($works !== true) {
         return $works;
     }
-
     $works = is_doi_active($doi);
     if ($works === null) { // Temporary problem - do not cache
         return null; // @codeCoverageIgnore
@@ -129,12 +126,12 @@ function is_doi_active(string $doi): ?bool {
     $body = substr($return, $header_length);
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     if ($header === "" || ($response_code === 503)) {
-        sleep(4);                                                                                                                               // @codeCoverageIgnoreStart
+        sleep(4);                                                             // @codeCoverageIgnoreStart
         $return = bot_curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($return, 0, $header_length);
-        $body = substr($return, $header_length);                                                                 // @codeCoverageIgnoreEnd
+        $body = substr($return, $header_length);                               // @codeCoverageIgnoreEnd
     }
     if ($header === "" || ($response_code === 503)) {
         return null;
@@ -151,7 +148,7 @@ function is_doi_active(string $doi): ?bool {
     $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
     bot_debug_log($err);
     report_warning($err);
-    return null;                                    // @codeCoverageIgnoreEnd
+    return null;                  // @codeCoverageIgnoreEnd
 }
 
 function throttle_dx (): void {
@@ -1058,7 +1055,6 @@ function mb_substr_replace(string $string, string $replacement, int $start, int 
 function remove_brackets(string $string): string {
     return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
 }
-
 
 // ============================================= Wikipedia functions ======================================
 
