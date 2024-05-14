@@ -69,16 +69,11 @@ final class Parameter {
         $this->post = $match[2];
       }
     }
-
   }
-
 /*
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
  */
   public function parsed_text(): string {
-    if ($this->param && empty($this->eq)) {              // code used to do this
-      report_error('Missing equals in parameter');       // @codeCoverageIgnore
-    }
     return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }
 }
