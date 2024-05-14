@@ -89,7 +89,7 @@ class Page {
                     if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
                      $the_level = (string) $protects->level;
                      if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], true)) {
-                         ;  // We are good
+                         // We are good
                      } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
                          report_warning("Page is protected.");
                          return false;
@@ -198,9 +198,9 @@ class Page {
 
         // COMMENTS AND NOWIKI ETC. //
         /** @var array<Comment>         $comments        */
-        $comments        = $this->extract_object('Comment');
+        $comments    = $this->extract_object('Comment');
         /** @var array<Nowiki>          $nowiki          */
-        $nowiki          = $this->extract_object('Nowiki');
+        $nowiki      = $this->extract_object('Nowiki');
         /** @var array<Chemistry>       $chemistry   */
         $chemistry   = $this->extract_object('Chemistry');
         /** @var array<Mathematics> $mathematics */
@@ -242,7 +242,7 @@ class Page {
         // Ones like <ref>[http://www... http://www...]</ref>
         $this->text = preg_replace_callback(
                                             "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            function(array $matches): string    {
+                                            static function(array $matches): string    {
                                                 if ($matches[4] === $matches[6]) {
                                                         return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8] ;
                                                 }
@@ -250,8 +250,8 @@ class Page {
                                             },
                                             $this->text
                                             );
-            // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
-            $this->text = preg_replace_callback(        // like <ref>{{doi|10.1244/abc}}</ref>
+        // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
+        $this->text = preg_replace_callback(        // like <ref>{{doi|10.1244/abc}}</ref>
                                             "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string  {
                                                 if (stripos($matches[2], 'arxiv')) {
@@ -265,34 +265,34 @@ class Page {
                                             },
                                             $this->text
                                             );
-            // PLAIN DOIS Converted to templates
-            $this->text = preg_replace_callback(        // like <ref>10.1244/abc</ref>
+        // PLAIN DOIS Converted to templates
+        $this->text = preg_replace_callback(        // like <ref>10.1244/abc</ref>
                                             "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string  {return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3] ;},
                                             $this->text
                                             );
-            if (
-                ($ref_count < 2) ||
-                (($citation_count/$ref_count) >= 0.5)
-            ) {
-            $this->text = preg_replace_callback(        // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
-                                                                                        // also without titles on the urls
-                                            "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function(array $matches): string  {
-                                                $UPPER = mb_strtoupper($matches[0]);
-                                                if (substr_count($UPPER, 'HTTP') !== 1 || // more than one url
-                                                        substr_count($UPPER, 'SEE ALSO') !== 0 ||
-                                                        substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
-                                                        substr_count($UPPER, '{{CITE') !== 0 ||
-                                                        substr_count($UPPER, '{{CITATION') !== 0 ||
-                                                        substr_count($UPPER, '{{ CITE') !== 0 ||
-                                                        substr_count($UPPER, '{{ CITATION') !== 0) {
-                                                    return $matches[0];
-                                                }
-                                                return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6] ;},
-                                            $this->text
-                                            );
-            }
+        if (
+            ($ref_count < 2) ||
+            (($citation_count/$ref_count) >= 0.5)
+        ) {
+            $this->text = preg_replace_callback( // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
+                                                 // also without titles on the urls
+                            "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                            static function(array $matches): string  {
+                                $UPPER = mb_strtoupper($matches[0]);
+                                if (substr_count($UPPER, 'HTTP') !== 1 || // more than one url
+                                        substr_count($UPPER, 'SEE ALSO') !== 0 ||
+                                        substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
+                                        substr_count($UPPER, '{{CITE') !== 0 ||
+                                        substr_count($UPPER, '{{CITATION') !== 0 ||
+                                        substr_count($UPPER, '{{ CITE') !== 0 ||
+                                        substr_count($UPPER, '{{ CITATION') !== 0) {
+                                    return $matches[0];
+                                }
+                                return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6] ;},
+                            $this->text
+                            );
+        }
         // TEMPLATES
         set_time_limit(120);
         /** @var array<TripleBracket> $triplebrack */
@@ -396,8 +396,8 @@ class Page {
         // BATCH API CALLS
         report_phase('Consult APIs to expand templates');
         set_time_limit(120);
-        $this->expand_templates_from_identifier('doi',       $our_templates);    // Do DOIs first!  Try again later for added DOIs
-        $this->expand_templates_from_identifier('doi',       $our_templates_slight);
+        $this->expand_templates_from_identifier('doi', $our_templates);    // Do DOIs first!  Try again later for added DOIs
+        $this->expand_templates_from_identifier('doi', $our_templates_slight);
         foreach ($our_templates_slight as $this_template) { // Is is really a journal, after expanding DOI
             if ($this_template->has('journal') &&
                     $this_template->has('doi') &&
@@ -416,13 +416,13 @@ class Page {
                 }
             }
         }
-        $this->expand_templates_from_identifier('pmid',      $our_templates);
-        $this->expand_templates_from_identifier('pmc',       $our_templates);
+        $this->expand_templates_from_identifier('pmid', $our_templates);
+        $this->expand_templates_from_identifier('pmc', $our_templates);
         $this->expand_templates_from_identifier('bibcode', $our_templates);
-        $this->expand_templates_from_identifier('jstor',     $our_templates);
-        $this->expand_templates_from_identifier('doi',       $our_templates);
+        $this->expand_templates_from_identifier('jstor', $our_templates);
+        $this->expand_templates_from_identifier('doi', $our_templates);
         expand_arxiv_templates($our_templates);
-        $this->expand_templates_from_identifier('url',       $our_templates);
+        $this->expand_templates_from_identifier('url', $our_templates);
         Zotero::query_ieee_webpages($our_templates_ieee);
         Zotero::query_ieee_webpages($our_templates);
 
@@ -445,7 +445,7 @@ class Page {
             }
             $this_template->get_open_access_url();
         }
-        $this->expand_templates_from_identifier('doi',       $our_templates);
+        $this->expand_templates_from_identifier('doi', $our_templates);
         set_time_limit(120);
         Zotero::drop_urls_that_match_dois($our_templates);
         Zotero::drop_urls_that_match_dois($our_templates_conferences);
@@ -669,25 +669,25 @@ class Page {
             : ""
             ) . (($this->modifications["dashes"])
             ? "Formatted [[WP:ENDASH|dashes]]. "
-            : ""
-        );
+            : "");
         if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
             $auto_summary .= 'Some additions/deletions were parameter name changes. ';
         }
         $isbn978_added = (substr_count($this->text, '978 ') + substr_count($this->text, '978-')) - (substr_count($this->start_text, '978 ') + substr_count($this->start_text, '978-'));
         $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
-                                    (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
+                      (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
         if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
             $auto_summary .= 'Upgrade ISBN10 to 13. ';
         }
         if (stripos($auto_summary, 'template') !== false) {
             foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
-                    'book reference', 'Book reference', 'citejournal', 'Citejournal', 'citeweb', 'Citeweb',
-                    'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
-                    'cit news', 'Cit news', 'cite url', 'Cite url', 'web cite', 'Web cite',
-                    'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
-                    'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
-                    'cite new |', 'cite new |', 'cite |', 'Cite |'] as $try_me) {
+                'book reference', 'Book reference', 'citejournal', 'Citejournal', 'citeweb', 'Citeweb',
+                'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
+                'cit news', 'Cit news', 'cite url', 'Cite url', 'web cite', 'Web cite',
+                'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
+                'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
+                'cite new |', 'cite new |', 'cite |', 'Cite |',
+                ] as $try_me) {
                     if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
                         $auto_summary .= 'Removed Template redirect. ';
                         break;
@@ -745,8 +745,8 @@ class Page {
         }
     }
 
-    /** @return array<WikiThings|Template>
-            @param class-string $class
+    /** @param class-string $class
+        @return array<WikiThings|Template>
     */
     public function extract_object(string $class): array {
         $i = 0;
@@ -785,7 +785,8 @@ class Page {
                 $separator = $match[0];
                 $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
                 unset($separator, $text, $match);
-                $text = implode(sprintf($placeholder_text, $i++), $exploded);
+                $text = implode(sprintf($placeholder_text, $i), $exploded);
+                $i++;
                 unset($exploded);
                 $objects[] = $obj;
             }
@@ -806,7 +807,8 @@ class Page {
                 $separator = $match[0];
                 $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
                 unset($separator, $text, $match);
-                $text = implode(sprintf($placeholder_text, $i++), $exploded);
+                $text = implode(sprintf($placeholder_text, $i), $exploded);
+                $i++;
                 unset($exploded);
                 $objects[] = $obj;
             }
@@ -814,19 +816,19 @@ class Page {
         }
 
         if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
-                // @codeCoverageIgnoreStart
-                $this->page_error = true;
-                report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
-                if ($class === "Template") {
-                    echo "<p><h3>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters, or unclosed comment)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
-                }
-                if (TRAVIS) {
-                    report_error("Critical Error on page: " . echoable($this->title));
-                } else {
-                    report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
-                }
-                gc_collect_cycles();
-                // @codeCoverageIgnoreEnd
+            // @codeCoverageIgnoreStart
+            $this->page_error = true;
+            report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
+            if ($class === "Template") {
+                echo "<p><h3>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters, or unclosed comment)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
+            }
+            if (TRAVIS) {
+                report_error("Critical Error on page: " . echoable($this->title));
+            } else {
+                report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
+            }
+            gc_collect_cycles();
+            // @codeCoverageIgnoreEnd
         }
         $this->text = $text;
         return $objects;
@@ -837,7 +839,8 @@ class Page {
         $i = count($objects);
         if ($objects) {
             foreach (array_reverse($objects) as $obj) {
-                $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+                --$i;
+                $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, $i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
             }
         }
     }
@@ -861,7 +864,7 @@ class Page {
         }
         // see {{bots}} and {{nobots}}
         $bot_username = 'Citation[ _]bot';
-        if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
+        if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
             return false;
         }
         if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
@@ -901,22 +904,22 @@ class Page {
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
         $date_style = DATES_WHATEVER;
-        if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_MDY;
         }
-        if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_MDY;
         }
-        if (preg_match('~\{\{mdy[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{mdy[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_MDY;
         }
-        if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_DMY;
         }
-        if (preg_match('~\{\{Use dmy[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{Use dmy[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_DMY;
         }
-        if (preg_match('~\{\{dmy[^\}\{]*\}\}~i',$this->text)) {
+        if (preg_match('~\{\{dmy[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_DMY;
         }
         $this->date_style = $date_style;
