@@ -1649,9 +1649,9 @@ function bot_html_header(): void {
     <header>
         <p>Follow Citation bots progress below.</p>
         <p>
-            <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
-            <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
-            <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
+            <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot" aria-label="Using Citation Bot (opens new window)">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
+            <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank" aria-label="Report bugs at Wikipedia (opens new window)">Report&nbsp;bugs</a> |
+            <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>
         </p>
     </header>
 
