@@ -128,6 +128,6 @@ function jstor_link(string $id): string {
 
 function wiki_link(string $page): string {
     return HTML_OUTPUT
-    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank aria-label="Open wiki in new window"">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank aria-label="Open wiki in new window">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : " . echoable($page);
 }
