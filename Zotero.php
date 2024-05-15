@@ -938,7 +938,7 @@ final class Zotero {
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
             }
             $i++;
-            if ($template->blank(['author' . (string) ($i), 'first' . (string) ($i), 'last' . (string) ($i)])) {
+            if ($template->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) {
                 break; // Break out if nothing added
             }
         }
