@@ -4800,7 +4800,7 @@ final class Template
  }
  public function had_initial_author(): bool
  {
-  return is_array($this->initial_author_params) && sizeof($this->initial_author_params) > 0;
+  return is_array($this->initial_author_params) && count($this->initial_author_params) > 0;
  }
 
  private function join_params(): string
