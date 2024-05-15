@@ -1082,7 +1082,7 @@ final class Template
  }
 
  /**
-  * @param string[]|string $param
+  * @param array<string>|string $param
   */
  public function blank($param): bool
  {
@@ -1104,7 +1104,7 @@ final class Template
   return true;
  }
  /**
-  * @param string[]|string $param
+  * @param array<string>|string $param
   */
  public function blank_other_than_comments($param): bool
  {
