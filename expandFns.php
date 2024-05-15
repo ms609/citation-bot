@@ -641,8 +641,8 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_replace(" & ", " and ", $str);
     $str = str_replace(" / ", " and ", $str);
     $str = trim($str);
-    $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'],
-                                            ['Proc',                'Proc',             'Sym',           'Huff ',               'journal of ',       'New York Times', 'and ', ''], $str);
+    $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)'],
+                        ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', ''], $str);
     $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
     $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
                                             ['Springer',             'Springer',                                 'Springer',                'Springer'               ], $str);
@@ -1768,7 +1768,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url): string {
-    $in = [' '   , '"'  , "'"    , '<'  ,'>'     , '['  , ']'    , '{'  , '|'    , '}'];
+    $in = [' ', '"', '\'', '<','>', '[', ']', '{', '|', '}'];
     $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
     return str_replace($in, $out, $url);
 }
