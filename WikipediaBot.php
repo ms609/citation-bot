@@ -79,23 +79,25 @@ final class WikipediaBot {
             return false;
         }
         if (isset($response->error)) {
-            if ((string) @$response->error->code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+            $error_code = (string) @$response->error->code;
+            $respone_info = (string) @$response->error->info;
+            if ($error_code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
-            } elseif (strpos((string) @$response->error->info, 'The database has been automatically locked') !== false) {
+            } elseif (strpos($respone_info, 'The database has been automatically locked') !== false) {
                 report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-            } elseif (strpos((string) @$response->error->info, 'abusefilter-warning-predatory') !== false) {
+            } elseif (strpos($respone_info, 'abusefilter-warning-predatory') !== false) {
                 report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos((string) @$response->error->info, 'protected') !== false) {
+            } elseif (strpos($respone_info, 'protected') !== false) {
                 report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos((string) @$response->error->info, 'Wikipedia:Why create an account') !== false) {
+            } elseif (strpos($respone_info, 'Wikipedia:Why create an account') !== false) {
                 report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
-            } elseif (strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== false) {
+            } elseif (strpos($respone_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
             } else {
-                bot_debug_log(html_entity_decode((string) @$response->error->info)); // Good to know about about these things
-                report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
+                bot_debug_log(html_entity_decode($respone_info)); // Good to know about about these things
+                report_warning('API call failed: ' . echoable($respone_info) . '.  Will sleep and move on.');
             }
             sleep (10);
             return false;
