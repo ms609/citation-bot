@@ -201,10 +201,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         case "pii":
                                             if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
                                                 $this_template->add_if_new('doi', $match[0], 'entrez');
+                                            }
                                     }
                                 }
-                            }
-                            break;
+                                break;
                         }
                     }
                 }
