@@ -71,7 +71,7 @@ if ($total === 1) {
     echo "\n\n";
     bot_html_footer();
 } else {
-    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
+    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}] | #UCB_Category ";
     edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 }
 
