@@ -368,7 +368,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'видавець' => 'publisher',
     'дата' => 'date',
     'дата-доступу' => 'access-date',
-    'мертвий-url' => 'dead-url',
+    'мертвий-url' => 'deadurl',
     'назва' => 'author',
     'datum přístupu' => 'access-date',
     'jazyk' => 'language',
@@ -633,6 +633,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'works' => 'work',
     'archive-dat' => 'archive-date',
     'زبان' => 'language',
+    'archive-link' => 'archive-url',
+    'deadlink' => 'deadurl',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
