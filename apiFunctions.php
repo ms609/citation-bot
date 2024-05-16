@@ -97,7 +97,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
         report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
     }
 
-    report_action("Using $db API to retrieve publication details: ");
+    report_action("Using {$db} API to retrieve publication details: ");
     $xml = get_entrez_xml($db, implode(',', $ids));
 
     if ($xml === null) {
@@ -108,7 +108,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     // A few PMC do not have any data, just pictures of stuff
     if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) {
         foreach($xml->DocSum as $document) {
-            report_info("Found match for $db identifier " . echoable((string) $document->Id));
+            report_info("Found match for {$db} identifier " . echoable((string) $document->Id));
             foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
                 $an_id = (string) $an_id;
                 if (!array_key_exists($template_key, $templates)) {
@@ -167,12 +167,12 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                                 $first .= '.';
                                             }
                                             $i++;
-                                            $this_template->add_if_new("author$i", $names[1] . $junior . ',' . $first, 'entrez');
+                                            $this_template->add_if_new("author{$i}", $names[1] . $junior . ',' . $first, 'entrez');
                                         }
                                     } else {
                                         // We probably have a committee or similar.    Just use 'author$i'.
                                         $i++;
-                                        $this_template->add_if_new("author$i", $subItem, 'entrez');
+                                        $this_template->add_if_new("author{$i}", $subItem, 'entrez');
                                     }
                                 }
                                 break;
@@ -316,12 +316,12 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
             $i++;
             $name = (string) $auth->name;
             if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
-                $this_template->add_if_new("last$i", $names[2], 'arxiv');
-                $this_template->add_if_new("first$i", $names[1], 'arxiv');
+                $this_template->add_if_new("last{$i}", $names[2], 'arxiv');
+                $this_template->add_if_new("first{$i}", $names[1], 'arxiv');
             } else {
-                $this_template->add_if_new("author$i", $name, 'arxiv');
+                $this_template->add_if_new("author{$i}", $name, 'arxiv');
             }
-            if ($this_template->blank(["last$i", "first$i", "author$i"])) {
+            if ($this_template->blank(["last{$i}", "first{$i}", "author{$i}"])) {
                 $i--;    // Deal with authors that are empty or just a colon as in https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=2112.04678
             }
         }
@@ -411,7 +411,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => true,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
+        CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids)];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     if (!isset($response->docs)) {
         return;
@@ -613,13 +613,13 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     if ((string) $author["contributor_role"] === 'editor') {
                         ++$ed_i;
                         if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-                            $template->add_if_new("editor-last$ed_i", format_surname((string) $author->surname), 'crossref');
-                            $template->add_if_new("editor-first$ed_i", format_forename((string) $author->given_name), 'crossref');
+                            $template->add_if_new("editor-last{$ed_i}", format_surname((string) $author->surname), 'crossref');
+                            $template->add_if_new("editor-first{$ed_i}", format_forename((string) $author->given_name), 'crossref');
                         }
                     } elseif ((string) $author['contributor_role'] === 'author' && $add_authors) {
                         ++$au_i;
-                        $template->add_if_new("last$au_i", format_surname((string) $author->surname), 'crossref');
-                        $template->add_if_new("first$au_i", format_forename((string) $author->given_name), 'crossref');
+                        $template->add_if_new("last{$au_i}", format_surname((string) $author->surname), 'crossref');
+                        $template->add_if_new("first{$au_i}", format_forename((string) $author->given_name), 'crossref');
                     }
                 }
             }
@@ -663,7 +663,7 @@ function query_crossref(string $doi): ?object {
     set_time_limit(120);
     $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
     /** @psalm-taint-escape ssrf */
-    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
+    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:{$doi}&noredirect=TRUE";
     curl_setopt($ch, CURLOPT_URL, $url);
     for ($i = 0; $i < 2; $i++) {
         $raw_xml = bot_curl_exec($ch);
@@ -1410,7 +1410,8 @@ function process_bibcode_data(Template $this_template, object $record): void {
     $i = 0;
     if (isset($record->author)) {
         foreach ($record->author as $author) {
-            $this_template->add_if_new('author' . (string) ++$i, $author, 'adsabs');
+            ++$i;
+            $this_template->add_if_new('author' . (string) $i, $author, 'adsabs');
         }
     }
     if (isset($record->pub)) {
@@ -1493,7 +1494,8 @@ function expand_book_adsabs(Template $template, object $record): void {
         $i = 0;
         if (isset($record->author)) {
             foreach ($record->author as $author) {
-                $template->add_if_new('author' . (string) ++$i, $author);
+                ++$i;
+                $template->add_if_new('author' . (string) $i, $author);
             }
         }
     }
@@ -1514,7 +1516,7 @@ function query_adsabs(string $options): object {
     }
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                     . ".adsabs.harvard.edu/v1/search/query"
-                    . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+                    . "?q={$options}&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                     . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts=[
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
