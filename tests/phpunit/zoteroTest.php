@@ -362,13 +362,13 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = '';
-        $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'thesis', 'university' => 'IowaIowa', 'thesisType' => 'Masters'];
+        $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'thesis', 'university' => 'IowaIowa', 'thesisType' => 'M.S.'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite thesis', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('IowaIowa', $template->get2('publisher'));
-        $this->assertSame('Masters', $template->get2('type'));
+        $this->assertSame('M.S.', $template->get2('type'));
     }
 
     public function testZoteroResponse16(): void {
