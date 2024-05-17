@@ -2351,6 +2351,8 @@ const ARE_MANY_THINGS = [
     'www.finna.fi',
     'finna.fi',
     'elonet',
+    'audible.com',
+    'audible',
 ]; // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = [
     'the economist',
