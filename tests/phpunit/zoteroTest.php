@@ -368,7 +368,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('cite thesis', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('IowaIowa', $template->get2('publisher'));
-        $this->assertSame('M.S.', $template->get2('type'));
+        $this->assertSame('MS', $template->get2('type'));
     }
 
     public function testZoteroResponse16(): void {
