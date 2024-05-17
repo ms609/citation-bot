@@ -457,7 +457,7 @@ const CAMEL_CASE = [
     'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
-    'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide',
+    'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry',
 ];
 
 const ITALICS_HARDCODE_IN  = [
