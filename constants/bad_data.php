@@ -359,6 +359,7 @@ const BAD_TITLES = [
     'optica publishing group',
     'digital library - pdf document',
     'explore census data',
+    'msn',
 ];
 const IN_PRESS_ALIASES = [
     'in press',
