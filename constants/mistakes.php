@@ -656,6 +656,20 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'tilte' => 'title',
     'url- status' => 'url-status',
     'wia' => 'via',
+    'apellidos' => 'last',
+    'apellidos1' => 'last1',
+    'apellidos2' => 'last2',
+    'apellidos3' => 'last3',
+    'apellidos4' => 'last4',
+    'apellidos5' => 'last5',
+    'apellidos6' => 'last6',
+    'apellidos7' => 'last7',
+    'apellidos8' => 'last8',
+    'apellidos9' => 'last9',
+    'apellidos10' => 'last10',
+    'check date' => 'access-date',
+    'día' => 'date',
+    'éditeur' => 'editro',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
