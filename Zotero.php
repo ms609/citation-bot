@@ -963,6 +963,7 @@ final class Zotero {
                             stripos($url, 'finna.fi') === false &&
                             stripos($url, 'planetebd.com') === false &&
                             stripos($url, 'data.bnf.fr') === false &&
+                            stripos($url, 'audible.com') === false &&
                             stripos($url, 'elonet.fi') === false
                             ) {
                         $template->change_name_to('cite book');
