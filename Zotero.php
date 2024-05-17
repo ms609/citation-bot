@@ -1002,7 +1002,8 @@ final class Zotero {
                     }
                     if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
                         $type = (string) $result->thesisType;
-                        if (in_array($type, ['PhD', 'Ph.D.', 'MS', 'MA', 'M.A.', 'M.S.', 'MFA', 'M.F.A.', 'MBA', 'M.B.A.', 'Ed.D', 'EdD'])) {
+                        $type = str_replace('.', '', $type);
+                        if (in_array($type, ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'])) {
                             $template->add_if_new('type', $type); // Prefer type since it exists in cite journal too
                         }
                     }
