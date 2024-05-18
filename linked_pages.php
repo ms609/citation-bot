@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-@session_start(['read_and_close' => true]);
+session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 require_once 'setup.php';
@@ -16,7 +16,7 @@ bot_html_header();
 check_blocked();
 
 if (is_string(@$_POST['linkpage'])) {
-  $page_name = $_POST['linkpage'];
+    $page_name = $_POST['linkpage'];
 } else {
     report_warning(' Error in passing of linked page name ');
     bot_html_footer();
@@ -31,7 +31,7 @@ if ($page_name === '') {
     bot_html_footer();
 }
 
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from {$page_name} | #UCB_webform_linked ";
 
 $json = WikipediaBot::get_links($page_name);
 unset($page_name);

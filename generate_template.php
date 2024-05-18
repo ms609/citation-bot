@@ -5,8 +5,7 @@ declare(strict_types=1);
 set_time_limit(120);
 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
-
-require_once 'html_headers.php';
+// We do not include html_headers.php, since this should be cachable
 
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>';
 
