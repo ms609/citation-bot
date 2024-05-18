@@ -74,5 +74,4 @@ unset($pages);
 
 edit_a_list_of_pages($pages_to_do, $api, $edit_summary_end);
 
-exit("\n");
 ?>
