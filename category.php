@@ -68,7 +68,6 @@ if ($total === 1) {
     foreach ($pages_in_category as $page_title) {
        echo echoable((string) $page_title) . "\n";
     }
-    echo "\n\n";
     bot_html_footer();
 } else {
     $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}] | #UCB_Category ";
