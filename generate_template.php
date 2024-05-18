@@ -12,30 +12,31 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 require_once 'setup.php';
 
 if (count($_GET) !== 1) {
-    echo 'Exactly one parameters must be passed</pre></body></html>';
+    echo 'Exactly one parameters must be passed</pre></main></body></html>';
     exit;
 }
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
 
 if (!is_string($param) || !is_string($value)) {
-    echo 'Invalid parameter type error for passed parameter</pre></body></html>';
+    echo 'Invalid parameter type error for passed parameter</pre></main></body></html>';
     exit;
 }
 if (strlen($value) < 3) {
-    echo 'Unset parameter error</pre></body></html>';
+    echo 'Unset parameter error</pre></main></body></html>';
     exit;
 }
 if (strlen($value) > 100) {
-    exit('Excessive parameter error</pre></body></html>');
+    echo 'Excessive parameter error</pre></main></body></html>';
+    exit;
 }
 if ((strpos($value, "'") !== false) || (strpos($value, '"') !== false) || (strpos($value, "|") !== false) || (strpos($value, " ") !== false)) {
-    echo 'Invalid parameter value error</pre></body></html>';
+    echo 'Invalid parameter value error</pre></main></body></html>';
     exit;
 }
 $param = mb_strtolower($param);
 if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) {
-   echo 'Unexpected parameter passed</pre></body></html>';
+   echo 'Unexpected parameter passed</pre></main></body></html>';
    exit;
 }
 
@@ -54,6 +55,6 @@ $page->expand_text();
 $text = $page->parsed_text();
 unset($page);
 
-echo "\n\n" . echoable('<ref>' . $text . '</ref>') . "\n\n</pre></main></body></html>";
+echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n</pre></main></body></html>";
 
 ?>
