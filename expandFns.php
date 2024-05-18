@@ -1531,7 +1531,7 @@ function hdl_decode(string $hdl): string {
 // @codeCoverageIgnoreStart
 
 /** @param array<string> $pages_in_category */
-function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
+function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): never {
     $final_edit_overview = "";
     // Remove pages with blank as the name, if present
     $key = array_search("", $pages_in_category);
@@ -1541,13 +1541,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     if (empty($pages_in_category)) {
         report_warning('No links to expand found');
         bot_html_footer();
-        return;
     }
     $total = count($pages_in_category);
     if ($total > MAX_PAGES) {
         report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) MAX_PAGES);
         bot_html_footer();
-        return;
     }
     big_jobs_check_overused($total);
 
@@ -1662,11 +1660,12 @@ function bot_html_header(): void {
     }
 }
 
-function bot_html_footer(): void {
+function bot_html_footer(): never {
     if (HTML_OUTPUT) {
         echo '</pre><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Another</a>?</footer></body></html>'; // @codeCoverageIgnore
     }
     echo "\n";
+    exit;
 }
 
 /** null/false/String of location */
