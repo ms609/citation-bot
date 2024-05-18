@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-@session_start(['read_and_close' => true]);
+session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 require_once 'setup.php';
@@ -16,40 +16,40 @@ bot_html_header();
 check_blocked();
 
 if (is_string(@$_POST['linkpage'])) {
-  $page_name = $_POST['linkpage'];
+    $page_name = $_POST['linkpage'];
 } else {
-  report_warning(' Error in passing of linked page name ');
-  bot_html_footer();
-  exit;
+    report_warning(' Error in passing of linked page name ');
+    bot_html_footer();
+    exit;
 }
 
 $page_name = str_replace(' ', '_', trim($page_name));
 if ($page_name === '') {
-  report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
-  bot_html_footer();
-  exit;
+    report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
+    bot_html_footer();
+    exit;
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
-  report_warning('API only intended for User generated pages for fixing specific issues ');
-  bot_html_footer();
-  exit;
+    report_warning('API only intended for User generated pages for fixing specific issues ');
+    bot_html_footer();
+    exit;
 }
 
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from {$page_name} | #UCB_webform_linked ";
 
 $json = WikipediaBot::get_links($page_name);
 unset($page_name);
 
 if ($json === '') {
-  report_warning(' Error getting page list');
-  bot_html_footer();
-  exit;
+    report_warning(' Error getting page list');
+    bot_html_footer();
+    exit;
 }
 $array = @json_decode($json, true);
 unset($json);
 if ($array === false || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
-  report_warning(' Error interpreting page list - perhaps page requested does not even exist');
-  bot_html_footer();
-  exit;
+    report_warning(' Error interpreting page list - perhaps page requested does not even exist');
+    bot_html_footer();
+    exit;
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 unset($array);
