@@ -299,7 +299,7 @@ final class WikipediaBot {
     public static function category_members(string $cat): array {
         $list = [];
         $vars = [
-            "cmtitle" => "Category:$cat", // Don't urlencode.
+            "cmtitle" => "Category:{$cat}", // Don't urlencode.
             "action" => "query",
             "cmlimit" => "500",
             "list" => "categorymembers",
