@@ -1623,6 +1623,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         echo "\n Done with page.";
     }
     bot_html_footer();
+    exit;
 }
 
 // @codeCoverageIgnoreEnd
