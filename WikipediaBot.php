@@ -535,7 +535,7 @@ final class WikipediaBot {
              $return = urlencode($return);
              @header("Location: authenticate.php?return=" . $return);
         }
-        exit(0);
+        exit;
     }
 
     private static function reset(object &$obj): object { // Make PHP 8 happy
