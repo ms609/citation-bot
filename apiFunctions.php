@@ -711,25 +711,25 @@ function query_crossref(string $doi): ?object {
 }
 
 function expand_doi_with_dx(Template $template, string $doi): void {
-        // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
-        // https://api.crossref.org/works/$doi can be used to find out the agency
-        // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
-        // Examples of DOI usage  https://www.doi.org/demos.html
-        // This basically does this:
-        // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
-        static $ch = null;
-        if ($ch === null) {
-        $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
-            [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
-        }
-        if (strpos($doi, '10.2307') === 0 || // jstor API is better
-            strpos($doi, '10.24436') === 0 || // They have horrible meta-data
-            strpos($doi, '10.5284/1028203') === 0) { // database
-            return;
-        }
-        set_time_limit(120);
-        /** @param array|string|int|null $data */
-        $try_to_add_it = function(string $name, $data) use($template): void {
+    // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
+    // https://api.crossref.org/works/$doi can be used to find out the agency
+    // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
+    // Examples of DOI usage  https://www.doi.org/demos.html
+    // This basically does this:
+    // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
+    static $ch = null;
+    if ($ch === null) {
+    $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
+        [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
+    }
+    if (strpos($doi, '10.2307') === 0 || // jstor API is better
+        strpos($doi, '10.24436') === 0 || // They have horrible meta-data
+        strpos($doi, '10.5284/1028203') === 0) { // database
+        return;
+    }
+    set_time_limit(120);
+    /** @param array|string|int|null $data */
+    $try_to_add_it = function(string $name, $data) use($template): void {
         if ($template->has($name)) {
             return; // Not worth updating based upon DX
         }
@@ -744,6 +744,12 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         }
         $data = (string) $data;
         if ($data === '') {
+            return;
+        }
+        if ($data === 'Array') {
+            return;
+        }
+        if (str_ends_with(strtolower($data), '.pdf')) {
             return;
         }
         $template->add_if_new($name, $data, 'dx');
@@ -769,7 +775,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     $json = @json_decode($data, true);
     unset($data);
     if($json === false || $json === null) {
-            return;
+        return;
     }
     // BE WARNED:  this code uses the "@$var" method.
     // If the variable is not set, then PHP just passes null, then that is interpreted as a empty string
@@ -804,10 +810,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
         unset($json['container-title']);   // @codeCoverageIgnore
     }
-    if (str_ends_with((string) @$json['title'], '.PDF') ||
-        str_ends_with((string) @$json['title'], '.pdf')) {
-            unset($json['title']);
-    }
+
     $type = (string) @$json['type'];
     if ($type === 'article-journal' ||
             $type === 'journal-article' ||
@@ -820,29 +823,29 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
     } elseif ($type === 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
-            $try_to_add_it('journal', @$json['container-title']);  // @codeCoverageIgnore
-            $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
+        $try_to_add_it('journal', @$json['container-title']);  // @codeCoverageIgnore
+        $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
     } elseif ($type === 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
-            $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
+        $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
     } elseif ($type === 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
-            $try_to_add_it('work', @$json['container-title']);    // @codeCoverageIgnore
-            $try_to_add_it('title', @$json['title']);        // @codeCoverageIgnore
+        $try_to_add_it('work', @$json['container-title']);    // @codeCoverageIgnore
+        $try_to_add_it('title', @$json['title']);        // @codeCoverageIgnore
     } elseif ($type === 'monograph' || $type === 'book' || $type === 'edited-book') {
-            $try_to_add_it('title', @$json['title']);
-            $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('title', @$json['title']);
+        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
     } elseif ($type === 'reference-book') { // VERY rare
-            $try_to_add_it('title', @$json['title']);          // @codeCoverageIgnore
-            $try_to_add_it('title', @$json['container-title']);      // @codeCoverageIgnore
-            $try_to_add_it('chapter', @$json['original-title']);    // @codeCoverageIgnore
-            $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
-            $try_to_add_it('publisher', @$json['publisher']);      // @codeCoverageIgnore
+        $try_to_add_it('title', @$json['title']);          // @codeCoverageIgnore
+        $try_to_add_it('title', @$json['container-title']);      // @codeCoverageIgnore
+        $try_to_add_it('chapter', @$json['original-title']);    // @codeCoverageIgnore
+        $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
+        $try_to_add_it('publisher', @$json['publisher']);      // @codeCoverageIgnore
     } elseif ($type === 'chapter' || $type === 'book-chapter') {
-            $try_to_add_it('title', @$json['container-title']);
-            $try_to_add_it('chapter', @$json['title']);
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('title', @$json['container-title']);
+        $try_to_add_it('chapter', @$json['title']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
     } elseif ($type === 'other') {
         if (isset($json['container-title'])) {
             $try_to_add_it('title', @$json['container-title']);
@@ -850,33 +853,33 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         } else {
             $try_to_add_it('title', @$json['title']);
         }
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
     } elseif ($type === 'dataset') {
-            $try_to_add_it('type', 'Data Set');
-            $try_to_add_it('title', @$json['title']);
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('type', 'Data Set');
+        $try_to_add_it('title', @$json['title']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
         if (!isset($json['categories']['1']) &&
                 (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
             $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
         }
     } elseif ($type === '' || $type === 'graphic' || $type === 'report' || $type === 'report-component') {  // Add what we can where we can
-            $try_to_add_it('title', @$json['title']);
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('title', @$json['title']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
     } elseif ($type === 'thesis' || $type === 'dissertation' || $type === 'dissertation-thesis') {
         $template->change_name_to('cite thesis');
-            $try_to_add_it('title', @$json['title']);
-            $try_to_add_it('location', @$json['publisher-location']);
-            $try_to_add_it('publisher', @$json['publisher']);
+        $try_to_add_it('title', @$json['title']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
         if (stripos(@$json['URL'], 'hdl.handle.net')) {
             $template->get_identifiers_from_url($json['URL']);
         }
     } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture') { // posted-content is from bioRxiv
             $try_to_add_it('title', @$json['title']);
     } else {
-            $try_to_add_it('title', @$json['title']);                          // @codeCoverageIgnore
+        $try_to_add_it('title', @$json['title']);                          // @codeCoverageIgnore
         if (!HTML_OUTPUT) {
             print_r($json);                              // @codeCoverageIgnore
         }
