@@ -746,6 +746,12 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         if ($data === '') {
             return;
         }
+        if ($data === 'Array') {
+            return;
+        }
+        if (str_ends_with(strtolower($data), '.pdf')) {
+            return;
+        }
         $template->add_if_new($name, $data, 'dx');
         return;
     };
@@ -804,17 +810,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
         unset($json['container-title']);   // @codeCoverageIgnore
     }
-    
-    if (isset($json['title'])) {
-        if (is_array($json['title'])) {
-            $pos_title = (string) @$json['title'][0];
-        } else {
-            $pos_title = (string) @$json['title'];
-        }
-        if (str_ends_with(strtolower($pos_title), '.pdf')) {
-            unset($json['title']);
-        }
-    }
+
     $type = (string) @$json['type'];
     if ($type === 'article-journal' ||
             $type === 'journal-article' ||
