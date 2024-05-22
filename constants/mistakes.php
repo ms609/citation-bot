@@ -693,7 +693,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'origina-year' => 'orig-year',
     'purl' => 'url',
     'titel' => 'title',
-    'titel' => 'title',
     'títle' => 'title',
     'url;' => 'url',
     'w ebsite' => 'website',
