@@ -956,6 +956,7 @@ final class Zotero {
                     // Too much bad data to risk switching journal to book or vice versa.
                     // also reject 'review'
                     if ($template->wikiname() === 'cite web' &&
+                            $template->blank('website') && // Leads to error
                             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === false &&
                             stripos($url, 'archive.org') === false && !preg_match('~^https?://[^/]*journal~', $url) &&
                             stripos($url, 'booklistonline') === false &&
@@ -965,7 +966,7 @@ final class Zotero {
                             stripos($url, 'data.bnf.fr') === false &&
                             stripos($url, 'audible.com') === false &&
                             stripos($url, 'elonet.fi') === false
-                            ) {
+                        ) {
                         $template->change_name_to('cite book');
                     }
                     break;
