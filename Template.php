@@ -7404,10 +7404,14 @@ final class Template
      return;
 
     case 'year':
-     if ($this->blank($param)) {
+     if ($this->blank('year')) {
       if ($this->has('date')) {
        $this->forget('year');
       }
+      return;
+     }
+     if ($this->get('year') === $this->get('date')) {
+      $this->forget('year');
       return;
      }
      if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) {
