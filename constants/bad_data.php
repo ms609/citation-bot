@@ -360,6 +360,7 @@ const BAD_TITLES = [
     'digital library - pdf document',
     'explore census data',
     'msn',
+    'request rejected',
 ];
 const IN_PRESS_ALIASES = [
     'in press',
@@ -2937,6 +2938,7 @@ const ALWAYS_BAD_TITLES = [
     'How to access research remotely',
     'Log In - ProQuest',
     'DPG Media Privacy Gate',
+    'Request Rejected',
 ];
 
 const DOI_FREE_PREFIX = [
