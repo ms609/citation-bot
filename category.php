@@ -59,7 +59,7 @@ if (!$category) {
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
 shuffle($pages_in_category);
 $total = count($pages_in_category);
-if ($total === 1) {
+if ($total === 0) {
     report_warning('Category appears to be empty');
     bot_html_footer();
 } elseif ($total > intval(MAX_PAGES / 4)) {
