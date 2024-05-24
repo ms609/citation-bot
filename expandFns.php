@@ -17,7 +17,8 @@ final class HandleCache {
         '10.1267/science.040579197' => true,
         '10.0000/Rubbish_bot_failure_test' => true,
         '10.0000/Rubbish_bot_failure_test2' => true,
-        '10.0000/Rubbish_bot_failure_test.x' => true];
+        '10.0000/Rubbish_bot_failure_test.x' => true,
+    ];
 
     /** @var array<bool> $cache_active */
     public static array $cache_active = [];              // DOI is in CrossRef and works
@@ -115,7 +116,8 @@ function is_doi_active(string $doi): ?bool {
         $ch = bot_curl_init(1.0, [
             CURLOPT_HEADER => true,
             CURLOPT_NOBODY => false,
-            CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+            CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
+        ]);
     }
     $doi = trim($doi);
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
@@ -474,7 +476,7 @@ function wikify_external_text(string $title): string {
         if (mb_substr_count($title, '.') === 1) { // Only one period
             $title = mb_substr($title, 0, -1);
         } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
-            ;
+            /** do nothing */
         } else { // Multiple periods and at least one space
             $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
             $last_word = mb_substr($title, $last_word_start);
@@ -709,8 +711,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = mb_strtolower($inTitle);
     $inTitle2 = mb_strtolower($inTitle2);
     $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
-            "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
-            "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
+        "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
+        "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−",
+    ];
     $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
@@ -1412,7 +1415,8 @@ function prior_parameters(string $par, array $list=[]): array {
             return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
                 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                'transcripturl', 'URL'], $list));
+                'transcripturl', 'URL',
+            ], $list));
         case 'archive-date':
         case 'archivedate':
             return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
@@ -2909,8 +2913,9 @@ function get_headers_array(string $url): false|array {
     static $context_insecure;
     if (!isset($context_insecure)) {
         $context_insecure = stream_context_create([
-                'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
-                'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
+        ]);
     }
     set_time_limit(120);
     if ($last_url === $url) {
