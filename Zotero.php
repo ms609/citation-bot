@@ -13,7 +13,7 @@ const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero
     @param array<Template> $templates
 */
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
-        Zotero::query_url_api_class($templates);
+    Zotero::query_url_api_class($templates);
 }
 
 final class Zotero {
@@ -44,7 +44,7 @@ final class Zotero {
         self::$zotero_ch = bot_curl_init($time, [
             CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Cache-Control: no-cache, must-revalidate'],
-            ]);
+        ]);
 
         self::$ch_ieee = bot_curl_init($time, [CURLOPT_USERAGENT => 'curl']); // IEEE requires JavaScript, unless curl is specified
 

@@ -48,16 +48,16 @@ final class AdsAbsControl {
     public static function add_doi_map(string $bib, string $doi): void {
         self::check_memory_use();
         if ($bib === '' || $doi === '') {
-                report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
-                return; // @codeCoverageIgnore
+            report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
+            return; // @codeCoverageIgnore
         }
         if ($doi === 'X') {
-                self::$bib2doi[$bib] = 'X';
+            self::$bib2doi[$bib] = 'X';
         } elseif (doi_works($doi)) { // paranoid
-                self::$bib2doi[$bib] = $doi;
-                if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
-                        self::$doi2bib[$doi] = $bib;
-                }
+            self::$bib2doi[$bib] = $doi;
+            if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
+                self::$doi2bib[$doi] = $bib;
+            }
         }
     }
     public static function get_doi2bib(string $doi): string {
@@ -411,7 +411,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => true,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids)];
+        CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids),
+    ];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     if (!isset($response->docs)) {
         return;
@@ -898,14 +899,14 @@ function expand_by_jstor(Template $template): void {
         return;
     }
     if ($template->has('jstor')) {
-            $jstor = trim($template->get('jstor'));
+        $jstor = trim($template->get('jstor'));
     } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
-            $jstor = $match[1];
+        $jstor = $match[1];
     } else {
-            return;
+        return;
     }
     if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
-            $jstor = $match[1]; // remove ?seq= stuff
+        $jstor = $match[1]; // remove ?seq= stuff
     }
     /** @psalm-taint-escape ssrf */
     $jstor = trim($jstor);
@@ -974,8 +975,8 @@ function expand_by_jstor(Template $template): void {
                         $new_title = trim($ris_part[1]) . $new_title;
                         $got_count += 100;
                         break;
-                default:
-                    break;
+                    default:
+                        break;
                 }
             }
             if ($got_count === 110) { // Exactly one of each
@@ -1120,15 +1121,15 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             $template->forget('title');
         }
         if ($template->blank(['chapter', 'series', 'script-title']) &&
-                !$template->blank(['archive-url', 'archiveurl']) &&
-                ($template->blank(WORK_ALIASES) || $template->has('website'))    &&
-                ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
-                strtolower($template->get('title')) === 'archive copy' ||
-                strtolower($template->get('title')) === 'usurped title' ||
+            !$template->blank(['archive-url', 'archiveurl']) &&
+            ($template->blank(WORK_ALIASES) || $template->has('website'))    &&
+            ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
+            strtolower($template->get('title')) === 'archive copy' ||
+            strtolower($template->get('title')) === 'usurped title' ||
             substr_count($template->get('title'), '?') > 10 ||
             substr_count($template->get('title'), '') >0 ||
-                substr_count($template->get('title'), '') >0 ||
-                substr_count($template->get('title'), '') >0 ||
+            substr_count($template->get('title'), '') >0 ||
+            substr_count($template->get('title'), '') >0 ||
             substr_count($template->get('title'), '') >0 ||
             substr_count($template->get('title'), '') >0 ||
             substr_count($template->get('title'), '') >0 ||
@@ -1148,12 +1149,13 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 curl_setopt($ch, CURLOPT_URL, $archive_url);
                 $raw_html = bot_curl_exec($ch);
                 foreach ([
-                        '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                        '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
-                        '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                        '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
-                        '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
-                        '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~'] as $regex) {
+                    '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                    '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
+                    '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                    '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                    '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
+                    '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~',
+                    ] as $regex) {
                     set_time_limit(120); // Slow regex sometimes
                     if ($raw_html && preg_match($regex, $raw_html, $match)) {
                         set_time_limit(120);
@@ -1384,14 +1386,14 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
-                                    CURLOPT_POST => true,
-                                    CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
-                                    ]);
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
+        ]);
     }
     curl_setopt_array($ch, [
-                            CURLOPT_URL => $url,
-                            CURLOPT_POSTFIELDS => $post,
-                            ]);
+        CURLOPT_URL => $url,
+        CURLOPT_POSTFIELDS => $post,
+    ]);
     $output = bot_curl_exec($ch);
     $xml = @simplexml_load_string($output);
     if ($xml === false) {
@@ -1524,7 +1526,8 @@ function query_adsabs(string $options): object {
     $curl_opts=[
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => true,
-        CURLOPT_URL => $adsabs_url];
+        CURLOPT_URL => $adsabs_url,
+    ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
 

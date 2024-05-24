@@ -32,9 +32,9 @@ final class WikipediaBot {
         // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         self::$ch_write  = bot_curl_init(1.0,
                 [CURLOPT_FAILONERROR => true,
-                CURLOPT_POST => true,
-                CURLOPT_REFERER => "https://citations.toolforge.org/",
-                CURLOPT_URL => API_ROOT,
+                    CURLOPT_POST => true,
+                    CURLOPT_REFERER => "https://citations.toolforge.org/",
+                    CURLOPT_URL => API_ROOT,
                 ]);
         self::$ch_logout = bot_curl_init(1.0,
                 [CURLOPT_REFERER => "https://citations.toolforge.org/", CURLOPT_FAILONERROR => true ]);
@@ -360,7 +360,7 @@ final class WikipediaBot {
             "action" => "query",
             "prop" => "info",
             "titles" => $page,
-            ]);
+        ]);
         $res = @json_decode($res);
         if (!isset($res->query->pages)) {
             report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -374,7 +374,7 @@ final class WikipediaBot {
             "action" => "query",
             "redirects" => "1",
             "titles" => $page,
-            ]);
+        ]);
         $res = @json_decode($res);
         if (!isset($res->query->redirects[0]->to)) {
             report_warning("Failed to get redirect target");     // @codeCoverageIgnore
@@ -432,8 +432,9 @@ final class WikipediaBot {
 
     public static function GetAPage(string $title): string {
         curl_setopt_array(self::$ch_logout,
-                            [CURLOPT_HTTPGET => true,
-                             CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+                                [CURLOPT_HTTPGET => true,
+                                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw',]),
+                                ]);
         $text = @curl_exec(self::$ch_logout);
         if ($text === false) {
             // @codeCoverageIgnoreStart
@@ -521,7 +522,7 @@ final class WikipediaBot {
                 session_write_close(); // Done with the session
                 return;
             }
-            catch (Throwable $e) { ; }
+            catch (Throwable $e) { /** fall through */ }
         }
         if (empty($_SERVER['REQUEST_URI'])) {
              unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']); // Blow everything away
