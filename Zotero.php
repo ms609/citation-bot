@@ -13,7 +13,7 @@ const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero
     @param array<Template> $templates
 */
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
-        Zotero::query_url_api_class($templates);
+    Zotero::query_url_api_class($templates);
 }
 
 final class Zotero {
