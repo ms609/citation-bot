@@ -706,42 +706,39 @@ class Page {
     public function write(WikipediaBot $api, string $edit_summary_end = ''): bool {
         /** @var array<bool> $failures */
         static $failures = [false, false, false, false, false];
-        if ($this->allow_bots()) {
-            $failures[0] = $failures[1];
-            $failures[1] = $failures[2];
-            $failures[2] = $failures[3];
-            $failures[3] = $failures[4];
-            $failures[4] = false;
-            throttle(); // This is only writing.    Not pages that are left unchanged
-            if ($api->write_page($this->title, $this->text,
-                            $this->edit_summary() . $edit_summary_end,
-                            $this->lastrevid, $this->read_at)) {
-                return true;
-            } elseif (!TRAVIS) { // @codeCoverageIgnoreStart
-                sleep(9);    // could be database being locked
-                report_info("Trying to write again after waiting");
-                $return = $api->write_page($this->title, $this->text,
-                            $this->edit_summary() . $edit_summary_end,
-                            $this->lastrevid, $this->read_at);
-                if ($return) {
-                    return true;
-                } else {
-                    $failures[4] = true;
-                    if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
-                        report_error("Five failures in a row -- shutting down the bot on page " . echoable($this->title));
-                    }
-                    sleep(4);
-                    return false;
-                }
-            } else {
-                return false;
-            }
-            // @codeCoverageIgnoreEnd
-        } else {
-            report_warning("Can't write to " . echoable($this->title) .
-                " - prohibited by {{bots}} template.");
+        if (!$this->allow_bots()) {
+            report_warning("Can't write to " . echoable($this->title) . " - prohibited by {{bots}} template.");
             return false;
         }
+        $failures[0] = $failures[1];
+        $failures[1] = $failures[2];
+        $failures[2] = $failures[3];
+        $failures[3] = $failures[4];
+        $failures[4] = false;
+        throttle(); // This is only writing.    Not pages that are left unchanged
+        if ($api->write_page($this->title, $this->text,
+                        $this->edit_summary() . $edit_summary_end,
+                        $this->lastrevid, $this->read_at)) {
+            return true;
+        }
+        if (TRAVIS) {   // @codeCoverageIgnoreStart
+            return false;
+        }
+        sleep(9);    // could be database being locked
+        report_info("Trying to write again after waiting");
+        $return = $api->write_page($this->title, $this->text,
+                    $this->edit_summary() . $edit_summary_end,
+                    $this->lastrevid, $this->read_at);
+        if ($return) {
+            return true;
+        }
+        $failures[4] = true;
+        if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
+            report_error("Five failures in a row -- shutting down the bot on page " . echoable($this->title));
+        }
+        sleep(4);
+        return false;
+        // @codeCoverageIgnoreEnd
     }
 
     /** @param class-string $class
