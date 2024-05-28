@@ -721,9 +721,9 @@ class Page {
                         $this->lastrevid, $this->read_at)) {
             return true;
         }
-        if (TRAVIS) {   // @codeCoverageIgnoreStart
+        if (TRAVIS) {
             return false;
-        }
+        }    // @codeCoverageIgnoreStart
         sleep(9);    // could be database being locked
         report_info("Trying to write again after waiting");
         $return = $api->write_page($this->title, $this->text,
@@ -736,7 +736,7 @@ class Page {
         if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
             report_error("Five failures in a row -- shutting down the bot on page " . echoable($this->title));
         }
-        sleep(4);
+        sleep(9);
         return false;
         // @codeCoverageIgnoreEnd
     }
