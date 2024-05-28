@@ -974,7 +974,7 @@ final class Template
  public function api_has_used(string $api, array $param): bool
  {
   if (!isset($this->used_by_api[$api])) {
-   report_error("Invalid API: $api");
+   report_error("Invalid API: " . $api);
   }
   /** @psalm-suppress all */
   return (bool) count(array_intersect($param, $this->used_by_api[$api]));
@@ -1493,7 +1493,7 @@ final class Template
    case "author89":
    case "author99":
     if (
-     $this->blank(array_merge(COAUTHOR_ALIASES, ["last$auNo", "author$auNo"])) &&
+     $this->blank(array_merge(COAUTHOR_ALIASES, ["last{$auNo}", "author{$auNo}"])) &&
      strpos($this->get('author') . $this->get('authors'), ' and ') === false &&
      strpos($this->get('author') . $this->get('authors'), '; ') === false &&
      strpos($this->get('author') . $this->get('authors'), ' et al') === false
@@ -2674,7 +2674,7 @@ final class Template
    if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS, true) || stripos($check_against, $name_as_publisher) !== false) {
     $this->add_if_new('publisher', $name_as_publisher);
    } else {
-    $this->add_if_new($author_param, format_author($author . ($forename ? ", $forename" : '')));
+    $this->add_if_new($author_param, format_author($author . ($forename ? ", {$forename}" : '')));
    }
   }
  }
@@ -2947,7 +2947,7 @@ final class Template
      foreach ($data_array as $val) {
       if (!in_array(strtolower($val), ['the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't', 'an', 'as', 'at', 'and', 'but', 'how', 'why', 'by', 'when', 'with', 'who', 'where', ''], true) && mb_strlen($val) > 3) {
        // Small words are NOT indexed
-       $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+       $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
       }
      }
     }
@@ -2956,25 +2956,25 @@ final class Template
     if ($pages) {
      $val = $pages[1];
      $key = 'Pagination';
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
     }
    } elseif ($term === "surname") {
     $val = $this->first_surname();
     if ($val) {
      $key = 'Author';
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
     }
    } elseif ($term === "year") {
     $key = 'Publication Date';
     $val = $this->year();
     if ($val) {
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
     }
    } elseif ($term === "doi") {
     $key = 'AID';
     $val = $this->get_without_comments_and_placeholders($term);
     if ($val) {
-     $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
+     $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
     }
    } else {
     $key = $key_index[$term]; // Will crash if bad data is passed
@@ -2987,7 +2987,7 @@ final class Template
      }
      $val = strip_diacritics($val);
      $val = straighten_quotes($val, true);
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
     }
    }
   }
@@ -3354,7 +3354,7 @@ final class Template
      break;
     case "AU":
      $ris_authors++;
-     $ris_parameter = "author$ris_authors";
+     $ris_parameter = "author{$ris_authors}";
      $ris_part[1] = format_author($ris_part[1]);
      break;
     case "Y1":
@@ -3395,18 +3395,18 @@ final class Template
      break;
     case "RI": // Deal with review titles later
      $ris_review = "Reviewed work: " . trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
      break;
     case "SN": // Deal with ISSN later
      $ris_issn = trim($ris_part[1]);
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
      break;
     case "UR":
      $ris_parameter = "url";
      break;
     case "PB": // Deal with publisher later
      $ris_publisher = trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
      break;
     case "M3":
     case "N1":
@@ -3431,7 +3431,7 @@ final class Template
     case "Provider: JSTOR http://www.jstor.org":
     case "Database: JSTOR":
     case "Content: text/plain; charset=\"UTF-8\"":
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}")); // Ignore these completely
      break;
     default:
      if (isset($ris_part[1])) {
@@ -3440,7 +3440,7 @@ final class Template
    }
    unset($ris_part[0]);
    if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $this->add_if_new($ris_parameter, trim(implode($ris_part))))) {
-    $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+    $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
    }
   }
   if ($ris_review) {
@@ -3560,7 +3560,7 @@ final class Template
   } // TODO - maybe all ISBN
   set_time_limit(120);
   /** @psalm-taint-escape ssrf */
-  $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
+  $url = "https://api.unpaywall.org/v2/{$doi}?email=" . CROSSREFUSERNAME;
   curl_setopt($ch_oa, CURLOPT_URL, $url);
   $json = bot_curl_exec($ch_oa);
   if ($json) {
@@ -4130,7 +4130,7 @@ final class Template
       case "A":
        ++$endnote_authors;
        $this->add_if_new('author' . (string) $endnote_authors, format_author($endnote_datum));
-       $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+       $dat = trim(str_replace("\n%" . $endnote_line, "", "\n" . $dat));
        $endnote_parameter = false;
        break;
       case "D":
@@ -4184,7 +4184,7 @@ final class Template
       case "0": // Citation type
       case "X": // Abstract
       case "M": // Object identifier
-       $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+       $dat = trim(str_replace("\n%" . $endnote_line, "", "\n" . $dat));
        $endnote_parameter = false;
        break;
       default:
@@ -4192,7 +4192,7 @@ final class Template
      }
      if ($endnote_parameter) {
       $this->add_if_new($endnote_parameter, $endnote_datum);
-      $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
+      $dat = trim(str_replace("\n%" . $endnote_line, "", "\n$dat"));
      }
     }
    }
@@ -4782,13 +4782,13 @@ final class Template
     } elseif ($shortest < 12 && $shortest < $shortish) {
      bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
      $p->param = $closest;
-     report_inline("replaced with $closest (likelihood " . (string) round(24.0 - $shortest, 1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
+     report_inline("replaced with {$closest} (likelihood " . (string) round(24.0 - $shortest, 1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
     } else {
      $similarity = (float) similar_text($p->param, $closest) / (float) strlen($p->param);
      if ($similarity > 0.6) {
       bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
       $p->param = $closest;
-      report_inline("replaced with $closest (similarity " . (string) round(24.0 * $similarity, 1) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+      report_inline("replaced with {$closest} (similarity " . (string) round(24.0 * $similarity, 1) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
      } else {
       bot_debug_log("levenshtein could not fix " . $p->param);
       report_inline("could not be replaced with confidence. Please check the citation yourself.");
@@ -5258,7 +5258,7 @@ final class Template
       if ($pmatch[2]) {
        $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
        if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
-        $others = trim("$match[1] $match[5]");
+        $others = trim($match[1] . ' ' . $match[5]);
         if ($this->has('others')) {
          $this->append_to('others', '; ' . $others);
         } else {
@@ -8539,7 +8539,7 @@ final class Template
 
  public function add(string $par, string $val): bool
  {
-  report_add(echoable("Adding $par: $val"));
+  report_add(echoable("Adding $par: " . $val));
   $could_set = $this->set($par, $val);
   $this->tidy_parameter($par);
   return $could_set;
