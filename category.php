@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 set_time_limit(120);
-@session_start(['read_and_close' => true]);
+session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 require_once 'setup.php';
@@ -29,7 +29,7 @@ const GET_IS_OKAY = [
 
 $api = new WikipediaBot();
 $category = '';
-if (is_string(@$_POST["cat"])) {
+if (isset($_POST["cat"]) && is_string($_POST["cat"])) {
     $category = trim($_POST["cat"]);
 }
 if (strtolower(substr($category, 0, 9)) === 'category:') {
