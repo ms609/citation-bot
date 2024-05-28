@@ -614,10 +614,10 @@ class Page {
                 }
             }
             if ($max_au) {
-                $auto_summary .= "authors $min_au-$max_au. ";
+                $auto_summary .= "authors {$min_au}-{$max_au}. ";
             }
             if ($max_ed) {
-                $auto_summary .= "editors $min_ed-$max_ed. ";
+                $auto_summary .= "editors {$min_ed}-{$max_ed}. ";
             }
             if (!$max_ed && !$max_au) {
                 $auto_summary = substr($auto_summary, 0, -2) . '. ';
