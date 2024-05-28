@@ -3354,7 +3354,7 @@ final class Template
      break;
     case "AU":
      $ris_authors++;
-     $ris_parameter = "author{$ris_authors}";
+     $ris_parameter = "author". $ris_authors;
      $ris_part[1] = format_author($ris_part[1]);
      break;
     case "Y1":
@@ -3366,11 +3366,11 @@ final class Template
      break;
     case "SP": // Deal with start pages later
      $start_page = trim($ris_part[1]);
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "EP": // Deal with end pages later
      $end_page = trim($ris_part[1]);
-     $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "DO":
      $ris_parameter = doi_active($ris_part[1]) ? "doi" : false;
@@ -3395,18 +3395,18 @@ final class Template
      break;
     case "RI": // Deal with review titles later
      $ris_review = "Reviewed work: " . trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "SN": // Deal with ISSN later
      $ris_issn = trim($ris_part[1]);
-     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "UR":
      $ris_parameter = "url";
      break;
     case "PB": // Deal with publisher later
      $ris_publisher = trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "M3":
     case "N1":
@@ -3431,7 +3431,7 @@ final class Template
     case "Provider: JSTOR http://www.jstor.org":
     case "Database: JSTOR":
     case "Content: text/plain; charset=\"UTF-8\"":
-     $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}")); // Ignore these completely
+     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
      break;
     default:
      if (isset($ris_part[1])) {
@@ -3440,7 +3440,7 @@ final class Template
    }
    unset($ris_part[0]);
    if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $this->add_if_new($ris_parameter, trim(implode($ris_part))))) {
-    $dat = trim(str_replace("\n$ris_line", "", "\n{$dat}"));
+    $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
    }
   }
   if ($ris_review) {
@@ -4192,7 +4192,7 @@ final class Template
      }
      if ($endnote_parameter) {
       $this->add_if_new($endnote_parameter, $endnote_datum);
-      $dat = trim(str_replace("\n%" . $endnote_line, "", "\n$dat"));
+      $dat = trim(str_replace("\n%" . $endnote_line, "", "\n" . $dat));
      }
     }
    }
@@ -8539,7 +8539,7 @@ final class Template
 
  public function add(string $par, string $val): bool
  {
-  report_add(echoable("Adding $par: " . $val));
+  report_add(echoable("Adding " . $par . ": " . $val));
   $could_set = $this->set($par, $val);
   $this->tidy_parameter($par);
   return $could_set;
