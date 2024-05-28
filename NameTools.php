@@ -94,15 +94,17 @@ function format_surname(string $surname): string {
     $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
     if (mb_substr($surname, 0, 2) === "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
-    } elseif (mb_substr($surname, 0, 2) === "mc") {
-        return "Mc" . format_surname_2(mb_substr($surname, 2));
-    } elseif (mb_substr($surname, 0, 3) === "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
-        return "Mac" . format_surname_2(mb_substr($surname, 3));
-    } elseif (mb_substr($surname, 0, 1) === "&") {
-        return "&" . format_surname_2(mb_substr($surname, 1));
-    } else {
-        return format_surname_2($surname); // Case of surname
     }
+    if (mb_substr($surname, 0, 2) === "mc") {
+        return "Mc" . format_surname_2(mb_substr($surname, 2));
+    }
+    if (mb_substr($surname, 0, 3) === "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
+        return "Mac" . format_surname_2(mb_substr($surname, 3));
+    }
+    if (mb_substr($surname, 0, 1) === "&") {
+        return "&" . format_surname_2(mb_substr($surname, 1));
+    }
+    return format_surname_2($surname); // Case of surname
 }
 
 function format_surname_2(string $surname): string {
