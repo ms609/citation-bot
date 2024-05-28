@@ -15,7 +15,7 @@ bot_html_header();
 
 check_blocked();
 
-if (is_string(@$_POST['linkpage'])) {
+if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];
 } else {
     report_warning(' Error in passing of linked page name ');
