@@ -433,7 +433,7 @@ final class WikipediaBot {
     public static function GetAPage(string $title): string {
         curl_setopt_array(self::$ch_logout,
                                 [CURLOPT_HTTPGET => true,
-                                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw',]),
+                                    CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw',]),
                                 ]);
         $text = @curl_exec(self::$ch_logout);
         if ($text === false) {
