@@ -55,8 +55,7 @@ function clean_up_last_names(string $value): string {
     } else {
         $value = sanitize_string($value);
     }
-    $value = str_replace('..', '.', $value);
-    return $value;
+    return str_replace('..', '.', $value);
 }
 
 function clean_up_first_names(string $value): string {
@@ -115,12 +114,11 @@ function format_surname_2(string $surname): string {
         },
         $ret);
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
-    $ret = preg_replace_callback('~;\w~',
+    return preg_replace_callback('~;\w~',
         static function(array $matches): string {
             return mb_strtolower($matches[0]);
         },
         $ret);
-    return $ret;
 }
 
 function format_forename(string $forename): string {
