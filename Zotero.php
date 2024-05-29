@@ -1196,10 +1196,10 @@ final class Zotero {
                 if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
                     $url = "http://" . $url; // Try it with http
                 }
-                if (preg_match (REGEXP_IS_URL, $url) !== 1) {
+                if (preg_match(REGEXP_IS_URL, $url) !== 1) {
                     return false;  // See https://mathiasbynens.be/demo/url-regex/ This regex is more exact than validator. We only spend time on this after quick and dirty check is passed
                 }
-                if (preg_match ('~^https?://[^/]+/?$~', $url) === 1) {
+                if (preg_match('~^https?://[^/]+/?$~', $url) === 1) {
                     return false; // Just a host name
                 }
                 $template->rename('website', 'url'); // Change name it first, so that parameters stay in same order
