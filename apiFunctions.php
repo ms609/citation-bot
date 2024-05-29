@@ -1240,8 +1240,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
             throw new Exception('Curl error from AdsAbs website: ' . $errorStr, $errnoInt);
             // @codeCoverageIgnoreEnd
         }
-        $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $http_response_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         if ($http_response_code === 0 || $header_length === 0) {
             throw new Exception('Size of zero from AdsAbs website');
         }
