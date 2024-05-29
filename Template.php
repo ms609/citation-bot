@@ -3727,8 +3727,8 @@ final class Template
      // The above line might have eaten the URL and upgraded it
      $the_url = $this->get($url_type);
      $ch = bot_curl_init(1.5, [
-      CURLOPT_HEADER => true,
-      CURLOPT_NOBODY => true,
+      CURLOPT_HEADER => '1',
+      CURLOPT_NOBODY => '1',
       CURLOPT_SSL_VERIFYHOST => 0,
       CURLOPT_SSL_VERIFYPEER => false,
       CURLOPT_SSL_VERIFYSTATUS => false,
