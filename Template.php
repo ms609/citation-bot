@@ -8348,8 +8348,7 @@ final class Template
   } else {
    $page = $this->get('page');
   }
-  $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
-  return $page;
+  return str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
  }
 
  public function year(): string
@@ -8515,8 +8514,7 @@ final class Template
   $ret = safe_preg_replace('~<!--.*?-->~su', '', $ret); // Comments
   $ret = safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped. Case insensitive
   $ret = str_replace("\xc2\xa0", ' ', $ret); // Replace non-breaking with breaking spaces, which are trimmable
-  $ret = trim($ret);
-  return $ret;
+  return trim($ret);
  }
 
  private function get_param_key(string $needle): ?int
