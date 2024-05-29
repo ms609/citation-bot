@@ -138,7 +138,7 @@ if (!(strpos($nlm_email, '@') > 0)) {
 if (strlen($nlm_apikey) < 8) {
     $nlm_apikey = "";
 }
-define ("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
+define("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
 unset($nlm_email, $nlm_apikey, $nlm_tool);
 
 function check_blocked(): void {
