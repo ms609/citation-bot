@@ -1480,7 +1480,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($httpCode === 200 &&
             stripos($ris, $doi) !== false &&
-            strpos ($ris, 'Provider') !== false &&
+            strpos($ris, 'Provider') !== false &&
             stripos($ris, 'No RIS data found for') === false &&
             stripos($ris, 'Block Reference') === false &&
             stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
