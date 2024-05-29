@@ -123,7 +123,7 @@ function is_doi_active(string $doi): ?bool {
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
     curl_setopt($ch, CURLOPT_URL, $url);
     $return = bot_curl_exec($ch);
-    $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -131,7 +131,7 @@ function is_doi_active(string $doi): ?bool {
         sleep(4);                                                             // @codeCoverageIgnoreStart
         $return = bot_curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($return, 0, $header_length);
         $body = substr($return, $header_length);                               // @codeCoverageIgnoreEnd
     }
@@ -1477,7 +1477,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     }
     curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
     $ris = bot_curl_exec($ch);
-    $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($httpCode === 200 &&
             stripos($ris, $doi) !== false &&
             strpos ($ris, 'Provider') !== false &&
