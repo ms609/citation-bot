@@ -20,7 +20,7 @@ require_once 'constants.php';           // @codeCoverageIgnore
 class Page {
     protected string $text = '';
     protected string $title = '';
-    /** @var array<mixed> $modifications */
+    /** @var array<array|bool> $modifications */
     private array $modifications = [];
     private int $date_style = DATES_WHATEVER;
     private int $name_list_style = NAME_LIST_STYLE_DEFAULT;
