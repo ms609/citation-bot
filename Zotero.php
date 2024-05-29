@@ -1150,8 +1150,7 @@ final class Zotero {
                                                 ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
         $url = substr($url, 0, -1); // Remove the ending slash we added
         $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
-        $url = str_ireplace('https', 'http', $url);
-        return $url;
+        return str_ireplace('https', 'http', $url);
     }
 
     public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
