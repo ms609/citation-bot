@@ -3729,7 +3729,7 @@ final class Template
      $ch = bot_curl_init(1.5, [
       CURLOPT_HEADER => true,
       CURLOPT_NOBODY => true,
-      CURLOPT_SSL_VERIFYHOST => 0,
+      CURLOPT_SSL_VERIFYHOST => '0',
       CURLOPT_SSL_VERIFYPEER => false,
       CURLOPT_SSL_VERIFYSTATUS => false,
       CURLOPT_URL => $the_url,
