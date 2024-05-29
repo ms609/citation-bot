@@ -730,7 +730,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     set_time_limit(120);
     /** @param array|string|int|null $data */
-    $try_to_add_it = function(string $name, $data) use($template): void {
+    $try_to_add_it = static function(string $name, $data) use($template): void {
         if ($template->has($name)) {
             return; // Not worth updating based upon DX
         }
