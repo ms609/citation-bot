@@ -753,7 +753,7 @@ class Page {
         $placeholder_text = $class::PLACEHOLDER_TEXT;
         /** @var bool $treat_identical_separately */
         $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
-        /** @var array<WikiThings|Template> */
+        /** @var array<WikiThings|Template> $objects */
         $objects = [];
 
         if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
