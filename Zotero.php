@@ -1594,7 +1594,7 @@ final class Zotero {
                             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
                             curl_setopt(self::$ch_pmc, CURLOPT_URL, $test_url);
                             bot_curl_exec(self::$ch_pmc);
-                            $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
+                            $httpCode = (int) curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
                             if ($httpCode > 399 || ($httpCode === 0)) { // Some PMCs do NOT resolve. So leave URL
                                 return $template->add_if_new('pmc', $new_pmc);
                             }
