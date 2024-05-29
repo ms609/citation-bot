@@ -3526,7 +3526,7 @@ final class Template
  {
   static $ch = null;
   if ($ch === null) {
-   $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+   $ch = bot_curl_init(0.5, HEADER_S2);
   }
   set_time_limit(120);
   if ($this->has('pmc') || ($this->has('doi') && $this->get('doi-access') === 'free') || ($this->has('jstor') && $this->get('jstor-access') === 'free')) {
