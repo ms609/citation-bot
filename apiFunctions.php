@@ -1020,7 +1020,7 @@ function expand_by_jstor(Template $template): void {
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+        $ch = bot_curl_init(0.5, HEADER_S2);
     }
     $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -1049,7 +1049,7 @@ function getS2CID(string $url): string {
 function ConvertS2CID_DOI(string $s2cid): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+        $ch = bot_curl_init(0.5, HEADER_S2);
     }
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
@@ -1085,7 +1085,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
 function get_semanticscholar_license(string $s2cid): ?bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+        $ch = bot_curl_init(0.5, HEADER_S2);
     }
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
     curl_setopt($ch, CURLOPT_URL, $url);

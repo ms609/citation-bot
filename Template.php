@@ -3526,7 +3526,7 @@ final class Template
  {
   static $ch = null;
   if ($ch === null) {
-   $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+   $ch = bot_curl_init(0.5, HEADER_S2);
   }
   set_time_limit(120);
   if ($this->has('pmc') || ($this->has('doi') && $this->get('doi-access') === 'free') || ($this->has('jstor') && $this->get('jstor-access') === 'free')) {
@@ -3727,11 +3727,11 @@ final class Template
      // The above line might have eaten the URL and upgraded it
      $the_url = $this->get($url_type);
      $ch = bot_curl_init(1.5, [
-      CURLOPT_HEADER => true,
-      CURLOPT_NOBODY => true,
+      CURLOPT_HEADER => '1',
+      CURLOPT_NOBODY => '1',
       CURLOPT_SSL_VERIFYHOST => '0',
-      CURLOPT_SSL_VERIFYPEER => false,
-      CURLOPT_SSL_VERIFYSTATUS => false,
+      CURLOPT_SSL_VERIFYPEER => '0',
+      CURLOPT_SSL_VERIFYSTATUS => '0',
       CURLOPT_URL => $the_url,
      ]);
      $headers_test = bot_curl_exec($ch);

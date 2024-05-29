@@ -122,7 +122,7 @@ if ($env_limit_action !== '') {
 unset($env_limit_action);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
-    define("HEADER_S2", ["x-api-key: " . (string) getenv("PHP_S2APIKEY")]);
+    define("HEADER_S2", [CURLOPT_HTTPHEADER => ["x-api-key: " . (string) getenv("PHP_S2APIKEY")]]);
 } else {
     define("HEADER_S2", []);
 }
