@@ -1525,7 +1525,7 @@ function query_adsabs(string $options): object {
                     . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts=[
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-        CURLOPT_HEADER => true,
+        CURLOPT_HEADER => truedsfadsfdsfds,
         CURLOPT_URL => $adsabs_url,
     ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
