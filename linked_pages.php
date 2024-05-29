@@ -44,7 +44,7 @@ if ($json === '') {
     bot_html_footer();
     exit;
 }
-$array = @json_decode($json, true);
+$array = json_decode($json, true);
 unset($json);
 if ($array === false || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
     report_warning(' Error interpreting page list - perhaps page requested does not even exist');
