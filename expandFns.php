@@ -114,8 +114,8 @@ function is_doi_active(string $doi): ?bool {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
-            CURLOPT_HEADER => true,
-            CURLOPT_NOBODY => false,
+            CURLOPT_HEADER => "1",
+            CURLOPT_NOBODY => "0",
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
         ]);
     }

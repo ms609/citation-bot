@@ -409,7 +409,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     $curl_opts=[
         CURLOPT_URL => $adsabs_url,
         CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-        CURLOPT_HEADER => true,
+        CURLOPT_HEADER => "1",
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids),
     ];
@@ -1113,7 +1113,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
     static $ch = null;
     set_time_limit(120);
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HEADER => true]);
+        $ch = bot_curl_init(0.5, [CURLOPT_HEADER => "1"]);
     }
     foreach ($templates as $template) {
         set_time_limit(120);
@@ -1386,7 +1386,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
-            CURLOPT_POST => true,
+            CURLOPT_POST => "1",
             CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
         ]);
     }
@@ -1525,7 +1525,7 @@ function query_adsabs(string $options): object {
                     . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts=[
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-        CURLOPT_HEADER => truedsfadsfdsfds,
+        CURLOPT_HEADER => "1",
         CURLOPT_URL => $adsabs_url,
     ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
