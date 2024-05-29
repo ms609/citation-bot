@@ -5513,7 +5513,7 @@ final class Template
        $test_url = 'https://plants.jstor.org/stable/' . $doi;
        $ch = bot_curl_init(1.5, [CURLOPT_URL => $test_url]);
        bot_curl_exec($ch);
-       $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+       $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
        unset($ch);
        if ($httpCode === 200) {
         $this->add_if_new('url', $test_url);
@@ -7150,7 +7150,7 @@ final class Template
         CURLOPT_URL => $matches[0],
        ]);
        if (bot_curl_exec($ch) !== "") {
-        $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); // Final URL
+        $redirectedUrl = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); // Final URL
         if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) || preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
          $changed = true;
          $this->set($param, 'https://search' . $matches[1]);
