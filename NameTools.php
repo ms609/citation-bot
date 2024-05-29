@@ -11,7 +11,7 @@ require_once 'constants.php';    // @codeCoverageIgnore
 
 /** @return array<string> */
 function junior_test(string $name): array {
-    $junior = substr($name, -3) === " Jr" ?" Jr" : "";
+    $junior = substr($name, -3) === " Jr" ? " Jr" : "";
     if ($junior) {
         $name = substr($name, 0, -3);
     } else {
@@ -273,7 +273,7 @@ function format_author(string $author): string {
                 if (!$surname && !is_initials($chunk)) {
                     $surname = $chunk;
                 } else {
-                    array_unshift($i, is_initials($chunk)?format_initials($chunk):$chunk);
+                    array_unshift($i, is_initials($chunk) ? format_initials($chunk) : $chunk);
                 }
             }
             $fore = implode(" ", $i);
@@ -338,7 +338,7 @@ function format_multiple_authors(string $authors): string {
             $bits = $bitts;
             unset($bitts);
             if (isset($bits[1]) || $savedChunk) {
-                $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
+                $return[] = format_author($savedChunk . ($savedChunk ? ", " : '') . $chunk);
                 $savedChunk = '';
             } else {
                 $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
@@ -352,7 +352,7 @@ function format_multiple_authors(string $authors): string {
     $frags = explode(" ", $return);
     $return = [];
     foreach ($frags as $frag){
-        $return[] = is_initials($frag)?format_initials($frag):$frag;
+        $return[] = is_initials($frag) ? format_initials($frag) : $frag;
     }
     return preg_replace("~;$~", "", trim(implode(" ", $return)));
 }
