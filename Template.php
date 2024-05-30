@@ -8345,8 +8345,7 @@ final class Template
   } else {
    $page = $this->get('page');
   }
-  $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
-  return $page;
+  return str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
  }
 
  public function year(): string
