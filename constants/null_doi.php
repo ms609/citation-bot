@@ -909,7 +909,6 @@ const NULL_DOI_LIST = [
     '10.7577/nibr/notat/2006/130' => true,
     '10.7577/nibr/rapport/2002/03' => true,
     '10.7595/management.fon.2020.0005' => true,
-    '10.7595/management.fon.2020.0005' => true,
     '10.7660/actahortic.1988.221.22' => true,
     '10.7660/ActaHortic.1993.337.12' => true,
     '10.7660/actahortic.2006.708.18' => true,
