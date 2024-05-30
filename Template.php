@@ -3729,9 +3729,9 @@ final class Template
      $ch = bot_curl_init(1.5, [
       CURLOPT_HEADER => '1',
       CURLOPT_NOBODY => '1',
-      CURLOPT_SSL_VERIFYHOST => 0,
-      CURLOPT_SSL_VERIFYPEER => false,
-      CURLOPT_SSL_VERIFYSTATUS => false,
+      CURLOPT_SSL_VERIFYHOST => '0',
+      CURLOPT_SSL_VERIFYPEER => '0',
+      CURLOPT_SSL_VERIFYSTATUS => '0',
       CURLOPT_URL => $the_url,
      ]);
      $headers_test = bot_curl_exec($ch);
