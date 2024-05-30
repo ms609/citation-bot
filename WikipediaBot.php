@@ -99,7 +99,7 @@ final class WikipediaBot {
                 bot_debug_log(html_entity_decode($respone_info)); // Good to know about about these things
                 report_warning('API call failed: ' . echoable($respone_info) . '.  Will sleep and move on.');
             }
-            sleep (10);
+            sleep(10);
             return false;
         }
         return true;
