@@ -73,6 +73,7 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         // 2 - Default Time by ratio
         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time,
+        CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
     ]);
     // 3 - Specific options and overrides of defaults
     curl_setopt_array($ch, $ops);

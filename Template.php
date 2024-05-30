@@ -3729,7 +3729,7 @@ final class Template
      $ch = bot_curl_init(1.5, [
       CURLOPT_HEADER => '1',
       CURLOPT_NOBODY => '1',
-      CURLOPT_SSL_VERIFYHOST => 'ssss0',
+      CURLOPT_SSL_VERIFYHOST => '0',
       CURLOPT_SSL_VERIFYPEER => '0',
       CURLOPT_SSL_VERIFYSTATUS => '0',
       CURLOPT_URL => $the_url,
@@ -7145,10 +7145,7 @@ final class Template
        $this->set($param, $matches[1]);
       }
       if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-       $ch = bot_curl_init(1.5, [
-        CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
-        CURLOPT_URL => $matches[0],
-       ]);
+       $ch = bot_curl_init(1.5, [CURLOPT_URL => $matches[0]]);
        if (bot_curl_exec($ch) !== "") {
         $redirectedUrl = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); // Final URL
         if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) || preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
