@@ -1387,7 +1387,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
             CURLOPT_POST => "1",
-            CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"]
+            CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"],
         ]);
     }
     curl_setopt_array($ch, [
