@@ -2917,6 +2917,7 @@ final class Template
  }
 
  /** @param array<string> $terms
+
   @return array{0: string, 1: int, 2: array<string>} */
  private function do_pumbed_query(array $terms): array
  {
