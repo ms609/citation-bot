@@ -184,7 +184,7 @@ final class WikipediaBot {
             return false;
         }
 
-        $baseTimeStamp = $myPage->revisions[0]->timestamp;
+        $baseTimeStamp = (string) $myPage->revisions[0]->timestamp;
 
         if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
          || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
@@ -193,11 +193,11 @@ final class WikipediaBot {
         }  // This returns true so that we do not try again
 
         if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
-                report_warning('unable to get bot tokens');     // @codeCoverageIgnore
-                return false;                                   // @codeCoverageIgnore
+            report_warning('unable to get bot tokens');     // @codeCoverageIgnore
+            return false;                                   // @codeCoverageIgnore
         }
         // No obvious errors; looks like we're good to go ahead and edit
-        $auth_token = $response->query->tokens->csrftoken;
+        $auth_token = (string) $response->query->tokens->csrftoken;
         if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
             $auth_token = @json_decode( $this->user_client->makeOAuthCall(
                 $this->user_token,
