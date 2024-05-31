@@ -197,7 +197,7 @@ final class WikipediaBot {
             return false;                                   // @codeCoverageIgnore
         }
         // No obvious errors; looks like we're good to go ahead and edit
-        $auth_token = (string) $response->query->tokens->csrftoken;
+        $auth_token = $response->query->tokens->csrftoken;
         if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
             $auth_token = @json_decode( $this->user_client->makeOAuthCall(
                 $this->user_token,
