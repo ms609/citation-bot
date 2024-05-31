@@ -8728,7 +8728,7 @@ final class Template
   }
  }
 
- /** @return array<mixed> */
+ /** @return array<bool|array<string>> */
  public function modifications(): array
  {
   if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
