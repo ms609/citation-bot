@@ -2925,7 +2925,6 @@ function get_headers_array(string $url): false|array {
     return @get_headers($url, true, $context_insecure);
 }
 
-
 function simplify_google_search(string $url): string {
     if (stripos($url, 'q=') === false) {
         return $url;     // Not a search
