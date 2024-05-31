@@ -656,8 +656,7 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = safe_preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
     $str = safe_preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
     $str = trim($str);
-    $str = strip_diacritics($str);
-    return $str;
+    return strip_diacritics($str);
 }
 
 // See also titles_are_similar()
@@ -769,8 +768,7 @@ function titles_simple(string $inTitle): string {
     $inTitle = str_replace(" / ", " and ", $inTitle);
     // greek
     $inTitle = strip_diacritics($inTitle);
-    $inTitle = str_remove_irrelevant_bits($inTitle);
-    return $inTitle;
+    return str_remove_irrelevant_bits($inTitle);
 }
 
 function strip_diacritics (string $input): string {
@@ -808,8 +806,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
         }
     }
     $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
-    $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
-    return $str;
+    return str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
 }
 
 // ============================================= Capitalization functions ======================================
@@ -1518,16 +1515,14 @@ function doi_encode (string $doi): string {
         @psalm-taint-escape has_quotes
         @psalm-taint-escape ssrf */
     $doi = urlencode($doi);
-    $doi = str_replace('%2F', '/', $doi);
-    return $doi;
+    return str_replace('%2F', '/', $doi);
 }
 
 function hdl_decode(string $hdl): string {
     $hdl = urldecode($hdl);
     $hdl = str_replace(';', '%3B', $hdl);
     $hdl = str_replace('#', '%23', $hdl);
-    $hdl = str_replace(' ', '%20', $hdl);
-    return $hdl;
+    return str_replace(' ', '%20', $hdl);
 }
 
 /**
