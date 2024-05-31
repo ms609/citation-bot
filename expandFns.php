@@ -2906,7 +2906,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     return $input;
 }
 
-/** @return false|array<mixed> */
+/** @return false|array<string|array<string>> */
 function get_headers_array(string $url): false|array {
     static $last_url = "none yet";
     // Allow cheap journals to work
