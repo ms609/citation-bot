@@ -4042,7 +4042,7 @@ final class Template
   }
   $keys = array_keys($this->param);
   foreach ($keys as $the_key) {
-   if (stripos($this->param[$the_key]->param, 'http') === FALSE && strlen($this->param[$the_key]->param) < 30) {
+   if (stripos($this->param[$the_key]->param, 'http') === false && strlen($this->param[$the_key]->param) < 30) {
     $this->param[$the_key]->param = str_replace('duplicate_', 'DUPLICATE_', strtolower($this->param[$the_key]->param));
    }
   }
