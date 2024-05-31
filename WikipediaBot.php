@@ -177,7 +177,7 @@ final class WikipediaBot {
             'prop' => 'info|revisions',
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
-            'titles' => $page
+            'titles' => $page,
         ]);
 
         $myPage = self::response2page($response);
