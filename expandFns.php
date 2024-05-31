@@ -1642,7 +1642,7 @@ function check_memory_usage(string $where): void {
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    echo
+    echo 
 '<!DOCTYPE html>', "\n",
 '<html lang="en" dir="ltr">', "\n",
 '    <head>', "\n",
