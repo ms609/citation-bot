@@ -742,6 +742,7 @@ class Page {
     }
 
     /** @param class-string $class
+
         @return array<WikiThings|Template>
     */
     public function extract_object(string $class): array {
