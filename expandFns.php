@@ -260,7 +260,7 @@ function is_doi_works(string $doi): ?bool {
     return (bool) interpret_doi_header($headers_test);
 }
 
-/** @param array<mixed> $headers_test */
+/** @param array<string|array<string>> $headers_test */
 function interpret_doi_header(array $headers_test): ?bool {
     if (empty($headers_test['Location']) && empty($headers_test['location'])) {
         return false; // leads nowhere
@@ -307,7 +307,7 @@ function interpret_doi_header(array $headers_test): ?bool {
     return null; // @codeCoverageIgnoreEnd
 }
 
-/** @param array<mixed> $headers_test */
+/** @param array<string|array<string>> $headers_test */
 function get_loc_from_hdl_header(array $headers_test): ?string {
     if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
         return (string) $headers_test['Location'][0];    // @codeCoverageIgnore
