@@ -1283,6 +1283,7 @@ function remove_comments(string $string): string {
 }
 
 /** @param array<string> $list
+
     @return array<string> */
 function prior_parameters(string $par, array $list=[]): array {
     array_unshift($list, $par);
@@ -1638,7 +1639,6 @@ function check_memory_usage(string $where): void {
 }
 
 /**
- * Only on webpage
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
