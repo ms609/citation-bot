@@ -345,7 +345,7 @@ function sanitize_doi(string $doi): string {
     $doi = safe_preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
     $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
-    $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
+    $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
     $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
     $pos = (int) strrpos($doi, '.');
     if ($pos) {
@@ -537,15 +537,15 @@ function wikify_external_text(string $title): string {
         $title = sanitize_string($title);
     }
 
-    $title = str_replace(['​'],[' '], $title); // Funky spaces
+    $title = str_replace(['​'], [' '], $title); // Funky spaces
 
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     if (mb_strlen($title) === strlen($title)) {
-        $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+        $title = trim($title, " \t\n\r\0\x0B\xc2\xa0");
     } else {
-        $title = trim($title," \t\n\r\0");
+        $title = trim($title, " \t\n\r\0");
     }
 
     $num_replace = count($replacement);
@@ -649,15 +649,14 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
                                             ['Springer',             'Springer',                                 'Springer',                'Springer'               ], $str);
     $str = straighten_quotes($str, true);
-    $str = str_replace("′","'", $str);
+    $str = str_replace("′", "'", $str);
     $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
     $str = safe_preg_replace('~\d+ Volume Set$~i', '', $str);    // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
     $str = safe_preg_replace('~^Retracted~i', '', $str);
     $str = safe_preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
     $str = safe_preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
     $str = trim($str);
-    $str = strip_diacritics($str);
-    return $str;
+    return strip_diacritics($str);
 }
 
 // See also titles_are_similar()
@@ -680,17 +679,17 @@ function titles_are_similar(string $title1, string $title2): bool {
 }
 
 function de_wikify(string $string): string {
-    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"],    $string));
+    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"], $string));
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
         // Blow away junk from OLD stuff
     if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
-        $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
+        $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ', $inTitle);
         if ($possible !== null) {
                 $inTitle = $possible;
         } else { // When PHP fails with unicode, try without it
-            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ', $inTitle);  // @codeCoverageIgnore
             if ($inTitle === null) {
                 return true;
             }
@@ -769,8 +768,7 @@ function titles_simple(string $inTitle): string {
     $inTitle = str_replace(" / ", " and ", $inTitle);
     // greek
     $inTitle = strip_diacritics($inTitle);
-    $inTitle = str_remove_irrelevant_bits($inTitle);
-    return $inTitle;
+    return str_remove_irrelevant_bits($inTitle);
 }
 
 function strip_diacritics (string $input): string {
@@ -808,8 +806,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
         }
     }
     $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
-    $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
-    return $str;
+    return str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
 }
 
 // ============================================= Capitalization functions ======================================
@@ -1056,7 +1053,7 @@ function mb_substr_replace(string $string, string $replacement, int $start, int 
 }
 
 function remove_brackets(string $string): string {
-    return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
+    return str_replace(['(', ')', '{', '}', '[', ']'], '', $string);
 }
 
 // ============================================= Wikipedia functions ======================================
@@ -1146,7 +1143,7 @@ function tidy_date(string $string): string {
         }
         $string = $cleaned;
     }
-    $string = safe_preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
+    $string = safe_preg_replace("~[^\x01-\x7F]~", "-", $string); // Convert any non-ASCII Characters to dashes
     $string = safe_preg_replace('~[\s\-]*\-[\s\-]*~', '-', $string); // Combine dash with any following or preceding white space and other dash
     $string = safe_preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
     $string = trim($string);
@@ -1283,6 +1280,7 @@ function remove_comments(string $string): string {
 }
 
 /** @param array<string> $list
+
     @return array<string> */
 function prior_parameters(string $par, array $list=[]): array {
     array_unshift($list, $par);
@@ -1517,16 +1515,14 @@ function doi_encode (string $doi): string {
         @psalm-taint-escape has_quotes
         @psalm-taint-escape ssrf */
     $doi = urlencode($doi);
-    $doi = str_replace('%2F', '/', $doi);
-    return $doi;
+    return str_replace('%2F', '/', $doi);
 }
 
 function hdl_decode(string $hdl): string {
     $hdl = urldecode($hdl);
     $hdl = str_replace(';', '%3B', $hdl);
     $hdl = str_replace('#', '%23', $hdl);
-    $hdl = str_replace(' ', '%20', $hdl);
-    return $hdl;
+    return str_replace(' ', '%20', $hdl);
 }
 
 /**
@@ -1638,11 +1634,10 @@ function check_memory_usage(string $where): void {
 }
 
 /**
- * Only on webpage
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    echo
+    echo 
 '<!DOCTYPE html>', "\n",
 '<html lang="en" dir="ltr">', "\n",
 '    <head>', "\n",
@@ -2164,7 +2159,8 @@ function get_possible_dois(string $doi): array {
         case ".":
             // Missing a terminal 'x'?
             $trial[] = $doi . "x";
-            // Or maybe perios is bad idea?
+            $trial[] = substr($doi, 0, -1);
+            break;
         case ",":
         case ";":
         case "\"":
@@ -2924,7 +2920,6 @@ function get_headers_array(string $url): false|array {
     $last_url = $url;
     return @get_headers($url, true, $context_insecure);
 }
-
 
 function simplify_google_search(string $url): string {
     if (stripos($url, 'q=') === false) {

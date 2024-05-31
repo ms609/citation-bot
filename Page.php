@@ -686,7 +686,7 @@ class Page {
                 'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
                 'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
                 'cite new |', 'cite new |', 'cite |', 'Cite |',
-                ] as $try_me) {
+            ] as $try_me) {
                     if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
                         $auto_summary .= 'Removed Template redirect. ';
                         break;
@@ -742,6 +742,7 @@ class Page {
     }
 
     /** @param class-string $class
+
         @return array<WikiThings|Template>
     */
     public function extract_object(string $class): array {

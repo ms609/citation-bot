@@ -1084,7 +1084,7 @@ final class Template
  /**
   * @param array<string>|string $param
   */
- public function blank($param): bool
+ public function blank(array|string $param): bool
  {
   // Accepts arrays of strings and string
   if (!$param) {
@@ -1106,7 +1106,7 @@ final class Template
  /**
   * @param array<string>|string $param
   */
- public function blank_other_than_comments($param): bool
+ public function blank_other_than_comments(array|string $param): bool
  {
   // Accepts arrays of strings and string
   if (!$param) {
@@ -1694,7 +1694,7 @@ final class Template
       }
      }
     }
-   // Don't break here; we want to go straight in to year;
+   // no break; we want to go straight in to year;
    case "year":
     if ($this->has('publication-date')) {
      return false;
@@ -2917,6 +2917,7 @@ final class Template
  }
 
  /** @param array<string> $terms
+
   @return array{0: string, 1: int, 2: array<string>} */
  private function do_pumbed_query(array $terms): array
  {
@@ -4041,7 +4042,7 @@ final class Template
   }
   $keys = array_keys($this->param);
   foreach ($keys as $the_key) {
-   if (stripos($this->param[$the_key]->param, 'http') === FALSE && strlen($this->param[$the_key]->param) < 30) {
+   if (stripos($this->param[$the_key]->param, 'http') === false && strlen($this->param[$the_key]->param) < 30) {
     $this->param[$the_key]->param = str_replace('duplicate_', 'DUPLICATE_', strtolower($this->param[$the_key]->param));
    }
   }
@@ -5243,7 +5244,7 @@ final class Template
       // Comment out since "never used"  $param = 'last' . $pmatch[2];
       return;
      }
-    // No return here
+    // no break
     case 'authors':
      if ($this->has('author') && $this->has('authors')) {
       $this->rename('author', 'DUPLICATE_authors');
@@ -5251,7 +5252,7 @@ final class Template
      if (!$this->initial_author_params) {
       $this->handle_et_al();
      }
-    // Continue from authors without break
+    // no break; Continue from authors without break
     case 'last':
     case 'surname':
      if (!$this->initial_author_params) {
@@ -6069,7 +6070,7 @@ final class Template
      if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
       $this->set($param, $matches[1]);
      }
-    // No break; continue from pmc to pmid:
+    // no break; continue from pmc to pmid:
     case 'pmid':
      if ($this->blank($param)) {
       return;
@@ -6807,7 +6808,7 @@ final class Template
       $this->rename($param, 'url');
       $param = 'url';
      }
-     // passes down to next area
+     // no break
     case 'url':
      if ($this->blank($param)) {
       return;
@@ -7437,6 +7438,7 @@ final class Template
       return;
      } // Special no-date code that citation template recognize.
     // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
+    // no break
     case 'issue':
     case 'number':
      if ($this->blank($param)) {
@@ -7499,7 +7501,7 @@ final class Template
        }
       }
      }
-    // No break here: pages, issue and year (the previous case) should be treated in this fashion.
+    // no break; pages, issue and year (the previous case) should be treated in this fashion.
     case 'pages':
     case 'page':
     case 'pp': // And cases 'year' and'issue' following from previous

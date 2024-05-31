@@ -214,7 +214,7 @@ final class Zotero {
                 } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
                     report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
                     $template->forget($url_kind);
-                } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
+                } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
                     report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
                 } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
@@ -226,17 +226,17 @@ final class Zotero {
                 } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
                     report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-                } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
+                } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && $template->has('pmid')) {
                     // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
                     // SEP 2020 $template->forget($url_kind);
-                } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org','', $url) !== $url) {
+                } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
                     // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
                     // SEP 2020 $template->forget($url_kind);;
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-                } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
+                } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
                     report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-                } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === false) {
+                } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup', '', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === false) {
                     report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
                     $template->forget($url_kind);
                 } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
@@ -290,7 +290,7 @@ final class Zotero {
                 }
             }
             $url = $template->get($url_kind);
-            if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
+            if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url) {
                 if (!$template->blank_other_than_comments('pmc')) {
                     report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
                     $template->forget($url_kind);
@@ -1094,7 +1094,7 @@ final class Zotero {
                             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
                             isset($result->rights) ? (string) $result->rights : '', false);
                                 // Break out if nothing added
-                            if ((strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) {
+                            if ((strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string)($author_i)])) {
                                 break;
                             }
                             if ((strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {

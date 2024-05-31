@@ -106,6 +106,7 @@ final class WikipediaBot {
     }
 
     /** @phpstan-impure
+
         @param array<string> $params */
     private function fetch(array $params, int $depth = 1): ?object {
         set_time_limit(120);
@@ -176,7 +177,7 @@ final class WikipediaBot {
             'prop' => 'info|revisions',
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
-            'titles' => $page
+            'titles' => $page,
         ]);
 
         $myPage = self::response2page($response);
@@ -492,11 +493,10 @@ final class WikipediaBot {
     }
 
 /**
- * Human interaction needed
  * @codeCoverageIgnore
  */
     private function authenticate_user(): void {
-        @setcookie(session_name(),session_id(),time()+(7*24*3600), "", "", true, true); // 7 days
+        @setcookie(session_name(), session_id(), time()+(7*24*3600), "", "", true, true); // 7 days
         if (isset($_SESSION['citation_bot_user_id']) &&
             isset($_SESSION['access_key']) &&
             isset($_SESSION['access_secret']) &&
