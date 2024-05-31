@@ -1084,7 +1084,7 @@ final class Template
  /**
   * @param array<string>|string $param
   */
- public function blank($param): bool
+ public function blank(array|string $param): bool
  {
   // Accepts arrays of strings and string
   if (!$param) {
@@ -1106,7 +1106,7 @@ final class Template
  /**
   * @param array<string>|string $param
   */
- public function blank_other_than_comments($param): bool
+ public function blank_other_than_comments(array|string $param): bool
  {
   // Accepts arrays of strings and string
   if (!$param) {
