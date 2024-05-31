@@ -272,8 +272,8 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         report_warning("No valid from arXiv.");        // @codeCoverageIgnore
         return;                                  // @codeCoverageIgnore
     }
-    if ((string)$xml->entry->title === "Error") {
-        $the_error = (string)$xml->entry->summary;
+    if ((string) $xml->entry->title === "Error") {
+        $the_error = (string) $xml->entry->summary;
         if (stripos($the_error, 'incorrect id format for') !== false) {
             report_warning("arXiv search failed: " . echoable($the_error));
         } else {
@@ -626,7 +626,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
             $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
-            if ((int)$crossRef->volume > 0) {
+            if ((int) $crossRef->volume > 0) {
                 $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
             }
             if (((strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
