@@ -496,7 +496,7 @@ final class WikipediaBot {
  * @codeCoverageIgnore
  */
     private function authenticate_user(): void {
-        @setcookie(session_name(),session_id(),time()+(7*24*3600), "", "", true, true); // 7 days
+        @setcookie(session_name(), session_id(), time()+(7*24*3600), "", "", true, true); // 7 days
         if (isset($_SESSION['citation_bot_user_id']) &&
             isset($_SESSION['access_key']) &&
             isset($_SESSION['access_secret']) &&
