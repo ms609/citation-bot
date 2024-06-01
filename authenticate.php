@@ -55,7 +55,9 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $client->makeOAuthCall($token, $auth_url);
         return_to_sender();
     }
-    catch (Throwable $e) { /** fall through */ }
+    catch (Throwable $e) {
+        /** fall through */
+    }
 }
 // clear anything left over that did not work
 unset($_SESSION['access_key'], $_SESSION['access_secret']);
@@ -78,7 +80,9 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         }
         return_to_sender();
     }
-    catch (Throwable $e) { /** fall through */ }
+    catch (Throwable $e) {
+        /** fall through */
+    }
     death_time("Incoming authorization tokens did not work - try again please");
 }
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
@@ -95,6 +99,8 @@ try {
     $_SESSION['request_secret'] = $token->secret;
     return_to_sender($authUrl);
 }
-catch (Throwable $e) { /** fall through */ }
+catch (Throwable $e) {
+    /** fall through */
+}
 death_time("Unable to initiate OAuth.");
 ?>
