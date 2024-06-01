@@ -14,8 +14,8 @@ function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to
 }
 /** @param array<string> $pmcs
     @param array<Template> $templates */
-function query_pmc_api  (array $pmcs, array &$templates): void {  // Pointer to save memory
-    entrez_api($pmcs,  $templates, 'pmc');
+function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to save memory
+    entrez_api($pmcs, $templates, 'pmc');
 }
 
 final class AdsAbsControl {
@@ -129,7 +129,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                         }
                         switch ($item["Name"]) {
                             case "Title":
-                                $this_template->add_if_new('title',    str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
+                                $this_template->add_if_new('title', str_replace(["[", "]"], "", (string) $item), 'entrez'); // add_if_new will format the title
                                 break;
                             case "PubDate":
                                 if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
@@ -137,7 +137,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                 }
                                 break;
                             case "FullJournalName":
-                                $this_template->add_if_new('journal',    mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
+                                $this_template->add_if_new('journal', mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
                                 break;
                             case "Volume":
                                 $this_template->add_if_new('volume', (string) $item, 'entrez');
