@@ -2872,6 +2872,7 @@ const AVOIDED_LINKS = [
 
 // Lower case, and periods and dashes converted to spaces
 const JOURNAL_IS_BOOK_SERIES = [
+    'progress in optics',
     'novartis found symp',
     'novartis foundation symposia',
     'methods of molecular biology',
