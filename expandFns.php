@@ -1637,25 +1637,22 @@ function check_memory_usage(string $where): void {
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    echo 
-'<!DOCTYPE html>', "\n",
-'<html lang="en" dir="ltr">', "\n",
-'    <head>', "\n",
-'    <title>Citation Bot: running</title>', "\n",
-'    <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
-'    <link rel="stylesheet" type="text/css" href="results.css" />', "\n",
-'    </head>', "\n",
-'<body>', "\n",
-'    <header>', "\n",
-'        <p>Follow Citation bots progress below.</p>', "\n",
-'        <p>', "\n",
-'            <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot" aria-label="Using Citation Bot (opens new window)">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |', "\n",
-'            <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank" aria-label="Report bugs at Wikipedia (opens new window)">Report&nbsp;bugs</a> |', "\n",
-'            <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>', "\n",
-'        </p>', "\n",
-'    </header>', "\n",
-"\n",
-'    <pre id="botOutput">', "\n";
+    echo '<!DOCTYPE html><html lang="en" dir="ltr">', "\n",
+    ' <head>', "\n",
+    '  <title>Citation Bot: running</title>', "\n",
+    '  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
+    '  <link rel="stylesheet" type="text/css" href="results.css" />', "\n",
+    ' </head>', "\n",
+    ' <body>', "\n",
+    '  <header>', "\n",
+    '   <p>Follow Citation bots progress below.</p>', "\n",
+    '   <p>', "\n",
+    '    <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot" aria-label="Using Citation Bot (opens new window)">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |', "\n",
+    '    <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank" aria-label="Report bugs at Wikipedia (opens new window)">Report&nbsp;bugs</a> |', "\n",
+    '    <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>', "\n",
+    '   </p>', "\n",
+    '  </header>', "\n",
+    '  <pre id="botOutput">', "\n";
     if (ini_get('pcre.jit') === '0') {
         report_warning('PCRE JIT Disabled');
     }
