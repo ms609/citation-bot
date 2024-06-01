@@ -522,7 +522,9 @@ final class WikipediaBot {
                 session_write_close(); // Done with the session
                 return;
             }
-            catch (Throwable $e) { /** fall through */ }
+            catch (Throwable $e) {
+                /** fall through */
+            }
         }
         if (empty($_SERVER['REQUEST_URI'])) {
              unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']); // Blow everything away
