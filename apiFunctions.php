@@ -9,10 +9,14 @@ require_once 'NameTools.php';      // @codeCoverageIgnore
 
 /** @param array<string> $pmids
     @param array<Template> $templates */
-function query_pmid_api (array $pmids, array &$templates): void { entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to save memory
+    entrez_api($pmids, $templates, 'pubmed');
+}
 /** @param array<string> $pmcs
     @param array<Template> $templates */
-function query_pmc_api  (array $pmcs, array &$templates): void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
+function query_pmc_api  (array $pmcs, array &$templates): void {  // Pointer to save memory
+    entrez_api($pmcs,  $templates, 'pmc');
+}
 
 final class AdsAbsControl {
     private const MAX_CACHE_SIZE = 50000;
@@ -218,7 +222,9 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
   @param array<string> $bibcodes
   @param array<Template> $templates
 */
-function query_bibcode_api(array $bibcodes, array &$templates): void { adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
+function query_bibcode_api(array $bibcodes, array &$templates): void {  // Pointer to save memory
+    adsabs_api($bibcodes, $templates, 'bibcode');
+}
 
 /**
   @param array<Template> $templates
@@ -1214,9 +1220,9 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                 } else {
                                     $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%') + substr_count($new, '');
                                     if ($bad_count > 5) {
-                                                $template->set('title', $old); // UTF-8 craziness
+                                        $template->set('title', $old); // UTF-8 craziness
                                     } else {
-                                                $raw_html = ''; // We are done
+                                        $raw_html = ''; // We are done
                                     }
                                 }
                             }
@@ -1553,4 +1559,4 @@ function CrossRefTitle(string $doi): string {
         sleep(2);    // @codeCoverageIgnore
         return ''; // @codeCoverageIgnore
     }
-  }
+}
