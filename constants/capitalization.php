@@ -931,6 +931,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Ргасе filologiczne ',
+    ' i Toksikologiia ',
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
@@ -1439,6 +1440,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ',
     ' Zprávy o zasedání Král. čes. Společnosti nauk v Praze ',
     ' Ргасе Filologiczne ',
+    ' I Toksikologiia ',
     /* The above will be automatically updated to alphabetical order */
 ];
 const OBVIOUS_FOREIGN_WORDS = [
@@ -1608,6 +1610,8 @@ const OBVIOUS_FOREIGN_WORDS = [
     ' Komunikacija ',
     ' Antibiotiki ',
     ' Khimioterapiia ',
+    ' Farmakologiia ',
+    ' Toksikologiia ',
 ];
 const MAP_DIACRITICS = [
     'À' => 'A',
