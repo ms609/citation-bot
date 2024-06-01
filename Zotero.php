@@ -153,7 +153,7 @@ final class Zotero {
                             $dois = array_unique($matches[1]);
                             if (count($dois) === 1) {
                                 if ($template->add_if_new('doi', $dois[0])) {
-                                   if (strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
+                                    if (strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
                                         // SEP 2020 $template->forget($kind);  // It is one of those DOIs with the document number in it
                                     }
                                 }
@@ -1890,7 +1890,8 @@ final class Zotero {
                         }
                     }
                     return $template->add_if_new('zbl', $match[1]);
-                    } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
+                }
+                if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
                     if ($template->blank('jfm')) {
                         quietly('report_modification', "Converting URL to JFM parameter");
                     }
@@ -1940,7 +1941,8 @@ final class Zotero {
                         }
                     }
                     return $template->add_if_new('osti', $match[1]);
-                    } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
+                }
+                if (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
                     if ($template->blank('osti')) {
                         quietly('report_modification', "Converting URL to OSTI parameter");
                     }
