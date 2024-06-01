@@ -1094,7 +1094,7 @@ final class Zotero {
                             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
                             isset($result->rights) ? (string) $result->rights : '', false);
                                 // Break out if nothing added
-                            if ((strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string)($author_i)])) {
+                            if ((strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
                                 break;
                             }
                             if ((strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
