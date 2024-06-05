@@ -1676,12 +1676,13 @@ final class Template
    // DATE AND YEAR
 
    case "date":
+    $time = strtotime($value);
+    $almost_today = strtotime('-3 days');
+    if ((int) $time > $almost_today) {
+     return false;  // Reject bad data
+    }
     if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
-     $time = strtotime($value);
      if ($time) {
-      if ($time === strtotime(date("Y-m-d"))) {
-       return false;
-      } // Reject bad data
       $day = date('d', $time);
       if ($day !== '01') {
        // Probably just got month and year if day=1
