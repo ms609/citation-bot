@@ -7521,15 +7521,19 @@ final class Template
       $value = "[https://" . substr($value, 3);
       $this->set($param, $value);
      }
-     if (preg_match('~^p\.?p\.?[(?:&nbsp;)\s]*(\d+[–-]?\d+)$~u', $value, $matches)) {
+     if (preg_match('~^p\.?p\.?[(?:&nbsp;)\s]*(\d+[–-]?\d+)$~ui', $value, $matches)) {
       $value = $matches[1];
       $this->set($param, $value);
      }
-     if (preg_match('~^[Pp]ages?[\.\:]? *(\d+[–-]?\d+)$~u', $value, $matches)) {
+     if (preg_match('~^pages?[\.\:]? *(\d+[–-]?\d+)$~ui', $value, $matches)) {
       $value = $matches[1];
       $this->set($param, $value);
      }
-     if (preg_match('~^p\.? *(\d+[–-]?\d+)$~u', $value, $matches)) {
+     if (preg_match('~^p\.? *(\d+[–-]?\d+)$~ui', $value, $matches)) {
+      $value = $matches[1];
+      $this->set($param, $value);
+     }
+     if (preg_match('~^p\. *(\d+)$~ui', $value, $matches)) {
       $value = $matches[1];
       $this->set($param, $value);
      }
