@@ -5090,7 +5090,7 @@ final class Template
     // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
     // Do not do titles of non-books, since they sometimes have quotes in the actual one
     if (($param !== 'title' || $this->has('chapter')) && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-     if ($matches[1] !== $matches[3] || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
+     if ($matches[1] !== $matches[3] || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher' && $param !== 'trans-title')) {
       $this->set($param, $matches[2]);
      }
     }
