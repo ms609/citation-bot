@@ -1676,21 +1676,24 @@ final class Template
    // DATE AND YEAR
 
    case "date":
-    $time = strtotime($value);
-    $almost_today = strtotime('-14 days');
-    if ((int) $time > $almost_today) {
-     return false;  // Reject bad data
-    }
-    if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
-     if ($time) {
-      $day = date('d', $time);
-      if ($day !== '01') {
-       // Probably just got month and year if day=1
-       if (self::$date_style === DATES_MDY) {
-        $value = date('F j, Y', $time);
-       } else {
-        // DATES_DMY and make DATES_WHATEVER pretty
-        $value = date('j F Y', $time);
+    if (!preg_match('~^\d{4}$~', $value)) {
+     $time = strtotime($value);
+     $almost_today = strtotime('-14 days');
+     $the_future = strtotime('+14 days');
+     if ((int) $time > $almost_today && (int) $time < $the_future) {
+      return false;  // Reject bad data
+     }
+     if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+      if ($time) {
+       $day = date('d', $time);
+       if ($day !== '01') {
+        // Probably just got month and year if day=1
+        if (self::$date_style === DATES_MDY) {
+         $value = date('F j, Y', $time);
+        } else {
+         // DATES_DMY and make DATES_WHATEVER pretty
+         $value = date('j F Y', $time);
+        }
        }
       }
      }
