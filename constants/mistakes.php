@@ -754,6 +754,9 @@ const COMMON_MISTAKES_TOOL = [
     'ye ar' => 'year',
     'wevsite' => 'website',
     'authorlionk' => 'authorlink',
+    'lastname' => 'last',
+    'firstname' => 'first',
+    'publishee' => 'publisher',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
