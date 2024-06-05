@@ -2030,6 +2030,7 @@ final class Template
      if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
       // Wikilinked journal title
       $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+      $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
      }
      if (in_array($temp_string, HAS_NO_VOLUME, true)) {
       // This journal has no volume. This is really the issue number
