@@ -2272,6 +2272,9 @@ const NON_JOURNAL_WEBSITES = [
     'dib.ie/',
     'ideas.repec.org/',
     'weblio.jp/',
+    'nist.gov/itl',
+    'wipo.int/',
+    'repository.cam.ac.uk',
 ];
 // Just a list of ones that are obvious.  Add ones that time-out as we find them
 // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we do not want to grab too many sites
