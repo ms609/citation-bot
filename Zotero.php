@@ -884,7 +884,11 @@ final class Zotero {
                 if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
                     (stripos((string) $result->publicationTitle, ' edition') === false)) { // Do not add if "journal" includes "edition"
                     if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
-                        $template->add_if_new('journal', (string) $result->publicationTitle);
+                        if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
+                            $template->add_if_new('journal', (string) $result->publicationTitle);
+                        } else {
+                            $template->add_if_new('work', (string) $result->publicationTitle);
+                        }
                     }
                 }
             }
