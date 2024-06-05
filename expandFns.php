@@ -127,15 +127,17 @@ function is_doi_active(string $doi): ?bool {
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    if ($header === "" || ($response_code === 503)) {
+    if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         sleep(4);                                                             // @codeCoverageIgnoreStart
+        if ($response_code === 429) sleep(4);  // WE are getting blocked
         $return = bot_curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($return, 0, $header_length);
         $body = substr($return, $header_length);                               // @codeCoverageIgnoreEnd
     }
-    if ($header === "" || ($response_code === 503)) {
+    if ($response_code === 429) sleep(10);  // WE are still getting blocked
+    if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         return null;
     }
     if ($body === 'Resource not found.'){
