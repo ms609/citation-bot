@@ -753,7 +753,12 @@ const COMMON_MISTAKES_TOOL = [
     'authorlionk' => 'authorlink',
     'lastname' => 'last',
     'firstname' => 'first',
+    'last-name' => 'last',
+    'first-name' => 'first',
     'publishee' => 'publisher',
+    'web url' => 'url',
+    'datum vydání' => 'date',
+    'заглавие' => 'title',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
