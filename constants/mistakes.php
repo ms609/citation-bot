@@ -737,6 +737,23 @@ const COMMON_MISTAKES_TOOL = [
     'izdavač' => 'publisher',
     'автор' => 'author',
     'том' => 'volume',
+    'oublisher' => 'publisher',
+    'lanuage' => 'language',
+    'trabns-title' => 'trans-title',
+    'access.date' => 'access-date',
+    'ast1' => 'last1',
+    'orig_date' => 'orig-date',
+    'woek' => 'work',
+    'wevsite' => 'website',
+    'ed77ition' => 'edition',
+    'woek' => 'work',
+    'pagse' => 'page',
+    'accfess-date' => 'access-date',
+    'dae' => 'date',
+    'swebsite' => 'website',
+    'ye ar' => 'year',
+    'wevsite' => 'website',
+    'authorlionk' => 'authorlink',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
