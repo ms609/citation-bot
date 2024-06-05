@@ -2056,6 +2056,7 @@ final class Template
     if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
      // Wikilinked journal title
      $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+     $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
     }
     if (in_array($temp_string, HAS_NO_ISSUE, true)) {
      return $this->add_if_new('volume', $value);
@@ -7371,6 +7372,7 @@ final class Template
      if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
       // Wikilinked journal title
       $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+      $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
      }
      if (in_array($temp_string, HAS_NO_VOLUME, true)) {
       if ($this->blank(ISSUE_ALIASES)) {
@@ -7481,6 +7483,7 @@ final class Template
       if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
        // Wikilinked journal title
        $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+       $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
       }
       if (in_array($temp_string, HAS_NO_ISSUE, true)) {
        if ($this->blank('volume')) {
