@@ -1334,7 +1334,7 @@ final class Zotero {
                 }
             }
             if (stripos($url, 'plants.jstor.org') !== false) {
-            return false; # Plants database, not journal
+                return false; # Plants database, not journal
             }
             // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
             // Optional 0- at front.
