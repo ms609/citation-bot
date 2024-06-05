@@ -1677,7 +1677,7 @@ final class Template
 
    case "date":
     $time = strtotime($value);
-    $almost_today = strtotime('-3 days');
+    $almost_today = strtotime('-14 days');
     if ((int) $time > $almost_today) {
      return false;  // Reject bad data
     }
