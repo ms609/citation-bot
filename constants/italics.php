@@ -202,6 +202,9 @@ const ITALICS_LIST =
     'Emiliania huxleyi|' .
     'Res Publica|' .
     'de Novo|' .
+    'Placobdelloides siamensis|' .
+    'Haematopus ostralegus|' .
+    'Macoma balthica|' .
     'Boscia angustifolia|' .
     'Cephalotes atratus|' .
     'Angelica sinensis|' .
@@ -251,6 +254,7 @@ const ITALICS_LIST =
     'Armillaria|' .
     'Neurospora|' .
     'Symphysodon|' .
+    'Glyptonotus|' .
     'Beggiatoa|' .
     'Ascomycota|' .
     'Puffinus|' .
@@ -457,7 +461,7 @@ const CAMEL_CASE = [
     'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
-    'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry',
+    'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
 ];
 
 const ITALICS_HARDCODE_IN  = [
