@@ -90,8 +90,8 @@ const ALL_URL_TYPES = [
 
 const DATES_TO_CLEAN = [
     'air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
-    'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'orig-date', 'doi-broken-date',
-];
+    'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'doi-broken-date',
+]; // Do not clean orig-date
 
 const THINGS_THAT_ARE_TITLES = ['chapter', 'title', 'series', 'trans-title', 'book-title', 'contribution'];
 
