@@ -666,6 +666,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' i ee ',
     ' i ee ',
     ' i Teplovoznaja ',
+    ' i Toksikologiia ',
     ' i-Perception ',
     ' iConference ',
     ' IDCases ',
@@ -932,7 +933,6 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Ргасе filologiczne ',
-    ' i Toksikologiia ',
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
@@ -1176,6 +1176,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' I Ee ',
     ' I ee ',
     ' I Teplovoznaja ',
+    ' I Toksikologiia ',
     ' I-Perception ',
     ' Iconference ',
     ' Idcases ',
@@ -1442,7 +1443,6 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ',
     ' Zprávy o zasedání Král. čes. Společnosti nauk v Praze ',
     ' Ргасе Filologiczne ',
-    ' I Toksikologiia ',
     /* The above will be automatically updated to alphabetical order */
 ];
 const OBVIOUS_FOREIGN_WORDS = [
