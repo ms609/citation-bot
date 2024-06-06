@@ -739,6 +739,7 @@ const HOSTS_TO_NOT_ADD = [
 ];
 
 const HOSTNAME_MAP = [
+    'moviecrow.com' => 'MovieCrow',
     'public.ebookcentral.proquest.com' => '[[ProQuest]]',
     'proquest.com' => '[[ProQuest]]',
     'search.proquest.com' => '[[ProQuest]]',
