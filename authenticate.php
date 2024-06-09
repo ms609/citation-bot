@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 set_time_limit(120);
+
+if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
+    return_to_sender();
+}
+
 session_start();
 
 require_once 'html_headers.php';
