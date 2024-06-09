@@ -58,6 +58,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
     catch (Throwable $e) {
         /** fall through */
     }
+    death_time("Existing authorization tokens did not work - try again please");
 }
 // clear anything left over that did not work
 unset($_SESSION['access_key'], $_SESSION['access_secret']);
