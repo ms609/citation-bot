@@ -696,16 +696,17 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'url;' => 'url',
     'w ebsite' => 'website',
     'weork' => 'work',
-]; // Lots of stuff that just existed
-
-const COMMON_MISTAKES_TOOL = [
-    'accessdate' => 'access-date',
-    'archivedate' => 'archive-date',
-    'archiveurl' => 'archive-url',
-    'authorlink' => 'author-link',
-    'origyear' => 'orig-date',
-    'origdate' => 'orig-date',
-    'airdate' => 'air-date',
+    'accessdaste' => 'accessdate',
+    'accessed on' => 'access-date',
+    'archivedat' => 'archivedate',
+    'archivedte' => 'archivedate',
+    'dated' => 'date',
+    'itle' => 'title',
+    'juornal' => 'journal',
+    'puisher' => 'publisher',
+    'saccessdate' => 'accessdate',
+    'trancslate-title' => 'trans-article',
+    'web site' => 'website',
     'accessedate' => 'access-date',
     'archive-urk' => 'archive-url',
     'arhive-date' => 'archive-date',
@@ -759,6 +760,16 @@ const COMMON_MISTAKES_TOOL = [
     'web url' => 'url',
     'datum vydání' => 'date',
     'заглавие' => 'title',
+]; // Lots of stuff that just existed
+
+const COMMON_MISTAKES_TOOL = [
+    'accessdate' => 'access-date',
+    'archivedate' => 'archive-date',
+    'archiveurl' => 'archive-url',
+    'authorlink' => 'author-link',
+    'origyear' => 'orig-date',
+    'origdate' => 'orig-date',
+    'airdate' => 'air-date',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
