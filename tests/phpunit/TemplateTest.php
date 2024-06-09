@@ -1529,9 +1529,9 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testOpenAccessLookup2(): void {
-        $text = '{{cite journal|doi=10.1038/nature08244}}';
+        $text = '{{cite journal|doi=10.1063/5.0004997}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('0904.1532', $expanded->get2('arxiv'));
+        $this->assertSame('10256/18833', $expanded->get2('hdl'));
     }
 
     public function testOpenAccessLookup3(): void {
