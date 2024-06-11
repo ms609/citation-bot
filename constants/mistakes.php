@@ -760,6 +760,13 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'web url' => 'url',
     'datum vydání' => 'date',
     'заглавие' => 'title',
+    'fisrt1' => 'first1',
+    'archive-qurl' => 'archive-url',
+    'daze' => 'date',
+    'odkaz na autora' => 'author-link',
+    'אתר' => 'website',
+    'כותרת' => 'title',
+    'תאריך' => 'date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
