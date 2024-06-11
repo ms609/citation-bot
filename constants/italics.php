@@ -203,6 +203,7 @@ const ITALICS_LIST =
     'Res Publica|' .
     'de Novo|' .
     'Placobdelloides siamensis|' .
+    'Leptanilla japonica|'.
     'Haematopus ostralegus|' .
     'Macoma balthica|' .
     'Boscia angustifolia|' .
@@ -211,10 +212,14 @@ const ITALICS_LIST =
     'Dilophosaurus wetherilli|' .
     'Scutarx deltatylus|' .
     'Vernonia amygdalina|' .
+    'Papilio memnon|' .
     'Loa loa|' .
     'Ixodes scapularis|' .
     'Homo nalediin|' .
     'Homo naledi|' .
+    'Kallima inachus|' .
+    'K. inachus|' .
+    'Argynnis hyperbius|' .
     'Helicobacter Pylori|' .
     'Streptococcus diacetilactis|' .
     'Panax ginseng|' .
@@ -228,6 +233,8 @@ const ITALICS_LIST =
     'Arianops|' .
     'Ottoia|' .
     'Onychites|' .
+    'Kallima|' .
+    'Leptanilla|' .
     'Loxosceles|' .
     'Diplocynodon|' .
     'Leveillula|' .
@@ -236,10 +243,12 @@ const ITALICS_LIST =
     'Pohlerodus|' .
     'Diaphera|' .
     'Hyloscirtus|' .
+    'Argynnis|' .
     'Micrapis|' .
     'Pseudomonas|' .
     'Baryonyx|' .
     'Athrips|' .
+    'Morpho|' .
     'Monacha|' .
     'Plesiosorex|' .
     'Amazona|' .
@@ -462,6 +471,7 @@ const CAMEL_CASE = [
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
+    'ProCite', 'Keypoint-MoSeq', 'DaEng',
 ];
 
 const ITALICS_HARDCODE_IN  = [
