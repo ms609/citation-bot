@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 ob_implicit_flush(true);
-require_once 'html_headers.php';
+
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>';
 
 clearstatcache();

@@ -6,7 +6,6 @@ ob_implicit_flush(true);
 set_time_limit(120);
 session_start(['read_and_close' => true]);
 
-require_once 'html_headers.php';
 require_once 'big_jobs.php';
 
 if (!isset($_SESSION['citation_bot_user_id'])) {

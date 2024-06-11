@@ -21,7 +21,6 @@
       <file>./authenticate.php</file>
       <file>./setup.php</file>
       <file>./kill_big_job.php</file>
-      <file>./html_headers.php</file>
       <file>./big_jobs.php</file>
     </exclude>
     <report>

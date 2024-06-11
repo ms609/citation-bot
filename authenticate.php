@@ -10,7 +10,6 @@ if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
 
 session_start();
 
-require_once 'html_headers.php';
 require_once 'setup.php';
 
 // To use the oauthclient library, run: composer require mediawiki/oauthclient
