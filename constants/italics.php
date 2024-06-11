@@ -218,7 +218,7 @@ const ITALICS_LIST =
     'Homo nalediin|' .
     'Homo naledi|' .
     'Kallima inachus|' .
-    'K. inachus|' .
+    'K\. inachus|' .
     'Argynnis hyperbius|' .
     'Helicobacter Pylori|' .
     'Streptococcus diacetilactis|' .
