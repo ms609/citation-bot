@@ -536,13 +536,12 @@ final class WikipediaBot {
              $return = preg_replace('~\s+~', '', $return); // Security paranoia
              /** @psalm-taint-escape header */
              $return = urlencode($return);
-             @header("Location: authenticate.php?return=" . $return);
+             header("Location: authenticate.php?return=" . $return);
         }
         exit;
     }
 
-    private static function reset(object &$obj): object { // Make PHP 8 happy
-        $arr = (array) $obj;
-        return (object) reset($arr);
+    private static function reset(object &$obj): object { // We use old php 7 style reset, so emulate
+        return (object) reset((array) $obj);
     }
 }
