@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 // https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js
 set_time_limit(120);
-ignore_user_abort(false); // Dies if cannot connect back to client, should be the default
 
 try {
-    @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
-    @header('Content-Type: text/json');
+    header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
+    header('Content-Type: text/json');
 
     //Set up tool requirements
     require_once 'setup.php';
