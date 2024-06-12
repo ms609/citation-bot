@@ -141,6 +141,7 @@ const ITALICS_LIST =
     'Balaur bondoc|' .
     'Screbinodus ornatus|' .
     'Rg Veda|' .
+    'Protogoniomorpha anacardii|' .
     'Homo erectus|' .
     'Piveteauia madagascariensis|' .
     'Aspergillus terreus|' .
