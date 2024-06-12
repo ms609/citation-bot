@@ -441,7 +441,7 @@ final class expandFnsTest extends testBaseClass {
             }
         }
         // Deal with super common ones that flood the list
-        foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'] as $doi) {
+        foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302', '10.4249/scholarpedia.6274'] as $doi) {
             $works = doi_works($doi);
             if ($works === null) {
                 $changes = $changes . "Flagged as null: " . $doi . "             ";
