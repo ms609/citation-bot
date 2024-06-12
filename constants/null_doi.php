@@ -107,7 +107,6 @@ const NULL_DOI_STARTS_BAD = [
     '10.1601/nm.',
     '10.1601/ex.',
     '10.5353/th_',
-    '10.4249/scholarpedia.',
 ];
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
