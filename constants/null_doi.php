@@ -102,7 +102,7 @@ const NULL_DOI_ANNOYING = [
     '10.7497/j.issn.2095-3941.2015.0030' => true, // Page not found
 ];
 
-const NULL_DOI_STARTS_BAD = [
+const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area
     '10.1601/tx.',
     '10.1601/nm.',
     '10.1601/ex.',
