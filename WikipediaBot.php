@@ -95,10 +95,8 @@ final class WikipediaBot {
                 report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
-            } elseif ($respone_info === 'Bad title "Category:".') {
-                exit; // category got lost in initial auth - exit now or we get odd things
             } else {
-                $err_string = 'API call failed: ' . echoable($respone_info) . '  Will sleep and move on.';
+                $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
                 bot_debug_log($err_string); // Good to know about about these things
                 report_warning($err_string);
             }
