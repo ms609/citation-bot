@@ -4631,6 +4631,7 @@ final class Template
      case "gburl": // TODO - should use
      case "isbnt":
      case "issn link":
+     case "project euclid":
      case "lccn8": // Assume not normal template for a reason
      case "google books": // Usually done for fancy formatting and because already has title-link/url
      case "url": // Untrustable: used by bozos
