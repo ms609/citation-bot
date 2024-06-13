@@ -521,6 +521,7 @@ final class WikipediaBot {
                 $this->the_user = $user;
                 $_SESSION['citation_bot_user_id'] = $this->the_user;
                 session_write_close(); // Done with the session
+                flush();
                 return;
             }
             catch (Throwable $e) {
@@ -528,16 +529,17 @@ final class WikipediaBot {
             }
         }
         if (empty($_SERVER['REQUEST_URI'])) {
-             unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']); // Blow everything away
-             report_error('Invalid access attempt to internal API');
+            unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']); // Blow everything away
+            report_error('Invalid access attempt to internal API');
         } else {
-             unset($_SESSION['access_key'], $_SESSION['access_secret']);
-             session_write_close();
-             $return = $_SERVER['REQUEST_URI'];
-             $return = preg_replace('~\s+~', '', $return); // Security paranoia
-             /** @psalm-taint-escape header */
-             $return = urlencode($return);
-             header("Location: authenticate.php?return=" . $return);
+            unset($_SESSION['access_key'], $_SESSION['access_secret']);
+            session_write_close();
+            flush();
+            $return = $_SERVER['REQUEST_URI'];
+            $return = preg_replace('~\s+~', '', $return); // Security paranoia
+            /** @psalm-taint-escape header */
+            $return = urlencode($return);
+            header("Location: authenticate.php?return=" . $return);
         }
         exit;
     }
