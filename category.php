@@ -53,6 +53,7 @@ if (!$category) {
         report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
     }
     bot_html_footer();
+    exit;
 }
 
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
@@ -61,7 +62,9 @@ $total = count($pages_in_category);
 if ($total === 0) {
     report_warning('Category appears to be empty');
     bot_html_footer();
-} elseif ($total > intval(MAX_PAGES / 4)) {
+    exit;
+}
+if ($total > intval(MAX_PAGES / 4)) {
     report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
@@ -69,9 +72,9 @@ if ($total === 0) {
     }
     echo "\n\n";
     bot_html_footer();
-} else {
-    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
-    edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+    exit;
 }
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 
 ?>
