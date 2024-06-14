@@ -1598,7 +1598,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     foreach ($pages_in_category as $page_title) {
         big_jobs_check_killed();
         $done++;
-        if ($page->get_text_from($page_title) && $page->expand_text()) {
+        if (strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
             if (SAVETOFILES_MODE) {
                 // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                 // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
