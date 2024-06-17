@@ -510,7 +510,7 @@ final class WikipediaBot {
             $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
             return;
         }
-        if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools')) {
+        if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
             report_warning('You need to run the bot on a page normally first to get permission tokens');
             bot_html_footer();
             exit;
