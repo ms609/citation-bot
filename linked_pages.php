@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
+require_once 'setup.php';
+
+bot_html_header();
+
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];
 } else {
@@ -14,11 +18,7 @@ if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
 
 session_start(['read_and_close' => true]);
 
-require_once 'setup.php';
-
 $api = new WikipediaBot();
-
-bot_html_header();
 
 check_blocked();
 
