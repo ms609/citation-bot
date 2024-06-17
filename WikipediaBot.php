@@ -511,7 +511,7 @@ final class WikipediaBot {
             return;
         }
         if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools')) {
-            report_warning('You need to run the bot on a page normaly first to get permission tokens');
+            report_warning('You need to run the bot on a page normally first to get permission tokens');
             bot_html_footer();
             exit;
         }
