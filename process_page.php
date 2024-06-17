@@ -11,10 +11,6 @@ if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false && em
 
 require_once 'setup.php';
 
-if (HTML_OUTPUT) {
-    bot_html_header();
-}
-
 if (isset($argv[1])) {
     $pages = $argv[1];
     if (in_array($pages, ['page_list.txt', 'page_list2.txt'])) {
@@ -23,11 +19,13 @@ if (isset($argv[1])) {
 } elseif (isset($_GET["page"])) {
     $pages = $_GET["page"];
     if (!is_string($pages)) {
+        bot_html_header();
         report_warning('Non-string found in GET for page.');
         bot_html_footer();
         exit;
     }
     if (strpos($pages, '|') !== false) {
+        bot_html_header();
         report_warning('Use the webform for multiple pages.');
         bot_html_footer();
         exit;
@@ -35,11 +33,13 @@ if (isset($argv[1])) {
 } elseif (isset($_POST["page"])) {
     $pages = $_POST["page"];
     if (!is_string($pages)) {
+        bot_html_header();
         report_warning('Non-string found in POST for page.');
         bot_html_footer();
         exit;
     }
 } else {
+    bot_html_header();
     report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
     bot_html_footer();
     exit;
@@ -47,6 +47,10 @@ if (isset($argv[1])) {
 
 // Do not open session until we know we have good data
 session_start(['read_and_close' => true]);
+
+if (HTML_OUTPUT) {
+    bot_html_header();
+}
 
 $api = new WikipediaBot();
 
