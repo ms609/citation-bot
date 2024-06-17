@@ -111,6 +111,7 @@ const ITALICS_LIST =
     'Arabidopsis thaliana|' .
     'Fahraeusodus adentatus|' .
     'Homo sapiens|' .
+    'Nanocthulhu lovecrafti|' .
     'Xylella fastidiosa|' .
     'Listeria monocytogenes|' .
     'Halszkaraptor escuilliei|' .
@@ -472,7 +473,7 @@ const CAMEL_CASE = [
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
-    'ProCite', 'Keypoint-MoSeq', 'DaEng',
+    'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform',
 ];
 
 const ITALICS_HARDCODE_IN  = [
