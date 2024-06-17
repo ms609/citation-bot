@@ -6,11 +6,10 @@ set_time_limit(120);
 
 require_once 'setup.php';
 
-bot_html_header();
-
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];
 } else {
+    bot_html_header();
     report_warning(' Error in passing of linked page name ');
     bot_html_footer();
     exit;
@@ -20,6 +19,7 @@ session_start(['read_and_close' => true]);
 
 $api = new WikipediaBot();
 
+bot_html_header();
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim($page_name));
