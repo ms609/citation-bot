@@ -3,20 +3,12 @@
 declare(strict_types=1);
 
 set_time_limit(120);
-session_start(['read_and_close' => true]);
 
 require_once 'setup.php';
 
-$api = new WikipediaBot();
-
 if (HTML_OUTPUT) {
     bot_html_header();
-    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
-} else {
-    $edit_summary_end = ""; // Command line edits as the person
 }
-
-check_blocked();
 
 if (isset($argv[1])) {
     $pages = $argv[1];
@@ -27,22 +19,39 @@ if (isset($argv[1])) {
     $pages = $_GET["page"];
     if (!is_string($pages)) {
         report_warning('Non-string found in GET for page.');
-        $pages = '';
+        bot_html_footer();
+        exit;
     }
     if (strpos($pages, '|') !== false) {
         report_warning('Use the webform for multiple pages.');
-        $pages = '';
+        bot_html_footer();
+        exit;
     }
 } elseif (isset($_POST["page"])) {
     $pages = $_POST["page"];
     if (!is_string($pages)) {
         report_warning('Non-string found in POST for page.');
-        $pages = '';
+        bot_html_footer();
+        exit;
     }
 } else {
     report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
-    $pages = '';
+    bot_html_footer();
+    exit;
 }
+
+// Do not open session until we know we have good data
+session_start(['read_and_close' => true]);
+
+$api = new WikipediaBot();
+
+if (HTML_OUTPUT) {
+    $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
+} else {
+    $edit_summary_end = ""; // Command line edits as the person
+}
+
+check_blocked();
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
     if ($_REQUEST["edit"] === 'automated_tools') {
