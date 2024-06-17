@@ -39,6 +39,7 @@ if ($category === '' && isset($_GET["cat"])) {
    }
 }
 if (!$category) {
+    bot_html_header();
     if (isset($_POST["cat"])) {
         report_warning("Invalid category on the webform.");
     } elseif (isset($_GET["cat"])) {
