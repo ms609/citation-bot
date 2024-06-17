@@ -510,6 +510,11 @@ final class WikipediaBot {
             $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
             return;
         }
+        if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools')) {
+            report_warning('You need to run the bot on a page normaly first to get permission tokens');
+            bot_html_footer();
+            exit;
+        }
         @session_start(); // Need write access
         unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
         if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
