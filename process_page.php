@@ -48,9 +48,7 @@ if (isset($argv[1])) {
 // Do not open session until we know we have good data
 session_start(['read_and_close' => true]);
 
-if (HTML_OUTPUT) {
-    bot_html_header();
-}
+bot_html_header();
 
 $api = new WikipediaBot();
 
