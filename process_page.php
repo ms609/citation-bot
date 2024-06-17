@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
+if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false && empty($_COOKIE['CiteBot'])) {
+    echo 'You need to run the bot on a page normally first to get permission tokens'; // Fast exit, do not even include setup.php
+    exit;
+}
+
 require_once 'setup.php';
 
 if (HTML_OUTPUT) {
