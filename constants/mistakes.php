@@ -787,7 +787,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'author 2' => 'author2',
     'journals' => 'journal',
     'sprache' => 'language',
-    'origdate' => 'orig-date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
