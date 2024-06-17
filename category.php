@@ -52,9 +52,8 @@ if (!$category) {
 }
 
 session_start(['read_and_close' => true]);
-$api = new WikipediaBot();
-
 bot_html_header();
+$api = new WikipediaBot();
 check_blocked();
 
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
