@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 set_time_limit(120);
-session_start(['read_and_close' => true]);
 
 require_once 'setup.php';
 
@@ -26,7 +25,6 @@ const GET_IS_OKAY = [
     'CS1 errors: invisible characters',
 ];
 
-$api = new WikipediaBot();
 $category = '';
 if (isset($_POST["cat"]) && is_string($_POST["cat"])) {
     $category = trim($_POST["cat"]);
@@ -40,10 +38,6 @@ if ($category === '' && isset($_GET["cat"])) {
        $category = $try;
    }
 }
-
-bot_html_header();
-check_blocked();
-
 if (!$category) {
     if (isset($_POST["cat"])) {
         report_warning("Invalid category on the webform.");
@@ -55,6 +49,12 @@ if (!$category) {
     bot_html_footer();
     exit;
 }
+
+session_start(['read_and_close' => true]);
+$api = new WikipediaBot();
+
+bot_html_header();
+check_blocked();
 
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
 shuffle($pages_in_category);
