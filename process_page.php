@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false && empty($_COOKIE['CiteBot'])) {
-    echo 'You need to run the bot on a page normally first to get permission tokens'; // Fast exit, do not even include setup.php
+if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
+    echo '<!DOCTYPE html><html><head><title>Citation Bot: error</title></head><body><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></body></html>'; // Fast exit, do not even include setup.php
     exit;
 }
 
