@@ -787,6 +787,23 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'author 2' => 'author2',
     'journals' => 'journal',
     'sprache' => 'language',
+    'ngày tháng' => 'date',
+    'url-stauts' => 'url-status',
+    'aithor' => 'author',
+    'họ' => 'last',
+    'họ 1' => 'last1',
+    'họ 2' => 'last2',
+    'họ 3' => 'last3',
+    'họ 4' => 'last4',
+    'họ 5' => 'last5',
+    'họ 6' => 'last6',
+    'tên' => 'first',
+    'tên 1' => 'first1',
+    'tên 2' => 'first2',
+    'tên 3' => 'first3',
+    'tên 4' => 'first4',
+    'tên 5' => 'first5',
+    'tên 6' => 'first6',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
