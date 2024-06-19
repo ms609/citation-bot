@@ -3175,7 +3175,7 @@ function simplify_google_search(string $url): string {
                 break;
             default:
             // @codeCoverageIgnoreStart
-                report_minor_error("Unexpected Google URL component:    " . echoable($part));
+                report_minor_error("Unexpected Google URL component:    " . echoable($part));fdsgfdgdfgfdg
                 $url .=  $part . "&" ;
                 break;
             // @codeCoverageIgnoreEnd
