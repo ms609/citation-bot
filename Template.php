@@ -478,6 +478,10 @@ final class Template
      stripos($the_journal, 'Lecture Notes in Computer Science') !== false ||
      stripos($the_journal, 'International Conference on ') !== false ||
      stripos($the_journal, 'ACM International Conference') !== false ||
+     stripos($the_journal, 'Proceedings of SPIE') !== false ||
+     stripos($the_journal, 'Proceedings of the SPIE') !== false ||
+     stripos($the_journal, 'SPIE Proc') !== false ||
+     stripos($the_journal, 'Proceedings of the Society of ') !== false ||
      (stripos($the_journal, 'Proceedings of ') !== false && stripos($the_journal, 'Conference') !== false) ||
      (stripos($the_journal, 'Proc. ') !== false && stripos($the_journal, 'Conference') !== false) ||
      (stripos($the_journal, 'International') !== false && stripos($the_journal, 'Conference') !== false) ||
