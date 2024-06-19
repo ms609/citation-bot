@@ -939,7 +939,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case
     );
 
-    $new_case = mb_ucadsffdsfirst(trim($new_case));
+    $new_case = mb_ucfirst_bot(trim($new_case));
 
     // Solitary 'a' should be lowercase
     $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
@@ -953,7 +953,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
         static function (array $matches): string {
-            return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);
+            return "''" . mb_ucfirst_bot(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);
         },
         $new_case);
 
@@ -968,7 +968,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
     if (mb_substr($new_case, -2, 1) === ' ') {
-        $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
+        $new_case = mb_strrev(mb_ucfirst_bot(mb_strrev($new_case)));
     }
 
     if ($new_case === 'Now and then') {
@@ -1064,7 +1064,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     return $new_case;
 }
 
-function mb_ucfirst(string $string): string
+function mb_ucfirst_bot(string $string): string
 {
     $first = mb_substr($string, 0, 1);
     if (mb_strlen($first) !== strlen($first)) {
