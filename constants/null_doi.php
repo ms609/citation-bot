@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.21040/eom/2016.2.7' => true, // bid on domain
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
     '10.1101/SQB.1996.061.01.050' => true, // not found error
@@ -520,7 +521,6 @@ const NULL_DOI_LIST = [
     '10.19153/cleiej.8.2.1' => true,
     '10.1920/wp.ifs.2022.3622' => true,
     '10.20516/classic.2018.42.245' => true,
-    '10.20956/jars.v2i1.1366' => true,
     '10.20960/nh.27' => true,
     '10.20960/nh.559' => true,
     '10.2104/ag060007' => true,
@@ -528,7 +528,7 @@ const NULL_DOI_LIST = [
     '10.2104/bc060012' => true,
     '10.2104/bc090001' => true,
     '10.2104/mbr07056' => true,
-    '10.21040/eom/2016.2.7' => true,
+    '10.21040/eom/2016.2.7' => true, // bid on domain
     '10.21082/blpn.v12n2.2006.p83-88' => true,
     '10.21082/fae.v30n1.2012.13-30' => true,
     '10.21082/fae.v31n1.2013.67-87' => true,
@@ -955,6 +955,7 @@ const NULL_DOI_LIST = [
  /** ========================================================================================================================================================================== */
  // TODO - these need to be manually double checked once in a great while.
 const NULL_DOI_BUT_GOOD = [
+    '10.20956/jars.v2i1.1366' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
     '10.1001/jama.2013.2049' => true,
