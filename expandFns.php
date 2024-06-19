@@ -2969,7 +2969,6 @@ function simplify_google_search(string $url): string {
     if (preg_match('~^https?://.*google.com/search/~', $url)) {
         return $url; // Not a search if the slash is there
     }
-    $orig_url = $url;
     $hash = '';
     if (strpos($url, "#")) {
         $url_parts = explode("#", $url, 2);
@@ -3166,7 +3165,7 @@ function simplify_google_search(string $url): string {
                 break;
             default:
             // @codeCoverageIgnoreStart
-                report_minor_error("Unexpected Google URL component:    " . echoable($part) . " in " . echoable($orig_url));
+                report_minor_error("Unexpected Google URL component:    " . echoable($part));
                 $url .=  $part . "&" ;
                 break;
             // @codeCoverageIgnoreEnd
