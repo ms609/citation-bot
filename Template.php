@@ -483,6 +483,7 @@ final class Template
      (stripos($the_journal, 'International') !== false && stripos($the_journal, 'Conference') !== false) ||
      (stripos($the_journal, 'International') !== false && stripos($the_journal, 'Meeting') !== false) ||
      (stripos($the_journal, 'International') !== false && stripos($the_journal, 'Colloquium') !== false) ||
+     (stripos($the_journal, 'International') !== false && stripos($the_journal, 'Symposium') !== false) ||
      stripos($the_journal, 'SIGGRAPH') !== false ||
      stripos($the_journal, 'Design Automation Conference') !== false
     ) {
