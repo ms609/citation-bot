@@ -3610,6 +3610,9 @@ final class Template
     if (stripos($oa_url, 'citeseerx') !== false) {
      return 'citeseerx';
     } // blacklisted due to copyright concerns
+    if (stripos($oa_url, 'zenodo') !== false) {
+     return 'zenodo';
+    } // blacklisted due to copyright concerns
     if (stripos($oa_url, 'palgraveconnect') !== false) {
      return 'palgraveconnect';
     }
