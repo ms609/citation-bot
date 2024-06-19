@@ -939,7 +939,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case
     );
 
-    $new_case = mb_ucfirst(trim($new_case));
+    $new_case = mb_ucadsffdsfirst(trim($new_case));
 
     // Solitary 'a' should be lowercase
     $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
