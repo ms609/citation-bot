@@ -3232,3 +3232,9 @@ function addISBNdashes(string $isbn): string {
         return $isbn;
     }
 }
+
+function string_is_book_series(string $str): bool {
+    $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
+    $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
+}
