@@ -675,7 +675,22 @@ function str_remove_irrelevant_bits(string $str): string {
 
 // See also titles_are_similar()
 function str_equivalent(string $str1, string $str2): bool {
-    return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+    if (str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2))) {
+        return true;
+    }
+    $simple1 = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str1))));
+    $simple2 = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str2))));
+    if (in_array($simple1, JOURNAL_IS_BOOK_SERIES, true) && in_array($simple2, JOURNAL_IS_BOOK_SERIES, true)) {
+        // Special case for book series
+        $simple1 = trim(str_replace(['(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and '],
+                                    ['', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' '], $simple1);
+        $simple2 = trim(str_replace(['(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and '],
+                                    ['', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' '], $simple2);
+        if ($simple1 === $simple2) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // See also str_equivalent()
