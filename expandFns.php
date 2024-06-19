@@ -675,7 +675,17 @@ function str_remove_irrelevant_bits(string $str): string {
 
 // See also titles_are_similar()
 function str_equivalent(string $str1, string $str2): bool {
-    return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+    if (str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2))) {
+        return true;
+    }
+    if (string_is_book_series($str1) && string_is_book_series($str2)) { // Both series, but not the same
+        $str1 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str1)));
+        $str2 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str2)));
+        if ($str1 === $str2) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // See also str_equivalent()
@@ -3215,4 +3225,10 @@ function addISBNdashes(string $isbn): string {
     } else {
         return $isbn;
     }
+}
+
+function string_is_book_series(string $str): bool {
+    $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
+    $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }

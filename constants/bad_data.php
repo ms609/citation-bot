@@ -2924,6 +2924,9 @@ const JOURNAL_IS_BOOK_SERIES = [
     'handbook of the birds of the world',
 ];
 
+const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  '];
+const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' '];
+
 const ALWAYS_BAD_TITLES = [
     'Bloomberg - Are you a robot?',
     'Page not found',
