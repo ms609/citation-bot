@@ -2008,6 +2008,9 @@ final class Template
      if ($value === 'Online First') {
       return false;
      }
+     if ($value === $this->year()) {
+      return false;
+     }
      if ($value === 'volume') {
       return false;
      }
