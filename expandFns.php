@@ -679,8 +679,8 @@ function str_equivalent(string $str1, string $str2): bool {
         return true;
     }
     if (string_is_book_series($str1) && string_is_book_series($str1)) { // Both series, but not the same
-        $str1 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, str2lower($str1)));
-        $str2 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, str2lower($str2)));
+        $str1 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str1)));
+        $str2 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str2)));
         if ($str1 === $str2) {
             return true;
         }
