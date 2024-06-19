@@ -2979,7 +2979,6 @@ function simplify_google_search(string $url): string {
     if (preg_match('~^https?://.*google.com/search/~', $url)) {
         return $url; // Not a search if the slash is there
     }
-    $orig_url = $url;
     $hash = '';
     if (strpos($url, "#")) {
         $url_parts = explode("#", $url, 2);
