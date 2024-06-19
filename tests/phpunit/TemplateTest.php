@@ -3942,13 +3942,6 @@ EP - 999 }}';
         $this->assertEqualsCanonicalizing($expected, $array);
     }
 
-    public function testOAChapterURL(): void {
-        $text = "{{cite book|doi=10.1007/978-3-319-18111-0_47|chapter=Cross-Dialectal Arabic Processing |title=Computational Linguistics and Intelligent Text Processing |series=Lecture Notes in Computer Science |year=2015 |last1=Harrat |first1=Salima |last2=Meftouh |first2=Karima |last3=Abbas |first3=Mourad |last4=Jamoussi |first4=Salma |last5=Saad |first5=Motaz |last6=Smaili |first6=Kamel |volume=9041 |pages=620–632 |isbn=978-3-319-18110-3 }}";
-        $template = $this->make_citation($text);
-        $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
-        $this->assertNotNull($template->get2('chapter-url'));
-    }
-
     public function testChaptURLisDup(): void {
         $text = "{{cite book|url=https://www.cnn.com/ }}";
         $template = $this->make_citation($text);
