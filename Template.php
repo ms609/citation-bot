@@ -4979,7 +4979,7 @@ final class Template
    if (substr($this->name, 0, 1) === 'c') {
     $this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
    } else {
-    $this->name = $spacing[1] . $invoke . mb_ucfirst($new_name) . $spacing[2];
+    $this->name = $spacing[1] . $invoke . mb_ucfirst_bot($new_name) . $spacing[2];
    }
    switch (strtolower($new_name)) {
     case 'cite journal':
