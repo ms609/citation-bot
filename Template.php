@@ -9069,9 +9069,7 @@ final class Template
 
  private function is_book_series(string $param): bool
  {
-  $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($this->get($param))));
-  $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
-  return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
+  return string_is_book_series($this->get($param));
  }
 
  private function should_url2chapter(bool $force): bool

@@ -3176,7 +3176,7 @@ function simplify_google_search(string $url): string {
                 break;
             default:
             // @codeCoverageIgnoreStart
-                report_minor_error("Unexpected Google URL component:    " . echoable($part) . " in " . echoable($orig_url));
+                report_minor_error("Unexpected Google URL component:    " . echoable($part));
                 $url .=  $part . "&" ;
                 break;
             // @codeCoverageIgnoreEnd
@@ -3226,4 +3226,10 @@ function addISBNdashes(string $isbn): string {
     } else {
         return $isbn;
     }
+}
+
+function string_is_book_series(string $str): bool {
+    $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
+    $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
