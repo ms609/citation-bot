@@ -804,6 +804,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'tên 4' => 'first4',
     'tên 5' => 'first5',
     'tên 6' => 'first6',
+    'locations' => 'location',
+    'locstion' => 'location',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
