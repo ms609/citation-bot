@@ -515,6 +515,10 @@ final class Zotero {
             unset($result->author);   // @codeCoverageIgnore
         }
 
+        if (stripos($url, 'theathletic.com') !== false) { // Returns NYT
+            unset($result->publicationTitle);  // @codeCoverageIgnore
+        } 
+
         if (stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
             unset($result->creators['1']);
             unset($result->author['1']);
