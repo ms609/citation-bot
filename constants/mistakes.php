@@ -806,6 +806,9 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'tên 6' => 'first6',
     'locations' => 'location',
     'locstion' => 'location',
+    'zugriff' => 'access-date',
+    'odkaz na titul' => 'title-link',
+    'vydanie' => 'edition',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
