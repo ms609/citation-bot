@@ -473,7 +473,7 @@ const CAMEL_CASE = [
     'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology',
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
-    'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform',
+    'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
 ];
 
 const ITALICS_HARDCODE_IN  = [
