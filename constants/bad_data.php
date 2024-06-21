@@ -40,6 +40,9 @@ const PREFER_ISSUES = [
 const CONFERENCE_LIST = [
     'Proceedings of Advancing Astrophysics',
     'International Cosmic Ray Conference',
+    'Annual Meeting of the Association',
+    'Proceedings of the ',
+    ' of the Association for ',
 ];
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'oup accepted manuscript',
