@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
-    '10.21040/eom/2016.2.7' => true, // bid on domain
+
+
+
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
-    '10.1101/SQB.1996.061.01.050' => true, // not found error
     '10.1054/jocn.1999.0776' => true, // parked domain
     '10.1080/10798587.2007.10642974' => true, // Spam
+    '10.1101/SQB.1996.061.01.050' => true, // not found error
     '10.1128/mcb.14.11.7643' => true, // error 404
     '10.1128/mcb.2.3.221' => true, // error 404
     '10.1128/mcb.4.11.2455' => true, // error 404
@@ -28,6 +30,7 @@ const NULL_DOI_ANNOYING = [
     '10.18035/emj.v2i3.202' => true, // Virus
     '10.18551/issn1997-0749.2014-06' => true, // Key not found
     '10.1900/RDS.2009.6.203' => true, // Spam
+    '10.21040/eom/2016.2.7' => true, // bid on domain
     '10.21113/iir.v3i1.112' => true, // 404
     '10.21143/jhp.vol8.no3.772' => true, // DB Error
     '10.2136/sh2012-53-6-lf' => true, // published landing page
@@ -100,6 +103,7 @@ const NULL_DOI_ANNOYING = [
     '10.52486/01.00001.15' => true, // Journal in general
     '10.5527/wjn.v5.i1.66' => true, // DB error
     '10.5594/J09550' => true, // 404
+    '10.59287/siibyc.688' => true, //parked domain
     '10.7454/irhs.v1i1.50' => true, // DB Error
     '10.7497/j.issn.2095-3941.2015.0030' => true, // Page not found
 ];
