@@ -3441,6 +3441,7 @@ final class Template
     case "C1":
     case "DB":
     case "AB":
+    case "H1":
     case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
     case "":
     case "Provider: JSTOR http://www.jstor.org":
