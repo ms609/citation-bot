@@ -7626,12 +7626,26 @@ final class Template
       $this->forget($param);
       return;
      }
-     if (
-      $this->wikiname() === 'cite book' &&
-      (str_i_same($this->get($param), 'google.com') || str_i_same($this->get($param), 'Google Books') || str_i_same($this->get($param), 'Google Book') || stripos($this->get($param), 'Books.google.') === 0)
-     ) {
-      $this->forget($param);
-      return;
+     if ($this->wikiname() === 'cite book') {
+      if (str_i_same($this->get($param), 'google.com') ||
+          str_i_same($this->get($param), 'Google Books') ||
+          str_i_same($this->get($param), 'Google Book') ||
+          stripos($this->get($param), 'Books.google.') === 0
+         ) {
+       $this->forget($param);
+       return;
+      }
+      if ($this->has('doi') && (
+          str_i_same($this->get($param), 'Springerlink') ||
+          str_i_same($this->get($param), 'elsevier') ||
+          str_i_same($this->get($param), 'wiley') ||
+          str_i_same($this->get($param), 'sciencedirect') ||
+          str_i_same($this->get($param), 'science direct') ||
+          str_i_same($this->get($param), 'Wiley Online Library'))
+         ) {
+       $this->forget($param);
+       return;
+      } 
      }
      if (stripos($this->get($param), 'archive.org') !== false && stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === false) {
       $this->forget($param);
