@@ -6011,6 +6011,11 @@ final class Template
      foreach (CONFERENCE_LIST as $conf) {
       if (stripos($the_title, $conf) !== false && stripos($the_title, $the_param) !== false) {
        $this->forget($param);
+       return;
+      }
+      if (stripos($the_title, $conf) !== false && stripos($this->get($param), $conf) !== false && $this->wikiname() === 'cite book') {
+       $this->forget($param);
+       return;
       }
      }
      return;
