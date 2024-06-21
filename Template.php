@@ -6018,6 +6018,12 @@ final class Template
        return;
       }
      }
+     if ($this->wikiname() === 'cite book' && $the_title === '') {
+      if (in_array($this->get($param), ['Automata, Languages and Programming'])) {
+       $this->rename($param, 'title');
+       return;
+      }
+     }
      return;
 
     case 'jstor':
