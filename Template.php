@@ -6024,6 +6024,21 @@ final class Template
        return;
       }
      }
+     if ($this->wikiname() === 'cite book' && $this->blank('chapter')) {
+      /**
+      if (in_array($this->get($param), [])) {
+       $this->rename('title', 'chapter');
+       $this->rename($param, 'title');
+       return;
+      }
+      */
+      if (in_array($this->get('series'), ['Lecture Notes in Computer Science'])) {
+       $this->rename('title', 'chapter');
+       $this->rename($param, 'title');
+       return;
+      }
+     }
+
      return;
 
     case 'jstor':
