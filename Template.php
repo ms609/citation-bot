@@ -8506,6 +8506,12 @@ final class Template
    $this->rename('chapter-url', 'url');
    $this->rename('chapterurl', 'url');
   }
+  if ($this->has('script-' . $old_param)) {
+   $this->rename('script-' . $old_param, 'script-' . $new_param);
+  }
+  if ($this->has('trans-' . $old_param)) {
+   $this->rename('trans-' . $old_param, 'trans-' . $new_param);
+  }
  }
 
  public function get(string $name): string
