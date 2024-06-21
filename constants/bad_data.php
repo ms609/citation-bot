@@ -971,6 +971,7 @@ const HOSTNAME_MAP = [
 ]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
+    'brema.suub.uni-bremen.de',
     'corydondemocrat.com',
     'wikipedia.org',
     'web.archive.org',
@@ -2361,6 +2362,8 @@ const ARE_MANY_THINGS = [
     'elonet',
     'audible.com',
     'audible',
+    'staats und universitätsbibliothek bremen',
+    'brema.suub.uni-bremen.de',
 ]; // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = [
     'the economist',
