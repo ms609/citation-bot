@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
-
-
-
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
     '10.1054/jocn.1999.0776' => true, // parked domain
