@@ -6032,7 +6032,7 @@ final class Template
        return;
       }
       */
-      if (in_array($this->get('series'), ['Lecture Notes in Computer Science'])) {
+      if (in_array($this->get('series'), ['Lecture Notes in Computer Science', 'Klassische Texte der Wissenschaft'])) {
        $this->rename('title', 'chapter');
        $this->rename($param, 'title');
        return;
