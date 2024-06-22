@@ -6699,7 +6699,13 @@ final class Template
       if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
        if (strlen($matches[1]) > 0.7 * (float) strlen($title) && $title !== '[[' . $matches[1] . ']]') {
         // Only add as title-link if a large part of title text
-        $title = '[[' . $matches[1] . "|" . str_replace(["[[", "]]"], "", $title) . ']]';
+        $matches[2] = str_replace(["[[", "]]"], "", $title);
+        if ($matches[2] === "''" . $matches[1] . "''") {
+         $title = $matches[1];
+         $this->set('title-link', $matches[1]);
+        } else {
+         $title = '[[' . $matches[1] . "|" . $matches[2]. ']]';
+        }
        }
       } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $title, $matches) && strpos($title, ':') === false) {
        // Avoid touching inter-wiki links
