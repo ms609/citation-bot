@@ -6669,6 +6669,12 @@ final class Template
       return;
      }
      $title = $this->get($param);
+     if (preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Reuters$~', $title, $matches)) {
+      if (stripos($this->get('agency') . $this->get('work') . $this->get('website') . $this->get('newspaper'), 'Reuters') !== false) {
+       $title = $matches[1];
+       $this->set('title', $title);
+      }
+     }
      if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
       $this->set('title', '');
       return;
