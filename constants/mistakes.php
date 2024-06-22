@@ -1200,6 +1200,6 @@ const TEMPLATE_CONVERSIONS = [
     ['Registration-required', 'Registration required'],
     ['registration needed', 'registration required'],
     ['Registration needed', 'Registration required'],
-    ['cite article, 'cite news'],
-    ['Cite article, 'Cite news'],
+    ['cite article', 'cite news'],
+    ['Cite article', 'Cite news'],
 ];
