@@ -2958,6 +2958,7 @@ const ALWAYS_BAD_TITLES = [
 ];
 
 const DOI_FREE_PREFIX = [
+    '10.12942/',
     '10.1100/',
     '10.11131/',
     '10.11569/',
