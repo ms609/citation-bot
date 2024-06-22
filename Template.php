@@ -6008,6 +6008,8 @@ final class Template
       return;
      }
      $the_title = $this->get('title');
+     $the_param = str_ireplace(['Proc. ', 'Conf. '], ['Proceedings ', 'Conference '], $the_param);
+     $the_title = str_ireplace(['Proc. ', 'Conf. '], ['Proceedings ', 'Conference '], $the_title);
      foreach (CONFERENCE_LIST as $conf) {
       if (stripos($the_title, $conf) !== false && stripos($the_title, $the_param) !== false) {
        $this->forget($param);
