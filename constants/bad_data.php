@@ -2956,6 +2956,7 @@ const ALWAYS_BAD_TITLES = [
     'Log In - ProQuest',
     'DPG Media Privacy Gate',
     'Request Rejected',
+    '{title}',
 ];
 
 const DOI_FREE_PREFIX = [
