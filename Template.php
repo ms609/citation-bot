@@ -5186,7 +5186,7 @@ final class Template
        $the_url .= $this->get($thingy);
       }
       if (
-       stripos($the_url, 'reuters.com') !== false ||
+       stripos($the_url, 'reuters.co') !== false ||
        stripos($the_url, 'apnews.com') !== false ||
        stripos($the_url, 'yna.co.kr') !== false ||
        stripos($the_url, 'upi.com') !== false ||
@@ -5195,7 +5195,7 @@ final class Template
        stripos($the_url, 'pna.gov.ph') !== false
       ) {
        $this->rename($param, 'work');
-       if (stripos($the_url, 'apnews.com') !== false) {
+       if (stripos($the_url, 'apnews.co') !== false) {
         if ($this->get('work') === 'AP') {
          $this->set('work', 'AP News');
         } elseif ($this->get('work') === 'Associated Press') {
@@ -7302,7 +7302,7 @@ final class Template
       foreach (ALL_URL_TYPES as $thingy) {
        $the_url .= $this->get($thingy);
       }
-      if (stripos($the_url, 'reuters.com') === false && stripos($the_url, 'apnews.com') === false) {
+      if (stripos($the_url, 'reuters.co') === false && stripos($the_url, 'apnews.co') === false) {
        $this->rename($param, 'agency');
       }
      }
