@@ -1864,7 +1864,7 @@ function convert_to_utf8(string $value): string {
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
     $encode = strtolower($encode);
-    return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1'], true);
+    return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1', '8859-1', '8859-7'], true);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url): string {
@@ -1880,8 +1880,11 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if ($encode === 'big5') {
         $encode = 'BIG-5';
     }
+    if (preg_match('~^\d{4}\-\d{1,2}$~', $encode)) {
+        $encode = 'iso-' . $encode;
+    }
     if (in_array($encode, ['utf-8-sig', 'x-user-defined'], true)) { // Known wonky ones
-            return "";
+        return "";
     }
     $master_list = mb_list_encodings();
     $valid = [];
