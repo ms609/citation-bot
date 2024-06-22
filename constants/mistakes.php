@@ -809,6 +809,11 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'zugriff' => 'access-date',
     'odkaz na titul' => 'title-link',
     'vydanie' => 'edition',
+    'url-stats' => 'url-status',
+    'first 1' => 'first1',
+    'ifirst' => 'first',
+    'trans-tite' => 'trans-title',
+    'publish' => 'publisher',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
