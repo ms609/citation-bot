@@ -6658,7 +6658,7 @@ final class Template
      }
      $title = $this->get($param);
      if (preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Reuters(?:\.com)$~i', $title, $matches)) {
-      if (stripos($this->get('agency') . $this->get('work') . $this->get('website') . $this->get('newspaper') . $this->get('website') . $this->get('publiser'), 'reuters') !== false) {
+      if (stripos($this->get('agency') . $this->get('work') . $this->get('website') . $this->get('newspaper') . $this->get('website') . $this->get('publisher'), 'reuters') !== false) {
        $title = $matches[1];
        $this->set('title', $title);
       }
