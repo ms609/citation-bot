@@ -485,14 +485,18 @@ final class Zotero {
         }
         if (!isset($result->title)) {
             if (strpos($zotero_response, 'unknown_error') !== false) { // @codeCoverageIgnoreStart
-                    report_info("Did not get a title for URL ". echoable($url));
+                report_info("Did not get a title for URL ". echoable($url));
             } else {
-                    report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
+                report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
             }
             return;  // @codeCoverageIgnoreEnd
         }
         if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
             report_info("Could not resolve URL " . echoable($url));
+            return;
+        }
+        if ($result->title === 'Newstream') {
+            report_info("No good meta-data from URL " . echoable($url));
             return;
         }
         // Remove unused stuff
@@ -555,10 +559,10 @@ final class Zotero {
             $test_data .= $result->title;
         }
         foreach (BAD_ZOTERO_TITLES as $bad_title ) {
-                if (mb_stripos($test_data, $bad_title) !== false) {
-                    report_info("Received invalid title data for URL " . echoable($url . ": " . $test_data));
-                    return;
-                }
+            if (mb_stripos($test_data, $bad_title) !== false) {
+                report_info("Received invalid title data for URL " . echoable($url . ": " . $test_data));
+                return;
+            }
         }
         if ($test_data === '404' || $test_data === '/404') {
             return;
