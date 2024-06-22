@@ -2918,6 +2918,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'meth enzymol',
     'advances in genetics',
     'adv genetics',
+    'adv genet',
     'international studies on childhood and adolescence',
     'methods in cell biology',
     'methods in molecular medicine',
