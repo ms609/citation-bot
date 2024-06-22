@@ -600,6 +600,8 @@ final class Zotero {
                 $result->publicationTitle = 'Financial Post';
             } elseif ($tester === 'bloomberg.com') {
                 $result->publicationTitle = 'Bloomberg';
+            } elseif ($tester === 'radiofreeeurope/radioliberty') {
+                $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
             } elseif ($tester === 'advanced books') {
                 unset($result->issue);
                 unset($result->volume);
