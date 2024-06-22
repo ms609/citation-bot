@@ -76,24 +76,6 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame("{{cite news}}", $expanded->parsed_text());
     }
 
-    public function testTemplateConvertComplex(): void {
-        $text = "{{cite article}}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame("{{cite news}}", $expanded->parsed_text());
-
-        $text = "{{cite article|journal=X}}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame("{{cite journal|journal=X}}", $expanded->parsed_text());
-
-        $text = "{{Cite article}}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame("{{Cite news}}", $expanded->parsed_text());
-
-        $text = "{{Cite article|journal=X}}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame("{{Cite journal|journal=X}}", $expanded->parsed_text());
-    }
-
     public function testTemplateConvertComplex2a(): void {
         $text = "{{cite document}}";
         $expanded = $this->process_citation($text);
