@@ -93,7 +93,6 @@ const ITALICS_LIST =
     'Phialella fragilis|' .
     'Skeletonema costatum|' .
     'Salmonella typhimurium|' .
-    'Drosophila melanogaster|' .
     'Polycotylus latipinnis|' .
     'Coprosma lucida|' .
     'Mycobacterium tuberculosis|' .
@@ -233,7 +232,6 @@ const ITALICS_LIST =
     'Kallima inachus|' .
     'K\. inachus|' .
     'Argynnis hyperbius|' .
-    'Helicobacter Pylori|' .
     'Streptococcus diacetilactis|' .
     'Panax ginseng|' .
     'Leuconostoc citrovorum|' .
