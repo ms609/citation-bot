@@ -216,7 +216,7 @@ const ITALICS_LIST =
     'Mussaurus patagonicus|' .
     'Ciona intestinalis|' .
     'Placobdelloides siamensis|' .
-    'Leptanilla japonica|'.
+    'Leptanilla japonica|' .
     'Haematopus ostralegus|' .
     'Macoma balthica|' .
     'Boscia angustifolia|' .
