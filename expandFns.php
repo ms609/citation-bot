@@ -1761,10 +1761,7 @@ function hdl_works(string $hdl): string|null|false {
             }
         }
         HandleCache::$cache_hdl_null[$hdl] = true;
-        if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
-            bot_debug_log('Got null for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($hdl)));
-        }
-        return null;                                                         // @codeCoverageIgnoreEnd
+        return null;                                     // @codeCoverageIgnoreEnd
     }
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$hdl] = true;
