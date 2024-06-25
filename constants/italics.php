@@ -204,6 +204,17 @@ const ITALICS_LIST =
     'Emiliania huxleyi|' .
     'Res Publica|' .
     'de Novo|' .
+    'Clevosaurus latidens|' .
+    'Cymbospondylus buchseri|' .
+    'Klebsiella oxytoca|' .
+    'Borrelia burgdorferi|' .
+    'Besanosaurus leptorhynchus|' .
+    'Drosophila melanogaster|' .
+    'Bacillus pumilusfrom|' .
+    'Praemegaceros portis|' .
+    'Helicobacter pylori|' .
+    'Mussaurus patagonicus|' .
+    'Ciona intestinalis|' .
     'Placobdelloides siamensis|' .
     'Leptanilla japonica|'.
     'Haematopus ostralegus|' .
@@ -228,6 +239,9 @@ const ITALICS_LIST =
     'Leuconostoc citrovorum|' .
     'Lynx pardinus|' .
     'Oenococcus oeni|' .
+    'Rhamphorhynchus|' .
+    'Buchnera|' .
+    'Praemegaceros|' .
     'Pristionchus|' .
     'Arabidopsis|' .
     'Realpolitik|' .
@@ -474,6 +488,8 @@ const CAMEL_CASE = [
     'PhotonIcs', 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma',
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
     'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
+    'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
+    'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv',
 ];
 
 const ITALICS_HARDCODE_IN  = [
