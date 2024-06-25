@@ -209,7 +209,6 @@ const ITALICS_LIST =
     'Borrelia burgdorferi|' .
     'Besanosaurus leptorhynchus|' .
     'Drosophila melanogaster|' .
-    'Bacillus pumilusfrom|' .
     'Praemegaceros portis|' .
     'Helicobacter pylori|' .
     'Mussaurus patagonicus|' .
