@@ -202,6 +202,11 @@ const ITALICS_LIST =
     'Poria cocos|' .
     'Emiliania huxleyi|' .
     'Res Publica|' .
+    'Mixosaurus nordenskioeldii|' .
+    'Streptococcus agalactiae|' .
+    'Mycoplasma genitalium|' .
+    'Notorynchus cepedianus|' .
+    'Chauliodus macouni|' .
     'de Novo|' .
     'Clevosaurus latidens|' .
     'Cymbospondylus buchseri|' .
@@ -371,6 +376,7 @@ const ITALICS_LIST =
     'Rangifer|' .
     'Graphidaceae|' .
     'Bacillus|' .
+    'Pennellidae|' .
     'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
@@ -485,7 +491,7 @@ const CAMEL_CASE = [
     'MiniVess', 'GlobeCom', 'ASHRAE GreenGuide', 'BioIndustry', 'FeCo',
     'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
-    'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv',
+    'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
 ];
 
 const ITALICS_HARDCODE_IN  = [
