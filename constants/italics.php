@@ -210,7 +210,6 @@ const ITALICS_LIST =
     'Besanosaurus leptorhynchus|' .
     'Drosophila melanogaster|' .
     'Praemegaceros portis|' .
-    'Helicobacter pylori|' .
     'Mussaurus patagonicus|' .
     'Ciona intestinalis|' .
     'Placobdelloides siamensis|' .
