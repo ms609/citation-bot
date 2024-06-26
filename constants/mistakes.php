@@ -835,6 +835,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'punlisher' => 'publisher',
     'websinte' => 'website',
     'aauthor1-link' => 'author1-link',
+    'wprk' => 'work',
+    'title-lik' => 'title-link',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
