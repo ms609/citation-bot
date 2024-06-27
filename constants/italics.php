@@ -48,7 +48,6 @@ const ITALICS_LIST =
     'Inonotus radiatus|' .
     'Plasmodium berghei|' .
     'Dunkleosteus terrelli|' .
-    'Mycoplasma genitalium|' .
     'In Vitro|' .
     'Australopithecus afarensis|' .
     'Tabula Rasa|' .
