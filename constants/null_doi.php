@@ -203,6 +203,9 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1519/0744-0049(1984)009<0065:STVWL>2.3.CO;2' => true, // domain for sale
+    '10.1379/1466-1268(1996)001<0023:ahsgtt>2.3.co;2' => true, // domain for sale
+    '10.1379/1466-1268(1996)001<0023:AHSGTT>2.3.CO;2' => true, // domain for sale
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -492,8 +495,6 @@ const NULL_DOI_LIST = [
     '10.1474/GGA.2005-01.0-05.0005' => true,
     '10.1489/1544-581X(2004)072<0169:LOLSTP>2.0.CO;2' => true, // domain for sale
     '10.1511/2006.61.412' => true, // goes to wrong page
-    '10.1512/iumj.2006.55.2710' => true,
-    '10.1512/iumj.2015.64.5469' => true,
     '10.1515/abcsj-2015-0003' => true, // publisher webpage
     '10.1515/crll.1878.84.242' => true,
     '10.1515/vzoo-2017-0029' => true, // page not found
@@ -818,7 +819,6 @@ const NULL_DOI_LIST = [
     '10.30883/jba.v29i2.375' => true, // Localhost
     '10.31057/2314.3908.v5.n2.17761' => true,
     '10.3116/20775679/14/1/45/2013' => true,
-    '10.31273/reinvention.v12i2.339' => true,
     '10.3129/can.j.ophthalmol.i07-044' => true,
     '10.3134/ehtj.08.008' => true, // Spam site
     '10.3134/ehtj.09.001' => true, // Spam site
@@ -1032,7 +1032,6 @@ const NULL_DOI_LIST = [
     '10.7182/prtr.13.3.a368158t7662j463' => true,
     '10.7313/upo9781904761679.011' => true,
     '10.7313/upo9781907284991.018' => true,
-    '10.7328/jurpcb/20021719' => true,
     '10.7454/irhs.v1i1.50' => true, // DB Error
     '10.7497/j.issn.2095-3941.2015.0030' => true, // Page not found
     '10.7556/jaoa' => true,
@@ -1066,6 +1065,10 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1512/iumj.2006.55.2710' => true,
+    '10.1512/iumj.2015.64.5469' => true,
+    '10.31273/reinvention.v12i2.339' => true,
+    '10.7328/jurpcb/20021719' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
