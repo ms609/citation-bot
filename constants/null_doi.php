@@ -24,7 +24,6 @@ const NULL_DOI_ANNOYING = [
     '10.13734/j.cnki.1000-5315.2001.06.017' => true, // Error
     '10.1379/1466-1268(1996)001<0023:ahsgtt>2.3.co;2' => true, // domain for sale
     '10.1379/1466-1268(1996)001<0023:AHSGTT>2.3.CO;2' => true, // domain for sale
-    '10.1379/1466-1268(1996)001<0023:AHSGTT>2.3.CO;2' => true, // domain for sale
     '10.1379/1466-1268(1996)001<0097:dothsr>2.3.co;2' => true, // domain for sale
     '10.1379/1466-1268(1996)001<0097:DOTHSR>2.3.CO;2' => true, // domain for sale
     '10.1379/1466-1268(1996)001<0237:apomci>2.3.co;2' => true, // domain for sale
