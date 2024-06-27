@@ -69,6 +69,8 @@ const ITALICS_LIST =
     'Bacillus thuringiensis|' .
     'Magnosaurus nethercombensis|' .
     'Star Trek|' .
+    'Alligator mississippiensis|' .
+    'Palaenigma wrangeli|' .
     'Meringosphaera mediterranea|' .
     'Candida albicansas|' .
     'Candida albicans|' .
