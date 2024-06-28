@@ -842,6 +842,10 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'archívdátum' => 'archive-date',
     'elérés' => 'access-date',
     'kiadó' => 'publisher',
+    'labng' => 'lang',
+    'l<nguage' => 'language',
+    'urel' => 'url',
+    'archiveadate' => 'archive-date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
