@@ -1961,6 +1961,9 @@ final class Template
    // (page, volume etc)
 
    case 'title':
+    if ($this->has('trans-title')) {
+     return;
+    }
     if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
      return false;
     }
