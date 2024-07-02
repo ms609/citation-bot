@@ -1354,6 +1354,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'author':
         case 'authors':
         case 'last':
+        case 'first':
             return $list;
         case 'dummy':
             return $list;
