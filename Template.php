@@ -1962,7 +1962,7 @@ final class Template
 
    case 'title':
     if ($this->has('trans-title')) {
-     return;
+     return false;
     }
     if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
      return false;
