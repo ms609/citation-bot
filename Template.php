@@ -9162,6 +9162,7 @@ final class Template
    return false;
   }
   $url = $this->get('url');
+  $url = str_ireplace('%2F', '/', $url);
   if (stripos($url, 'google') && !strpos($this->get('url'), 'pg=')) {
    return false;
   } // Do not move books without page numbers
@@ -9225,9 +9226,12 @@ final class Template
   if (strpos($url, 'link.springer.com/chapter/10.')) {
    return true;
   }
-  if (preg_match('~10\.\1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
+  if (preg_match('~10\.1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
    return true;
   }
+  if (preg_match('~10\.1057\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
+   return true;
+  }1057
   if ($force) {
    return true;
   }
