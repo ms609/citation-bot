@@ -2615,6 +2615,7 @@ final class Template
 
    case 'work':
    case 'website':
+   case 'encyclopedia':
     if ($this->blank(WORK_ALIASES)) {
      return $this->add($param_name, $value); // Do NOT Sanitize
     }
