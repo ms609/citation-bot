@@ -846,6 +846,22 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'l<nguage' => 'language',
     'urel' => 'url',
     'archiveadate' => 'archive-date',
+    'abizena1' => 'last1',
+    'argitaletxea' => 'publisher',
+    'egile1-lotura' => 'author1-link',
+    'izena1' => 'last1',
+    'izenburua' => 'title',
+    'abizena1' => 'first1',
+    'urtea' => 'year',
+    'year_published' => 'year',
+    'publish-date' => 'date',
+    'accessd-date' => 'access-date',
+    'author -link' => 'author-link',
+    'editor-others' => 'editor-given',
+    'first 2' => 'first2',
+    'languafe' => 'language',
+    'lsst2' => 'last2',
+    'url-status-' => 'url-status',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
