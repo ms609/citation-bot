@@ -9231,7 +9231,7 @@ final class Template
   }
   if (preg_match('~10\.1057\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
    return true;
-  }1057
+  }
   if ($force) {
    return true;
   }
