@@ -100,7 +100,7 @@ const ITALICS_LIST =
     'Ariolimax californicus|' .
     'Streptococcus pneumoniae|' .
     'In Vivo|' .
-    'Tereingaornis moisleyi|',
+    'Tereingaornis moisleyi|' .
     'A\. dolichophallus|' .
     'Necrodes littoralis|' .
     'Stachybotrys chartarum|' .
