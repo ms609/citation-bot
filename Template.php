@@ -5443,6 +5443,21 @@ final class Template
      }
      return;
 
+    case 'arşivengelli': // "ignore archive"
+     $the_data = mb_strtolower($this->get($param));
+     if (in_array($the_data, ['y', 'yes', 'evet'], true)) {
+      $this->rename($param, 'url-status', 'live');
+      $this->forget($param);
+     } elseif (in_array($the_data, ['n', 'no', 'hayır'], true)) {
+      $this->rename($param, 'url-status', 'dead');
+      $this->forget($param);
+     } elseif (in_array($the_data, ['', 'bot: unknown'], true)) {
+      $this->forget($param);
+     } else {
+      $this->forget($param);
+     }
+     return;
+    
     case 'url-status':
      $the_data = mb_strtolower($this->get($param));
      if (in_array($the_data, ['y', 'yes', 'si', 'sì', 'ei tööta'], true)) {
