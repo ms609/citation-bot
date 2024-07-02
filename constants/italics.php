@@ -100,6 +100,7 @@ const ITALICS_LIST =
     'Ariolimax californicus|' .
     'Streptococcus pneumoniae|' .
     'In Vivo|' .
+    'Tereingaornis moisleyi|',
     'A\. dolichophallus|' .
     'Necrodes littoralis|' .
     'Stachybotrys chartarum|' .
@@ -378,6 +379,7 @@ const ITALICS_LIST =
     'Graphidaceae|' .
     'Bacillus|' .
     'Pennellidae|' .
+    'Manuherikia|' .
     'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
@@ -493,6 +495,7 @@ const CAMEL_CASE = [
     'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
+    'MicroFinance', 'DeFi', 'JetBlue',
 ];
 
 const ITALICS_HARDCODE_IN  = [
