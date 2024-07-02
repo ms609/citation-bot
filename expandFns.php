@@ -498,7 +498,7 @@ function wikify_external_text(string $title): string {
     $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
     $originalTags = ['<title>', '</title>', '</ title>', 'From the Cover: ', '<SCP>', '</SCP>', '</ SCP>',];
-    $wikiTags = ['','','',''];
+    $wikiTags = ['', '', '', '', '', '', ''];
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['<inf>', '</inf>'];
     $wikiTags = ['<sub>', '</sub>'];
