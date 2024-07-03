@@ -538,7 +538,7 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'update', 'illustrator', 'počet stran', 'ur', 'kbytes', 'aspas', 'binding', 'local-notes',
     'notas', 'oi', 'orig-publisher', 'system-requirements', 'orig-pages', 'orig-place',
     'age', 'počet strán', 'opis', 'verse', 'typ vydania', 'en', 'journal-url',
-    'тираж', 'orcid', 'wire', 'archive-first', 'fr', 'part-url', 'footnote',
+    'тираж', 'orcid', 'wire', 'archive-first', 'fr', 'part-url', 'footnote', 'ncid',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
