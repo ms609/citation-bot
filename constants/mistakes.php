@@ -861,6 +861,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'languafe' => 'language',
     'lsst2' => 'last2',
     'url-status-' => 'url-status',
+    'chapter-title' => 'chapter',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
