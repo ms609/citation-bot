@@ -971,6 +971,7 @@ const HOSTNAME_MAP = [
     'theweek.com' => '[[The Week]]',
     'theweek.in' => '[[The Week (Indian magazine)|The Week]]',
     'theathletic.com' => '[[The Athletic]]',
+    'theprint.in' => '[[ThePrint]]',
 ]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
