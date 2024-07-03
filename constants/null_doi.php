@@ -736,7 +736,6 @@ const NULL_DOI_LIST = [
     '10.2225/vol8-issue1-fulltext-9' => true, // Forbid
     '10.2225/vol9-issue3-fulltext-15' => true, // Forbid
     '10.2225/vol9-issue3-fulltext-2' => true, // Forbid
-    '10.22319/rmcp.v11i3.5242' => true,
     '10.22353/mjbs.2004.02.13' => true,
     '10.22374/cjgim.v13i3.258' => true,
     '10.22394/0869-5377-2019-5-203-225' => true, // Not found
@@ -1126,6 +1125,7 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.22319/rmcp.v11i3.5242' => true,
     '10.21500/16578031.4749' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
