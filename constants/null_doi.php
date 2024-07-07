@@ -856,7 +856,6 @@ const NULL_DOI_LIST = [
     '10.26687/ARCHNET-IJAR.V10I2.960' => true, // page not found
     '10.26687/archnet-ijar.v10i2.962' => true, // page not found
     '10.26687/archnet-ijar.v9i1.558' => true, // page not found
-    '10.28925/2664-2069.2020.1.8' => true,
     '10.29011/2576-9588.100111' => true,
     '10.2979/FIL.2000.12.3.344' => true,
     '10.2979/FIL.2000.12.3.358' => true,
@@ -1150,6 +1149,7 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.28925/2664-2069.2020.1.8' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archpsyc.60.5.497' => true,
