@@ -506,8 +506,7 @@ const PARAMETER_LIST = [
     'translator-last#', 'translator-link', 'translator-link#', 'translator-mask',
     'translator-mask#', 'translator-surname', 'translator-surname#', 'type', 'url',
     'url-access', 'url-status', 'vauthors', 'veditors', 'version', 'via', 'volume',
-    'website', 'work', 'year', 'zbl', 'pdf', 'trans-first', 'trans-last', 'image',
-    'alt isbn', 'died_date', 'issn2', 'subtitle', 'url texte', 'with', 'wo',
+    'website', 'work', 'year', 'zbl',
 ];
 
 const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
@@ -540,6 +539,8 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'notas', 'oi', 'orig-publisher', 'system-requirements', 'orig-pages', 'orig-place',
     'age', 'počet strán', 'opis', 'verse', 'typ vydania', 'en', 'journal-url',
     'тираж', 'orcid', 'wire', 'archive-first', 'fr', 'part-url', 'footnote', 'ncid',
+    'plainurl', 'sous-titre', 'arşivengelli',  'pdf', 'trans-first', 'trans-last', 'image',
+    'alt isbn', 'died_date', 'issn2', 'subtitle', 'url texte', 'with', 'wo',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
