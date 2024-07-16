@@ -506,7 +506,8 @@ const PARAMETER_LIST = [
     'translator-last#', 'translator-link', 'translator-link#', 'translator-mask',
     'translator-mask#', 'translator-surname', 'translator-surname#', 'type', 'url',
     'url-access', 'url-status', 'vauthors', 'veditors', 'version', 'via', 'volume',
-    'website', 'work', 'year', 'zbl',
+    'website', 'work', 'year', 'zbl', 'pdf', 'trans-first', 'trans-last', 'image',
+    'alt isbn', 'died_date', 'issn2', 'subtitle', 'url texte', 'with', 'wo',
 ];
 
 const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
