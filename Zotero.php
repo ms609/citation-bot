@@ -1787,8 +1787,12 @@ final class Zotero {
                     if ($template->has('isbn')) { // Already have ISBN
                         quietly('report_inaction', "Not converting ASIN URL: redundant to existing ISBN.");
                     } else {
-                        quietly('report_modification', "Converting URL to ASIN template");
-                        $template->set('id', $template->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace([".co.", ".com.", "."], "", $match['domain']) . "}}");
+                        if ($template-blank('id')) { // TODO - deal with when already does and does not have {{ASIN}}
+                            quietly('report_modification', "Converting URL to ASIN template");
+                            $template->set('id', $template->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace([".co.", ".com.", "."], "", $match['domain']) . "}}");
+                        } else {
+                            return false;  // do not continue and delete it, because of TODO above
+                        }
                     }
                     if (is_null($url_sent)) {
                         $template->forget($url_type); // will forget accessdate too
