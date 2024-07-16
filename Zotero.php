@@ -1299,18 +1299,20 @@ final class Zotero {
                 return false;
             }
             $template->add_if_new('s2cid', $s2cid);
-            if ($template->has('s2cid') && is_null($url_sent) && $template->blank(['archiveurl', 'archive-url'])) {
-                $template->forget($url_type);
-                return true;  // Time to clean up
-            }
-            if (is_null($url_sent) && stripos($url, 'pdf') === false) {
-                $template->forget($url_type);
-                return true;
-            }
-            if (is_null($url_sent) && $template->has_good_free_copy() && get_semanticscholar_license($s2cid) === false) {
-                report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
-                $template->forget($url_type);
-                return true;
+            if ($template->wikiname() !== 'cite web' || !$this->blank(['doi', 'pmc', 'pmid', 'journal'])) { // Avoid template errors
+                if ($template->has('s2cid') && is_null($url_sent) && $template->blank(['archiveurl', 'archive-url'])) {
+                    $template->forget($url_type);
+                    return true;  // Time to clean up
+                }
+                if (is_null($url_sent) && stripos($url, 'pdf') === false) {
+                    $template->forget($url_type);
+                    return true;
+                }
+                if (is_null($url_sent) && $template->has_good_free_copy() && get_semanticscholar_license($s2cid) === false) {
+                    report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
+                    $template->forget($url_type);
+                    return true;
+                }
             }
             return true;
         }
