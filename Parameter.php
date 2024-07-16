@@ -35,7 +35,9 @@ final class Parameter {
             // $post_eq[1]: any whitespace before the parameter value (including newlines)
             // $post_eq[2]: the parameter value itself (which can span multiple lines)
             // $post_eq[3]: any whitespace after the parameter value (including newlines)
-            preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq);
+            if (!preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq)) {
+                bot_debug_log('Error in parse_text with: ' . $text); // Why and how?
+            }
             if (count($pre_eq) === 0) {
                 $this->eq    = $split[0] . '=' . $post_eq[1];
             } else {
