@@ -884,6 +884,12 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'plast' => 'last',
     'access -date' => 'access-date',
     'totle' => 'title',
+    'luku' => 'number',
+    'سال' => 'year',
+    'আইএসবিএন' => 'isbn',
+    'تاریخ بازبینی' => 'access-date',
+    'সংস্করণ' => 'edition',
+    'পাতাসমূহ' => 'pages',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
