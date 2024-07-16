@@ -16,6 +16,7 @@ const ITALICS_LIST =
     'Sydney morning herald|' .
     'Chronicle\(s\) of Ioannina|' .
     'Homo sapiens sapiens|' .
+    'Phaethornis longuemareus aethopyga|' .
     'Trypanosoma brucei gambiense|' .
     'Star Trek: Voyager|' .
     'Notechis scutatus scutatus|' .
@@ -162,6 +163,10 @@ const ITALICS_LIST =
     'Perccottus glenii|' .
     'Tornieria africana|' .
     'Ilex asprella|' .
+    'Boluochia zhengi|' .
+    'Geochen rhuax|' .
+    'Gyps melitensis|' .
+    'Titanis walleri|' .
     'Physcomitrella patens|' .
     'Carcharhinus brachyurus|' .
     'C\. obscurus|' .
@@ -495,7 +500,7 @@ const CAMEL_CASE = [
     'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
-    'MicroFinance', 'DeFi', 'JetBlue',
+    'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv',
 ];
 
 const ITALICS_HARDCODE_IN  = [
