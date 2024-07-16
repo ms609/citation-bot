@@ -1299,7 +1299,7 @@ final class Zotero {
                 return false;
             }
             $template->add_if_new('s2cid', $s2cid);
-            if ($template->wikiname() !== 'cite web' || !$this->blank(['doi', 'pmc', 'pmid', 'journal'])) { // Avoid template errors
+            if ($template->wikiname() !== 'cite web' || !$template->blank(['doi', 'pmc', 'pmid', 'journal'])) { // Avoid template errors
                 if ($template->has('s2cid') && is_null($url_sent) && $template->blank(['archiveurl', 'archive-url'])) {
                     $template->forget($url_type);
                     return true;  // Time to clean up
