@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.4267/pollution-atmospherique.4936' => true, // Blank page
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -1147,7 +1148,7 @@ const NULL_DOI_LIST = [
     '10.4267/2042/56407' => true,
     '10.4267/2042/56413' => true,
     '10.4267/2042/56440' => true, // Dead handle
-    '10.4267/pollution-atmospherique.4936' => true,
+    '10.4267/pollution-atmospherique.4936' => true, // Blank page
     '10.4268/cjcmm20100112' => true,
     '10.4268/cjcmm20101214' => true,
     '10.4268/cjcmm20111301' => true,
