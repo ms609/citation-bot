@@ -97,7 +97,9 @@ final class WikipediaBot {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'Edit conflict') !== false) {
                 report_warning('Edit Conflict while saving changes');  // @codeCoverageIgnore
-                return true;
+                return true;  // @codeCoverageIgnore
+            } elseif (strpos($respone_info, 'Invalid CSRF token') !== false) {
+                report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
                 bot_debug_log($err_string); // Good to know about about these things
