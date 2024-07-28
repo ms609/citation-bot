@@ -246,6 +246,7 @@ const ITALICS_LIST =
     'Panax ginseng|' .
     'Leuconostoc citrovorum|' .
     'Lynx pardinus|' .
+    'Streptopelia senegalensis|' .
     'Oenococcus oeni|' .
     'Rhamphorhynchus|' .
     'Buchnera|' .
