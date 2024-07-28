@@ -2562,6 +2562,12 @@ final class Template
     }
     return false;
 
+   case 'agency':
+    if ($this->blank($param_name)) {
+     return $this->add($param_name, sanitize_string($value));
+    }
+    return false;
+
    case 'location':
     if ($this->had_initial_publisher) {
      return false;
