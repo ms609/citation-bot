@@ -2958,6 +2958,7 @@ const ALWAYS_BAD_TITLES = [
     'DPG Media Privacy Gate',
     'Request Rejected',
     '{title}',
+    'Radware Bot Manager Captcha',
 ];
 
 const DOI_FREE_PREFIX = [
