@@ -1042,6 +1042,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
             return strtoupper($matches[0]);
         },
         $new_case);
+    $new_case = safe_preg_replace_callback(
+        "~ Proceedings ([a-z]) ~u",
+        static function (array $matches): string {
+            return ' Proceedings ' . strtoupper($matches[1]) . ' ';
+        },
+        $new_case);
     $new_case = trim($new_case);
     // Special cases - Only if the full title
     if ($new_case === 'Bioscience') {
