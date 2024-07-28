@@ -915,7 +915,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'väljaandja' => 'publisher',
     'väljaanne' => 'work',
     'γλώσσα' => 'language',
-    'consulté' => 'access-date',
     'consulté le' => 'access-date',
     'kasutatud' => 'access-date',
 ]; // Lots of stuff that just existed
