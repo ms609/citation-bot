@@ -890,7 +890,7 @@ class Page {
         $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
         if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
             $s = strtolower($matches[1]); // We ONLY deal with first one
-            if ($s === 'default') {
+            if ($s === 'default' || $s === 'none') {
                 $name_list_style = NAME_LIST_STYLE_DEFAULT;
             } elseif ($s === 'vanc') {
                 $name_list_style = NAME_LIST_STYLE_VANC;
