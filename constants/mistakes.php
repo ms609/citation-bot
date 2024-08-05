@@ -919,6 +919,22 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'kasutatud' => 'access-date',
     'urlarquivo' => 'archive-url',
     'urlmorta' => 'deadurl',
+    'پیوند' => 'url',
+    'v authors' => 'vauthors',
+    'atchive-date' => 'archive-date',
+    'vauthoes' => 'vauthors',
+    'dtae' => 'date',
+    'last 2' => 'last2',
+    'volumen' => 'volume',
+    'webaite' => 'website',
+    'editorlast' => 'editor-last',
+    'tarns-title' => 'trans-title',
+    'authro2-link' => 'author2-link',
+    'vauthoes' => 'vauthors',
+    'firs1' => 'first1',
+    'axccessdate' => 'accessdate',
+    'handle' => 'hdl',
+    'oriyear-' => 'origyear',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
