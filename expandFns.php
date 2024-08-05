@@ -1049,9 +1049,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~ var\. ([A-Z]) ~u",
+        "~ var\. ([A-Z])~u",
         static function (array $matches): string {
-            return ' var. ' . strtolower($matches[1]) . ' ';
+            return ' var. ' . strtolower($matches[1]);
         },
         $new_case);
     $new_case = trim($new_case);
