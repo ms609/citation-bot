@@ -917,6 +917,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'γλώσσα' => 'language',
     'consulté le' => 'access-date',
     'kasutatud' => 'access-date',
+    'urlarquivo' => 'archive-url',
+    'urlmorta' => 'deadurl',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
