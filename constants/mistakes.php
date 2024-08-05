@@ -930,7 +930,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'editorlast' => 'editor-last',
     'tarns-title' => 'trans-title',
     'authro2-link' => 'author2-link',
-    'vauthoes' => 'vauthors',
     'firs1' => 'first1',
     'axccessdate' => 'accessdate',
     'handle' => 'hdl',
