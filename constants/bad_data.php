@@ -364,6 +364,7 @@ const BAD_TITLES = [
     'explore census data',
     'msn',
     'request rejected',
+    'redirecting',
 ];
 const IN_PRESS_ALIASES = [
     'in press',
