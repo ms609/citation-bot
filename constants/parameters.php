@@ -541,10 +541,11 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'тираж', 'orcid', 'wire', 'archive-first', 'fr', 'part-url', 'footnote', 'ncid',
     'plainurl', 'sous-titre', 'arşivengelli',  'pdf', 'trans-first', 'trans-last', 'image',
     'alt isbn', 'died_date', 'issn2', 'subtitle', 'url texte', 'with', 'wo', 'father',
-    'journal-link',
+    'journal-link', 'align', 'certyear', 'relyear', 'chapter-author', 'restricted',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work
 // web could be website or url, tile could be time or title
 // list should not be changed to last, name should not become time, etc.
+// Some are from other templates
