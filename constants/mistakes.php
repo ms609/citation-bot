@@ -934,6 +934,13 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'axccessdate' => 'accessdate',
     'handle' => 'hdl',
     'oriyear-' => 'origyear',
+    'arquivodata' => 'archivedate',
+    'arquivourl' => 'archiveurl',
+    'xhapter' => 'chapter',
+    'publicado' => 'publisher',
+    'accessadate' => 'access-date',
+    'publisjer' => 'publisher',
+    'author_link' => 'author-link',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
@@ -943,14 +950,6 @@ const COMMON_MISTAKES_TOOL = [
     'authorlink' => 'author-link',
     'origyear' => 'orig-date',
     'airdate' => 'air-date',
-    'publicado' => 'publisher',
-    'arquivodata' => 'archivedate',
-    'arquivourl' => 'archiveurl',
-    'xhapter' => 'chapter',
-    'publicado' => 'publisher',
-    'accessadate' => 'access-date',
-    'publisjer' => 'publisher',
-    'author_link' => 'author-link',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
