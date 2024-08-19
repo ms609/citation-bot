@@ -36,11 +36,14 @@ final class Parameter {
             // $post_eq[2]: the parameter value itself (which can span multiple lines)
             // $post_eq[3]: any whitespace after the parameter value (including newlines)
             if (!preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq)) {
-                bot_debug_log('Error in parse_text with: ' . $text); // Why and how?
+                bot_debug_log('Error 1 in parse_text with: ' . $text); // Why and how?
             }
             if (count($pre_eq) === 0) {
                 $this->eq    = $split[0] . '=' . $post_eq[1];
             } else {
+                if (!$pre_eq) {
+                    bot_debug_log('Error 2 in parse_text with: ' . $text); // Why and how?
+                }
                 $this->pre   = $pre_eq[1];
                 $this->param = $pre_eq[2];
                 $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
