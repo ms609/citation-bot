@@ -372,7 +372,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'chatper' => 'chapter',
     'url status' => 'url-status',
     'afirst1' => 'first1',
-    'tác giả 1' => 'author1',
     'năm' => 'year',
     'tác giả' => 'author',
     'u rl-status' => 'url-status',
