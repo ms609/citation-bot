@@ -2077,16 +2077,16 @@ final class Zotero {
     }
 
     private static function clean_volume(string $volume): string {
-        if (strpos($volume, "(") !== false)) {
+        if (strpos($volume, "(") !== false) {
             return '';
         }
         if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
             return ''; // Do not add date
         }
-        if (stripos($volume, "november) !== false) {
+        if (stripos($volume, "november") !== false) {
             return '';
         }
-        if (stripos($volume, "nostradamus) !== false) {
+        if (stripos($volume, "nostradamus") !== false) {
             return '';
         }
         $volume = str_ireplace(['volumes', 'volume', 'vol.' 'vols.', 'vols',
