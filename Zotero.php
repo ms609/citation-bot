@@ -521,13 +521,17 @@ final class Zotero {
 
         if (stripos($url, 'theathletic.com') !== false) { // Returns NYT
             unset($result->publicationTitle);  // @codeCoverageIgnore
-        } 
+        }
 
         if (stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
             unset($result->creators['1']);
             unset($result->author['1']);
         }
 
+        if (stripos($url, 'flickr.') !== false) {
+            $result->itemType = 'webpage';
+        }
+        
         $result->title = convert_to_utf8($result->title);
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
