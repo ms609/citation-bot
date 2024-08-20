@@ -530,6 +530,9 @@ final class Zotero {
 
         if (stripos($url, 'flickr.') !== false) {
             $result->itemType = 'webpage';
+            if ($template->has('via')) {
+                unset($result->publicationTitle);
+            }
         }
         
         $result->title = convert_to_utf8($result->title);
