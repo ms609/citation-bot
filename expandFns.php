@@ -820,7 +820,8 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
                 $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
-                    preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
+                preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) && 
+                !preg_match('~.(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»).~u', $str)
             ) {
                 $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', '"', $str);
                 $str = safe_preg_replace('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
