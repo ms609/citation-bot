@@ -446,7 +446,7 @@ const PARAMETER_LIST = [
     'author#-mask', 'author#-surname', 'author#link', 'author-first', 'author-first#',
     'author-given', 'author-given#', 'author-last', 'author-last#', 'author-link',
     'author-link#', 'author-mask', 'author-mask#', 'author-surname', 'author-surname#',
-    'authorlink', 'authorlink#', 'authors', 'bibcode', 'bibcode-access', 'biorxiv',
+    'authorlink', 'authorlink#', 'bibcode', 'bibcode-access', 'biorxiv',
     'book-title', 'cartography', 'chapter', 'chapter-format', 'chapter-url', 'chapter-url-access',
     'citation_bot_placeholder_bare_url', 'citeseerx', 'class', 'collaboration', 'conference',
     'conference-format', 'conference-url', 'contribution', 'contribution-format',
@@ -543,6 +543,7 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'alt isbn', 'died_date', 'issn2', 'subtitle', 'url texte', 'with', 'wo', 'father',
     'journal-link', 'align', 'certyear', 'relyear', 'chapter-author', 'restricted',
     'total_pages', 'total-pages', 'broken-link', 'broken-url', 'lien périodique',
+    'authors',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
