@@ -2089,9 +2089,9 @@ final class Zotero {
         if (stripos($volume, "nostradamus") !== false) {
             return '';
         }
-        $volume = str_ireplace(['volumes', 'volume', 'vol.' 'vols.', 'vols',
+        $volume = str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
          'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number'
-         'num.', 'num', 'nos.', 'nos', 'nr', '°', '№'], '');
+         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '');
         return $volume;
     }
 
