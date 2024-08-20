@@ -2932,6 +2932,8 @@ const JOURNAL_IS_BOOK_SERIES = [
     'advances in anatomy embryology and cell biology',
     'adv anat embryol cell biol',
     'handbook of the birds of the world',
+    'clio medica (amsterdam, netherlands)',
+    'clio medica',
 ];
 
 const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  '];
