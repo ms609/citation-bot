@@ -100,7 +100,7 @@ function doi_works(string $doi): ?bool {
     if ($works === null) {
         // These are unexpected nulls
         HandleCache::$cache_hdl_null[$doi] = true;
-        return null;                                                                 // @codeCoverageIgnoreEnd
+        return null;   // @codeCoverageIgnoreEnd
     }
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$doi] = true;
@@ -200,15 +200,15 @@ function is_doi_works(string $doi): ?bool {
     // 16:42, November 25, 2023 version is last check
     if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
         $registrant = substr($registrant, 3);
-        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||                // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
-                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||       // 4 digits with subcode (0xxx); accepts: 1000–9999
-                preg_match('~^[^1-9]\d\d\d$~', $registrant) ||                  // 4 digits without subcode (0xxx); accepts: 1000–9999
-                preg_match('~^\d\d\d\d\d\d+~', $registrant) ||                  // 6 or more digits
-                preg_match('~^\d\d?\d?$~', $registrant) ||                          // less than 4 digits without subcode (3 digits with subcode is legitimate)
-                preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||                 // 1 or 2 digits with subcode
-                $registrant === '5555' ||                                                               // test registrant will never resolve
-                preg_match('~[^\d\.]~', $registrant)) {                                 // any character that isn't a digit or a dot
+        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||       // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
+                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||  // 4 digits with subcode (0xxx); accepts: 1000–9999
+                preg_match('~^[^1-9]\d\d\d$~', $registrant) ||         // 4 digits without subcode (0xxx); accepts: 1000–9999
+                preg_match('~^\d\d\d\d\d\d+~', $registrant) ||         // 6 or more digits
+                preg_match('~^\d\d?\d?$~', $registrant) ||             // less than 4 digits without subcode (3 digits with subcode is legitimate)
+                preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||        // 1 or 2 digits with subcode
+                $registrant === '5555' ||                              // test registrant will never resolve
+                preg_match('~[^\d\.]~', $registrant)) {                // any character that isn't a digit or a dot
             return false;
         }
     }
@@ -293,10 +293,10 @@ function interpret_doi_header(array $headers_test): ?bool {
         return true; // grumpy
     }
     if (stripos($resp0, '301 Moved Permanently') !== false || stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
-        if (stripos($resp1, '302 Found') !== false               || stripos($resp1, 'HTTP/1.1 302') !== false) {
+        if (stripos($resp1, '302 Found') !== false || stripos($resp1, 'HTTP/1.1 302') !== false) {
             return true;    // Good
         } elseif (stripos($resp1, '301 Moved Permanently') !== false || stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
-            if (stripos($resp2, '200 OK') !== false                 || stripos($resp2, 'HTTP/1.1 200') !== false) {
+            if (stripos($resp2, '200 OK') !== false || stripos($resp2, 'HTTP/1.1 200') !== false) {
                 return true;
             } else {
                 return false;
@@ -809,13 +809,13 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
     if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;')    !== false) ||
             (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
-            (mb_strpos($str, '‹')               !== false && mb_strpos($str, '›')                !== false)) { // Only replace single angle quotes if some of both
+            (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);                      // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
     if((mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
-            (mb_strpos($str, '«')               !== false && mb_strpos($str, '»')                !== false)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
+            (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
         if ($do_more){
                 $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
