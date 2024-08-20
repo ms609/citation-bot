@@ -41,7 +41,7 @@ final class Parameter {
             if (count($pre_eq) === 0) {
                 $this->eq    = $split[0] . '=' . $post_eq[1];
             } else {
-                if (is_null($pre_eq[1]) || is_null($pre_eq[2]) || is_null($pre_eq[3])) {
+                if (is_null($pre_eq[1]) || is_null($pre_eq[2]) || is_null($pre_eq[3])) { // @phpstan-ignore-line
                     bot_debug_log('Error 2 in parse_text with: ' . $text); // Why and how?
                 }
                 $this->pre   = $pre_eq[1];
