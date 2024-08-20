@@ -2090,7 +2090,7 @@ final class Zotero {
             return '';
         }
         $volume = str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
-         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number'
+         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
          'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '');
         return $volume;
     }
