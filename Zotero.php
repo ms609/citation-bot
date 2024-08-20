@@ -909,7 +909,7 @@ final class Zotero {
             }
         }
         if (isset($result->volume)) {
-            $template->add_if_new('volume', self::clean_volume((string) $result->volume););
+            $template->add_if_new('volume', self::clean_volume((string) $result->volume));
         }
         if (isset($result->date) && strlen((string) $result->date)>3) {
             $new_date = tidy_date((string) $result->date);
