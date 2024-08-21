@@ -2283,6 +2283,7 @@ const NON_JOURNAL_WEBSITES = [
     'zerohedge.com/',
     'zhanqi.tv/',
     'zoominfo.com/',
+    'pressbooks.online.ucf.edu/',
 ];
 // Just a list of ones that are obvious.  Add ones that time-out as we find them
 // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we do not want to grab too many sites
