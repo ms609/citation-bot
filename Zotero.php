@@ -513,6 +513,8 @@ final class Zotero {
         unset($result->subject);
         unset($result->caseName);
         unset($result->nameOfAct);
+        unset($result->language);
+        unset($result->source);
 
         if (stripos($url, 'www.royal.uk') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
@@ -531,6 +533,11 @@ final class Zotero {
         if (stripos($url, 'flickr.') !== false) {
             $result->itemType = 'webpage';
             unset($result->publicationTitle); //Flickr is not a work
+        }
+
+        if (stripos($url, 'pressbooks.online.ucf.edu') !== false) {
+            $result->itemType = 'webpage';
+            unset($result->author); // They list themself
         }
         
         $result->title = convert_to_utf8($result->title);
