@@ -1433,6 +1433,14 @@ final class Zotero {
                 $template->set($url_type, $url); // Update URL with cleaner one
             }
         }
+
+        if (preg_match('~^https?://onlinelibrary\.wiley\.com/doi/(.+)/abstract\?(?:deniedAccessCustomise|userIsAuthenticated)~i', $url, $matches)) {
+            $url = 'https://onlinelibrary.wiley.com/doi/' . $matches[1] . '/abstract';
+            if (is_null($url_sent)) {
+                $template->set($url_type, $url); // Update URL with cleaner one
+            }
+        }
+     
         if (preg_match('~^https?://(?:dx\.|)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
             $url = 'http://www.springerreference.com/index/doi/10.1007/springerreference_' . $matches[1];
             if (is_null($url_sent)) {
