@@ -874,7 +874,7 @@ final class Zotero {
         }
 
         if (isset($result->issue)) {
-            $template->add_if_new('issue', (string) $result->issue);
+            $template->add_if_new('issue', self::clean_volume((string) $result->issue));
         }
         if (isset($result->pages)) {
             $pos_pages = (string) $result->pages;
@@ -909,14 +909,7 @@ final class Zotero {
             }
         }
         if (isset($result->volume)) {
-            $volume = (string) $result->volume;
-            if (strpos($volume, "(") === false ) {
-                if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
-                    // Do not add date
-                } else {
-                    $template->add_if_new('volume', $volume);
-                }
-            }
+            $template->add_if_new('volume', self::clean_volume((string) $result->volume));
         }
         if (isset($result->date) && strlen((string) $result->date)>3) {
             $new_date = tidy_date((string) $result->date);
@@ -2081,6 +2074,24 @@ final class Zotero {
                return $match[1];
         }
         return '';
+    }
+
+    private static function clean_volume(string $volume): string {
+        if (strpos($volume, "(") !== false) {
+            return '';
+        }
+        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+            return ''; // Do not add date
+        }
+        if (stripos($volume, "november") !== false) {
+            return '';
+        }
+        if (stripos($volume, "nostradamus") !== false) {
+            return '';
+        }
+        return trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
+         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
+         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
     }
 
 } // End of CLASS
