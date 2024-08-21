@@ -2089,9 +2089,9 @@ final class Zotero {
         if (stripos($volume, "nostradamus") !== false) {
             return '';
         }
-        return str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
+        return trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
          'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
-         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume);
+         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
     }
 
 } // End of CLASS
