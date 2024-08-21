@@ -817,16 +817,21 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
         if ($do_more){
-                $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
+            $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
-            if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
-                preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) && 
-                !preg_match('~.(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»).~u', $str)
+            if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str, $match1) &&
+                preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str, $match2)
             ) {
-                $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', '"', $str);
-                $str = safe_preg_replace('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
-            } else {
-                // No change
+                $count1 = substr_count($str, $match1[0]);
+                $count2 = substr_count($str, $match2[0]);
+                if ($match1[0] === $match2[0]) { // Avoid double counting
+                    $count1 -= 1;
+                    $count2 -= 1;
+                }
+                if ($count1 === 1 && $count2 === 1) {
+                    $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', '"', $str);
+                    $str = safe_preg_replace('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
+                }
             }
         }
     }
