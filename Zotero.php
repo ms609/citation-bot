@@ -43,7 +43,7 @@ final class Zotero {
         }
         self::$zotero_ch = bot_curl_init($time, [
             CURLOPT_URL => CITOID_ZOTERO,
-            CURLOPT_HTTPHEADER => ['accept: application/json; charset=utfsdaf-8', 'Cache-Control: no-cache, must-revalidate'],
+            CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Accept-Language: en-US,en', 'Cache-Control: no-cache, must-revalidate'],
         ]);
 
         self::$ch_ieee = bot_curl_init($time, [CURLOPT_USERAGENT => 'curl']); // IEEE requires JavaScript, unless curl is specified
