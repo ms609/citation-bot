@@ -2293,6 +2293,7 @@ const NON_JOURNAL_DOIS = [
     '10.1163/2352-0248',
     '10.3318/dib',
     '10.34667/tind.',
+    '10.2139/ssrn',
 ]; // lowercase exact matches
 const NON_JOURNALS = [
     'Amphibian Species of the World',
