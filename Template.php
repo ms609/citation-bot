@@ -1007,7 +1007,7 @@ final class Template
   }
   // And now everything else
   if (
-   $this->blank(['pages', 'page', 'at']) ||
+   $this->blank(['pages', 'page', 'at', 'article-number']) ||
    preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
    (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // It claims to be on page one
   ) {
@@ -2094,7 +2094,7 @@ final class Template
     if (in_array($value, ['0', '0-0', '0–0'], true)) {
      return false;
     } // Reject bogus zero page number
-    if ($this->has('at')) {
+    if ($this->has('at') || $this->has('article-number')) {
      return false;
     } // Leave at= alone.  People often use that for at=See figure 17 on page......
     if (preg_match('~^\d+$~', $value) && intval($value) > 50000) {
@@ -2155,7 +2155,7 @@ final class Template
        }
       }
       if ($old_page > $first_page && $old_page <= $last_page) {
-       foreach (['pages', 'page', 'pp', 'p'] as $forget_blank) {
+       foreach (['pages', 'page', 'pp', 'p', 'article-number'] as $forget_blank) {
         if ($this->blank($forget_blank)) {
          $this->forget($forget_blank);
         }
@@ -8439,8 +8439,10 @@ final class Template
  {
   if ($this->has('pages')) {
    $page = $this->get('pages');
-  } else {
+  } elseif ($this->has('page')) {
    $page = $this->get('page');
+  } else {
+   $page = $this->get('article-number');
   }
   return str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
  }
