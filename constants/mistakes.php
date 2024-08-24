@@ -986,6 +986,18 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     '이름' => 'author',
     'സ്റ്റേ' => 'date',
     'издание' => 'edition',
+    'we site' => 'website',
+    'pubblisher' => 'publisher',
+    'author link' => 'author-link',
+    'url-satus' => 'url-status',
+    'book title' => 'book-title',
+    'rpubllisher' => 'publisher',
+    'sccess-date' => 'access-date',
+    'auteur1' => 'author1',
+    'lieu' => 'location',
+    'passage' => 'pages',
+    'site name' => 'website',
+    'consulted on' => 'access-date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
