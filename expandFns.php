@@ -1890,7 +1890,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if ($encode === 'maccentraleurope') {
         $encode = 'mac-centraleurope';
     }
-    if ($encode === 'Shift_JIS') {
+    if ($encode === 'Shift_JIS' || $encode === 'x-sjis') {
         $encode = 'SJIS-win';
     }
     if ($encode === 'big5') {
@@ -1898,6 +1898,9 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     }
     if (preg_match('~^\d{4}\-\d{1,2}$~', $encode)) {
         $encode = 'iso-' . $encode;
+    }
+    if (preg_match('~^ISO\-(.+)$~', $encode)) {
+        $encode = 'iso-' . $encode[1];
     }
     if (in_array($encode, ['utf-8-sig', 'x-user-defined'], true)) { // Known wonky ones
         return "";
