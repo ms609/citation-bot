@@ -834,7 +834,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
     } elseif ($type === 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
         $try_to_add_it('issn', @$json['issn']);          // @codeCoverageIgnore
-    } elseif ($type === 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
+    } elseif ($type === 'reference-entry' || $type === 'component') { // Very rare: reference-entry from 10.1002/14356007.a02_115.pub2, component from 10.3998/mpub.11422327.cmp.11
         $try_to_add_it('work', @$json['container-title']);    // @codeCoverageIgnore
         $try_to_add_it('title', @$json['title']);        // @codeCoverageIgnore
     } elseif ($type === 'monograph' || $type === 'book' || $type === 'edited-book') {
@@ -848,7 +848,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $try_to_add_it('chapter', @$json['original-title']);    // @codeCoverageIgnore
         $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
         $try_to_add_it('publisher', @$json['publisher']);      // @codeCoverageIgnore
-    } elseif ($type === 'chapter' || $type === 'book-chapter') {
+    } elseif ($type === 'chapter' || $type === 'book-chapter' || $type === 'book-section') {
         $try_to_add_it('title', @$json['container-title']);
         $try_to_add_it('chapter', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
