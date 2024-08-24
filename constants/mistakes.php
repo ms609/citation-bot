@@ -998,6 +998,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'passage' => 'pages',
     'site name' => 'website',
     'consulted on' => 'access-date',
+    'lire en ligne' => 'url',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
