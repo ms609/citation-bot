@@ -5079,6 +5079,7 @@ final class Template
     stripos($param, 'url') === false && // all characters are valid
     stripos($param, 'quot') === false && // someone might have formatted the quote
     stripos($param, 'link') === false && // inter-wiki links
+    stripos($param, 'mask') === false && // sometimes used for asian names is a very odd way
     $param !== 'script-title' && // these can be very weird
     (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
    ) {
