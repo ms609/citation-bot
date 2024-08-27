@@ -3641,6 +3641,7 @@ final class Template
     if (!preg_match("~^https?://([^\/]+)/~", $oa_url, $match)) {
      return 'no_slash'; // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
     }
+    $host_name = $match[1];
     if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) {
      return 'publisher';
     }
