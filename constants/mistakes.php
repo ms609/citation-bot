@@ -1016,6 +1016,14 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'prénom4' => 'first4',
     'prénom5' => 'first5',
     'prénom6' => 'first6',
+    'accessed-date' => 'access-date',
+    'archiefdatum' => 'archive-date',
+    'archiefurl' => 'archive-url',
+    'tytuł' => 'title',
+    'প্রকাশক' => 'publisher',
+    'ভাষা' => 'language',
+    'শেষাংশ' => 'last',
+    'সংগ্রহের-date' => 'access-date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
