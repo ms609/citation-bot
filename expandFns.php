@@ -1890,7 +1890,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if ($encode === 'maccentraleurope') {
         $encode = 'mac-centraleurope';
     }
-    if ($encode === 'Shift_JIS' || $encode === 'x-sjis') {
+    if ($encode === 'Shift_JIS' || $encode === 'x-sjis' || $encode === 'SJIS') {
         $encode = 'SJIS-win';
     }
     if ($encode === 'big5') {
