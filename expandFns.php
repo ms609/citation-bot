@@ -1858,7 +1858,7 @@ function convert_to_utf8(string $value): string {
     $value = convert_to_utf8_inside($value);
     $test = preg_replace('~[\'a-zA-Z0-9 ]+~', '', $value);
     $test = mb_convert_encoding($test, 'utf-8', 'windows-1252');
-    if ((1 + substr_count('®', $value) + substr_count('©', $value)) === (substr_count('®', $test) + substr_count('©', $test))) {
+    if ((1 + substr_count($value, '®') + substr_count($value, '©')) === (substr_count($test, '®') + substr_count($test, '©'))) {
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
     }
     return $value;
