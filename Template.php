@@ -4523,6 +4523,9 @@ final class Template
       break;
 
      // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
+     case "circe":
+     case "ill":
+     case "cs":
      case "proquest":
      case "inist":
      case "gale":
