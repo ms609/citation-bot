@@ -29,21 +29,20 @@ final class Parameter {
         // $pre_eq[1]: any whitespace before the parameter name (including newlines)
         // $pre_eq[2]: the parameter name itself (which can span multiple lines)
         // $pre_eq[3]: any whitespace after the parameter name (including newlines)
-        preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~u', $split[0], $pre_eq);
+        if (preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~u', $split[0], $pre_eq) === false) {
+            preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~', $split[0], $pre_eq); // Try non-unicode
+        }
         if (count($split) === 2) {
             // Split the text after the '=' into constituent parts:
             // $post_eq[1]: any whitespace before the parameter value (including newlines)
             // $post_eq[2]: the parameter value itself (which can span multiple lines)
             // $post_eq[3]: any whitespace after the parameter value (including newlines)
-            if (!preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq)) {
-                bot_debug_log('Error 1 in parse_text with: ' . $text); // Why and how?
+            if (preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq) === false) {
+                preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);  // Try non-unicode
             }
             if (count($pre_eq) === 0) {
                 $this->eq    = $split[0] . '=' . $post_eq[1];
             } else {
-                if (is_null($pre_eq[1]) || is_null($pre_eq[2]) || is_null($pre_eq[3])) { // @phpstan-ignore-line
-                    bot_debug_log('Error 2 in parse_text with: ' . $text); // Why and how?
-                }
                 $this->pre   = $pre_eq[1];
                 $this->param = $pre_eq[2];
                 $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
