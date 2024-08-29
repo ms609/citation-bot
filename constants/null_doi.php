@@ -1169,7 +1169,6 @@ const NULL_DOI_LIST = [
     '10.18034/abr.v2i1.309' => true,
     '10.18035/emj.v2i3.202' => true, // Virus
     '10.18052/www.scipress.com/ILSHS.53.60' => true,
-    '10.18173/2354-1059.2016-0066' => true,
     '10.18232/alhe.952' => true,
     '10.18282/amor.v2.i4.58' => true,
     '10.18289/oef.2019.041' => true,
@@ -1346,8 +1345,6 @@ const NULL_DOI_LIST = [
     '10.2478/v10153-011-0087-5' => true, // 404
     '10.24832/sba.v19i2.31' => true,
     '10.24832/wln.v18i1.427' => true,
-    '10.24843/JBIOUNUD.2016.v20.i02.p03' => true,
-    '10.24843/JBIOUNUD.2017.vol21.i02.p05' => true,
     '10.25077/ar.7.2.173-181.2020' => true,
     '10.2509/naf2008.003.003' => true,
     '10.2509/naf2008.003.00717' => true,
@@ -1711,6 +1708,9 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.18173/2354-1059.2016-0066' => true,
+    '10.24843/JBIOUNUD.2016.v20.i02.p03' => true,
+    '10.24843/JBIOUNUD.2017.vol21.i02.p05' => true,
     '10.18260/1-2--36646' => true,
     '10.2140/gtm.2004.7.431' => true,
     '10.2140/gtm.2008.13.529' => true,
