@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.7152/bippa.v15i0.11537' => true, // not found
     '10.2458/azu_acku_hc417_a57_1976_v2' => true, // 400 error
     '10.2458/azu_acku_pk6874_qaaf42_1365' => true, // 400 error
     '10.2458/azu_acku_serial_jq1769_a8_a76_v6_n7' => true, // 400 error
@@ -1665,7 +1666,7 @@ const NULL_DOI_LIST = [
     '10.6072/H0.MP.A004235.01' => true,
     '10.7146/cns.v6i0.122249' => true,
     '10.7146/cns.v6i0.122251' => true,
-    '10.7152/bippa.v15i0.11537' => true,
+    '10.7152/bippa.v15i0.11537' => true, // not found
     '10.7182/prtr.1.6.1.f04016025hh795up' => true,
     '10.7182/prtr.1.6.3.8145l3u185493182' => true,
     '10.7182/prtr.13.3.a368158t7662j463' => true,
