@@ -531,22 +531,25 @@ final class constantsTest extends testBaseClass {
         $page = new TestPage();
         $errors = "";
         foreach (TEMPLATE_CONVERSIONS as $convert) {
-             // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-             $tem = 'Template:' . $convert[0];
-             $tem = str_replace(' ', '_', $tem);
-             // Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis
-             if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
-                    $page->get_text_from($tem);
-                    $text = $page->parsed_text();
-                    if (stripos($text, 'safesubst:') === false || stripos($convert[0], 'cite standard') !== false) {
-                        $errors = $errors . '   Is real:' . $convert[0];
-                    }
-             }
-             $tem = 'Template:' . $convert[1];
-             $tem = str_replace(' ', '_', $tem);
-             if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
-                    $errors = $errors . '   In now a redirect:' . $convert[1];
-             }
+            // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+            if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
+                continue;
+            }
+            $tem = 'Template:' . $convert[0];
+            $tem = str_replace(' ', '_', $tem);
+            // Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis
+            if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
+                $page->get_text_from($tem);
+                $text = $page->parsed_text();
+                if (stripos($text, 'safesubst:') === false) {
+                    $errors = $errors . '   Is real:' . $convert[0];
+                }
+            }
+            $tem = 'Template:' . $convert[1];
+            $tem = str_replace(' ', '_', $tem);
+            if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
+                $errors = $errors . '   In now a redirect:' . $convert[1];
+            }
         }
         $this->assertSame("", $errors); // We want a list of all of them
     }
