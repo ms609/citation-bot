@@ -1871,6 +1871,8 @@ function convert_to_utf8(string $value): string {
     if ((1 + $count_cr1) === $count_cr2 && (4 + $len1 > $len2) && ($bad1 >= $bad2) && ($lq1 <= $lq2) && ($rq1 <= $rq2)) { // Special case for single (c) or (r) and did not grow much
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
     }
+    // Special cases
+    $value = str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"],[' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
     return $value;
 }
 
