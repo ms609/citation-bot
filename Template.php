@@ -5104,7 +5104,7 @@ final class Template
 
     // Remove final semi-colon from a few items
     if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'], true) || in_array($param, FLATTENED_AUTHOR_PARAMETERS, true)) && strpos($this->get($param), '&') === false) {
-     $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
+     $this->set($param, safe_preg_replace('~;$~u', '', $this->get($param)));
     }
 
     // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
@@ -5787,7 +5787,7 @@ final class Template
      if ($this->blank($param)) {
       return;
      }
-     $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
+     $this->set($param, safe_preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
      return; // Don't want 'Edition ed.'
 
     case 'eprint':
