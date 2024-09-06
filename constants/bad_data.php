@@ -2936,6 +2936,10 @@ const JOURNAL_IS_BOOK_SERIES = [
     'handbook of the birds of the world',
     'clio medica (amsterdam, netherlands)',
     'clio medica',
+    'methods in neurosciences',
+    'methods in enzymology',
+    'meth neurosciences',
+    'meth enzymology',
 ];
 
 const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  '];
