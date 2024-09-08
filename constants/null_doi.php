@@ -276,9 +276,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
-    '10.5604/17322693.1175009' => true,
     '10.1017/S001041759900208X' => true,
-    '10.1017/S0267190508070013' => true,
     '10.1017/S0010417501003619' => true,
     '10.5944/epos.1.1984.9408' => true,
     '10.1001/jama.229.4.462' => true, // 404
