@@ -1049,6 +1049,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'access-datr' => 'access-date',
     'volumes' => 'volume',
     'laccess date' => 'access-date',
+    'scritp-title' => 'script-title',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
