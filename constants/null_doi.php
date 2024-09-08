@@ -276,6 +276,11 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.5604/17322693.1175009' => true,
+    '10.1017/S001041759900208X' => true,
+    '10.1017/S0267190508070013' => true,
+    '10.1017/S0010417501003619' => true,
+    '10.5944/epos.1.1984.9408' => true,
     '10.1001/jama.229.4.462' => true, // 404
     '10.1001/jama.275.17.1339' => true, // 404
     '10.1001/jama.275.2.134' => true, // 404
@@ -1885,6 +1890,11 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.24832/kapata.v11i1.279' => true,
+    '10.1016/0091-3057(91)90106-c' => true,
+    '10.1136/bjsm.2010.078725.208' => true,
+    '10.1016/j.erss.2024.103446' => true,
+    '10.5492/wjccm.v4.i3.251' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archotol.1950.00700020366006' => true,
