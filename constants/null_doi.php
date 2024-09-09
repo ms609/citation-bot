@@ -1579,7 +1579,6 @@ const NULL_DOI_LIST = [
     '10.31057/2314.3908.v5.n2.17761' => true,
     '10.3116/20775679/14/1/45/2013' => true,
     '10.3129/can.j.ophthalmol.i07-044' => true,
-    '10.3133/wri844341' => true,
     '10.3134/ehtj.08.008' => true, // Spam site
     '10.3134/ehtj.09.001' => true, // Spam site
     '10.31377/chr.v24i0.429' => true,
@@ -1886,6 +1885,7 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.3133/wri844341' => true,
     '10.12775/TMNA.2005.021' => true,
     '10.15405/epsbs.2021.12.66' => true,
     '10.15405/epsbs.2020.10.05.137' => true,
