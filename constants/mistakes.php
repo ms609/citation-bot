@@ -1077,6 +1077,10 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     't itle' => 'title',
     'url-statuss' => 'url-status',
     'аuthor' => 'author',
+    'pagină' => 'pages',
+    'ediție' => 'edition',
+    'títol' => 'title',
+    'isbn-13' => 'isbn',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
