@@ -1061,7 +1061,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~([\–\- ])(PPM)(\.\,\:\; )~u",
+        "~([\–\- ])(PPM)([\.\,\:\; ])~u",
         static function (array $matches): string {
             return $matches[1] . 'ppm' . $matches[3];
         },
