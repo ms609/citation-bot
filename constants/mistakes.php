@@ -1055,7 +1055,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'rul' => 'url',
     'source-date' => 'date',
     'accces-date' => 'access-date',
-    'accces-date' => 'access-date',
     'access-9date' => 'access-date',
     'acsess date' => 'access-date',
     'archve-date' => 'archive-date',
