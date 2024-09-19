@@ -503,6 +503,7 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' Fe–ppm ',
+    ' Fe-ppm ',
     ' ppm ',
     ' ndhF ',
     ' str. and ',
@@ -1022,6 +1023,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' FE–PPM ',
+    ' FE-PPM ',
     ' PPM ',
     ' NDHF ',
     ' STR. And ',
