@@ -540,14 +540,12 @@ final class Zotero {
             unset($result->author); // They list themself
         }
         
-        $result->title = convert_to_utf8($result->title);
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
         // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
         $bad_count = substr_count($result->title, '�') + mb_substr_count($result->title, '$') + mb_substr_count($result->title, '%');
         $total_count = mb_strlen($result->title);
         if (isset($result->bookTitle)) {
-            $result->bookTitle = convert_to_utf8($result->bookTitle);
             $bad_count += substr_count($result->bookTitle, '�') + mb_substr_count($result->bookTitle, '$') + mb_substr_count($result->bookTitle, '%');
             $total_count += mb_strlen($result->bookTitle);
         }
