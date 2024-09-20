@@ -31,6 +31,9 @@ const HAS_NO_ISSUE = [
     'cahiers balkaniques',
     'res historica',
     'archaeological reports',
+    'cahiers d'extrême-asie',
+    'bulletin de l'ecole française d'extrême-orient',
+    'ars orientalis',
 ]; // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = ['illinois classical studies']; // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = [
