@@ -544,7 +544,7 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'journal-link', 'align', 'certyear', 'relyear', 'chapter-author', 'restricted',
     'total_pages', 'total-pages', 'broken-link', 'broken-url', 'lien périodique',
     'authors', 'plume', 'loc', 'allpages', 'archive-access', 'original', 'laysummary',
-    'archiveservice',
+    'archiveservice', 'reviewer', 'hrsg', 'address', 'archived', 'history access',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
