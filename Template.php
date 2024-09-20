@@ -202,12 +202,12 @@ final class Template
  // Re-assemble parsed template into string
  public function parsed_text(): string
  {
-  if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+  if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
    if ($this->has('title') || $this->has('chapter') || ($this->has('journal') && $this->get('volume') . $this->get('issue') !== '' && $this->page() !== '' && $this->year() !== '')) {
-    report_action("Converted Bare reference to template: " . echoable(trim(base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
-    $this->quietly_forget(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+    report_action("Converted Bare reference to template: " . echoable(trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
+    $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
    } else {
-    return base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
+    return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
    }
   }
   if (stripos(trim($this->name), '#invoke:') === 0) {
@@ -7918,9 +7918,9 @@ final class Template
      $this->rename('work', 'journal');
     }
    }
-   if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+   if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
     if ($this->has('title') || $this->has('chapter')) {
-     $this->quietly_forget(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+     $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
     }
    }
    if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
@@ -8840,12 +8840,12 @@ final class Template
  /** @return array<bool|array<string>> */
  public function modifications(): array
  {
-  if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+  if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
    if ($this->has('title') || $this->has('chapter')) {
-    $this->forget(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+    $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
    }
   }
-  if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+  if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
    return [];
   }
   $new = [];
