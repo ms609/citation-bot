@@ -89,7 +89,7 @@ final class Template
   }
   if (strpos($trim_name, "_") !== false) {
    $tmp_name = str_replace("_", " ", $trim_name);
-   if (in_array(mb_strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME), true)) {
+   if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME), true)) {
     $this->name = $spacing[1] . str_replace("_", " ", $trim_name) . $spacing[2];
     $trim_name = str_replace("_", " ", $trim_name);
    }
@@ -106,7 +106,7 @@ final class Template
   }
   $trim_name = trim($this->name); // Update if changed above
   // Cite paper is really cite journal
-  if (mb_strtolower($trim_name) === 'cite paper' || mb_strtolower($trim_name) === 'cite document') {
+  if (strtolower($trim_name) === 'cite paper' || strtolower($trim_name) === 'cite document') {
    if ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
     $cite_caps = $spacing[1] . "Cite ";
    } else {
@@ -1153,7 +1153,7 @@ final class Template
    report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
   }
 
-  $low_value = mb_strtolower($value);
+  $low_value = strtolower($value);
   if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)'], true)) {
    // Hopeully name is not actually null
    return false;
@@ -1700,8 +1700,8 @@ final class Template
      return false;
     }
     if (
-     ($this->blank('date') || in_array(trim(mb_strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES, true)) &&
-     ($this->blank('year') || in_array(trim(mb_strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES, true))
+     ($this->blank('date') || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES, true)) &&
+     ($this->blank('year') || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES, true))
     ) {
      // Delete any "in press" dates.
      $this->forget('year'); // "year" is discouraged
