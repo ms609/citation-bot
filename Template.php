@@ -2054,6 +2054,9 @@ final class Template
     if ($value === 'issue') {
      return false;
     }
+    if (preg_match('~\d\d\d\d\d\d~', $value)) {
+     return false;
+    }
     $temp_string = strtolower($this->get('journal'));
     if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
      // Wikilinked journal title
