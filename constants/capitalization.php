@@ -208,8 +208,6 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' SIGWEB ',
     ' SMPTE ',
     ' SPIE ',
-    ' spp. ',
-    ' spp.) ',
     ' SpringerPlus ',
     ' SSRN ',
     ' TAPPI ',
@@ -456,8 +454,6 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' Sigweb ',
     ' Smpte ',
     ' Spie ',
-    ' SPP. ',
-    ' SPP.) ',
     ' Springerplus ',
     ' Ssrn ',
     ' Tappi ',
@@ -503,6 +499,10 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' ppm ',
+    ' spp. ',
+    ' spp.) ',
+    ' spp. ',
+    ' spp.) ',
     ' ndhF ',
     ' str. and ',
     ' (and the Middle East) ',
@@ -1020,6 +1020,10 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' SPP. ',
+    ' SPP.) ',
+    ' Spp. ',
+    ' Spp.) ',
     ' PPM ',
     ' NDHF ',
     ' STR. And ',
