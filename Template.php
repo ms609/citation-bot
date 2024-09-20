@@ -2512,25 +2512,25 @@ final class Template
     if (preg_match('~^(.+), \d{4}$~', $value, $match)) {
      $value = $match[1];
     } // remove years from zotero
-    if (strpos(mb_strtolower($value), 'london') !== false) {
+    if (strpos(strtolower($value), 'london') !== false) {
      return false;
     } // Common from archive.org
-    if (strpos(mb_strtolower($value), 'edinburg') !== false) {
+    if (strpos(strtolower($value), 'edinburg') !== false) {
      return false;
     } // Common from archive.org
-    if (strpos(mb_strtolower($value), 'privately printed') !== false) {
+    if (strpos(strtolower($value), 'privately printed') !== false) {
      return false;
     } // Common from archive.org
     if (str_equivalent($this->get('location'), $value)) {
      return false;
     } // Catch some bad archive.org data
-    if (strpos(mb_strtolower($value), 'impressum') !== false) {
+    if (strpos(strtolower($value), 'impressum') !== false) {
      return false;
     } // Common from archive.org
     if (strpos(mb_strtolower($value), ':') !== false) {
      return false;
     } // Common from archive.org when location is included
-    if (strpos(mb_strtolower($value), '[etc.]') !== false) {
+    if (strpos(strtolower($value), '[etc.]') !== false) {
      return false;
     } // common from biodiversitylibrary.org - what does the etc. mean?
     if ($this->wikiname() !== 'cite book' && !$this->blank(WORK_ALIASES)) {
@@ -2538,7 +2538,7 @@ final class Template
     } // Do not add if work is set, unless explicitly a book
 
     $value = truncate_publisher($value);
-    if (in_array(trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
+    if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
      return false;
     }
     if ($this->has('via') && str_equivalent($this->get('via'), $value)) {
@@ -2558,7 +2558,7 @@ final class Template
    case 'type':
     if (
      $this->blank($param_name) &&
-     !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
+     !in_array(strtolower($value), ['text', 'data set'], true) &&
      strlen($value) === mb_strlen($value) &&
      strpos($value, 'purl.org') === false &&
      strpos($value, 'dcmitype') === false &&
