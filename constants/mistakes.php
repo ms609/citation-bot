@@ -1081,6 +1081,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'ediție' => 'edition',
     'títol' => 'title',
     'isbn-13' => 'isbn',
+    'file format' => 'format',
+    'accessdatr' => 'accessdate',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
