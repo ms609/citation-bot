@@ -1829,11 +1829,11 @@ final class Template
     if ($this->has('title') && str_equivalent($this->get('title'), $value)) {
      return false;
     } // Messed up already or in database
-    if (!$this->blank(array_merge(['agency', 'publisher'], WORK_ALIASES)) && in_array(mb_strtolower($value), DUBIOUS_JOURNALS, true)) {
+    if (!$this->blank(array_merge(['agency', 'publisher'], WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS, true)) {
      return false;
     } // non-journals that are probably same as agency or publisher that come from zotero
     if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
-     if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_VOLUME, true)) {
+     if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME, true)) {
       $this->forget('volume');
      } // No volumes, just issues.
      if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_ISSUE, true)) {
@@ -1845,7 +1845,7 @@ final class Template
       return false;
      }
      if ($this->has('work')) {
-      if (str_equivalent($this->get('work'), $value) && !in_array(mb_strtolower($value), ARE_MANY_THINGS, true)) {
+      if (str_equivalent($this->get('work'), $value) && !in_array(strtolower($value), ARE_MANY_THINGS, true)) {
        if ($param_name === 'journal') {
         $this->rename('work', $param_name);
        } // Distinction between newspaper and magazine and websites are not clear to zotero
