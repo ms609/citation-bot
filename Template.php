@@ -1804,10 +1804,10 @@ final class Template
     if (!$this->blank(['booktitle', 'book-title'])) {
      return false;
     }
-    if (in_array(mb_strtolower(sanitize_string($value)), BAD_TITLES, true)) {
+    if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
      return false;
     }
-    if (in_array(mb_strtolower($value), ARE_MANY_THINGS, true)) {
+    if (in_array(strtolower($value), ARE_MANY_THINGS, true)) {
      if ($this->wikiname() === 'cite news' && $param_name === 'newspaper') {
       // Only time we trust zotero on these (people already said news)
      } else {
@@ -1817,7 +1817,7 @@ final class Template
     if (!$this->blank(['trans-work', 'script-work'])) {
      return false;
     }
-    if (in_array(mb_strtolower(sanitize_string($this->get('journal'))), BAD_TITLES, true)) {
+    if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES, true)) {
      $this->forget('journal');
     } // Update to real data
     if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) {
