@@ -2654,9 +2654,9 @@ final class Template
    return;
   } // Zotero does not know difference between editors and authors often
   if (
-   in_array(strtolower($author), BAD_AUTHORS, true) === false &&
-   in_array(strtolower($forename), BAD_AUTHORS, true) === false &&
-   in_array(strtolower($forename . ' ' . $author), BAD_AUTHORS, true) === false &&
+   in_array(mb_strtolower($author), BAD_AUTHORS, true) === false &&
+   in_array(mb_strtolower($forename), BAD_AUTHORS, true) === false &&
+   in_array(mb_strtolower($forename . ' ' . $author), BAD_AUTHORS, true) === false &&
    author_is_human($author) &&
    author_is_human($forename)
   ) {
@@ -3323,7 +3323,7 @@ final class Template
   $ris_authors = 0;
 
   if (preg_match('~(?:T[I1]).*-(.*)$~m', $dat, $match)) {
-   if (in_array(mb_strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+   if (in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
     return;
    }
   }
@@ -4929,7 +4929,7 @@ final class Template
   if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES_AND_SCRIPT)) {
    return; // Changing away leads to error
   }
-  if ($this->wikiname() === 'cite document' && in_array(mb_strtolower($this->get('work')), ARE_WORKS, true)) {
+  if ($this->wikiname() === 'cite document' && in_array(strtolower($this->get('work')), ARE_WORKS, true)) {
    return; // Things with DOIs that are works
   }
   $new_name = mb_strtolower(trim($new_name)); // Match wikiname() output and cite book below
@@ -6023,7 +6023,7 @@ final class Template
        $this->rename($param, 'newspaper');
       } // Grumpy people
       return;
-     } elseif (in_array(mb_strtolower($the_param), ARE_WORKS, true)) {
+     } elseif (in_array(strtolower($the_param), ARE_WORKS, true)) {
       $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
       $this->change_name_to('cite document');
       $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
