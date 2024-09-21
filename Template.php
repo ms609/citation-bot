@@ -1836,7 +1836,7 @@ final class Template
      if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME, true)) {
       $this->forget('volume');
      } // No volumes, just issues.
-     if (in_array(strtolower(sanitize_string($value)), HAS_NO_ISSUE, true)) {
+     if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_ISSUE, true)) {
       $this->forget('issue');
       $this->forget('number');
      } // No issues, just volumes
@@ -2057,7 +2057,7 @@ final class Template
     if (preg_match('~\d\d\d\d\d\d~', $value)) {
      return false;
     }
-    $temp_string = strtolower($this->get('journal'));
+    $temp_string = mb_strtolower($this->get('journal'));
     if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
      // Wikilinked journal title
      $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]

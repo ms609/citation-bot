@@ -114,10 +114,10 @@ final class constantsTest extends testBaseClass {
         }
     }
 
-    public function testAllFreeOfUTF(): void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
+    public function testAllFreeOfUTF(): void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS, HAS_NO_ISSUE already has UTF-8)
         $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
                                  PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                                 JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                                 JOURNAL_IS_BOOK_SERIES, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
                                  PREFER_ISSUES, PARAMETER_LIST, LOTS_OF_EDITORS,
                                  TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS, TEMPLATES_VCITE,
                                  TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
