@@ -1084,6 +1084,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'file format' => 'format',
     'accessdatr' => 'accessdate',
     'isuue' => 'issue',
+    'translate-title'  => 'trans-title',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
