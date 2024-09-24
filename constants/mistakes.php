@@ -1086,6 +1086,15 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'isuue' => 'issue',
     'translate-title'  => 'trans-title',
     'data-acceso' => 'access-date',
+    'webbsite' => 'website',
+    'quot' => 'quote',
+    'ưebsite' => 'website',
+    'firsy' => 'first',
+    'paes' => 'pages',
+    'enyclopedia' => 'encyclopedia',
+    'a frccess-date' => 'access-date',
+    'site web' => 'website',
+    'présentation en ligne' => 'url',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
