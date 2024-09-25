@@ -7607,7 +7607,11 @@ final class Template
       $value = $matches[1];
       $this->set($param, $value);
      }
-     if (preg_match('~^p\.? *(\d+[–-]?\d+)$~ui', $value, $matches)) {
+     if (preg_match('~^p\.? +(\d+[–-]?\d+)$~ui', $value, $matches)) {
+      $value = $matches[1];
+      $this->set($param, $value);
+     }
+     if (preg_match('~^p\. *(\d+[–-]?\d+)$~ui', $value, $matches)) {
       $value = $matches[1];
       $this->set($param, $value);
      }
