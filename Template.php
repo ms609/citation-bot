@@ -3797,13 +3797,9 @@ final class Template
     if (preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $url, $matches)) {
      $url = 'https://books.google.com/books?id=' . $matches[1];
     }
-    if (preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $url, $matches)) {
-     $url = '';
-    }
-    if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $url, $matches)) {
-     $url = '';
-    }
-    if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $url, $matches)) {
+    if (preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $url, $matches) ||
+        preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $url, $matches) ||
+        preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $url, $matches)) {
      $url = '';
     }
     if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $url, $matches)) {
@@ -3824,6 +3820,9 @@ final class Template
     $this->set($url_type, $url);
     if ($url === '') {
      $this->forget($url_type);
+     if ($this->blank('title')) {
+      bot_debug_log('dropped google url completely');
+     }
     }
     $this->expand_by_google_books_inner($url_type, false);
     if (preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
