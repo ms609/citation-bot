@@ -3146,6 +3146,8 @@ function simplify_google_search(string $url): string {
             case "e":
             case "surl":
             case "aql":
+            case "gs_lcrp":
+            case "sca_esv":
                 break;
             case "as_occt":
                 if ($it_is_blank || str_i_same($part_start1, 'any')) {
