@@ -2943,6 +2943,8 @@ const JOURNAL_IS_BOOK_SERIES = [
     'methods in enzymology',
     'meth neurosciences',
     'meth enzymology',
+    'international review of cytology',
+    'int rev cyt',
 ];
 
 const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  '];
