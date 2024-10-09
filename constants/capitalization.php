@@ -498,13 +498,13 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Abh. der Akademie ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
     ' AA Files ',
     ' AAPOS ',
     ' AAPS ',
+    ' Abh. der Akademie ',
     ' ACM SIGGRAPH ',
     ' ACS ',
     ' Acta medico-historica Adriatica ',
@@ -1023,13 +1023,13 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Abh. Der Akademie ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
     ' Aa Files ',
     ' Aapos ',
     ' Aaps ',
+    ' Abh. Der Akademie ',
     ' ACM Siggraph ',
     ' Acs ',
     ' Acta Medico-Historica Adriatica ',
