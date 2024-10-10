@@ -1124,6 +1124,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'acecssdate' => 'access-date',
     'lxast' => 'last',
     'retrieved date' => 'access-date',
+    'sınıf' => 'class',
+    'publication-year' => 'publication-date',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
