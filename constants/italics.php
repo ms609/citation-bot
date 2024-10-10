@@ -501,7 +501,7 @@ const CAMEL_CASE = [
     'ProCite', 'Keypoint-MoSeq', 'DaEng', 'ChemInform', 'eBook',
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
-    'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv',
+    'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv', 'WorldMinds',
 ];
 
 const ITALICS_HARDCODE_IN  = [
