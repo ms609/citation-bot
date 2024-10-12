@@ -1127,6 +1127,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'sınıf' => 'class',
     'publication-year' => 'publication-date',
     'lisans' => 'degree',
+    'websit' => 'website',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
