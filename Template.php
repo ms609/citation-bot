@@ -5108,6 +5108,12 @@ final class Template
     if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'], true) || in_array($param, FLATTENED_AUTHOR_PARAMETERS, true)) && strpos($this->get($param), '&') === false) {
      $this->set($param, safe_preg_replace('~;$~u', '', $this->get($param)));
     }
+    // Remove final period from a few items
+    if (in_array($param, ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'], true)) {
+     if (preg_match('~^(\d+)\.$~', $this->get($param), $match)) {
+       $this->set($param, $match[1]);
+     }
+    }
 
     // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
     // Do not do titles of non-books, since they sometimes have quotes in the actual one
