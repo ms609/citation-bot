@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
+    ' IWSEC ',
     ' AAOHN ',
     ' AAP ',
     ' AAUP ',
@@ -249,6 +250,7 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' U S A ',
 ];
 const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
+    ' Iwsec ',
     ' Aaohn ',
     ' Aap ',
     ' Aaup ',
