@@ -1145,16 +1145,16 @@ final class Template
   $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
   $value = safe_preg_replace('~  +~u', ' ', $value); // multiple spaces
   $value = trim($value);
-  $param_name = trim($param_name); // Pure paranoia
   if ($value === '') {
    return false;
   }
+  $param_name = trim($param_name); // Pure paranoia
   if ($param_name === '') {
    report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
   }
 
   $low_value = strtolower($value);
-  if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)'], true)) {
+  if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)', '-'], true)) {
    // Hopeully name is not actually null
    return false;
   }
