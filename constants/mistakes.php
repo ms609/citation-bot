@@ -1539,4 +1539,6 @@ const TEMPLATE_CONVERSIONS = [
     ['Registration needed', 'Registration required'],
     ['cite article', 'cite news'],
     ['Cite article', 'Cite news'],
+    ['Webarchiv', 'Webarchive'],
+    ['webarchiv', 'webarchive'],
 ];
