@@ -70,10 +70,10 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
         CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
         CURLOPT_NOPROGRESS => "0",
+        CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
         // 2 - Default Time by ratio
         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time,
-        CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
     ]);
     // 3 - Specific options and overrides of defaults
     curl_setopt_array($ch, $ops);
