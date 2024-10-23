@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
-    ' IWSEC ',
     ' AAOHN ',
     ' AAP ',
     ' AAUP ',
@@ -117,6 +116,7 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' ISPRS ',
     ' its ',
     ' IUCN ',
+    ' IWSEC ',
     ' JAAPA ',
     ' JAMA ',
     ' JAMA: ',
@@ -250,7 +250,6 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' U S A ',
 ];
 const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
-    ' Iwsec ',
     ' Aaohn ',
     ' Aap ',
     ' Aaup ',
@@ -364,6 +363,7 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' Isprs ',
     ' Its ',
     ' Iucn ',
+    ' Iwsec ',
     ' Jaapa ',
     ' Jama ',
     ' Jama: ',
@@ -500,7 +500,6 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Feminismo/s ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -710,6 +709,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' FEBS J ',
     ' FEBS J. ',
     ' FEBS Journal ',
+    ' Feminismo/s ',
     ' Fizika Goreniya i Vzryva ',
     ' Folia onomastica Croatica ',
     ' For. Bull. ',
@@ -1026,7 +1026,6 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Feminismo/S ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
@@ -1236,6 +1235,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Febs J ',
     ' Febs J. ',
     ' Febs Journal ',
+    ' Feminismo/S ',
     ' Fizika Goreniya I Vzryva ',
     ' Folia Onomastica Croatica ',
     ' for. Bull. ',
