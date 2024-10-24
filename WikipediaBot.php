@@ -100,6 +100,8 @@ final class WikipediaBot {
                 return true;  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'Invalid CSRF token') !== false) {
                 report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
+            } elseif (strpos($respone_info, 'Bad title') !== false) {
+                report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
                 bot_debug_log($err_string); // Good to know about about these things
