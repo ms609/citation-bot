@@ -288,6 +288,7 @@ const DUBIOUS_JOURNALS = [
     'ap wire',
     'report',
     'nist',
+    'tumblr',
     'national institute of standards and technology',
 ]; // Things we add, but only if publisher and agency are both blank
 
