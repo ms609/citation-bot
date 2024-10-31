@@ -1649,7 +1649,7 @@ final class Zotero {
                 } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
                 . "(?:pubmed/|"
                 . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
-                . "entrez/query\.fcgi\S+db=pubmed\S+|"
+                . "entrez/query\.fcgi\S+db=pubmed\S+?|"
                 . "pmc/articles/pmid/)"
                 . ".*?=?(\d{4,})~i", $url, $match)||
                         preg_match("~^https?://(?:pubmed|www)\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed(?:|\&tool=sumsearch.org/cite)\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
