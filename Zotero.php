@@ -818,6 +818,17 @@ final class Zotero {
                     break;
                 }
             }
+        } else {
+            $huh_no_date = true;
+            foreach (NO_DATE_WEBSITES as $bad_website ) {
+                if (stripos($url, $bad_website) !== false) {
+                    $huh_no_date = false;
+                    break;
+                }
+            }
+            if ($huh_no_date) {
+                bot_debug_log('NO DATE FOR: ' . $url);
+            }
         }
 
         if (isset($result->ISBN)) {
