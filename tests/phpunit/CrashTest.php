@@ -7,13 +7,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class CrashTest extends testBaseClass {
+/**
+ * @long
+ */
 
-    protected function setUp(): void {
-        $this->getTestResultObject()->setTimeoutForSmallTests(60);
-        $this->getTestResultObject()->setTimeoutForMediumTests(120);
-        $this->getTestResultObject()->setTimeoutForLargeTests(180);
-    }
+final class CrashTest extends testBaseClass {
 
     public function testBadPage2(): void {  // Use this when debugging pages that crash the bot
         $page = new TestPage();
