@@ -33,10 +33,6 @@ final class TestPage extends Page {
     }
 }
 
-/**
- * @medium
- */
-
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     private bool $testing_skip_bibcode;
