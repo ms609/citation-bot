@@ -5,6 +5,10 @@ declare(strict_types=1);
  * Tests for WikipediaBot.php
  */
 
+/**
+ * @long
+ */
+
 require_once __DIR__ . '/../testBaseClass.php';
 
     final class WikipediaBotTest extends testBaseClass {
@@ -13,9 +17,6 @@ require_once __DIR__ . '/../testBaseClass.php';
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
-        $this->getTestResultObject()->setTimeoutForSmallTests(60);
-        $this->getTestResultObject()->setTimeoutForMediumTests(120);
-        $this->getTestResultObject()->setTimeoutForLargeTests(180);
     }
 
     public function testFillCache(): void {
