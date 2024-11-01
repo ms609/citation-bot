@@ -1624,7 +1624,7 @@ final class Zotero {
                 if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
                                                 . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})"
                                                 . "|^https?://pmc\.ncbi\.nlm\.nih\.gov/(?:m/|labs/|)articles/(?:PMC)?(\d{4,})~i", $url, $match)) {
-                    if (preg_match("~\?term~i", $url)) {
+                    if (preg_match("~\?term~i", $url)) {  // ALWAYS ADD new @$mathch[] below
                         return false; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                     }
                     if ($template->wikiname() === 'cite web') {
@@ -1633,7 +1633,11 @@ final class Zotero {
                     if ($template->blank('pmc')) {
                         quietly('report_modification', "Converting URL to PMC parameter");
                     }
-                    $new_pmc = @$match[1] . @$match[2];
+                    $new_pmc = @$match[1] . @$match[2] . @$match[3];
+                    if ($new_pmc === '') {
+                        bot_debug_log("PMC oops");
+                        return false;
+                    }
                     if (is_null($url_sent)) {
                         if (stripos($url, ".pdf") !== false) {
                             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
