@@ -1116,7 +1116,6 @@ function get_semanticscholar_license(string $s2cid): ?bool {
   @param array<Template> $templates
 */
 function expand_templates_from_archives(array &$templates): void { // This is done very late as a latch ditch effort  // Pointer to save memory
-    return; // TODO - web.archive.org is being attacked
     static $ch = null;
     set_time_limit(120);
     if ($ch === null) {
