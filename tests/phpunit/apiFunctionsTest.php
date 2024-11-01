@@ -11,9 +11,6 @@ final class apiFunctionsTest extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
-        $this->getTestResultObject()->setTimeoutForSmallTests(60);
-        $this->getTestResultObject()->setTimeoutForMediumTests(120);
-        $this->getTestResultObject()->setTimeoutForLargeTests(180);
     }
 
     public function testFillCache(): void {

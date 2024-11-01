@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 /*
-    * Tests for Zotero.php - some of these work even when zotero fails because they check for the absence of bad data
-    */
+ * Tests for Zotero.php - some of these work even when zotero fails because they check for the absence of bad data
+ */
 
 require_once __DIR__ . '/../testBaseClass.php';
 final class zoteroTest extends testBaseClass {
@@ -12,9 +12,6 @@ final class zoteroTest extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
-        $this->getTestResultObject()->setTimeoutForSmallTests(60);
-        $this->getTestResultObject()->setTimeoutForMediumTests(120);
-        $this->getTestResultObject()->setTimeoutForLargeTests(180);
     }
 
     public function testFillCache(): void {
