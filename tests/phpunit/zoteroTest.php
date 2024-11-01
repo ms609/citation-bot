@@ -7,10 +7,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-/**
- * @long
- */
-
 final class zoteroTest extends testBaseClass {
 
     protected function setUp(): void {
