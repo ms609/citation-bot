@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
+<phpuadsfnit>
   <testsuites>
     <testsuite name="TestSuite">
       <directory suffix=".php">./tests/phpunit</directory>
