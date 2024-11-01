@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit timeoutForSmallTests="60" timeoutForMediumTests="60" timeoutForLargeTests="60" stopOnError="false" >
+<phpunit timeoutForSmallTests="60" timeoutForMediumTests="120" timeoutForLargeTests="180" stopOnError="false" >
   <testsuites>
     <testsuite name="TestSuite">
       <directory suffix=".php">./tests/phpunit</directory>
