@@ -4649,6 +4649,7 @@ final class Template
      case "isbnt":
      case "issn link":
      case "project euclid":
+     case "circa":
      case "lccn8": // Assume not normal template for a reason
      case "google books": // Usually done for fancy formatting and because already has title-link/url
      case "url": // Untrustable: used by bozos
