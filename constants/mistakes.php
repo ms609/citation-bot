@@ -1128,6 +1128,13 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'publication-year' => 'publication-date',
     'lisans' => 'degree',
     'websit' => 'website',
+    'date access' => 'access-date',
+    'laste' => 'last',
+    'publosher' => 'publisher',
+    'access-adate' => 'access-date',
+    'titlte' => 'title',
+    'accesdante' => 'accessdate',
+    'date-published' => 'date-published',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
