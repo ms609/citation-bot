@@ -16,6 +16,7 @@ final class expandFnsTest extends testBaseClass {
     protected function setUp(): void {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
+        }
     }
 
     public function testFillCache(): void {
