@@ -1611,7 +1611,7 @@ final class Zotero {
             } elseif (stripos($url, '.nih.gov') !== false) {
 
                 if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
-                                                . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
+                                                . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
                     if (preg_match("~\?term~i", $url)) {
                         return false; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                     }
