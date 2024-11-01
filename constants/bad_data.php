@@ -1110,6 +1110,7 @@ const ZOTERO_AVOID_REGEX = [
     'myprivacy\.dpgmedia\.nl', // blocker
     'explore\.bl\.uk/primo_library', // Fails 100%
     'weblio\.jp/', // just scrapes other website like wiki and has bogus issue and volume numbers
+    'kijkcijferanalyse\.nl/', // highjacked
 ];
 const NON_JOURNAL_WEBSITES = [
     '-news.co.uk/',
