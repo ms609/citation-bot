@@ -7,15 +7,16 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
+/**
+ * @long
+ */
+
 final class ParameterTest extends testBaseClass {
 
     protected function setUp(): void {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
-        $this->getTestResultObject()->setTimeoutForSmallTests(60);
-        $this->getTestResultObject()->setTimeoutForMediumTests(120);
-        $this->getTestResultObject()->setTimeoutForLargeTests(180);
     }
 
     public function testFillCache(): void {
