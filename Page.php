@@ -288,6 +288,9 @@ class Page {
                             static function(array $matches): string  {
                                 $UPPER = mb_strtoupper($matches[0]);
                                 if (substr_count($UPPER, 'HTTP') !== 1 || // more than one url
+                                        substr_count($UPPER, '10.') !== 1 || // More than one doi probably
+                                        substr_count($UPPER, '*') !== 0 || // A list!!!
+                                        substr_count($UPPER, "\n") > 8 || // who knows
                                         substr_count($UPPER, 'SEE ALSO') !== 0 ||
                                         substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
                                         substr_count($UPPER, '{{CITE') !== 0 ||
