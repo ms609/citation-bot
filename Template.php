@@ -6769,6 +6769,9 @@ final class Template
      if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
       $this->set($param, trim($matches[1])); // ACM conference titles
      }
+     if (preg_match("~^in (Proc\.? .+)$~i", $this->get($param), $matches)) {
+      $this->set($param, trim($matches[1]));
+     }
      return;
 
     case 'archivedate':
