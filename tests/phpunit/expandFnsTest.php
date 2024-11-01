@@ -400,7 +400,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertTrue(doi_works('10.3403/bsiso10294')); // this one seems to be fussy
     }
 
-    public function testHostIsGoneDOI(): void {
+    public function testHostIsGoneDOIbasic(): void {
         foreach (NULL_DOI_LIST as $doi => $value) {
             $this->assertSame(trim($doi), $doi);
             $this->assertTrue($value);
@@ -414,12 +414,24 @@ final class expandFnsTest extends testBaseClass {
             $this->assertTrue($value);
             $this->assertTrue(strpos($doi, '10.') === 0); // No HDLs allowed
         }
-
         $changes = "";
         foreach (NULL_DOI_LIST as $doi => $value) {
             if (isset(NULL_DOI_BUT_GOOD[$doi])) {
                 $changes = $changes . "In Both: " . $doi . "                ";
-            } elseif (isset(NULL_DOI_ANNOYING[$doi])) {
+            }
+        }
+        foreach (NULL_DOI_ANNOYING as $doi => $value) {
+            if (!isset(NULL_DOI_LIST[$doi])) {
+                $changes = $changes . "Not in main null list: " . $doi . "           ";
+            }
+        }
+        $this->assertSame("", $changes);  
+    }
+
+    public function testHostIsGoneDOILoop(): void {
+        $changes = "";
+        foreach (NULL_DOI_LIST as $doi => $value) {
+            if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
             } else {
                 $works = doi_works($doi);
@@ -430,11 +442,11 @@ final class expandFnsTest extends testBaseClass {
                 $changes = $changes . "Flagged as null: " . $doi . "             ";
             }
         }
-        foreach (NULL_DOI_ANNOYING as $doi => $value) {
-            if (!isset(NULL_DOI_LIST[$doi])) {
-                $changes = $changes . "Not in main null list: " . $doi . "           ";
-            }
-        }
+        $this->assertSame("", $changes);
+    }
+
+    public function testHostIsGoneDOIHosts(): void {
+        $changes = "";
         // Deal with super common ones that flood the list
         foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'] as $doi) {
             $works = doi_works($doi);
