@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
+/**
+ * @long
+ */
+
 final class constantsTest extends testBaseClass {
 
     protected function setUp(): void {
