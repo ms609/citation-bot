@@ -430,6 +430,7 @@ final class expandFnsTest extends testBaseClass {
 
     public function testHostIsGoneDOILoop(): void {
         $changes = "";
+        $this->assertSame("", $changes);
         foreach (NULL_DOI_LIST as $doi => $value) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
@@ -454,8 +455,15 @@ final class expandFnsTest extends testBaseClass {
     public function testHostIsGoneDOIHosts(): void {
         $changes = "";
         // Deal with super common ones that flood the list
+        $this->assertSame("", $changes);
         foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'] as $doi) {
+            $time_start = microtime(true);
             $works = doi_works($doi);
+            $time_end = microtime(true);
+            $execution_time = $time_end - $time_start;
+            if ($execution_time > 30) {
+                bot_debug_log("SLOW: " . $doi . " " . (string) $execution_time);
+            }
             if ($works === null) {
                 $changes = $changes . "Flagged as null: " . $doi . "             ";
             } elseif ($works === true) {
