@@ -3007,13 +3007,19 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
 function get_headers_array(string $url): false|array {
     static $last_url = "none yet";
     // Allow cheap journals to work
-    static $context_insecure;
+    static $context_insecure_doi;
+    static $context_insecure_hdl;
     if (!isset($context_insecure)) {
         $timeout = BOT_HTTP_TIMEOUT * 1.0;
         if (TRAVIS) {
             $timeout = 5.0; // Give up fast
         }
-        $context_insecure = stream_context_create([
+        $context_insecure_doi = stream_context_create([
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
+        ]);
+        $timeout = BOT_HTTP_TIMEOUT * 1.5;
+        $context_insecure_hdl = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
             'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
         ]);
@@ -3023,7 +3029,13 @@ function get_headers_array(string $url): false|array {
         sleep(5);
     }
     $last_url = $url;
-    return @get_headers($url, true, $context_insecure);
+    if (strpos($url, 'https://doi.org') === 0) {
+        return @get_headers($url, true, $context_insecure_doi);
+    } elseif (strpos($url, 'https://hdl.handle.net') === 0) {
+        return @get_headers($url, true, $context_insecure_hdl);
+    } else {
+        report_error("BAD URL in get_headers_array");
+    }
 }
 
 function simplify_google_search(string $url): string {
