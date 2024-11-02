@@ -883,8 +883,8 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         if (stripos(@$json['URL'], 'hdl.handle.net')) {
             $template->get_identifiers_from_url($json['URL']);
         }
-    } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture') { // posted-content is from bioRxiv
-            $try_to_add_it('title', @$json['title']);
+    } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture' || $type === 'patent') { // posted-content is from bioRxiv
+        $try_to_add_it('title', @$json['title']);
     } else {
         $try_to_add_it('title', @$json['title']);                          // @codeCoverageIgnore
         if (!HTML_OUTPUT) {
