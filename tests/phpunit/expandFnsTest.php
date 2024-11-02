@@ -435,13 +435,7 @@ final class expandFnsTest extends testBaseClass {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
             } else {
-                $time_start = microtime(true);
                 $works = doi_works($doi);
-                $time_end = microtime(true);
-                $execution_time = $time_end - $time_start;
-                if ($execution_time > 10) {
-                    bot_debug_log("SLOW: " . $doi . " " . (string) $execution_time);
-                }
             }
             if ($works === true) {
                 $changes = $changes . "Flagged as good: " . $doi . "             ";
