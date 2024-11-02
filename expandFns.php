@@ -3009,7 +3009,7 @@ function get_headers_array(string $url): false|array {
     // Allow cheap journals to work
     static $context_insecure_doi;
     static $context_insecure_hdl;
-    if (!isset($context_insecure)) {
+    if (!isset($context_insecure_doi)) {
         $timeout = BOT_HTTP_TIMEOUT * 1.0;
         if (TRAVIS) {
             $timeout = 5.0; // Give up fast
