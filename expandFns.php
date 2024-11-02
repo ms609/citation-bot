@@ -3009,9 +3009,13 @@ function get_headers_array(string $url): false|array {
     // Allow cheap journals to work
     static $context_insecure;
     if (!isset($context_insecure)) {
+        $timeout = BOT_HTTP_TIMEOUT * 1.0;
+        if (TRAVIS) {
+            $timeout = 5.0; // Give up fast
+        }
         $context_insecure = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
-            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
+            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
         ]);
     }
     set_time_limit(120);
