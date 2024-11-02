@@ -826,7 +826,7 @@ final class Zotero {
                     break;
                 }
             }
-            if ($huh_no_date) {
+            if ($huh_no_date && $url !== "") {
                 bot_debug_log('NO DATE FOR: ' . $url);
             }
         }
