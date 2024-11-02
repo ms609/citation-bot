@@ -394,9 +394,9 @@ final class PageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText17(): void {
-        $text = "<ref>{{isbn|9780974900902}}</ref>";
+        $text = "<ref>{{isbn|9781782626299}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), '978-0-9749009-0-2'));
+        $this->assertTrue((bool) stripos($page->parsed_text(), '978-1-78262-629-9'));
     }
 
     public function testMagazine(): void {
