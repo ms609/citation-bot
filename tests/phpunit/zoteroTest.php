@@ -1063,7 +1063,19 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
     }
 
-    public function testHDLSimpler2(): void {
+    public function testHDLSimpler2a(): void {
+        $this->assertIsString(hdl_works('20.1000/100'));
+    }
+
+    public function testHDLSimpler2b(): void {
+        $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326'));
+    }
+
+    public function testHDLSimpler2c(): void {
+        $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35'));
+    }
+
+    public function testHDLSimpler2d(): void {
         hdl_works('20.1000/100');
         hdl_works('20.1000/100?urlappend=%3Bseq=326');
         hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35');
