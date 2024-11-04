@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+header("Access-Control-Allow-Origin: null"); // Humans only
+
 set_time_limit(120);
 ob_implicit_flush(true);
 
