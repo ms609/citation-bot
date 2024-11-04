@@ -26,7 +26,10 @@ function death_time(string $err): never {
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
-    header("Location: " . preg_replace('~\s+~', '', $where));
+    if (preg_match('~\s+~', $where)) {
+        death_time('Error in return_to_sender');
+    }
+    header("Location: " . $where);
     exit;
 }
 
@@ -81,6 +84,9 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
             // This could only be tainted input if OAuth server itself was hacked, so flag as safe
             /** @psalm-taint-escape header */
             $where = trim($_GET['return']);
+            if (mb_substr($where, 0, 1) !== '/' || preg_match('~\s+~', $where)) {
+                death_time('Invalid Access URL');
+            }
             return_to_sender($where);
         }
         return_to_sender();
@@ -102,6 +108,9 @@ try {
     [$authUrl, $token] = $client->initiate();
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
+    if (strpos($authUrl, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=') !== 0 || preg_match('~\s+~', $authUrl)) {
+        death_time('Corrupted OAuth URL');
+    }
     return_to_sender($authUrl);
 }
 catch (Throwable $e) {
