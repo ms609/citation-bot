@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
+@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
+@header('Access-Control-Allow-Origin: null');
+
 if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><main><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></main></body></html>'; // Fast exit, do not even include setup.php
     exit;
