@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
+@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
+@header('Access-Control-Allow-Origin: null');
+
 require_once 'setup.php';
 
 const GET_IS_OKAY = [
