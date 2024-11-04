@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+	exit;
+}
+
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
 const HAS_NO_VOLUME = [
