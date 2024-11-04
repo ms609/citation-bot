@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+	exit;
+}
+
 /*
  * Page contains methods that will do most of the higher-level work of expanding
  * citations on the wikipage associated with the Page object.
