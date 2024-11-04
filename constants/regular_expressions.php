@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+    exit;
+}
+
 const REGEXP_PLAIN_WIKILINK = '~\[\[([^|\[\]]+?)\]\]~';
 const REGEXP_PLAIN_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\]\]$~';
 // Matches: [1], target; [2], display text

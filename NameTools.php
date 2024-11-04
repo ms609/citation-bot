@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+    exit;
+}
+
 require_once 'constants.php';    // @codeCoverageIgnore
 
 /* junior_test - tests a name for a Junior appellation
