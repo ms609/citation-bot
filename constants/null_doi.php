@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 if (get_included_files()[0] === __FILE__) {
-	exit;
+    exit;
 }
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
