@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-if (!TRAVIS) {
+if (!defined(TRAVIS)) {
     header("Access-Control-Allow-Origin: null"); // This should not be set, this API is for humans
 }
 
