@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+	exit;
+}
+
 const TEMPLATES_WE_PROCESS = [
     'citation', 'cite arxiv', 'cite book', 'cite books', 'cite document',
     'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web', 'cite work',
