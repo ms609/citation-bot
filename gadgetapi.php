@@ -11,6 +11,7 @@ try {
     @header('Access-Control-Allow-Origin: https://en.m.wikipedia.org');
     @header('Access-Control-Allow-Origin: https://simple.wikipedia.org');
     @header('Access-Control-Allow-Origin: https://simple.m.wikipedia.org');
+    @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
     @header('Content-Type: text/json');
 
     //Set up tool requirements
