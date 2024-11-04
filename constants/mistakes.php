@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 if (get_included_files()[0] === __FILE__) {
-	exit;
+    exit;
 }
 
 const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
