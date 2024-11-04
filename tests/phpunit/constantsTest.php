@@ -408,6 +408,24 @@ final class constantsTest extends testBaseClass {
         $this->assertFalse($failed);
     }
 
+    public function testNonJournalListIsNotBad() {
+        $failed = false;
+        foreach (CANONICAL_PUBLISHER_URLS as $journal) {
+            $journal = $journal . '/';
+            $check = $journal;
+            foreach (NON_JOURNAL_WEBSITES as $bad) {
+                $check = str_ireplace($bad, '', $check);
+            }
+            if ($check !== $journal) {
+                 $failed = true;
+                 $this->flush();
+                 echo "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' ' . $check . "\n\n";
+                 $this->flush();
+            }
+        }
+        $this->assertFalse($failed);
+    }
+
     public function testItalicsOrder(): void {
         $in_order = true;
         $spaces_at = 99999999;
