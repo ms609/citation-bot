@@ -545,10 +545,13 @@ final class WikipediaBot {
             report_error('Invalid access attempt to internal API');
         } else {
             unset($_SESSION['access_key'], $_SESSION['access_secret']);
+            $return = $_SERVER['REQUEST_URI'];
+            unset($_SERVER['REQUEST_URI']);
             session_write_close();
             flush();
-            $return = $_SERVER['REQUEST_URI'];
-            $return = preg_replace('~\s+~', '', $return); // Security paranoia
+            if (mb_substr($return, 0, 1) !== '/' || preg_match('~\s+~', $return)) { // Security paranoia
+                report_error('Invalid URL passes to internal API');
+            }
             /** @psalm-taint-escape header */
             $return = urlencode($return);
             header("Location: authenticate.php?return=" . $return);
