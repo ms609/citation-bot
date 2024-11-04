@@ -1,9 +1,9 @@
 <?php
-
+dsfasdfdsafsdfsd
 declare(strict_types=1);
 
 if (get_included_files()[0] === __FILE__) {
-	exit;
+    exit;
 }
 
 error_reporting(E_ALL);
