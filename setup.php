@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+	exit;
+}
+
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
