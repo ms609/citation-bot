@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-if (!defined(TRAVIS)) {
-    header("Access-Control-Allow-Origin: null"); // This should not be set, this API is for humans
-}
+@header("Access-Control-Allow-Origin: null"); // This should not be set, this API is for humans
 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
