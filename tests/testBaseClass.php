@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+if (get_included_files()[0] === __FILE__) {
+	exit;
+}
+
 require_once __DIR__ . '/../setup.php';
 
 define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
