@@ -6,7 +6,11 @@ declare(strict_types=1);
 set_time_limit(120);
 
 try {
-    @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
+    // Only wikipedias that use the correct template types -- more as requested
+    @header('Access-Control-Allow-Origin: https://en.wikipedia.org');
+    @header('Access-Control-Allow-Origin: https://en.m.wikipedia.org');
+    @header('Access-Control-Allow-Origin: https://simple.wikipedia.org');
+    @header('Access-Control-Allow-Origin: https://simple.m.wikipedia.org');
     @header('Content-Type: text/json');
 
     //Set up tool requirements
