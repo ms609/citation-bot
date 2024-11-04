@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 if (get_included_files()[0] === __FILE__) {
-	exit;
+    exit;
 }
 
 /** https://en.wikipedia.org/wiki/Module:Format_ISBN/data */
