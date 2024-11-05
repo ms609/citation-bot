@@ -28,8 +28,10 @@ try {
 
     //Expand text from postvars
     $page = new Page();
+    ob_start(); // For some reason this is needed sometimes
     $page->parse_text($originalText);
     $page->expand_text();
+    ob_end_clean();
     $newText = $page->parsed_text();
     if ($newText === "") {
        throw new Exception('text lost');    // @codeCoverageIgnore
