@@ -7203,6 +7203,15 @@ final class Template
        if ($this->has('via') && stripos($this->get('via'), 'proquest') === false) {
         $this->forget('via');
        }
+      } elseif (preg_match("~^http.+/login/?\?url=https://www\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
+       $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+       report_info("Remove proxy from ProQuest URL");
+       if ($this->has('via') && stripos($this->get('via'), 'library') !== false) {
+        $this->forget('via');
+       }
+       if ($this->has('via') && stripos($this->get('via'), 'proquest') === false) {
+        $this->forget('via');
+       }
       }
       $changed = false;
       if (preg_match("~^https?://(?:|search|www).proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
