@@ -520,6 +520,7 @@ class Page {
                     $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
                 }
             }
+            $this_template->final_tidy();
         }
         set_time_limit(120);
         // Release memory ASAP
