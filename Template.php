@@ -7818,6 +7818,12 @@ final class Template
       }
      }
 
+     if (strtolower($the_param) === 'dx.doi.org') {
+      if (strpos($this->get('url'), 'https://dx.doi.org/10.') === 0) {
+       $this->forget($param);
+      }
+     }
+
      return;
 
     case 'location':
