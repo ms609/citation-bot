@@ -8,6 +8,7 @@ if (get_included_files()[0] === __FILE__) {
 
 // TODO - manually check these from time to time - Last Check 10 MAR 2024
 const NULL_DOI_ANNOYING = [
+    '10.7306/gq.1095' => true, // 404
     '10.21756/cab.esp5' => true, // login page
     '10.21756/cab.v2i02.11119' => true, // login page
     '10.21756/CAB.ESP5' => true, // login page
@@ -2309,7 +2310,6 @@ const NULL_DOI_LIST = [
     '10.5944/trc.41.2018.22119' => true,
     '10.6019/blueprint_20130405' => true,
     '10.6072/H0.MP.A004235.01' => true,
-    '10.61303/07172257.v28i42.139' => true,
     '10.7146/cns.v1i0.27720' => true,
     '10.7146/cns.v6i0.122249' => true,
     '10.7146/cns.v6i0.122251' => true,
@@ -2327,7 +2327,7 @@ const NULL_DOI_LIST = [
     '10.7196/samj.7297' => true,
     '10.7196/SAMJ.8392' => true,
     '10.7203/SAGVNTVM.51.11476' => true,
-    '10.7306/gq.1095' => true,
+    '10.7306/gq.1095' => true, // 404
     '10.7313/upo9781904761679.011' => true,
     '10.7313/upo9781907284991.018' => true,
     '10.7392/openaccess.45011830' => true,
@@ -2369,6 +2369,9 @@ const NULL_DOI_LIST = [
     '10.9775/kvfd.2011.4275' => true,
     '10.9775/kvfd.2012.5341' => true,
     '10.9775/kvfd.2014.12722' => true,
+    '20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend',
+    '20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35',
+    '20.1000/100?urlappend=%3Bseq=326',
 ];
 
  // Note that a failed url on one computer does not mean it is gone, it might just be you
@@ -2378,6 +2381,7 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.61303/07172257.v28i42.139' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
     '10.1001/archopht.1973.01000040061014' => true,
