@@ -506,6 +506,7 @@ const CAMEL_CASE = [
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
     'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv', 'WorldMinds',
+    'SmartCloud',
 ];
 
 const ITALICS_HARDCODE_IN  = [
