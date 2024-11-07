@@ -2370,8 +2370,11 @@ const NULL_DOI_LIST = [
     '10.9775/kvfd.2012.5341' => true,
     '10.9775/kvfd.2014.12722' => true,
     '20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend' => true,
+    '20.1000/100?urlappend=;seq=326;ownerid=13510798900390116-35urlappend' => true,
     '20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35' => true,
+    '20.1000/100?urlappend=;seq=326;ownerid=13510798900390116-35' => true,
     '20.1000/100?urlappend=%3Bseq=326' => true,
+    '20.1000/100?urlappend=;seq=326' => true,
 ];
 
  // Note that a failed url on one computer does not mean it is gone, it might just be you
