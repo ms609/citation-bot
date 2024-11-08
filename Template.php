@@ -5762,7 +5762,7 @@ final class Template
       return;
      }
      $handle = hdl_decode($handle);
-     if (preg_match('~^(.+)(%3Bownerid=.*)$~', $handle, $matches)) {
+     if (preg_match('~^(.+)(\%3Bownerid=.*)$~', $handle, $matches) || preg_match('~^(.+)(;ownerid=.*)$~', $handle, $matches)) {
       // should we shorten it?
       if (hdl_works($handle) === false) {
        $handle = $matches[1];
