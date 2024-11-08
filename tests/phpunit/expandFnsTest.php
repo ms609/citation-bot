@@ -390,7 +390,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testDOIWorks3c(): void {
-        $this->assertFalsedoi_works('10.1126/scidip.ado5059'));
+        $this->assertafso5059'));
     }
 
     public function testDOIWorks3a(): void {
