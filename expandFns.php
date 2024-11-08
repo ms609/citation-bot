@@ -278,15 +278,6 @@ function interpret_doi_header(array $headers_test): ?bool {
     /** @psalm-suppress InvalidArrayOffset */
     $resp2 = (string) @$headers_test['2'];
 
-    if (strpos($resp2, '40') !== false) {
-        if ($resp1 === 'HTTP/1.1 302 Redirected') {
-            $resp2 = ''; // https://doi.org/10.1107/S2056989021000116
-        }
-        if ($resp1 === 'HTTP/1.1 301 Moved Permanently') {
-            $resp2 = ''; // https://doi.org/10.5152/UCD.2016.3683
-        }
-    }
-
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
     }
