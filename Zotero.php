@@ -1864,7 +1864,7 @@ final class Zotero {
                     $handle = $matches[1];
                 }
                 $handle = hdl_decode($handle);
-                if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {
+                if (preg_match('~^(.+)\%3Bownerid=~', $handle, $matches) || preg_match('~^(.+)\;ownerid=~', $handle, $matches)) {
                     if (hdl_works($matches[1])) {
                         $handle = $matches[1];
                     }
