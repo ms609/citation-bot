@@ -132,6 +132,8 @@ const ITALICS_LIST =
     'Hulsanpes perlei|' .
     'Buitreraptor gonzalezorum|' .
     'Bellusaurus sui|' .
+    'Ganoderma lucidum|' .
+    'Ganoderma tsugae|' .
     'Sinovenator changii|' .
     'Thermomonospora fusca|' .
     'Diplocynodon levantinicum|' .
