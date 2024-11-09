@@ -201,7 +201,7 @@ function is_doi_works(string $doi): ?bool {
     }
     $registrant = $matches[1];
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
-    // 16:42, November 25, 2023 version is last check
+    // 17 August 2024 version is last check
     if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
         $registrant = substr($registrant, 3);
         if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
