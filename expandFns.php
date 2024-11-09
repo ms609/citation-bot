@@ -216,6 +216,19 @@ function is_doi_works(string $doi): ?bool {
             return false;
         }
     }
+    $seen_it = false;
+    if (isset(NULL_DOI_LIST[$doi]) || isset(NULL_DOI_BUT_GOOD[$doi])) {
+        $seen_it = true;
+    }
+    foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+        if (stripos($doi, $bad_start) === 0) {
+            $seen_it = true;
+        }
+    }
+    if (!$seen_it) {
+        bot_debug_log("NEW DOI for tables: " . $doi);
+    }
+    
     throttle_dx();
 
     $url = "https://doi.org/" . doi_encode($doi);
