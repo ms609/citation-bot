@@ -8,6 +8,14 @@ if (get_included_files()[0] === __FILE__) {
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.7196/SAMJ.2018.v108i9.13584' => true, // website down for a long time
+    '10.7196/SAMJ.2018.v108i9.13609' => true, // website down for a long time
+    '10.7196/SAMJ.2019.v109i8.14152' => true, // website down for a long time
+    '10.7196/SAMJ.2021.v111i6.15465' => true, // website down for a long time
+    '10.7196/samj.5916' => true, // website down for a long time
+    '10.7196/samj.7046' => true, // website down for a long time
+    '10.7196/samj.7297' => true, // website down for a long time
+    '10.7196/SAMJ.8392' => true, // website down for a long time
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2341,14 +2349,14 @@ const NULL_DOI_LIST = [
     '10.7182/prtr.1.6.1.f04016025hh795up' => true, // Error
     '10.7182/prtr.1.6.3.8145l3u185493182' => true, // Error
     '10.7182/prtr.13.3.a368158t7662j463' => true, // Error
-    '10.7196/SAMJ.2018.v108i9.13584' => true,
-    '10.7196/SAMJ.2018.v108i9.13609' => true,
-    '10.7196/SAMJ.2019.v109i8.14152' => true,
-    '10.7196/SAMJ.2021.v111i6.15465' => true,
-    '10.7196/samj.5916' => true,
-    '10.7196/samj.7046' => true,
-    '10.7196/samj.7297' => true,
-    '10.7196/SAMJ.8392' => true,
+    '10.7196/SAMJ.2018.v108i9.13584' => true, // website down for a long time
+    '10.7196/SAMJ.2018.v108i9.13609' => true, // website down for a long time
+    '10.7196/SAMJ.2019.v109i8.14152' => true, // website down for a long time
+    '10.7196/SAMJ.2021.v111i6.15465' => true, // website down for a long time
+    '10.7196/samj.5916' => true, // website down for a long time
+    '10.7196/samj.7046' => true, // website down for a long time
+    '10.7196/samj.7297' => true, // website down for a long time
+    '10.7196/SAMJ.8392' => true, // website down for a long time
     '10.7203/SAGVNTVM.51.11476' => true,
     '10.7306/gq.1095' => true, // 404
     '10.7313/upo9781904761679.011' => true,
