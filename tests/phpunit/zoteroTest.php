@@ -752,11 +752,20 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite web|work=DSfadsfsdf}}';
         $template = $this->make_citation($text);
         $access_date = 0;
-        $url = 'http://nature.org/';
+        $url = 'http://nature.com/';
         $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'report'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite journal', $template->wikiname());
+
+        $text = '{{cite web|work=DSfadsfsdf}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'http://nature.org/';
+        $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'report'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testZoteroResponse48(): void {
