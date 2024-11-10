@@ -247,6 +247,12 @@ const ITALICS_LIST =
     'Homo naledi|' .
     'Kallima inachus|' .
     'K\. inachus|' .
+    'Schesslitziella haupti|' .
+    'in vivo|' .
+    'Suevoleviathan integer|' .
+    'Pityogenes chalcographus|' .
+    'Ips typographus|' .
+    'Hauffiosaurus zanoni|' .
     'Argynnis hyperbius|' .
     'Streptococcus diacetilactis|' .
     'Panax ginseng|' .
@@ -392,6 +398,15 @@ const ITALICS_LIST =
     'Bacillus|' .
     'Pennellidae|' .
     'Manuherikia|' .
+    'Acidorhynchus|' .
+    'Echmatemys|' .
+    'Plesiocathartes|' .
+    'Progymnasmata|' .
+    'Rhizopus|' .
+    'Stenopterygius|' .
+    'Phymatoderma|' .
+    'Allopanax|' .
+    'Boreopanax|' .
     'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
@@ -508,7 +523,8 @@ const CAMEL_CASE = [
     'MSqRob', 'dsCheck', 'PhyloWidget', 'SourceForge', 'TreeGraph',
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
     'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv', 'WorldMinds',
-    'SmartCloud',
+    'SmartCloud', 'DiCaprio', 'LaNada', 'BioCassava', 'ResFinder',
+    'HyperRhetoric', 'HflXr',
 ];
 
 const ITALICS_HARDCODE_IN  = [
