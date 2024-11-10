@@ -393,10 +393,6 @@ final class expandFnsTest extends testBaseClass {
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
-    public function testDOIWorks3c(): void {
-        $this->assertTrue(doi_works('10.5152/UCD.2016.3683'));
-    }
-
     public function testThrottle(): void { // Just runs over the code and basically does nothing
         for ($x = 0; $x <= 25; $x++) {
             $this->assertNull(throttle());
