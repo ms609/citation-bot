@@ -2408,6 +2408,9 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1016/j.cpc.2017.09.004' => true,
+    '10.1002/ajb2.1143' => true,
+    '10.1093/ref:odnb/46421' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
