@@ -8,6 +8,8 @@ if (get_included_files()[0] === __FILE__) {
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.3421/32412xxxxxxx' => true, // test suite bogus
+    '10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195' => true, // test suite bogus
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -384,6 +386,8 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.3421/32412xxxxxxx' => true, // test suite bogus
+    '10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195' => true, // test suite bogus
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2502,6 +2506,7 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1093/acrefore/9780190228613.013.1195' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
