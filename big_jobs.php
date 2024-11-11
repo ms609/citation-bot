@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 // Paranoid - trying to be atomic without non-portable locks etc.
 
 // "hard" as in "try hard" and ignore errors
