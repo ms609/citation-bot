@@ -57,7 +57,7 @@ function report_forget(string $text): void {
 
 function report_inline(string $text): void {
     if ((!TRAVIS && defined('BIG_JOB_MODE')) || defined("TRAVIS_PRINT")) {
-        echo " ", $text;
+        echo " ", $text;   // @codeCoverageIgnore
     }
 }
 // call report_warning to give users a message before we die
