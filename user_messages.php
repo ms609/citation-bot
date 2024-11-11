@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text=''): void {
