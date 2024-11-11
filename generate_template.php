@@ -12,33 +12,32 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 
 require_once 'setup.php';
 
+function die_in_template(string $err): never {
+    echo $err, '</pre></main></body></html>'; // @codeCoverageIgnore
+    exit; // @codeCoverageIgnore
+} 
+
 if (count($_GET) !== 1) {
-    echo 'Exactly one parameters must be passed</pre></main></body></html>';
-    exit;
+    die_in_template('Exactly one parameters must be passed'); // @codeCoverageIgnore
 }
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
 
 if (!is_string($param) || !is_string($value)) {
-    echo 'Invalid parameter type error for passed parameter</pre></main></body></html>';
-    exit;
+    die_in_template('Invalid parameter type error for passed parameter'); // @codeCoverageIgnore
 }
 if (strlen($value) < 3) {
-    echo 'Unset parameter error</pre></main></body></html>';
-    exit;
+    die_in_template('Unset parameter error'); // @codeCoverageIgnore
 }
 if (strlen($value) > 100) {
-    echo 'Excessive parameter error</pre></main></body></html>';
-    exit;
+    die_in_template('Excessive parameter error'); // @codeCoverageIgnore
 }
 if ((strpos($value, "'") !== false) || (strpos($value, '"') !== false) || (strpos($value, "|") !== false) || (strpos($value, " ") !== false)) {
-    echo 'Invalid parameter value error</pre></main></body></html>';
-    exit;
+    die_in_template('Invalid parameter value error'); // @codeCoverageIgnore
 }
 $param = mb_strtolower($param);
 if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) {
-   echo 'Unexpected parameter passed</pre></main></body></html>';
-   exit;
+    die_in_template('Unexpected parameter passed'); // @codeCoverageIgnore
 }
 
 $t = new Template();
