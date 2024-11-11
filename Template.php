@@ -5198,29 +5198,20 @@ final class Template
       return;
      }
      // Undo some bad bot/human edits
-     if (
-      $this->blank(WORK_ALIASES) &&
-      in_array(
-       strtolower(str_replace(['[', ']', '.'], '', $this->get($param))),
-       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company', 'philippine news agency', 'philippine information agency', 'ap', 'ap news', 'associated press news'],
-       true
-      )
-     ) {
+     if ($this->blank(WORK_ALIASES)) {
       $the_url = '';
       foreach (ALL_URL_TYPES as $thingy) {
        $the_url .= $this->get($thingy);
       }
-      if (
-       stripos($the_url, 'reuters.co') !== false ||
-       stripos($the_url, 'apnews.com') !== false ||
-       stripos($the_url, 'yna.co.kr') !== false ||
-       stripos($the_url, 'upi.com') !== false ||
-       stripos($the_url, 'officialcharts.com') !== false ||
-       stripos($the_url, 'pia.gov.ph') !== false ||
-       stripos($the_url, 'pna.gov.ph') !== false
-      ) {
-       $this->rename($param, 'work');
+      $cleaned = strtolower(str_replace(['[', ']', '.'], '', $this->get($param)));
+ 
+      if (in_array($cleaned, ['reuters'], true)) {
+       if (stripos($the_url, 'reuters.co') !== false) {
+        $this->rename($param, 'work');
+       }
+      } elseif (in_array($cleaned, ['associated press', 'ap', 'ap news', 'associated press news'], true)) {
        if (stripos($the_url, 'apnews.co') !== false) {
+        $this->rename($param, 'work');
         if ($this->get('work') === 'AP') {
          $this->set('work', 'AP News');
         } elseif ($this->get('work') === 'Associated Press') {
@@ -5231,9 +5222,24 @@ final class Template
          $this->set('work', '[[AP News]]');
         }
        }
+      } elseif (in_array($cleaned, ['united press international', 'upi'], true)) {
+       if (stripos($the_url, 'upi.com') !== false) {
+        $this->rename($param, 'work');
+       }
+      } elseif (in_array($cleaned, ['philippine news agency', 'philippine information agency'], true)) {
+       if (stripos($the_url, 'pia.gov.ph') !== false || stripos($the_url, 'pna.gov.ph') !== false) {
+        $this->rename($param, 'work');
+       }
+      } elseif (in_array($cleaned, ['yonhap news agency'], true)) {
+       if (stripos($the_url, 'yna.co.kr') !== false) {
+        $this->rename($param, 'work');
+       }
+      } elseif (in_array($cleaned, ['official charts company'], true)) {
+       if (stripos($the_url, 'officialcharts.com') !== false) {
+        $this->rename($param, 'work');
+       }
       }
      }
-
      return;
 
     case 'arxiv':
