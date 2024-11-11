@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
-    '10.1007/978-94-015-8265-0_2' => true,
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
+    '10.1007/978-94-015-8265-0_2' => true,
     '10.1016/j.icrp.2012.06.038' => true, // Error
     '10.1017/S003803850122015X' => true, // Error
     '10.1017/S0950017001230104' => true, // Error
@@ -1440,6 +1440,7 @@ const NULL_DOI_LIST = [
     '10.1201/b14585-2' => true,
     '10.1201/b15852-12' => true,
     '10.1201/b18394-1' => true,
+    '10.1201/b18895-2' => true,
     '10.1201/b20044-6' => true,
     '10.1201/EBK1439804896-13' => true,
     '10.1201/ebk1439804896-25' => true,
