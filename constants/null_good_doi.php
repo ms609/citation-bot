@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
  // Note that a failed url on one computer does not mean it is gone, it might just be you
  // You can use hdl.handle.org to show you the final url - russia and other countries firewall
  // TODO - these need to be manually double checked once in a great while

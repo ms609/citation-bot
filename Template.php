@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 /*
  * Handle most aspects of citation templates
  * add_if_new() is generally called to add or sometimes overwrite parameters.

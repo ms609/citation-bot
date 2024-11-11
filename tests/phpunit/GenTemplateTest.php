@@ -1,10 +1,6 @@
 <?php
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 /*
  * Tests for generate_template.php
  */

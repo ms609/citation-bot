@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 const ITALICS_LIST =
     'Night of the Living Dead|' .
     'The Dream of the Rood|' .

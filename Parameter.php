@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 /*
  * Parameter includes parsing functions to extract parameters, values, and metadata
  * from templates.

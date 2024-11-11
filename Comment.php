@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 /*
  * Contains constants and text-parsing functions for wikitext comments.
  */

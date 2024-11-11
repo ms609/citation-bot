@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
     ' AAOHN ',
     ' AAP ',
