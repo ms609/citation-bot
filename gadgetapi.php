@@ -17,6 +17,7 @@ try {
     }
     $originalText = $_POST['text'];
     $editSummary = $_POST['summary'];
+    unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
     if (strlen($originalText) < 6) {
         throw new Exception('tiny page');  // @codeCoverageIgnore
