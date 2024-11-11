@@ -16,6 +16,7 @@ if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     bot_html_footer();
     exit;
 }
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 session_start(['read_and_close' => true]);
 
