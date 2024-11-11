@@ -9,13 +9,13 @@ declare(strict_types=1);
  * handle collected page modifications, and save the edited page text.
  */
 
-require_once 'Comment.php';             // @codeCoverageIgnore
-require_once 'Template.php';            // @codeCoverageIgnore
-require_once 'apiFunctions.php';    // @codeCoverageIgnore
-require_once 'expandFns.php';           // @codeCoverageIgnore
+require_once 'Comment.php';       // @codeCoverageIgnore
+require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'apiFunctions.php';  // @codeCoverageIgnore
+require_once 'expandFns.php';     // @codeCoverageIgnore
 require_once 'user_messages.php'; // @codeCoverageIgnore
-require_once 'Zotero.php';              // @codeCoverageIgnore
-require_once 'constants.php';           // @codeCoverageIgnore
+require_once 'Zotero.php';        // @codeCoverageIgnore
+require_once 'constants.php';     // @codeCoverageIgnore
 
 class Page {
     protected string $text = '';
@@ -165,8 +165,8 @@ class Page {
                 $api = 'jstor';
                 break;
             default:
-                $api = $identifier;
-                report_error('expand_templates_from_identifier got: ' . $api);
+                $api = $identifier;                                            // @codeCoverageIgnore
+                report_error('expand_templates_from_identifier got: ' . $api); // @codeCoverageIgnore
         }
         $num_template = count($templates);
         for ($i = 0; $i < $num_template; $i++) {
