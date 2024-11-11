@@ -233,4 +233,20 @@ final class NameToolsTest extends testBaseClass {
     public function testCleanUpLastNames2(): void {
         $this->assertSame('A.', clean_up_last_names('A.'));
     }
+
+    public function testMiscNameTests(): void {
+        $this->assertSame('', format_surname('-'));
+        $this->assertSame('', format_surname(''));
+        $this->assertSame('', format_forename('-'));
+        $this->assertSame('', format_forename(''));
+        $this->assertSame('', format_initials('    '));
+        $this->assertFalse(is_initials('    ')); 
+    }
+
+    public function testSplit(): void {
+        $out = split_authors('Joe,Bob;Jim,Slim'));
+        $this->assertSame('Joe,Bob', $out[0]);
+        $this->assertSame('Jim,Slim', $out[1]);
+    }
+    
 }
