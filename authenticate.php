@@ -99,6 +99,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
     death_time("Incoming authorization tokens did not work - try again please");
 }
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 // Nothing found.  Needs an access grant from scratch
 try {
