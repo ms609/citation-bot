@@ -244,7 +244,7 @@ final class NameToolsTest extends testBaseClass {
     }
 
     public function testSplit(): void {
-        $out = split_authors('Joe,Bob;Jim,Slim'));
+        $out = split_authors('Joe,Bob;Jim,Slim');
         $this->assertSame('Joe,Bob', $out[0]);
         $this->assertSame('Jim,Slim', $out[1]);
     }
