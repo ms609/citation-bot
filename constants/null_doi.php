@@ -386,6 +386,8 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1017/S0047404506260342' => true,
+    '10.1057/9780230270619' => true,
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2507,6 +2509,11 @@ const NULL_DOI_LIST = [
  // TODO - these need to be manually double checked once in a great while
  //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1017/S0016756800067091' => true,
+    '10.1007/s001480050106' => true,
+    '10.52567/pjsr.v4i03.964' => true,
+    '10.4271/560225' => true,
+    '10.4271/490011' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archneur.1989.00520400097026' => true,
