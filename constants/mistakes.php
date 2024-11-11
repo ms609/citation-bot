@@ -1190,6 +1190,13 @@ const COMMON_MISTAKES_TOOL = [
     'langu' => 'lang',
     'соавторы' => 'coauthors',
     'acces date' => 'access-date',
+    'iarchive-url' => 'archive-url',
+    'url- access' => ' url-access',
+    'publishuer' => 'publisher',
+    'anguage' => 'language',
+    'rtitle' => 'title',
+    'translated title' => 'trans-title',
+    '출판사' => 'publisher',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
