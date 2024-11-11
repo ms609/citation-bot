@@ -674,5 +674,10 @@ final class expandFnsTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
-        
+
+    public function testRubbishISBN(): void {
+        $junk = "12342";
+        $this->assertSame($junk, addISBNdashes($junk));
+    }
+
 }
