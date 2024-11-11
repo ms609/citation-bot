@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-if (get_included_files()[0] === __FILE__) {
-    exit;
-}
-
 // all new constant files needed listed here
 require_once 'constants/bad_data.php';
 require_once 'constants/capitalization.php';
