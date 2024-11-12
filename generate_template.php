@@ -22,6 +22,7 @@ if (count($_GET) !== 1) {
 }
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 if (!is_string($param) || !is_string($value)) {
     die_in_template('Invalid parameter type error for passed parameter'); // @codeCoverageIgnore

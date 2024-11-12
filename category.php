@@ -53,6 +53,7 @@ if (!$category) {
     bot_html_footer();
     exit;
 }
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 session_start(['read_and_close' => true]);
 bot_html_header();
