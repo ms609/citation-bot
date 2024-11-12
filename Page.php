@@ -32,13 +32,13 @@ class Page {
     public static string $last_title = '';
 
     public function __construct() {
-            $this->construct_modifications_array();
-            if (!self::$told_fast) {
-                    if (!SLOW_MODE) {
-                     report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
-                    }
-                    self::$told_fast = true;
+        $this->construct_modifications_array();
+        if (!self::$told_fast) {
+            if (!SLOW_MODE) {
+                report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
             }
+            self::$told_fast = true;
+        }
     }
 
     public function get_text_from(string $title): bool {
@@ -72,31 +72,31 @@ class Page {
             return false;
         }
         if ( !isset($details->touched) || !isset($details->lastrevid)) {
-                report_warning("Could not even get the page.     Perhaps non-existent?");
-                return false;
+            report_warning("Could not even get the page.     Perhaps non-existent?");
+            return false;
         }
 
         if (!isset($details->title)) {
-                report_warning("Could not even get the page title.");   // @codeCoverageIgnore
-                return false;                                                                                   // @codeCoverageIgnore
+            report_warning("Could not even get the page title.");   // @codeCoverageIgnore
+            return false;                                                                                   // @codeCoverageIgnore
         }
 
         if (!empty($details->protection)) {
-                /** @var array<object> $the_protections */
-                $the_protections = (array) $details->protection;
-                foreach ($the_protections as $protects) {
-                    if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
-                     $the_level = (string) $protects->level;
-                     if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], true)) {
-                         // We are good
-                     } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
-                         report_warning("Page is protected.");
-                         return false;
-                     } else {
-                         report_minor_error("Unexpected protection status: " . echoable($the_level));    // @codeCoverageIgnore
-                     }
+            /** @var array<object> $the_protections */
+            $the_protections = (array) $details->protection;
+            foreach ($the_protections as $protects) {
+                if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
+                    $the_level = (string) $protects->level;
+                    if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], true)) {
+                        // We are good
+                    } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
+                        report_warning("Page is protected.");
+                        return false;
+                    } else {
+                        report_minor_error("Unexpected protection status: " . echoable($the_level));    // @codeCoverageIgnore
                     }
                 }
+            }
         }
 
         $this->title = (string) $details->title;
@@ -106,8 +106,8 @@ class Page {
         $this->text = WikipediaBot::GetAPage($title);
 
         if ($this->text === '') {
-                report_warning('Page '   . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
-                return false;                                                                                                                                                   // @codeCoverageIgnore
+            report_warning('Page '   . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
+            return false;                                                                                                                                                   // @codeCoverageIgnore
         }
         $this->start_text = $this->text;
         $this->set_date_pattern();
