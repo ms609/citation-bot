@@ -5402,6 +5402,14 @@ final class Template
      }
      return;
 
+    case 'contribution':
+     if ($this->has('contribution') && $this->has('url') && $this->blank('contribution-url')) {
+      if (preg_match('~^https?://portal.acm.org/citation.cfm?id=\d+$~', $this->get('url'))) {
+       $this-rename('url', 'contribution-url'));
+      }
+     }
+     return;
+    
     case 'class':
      if ($this->blank('class')) {
       if ($this->wikiname() !== 'cite arxiv' && !$this->blank(['doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'])) {
@@ -8572,6 +8580,10 @@ final class Template
    $this->rename('urlaccess', 'chapter-url-access');
    $this->rename('url-access', 'chapter-url-access');
    $this->rename('format', 'chapter-format');
+  if ($old_param === 'url' && $new_param === 'contribution-url') {
+   $this->rename('urlaccess', 'contribution-url-access');
+   $this->rename('url-access', 'contribution-url-access');
+   $this->rename('format', 'contribution-format');
   } elseif (($old_param === 'chapter-url' || $old_param === 'chapterurl') && $new_param === 'url') {
    $this->rename('chapter-url-access', 'url-access');
    $this->rename('chapter-format', 'format');
