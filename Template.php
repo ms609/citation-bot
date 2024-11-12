@@ -5529,7 +5529,7 @@ final class Template
       return;
      }
      if ($this->wikiname() === 'cite journal' && stripos($doi, '10.2307/j.') === 0) {
-      $this-change_name_to('cite book');
+      $this->change_name_to('cite book');
      }
      if (preg_match('~^(10\.[^\/]+\/)\/(.+)$~', $doi, $matches)) {
       $try = $matches[1] . $matches[2];
