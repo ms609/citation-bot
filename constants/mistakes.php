@@ -1146,15 +1146,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'authro1-link' => 'author1-link',
     'yeay' => 'year',
     'lanugage' => 'language',
-]; // Lots of stuff that just existed
-
-const COMMON_MISTAKES_TOOL = [
-    'accessdate' => 'access-date',
-    'archivedate' => 'archive-date',
-    'archiveurl' => 'archive-url',
-    'authorlink' => 'author-link',
-    'origyear' => 'orig-date',
-    'airdate' => 'air-date',
+    'tytle' => 'title',
+    'edito1r' => 'editor1',
     'mohth' => 'month',
     'edito1r' => 'editor',
     'url-staqtus' => 'url-status',
@@ -1193,6 +1186,14 @@ const COMMON_MISTAKES_TOOL = [
     'rtitle' => 'title',
     'translated title' => 'trans-title',
     '출판사' => 'publisher',
+    'origyear' => 'orig-date',
+]; // Lots of stuff that just existed
+
+const COMMON_MISTAKES_TOOL = [
+    'accessdate' => 'access-date',
+    'archivedate' => 'archive-date',
+    'archiveurl' => 'archive-url',
+    'authorlink' => 'author-link',
 ];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
