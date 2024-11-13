@@ -5330,8 +5330,8 @@ final class Template
        }
        if ($pmatch[2] === '1' && $this->has('first')) {
         $this->rename('first', 'first1');
-        $this->rename('author-link', 'author1-link');
-        $this->rename('author-mask', 'author1-mask');
+        $this->rename('author-link', 'author-link1');
+        $this->rename('author-mask', 'author-mask1');
        }
        if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !== false) {
         // Clean up links in first names
@@ -5347,13 +5347,13 @@ final class Template
      if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
       if ($this->blank('last1')) {
        $this->rename('last', 'last1');
-       $this->rename('author-link', 'author1-link');
-       $this->rename('author-mask', 'author1-mask');
+       $this->rename('author-link', 'author-link1');
+       $this->rename('author-mask', 'author-mask1');
       }
       if ($this->blank('first1')) {
        $this->rename('first', 'first1');
-        $this->rename('author-link', 'author1-link');
-        $this->rename('author-mask', 'author1-mask');
+        $this->rename('author-link', 'author-link1');
+        $this->rename('author-mask', 'author-mask1');
       }
      }
      return;
@@ -5362,13 +5362,13 @@ final class Template
      if (!$pmatch[2] && $pmatch[1] === 'first' && !$this->blank(['last1', 'first2', 'last2'])) {
       if ($this->blank('last1')) {
        $this->rename('last', 'last1');
-       $this->rename('author-link', 'author1-link');
-       $this->rename('author-mask', 'author1-mask');
+       $this->rename('author-link', 'author-link1');
+       $this->rename('author-mask', 'author-mask1');
       }
       if ($this->blank('first1')) {
        $this->rename('first', 'first1');
-       $this->rename('author-link', 'author1-link');
-       $this->rename('author-mask', 'author1-mask');
+       $this->rename('author-link', 'author-link1');
+       $this->rename('author-mask', 'author-mask1');
       }
      }
      return;
