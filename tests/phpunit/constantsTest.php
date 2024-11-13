@@ -267,8 +267,8 @@ final class constantsTest extends testBaseClass {
             $text = str_replace(['| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z ', '| arşivengelli = Z123Z '], '', $text);
             $text = str_replace(['displayeditors',  'editor1mask',  'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
                                 ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
-            $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
-                                ['editor1-link', 'editor1-link', 'subject-link1'], $text);
+            $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1',  'origyear'],
+                                ['editor1-link', 'editor1-link', 'subject-link1', 'orig-date'], $text);
             $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city',     'editorlink',  ' editors ='],
                                 ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
             $text = str_replace(['episodelink',  'mailinglist',  'mapurl',  'serieslink' , 'coauthor '],
