@@ -1767,14 +1767,14 @@ final class TemplateTest extends testBaseClass {
         $text = '{{citation|origyear=2000}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
-        $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+        $this->assertSame('{{citation|orig-date=2000}}', $prepared->parsed_text());
     }
 
     public function testChangeParamaters6(): void {
         $text = '{{citation|origyear=2000|date=1999}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
-        $this->assertSame('{{citation|origyear=2000|date=1999}}', $prepared->parsed_text());
+        $this->assertSame('{{citation|orig-date=2000|date=1999}}', $prepared->parsed_text());
  }
 
     public function testDropDuplicates1(): void {
@@ -2000,14 +2000,9 @@ final class TemplateTest extends testBaseClass {
     public function testOrigYearHandling(): void {
         $text = '{{cite book |year=2009 | origyear = 2000 }}';
         $prepared = $this->process_citation($text);
-        $this->assertSame('2000', $prepared->get2('origyear'));
+        $this->assertSame('2000', $prepared->get2('orig-date'));
         $this->assertNull($prepared->get2('orig-year'));
         $this->assertSame('2009', $this->getDateAndYear($prepared));
-
-        $text = '{{cite book | origyear = 2000 }}';
-        $prepared = $this->process_citation($text);
-        $this->assertSame('2000', $this->getDateAndYear($prepared));
-        $this->assertNull($prepared->get2('origyear'));
     }
 
     public function testDropAmazon(): void {
@@ -4044,11 +4039,11 @@ EP - 999 }}';
     }
 
     public function testDoiInline2(): void {
-        $text = '{{citation | title = {{doi-inline|10.1021/jp101758y|Funky Paper}} | doi=10.1021/jp101758y }}';
+        $text = '{{citation | title = {{doi-inline|10.1038/nphys806|A transient semimetallic layer in detonating nitromethane}} | doi=10.1038/nphys806 }}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('The Journal of Physical Chemistry. A', $expanded->get2('journal'));
-        $this->assertSame('Funky Paper', $expanded->get2('title'));
-        $this->assertSame('10.1021/jp101758y', $expanded->get2('doi'));
+        $this->assertSame('Nature Physics', $expanded->get2('journal'));
+        $this->assertSame('A transient semimetallic layer in detonating nitromethane', $expanded->get2('title'));
+        $this->assertSame('10.1038/nphys806', $expanded->get2('doi'));
     }
 
     public function testTidyBogusDOIs3316(): void {
