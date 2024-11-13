@@ -5404,7 +5404,7 @@ final class Template
 
     case 'contribution':
      if ($this->has('contribution') && $this->has('url') && $this->blank('contribution-url')) {
-      if (preg_match('~^https?://portal.acm.org/citation.cfm?id=\d+$~', $this->get('url'))) {
+      if (preg_match('~^https?://portal\.acm\.org/citation\.cfm\?id=\d+$~', $this->get('url'))) {
        $this->rename('url', 'contribution-url');
       }
      }
