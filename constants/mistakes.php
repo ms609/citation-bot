@@ -1149,7 +1149,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'tytle' => 'title',
     'edito1r' => 'editor1',
     'mohth' => 'month',
-    'edito1r' => 'editor',
     'url-staqtus' => 'url-status',
     'websitel' => 'website',
     'url-mstatus' => 'url-status',
