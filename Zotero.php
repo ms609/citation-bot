@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once 'constants.php';  // @codeCoverageIgnore
+require_once 'constants.php'; // @codeCoverageIgnore
 require_once 'Template.php';  // @codeCoverageIgnore
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
@@ -84,7 +84,7 @@ final class Zotero {
         }
 
         if (!SLOW_MODE) {
-            return; // Zotero takes time
+            return; // @codeCoverageIgnore
         }
 
         self::$zotero_announced = 1;
@@ -256,10 +256,10 @@ final class Zotero {
                     if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
                         $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
                         if (stripos($redirectedUrl_doi, 'cookie') !== false) {
-                            break;
+                            break; // @codeCoverageIgnore
                         }
                         if (stripos($redirectedUrl_doi, 'denied') !== false) {
-                            break;
+                            break; // @codeCoverageIgnore
                         }
                         $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
                         $url_short = self::url_simplify($url);
@@ -304,7 +304,7 @@ final class Zotero {
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
             self::$zotero_failures_count -= 1;
             if (self::$zotero_failures_count === self::ZOTERO_GIVE_UP) {
-                self::$zotero_failures_count = 0;
+                self::$zotero_failures_count = 0; // @codeCoverageIgnore
             }
         }
 
