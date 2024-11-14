@@ -1186,6 +1186,8 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'translated title' => 'trans-title',
     '출판사' => 'publisher',
     'origyear' => 'orig-date',
+    'issuee' => 'issue',
+    'vlume' => 'volume',
 ]; // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = [
