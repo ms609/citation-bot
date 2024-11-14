@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once 'constants.php';           // @codeCoverageIgnore
-require_once 'Template.php';            // @codeCoverageIgnore
-require_once 'big_jobs.php';            // @codeCoverageIgnore
+require_once 'constants.php';     // @codeCoverageIgnore
+require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
@@ -83,7 +83,7 @@ function doi_active(string $doi): ?bool {
 function doi_works(string $doi): ?bool {
     $doi = trim($doi);
     if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
-        return null;
+        return null;   // @codeCoverageIgnore
     }
     if (isset(HandleCache::$cache_good[$doi])) {
         return true;
@@ -92,15 +92,14 @@ function doi_works(string $doi): ?bool {
         return false;
     }
     if (isset(HandleCache::$cache_hdl_null[$doi])) {
-        return null;
+        return null;   // @codeCoverageIgnore
     }
     HandleCache::check_memory_use();
 
     $works = is_doi_works($doi);
-    if ($works === null) {
-        // These are unexpected nulls
-        HandleCache::$cache_hdl_null[$doi] = true;
-        return null;   // @codeCoverageIgnoreEnd
+    if ($works === null) {  // These are unexpected nulls
+        HandleCache::$cache_hdl_null[$doi] = true;   // @codeCoverageIgnore
+        return null;   // @codeCoverageIgnore
     }
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$doi] = true;
@@ -136,9 +135,11 @@ function is_doi_active(string $doi): ?bool {
         $header = substr($return, 0, $header_length);
         $body = substr($return, $header_length);                               // @codeCoverageIgnoreEnd
     }
-    if ($response_code === 429) sleep(10);  // WE are still getting blocked
+    if ($response_code === 429) {  // WE are still getting blocked
+        sleep(10);   // @codeCoverageIgnore
+    }
     if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
-        return null;
+        return null;  // @codeCoverageIgnore
     }
     if ($body === 'Resource not found.'){
         return false;
@@ -1695,7 +1696,7 @@ function check_memory_usage(string $where): void {
     }
     $mem_used = (int) (memory_get_peak_usage() / 1048576);
     if ($mem_used > 128) {
-        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where); // @codeCoverageIgnore
     }
 }
 
@@ -1728,12 +1729,14 @@ function bot_html_header(): void {
     }
 }
 
+// @codeCoverageIgnoreStart
 function bot_html_footer(): void {
     if (HTML_OUTPUT) {
         echo '</pre><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Another</a>?</footer></body></html>'; // @codeCoverageIgnore
     }
     echo "\n";
 }
+// @codeCoverageIgnoreEnd
 
 /** null/false/String of location */
 function hdl_works(string $hdl): string|null|false {
@@ -1759,7 +1762,7 @@ function hdl_works(string $hdl): string|null|false {
         return false;
     }
     if (isset(HandleCache::$cache_hdl_null[$hdl])) {
-        return null;
+        return null; // @codeCoverageIgnore
     }
     if (strpos($hdl, '10.') === 0 && doi_works($hdl) === false) {
         return false;
@@ -1796,11 +1799,11 @@ function is_hdl_works(string $hdl): string|null|false {
     if ($headers_test === false) {
         $headers_test = get_headers_array($url); // @codeCoverageIgnore
     }
-    if ($headers_test === false) {
-        return null; // most likely bad
+    if ($headers_test === false) { // most likely bad
+        return null; // @codeCoverageIgnore
     }
     if (interpret_doi_header($headers_test) === null) {
-        return null;
+        return null; // @codeCoverageIgnore
     }
     if (interpret_doi_header($headers_test) === false) {
         return false;
@@ -1815,7 +1818,7 @@ function safe_preg_replace(string $regex, string $replace, string $old): string 
     }
     $new = preg_replace($regex, $replace, $old);
     if ($new === null) {
-        return $old;
+        return $old; // @codeCoverageIgnore
     }
     return $new;
 }
@@ -1825,7 +1828,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
     }
     $new = preg_replace_callback($regex, $replace, $old);
     if ($new === null) {
-        return $old;
+        return $old; // @codeCoverageIgnore
     }
     return $new;
 }
