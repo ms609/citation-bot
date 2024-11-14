@@ -35,7 +35,7 @@ class Page {
         $this->construct_modifications_array();
         if (!self::$told_fast) {
             if (!SLOW_MODE) {
-                report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
+                report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode"); // @codeCoverageIgnore
             }
             self::$told_fast = true;
         }
@@ -555,11 +555,11 @@ class Page {
         set_time_limit(120);
 
         if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
-            $this->text = $this->start_text;                                                                    // @codeCoverageIgnore
+            $this->text = $this->start_text;// @codeCoverageIgnoreStart
             if ($this->title !== "") {
                 bot_debug_log($this->title . " page failed");
             }
-            report_error('CITATION_BOT_PLACEHOLDER found after processing');    // @codeCoverageIgnore
+            report_error('CITATION_BOT_PLACEHOLDER found after processing');    // @codeCoverageIgnoreEnd
         }
 
         // we often just fix Journal caps, so must be case sensitive compare
@@ -734,9 +734,10 @@ class Page {
                         $this->lastrevid, $this->read_at)) {
             return true;
         }
+        // @codeCoverageIgnoreStart
         if (TRAVIS) {
             return false;
-        }    // @codeCoverageIgnoreStart
+        }
         sleep(9);    // could be database being locked
         report_info("Trying to write again after waiting");
         $return = $api->write_page($this->title, $this->text,
