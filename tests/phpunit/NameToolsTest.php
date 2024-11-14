@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /*
- * Tests for NameTools.php.
+ * Tests for NameTools.php
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
@@ -245,7 +245,7 @@ final class NameToolsTest extends testBaseClass {
 
     public function testMiscNameTests2(): void {
         $this->assertSame('Aa;xx', format_surname('AA;XX'));
-        $this->assertSame('Aa; Xx', format_surname('AA;XX'));
+        $this->assertSame('Aa; Xx', format_surname('AA; XX'));
     }
 
     public function testSplit(): void {
