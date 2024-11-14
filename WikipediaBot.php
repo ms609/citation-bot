@@ -121,10 +121,10 @@ final class WikipediaBot {
     private function fetch(array $params, int $depth = 1): ?object {
         set_time_limit(120);
         if ($depth > 1) {
-            sleep($depth+2);
+            sleep($depth+2); // @codeCoverageIgnore
         }
         if ($depth > 4) {
-            return null;
+            return null;  // @codeCoverageIgnore
         }
         $params['format'] = 'json';
 
@@ -192,7 +192,7 @@ final class WikipediaBot {
 
         $myPage = self::response2page($response);
         if ($myPage === null) {
-            return false;
+            return false;  // @codeCoverageIgnore
         }
 
         $baseTimeStamp = (string) $myPage->revisions[0]->timestamp;
@@ -234,7 +234,7 @@ final class WikipediaBot {
         $result = $this->fetch($submit_vars);
 
         if (!self::resultsGood($result)) {
-            return false;
+            return false;  // @codeCoverageIgnore
         }
 
         if (HTML_OUTPUT) {
@@ -476,7 +476,7 @@ final class WikipediaBot {
             $response = self::QueryAPI($query);
         }
         if ($response === '') {
-            return false;
+            return false;  // @codeCoverageIgnore
         }
         $response = str_replace(["\r", "\n"], '', $response);  // paranoid
         if (strpos($response, '"invalid"') !== false || // IP Address and similar stuff
