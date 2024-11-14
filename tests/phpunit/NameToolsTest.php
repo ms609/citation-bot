@@ -243,6 +243,11 @@ final class NameToolsTest extends testBaseClass {
         $this->assertFalse(is_initials('    ')); 
     }
 
+    public function testMiscNameTests2(): void {
+        $this->assertSame('Aa;xx', format_surname('AA;XX'););
+        $this->assertSame('Aa; Xx', format_surname('AA;XX'););
+    }
+
     public function testSplit(): void {
         $out = split_authors('Joe,Bob;Jim,Slim');
         $this->assertSame('Joe,Bob', $out[0]);
