@@ -1097,14 +1097,14 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if ($response === '') {
-        return null;
+        return null; // @codeCoverageIgnore
     }
     if (stripos($response, 'Paper not found') !== false) {
-        return false;
+        return false; // @codeCoverageIgnore
     }
     $oa = @json_decode($response);
     if ($oa === false) {
-        return null;
+        return null; // @codeCoverageIgnore
     }
     if (isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         return true;
@@ -1249,7 +1249,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         $http_response_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         if ($http_response_code === 0 || $header_length === 0) {
-            throw new Exception('Size of zero from AdsAbs website');
+            throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
         }
         $header = substr($return, 0, $header_length);
         $body = substr($return, $header_length);
@@ -1523,7 +1523,7 @@ function query_adsabs(string $options): object {
         return (object) ['numFound' => 0];
     }
     if (!PHP_ADSABSAPIKEY) {
-        return (object) ['numFound' => 0];
+        return (object) ['numFound' => 0]; // @codeCoverageIgnore
     }
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                     . ".adsabs.harvard.edu/v1/search/query"
@@ -1556,7 +1556,7 @@ function CrossRefTitle(string $doi): string {
         }
         return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
     } else {
-        sleep(2);    // @codeCoverageIgnore
+        sleep(2);  // @codeCoverageIgnore
         return ''; // @codeCoverageIgnore
     }
 }
