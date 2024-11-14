@@ -967,7 +967,7 @@ final class Template
  public function api_has_used(string $api, array $param): bool
  {
   if (!isset($this->used_by_api[$api])) {
-   report_error("Invalid API: " . $api);
+   report_error("Invalid API: " . $api); // @codeCoverageIgnore
   }
   /** @psalm-suppress all */
   return (bool) count(array_intersect($param, $this->used_by_api[$api]));
@@ -1081,7 +1081,7 @@ final class Template
  {
   // Accepts arrays of strings and string
   if (!$param) {
-   report_error('null passed to blank()');
+   report_error('null passed to blank()'); // @codeCoverageIgnore
   }
   if (empty($this->param)) {
    return true;
@@ -1103,7 +1103,7 @@ final class Template
  {
   // Accepts arrays of strings and string
   if (!$param) {
-   report_error('null passed to blank_other_than_comments()');
+   report_error('null passed to blank_other_than_comments()'); // @codeCoverageIgnore
   }
   if (empty($this->param)) {
    return true;
