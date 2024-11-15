@@ -1753,7 +1753,7 @@ function hdl_works(string $hdl): string|null|false {
         return false;
     }
     if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
-        return null;
+        return null; // @codeCoverageIgnore
     }
     if (isset(HandleCache::$cache_hdl_loc[$hdl])) {
         return HandleCache::$cache_hdl_loc[$hdl];
