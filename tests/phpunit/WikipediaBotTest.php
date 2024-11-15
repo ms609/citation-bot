@@ -63,6 +63,10 @@ require_once __DIR__ . '/../testBaseClass.php';
         $result = WikipediaBot::is_valid_user("David(Owner, Founder, Creator and Lead Developer)"); // Random user who has a name with funky characters
         $this->assertTrue($result);
     }
+    public function testIsValidUserEmpty(): void {
+        $result = WikipediaBot::is_valid_user("");
+        $this->assertFalse($result);
+    }
     public function testIsINValidUser(): void {
         $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017');
         $this->assertFalse($result);
