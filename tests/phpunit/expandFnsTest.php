@@ -182,12 +182,16 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('', tidy_date('4444-10-07'));
     }
     public function testTidyDate7(): void {
-        $this->assertSame('1999-09-0', tidy_date('1999-09-09T22:10:11+08:00'));
-        $this->assertSame('2001-11-1', tidy_date('dafdsafsd    2001-11-11'));
+        $this->assertSame('1999-09-09', tidy_date('1999-09-09T22:10:11+08:00'));
+    }
+    public function testTidyDate7b(): void {
+        $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
     public function testTidyDate8(): void {
-        $this->assertSame('3/27/2000' , tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
-        $this->assertSame('3/27/2000' , tidy_date('dafdsafsd3/27/2000'));
+        $this->assertSame('2000-03-27' , tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
+    }
+    public function testTidyDate8b(): void {
+        $this->assertSame('2000-03-27' , tidy_date('dafdsafsd3/27/2000'));
     }
     
     public function testRemoveComments(): void {
@@ -221,7 +225,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function test_chapters_are_simple(): void {
-        $this->assertSame('Zbcder', titles_simple('Chapter 3 - Zbcder'));
+        $this->assertSame('zbcder', titles_simple('Chapter 3 - Zbcder'));
     }
 
     public function testArrowAreQuotes1(): void {
@@ -330,19 +334,19 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testTrailingNbsp(): void {
-        $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&nbsp;'));
+        $this->assertSame('Dfadsfds ', wikify_external_text('Dfadsfds&nbsp;'));
     }
 
     public function testItal(): void {
-        $this->assertSame("'A'", wikify_external_text('<italics>A</italics>'));
+        $this->assertSame("''A''", wikify_external_text('<italics>A</italics>'));
     }
 
     public function testEm(): void {
-        $this->assertSame("''A''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
+        $this->assertSame("'''A'''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
     }
 
     public function testEmIt(): void {
-        $this->assertSame("'A'", wikify_external_text('<Emphasis Type="Italic">A</Emphasis>'));
+        $this->assertSame("''A''", wikify_external_text('<Emphasis Type="Italic">A</Emphasis>'));
     }
 
     public function testDollarMath(): void {
