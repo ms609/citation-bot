@@ -414,7 +414,7 @@ final class PageTest extends testBaseClass {
     public function testConfer(): void {
         $text = '{{cite conference|work=Yup}}';
         $page = $this->process_page($text);
-        $this->assertSame($test, $page->parsed_text()));
+        $this->assertSame($test, $page->parsed_text());
     }
 
     public function testMagazine(): void {
