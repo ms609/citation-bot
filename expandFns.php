@@ -247,8 +247,8 @@ function is_doi_works(string $doi): ?bool {
         return null;     // @codeCoverageIgnore
     }
     if (stripos($doi, '10.1126/scidip.') === 0) {
-        if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {
-            unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
+        if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {  // https://doi.org/10.1126/scidip.ado5059
+            unset($headers_test['1']); // @codeCoverageIgnore
         }
     }
     if (interpret_doi_header($headers_test) !== false) {
@@ -281,8 +281,8 @@ function interpret_doi_header(array $headers_test): ?bool {
     if (stripos($resp0, '302 Found') !== false || stripos($resp0, 'HTTP/1.1 302') !== false) {
         return true;    // Good
     }
-    if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) {
-        return true; // grumpy
+    if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) { // grumpy
+        return true;  // @codeCoverageIgnore
     }
     if (stripos($resp0, '301 Moved Permanently') !== false || stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
         if (stripos($resp1, '302 Found') !== false || stripos($resp1, 'HTTP/1.1 302') !== false) {
@@ -309,8 +309,8 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
         return (string) $headers_test['location'][0];    // @codeCoverageIgnore
     } elseif (isset($headers_test['location'])) {
         return (string) $headers_test['location'];
-    } elseif (isset($headers_test['Location'])) {
-        return (string) $headers_test['Location'];
+    } elseif (isset($headers_test['Location'])) {        // @codeCoverageIgnore
+        return (string) $headers_test['Location'];       // @codeCoverageIgnore
     } else { // @codeCoverageIgnoreStart
         bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, true)));    // Is this even possible
         return null;
@@ -706,8 +706,8 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
                 $inTitle = $possible;
         } else { // When PHP fails with unicode, try without it
             $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ', $inTitle);  // @codeCoverageIgnore
-            if ($inTitle === null) {
-                return true;
+            if ($inTitle === null) {     // @codeCoverageIgnore
+                return true;             // @codeCoverageIgnore
             }
         }
     }
@@ -1753,7 +1753,7 @@ function hdl_works(string $hdl): string|null|false {
         return false;
     }
     if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
-        return null; // @codeCoverageIgnore
+        return null;
     }
     if (isset(HandleCache::$cache_hdl_loc[$hdl])) {
         return HandleCache::$cache_hdl_loc[$hdl];
@@ -3028,7 +3028,7 @@ function get_headers_array(string $url): false|array {
     } elseif (strpos($url, 'https://hdl.handle.net') === 0) {
         return @get_headers($url, true, $context_insecure_hdl);
     } else {
-        report_error("BAD URL in get_headers_array");
+        report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
     }
 }
 
