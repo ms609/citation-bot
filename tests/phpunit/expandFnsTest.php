@@ -168,6 +168,28 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
     }
 
+    public function testTidyDate5(): void {
+        $this->assertSame('', tidy_date('Invalid'));
+        $this->assertSame('', tidy_date('1/1/0001'));
+        $this->assertSame('', tidy_date('0001-01-01'));
+        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('', tidy_date('19xx'));
+    }
+    public function testTidyDate6(): void {
+        $this->assertSame('', tidy_date('2000 1999-1998'));
+        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('', tidy_date('0011-10-07'));
+        $this->assertSame('', tidy_date('4444-10-07'));
+    }
+    public function testTidyDate7(): void {
+        $this->assertSame('1999-09-0', '1999-09-09T22:10:11+08:00'));
+        $this->assertSame('2001-11-1', 'dafdsafsd    2001-11-11'));
+    }
+    public function testTidyDate8(): void {
+        $this->assertSame('3/27/2000' , '3/27/2000 dafdsafsd dafdsafsd'));
+        $this->assertSame('3/27/2000' , 'dafdsafsd3/27/2000'));
+    }
+    
     public function testRemoveComments(): void {
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
     }
@@ -192,6 +214,14 @@ final class expandFnsTest extends testBaseClass {
     public function test_titles_are_similar_ticks(): void {
         $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
         $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
+    }
+
+    public function test_titles_are_similar_series(): void {
+        $this->assertTrue(titles_are_similar('ABC(clifton, n j ) experimental mol adv ', 'ABC[]exp molecular advances in  '));
+    }
+
+    public function test_chapters_are_simple(): void {
+        $this->assertSame('Zbcder', titles_simple('Chapter 3 - Zbcder'));
     }
 
     public function testArrowAreQuotes1(): void {
@@ -299,6 +329,26 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('Dfadsfds Hoser......', wikify_external_text('Dfadsfds Hoser..... . .'));
     }
 
+    public function testTrailingNbsp(): void {
+        $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&nbsp;'));
+    }
+
+    public function testItal(): void {
+        $this->assertSame("'A'", wikify_external_text('<italics>A</italics>'));
+    }
+
+    public function testEm(): void {
+        $this->assertSame("''A''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
+    }
+
+    public function testEmIt(): void {
+        $this->assertSame("'A'", wikify_external_text('<Emphasis Type="Italic">A</Emphasis>'));
+    }
+
+    public function testDollarMath(): void {
+        $this->assertSame("<math>Abc</math>", wikify_external_text('$$Abs$$'));
+    }
+
     public function testBrackets(): void {
         $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
     }
@@ -389,6 +439,22 @@ final class expandFnsTest extends testBaseClass {
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
+    public function testDOIWorks4(): void {
+        $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
+        $this->assertFalse(doi_works('10.1007/springerreferenc.ado5059'));
+        $this->assertFalse(doi_works('10.1126scidip.ado5059'));
+    }
+
+    public function testHDLworks(): void {
+        $this->assertFalse(doi_works('10.1126fwerw4w4r2342314'));
+        $this->assertFalse(doi_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
+        $this->assertFalse(doi_works('10.112/springerreferenc.ado5059'));
+    }
+
+    public function testConference(): void {
+        $this->assertFalse(conference_doi('10.1007/978-3-662-44777_ch3'));
+    }
+    
     public function testThrottle(): void { // Just runs over the code and basically does nothing
         for ($x = 0; $x <= 25; $x++) {
             $this->assertNull(throttle());
