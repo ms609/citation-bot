@@ -746,4 +746,10 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame($junk, addISBNdashes($junk));
     }
 
+    public function testFixupGoogle(): void {
+        $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
+        $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
+    }
+    
+
 }
