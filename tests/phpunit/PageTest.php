@@ -399,6 +399,24 @@ final class PageTest extends testBaseClass {
         $this->assertTrue((bool) stripos($page->parsed_text(), '978-1-78262-629-9'));
     }
 
+    public function testUrlReferencesWithText18(): void {
+        $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
+        $page = $this->process_page($text);
+        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+    }
+
+    public function testUrlReferencesWithText19(): void {
+        $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
+        $page = $this->process_page($text);
+        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+    }
+
+    public function testConfer(): void {
+        $text = '{{cite conference|work=Yup}}';
+        $page = $this->process_page($text);
+        $this->assertSame($test, $page->parsed_text()));
+    }
+
     public function testMagazine(): void {
         $text = '{{cite magazine|work=Yup}}';
         $page = $this->process_page($text);
