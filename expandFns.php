@@ -556,7 +556,7 @@ function wikify_external_text(string $title): string {
 
     $num_replace = count($replacement);
     for ($i = 0; $i < $num_replace; $i++) {
-        $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
+        $title = str_ireplace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
     }
 
     foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
