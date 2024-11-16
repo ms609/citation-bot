@@ -334,7 +334,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testTrailingNbsp(): void {
-        $this->assertSame('dfadsfds ', wikify_external_text('Dfadsfds&nbsp;'));
+        $this->assertSame('Dfadsfds ', wikify_external_text('Dfadsfds&nbsp;'));
     }
 
     public function testItal(): void {
@@ -350,7 +350,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testDollarMath(): void {
-        $this->assertSame("<math>Abc</math>", wikify_external_text('$$Abs$$'));
+        $this->assertSame("<math>Abs</math>", wikify_external_text('$$Abs$$'));
     }
 
     public function testBrackets(): void {
