@@ -546,4 +546,14 @@ final class PageTest extends testBaseClass {
         $this->assertSame('cite news', $template->wikiname());
     }
 
+    public function testDuplicateStuff(): void {
+        $text = "{{cite journal|chapter-url=https://cnn.com|chapterurl=|accessdate=|access-date=2020-10-10|url=https://cnn2.com}}";
+        $template = $this->process_citation($text);
+        $this->assertSame('https://cnn.com', $template->get2('chapter-url'));
+        $this->assertSame('2020-10-10', $template->get2('access-date'));
+        $this->assertSame('https://cnn2.com', $template->get2('url'));
+        $this->assertNull($template->get2('chapterurl'));
+        $this->assertNull($template->get2('accessdate'));
+    }
+
 }
