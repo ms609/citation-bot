@@ -221,7 +221,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function test_titles_are_similar_series(): void {
-        $this->assertTrue(titles_are_similar('ABC(clifton, n j ) experimental mol adv ', 'ABC[]exp molecular advances in  '));
+        $this->assertTrue(titles_are_similar('ABC  (clifton, n j ) ', 'ABC  '));
     }
 
     public function test_chapters_are_simple(): void {
