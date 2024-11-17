@@ -12618,6 +12618,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.5492/wjccm.v4.i3.251' => true,
     '10.5495/wjcid.v6.i4.61' => true,
     '10.5498/wjp.v12.i9.1127' => true,
+    '10.5500/wjt.v13.i1.10' => true,
     '10.5498/wjp.v4.i4.112' => true,
     '10.5498/wjp.v7.i1.44' => true,
     '10.5498/wjp.v7.i2.77' => true,
