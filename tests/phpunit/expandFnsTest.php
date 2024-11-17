@@ -193,7 +193,7 @@ final class expandFnsTest extends testBaseClass {
     public function testTidyDate8b(): void {
         $this->assertSame('2000-03-27' , tidy_date('dafdsafsd3/27/2000'));
     }
-    public function testTidyDate8b(): void {
+    public function testTidyDate8c(): void {
         $this->assertSame('' , tidy_date('23--'));
     }
     
