@@ -245,7 +245,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertTrue(titles_are_similar('DSFrHdseyJhgdtyhTSFDhge5safdsfasdfa', '��D��S��F��r��H��d��s��e��y��J��h��g��d��t��y��h��T��S��F��D��h��g��e��5��s��a��f��d��s��f��a��s��d��f��a��'));
     }
 
-    public function test_titles_are_similar_junk(): void {
+    public function test_titles_are_similar_junk2(): void {
         $x = 'Eulerian Numbers';
         $this->assertFalse(str_i_same($x, $x));
     }
@@ -794,5 +794,58 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
     }
     
+    public function testTitles10(): void {
+        $junk = "(ab)(cd)";
+        $this->assertSame('(Ab)(Cd)', title_case($junk));
+    }
 
+    public function testTitles11(): void {
+        $junk = "ac's";
+        $this->assertSame("Ac's", title_case($junk));
+    }
+
+    public function testTitles12(): void {
+        $junk = "This Des Doggy Des";
+        $this->assertSame("This des Doggy Des", title_case($junk));
+    }
+
+    public function testTitles13(): void {
+        $junk = "Now and Then";
+        $this->assertSame("Now and Then", title_case($junk));
+    }
+
+    public function testTitleRoman1(): void {
+        $junk = 'Part xvi: Dogs';
+        $this->assertSame('', title_case($junk));
+    }
+
+    public function testTitleRoman2(): void {
+        $junk = 'Part xvi Dogs';
+        $this->assertSame('', title_case($junk));
+    }
+
+    public function testTitleRoman3(): void {
+        $junk = 'Dogs Vii';
+        $this->assertSame('', title_case($junk));
+    }
+
+    public function testTitleRoman4(): void {
+        $junk = 'Vii: Dogs';
+        $this->assertSame('', title_case($junk));
+    }
+
+    public function testTitleProc(): void {
+        $junk = 'This is Proceedings a Dog';
+        $this->assertSame('This is Proceedings A Dog', title_case($junk));
+    }
+
+    public function testTitleVar(): void {
+        $junk = 'This is var. abc';
+        $this->assertSame('This is var. abc', title_case($junk));
+    }
+
+    public function testTitlePPM(): void {
+        $junk = 'This PPM Code';
+        $this->assertSame('This ppm Code', title_case($junk));
+    }
 }
