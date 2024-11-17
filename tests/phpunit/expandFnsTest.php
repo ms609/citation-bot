@@ -152,7 +152,7 @@ final class expandFnsTest extends testBaseClass {
     public function testTidyDate2(): void {
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
-        $this->assertSame('2011'            , tidy_date('05/11/2011 12:52:08'));
+        $this->assertSame('2011'      , tidy_date('05/11/2011 12:52:08'));
         $this->assertSame('2011-11-11', tidy_date('11/11/2011 12:52:08'));
         $this->assertSame('2018-10-21', tidy_date('Date published (2018-10-21'));
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
@@ -193,16 +193,33 @@ final class expandFnsTest extends testBaseClass {
     public function testTidyDate8b(): void {
         $this->assertSame('2000-03-27' , tidy_date('dafdsafsd3/27/2000'));
     }
+    public function testTidyDate8b(): void {
+        $this->assertSame('' , tidy_date('23--'));
+    }
     
     public function testRemoveComments(): void {
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
     }
 
-    public function testJstorInDo(): void {
+    public function testJstorInDoi(): void {
         $template = $this->prepare_citation('{{cite journal|jstor=}}');
         $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code
         check_doi_for_jstor($doi, $template);
-        $this->assertSame('3241423',$template->get2('jstor'));
+        $this->assertSame('3241423', $template->get2('jstor'));
+    }
+
+    public function testJstorInDoi2(): void {
+        $template = $this->prepare_citation('{{cite journal|jstor=3111111}}');
+        $doi = '10.2307/3241423?junk';
+        check_doi_for_jstor($doi, $template);
+        $this->assertSame('3111111', $template->get2('jstor'));
+    }
+
+    public function testJstorInDoi3(): void {
+        $template = $this->prepare_citation('{{cite journal|jstor=3111111}}');
+        $doi = '3241423';
+        check_doi_for_jstor($doi, $template);
+        $this->assertNull($template->get2('jstor'));
     }
 
     public function test_titles_are_dissimilar_LONG(): void {
@@ -222,6 +239,15 @@ final class expandFnsTest extends testBaseClass {
 
     public function test_titles_are_similar_series(): void {
         $this->assertTrue(titles_are_similar('ABC  (clifton, n j ) ', 'ABC  '));
+    }
+
+    public function test_titles_are_similar_junk(): void {
+        $this->assertTrue(titles_are_similar('DSFrHdseyJhgdtyhTSFDhge5safdsfasdfa', '��D��S��F��r��H��d��s��e��y��J��h��g��d��t��y��h��T��S��F��D��h��g��e��5��s��a��f��d��s��f��a��s��d��f��a��'));
+    }
+
+    public function test_titles_are_similar_junk(): void {
+        $x = 'Eulerian Numbers';
+        $this->assertFalse(str_i_same($x, $x));
     }
 
     public function test_chapters_are_simple(): void {
@@ -308,6 +334,11 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('<nowiki>' . $text_math . '</nowiki>',wikify_external_text($text_mml));
     }
 
+    public function testURLInTitle(): void {
+        $text = '[http://dfadfd]';
+        $this->assertSame($text_math, sanitize_string($text));
+    }
+
     public function testTrailingPeriods1(): void {
         $this->assertSame('In the X.Y.', wikify_external_text('In the X.Y.'));
     }
@@ -344,6 +375,10 @@ final class expandFnsTest extends testBaseClass {
 
     public function testEm(): void {
         $this->assertSame("'''A'''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
+    }
+
+    public function testEm2(): void {
+        $this->assertSame("'''A'''", wikify_external_text('<em>A</em>'));
     }
 
     public function testEmIt(): void {
@@ -446,14 +481,17 @@ final class expandFnsTest extends testBaseClass {
 
     public function testDOIWorks4(): void {
         $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
-        $this->assertFalse(doi_works('10.1007/springerreferenc.ado5059'));
+        $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
+        $this->assertFalse(doi_works('123456789/32131423'));
+        $this->assertFalse(doi_works('dfasdfsd/CITATION_BOT_PLACEHOLDER'));
+        $this->assertFalse(doi_works('/dfadsfasf'));
     }
 
     public function testHDLworks(): void {
-        $this->assertFalse(doi_works('10.1126fwerw4w4r2342314'));
-        $this->assertFalse(doi_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
-        $this->assertFalse(doi_works('10.112/springerreferenc.ado5059'));
+        $this->assertFalse(hdl_works('10.1126fwerw4w4r2342314'));
+        $this->assertFalse(hdl_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
+        $this->assertFalse(hdl_works('10.112/springerreference.ado5059'));
     }
 
     public function testConference(): void {
