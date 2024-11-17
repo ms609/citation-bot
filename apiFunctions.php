@@ -298,7 +298,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
                 $the_arxiv_title = $this_template->get('title');
                 $the_arxiv_contribution = $this_template->get('contribution');
                 if ($the_arxiv_contribution !== '') {
-                        $this_template->set('contribution', '');
+                    $this_template->set('contribution', '');
                 }
                 $this_template->set('title', '');
                 expand_by_doi($this_template);
