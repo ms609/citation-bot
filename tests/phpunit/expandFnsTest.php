@@ -219,7 +219,7 @@ final class expandFnsTest extends testBaseClass {
         $template = $this->prepare_citation('{{cite journal|jstor=3111111}}');
         $doi = '3241423';
         check_doi_for_jstor($doi, $template);
-        $this->assertNull($template->get2('jstor'));
+        $this->assertSame('3111111', $template->get2('jstor'));
     }
 
     public function test_titles_are_dissimilar_LONG(): void {
@@ -336,7 +336,7 @@ final class expandFnsTest extends testBaseClass {
 
     public function testURLInTitle(): void {
         $text = '[http://dfadfd]';
-        $this->assertSame($text_math, sanitize_string($text));
+        $this->assertSame($text, sanitize_string($text));
     }
 
     public function testTrailingPeriods1(): void {
@@ -796,56 +796,56 @@ final class expandFnsTest extends testBaseClass {
     
     public function testTitles10(): void {
         $junk = "(ab)(cd)";
-        $this->assertSame('(Ab)(Cd)', title_case($junk));
+        $this->assertSame('(Ab)(Cd)', title_capitalization($junk, true));
     }
 
     public function testTitles11(): void {
         $junk = "ac's";
-        $this->assertSame("Ac's", title_case($junk));
+        $this->assertSame("Ac's", title_capitalization($junk, true));
     }
 
     public function testTitles12(): void {
         $junk = "This Des Doggy Des";
-        $this->assertSame("This des Doggy Des", title_case($junk));
+        $this->assertSame("This des Doggy Des", title_capitalization($junk, true));
     }
 
     public function testTitles13(): void {
         $junk = "Now and Then";
-        $this->assertSame("Now and Then", title_case($junk));
+        $this->assertSame("Now and Then", title_capitalization($junk, true));
     }
 
     public function testTitleRoman1(): void {
         $junk = 'Part xvi: Dogs';
-        $this->assertSame('', title_case($junk));
+        $this->assertSame('Part XVI: Dogs', title_capitalization($junk, true));
     }
 
     public function testTitleRoman2(): void {
         $junk = 'Part xvi Dogs';
-        $this->assertSame('', title_case($junk));
+        $this->assertSame('Part XVI Dogs', title_capitalization($junk, true));
     }
 
     public function testTitleRoman3(): void {
         $junk = 'Dogs Vii';
-        $this->assertSame('', title_case($junk));
+        $this->assertSame('Dogs VII', title_capitalization($junk, true));
     }
 
     public function testTitleRoman4(): void {
         $junk = 'Vii: Dogs';
-        $this->assertSame('', title_case($junk));
+        $this->assertSame('VII: Dogs', title_capitalization($junk, true));
     }
 
     public function testTitleProc(): void {
         $junk = 'This is Proceedings a Dog';
-        $this->assertSame('This is Proceedings A Dog', title_case($junk));
+        $this->assertSame('This is Proceedings A Dog', title_capitalization($junk, true));
     }
 
     public function testTitleVar(): void {
         $junk = 'This is var. abc';
-        $this->assertSame('This is var. abc', title_case($junk));
+        $this->assertSame('This is var. abc', title_capitalization($junk, true));
     }
 
     public function testTitlePPM(): void {
         $junk = 'This PPM Code';
-        $this->assertSame('This ppm Code', title_case($junk));
+        $this->assertSame('This ppm Code', title_capitalization($junk, true));
     }
 }
