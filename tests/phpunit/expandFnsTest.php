@@ -335,6 +335,7 @@ final class expandFnsTest extends testBaseClass {
 
     public function testTrailingNbsp(): void {
         $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&nbsp;'));
+        $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&amp;nbsp;'));
     }
 
     public function testItal(): void {
