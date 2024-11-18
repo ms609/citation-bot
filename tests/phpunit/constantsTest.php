@@ -599,4 +599,10 @@ final class constantsTest extends testBaseClass {
             $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
             $this->assertSame(1, substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
     }
+
+    public function testCurlLimit(): void {
+        $ch = curl_init();
+        $this->assertSame(1, curl_limit_page_size($ch, 1, 134217729));
+        $this->assertSame(0, curl_limit_page_size($ch, 1, 134217728));
+    }
 }
