@@ -848,4 +848,11 @@ final class expandFnsTest extends testBaseClass {
         $junk = 'This PPM Code';
         $this->assertSame('This ppm Code', title_capitalization($junk, true));
     }
+
+    public function testStringEquSer(): void {
+        $s1 = 'advances in anatomy embryology and cell biology';
+        $s2 = 'adv anat embryol cell biol';
+        $this->assertTrue(str_equivalent($s1, $s2)
+    }
+    
 }
