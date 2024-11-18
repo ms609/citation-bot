@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.22045/ibj.2016.01' => true, // Forbid
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2052,15 +2053,13 @@ const NULL_DOI_LIST = [
     '10.21756/cab.v2i02.11117' => true, // login page
     '10.21756/cab.v2i02.11119' => true, // login page
     '10.22024/UniKent/03/fal.658' => true,
-    '10.22045/ibj.2016.01' => true,
+    '10.22045/ibj.2016.01' => true, // Forbid
     '10.22201/cieg.2594066xe.2004.29.1019' => true,
     '10.22201/cieg.2594066xe.2005.32.1225' => true,
     '10.2223/JPED.2083' => true,
     '10.2225/vol8-issue1-fulltext-9' => true, // Forbid
     '10.2225/vol9-issue3-fulltext-15' => true, // Forbid
     '10.2225/vol9-issue3-fulltext-2' => true, // Forbid
-    '10.22270/jddt.v10i1.3865' => true,
-    '10.22270/jddt.v11i4-S.4934' => true,
     '10.22353/mjbs.2004.02.13' => true,
     '10.22353/mjbs.2005.02.02' => true,
     '10.22374/cjgim.v13i3.258' => true,
