@@ -852,7 +852,7 @@ final class expandFnsTest extends testBaseClass {
     public function testStringEquSer(): void {
         $s1 = 'advances in anatomy embryology and cell biology';
         $s2 = 'adv anat embryol cell biol';
-        $this->assertTrue(str_equivalent($s1, $s2)
+        $this->assertTrue(str_equivalent($s1, $s2);
     }
     
 }
