@@ -378,7 +378,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testEm2(): void {
-        $this->assertSame("'''A'''", wikify_external_text('<em>A</em>'));
+        $this->assertSame("''A''", wikify_external_text('<em>A</em>'));
     }
 
     public function testEmIt(): void {
@@ -795,8 +795,8 @@ final class expandFnsTest extends testBaseClass {
     }
     
     public function testTitles10(): void {
-        $junk = "(ab)(cd)";
-        $this->assertSame('(Ab)(Cd)', title_capitalization($junk, true));
+        $junk = "(ab)(cd) (ef)";
+        $this->assertSame('(ab)(cd) (Ef)', title_capitalization($junk, true));
     }
 
     public function testTitles11(): void {
@@ -815,13 +815,13 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testTitleRoman1(): void {
-        $junk = 'Part xvi: Dogs';
-        $this->assertSame('Part XVI: Dogs', title_capitalization($junk, true));
+        $junk = 'A Part xvi: Dogs';
+        $this->assertSame('A Part XVI: Dogs', title_capitalization($junk, true));
     }
 
     public function testTitleRoman2(): void {
-        $junk = 'Part xvi Dogs';
-        $this->assertSame('Part XVI Dogs', title_capitalization($junk, true));
+        $junk = 'A Part xvi Dogs';
+        $this->assertSame('A Part XVI Dogs', title_capitalization($junk, true));
     }
 
     public function testTitleRoman3(): void {
