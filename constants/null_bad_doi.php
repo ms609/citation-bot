@@ -1666,7 +1666,6 @@ const NULL_DOI_LIST = [
     '10.1258/j.jmb.2005.04-49' => true, // Error
     '10.12738/estp.2015.5' => true, // domain for sale
     '10.12744/ijnpt.2017.1.0002-0010' => true,
-    '10.12744/ijnpt.2017.1.0025-0040' => true,
     '10.12785/jhs/20140213' => true,
     '10.12788/ajo.2018.0018' => true,
     '10.12788/j.sder.2015.0160' => true,
