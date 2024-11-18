@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+// @codeCoverageIgnoreStart
 // all new constant files needed listed here
 require_once 'constants/bad_data.php';
 require_once 'constants/capitalization.php';
@@ -13,6 +14,7 @@ require_once 'constants/italics.php';
 require_once 'constants/isbn.php';
 require_once 'constants/null_good_doi.php';
 require_once 'constants/null_bad_doi.php';
+// @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
@@ -49,9 +51,11 @@ const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0): int {
-    if ($down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
+    // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
+    // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
+    if ($down > 134217728) {
          bot_debug_log("Absurdly large curl");
-         return 1;  // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
+         return 1;
     }
     return 0;
 }
