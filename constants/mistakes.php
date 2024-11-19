@@ -557,6 +557,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'issue date' => 'issue-date',
     'issuee' => 'issue',
     'issues' => 'issue',
+    'isue' => 'issue',
     'isuue' => 'issue',
     'itle' => 'title',
     'izdavač' => 'publisher',
