@@ -191,5 +191,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $wb = new WikipediaBot();
         unset($wb);
         WikipediaBot::make_ch();
+        foreach (NULL_DOI_LIST as $doi) {
+            if (rand(1,8) === 5) { // Spread these out to avoid spamming dx.doi.org
+                doi_works($doi);
+            }
+        }
     }
 }
