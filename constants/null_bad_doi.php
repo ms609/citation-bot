@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.7152/bippa.v20i0.11751' => true, // not found
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2235,7 +2236,6 @@ const NULL_DOI_LIST = [
     '10.2509/pnwf.2007.002.003' => true,
     '10.2509/pnwf.2007.002.007' => true,
     '10.25105/Akal.V3i1.9754' => true,
-    '10.25134/erjee.v7i1.1530' => true,
     '10.25249/0375-7536.1980177185' => true,
     '10.25249/0375-7536.1981139146' => true,
     '10.25249/0375-7536.19819197' => true,
@@ -2614,7 +2614,7 @@ const NULL_DOI_LIST = [
     '10.7146/cns.v6i0.122249' => true,
     '10.7146/cns.v6i0.122251' => true,
     '10.7152/bippa.v15i0.11537' => true, // not found
-    '10.7152/bippa.v20i0.11751' => true,
+    '10.7152/bippa.v20i0.11751' => true, // not found
     '10.7177/sg.2014.v9.n4.a10' => true,
     '10.7182/prtr.1.6.1.f04016025hh795up' => true, // Error
     '10.7182/prtr.1.6.3.8145l3u185493182' => true, // Error
