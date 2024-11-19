@@ -609,13 +609,19 @@ final class constantsTest extends testBaseClass {
     public function testDoubleMap(): void {
         $errors = '';
         foreach (COMMON_MISTAKES as $map_me => $mapped) {
-            if (isset(COMMON_MISTAKES[$mapped]) || isset(COMMON_MISTAKES_TOOL[$mapped])) {
-                $errors .= ' re-mapped: ' . $map_me . '    ';
+            if (isset(COMMON_MISTAKES[$mapped])) {
+                $errors .= ' re-mapped1: ' . $map_me . '/' . $mapped . '    ';
+            }
+            if (isset(COMMON_MISTAKES_TOOL[$mapped])) {
+                $errors .= ' re-mapped2: ' . $map_me . '/' . $mapped . '    ';
             }
         }
         foreach (COMMON_MISTAKES_TOOL as $map_me => $mapped) {
-            if (isset(COMMON_MISTAKES[$mapped]) || isset(COMMON_MISTAKES_TOOL[$mapped])) {
-                $errors .= ' re-mapped: ' . $map_me . '    ';
+            if (isset(COMMON_MISTAKES[$mapped])) {
+                $errors .= ' re-mapped3: ' . $map_me . '/' . $mapped . '    ';
+            }
+            if (isset(COMMON_MISTAKES_TOOL[$mapped])) {
+                $errors .= ' re-mapped4: ' . $map_me . '/' . $mapped . '    ';
             }
             if (isset(COMMON_MISTAKES[$map_me])) {
                 $errors .= ' double-mapped: ' . $map_me . '    ';
