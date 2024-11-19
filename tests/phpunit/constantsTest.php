@@ -595,9 +595,9 @@ final class constantsTest extends testBaseClass {
     }
 
     public function testForISBNListUpdates(): void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
-            $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
-            $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
-            $this->assertSame(1, substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
+        $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
+        $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
+        $this->assertSame(1, substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
     }
 
     public function testCurlLimit(): void {
@@ -605,4 +605,15 @@ final class constantsTest extends testBaseClass {
         $this->assertSame(1, curl_limit_page_size($ch, 1, 134217729));
         $this->assertSame(0, curl_limit_page_size($ch, 1, 134217728));
     }
+
+    public function testDoubleMap(): void {
+        $errors = '';
+        foreach (COMMON_MISTAKES as $map_me => $mapped) {
+            if (in_array($mapped, COMMON_MISTAKES) || in_array($mapped, COMMON_MISTAKES_TOOL)) {
+                $errors .= ' re-mapped: ' . $map_me . '    ';
+            }
+        }
+        $this->assertSame('', $errors);
+    }
+  
 }
