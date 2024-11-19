@@ -609,7 +609,7 @@ final class constantsTest extends testBaseClass {
     public function testDoubleMap(): void {
         $errors = '';
         foreach (COMMON_MISTAKES as $map_me => $mapped) {
-            if (in_array($mapped, COMMON_MISTAKES) || in_array($mapped, COMMON_MISTAKES_TOOL)) {
+            if (isset(COMMON_MISTAKES[$mapped]) || isset(COMMON_MISTAKES_TOOL[$mapped])) {
                 $errors .= ' re-mapped: ' . $map_me . '    ';
             }
         }
