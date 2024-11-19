@@ -613,6 +613,14 @@ final class constantsTest extends testBaseClass {
                 $errors .= ' re-mapped: ' . $map_me . '    ';
             }
         }
+        foreach (COMMON_MISTAKES_TOOL as $map_me => $mapped) {
+            if (isset(COMMON_MISTAKES[$mapped]) || isset(COMMON_MISTAKES_TOOL[$mapped])) {
+                $errors .= ' re-mapped: ' . $map_me . '    ';
+            }
+            if (isset(COMMON_MISTAKES[$map_me])) {
+                $errors .= ' double-mapped: ' . $map_me . '    ';
+            }
+        }
         $this->assertSame('', $errors);
     }
   
