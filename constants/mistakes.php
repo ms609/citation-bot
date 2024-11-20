@@ -316,6 +316,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'daze' => 'date',
     'deaadurl' => 'deadurl',
     'deadlink' => 'deadurl',
+    'dead-link' => 'deadurl',
     'deađurl' => 'deadurl',
     'deate' => 'date',
     'dergi' => 'journal',
