@@ -395,7 +395,6 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
     '10.1601/tx.',
     '10.2277/',
     '10.3149/csm.',
-    '10.4435/bspi.',
     '10.5047/meep.' ,
     '10.5353/th_',
 ];
