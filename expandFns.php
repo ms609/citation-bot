@@ -196,6 +196,9 @@ function is_doi_works(string $doi): ?bool {
     if (isset(NULL_DOI_ANNOYING[$doi])) {
         return false;
     }
+    if (preg_match('~^10\.4435\/BSPI\.~i', $doi)) {
+        return false;
+    }
     $registrant = $matches[1];
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 17 August 2024 version is last check
