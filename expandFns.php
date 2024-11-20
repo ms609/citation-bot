@@ -197,7 +197,7 @@ function is_doi_works(string $doi): ?bool {
         return false;
     }
     if (preg_match('~^10\.4435\/BSPI\.~i', $doi)) {
-        return false;
+        return false;  // TODO: old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page
     }
     $registrant = $matches[1];
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
