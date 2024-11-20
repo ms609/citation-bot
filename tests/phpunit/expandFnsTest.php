@@ -563,7 +563,7 @@ final class expandFnsTest extends testBaseClass {
         $changes = "";
         // Deal with super common ones that flood the list
         $this->assertSame("", $changes);
-        foreach (['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'] as $doi) {
+        foreach (['10.4435/BSPI.2018.11', '10.5047/meep.2012.00103.0121', '10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302', '10.2277/0521826179', '10.3149/csm.0302.160'] as $doi) {
             $works = doi_works($doi);
             if ($works === null) {
                 $changes = $changes . "Flagged as null: " . $doi . "             ";
