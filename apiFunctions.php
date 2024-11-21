@@ -460,8 +460,20 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     }
     $unmatched_ids = array_udiff($ids, $matched_ids, 'strcasecmp');
     if (count($unmatched_ids)) {
-        report_warning("No match for bibcode identifier: " . echoable(implode('; ', $unmatched_ids)));  // @codeCoverageIgnore
-        bot_debug_log("No match for bibcode identifier: " . implode('; ', $unmatched_ids));    // @codeCoverageIgnore
+        foreach ($unmatched_ids as $bad_boy) {
+            if (preg_match('~^(\d{4}NatSR....)E(.....)$~i', $bad_boy, $match_bad)) {
+                $good_boy = $match_bad[1] . '.' . $match_bad[2];
+                foreach ($templates as $template) {
+                    if ($template->get('bibcode') === $bad_boy) {
+                        $template->set('bibcode', $good_boy);
+                    }
+                }
+            } else {
+                bot_debug_log("No match for bibcode identifier: " . $bad_boy);
+                report_warning("No match for bibcode identifier: " . $bad_boy);
+            }
+        }
+            
     }
     foreach ($templates as $template) {
         if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
