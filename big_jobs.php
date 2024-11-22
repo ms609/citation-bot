@@ -36,7 +36,7 @@ function big_jobs_we_died($lock_file): void {
 
 function big_jobs_check_overused(int $page_count): void {
     static $lock_file; // Force file handle to stay open
-    if (!HTML_OUTPUT || $page_count < 50) {
+    if (!HTML_OUTPUT || $page_count < 5) {
         return;
     }
     $fn = big_jobs_name();
