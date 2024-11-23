@@ -569,9 +569,9 @@ class Page {
         $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','ite news',      '',            '',              '',             '',             '',             '',               '',              '',              '',             '',               '',              '',              '',              '',                '',               '',               'Cite',  'cite',  'ubscription',          'work'];
         // @codeCoverageIgnoreStart
         if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (stripos($this->title, "draft:") === 0)) { // Backload clean-up
-                $caps_ok = [];
-                $last_first_in   = [];
-                $last_first_out = [];
+            $caps_ok = [];
+            $last_first_in   = [];
+            $last_first_out = [];
         } // @codeCoverageIgnoreEnd
         return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                                     str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
