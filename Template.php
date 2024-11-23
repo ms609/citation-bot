@@ -42,6 +42,7 @@ final class Template
  private bool $mod_dashes = false;
  private bool $mod_names = false;
  private bool $no_initial_doi = false;
+ private book $held_work_done = false;
  /** @var array<array<string>> $used_by_api */
  private array $used_by_api = [
   'adsabs' => [],
@@ -6057,6 +6058,10 @@ final class Template
       } // Grumpy people
       return;
      } elseif (in_array(strtolower($the_param), ARE_WORKS, true)) {
+      if ($this->held_work_done) {
+       return;
+      }
+      $this->held_work_done = true;
       $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
       $this->change_name_to('cite document');
       $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
