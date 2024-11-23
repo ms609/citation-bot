@@ -36,7 +36,7 @@ function bot_debug_log(string $log_this): void {
 
 if (isset($_REQUEST["wiki_base"])){
     $wiki_base = trim((string) $_REQUEST["wiki_base"]);
-    if (!in_array($wiki_base, ['en', 'simple', 'mk', 'mdwiki'], true)) {
+    if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki'], true)) {
         echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
         exit;
     }
