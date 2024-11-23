@@ -36,15 +36,20 @@ function bot_debug_log(string $log_this): void {
 
 if (isset($_REQUEST["wiki_base"])){
     $wiki_base = trim((string) $_REQUEST["wiki_base"]);
-    if (!in_array($wiki_base, ['en', 'simple'], true)) {
+    if (!in_array($wiki_base, ['en', 'simple', 'mk', 'mdwiki'], true)) {
         echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
         exit;
     }
 } else {
     $wiki_base = 'en';
 }
-define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
-define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+if ($wiki_base === 'mdwiki') {
+    define("WIKI_ROOT", 'https://mdwiki.org/w/index.php');
+    define("API_ROOT", 'https://mdwiki.org/w/api.php');
+} else {
+    define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
+    define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+}
 unset($wiki_base);
 
 require_once 'constants.php';
