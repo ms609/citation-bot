@@ -42,7 +42,7 @@ final class Template
  private bool $mod_dashes = false;
  private bool $mod_names = false;
  private bool $no_initial_doi = false;
- private book $held_work_done = false;
+ private bool $held_work_done = false;
  /** @var array<array<string>> $used_by_api */
  private array $used_by_api = [
   'adsabs' => [],
