@@ -102,7 +102,7 @@ final class WikipediaBot {
                 report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'Bad title') !== false) {
                 report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, "The page you specified doesn't exist") !== false) {
+            } elseif (strpos($respone_info, "The page you specified does not exist") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
@@ -292,7 +292,7 @@ final class WikipediaBot {
                            echoable((string) @$result->error->info)));
             return false;
         } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
-            report_error("Write error: We encountered a captcha, so can't be properly logged in.");  // @codeCoverageIgnore
+            report_error("Write error: We encountered a captcha, so the bot cannot be properly logged in.");  // @codeCoverageIgnore
         } elseif (empty($result->edit->result)) { // Includes results === null
             report_warning("Unhandled write error.  Please copy this output and " .
                            "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
@@ -310,7 +310,7 @@ final class WikipediaBot {
     public static function category_members(string $cat): array {
         $list = [];
         $vars = [
-            "cmtitle" => "Category:{$cat}", // Don't urlencode.
+            "cmtitle" => "Category:{$cat}", // Do not urlencode.
             "action" => "query",
             "cmlimit" => "500",
             "list" => "categorymembers",
