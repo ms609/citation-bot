@@ -37,9 +37,9 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 ## Structure
 
 Basic structure of a Citation bot script:
-* define configuration constants
-* require `setup.php`, which will set up the rest of the needed functions
-* use Page functions to fetch/expand/post the page's text
+* the `env.php` that defines configuration constants (you can create it from `env.php.example`)
+* the `setup.php` that sets up the functions needed (usually, you don't need to modify this file)
+* the Page functions to fetch/expand/post the page's text
 
 
 A quick tour of the main files:
