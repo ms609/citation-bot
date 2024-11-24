@@ -213,6 +213,7 @@ const ITALICS_LIST =
     'Poria cocos|' .
     'Emiliania huxleyi|' .
     'Res Publica|' .
+    'Mimulus peregrinus|' .
     'Mixosaurus nordenskioeldii|' .
     'Streptococcus agalactiae|' .
     'Mycoplasma genitalium|' .
@@ -405,6 +406,9 @@ const ITALICS_LIST =
     'Phymatoderma|' .
     'Allopanax|' .
     'Boreopanax|' .
+    'Accipiter|' .
+    'Santacruzodon|' .
+    'Escherichia|' .
     'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
@@ -522,7 +526,7 @@ const CAMEL_CASE = [
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
     'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv', 'WorldMinds',
     'SmartCloud', 'DiCaprio', 'LaNada', 'BioCassava', 'ResFinder',
-    'HyperRhetoric', 'HflXr',
+    'HyperRhetoric', 'HflXr', 'SteamBioAfrica',
 ];
 
 const ITALICS_HARDCODE_IN  = [
