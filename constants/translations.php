@@ -20,18 +20,18 @@ const MK_TRANS = [
 ];
 
 const RU_TRANS = [
-    'Altered' => 'Изменено',
-    'Alter:' => 'Изменить:',
+    'Altered' => 'Изменен',
+    'Alter:' => 'Изменены:',
     'URLs might have been anonymized. ' => 'URL-адреса могли быть анонимизированы. ',
-    'Added' => 'Добавлено',
-    'Add:' => 'Добавить:',
-    'Removed or converted URL. ' => 'Удален или преобразован URL-адрес. ',
+    'Added' => 'Добавлен',
+    'Add:' => 'Добавлены:',
+    'Removed or converted URL. ' => 'URL-адрес удален или преобразован. ',
     'Removed URL that duplicated identifier. ' => 'Удален URL-адрес, который дублировал идентификатор. ',
-    'Removed access-date with no URL. ' => 'Удален адрес доступа без URL-адреса. ',
-    'Changed bare reference to CS1/2. ' => 'Изменена простая ссылка на CS1/2. ',
+    'Removed access-date with no URL. ' => 'Удален access-date без URL-адреса. ',
+    'Changed bare reference to CS1/2. ' => 'Голые ссылка изменены на CS1/2. ',
     'Removed parameters. ' => 'Удалены параметры. ',
     'Some additions/deletions were parameter name changes. ' => 'Некоторые добавления/удаления были изменениями имен параметров. ',
-    'Upgrade ISBN10 to 13. ' => 'Обновить ISBN10 до 13. ',
-    'Removed Template redirect. ' => 'Удален перенаправление шаблона. ',
-    'Misc citation tidying. ' => 'Разное приведение в порядок цитат. ',
+    'Upgrade ISBN10 to 13. ' => 'Обновление ISBN10 до 13. ',
+    'Removed Template redirect. ' => 'Удалены перенаправления на шаблоны. ',
+    'Misc citation tidying. ' => 'Различные исправления источников. ',
 ];
