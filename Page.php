@@ -43,7 +43,7 @@ class Page {
         'Changed bare reference to CS1/2. ' => 'Променета гола референца на CS1/2. ',
         'Removed parameters. ' => 'Отстранети параметри. ',
         'Some additions/deletions were parameter name changes. ' => 'Некои дополнувања/бришења беа промени во името на параметрите. ',
-        'Upgrade ISBN10 to 13. ' => 'Надградете го ISBN10 на 13. '
+        'Upgrade ISBN10 to 13. ' => 'Надградете го ISBN10 на 13. ',
         'Removed Template redirect. ' => 'Отстранет пренасочување на шаблонот. ',
         'Misc citation tidying. ' => 'Средување на различни цитати. ',
     ];
