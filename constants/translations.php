@@ -34,4 +34,10 @@ const RU_TRANS = [
     'Upgrade ISBN10 to 13. ' => 'Обновление ISBN10 до 13. ',
     'Removed Template redirect. ' => 'Удалены перенаправления на шаблоны. ',
     'Misc citation tidying. ' => 'Различные исправления источников. ',
+    'Use this bot]].' => 'Как использовать бота]].',
+    '|Report bugs]]' => '|Сообщить об ошибке]]',
+    'Formatted ' => 'Отформатировано ',
+    '| Suggested by ' => '| Предложено ',
+    '| Linked from ' => '| Ссылки с ',
+    '| [[Category:' => '| [[Категория:',
 ];
