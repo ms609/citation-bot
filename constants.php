@@ -14,6 +14,7 @@ require_once 'constants/italics.php';
 require_once 'constants/isbn.php';
 require_once 'constants/null_good_doi.php';
 require_once 'constants/null_bad_doi.php';
+require_once 'constants/translations.php';
 // @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
