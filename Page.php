@@ -49,7 +49,7 @@ class Page {
     ];
 
     private const RU_TRANS = [
-        'Altered' => 'Изменено',:
+        'Altered' => 'Изменено',
         'Alter:' => 'Изменить:',
         'URLs might have been anonymized. ' => 'URL-адреса могли быть анонимизированы. ',
         'Added' => 'Добавлено',
