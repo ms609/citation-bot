@@ -39,5 +39,5 @@ const RU_TRANS = [
     'Formatted ' => 'Отформатировано ',
     '| Suggested by ' => '| Предложено ',
     '| Linked from ' => '| Ссылки с ',
-    '| [[Category:'| [[Категория:',
+    '| [[Category:' => '| [[Категория:',
 ];
