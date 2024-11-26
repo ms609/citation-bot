@@ -577,7 +577,7 @@ class Page {
                                     str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
     }
 
-    public function edit_summary(): string {
+    public function edit_summary(string $edit_summary_end = ''): string {
         $auto_summary = "";
         $altered_list = $this->modifications["changeonly"];
         if (count($altered_list) !== 0) {
@@ -709,7 +709,7 @@ class Page {
         if (!$auto_summary) {
             $auto_summary = "Misc citation tidying. ";
         }
-        $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
+        $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
         $wiki_base = str_replace(['https://', '/w/index.php', '.wikipedia.org', '.org'], ['', '', '', ''], WIKI_ROOT);
         switch ($wiki_base) {
@@ -747,7 +747,7 @@ class Page {
         $failures[4] = false;
         throttle(); // This is only writing.    Not pages that are left unchanged
         if ($api->write_page($this->title, $this->text,
-                        $this->edit_summary() . $edit_summary_end,
+                        $this->edit_summary($edit_summary_end),
                         $this->lastrevid, $this->read_at)) {
             return true;
         }
@@ -758,7 +758,7 @@ class Page {
         sleep(9);    // could be database being locked
         report_info("Trying to write again after waiting");
         $return = $api->write_page($this->title, $this->text,
-                    $this->edit_summary() . $edit_summary_end,
+                    $this->edit_summary($edit_summary_end),
                     $this->lastrevid, $this->read_at);
         if ($return) {
             return true;
