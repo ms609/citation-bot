@@ -61,8 +61,6 @@ jobs:
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v5.0.7
-      with:
-         file: ./coverage.xml
 
     - name: Look for weird stuff
       if: always()
