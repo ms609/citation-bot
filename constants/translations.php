@@ -37,7 +37,7 @@ const RU_TRANS = [
     'Use this bot]].' => 'Как использовать бота]].',
     '|Report bugs]]' => '|Сообщить об ошибке]]',
     'Formatted ' => 'Отформатировано ',
-    '| Suggested by ' => '| Предложено ',
-    '| Linked from ' => '| Ссылки с ',
-    '| [[Category:' => '| [[Категория:',
+    'Suggested by' => 'Предложено',
+    'Linked from' => 'Ссылки с',
+    '[[Category:' => '[[Категория:',
 ];
