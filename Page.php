@@ -31,6 +31,39 @@ class Page {
     private static bool $told_fast = false;
     public static string $last_title = '';
 
+    private const MK_TRANS = [
+        'Altered' => 'Променет',
+        'Alter:' => 'Промени:',
+        'URLs might have been anonymized. ' => 'УРЛ-адресите можеби биле анонимизирани. ',
+        'Added' => 'Додадено',
+        'Add:' => 'Додај:',
+        'Removed or converted URL. ' => 'Отстранет или конвертиран URL. ',
+        'Removed URL that duplicated identifier. ' => 'Отстранет URL-то дупликат идентификатор. ',
+        'Removed access-date with no URL. ' => 'Отстранет датумот на пристап без URL. ',
+        'Changed bare reference to CS1/2. ' => 'Променета гола референца на CS1/2. ',
+        'Removed parameters. ' => 'Отстранети параметри. ',
+        'Some additions/deletions were parameter name changes. ' => 'Некои дополнувања/бришења беа промени во името на параметрите. ',
+        'Upgrade ISBN10 to 13. ' => 'Надградете го ISBN10 на 13. '
+        'Removed Template redirect. ' => 'Отстранет пренасочување на шаблонот. ',
+        'Misc citation tidying. ' => 'Средување на различни цитати. ',
+    ];
+
+    private const RU_TRANS = [
+        'Altered' => 'Изменено',:
+        'Alter:' => 'Изменить:',
+        'URLs might have been anonymized. ' => 'URL-адреса могли быть анонимизированы. ',
+        'Added' => 'Добавлено',
+        'Add:' => 'Добавить:',
+        'Removed or converted URL. ' => 'Удален или преобразован URL-адрес. ',
+        'Removed URL that duplicated identifier. ' => 'Удален URL-адрес, который дублировал идентификатор. ',
+        'Removed access-date with no URL. ' => 'Удален адрес доступа без URL-адреса. ',
+        'Changed bare reference to CS1/2. ' => 'Изменена простая ссылка на CS1/2. ',
+        'Removed parameters. ' => 'Удалены параметры. ',
+        'Some additions/deletions were parameter name changes. ' => 'Некоторые добавления/удаления были изменениями имен параметров. ',
+        'Upgrade ISBN10 to 13. ' => 'Обновить ISBN10 до 13. ',
+        'Removed Template redirect. ' => 'Удален перенаправление шаблона. ',
+        'Misc citation tidying. ' => 'Разное приведение в порядок цитат. ',
+    ];
     public function __construct() {
         $this->construct_modifications_array();
         if (!self::$told_fast) {
@@ -710,8 +743,25 @@ class Page {
             $auto_summary = "Misc citation tidying. ";
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
-        if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
-            $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);    // @codeCoverageIgnore
+
+        $wiki_base = str_replace(['https://', '/w/index.php', '.wikipedia.org', '.org'], ['', '', '', ''], WIKI_ROOT);
+        switch ($wiki_base) {
+            case 'en':
+            case 'simple':
+            case 'mdwiki':
+                break; // All in English
+            case 'mk':
+                foreach (MK_TRANS as $eng => $not_eng) {
+                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
+                }
+                break; // Macedonian
+            case 'ru':
+                foreach (RU_TRANS as $eng => $not_eng) {
+                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
+                }
+                break; // Russian
+            default:
+                report_error('invalid wiki in edit summary);
         }
         return $auto_summary;
     }
