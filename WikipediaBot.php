@@ -291,7 +291,7 @@ final class WikipediaBot {
                            str_replace(["You ", " have "], ["This bot ", " has "],
                            echoable((string) @$result->error->info)));
             return false;
-        } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
+        } elseif (isset($result->edit->captcha)) {
             report_error("Write error: We encountered a captcha, so the bot cannot be properly logged in.");  // @codeCoverageIgnore
         } elseif (empty($result->edit->result)) { // Includes results === null
             report_warning("Unhandled write error.  Please copy this output and " .
