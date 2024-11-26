@@ -761,7 +761,7 @@ class Page {
                 }
                 break; // Russian
             default:
-                report_error('invalid wiki in edit summary);
+                report_error('invalid wiki in edit summary');
         }
         return $auto_summary;
     }
