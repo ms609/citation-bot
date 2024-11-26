@@ -1347,7 +1347,6 @@ const NULL_DOI_LIST = [
     '10.1063/1.2803618' => true,
     '10.1067/mpd.2000.106225' => true,
     '10.1068/p2952' => true, // domain for sale
-    '10.1071/bt02124' => true,
     '10.1079/IJT200440' => true,
     '10.1079/NRR200131' => true,
     '10.1079/PHN2005768' => true,
