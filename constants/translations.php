@@ -17,12 +17,12 @@ const MK_TRANS = [
     'Upgrade ISBN10 to 13. ' => 'Надградете го ISBN10 на 13. ',
     'Removed Template redirect. ' => 'Отстранет пренасочување на шаблонот. ',
     'Misc citation tidying. ' => 'Средување на различни цитати. ',
-    'Use this bot]].' => 'Use this bot]].',
-    '|Report bugs]]' => '|Report bugs]]',
-    'Formatted ' => 'Formatted ',
-    'Suggested by' => 'Suggested by',
-    'Linked from' => 'Linked from',
-    '[[Category:' =>'[[Category:',
+    'Use this bot]].' => 'Користете го овој софтвер]].',
+    '|Report bugs]]' => '|Пријави грешки]]',
+    'Formatted ' => 'Форматиран ',
+    'Suggested by' => 'Предложено од',
+    'Linked from' => 'Поврзано од',
+    '[[Category:' =>'[[Категорија:',
 ];
 
 const RU_TRANS = [
