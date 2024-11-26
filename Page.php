@@ -577,7 +577,7 @@ class Page {
                                     str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
     }
 
-    public function edit_summary($edit_summary_end = ''): string {
+    public function edit_summary(string $edit_summary_end = ''): string {
         $auto_summary = "";
         $altered_list = $this->modifications["changeonly"];
         if (count($altered_list) !== 0) {
