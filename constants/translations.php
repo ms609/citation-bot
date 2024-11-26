@@ -34,4 +34,11 @@ const RU_TRANS = [
     'Upgrade ISBN10 to 13. ' => 'Обновление ISBN10 до 13. ',
     'Removed Template redirect. ' => 'Удалены перенаправления на шаблоны. ',
     'Misc citation tidying. ' => 'Различные исправления источников. ',
+    'authors {$min_au}-{$max_au}. ' => 'авторы {$min_au}-{$max_au}. ',
+    'editors {$min_ed}-{$max_ed}. ' => 'редакторы {$min_au}-{$max_au}. ',
+    '| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]].  ' => '| [[:en:WP:UCB|Как использовать бота]]. [[:en:WP:DBUG|Сообщить об ошибке]]. ',
+    'Formatted [[:en:WP:ENDASH|dashes]]. ' => 'Отформатировано [[:en:WP:ENDASH|тире]]. ',
+    '| Suggested by ' => '| Предложено ',
+    '| Linked from {$page_name} | #UCB_webform_linked ' => '| Ссылки с {$page_name} | #UCB_webform_linked ',
+    '| [[Category:{$category}]] | #UCB_Category ' => '| [[Категория:{$category}]] | #UCB_Category ',
 ];
