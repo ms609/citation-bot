@@ -710,8 +710,25 @@ class Page {
             $auto_summary = "Misc citation tidying. ";
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
-        if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
-            $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);    // @codeCoverageIgnore
+
+        $wiki_base = str_replace(['https://', '/w/index.php', '.wikipedia.org', '.org'], ['', '', '', ''], WIKI_ROOT);
+        switch ($wiki_base) {
+            case 'en':
+            case 'simple':
+            case 'mdwiki':
+                break; // All in English
+            case 'mk':
+                foreach (MK_TRANS as $eng => $not_eng) {
+                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
+                }
+                break; // Macedonian
+            case 'ru':
+                foreach (RU_TRANS as $eng => $not_eng) {
+                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
+                }
+                break; // Russian
+            default:
+                report_error('invalid wiki in edit summary');
         }
         return $auto_summary;
     }
