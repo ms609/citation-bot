@@ -711,12 +711,11 @@ class Page {
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
-        $wiki_base = str_replace(['https://', '/w/index.php', '.wikipedia.org', '.org'], ['', '', '', ''], WIKI_ROOT);
-        switch ($wiki_base) {
+        switch (WIKI_BASE) {
             case 'en':
             case 'simple':
             case 'mdwiki':
-                break; // All in English
+                break; // English
             case 'mk':
                 foreach (MK_TRANS as $eng => $not_eng) {
                     $auto_summary = str_replace($eng, $not_eng, $auto_summary);
