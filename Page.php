@@ -931,6 +931,9 @@ class Page {
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
         $date_style = DATES_WHATEVER;
+        if (WIKI_BASE === 'mk' || WIKI_BASE === 'ru') {
+            $date_style = DATES_ISO;
+        }
         if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_MDY;
         }
