@@ -1631,6 +1631,8 @@ final class Template
       $value = date('F j, Y', $time);
      } elseif (self::$date_style === DATES_DMY) {
       $value = date('j F Y', $time);
+     } elseif (self::$date_style === DATES_ISO) {
+      $value = date('Y-m-d', $time);
      }
      return $this->add('access-date', $value);
     }
@@ -1648,6 +1650,8 @@ final class Template
       $value = date('F j, Y', $time);
      } elseif (self::$date_style === DATES_DMY) {
       $value = date('j F Y', $time);
+     } elseif (self::$date_style === DATES_ISO) {
+      $value = date('Y-m-d', $time);
      }
      return $this->add('archive-date', $value);
     }
@@ -1684,6 +1688,8 @@ final class Template
         // Probably just got month and year if day=1
         if (self::$date_style === DATES_MDY) {
          $value = date('F j, Y', $time);
+        } elseif (self::$date_style === DATES_ISO) {
+         $value = date('Y-m-d', $time);
         } else {
          // DATES_DMY and make DATES_WHATEVER pretty
          $value = date('j F Y', $time);
@@ -2368,6 +2374,8 @@ final class Template
       $value = date('F j, Y', $time);
      } elseif (self::$date_style === DATES_DMY) {
       $value = date('j F Y', $time);
+     } elseif (self::$date_style === DATES_ISO) {
+      $value = date('Y-m-d', $time);
      }
     }
     if ($this->blank(DOI_BROKEN_ALIASES)) {
@@ -2386,6 +2394,8 @@ final class Template
     if ($the_new > $last_day && $existing < $check_date) {
      if (self::$date_style === DATES_MDY) {
       return $this->add($param_name, date('F j, Y', $last_day));
+     } elseif (self::$date_style === DATES_ISO) {
+      return $this->add($param_name, date('Y-m-d', $last_day));
      } else {
       return $this->add($param_name, date('j F Y', $last_day));
      }
