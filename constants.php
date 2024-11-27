@@ -41,9 +41,12 @@ const DATES_DMY      = 2;
 const DATES_ISO      = 3;
 
 // TODO - these should be ENUM
-const NAME_LIST_STYLE_DEFAULT = 0;
-const NAME_LIST_STYLE_AMP     = 1;
-const NAME_LIST_STYLE_VANC    = 2;
+enum VancStyle
+{
+    case NAME_LIST_STYLE_DEFAULT;
+    case NAME_LIST_STYLE_AMP;
+    case NAME_LIST_STYLE_VANC;
+}
 
 const COMMONUSERNAME   = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
