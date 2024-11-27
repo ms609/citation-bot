@@ -923,7 +923,7 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertNull($template->get2('archive-date'));
         Template::$date_style = DATES_ISO;
         $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
-        $this->assertSame('2019-01-20', $template->get2('archive-date'));
+        $this->assertSame('2010-01-20', $template->get2('archive-date'));
     }
 
     public function testIssuesOnly(): void {
