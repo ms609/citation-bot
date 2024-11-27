@@ -22,7 +22,7 @@ final class Template
  public const TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
  /** @var array<Template> $all_templates */
  public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
- public static DateStyle:: $date_style = DateStyle::DATES_WHATEVER;
+ public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
  public static int $name_list_style = NAME_LIST_STYLE_DEFAULT;
  /** @psalm-suppress PropertyNotSetInConstructor */
  private string $rawtext; // Must start out as unset
