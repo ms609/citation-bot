@@ -28,6 +28,9 @@ function bot_debug_log(string $log_this): void {
     @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
     if (function_exists('echoable')) {
         // Avoid making a new huge string, so do not combine
+        if (defined(WIKI_BASE) && WIKI_BASE !== 'en') {
+            file_put_contents('CodeCoverage', WIKI_BASE . ' :: ', FILE_APPEND);
+        }
         file_put_contents('CodeCoverage', echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: ", FILE_APPEND);
         file_put_contents('CodeCoverage', $log_this, FILE_APPEND);
         file_put_contents('CodeCoverage', "\n", FILE_APPEND);
