@@ -23,7 +23,7 @@ final class Template
  /** @var array<Template> $all_templates */
  public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
  public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
- public static int $name_list_style = NAME_LIST_STYLE_DEFAULT;
+ public static VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
  /** @psalm-suppress PropertyNotSetInConstructor */
  private string $rawtext; // Must start out as unset
  public string $last_searched_doi = '';
@@ -3793,6 +3793,9 @@ final class Template
 
  public function clean_google_books(): void
  {
+  if (!in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'])) { // TODO - support other countries
+   return;
+  }
   foreach (ALL_URL_TYPES as $url_type) {
    if ($this->has($url_type)) {
     $url = $this->get($url_type);
@@ -4848,7 +4851,7 @@ final class Template
 
  private function join_params(): string
  {
-  if (self::$name_list_style === NAME_LIST_STYLE_VANC && !$this->had_initial_author() && !$this->had_initial_editor) {
+  if (self::$name_list_style === VancStyle::NAME_LIST_STYLE_VANC && !$this->had_initial_author() && !$this->had_initial_editor) {
    $vanc_attribs = ['vauthors', 'veditors'];
    $vanc_fa = ['first', 'editor-first'];
    $vanc_la = ['last', 'editor-last'];

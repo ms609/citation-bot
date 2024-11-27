@@ -23,7 +23,7 @@ class Page {
     /** @var array<bool|array<string>> $modifications */
     private array $modifications = [];
     private DateStyle $date_style = DateStyle::DATES_WHATEVER;
-    private int $name_list_style = NAME_LIST_STYLE_DEFAULT;
+    private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
     private string $read_at = '';
     private string $start_text = '';
     private int $lastrevid = 0;
@@ -529,7 +529,7 @@ class Page {
         // remove circular memory reference that makes garbage collection harder and reset
         Template::$all_templates = [];
         Template::$date_style = DateStyle::DATES_WHATEVER;
-        Template::$name_list_style = NAME_LIST_STYLE_DEFAULT;
+        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
         unset($all_templates);
 
         $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
@@ -907,25 +907,21 @@ class Page {
 
         // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
-        $name_list_style = null;
+        $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
         $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
         if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
             $s = strtolower($matches[1]); // We ONLY deal with first one
             if ($s === 'default' || $s === 'none') {
-                $name_list_style = NAME_LIST_STYLE_DEFAULT;
+                $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
             } elseif ($s === 'vanc') {
-                $name_list_style = NAME_LIST_STYLE_VANC;
+                $name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
             } elseif ($s === 'amp') {
-                $name_list_style =  NAME_LIST_STYLE_AMP;
+                $name_list_style = VancStyle::NAME_LIST_STYLE_AMP;
             } elseif ($s !== '') {
                 bot_debug_log('Weird name-list-style found: ' . echoable($s));
             }
         }
-        if ($name_list_style !== null) {
-            $this->name_list_style = $name_list_style;
-        } else {
-            $this->name_list_style = NAME_LIST_STYLE_DEFAULT;
-        }
+        $this->name_list_style = $name_list_style;
     }
 
     private function set_date_pattern(): void {
