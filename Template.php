@@ -3793,6 +3793,9 @@ final class Template
 
  public function clean_google_books(): void
  {
+  if (!in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'])) { // TODO - support other countries
+   return;
+  }
   foreach (ALL_URL_TYPES as $url_type) {
    if ($this->has($url_type)) {
     $url = $this->get($url_type);
