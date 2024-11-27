@@ -33,10 +33,14 @@ const DOT_DECODE = ["/", "[", "{", "}", "]", "<", ">", ";", "(", ")"];
 const DOI_URL_ENCODE = ["%23", "%3C", "%3E"];
 const DOI_URL_DECODE = ["#", "<", ">"];
 
+// TODO - these are used in too many places, and the if/case statements should be wrapped up in a single function
+// TODO - these should be ENUM
 const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
+const DATES_ISO      = 3;
 
+// TODO - these should be ENUM
 const NAME_LIST_STYLE_DEFAULT = 0;
 const NAME_LIST_STYLE_AMP     = 1;
 const NAME_LIST_STYLE_VANC    = 2;

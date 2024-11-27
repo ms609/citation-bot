@@ -711,12 +711,11 @@ class Page {
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
-        $wiki_base = str_replace(['https://', '/w/index.php', '.wikipedia.org', '.org'], ['', '', '', ''], WIKI_ROOT);
-        switch ($wiki_base) {
+        switch (WIKI_BASE) {
             case 'en':
             case 'simple':
             case 'mdwiki':
-                break; // All in English
+                break; // English
             case 'mk':
                 foreach (MK_TRANS as $eng => $not_eng) {
                     $auto_summary = str_replace($eng, $not_eng, $auto_summary);
@@ -932,6 +931,9 @@ class Page {
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
         $date_style = DATES_WHATEVER;
+        if (WIKI_BASE === 'mk' || WIKI_BASE === 'ru') {
+            $date_style = DATES_ISO;
+        }
         if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DATES_MDY;
         }
