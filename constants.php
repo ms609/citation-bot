@@ -35,10 +35,10 @@ const DOI_URL_DECODE = ["#", "<", ">"];
 
 // TODO - these are used in too many places, and the if/case statements should be wrapped up in a single function
 enum DateStyle {
- DATES_WHATEVER;
- DATES_MDY;
- DATES_DMY;
- DATES_ISO;
+    case DATES_WHATEVER;
+    case DATES_MDY;
+    case DATES_DMY;
+    case DATES_ISO;
 }
 
 // TODO - these should be ENUM
