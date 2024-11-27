@@ -47,13 +47,14 @@ if (isset($_REQUEST["wiki_base"])){
     $wiki_base = 'en';
 }
 if ($wiki_base === 'mdwiki') {
-    define("WIKI_ROOT", 'https://mdwiki.org/w/index.php');
-    define("API_ROOT", 'https://mdwiki.org/w/api.php');
+    define('WIKI_ROOT', 'https://mdwiki.org/w/index.php');
+    define('API_ROOT', 'https://mdwiki.org/w/api.php');
     define('EDIT_AS_USER', true); // TODO - does this work?
 } else {
-    define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
-    define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+    define('WIKI_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
+    define('API_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
 }
+define('WIKI_BASE', $wiki_base);
 unset($wiki_base);
 
 require_once 'constants.php';
