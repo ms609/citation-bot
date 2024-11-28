@@ -9404,14 +9404,22 @@ final class Template
  }
 
  private static function localize_dates(int $time): string {
-  if (self::$date_style === DateStyle::DATES_MDY) {
-   $value = date('F j, Y', $time);
-  } elseif (self::$date_style === DateStyle::DATES_DMY) {
-   $value = date('j F Y', $time);
-  } elseif (self::$date_style === DateStyle::DATES_ISO) {
-   $value = date('Y-m-d', $time);
-  } else {
-   $value = date('j F Y', $time);
+  $style = self::$date_style;
+  switch($style) {
+   case DateStyle::DATES_WHATEVER:
+    $value = date('j F Y', $time);
+    break;
+   case DateStyle::DATES_MDY:
+    $value = date('F j, Y', $time);
+    break;
+   case DateStyle::DATES_DMY:
+    $value = date('j F Y', $time);
+    break;
+   case  DateStyle::DATES_ISO:
+    $value = date('Y-m-d', $time);
+    break;
+   default:
+    report_error('invalid date style');
   }
   return $value;
  }
