@@ -41,7 +41,6 @@ enum DateStyle {
     case DATES_ISO;
 }
 
-// TODO - these should be ENUM
 enum VancStyle
 {
     case NAME_LIST_STYLE_DEFAULT;
