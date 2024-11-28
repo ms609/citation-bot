@@ -48,7 +48,7 @@ final class TemplateTest extends testBaseClass {
     public function testLotsOfFloaters6(): void {
         $text_in = "{{cite journal| url=http://www.cnn.com | accessdate 24 Nov 2020}}";
         $prepared = $this->prepare_citation($text_in);
-        $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
+        $this->assertSame('24 November 2020', $prepared->get2('access-date'));
         $this->assertNull($prepared->get2('accessdate'));
     }
 
@@ -3506,17 +3506,17 @@ EP - 999 }}';
     public function testAddArchiveDate(): void {
         $text = '{{Cite web|archive-url=https://web.archive.org/web/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
         $template = $this->prepare_citation($text);
-        $this->assertSame('2019-05-21', $template->get2('archive-date'));
+        $this->assertSame('21 May 2019', $template->get2('archive-date'));
 
         $text = '{{Cite web|archive-url=https://wayback.archive-it.org/4554/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
         $template = $this->prepare_citation($text);
-        $this->assertSame('2019-05-21', $template->get2('archive-date'));
+        $this->assertSame('21 May 2019', $template->get2('archive-date'));
     }
 
     public function testAddWebCiteDate(): void {
         $text = '{{Cite web|archive-url=https://www.webcitation.org/6klgx4ZPE}}';
         $template = $this->prepare_citation($text);
-        $this->assertSame('2016-09-24', $template->get2('archive-date'));
+        $this->assertSame('24 September 2016', $template->get2('archive-date'));
     }
 
     public function testJunkData(): void {
