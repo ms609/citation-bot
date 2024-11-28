@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.24321/0019.5138.201906' => true, // domain for sale
     '10.32439/ps.v4i4-5.266-276' => true, // Casino
     '10.4103/0973-1229.77436' => true, // cloud error
     '10.1001/archinte.158.17.1949' => true, // 404
@@ -2216,7 +2217,7 @@ const NULL_DOI_LIST = [
     '10.24247/ijelaug20179' => true,
     '10.24247/ijelfeb20183' => true,
     '10.24265/iggp.2018.v5n2.05' => true,
-    '10.24321/0019.5138.201906' => true,
+    '10.24321/0019.5138.201906' => true, // domain for sale
     '10.24411/1991-5497-2019-10226' => true,
     '10.24411/2658-3569-2020-10008' => true,
     '10.24411/9999-022A-2020-00014' => true,
