@@ -22,7 +22,7 @@ class Page {
     protected string $title = '';
     /** @var array<bool|array<string>> $modifications */
     private array $modifications = [];
-    private int $date_style = DATES_WHATEVER;
+    private DateStyle $date_style = DateStyle::DATES_WHATEVER;
     private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
     private string $read_at = '';
     private string $start_text = '';
@@ -528,7 +528,7 @@ class Page {
         $this->replace_object($all_templates);
         // remove circular memory reference that makes garbage collection harder and reset
         Template::$all_templates = [];
-        Template::$date_style = DATES_WHATEVER;
+        Template::$date_style = DateStyle::DATES_WHATEVER;
         Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
         unset($all_templates);
 
@@ -926,27 +926,27 @@ class Page {
 
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
-        $date_style = DATES_WHATEVER;
+        $date_style = DateStyle::DATES_WHATEVER;
         if (WIKI_BASE === 'mk' || WIKI_BASE === 'ru') {
-            $date_style = DATES_ISO;
+            $date_style = DateStyle::DATES_ISO;
         }
         if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_MDY;
+            $date_style = DateStyle::DATES_MDY;
         }
         if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_MDY;
+            $date_style =DateStyle:: DATES_MDY;
         }
         if (preg_match('~\{\{mdy[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_MDY;
+            $date_style = DateStyle::DATES_MDY;
         }
         if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_DMY;
+            $date_style = DateStyle::DATES_DMY;
         }
         if (preg_match('~\{\{Use dmy[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_DMY;
+            $date_style = DateStyle::DATES_DMY;
         }
         if (preg_match('~\{\{dmy[^\}\{]*\}\}~i', $this->text)) {
-            $date_style = DATES_DMY;
+            $date_style = DateStyle::DATES_DMY;
         }
         $this->date_style = $date_style;
     }

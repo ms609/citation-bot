@@ -109,7 +109,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
         $this->flush();
         Template::$all_templates = [];
-        Template::$date_style = DATES_WHATEVER;
+        Template::$date_style = DateStyle::DATES_WHATEVER;
         $this->assertSame('{{', mb_substr($text, 0, 2));
         $this->assertSame('}}', mb_substr($text, -2));
         $template = new Template();
@@ -134,7 +134,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     protected function process_page(string $text): TestPage { // Only used if more than just a citation template
         $this->flush();
         Template::$all_templates = [];
-        Template::$date_style = DATES_WHATEVER;
+        Template::$date_style = DateStyle::DATES_WHATEVER;
         $page = new TestPage();
         $page->parse_text($text);
         $page->expand_text();

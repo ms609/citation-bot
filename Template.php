@@ -22,7 +22,7 @@ final class Template
  public const TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
  /** @var array<Template> $all_templates */
  public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
- public static int $date_style = DATES_WHATEVER;
+ public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
  public static VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
  /** @psalm-suppress PropertyNotSetInConstructor */
  private string $rawtext; // Must start out as unset
@@ -1627,11 +1627,11 @@ final class Template
     $time = strtotime($value);
     if ($time) {
      // should come in cleaned up
-     if (self::$date_style === DATES_MDY) {
+     if (self::$date_style === DateStyle::DATES_MDY) {
       $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DATES_DMY) {
+     } elseif (self::$date_style === DateStyle::DATES_DMY) {
       $value = date('j F Y', $time);
-     } elseif (self::$date_style === DATES_ISO) {
+     } elseif (self::$date_style === DateStyle::DATES_ISO) {
       $value = date('Y-m-d', $time);
      }
      return $this->add('access-date', $value);
@@ -1646,11 +1646,11 @@ final class Template
     $time = strtotime($value);
     if ($time) {
      // should come in cleaned up
-     if (self::$date_style === DATES_MDY) {
+     if (self::$date_style === DateStyle::DATES_MDY) {
       $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DATES_DMY) {
+     } elseif (self::$date_style === DateStyle::DATES_DMY) {
       $value = date('j F Y', $time);
-     } elseif (self::$date_style === DATES_ISO) {
+     } elseif (self::$date_style === DateStyle::DATES_ISO) {
       $value = date('Y-m-d', $time);
      }
      return $this->add('archive-date', $value);
@@ -1681,17 +1681,17 @@ final class Template
      if ((int) $time > $almost_today && (int) $time < $the_future) {
       return false;  // Reject bad data
      }
-     if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+     if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
       if ($time) {
        $day = date('d', $time);
        if ($day !== '01') {
         // Probably just got month and year if day=1
-        if (self::$date_style === DATES_MDY) {
+        if (self::$date_style === DateStyle::DATES_MDY) {
          $value = date('F j, Y', $time);
-        } elseif (self::$date_style === DATES_ISO) {
+        } elseif (self::$date_style === DateStyle::DATES_ISO) {
          $value = date('Y-m-d', $time);
         } else {
-         // DATES_DMY and make DATES_WHATEVER pretty
+         // DateStyle::DATES_DMY and make DateStyle::DATES_WHATEVER pretty
          $value = date('j F Y', $time);
         }
        }
@@ -2370,11 +2370,11 @@ final class Template
     $time = strtotime($value);
     if ($time) {
      // paranoid
-     if (self::$date_style === DATES_MDY) {
+     if (self::$date_style === DateStyle::DATES_MDY) {
       $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DATES_DMY) {
+     } elseif (self::$date_style === DateStyle::DATES_DMY) {
       $value = date('j F Y', $time);
-     } elseif (self::$date_style === DATES_ISO) {
+     } elseif (self::$date_style === DateStyle::DATES_ISO) {
       $value = date('Y-m-d', $time);
      }
     }
@@ -2392,9 +2392,9 @@ final class Template
     $check_date = $last_day - 126000;
     // @codeCoverageIgnoreStart
     if ($the_new > $last_day && $existing < $check_date) {
-     if (self::$date_style === DATES_MDY) {
+     if (self::$date_style === DateStyle::DATES_MDY) {
       return $this->add($param_name, date('F j, Y', $last_day));
-     } elseif (self::$date_style === DATES_ISO) {
+     } elseif (self::$date_style === DateStyle::DATES_ISO) {
       return $this->add($param_name, date('Y-m-d', $last_day));
      } else {
       return $this->add($param_name, date('j F Y', $last_day));
