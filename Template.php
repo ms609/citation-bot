@@ -1626,7 +1626,7 @@ final class Template
     }
     $time = strtotime($value);
     if ($time) { // should come in cleaned up
-     $value = self::localize_dates($time)
+     $value = self::localize_dates($time);
      return $this->add('access-date', $value);
     }
     return false;
