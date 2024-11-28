@@ -4778,6 +4778,7 @@ final class Template
     $p->param = preg_replace('~author(\d+)-(la|fir)st~', "$2st$1", $p->param);
     $p->param = preg_replace('~surname\-?_?(\d+)~', "last$1", $p->param);
     $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
+    $p->param = str_replace(["\n", "\r"], [" ", " "], $p->param);
 
     // Check the parameter list to find a likely replacement
     $shortest = -1.0;
