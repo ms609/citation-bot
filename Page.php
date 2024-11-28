@@ -934,7 +934,7 @@ class Page {
             $date_style = DateStyle::DATES_MDY;
         }
         if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i', $this->text)) {
-            $date_style =DateStyle:: DATES_MDY;
+            $date_style = DateStyle::DATES_MDY;
         }
         if (preg_match('~\{\{mdy[^\}\{]*\}\}~i', $this->text)) {
             $date_style = DateStyle::DATES_MDY;
