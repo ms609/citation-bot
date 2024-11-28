@@ -3465,8 +3465,8 @@ final class Template
      $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
      break;
     default:
-     if (isset($ris_part[1])) {
-      report_minor_error("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1]))); // @codeCoverageIgnore
+     if (isset($ris_part[1])) { // After logging this for several years, nothing of value ever found
+      report_info("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1]))); // @codeCoverageIgnore
      }
    }
    unset($ris_part[0]);
