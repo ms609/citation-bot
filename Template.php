@@ -9419,6 +9419,7 @@ final class Template
     $value = date('Y-m-d', $time);
     break;
    default:
+    $value = '';
     report_error('invalid date style');
   }
   return $value;
