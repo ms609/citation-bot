@@ -1625,15 +1625,8 @@ final class Template
      return false;
     }
     $time = strtotime($value);
-    if ($time) {
-     // should come in cleaned up
-     if (self::$date_style === DateStyle::DATES_MDY) {
-      $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_DMY) {
-      $value = date('j F Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_ISO) {
-      $value = date('Y-m-d', $time);
-     }
+    if ($time) { // should come in cleaned up
+     $value = self::localize_dates($time)
      return $this->add('access-date', $value);
     }
     return false;
@@ -1644,15 +1637,8 @@ final class Template
      return false;
     }
     $time = strtotime($value);
-    if ($time) {
-     // should come in cleaned up
-     if (self::$date_style === DateStyle::DATES_MDY) {
-      $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_DMY) {
-      $value = date('j F Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_ISO) {
-      $value = date('Y-m-d', $time);
-     }
+    if ($time) { // should come in cleaned up
+     $value = self::localize_dates($time);
      return $this->add('archive-date', $value);
     }
     return false;
@@ -1684,16 +1670,8 @@ final class Template
      if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
       if ($time) {
        $day = date('d', $time);
-       if ($day !== '01') {
-        // Probably just got month and year if day=1
-        if (self::$date_style === DateStyle::DATES_MDY) {
-         $value = date('F j, Y', $time);
-        } elseif (self::$date_style === DateStyle::DATES_ISO) {
-         $value = date('Y-m-d', $time);
-        } else {
-         // DateStyle::DATES_DMY and make DateStyle::DATES_WHATEVER pretty
-         $value = date('j F Y', $time);
-        }
+       if ($day !== '01') { // Probably just got month and year if day=1
+        $value = self::localize_dates($time);
        }
       }
      }
@@ -2368,15 +2346,8 @@ final class Template
      }
     }
     $time = strtotime($value);
-    if ($time) {
-     // paranoid
-     if (self::$date_style === DateStyle::DATES_MDY) {
-      $value = date('F j, Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_DMY) {
-      $value = date('j F Y', $time);
-     } elseif (self::$date_style === DateStyle::DATES_ISO) {
-      $value = date('Y-m-d', $time);
-     }
+    if ($time) { // paranoid
+     $value = self::localize_dates($time);
     }
     if ($this->blank(DOI_BROKEN_ALIASES)) {
      return $this->add($param_name, $value);
@@ -2392,13 +2363,8 @@ final class Template
     $check_date = $last_day - 126000;
     // @codeCoverageIgnoreStart
     if ($the_new > $last_day && $existing < $check_date) {
-     if (self::$date_style === DateStyle::DATES_MDY) {
-      return $this->add($param_name, date('F j, Y', $last_day));
-     } elseif (self::$date_style === DateStyle::DATES_ISO) {
-      return $this->add($param_name, date('Y-m-d', $last_day));
-     } else {
-      return $this->add($param_name, date('j F Y', $last_day));
-     }
+     $last_day = self::localize_dates($last_day);
+     return $this->add($param_name, $last_day);
     }
     // @codeCoverageIgnoreEnd
     return false;
@@ -9434,5 +9400,18 @@ final class Template
   } else {
    $this->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
   }
+ }
+
+ private static function localize_dates(int $time): string {
+  if (self::$date_style === DateStyle::DATES_MDY) {
+   $value = date('F j, Y', $time);
+  } elseif (self::$date_style === DateStyle::DATES_DMY) {
+   $value = date('j F Y', $time);
+  } elseif (self::$date_style === DateStyle::DATES_ISO) {
+   $value = date('Y-m-d', $time);
+  } else {
+   $value = date('j F Y', $time);
+  }
+  return $value;
  }
 }
