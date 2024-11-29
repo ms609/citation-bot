@@ -5528,8 +5528,10 @@ final class Template
      if (!$doi) {
       return;
      }
-     if ($this->wikiname() === 'cite journal' && stripos($doi, '10.2307/j.') === 0) {
-      $this->change_name_to('cite book');
+     if ($this->wikiname() === 'cite journal') {
+      if(stripos($doi, '10.2307/j.') === 0 || preg_match('~^10\.\d+/\d+\.ch\d+$~', $doi)) {
+       $this->change_name_to('cite book');
+      }
      }
      if (preg_match('~^(10\.[^\/]+\/)\/(.+)$~', $doi, $matches)) {
       $try = $matches[1] . $matches[2];
