@@ -626,7 +626,7 @@ final class constantsTest extends testBaseClass {
             if (!isset($all_real[$mappedp]) && $mappedp !== 's#cid') {
                 $errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
             }
-            if (isset($all_dead[$mappedp] || isset($all_dead[$mapped])) {
+            if (isset($all_dead[$mappedp] || isset($all_dead[$mapped]))) {
                 $errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
             }
         }
