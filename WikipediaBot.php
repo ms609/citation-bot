@@ -104,6 +104,8 @@ final class WikipediaBot {
                 report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, "The page you specified does not exist") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
+            } elseif (strpos($respone_info, "The page you specified doesn") !== false) {
+                report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore  
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
                 bot_debug_log($err_string); // Good to know about about these things
