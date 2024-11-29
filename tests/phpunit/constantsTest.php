@@ -609,25 +609,29 @@ final class constantsTest extends testBaseClass {
     public function testDoubleMap(): void {
         $errors = '';
         $all_maps = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL);
+        $all_real = PARAMETER_LIST;
+        $all_dead = DEAD_PARAMETERS;
+        $com_err = COMMON_MISTAKES;
+        $com_err_tool = COMMON_MISTAKES_TOOL;
         foreach ($all_maps as $map_me => $mapped) {
             if (isset($all_maps[$mapped])) {
                 $errors .= ' re-mapped: ' . $map_me . '/' . $mapped . '    ';
             }
-            if (isset(DEAD_PARAMETERS[$mapped])) {
-                $errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
+            if (trim($mapped) !== $mapped || trim($map_me) !== $map_me) {
+                $errors .= ' extra white space: ' . $map_me . '/' . $mapped . '    ';
             }
             // Number replaced with pound
             $mappedp = preg_replace('~\d+~', '#', $mapped);
             $mappedp = preg_replace('~##+~', '#', $mappedp);
-            if (!isset(PARAMETER_LIST[$mappedp]) && $mapped !== 's2cid') {
+            if (!isset($all_real[$mappedp]) && $mappedp !== 's#cid') {
                 $errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
             }
-            if (isset(DEAD_PARAMETERS[$mappedp])) {
+            if (isset($all_dead[$mappedp] || isset($all_dead[$mapped])) {
                 $errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
             }
         }
-        foreach (COMMON_MISTAKES_TOOL as $map_me) {
-            if (isset(COMMON_MISTAKES[$map_me])) {
+        foreach ($com_err_tool as $map_me) {
+            if (isset($com_err[$map_me])) {
                 $errors .= ' double-mapped: ' . $map_me . '    ';
             }
         }
