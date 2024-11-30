@@ -23,7 +23,7 @@ use MediaWiki\OAuthClient\Token;
 // The two ways we leave this script
 function death_time(string $err): never {
     unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . $err . '</main></body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>', $err, '</main></body></html>';
     exit;
 }
 

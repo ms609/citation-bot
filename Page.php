@@ -844,18 +844,26 @@ class Page {
         }
 
         if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
+            gc_collect_cycles();
+            if (TRAVIS) {
+                report_error("Critical Error on page: " . echoable($this->title));
+            }
             // @codeCoverageIgnoreStart
             $this->page_error = true;
             report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
             if ($class === "Template") {
-                echo "<p><h3>\n\n Theadfdsfdsfa following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters, or unclosed comment)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
+                if (WIKI_BASE === 'mk') {
+                    $err1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
+                    $err2 = 'Ако тоа не е проблемот, тогаш стартувајте ја единствената страница со &prce=1 додадена на URL-то за да го промените моторот за парсирање';
+                } elseif (WIKI_BASE === 'ru') {
+                    $err1 = 'Следующий текст может помочь вам выяснить, где находится ошибка на странице (ищите одинокие символы { и } или незакрытый комментарий)';
+                    $err2 = 'Если проблема не в этом, то запустите отдельную страницу с &prce=1, добавленным к URL, чтобы изменить механизм синтаксического анализа.';
+                } else {
+                    $err1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
+                    $err2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
+                }
+                echo '<p><h3>', $err1, '</h3><h4>', $err2, '</h4></p><p>', echoable($text), '</p>';
             }
-            if (TRAVIS) {
-                report_error("Critical Error on page: " . echoable($this->title));
-            } else {
-                report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
-            }
-            gc_collect_cycles();
             // @codeCoverageIgnoreEnd
         }
         $this->text = $text;
