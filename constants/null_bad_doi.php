@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.12975/rastmd.2014.02.01.00020' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
@@ -1760,7 +1761,7 @@ const NULL_DOI_LIST = [
     '10.12795/pixelbit.2015.i46.08' => true,
     '10.12871/00039829201814' => true,
     '10.12970/2311-1755.2015.03.02.2' => true, // spam
-    '10.12975/rastmd.2014.02.01.00020' => true,
+    '10.12975/rastmd.2014.02.01.00020' => true, // 404
     '10.1300/J161v03n02_13' => true, // landing page
     '10.1308/003588405X71054' => true, // page not found
     '10.13102/neod.31.3' => true,
