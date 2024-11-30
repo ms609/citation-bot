@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -417,7 +418,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
-    '10.1001/archderm.134.11.1484' => true,
+    '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
     '10.1006/jfbi.2002.1914' => true, // not found
@@ -2453,7 +2454,6 @@ const NULL_DOI_LIST = [
     '10.32466/eufv-rel2022.9.709' => true,
     '10.32743/2658-6509.2019.3.4.96' => true,
     '10.32945/atr4215.2020' => true, // hyjacked
-    '10.33021/ideas.v1i2.3428' => true,
     '10.3310/nihrevidence_62528' => true,
     '10.33171/dtcfjournal.2019.59.2.8' => true,
     '10.33172/jp.v3i3.236' => true,
@@ -2468,7 +2468,6 @@ const NULL_DOI_LIST = [
     '10.3421/32412xxxxxxx' => true, // test suite bogus
     '10.35305/lt.v10i0.155' => true,
     '10.35370/bjost.2019.1.1-01' => true,
-    '10.36019/9780813598505-005' => true,
     '10.36076/ppj.2018.5.E573' => true,
     '10.36251/josi.128' => true,
     '10.36251/josi.136' => true,
@@ -2576,7 +2575,6 @@ const NULL_DOI_LIST = [
     '10.4103/ijds.ijds_96_16' => true,
     '10.4103/jdmimsu.jdmimsu_184_20' => true,
     '10.4103/jhrr.jhrr_125_16' => true, // cloud error
-    '10.4135/9781412939591.n1263' => true,
     '10.4159/harvard.9780674492608.c21' => true, // publisher main page
     '10.4169/002557010X529752' => true,
     '10.4169/002557010x529752' => true,
