@@ -862,7 +862,7 @@ class Page {
                     $err1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
                     $err2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
                 }
-                echo "<p><h3>${err1}</h3><h4>${err2}</h4></p><p>" . echoable($text) . "</p>";
+                echo "<p><h3>${err1}</h3><h4>${err2}</h4></p><p>", echoable($text), "</p>";
             }
             // @codeCoverageIgnoreEnd
         }
