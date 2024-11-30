@@ -609,10 +609,7 @@ final class constantsTest extends testBaseClass {
     public function testDoubleMap(): void {
         $errors = '';
         $all_maps = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL);
-        $all_real = PARAMETER_LIST;
-        $all_dead = DEAD_PARAMETERS;
-        $com_err = COMMON_MISTAKES;
-        $com_err_tool = COMMON_MISTAKES_TOOL;
+        $okay_to_be_bad = ['coauthors', 'deadurl', 'lay-date', 'lay-source', 'lay-url', 'month', 'authors'];  // We upgrade dead paramters to better dead parameters
         foreach ($all_maps as $map_me => $mapped) {
             if (isset($all_maps[$mapped])) {
                 $errors .= ' re-mapped: ' . $map_me . '/' . $mapped . '    ';
@@ -623,15 +620,20 @@ final class constantsTest extends testBaseClass {
             // Number replaced with pound
             $mappedp = preg_replace('~\d+~', '#', $mapped);
             $mappedp = preg_replace('~##+~', '#', $mappedp);
-            if (!isset($all_real[$mappedp]) && $mappedp !== 's#cid') {
-                $errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
+            if ($mappedp === 's#cid') {
+            	$mappedp = 's2cid';
             }
-            if (isset($all_dead[$mappedp]) || isset($all_dead[$mapped])) {
-                $errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
+            if (!in_array($mapped, $okay_to_be_bad)) {
+            	if (!in_array($mappedp, PARAMETER_LIST)) {
+                	$errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
+            	}
+            	if (in_array($mappedp, DEAD_PARAMETERS) || in_array($mapped, DEAD_PARAMETERS)) {
+                	$errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
+            	}
             }
         }
-        foreach ($com_err_tool as $map_me) {
-            if (isset($com_err[$map_me])) {
+        foreach (COMMON_MISTAKES_TOOL as $map_me) {
+            if (isset(COMMON_MISTAKES[$map_me])) {
                 $errors .= ' double-mapped: ' . $map_me . '    ';
             }
         }
