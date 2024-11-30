@@ -273,7 +273,7 @@ function interpret_doi_header(array $headers_test): ?bool {
     /** @psalm-suppress InvalidArrayOffset */
     $resp2 = (string) @$headers_test['2'];
 
-    if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
+    if (stripos($resp0 . $resp1, '404 Not Found') !== false || stripos($resp0 . $resp1, 'HTTP/1.1 404') !== false) {
         return false; // Bad
     }
     if (stripos($resp0, '302 Found') !== false || stripos($resp0, 'HTTP/1.1 302') !== false) {
