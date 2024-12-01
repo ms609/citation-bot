@@ -268,6 +268,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'citazione' => 'quote',
     'città' => 'location',
     'city' => 'location',
+    'medförfattare' => 'coauthors',
     'co-author' => 'coauthors',
     'co-authors' => 'coauthors',
     'coauther' => 'coauthors',
