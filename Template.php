@@ -4968,7 +4968,7 @@ final class Template
    } else {
     $invoke = '';
    }
-   preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+   preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
    if (substr($this->name, 0, 1) === 'c') {
     $this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
    } else {
