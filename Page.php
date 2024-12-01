@@ -556,11 +556,12 @@ class Page {
         set_time_limit(120);
 
         if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
-            $this->text = $this->start_text;// @codeCoverageIgnoreStart
+            echo '<p>', echoable($this->text), '</p>'; // @codeCoverageIgnoreStart
+            $this->text = $this->start_text;
             if ($this->title !== "") {
                 bot_debug_log($this->title . " page failed");
             }
-            report_error('CITATION_BOT_PLACEHOLDER found after processing');    // @codeCoverageIgnoreEnd
+            report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnoreEnd
         }
 
         // we often just fix Journal caps, so must be case sensitive compare
