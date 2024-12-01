@@ -273,7 +273,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
     /** @psalm-suppress InvalidArrayOffset */
     $resp2 = (string) @$headers_test['2'];
 
-    if (strpos($resp0, '302') !== false && strpos($resp1, '301') !== false && strpos($resp1, '404') !== false) {
+    if (strpos($resp0, '302') !== false && strpos($resp1, '301') !== false && strpos($resp2, '404') !== false) {
         if (isset(NULL_DOI_LIST[$doi])) {
             return false;
         }
