@@ -835,6 +835,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'primero1' => 'first1',
     'primero2' => 'first2',
     'primero3' => 'first3',
+    'printer' => 'publisher',
     'pristupdatum' => 'access-date',
     'pub;isher' => 'publisher',
     'pubblicazione' => 'magazine',
