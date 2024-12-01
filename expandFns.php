@@ -249,8 +249,8 @@ function is_doi_works(string $doi): ?bool {
             unset($headers_test['1']); // @codeCoverageIgnore
         }
     }
-    if (interpret_doi_header($headers_test) !== false) {
-        return interpret_doi_header($headers_test);
+    if (interpret_doi_header($headers_test, $doi) !== false) {
+        return interpret_doi_header($headers_test, $doi);
     }
     // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
     $headers_test = get_headers_array($url);
@@ -258,11 +258,11 @@ function is_doi_works(string $doi): ?bool {
     if ($headers_test === false) {
         return false;
     }
-    return (bool) interpret_doi_header($headers_test);
+    return (bool) interpret_doi_header($headers_test, $doi);
 }
 
 /** @param array<string|array<string>> $headers_test */
-function interpret_doi_header(array $headers_test): ?bool {
+function interpret_doi_header(array $headers_test, string $doi): ?bool {
     if (empty($headers_test['Location']) && empty($headers_test['location'])) {
         return false; // leads nowhere
     }
@@ -273,6 +273,15 @@ function interpret_doi_header(array $headers_test): ?bool {
     /** @psalm-suppress InvalidArrayOffset */
     $resp2 = (string) @$headers_test['2'];
 
+    if (strpos($resp0, '302') !== false && strpos($resp1, '301') !== false && strpos($resp1, '404') !== false) {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;
+        }
+        bot_debug_log('Got weird stuff for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));  // @codeCoverageIgnoreEnd
+    }
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
     }
@@ -1806,10 +1815,10 @@ function is_hdl_works(string $hdl): string|null|false {
     if ($headers_test === false) { // most likely bad
         return null; // @codeCoverageIgnore
     }
-    if (interpret_doi_header($headers_test) === null) {
+    if (interpret_doi_header($headers_test, $hdl) === null) {
         return null; // @codeCoverageIgnore
     }
-    if (interpret_doi_header($headers_test) === false) {
+    if (interpret_doi_header($headers_test, $hdl) === false) {
         return false;
     }
     return get_loc_from_hdl_header($headers_test);
