@@ -8129,7 +8129,7 @@ final class Template
     $this->forget('journal');
    }
    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) && $this->has('title') && $this->wikiname() !== 'cite encyclopedia' && $this->wikiname() !== 'cite encyclopaedia') {
-    preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+    preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
     if (substr($this->name, 0, 1) === 'c') {
      $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
     } else {
@@ -8144,7 +8144,7 @@ final class Template
     $this->forget('dictionary');
    }
    if (preg_match('~^10\.1093/~', $this->get('doi')) && $this->has('title') && ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') && $this->blank(WORK_ALIASES) && $this->blank('url')) {
-    preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+    preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
     if ($this->has('chapter')) {
      if (substr($this->name, 0, 1) === 'c') {
       $this->name = $spacing[1] . 'cite book' . $spacing[2];
@@ -8837,7 +8837,7 @@ final class Template
        $this->rename('website', 'work', $tmp);
       }
      }
-     preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+     preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
      if (substr($this->name, 0, 1) === 'c') {
       $this->name = $spacing[1] . 'cite document' . $spacing[2];
      } else {
