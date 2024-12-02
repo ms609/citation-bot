@@ -78,7 +78,7 @@ class Page {
 
         if (!isset($details->title)) {
             report_warning("Could not even get the page title.");   // @codeCoverageIgnore
-            return false;                                                                                   // @codeCoverageIgnore
+            return false;                                           // @codeCoverageIgnore
         }
 
         if (!empty($details->protection)) {
@@ -87,7 +87,7 @@ class Page {
             foreach ($the_protections as $protects) {
                 if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
                     $the_level = (string) $protects->level;
-                    if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], true)) {
+                    if (in_array($the_level, ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"], true)) {
                         // We are good
                     } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
                         report_warning("Page is protected.");
@@ -106,8 +106,8 @@ class Page {
         $this->text = WikipediaBot::GetAPage($title);
 
         if ($this->text === '') {
-            report_warning('Page '   . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
-            return false;                                                                                                                                                   // @codeCoverageIgnore
+            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
+            return false;                                                                                                                                    // @codeCoverageIgnore
         }
         $this->start_text = $this->text;
         $this->set_date_pattern();
