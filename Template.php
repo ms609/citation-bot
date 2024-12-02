@@ -78,15 +78,14 @@ final class Template
   }
   $this->initial_name = $this->name;
   // Clean up outdated redirects
-  if (preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
-   // Use non-greedy RegEx
-   $trim_name = trim($this->name);
-  } else {
+  if (!preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
    bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
    $trim_name = $this->name;
    $spacing = [];
    $spacing[1] = '';
    $spacing[2] = ''; // @codeCoverageIgnoreEnd
+  } else {
+   $trim_name = trim($this->name);
   }
   if (strpos($trim_name, "_") !== false) {
    $tmp_name = str_replace("_", " ", $trim_name);
@@ -4968,7 +4967,12 @@ final class Template
    } else {
     $invoke = '';
    }
-   preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
+   if (!preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
+    bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
+    $spacing = [];
+    $spacing[1] = '';
+    $spacing[2] = ''; // @codeCoverageIgnoreEnd
+   }
    if (substr($this->name, 0, 1) === 'c') {
     $this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
    } else {
@@ -8129,7 +8133,12 @@ final class Template
     $this->forget('journal');
    }
    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) && $this->has('title') && $this->wikiname() !== 'cite encyclopedia' && $this->wikiname() !== 'cite encyclopaedia') {
-    preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
+    if (!preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
+     bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
+     $spacing = [];
+     $spacing[1] = '';
+     $spacing[2] = ''; // @codeCoverageIgnoreEnd
+    }
     if (substr($this->name, 0, 1) === 'c') {
      $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
     } else {
@@ -8144,7 +8153,12 @@ final class Template
     $this->forget('dictionary');
    }
    if (preg_match('~^10\.1093/~', $this->get('doi')) && $this->has('title') && ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') && $this->blank(WORK_ALIASES) && $this->blank('url')) {
-    preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
+    if (!preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
+     bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
+     $spacing = [];
+     $spacing[1] = '';
+     $spacing[2] = ''; // @codeCoverageIgnoreEnd
+    }
     if ($this->has('chapter')) {
      if (substr($this->name, 0, 1) === 'c') {
       $this->name = $spacing[1] . 'cite book' . $spacing[2];
@@ -8837,7 +8851,12 @@ final class Template
        $this->rename('website', 'work', $tmp);
       }
      }
-     preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing);
+     if (!preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) {
+      bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
+      $spacing = [];
+      $spacing[1] = '';
+      $spacing[2] = ''; // @codeCoverageIgnoreEnd
+     }
      if (substr($this->name, 0, 1) === 'c') {
       $this->name = $spacing[1] . 'cite document' . $spacing[2];
      } else {
