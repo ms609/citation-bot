@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
-    '10.1186/s12862-015-0575-y' => true, // page not found
     '10.2471/BLT.07.043489' => true, // 404
     '10.2471/BLT.09.011209' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
@@ -427,7 +426,6 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
     '10.11865/zs.201615' => true,
-    '10.1186/s12862-015-0575-y' => true, // page not found
     '10.2471/BLT.07.043489' => true, // 404
     '10.2471/BLT.09.011209' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
