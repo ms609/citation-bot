@@ -8817,6 +8817,9 @@ final class Template
  }
  private function forgetter(string $par, bool $echo_forgetting): void
  {
+  if ($par === 'doi-broken-date' && $this->has('doi-broken-date')) {
+   bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
+  }
   // Do not call this function directly
   if (!$this->blank($par)) {
    // do not remove all this other stuff if blank
