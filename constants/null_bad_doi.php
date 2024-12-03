@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.4103/0973-1229.58825' => true,
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
     '10.1001/jama.229.4.462' => true, // 404
