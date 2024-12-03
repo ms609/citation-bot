@@ -2349,6 +2349,7 @@ final class Template
      $value = self::localize_dates($time);
     }
     if ($this->blank(DOI_BROKEN_ALIASES)) {
+     bot_debug_log("Marking bad HDL: " . $this->get('doi'));
      return $this->add($param_name, $value);
     }
     $existing = strtotime($this->get('doi-broken-date'));
