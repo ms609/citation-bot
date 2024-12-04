@@ -288,7 +288,8 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
             return true;
         }
-        bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));  // @codeCoverageIgnoreEnd
+        bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
+        return null; // @codeCoverageIgnoreEnd
     }
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
