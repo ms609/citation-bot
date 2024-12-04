@@ -2349,7 +2349,9 @@ final class Template
      $value = self::localize_dates($time);
     }
     if ($this->blank(DOI_BROKEN_ALIASES)) {
-     bot_debug_log("Marking bad HDL: " . $this->get('doi'));
+     if (!isset(NULL_DOI_LIST[$this->get('doi')])) {
+      bot_debug_log("Marking bad HDL: " . $this->get('doi'));
+     }
      return $this->add($param_name, $value);
     }
     $existing = strtotime($this->get('doi-broken-date'));
@@ -8818,8 +8820,8 @@ final class Template
  }
  private function forgetter(string $par, bool $echo_forgetting): void
  {
-  if ($par === 'doi-broken-date' && $this->has('doi-broken-date')) {
-   bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
+  if ($par === 'doi-broken-date' && $this->has('doi-broken-date') && !isset(NULL_DOI_BUT_GOOD[$this->get('doi')])) {
+    bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
   }
   // Do not call this function directly
   if (!$this->blank($par)) {
