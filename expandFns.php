@@ -104,13 +104,13 @@ function doi_works(string $doi): ?bool {
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$doi] = true;
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
-            bot_debug_log('Got bad for good HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));
+            bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
         }
         return false;
     }
     HandleCache::$cache_good[$doi] = true;
     if (isset(NULL_DOI_LIST[$doi])) {
-        bot_debug_log('Got good for bad HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));
+        bot_debug_log('Got good for bad HDL: ' . echoable_doi($doi));
     }
     return true;
 }
@@ -158,7 +158,7 @@ function is_doi_active(string $doi): ?bool {
     if ($response_code === 404) { // @codeCoverageIgnoreStart
         return false;
     }
-    $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
+    $err = "CrossRef server error loading headers for DOI " . echoable_doi($doi) . " : " . echoable((string) $response_code);
     bot_debug_log($err);
     report_warning($err);
     return null;                  // @codeCoverageIgnoreEnd
@@ -244,7 +244,7 @@ function is_doi_works(string $doi): ?bool {
             return true;     // @codeCoverageIgnoreStart
         }
         $headers_test = get_headers_array($url);
-        bot_debug_log('Got null for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));     // @codeCoverageIgnoreEnd
+        bot_debug_log('Got null for HDL: ' . echoable_doi($doi));     // @codeCoverageIgnoreEnd
     }
     if ($headers_test === false) {
         $headers_test = get_headers_array($url);     // @codeCoverageIgnore
@@ -288,7 +288,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
             return true;
         }
-        bot_debug_log('Got weird stuff for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));  // @codeCoverageIgnoreEnd
+        bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));  // @codeCoverageIgnoreEnd
     }
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
@@ -3314,4 +3314,8 @@ function string_is_book_series(string $str): bool {
     $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
     $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
+}
+
+function echoable_doi(string $doi): string {
+    return str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi));
 }
