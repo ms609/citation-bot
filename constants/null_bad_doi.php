@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.29103/mspr.v3i2.8005' => true, // landing page
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
@@ -2697,7 +2698,7 @@ const NULL_DOI_LIST = [
     '10.29054/apmc/2008.621' => true,
     '10.29078/rp.v1i23.220' => true, // malware
     '10.29103/aaj.v6i2.6866' => true, // gone - requires login, and has bad certificate
-    '10.29103/mspr.v3i2.8005' => true,
+    '10.29103/mspr.v3i2.8005' => true, // landing page
     '10.29145/2018/llr/040101' => true,
     '10.29252/ijrm.14.12.729' => true,
     '10.29300/disastra.v3i2.4455' => true,
@@ -3125,8 +3126,6 @@ const NULL_DOI_LIST = [
     '10.5798/diclemedj.0921.2015.01.0520' => true,
     '10.5812/ircmj.79992' => true,
     '10.5812/ircmj.9588' => true,
-    '10.5850/JKSCT.2015.39.1.121' => true,
-    '10.5850/jksct.2015.39.1.121' => true,
     '10.5869/fc.2013.v19.103' => true,
     '10.5888/pcd11.140341' => true,
     '10.59287/siibyc.688' => true, // domain for sale
