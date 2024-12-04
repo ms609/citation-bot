@@ -450,7 +450,6 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
-    '10.3138/anth-2019-0004' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
@@ -2765,7 +2764,7 @@ const NULL_DOI_LIST = [
     '10.31377/chr.v24i0.429' => true,
     '10.31377/chr.v33i0.92' => true,
     '10.31377/HAW.V17I0.67' => true,
-    '10.3138/anth-2019-0004' => true,
+    '10.3138/anth-2019-0004' => true, // 404
     '10.31418/2177-2770.2021.v13.n.35.p242-259' => true,
     '10.31421/IJHS/12/1/622' => true,
     '10.3149/fth.0303.201' => true,
