@@ -103,9 +103,15 @@ function doi_works(string $doi): ?bool {
     }
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$doi] = true;
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            bot_debug_log('Got bad for good HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));
+        }
         return false;
     }
     HandleCache::$cache_good[$doi] = true;
+    if (isset(NULL_DOI_LIST[$doi])) {
+        bot_debug_log('Got good for bad HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi)));
+    }
     return true;
 }
 
@@ -128,7 +134,9 @@ function is_doi_active(string $doi): ?bool {
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         sleep(4);                                                             // @codeCoverageIgnoreStart
-        if ($response_code === 429) sleep(4);  // WE are getting blocked
+        if ($response_code === 429) {
+            sleep(4);  // WE are getting blocked
+        }
         $return = bot_curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
