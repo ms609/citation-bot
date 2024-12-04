@@ -104,6 +104,9 @@ function doi_works(string $doi): ?bool {
     if ($works === false) {
         HandleCache::$cache_hdl_bad[$doi] = true;
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            if (strpos($doi, '10.1175/') === 0) { // TODO - just do them all and no longer even try????
+                return true;
+            }
             bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
         }
         return false;
