@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1182/blood.V82.12.3648.bloodjournal82123648' => true, // not found
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
     '10.1001/archinte.158.17.1949' => true, // 404
@@ -1919,7 +1920,7 @@ const NULL_DOI_LIST = [
     '10.1180/minmag.1998.62A.2.204' => true,
     '10.1180/minmag.1998.62A.2.234' => true,
     '10.1182/asheducation-2005.1.1' => true, // not found
-    '10.1182/blood.V82.12.3648.bloodjournal82123648' => true,
+    '10.1182/blood.V82.12.3648.bloodjournal82123648' => true, // not found
     '10.1186/s12862-015-0575-y' => true, // page not found
     '10.1186/s12862-015-0579-7' => true,
     '10.1186/s12863-015-0293-x' => true,
