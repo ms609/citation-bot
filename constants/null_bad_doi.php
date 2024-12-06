@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.3170/2008-8-18315' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -689,6 +690,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.3170/2008-8-18315' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
