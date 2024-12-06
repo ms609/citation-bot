@@ -686,6 +686,10 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1017/s0021911800112653' => true,
+    '10.1186/s12863-015-0203-2' => true,
+    '10.1558/cam.v8i1.67' => true,
+    '10.33182/ml.v12i3.283' => true,
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
