@@ -683,7 +683,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
     '10.3149/csm.',
     '10.5047/meep.' ,
     '10.5353/th_',
-    '10.18814/epiiug/',
+    '10.18814/epiiugs',
 ];
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
