@@ -683,6 +683,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
     '10.3149/csm.',
     '10.5047/meep.' ,
     '10.5353/th_',
+    '10.18814/epiiug/',
 ];
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
@@ -2586,32 +2587,6 @@ const NULL_DOI_LIST = [
     '10.18809/jbms.2016.0105' => true, // hijacked domain
     '10.18809/jbms.2016.0108' => true, // hijacked domain
     '10.18809/jbms.2017.0101' => true, // hijacked domain
-    '10.18814/epiiugs/1985/v8i2/005' => true,
-    '10.18814/epiiugs/1997/v20i1/004' => true,
-    '10.18814/epiiugs/1997/v20i3/003' => true,
-    '10.18814/epiiugs/1999/v22i3/007' => true,
-    '10.18814/epiiugs/1999/v22i3/012' => true,
-    '10.18814/epiiugs/2002/v25i1/003' => true,
-    '10.18814/epiiugs/2004/v27i1/003' => true,
-    '10.18814/epiiugs/2005/v28i2/003' => true,
-    '10.18814/epiiugs/2005/v28i2/004' => true,
-    '10.18814/epiiugs/2006/v29i1/001' => true,
-    '10.18814/epiiugs/2006/v29i2/003' => true,
-    '10.18814/epiiugs/2006/v29i4/004' => true,
-    '10.18814/epiiugs/2007/v30i4/002' => true,
-    '10.18814/epiiugs/2007/v30i4/003' => true,
-    '10.18814/epiiugs/2008/v31i1/022' => true,
-    '10.18814/epiiugs/2009/v32i1/004' => true,
-    '10.18814/epiiugs/2009/v32i2/003' => true,
-    '10.18814/epiiugs/2009/v32i4/001' => true,
-    '10.18814/epiiugs/2010/v33i4/002' => true,
-    '10.18814/epiiugs/2011/v34i1/008' => true,
-    '10.18814/epiiugs/2011/v34i3/005' => true,
-    '10.18814/epiiugs/2011/v34i4/002' => true,
-    '10.18814/epiiugs/2012/v35i1/028' => true,
-    '10.18814/epiiugs/2013/v36i3/001' => true,
-    '10.18814/epiiugs/2016/v39i3/99741' => true,
-    '10.18814/epiiugs/2017/v40i2/017020' => true,
     '10.18821/0023-2149-2016-94-11-875-880' => true,
     '10.18821/0023-2149-2016-94-2-154-160' => true,
     '10.18845/rc.v31i43.6279' => true,
