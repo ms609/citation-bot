@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1111/j.1502-3931.1983.tb01139.x' => true, // 404
     '10.1558/cam.v8i1.67' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
@@ -688,6 +689,15 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1111/j.1502-3931.1983.tb01139.x' => true, // 404
+    '10.1017/S0003480099007794' => true,
+    '10.18809/jbms.2017.0106' => true,
+    '10.18809/jbms.2017.0116' => true,
+    '10.2307/20159631' => true,
+    '10.2307/439669' => true,
+    '10.5731/pdajpst.2011.00765' => true,
+    '10.5731/pdajpst.2012.00891' => true,
+    '10.7326/M19-3007' => true,
     '10.1017/s0021911800112653' => true,
     '10.1186/s12863-015-0203-2' => true,
     '10.1558/cam.v8i1.67' => true, // 404
