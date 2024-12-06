@@ -575,14 +575,14 @@ final class expandFnsTest extends testBaseClass {
 
     public function testHostIsGoneDOIHosts(): void {
         $changes = "";
-        // Deal with super common ones that flood the list
+        // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAB
         $this->assertSame("", $changes);
-        foreach (['10.5047/meep.2012.00103.0121', '10.5353/th_b3198302', '10.2277/0521826179', '10.3149/csm.0302.160'] as $doi) {
+        foreach (['10.5047/meep.2012.00103.0121', '10.5353/th_b3198302', '10.2277/0521826179', '10.3149/csm.0302.160', '10.18814/epiiugs/1997/v20i3/003'] as $doi) {
             $works = doi_works($doi);
             if ($works === null) {
-                $changes = $changes . "Flagged as null: " . $doi . "             ";
+                $changes = $changes . "MEGA Flagged as null: " . $doi . "             ";
             } elseif ($works === true) {
-                $changes = $changes . "Flagged as good: " . $doi . "             ";
+                $changes = $changes . "MEGA Flagged as good: " . $doi . "             ";
             }
         }
         $this->assertSame("", $changes);
