@@ -12270,6 +12270,7 @@ const ARE_MANY_THINGS = [
     'audible',
     'staats und universitätsbibliothek bremen',
     'brema.suub.uni-bremen.de',
+    'usdakotawar.org',
 ]; // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = [
     'the economist',
