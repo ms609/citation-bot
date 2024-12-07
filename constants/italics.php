@@ -122,6 +122,7 @@ const ITALICS_LIST =
     'Mycoplasma pneumoniae|' .
     'Paradisaea Raggiana|' .
     'Rothia mucilaginosa|' .
+    'Mitragyna speciosain|' .
     'Brachiosaurus altithorax|' .
     'Saccharomyces cerevisiae|' .
     'Plutella xylostella|' .
