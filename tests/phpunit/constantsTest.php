@@ -565,8 +565,10 @@ final class constantsTest extends testBaseClass {
             }
             $tem = 'Template:' . $convert[1];
             $tem = str_replace(' ', '_', $tem);
-            if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
-                $errors = $errors . '   In now a redirect:' . $convert[1];
+            if (WikipediaBot::is_redirect($tem) !== 0 &&
+                $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
+                $tem !== 'Template:Lccn' && $tem !== 'Template:lccn') { // We remove one layer of re-direct
+                $errors = $errors . '   Is now a redirect:' . $convert[1];
             }
         }
         $this->assertSame("", $errors); // We want a list of all of them
