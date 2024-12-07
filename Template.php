@@ -1152,6 +1152,13 @@ final class Template
   if ($param_name === '') {
    report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
   }
+  // Clean up things we get from floaters
+  if ($param_name === 'editor-first') {
+   $param_name = 'editor-first1';
+  }
+  if ($param_name === 'editor-last') {
+   $param_name = 'editor-last1';
+  }
 
   $low_value = strtolower($value);
   if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)', '-'], true)) {
