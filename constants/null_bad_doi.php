@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.2307/439669' => true, // Not found
+    '10.7326/M19-3007' => true, // 404 
     '10.3170/2008-8-18315' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
@@ -2768,7 +2770,7 @@ const NULL_DOI_LIST = [
     '10.2307/3867449' => true,
     '10.2307/3867585' => true,
     '10.2307/41166308' => true,
-    '10.2307/439669' => true,
+    '10.2307/439669' => true, // Not found
     '10.2307/440460' => true, // Not found
     '10.2307/4452028' => true,
     '10.2307/628371' => true,
@@ -3667,7 +3669,7 @@ const NULL_DOI_LIST = [
     '10.7306/gq.1095' => true, // 404
     '10.7313/upo9781904761679.011' => true,
     '10.7313/upo9781907284991.018' => true,
-    '10.7326/M19-3007' => true,
+    '10.7326/M19-3007' => true, // 404 
     '10.7392/openaccess.45011830' => true,
     '10.7454/irhs.v1i1.50' => true, // DB Error
     '10.7497/j.issn.2095-3941.2013.04.004' => true,
