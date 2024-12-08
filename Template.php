@@ -1159,6 +1159,9 @@ final class Template
   if ($param_name === 'editor-last') {
    $param_name = 'editor-last1';
   }
+  if ($param_name === 'editor') {
+   $param_name = 'editor1';
+  }
 
   $low_value = strtolower($value);
   if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)', '-'], true)) {
