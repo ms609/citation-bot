@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1016/s0098-1354(97)00075-6' => true, // Page not found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -871,7 +872,7 @@ const NULL_DOI_LIST = [
     '10.1016/j.solmat.2005.04.002' => true, // Page not found
     '10.1016/S0002-9270(00)02053-0' => true, // Page not found
     '10.1016/s0092-8674(00)91910-x' => true,
-    '10.1016/s0098-1354(97)00075-6' => true,
+    '10.1016/s0098-1354(97)00075-6' => true, // Page not found
     '10.1016/s1085-5629(03)00087-7' => true,
     '10.1017/9781316389355.007' => true,
     '10.1017/cbo9780511610486.005' => true,
@@ -3557,8 +3558,6 @@ const NULL_DOI_LIST = [
     '10.3868/s010-006-017-0035-3' => true,
     '10.3920/978-90-8686-728-8_2' => true,
     '10.3920/978-90-8686-728-8_4' => true,
-    '10.3934/bdia.2016001' => true,
-    '10.3934/ipi.2014.8.1013' => true,
     '10.3934/mbe' => true, // 404
     '10.3938/jkps.40.601' => true,
     '10.3949/ccjm.41.3.109' => true,
