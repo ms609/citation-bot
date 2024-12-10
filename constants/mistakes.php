@@ -262,6 +262,7 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'chapte-url' => 'chapter-url',
     'chapter title' => 'chapter',
     'chapter-title' => 'chapter',
+    'chaptertitle' => 'chapter',
     'chapterurl' => 'chapter-url',
     'chatper-url' => 'chapter-url',
     'chatper' => 'chapter',
