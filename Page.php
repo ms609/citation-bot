@@ -876,7 +876,7 @@ class Page {
         set_time_limit(120);
         if ($objects) {
             $i = count($objects);
-            $reverse = array_reverse($objects)
+            $reverse = array_reverse($objects);
             foreach ($reverse as $obj) {
                 --$i;
                 $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, $i), $obj->parsed_text(), $this->text); // Case insensitive, since placeholder might get title case, etc.
