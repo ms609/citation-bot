@@ -561,8 +561,9 @@ final class expandFnsTest extends testBaseClass {
     public function testHostIsGoneDOILoop(): void {
         $changes = "";
         $this->assertSame("", $changes);
-        $null_list = shuffle(NULL_DOI_LIST); // Avoid doing similar ones next to each other
-        foreach ($null_list as $doi => $value) {
+        $null_list = array_keys(NULL_DOI_LIST);
+        shuffle($null_list); // Avoid doing similar ones next to each other
+        foreach ($null_list as $doi) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
             } else {
