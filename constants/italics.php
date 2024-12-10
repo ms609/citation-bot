@@ -534,7 +534,7 @@ const CAMEL_CASE = [
     'JEvTrace', 'mProphet', 'siDirect', 'BioRxiv', 'InfoStation',
     'MicroFinance', 'DeFi', 'JetBlue', 'PacBio', 'MetroLivEnv', 'WorldMinds',
     'SmartCloud', 'DiCaprio', 'LaNada', 'BioCassava', 'ResFinder',
-    'HyperRhetoric', 'HflXr', 'SteamBioAfrica', 'MindSpore', 'MathJax', 'AutoDock',
+    'HyperRhetoric', 'HflXr', 'SteamBioAfrica', 'MindSpore', 'MathJax',
     'poreCov', 'PyArmadillo', 'QuasiFlow', 'RustBelt', 'AutoDock', 'TractoFlow',
 ];
 
