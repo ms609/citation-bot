@@ -536,6 +536,8 @@ const CAMEL_CASE = [
     'SmartCloud', 'DiCaprio', 'LaNada', 'BioCassava', 'ResFinder',
     'HyperRhetoric', 'HflXr', 'SteamBioAfrica', 'MindSpore', 'MathJax',
     'poreCov', 'PyArmadillo', 'QuasiFlow', 'RustBelt', 'AutoDock', 'TractoFlow',
+    'libRoadRunner', 'pyJac', 'myGrid', 'Cp2TiCl', 'myExperiment',
+    'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse',
 ];
 
 const ITALICS_HARDCODE_IN  = [
