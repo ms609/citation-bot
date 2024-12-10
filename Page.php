@@ -872,12 +872,14 @@ class Page {
     }
 
     /** @param array<WikiThings|Template> $objects */
-    private function replace_object(array &$objects): void {    // Pointer to save memory
-        $i = count($objects);
+    private function replace_object(array &$objects): void {  // Pointer to save memory
+        set_time_limit(120);
         if ($objects) {
-            foreach (array_reverse($objects) as $obj) {
+            $i = count($objects);
+            $reverse = array_reverse($objects)
+            foreach ($reverse as $obj) {
                 --$i;
-                $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, $i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+                $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, $i), $obj->parsed_text(), $this->text); // Case insensitive, since placeholder might get title case, etc.
             }
         }
     }
