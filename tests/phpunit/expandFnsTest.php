@@ -517,15 +517,18 @@ final class expandFnsTest extends testBaseClass {
         foreach (NULL_DOI_LIST as $doi => $value) {
             $this->assertSame(trim($doi), $doi);
             $this->assertTrue($value);
+            $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         foreach (NULL_DOI_ANNOYING as $doi => $value) {
             $this->assertSame(trim($doi), $doi);
             $this->assertTrue($value);
+            $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
             $this->assertSame(trim($doi), $doi);
             $this->assertTrue($value);
             $this->assertTrue(strpos($doi, '10.') === 0); // No HDLs allowed
+            $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         $changes = "";
         foreach (NULL_DOI_LIST as $doi => $value) {
