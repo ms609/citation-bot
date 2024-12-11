@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-require_once 'constants.php';      // @codeCoverageIgnore
-require_once 'user_messages.php';    // @codeCoverageIgnore
+require_once 'constants.php';     // @codeCoverageIgnore
+require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
-require_once 'NameTools.php';      // @codeCoverageIgnore
+require_once 'NameTools.php';     // @codeCoverageIgnore
 
 /** @param array<string> $pmids
     @param array<Template> $templates */
@@ -499,7 +499,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
     // run this function, so we don't check this first.
 
     if (!$template->verify_doi()) {
-        return;
+        return; // TODO - sometimes CrossRef has Data even when DOI is broken, perhaps skip this
     }
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($doi === $template->last_searched_doi) {
@@ -510,7 +510,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         return;
     }
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
-            $template->add_if_new('jstor', substr($doi, 8));
+        $template->add_if_new('jstor', substr($doi, 8));
     }
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
