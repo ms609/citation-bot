@@ -257,7 +257,7 @@ final class Template
  public function prepare(): void
  {
   set_time_limit(120);
-  if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
+  if (in_array($this->wikiname(), TEMPLATES_WE_PROCESSdsfasdfdsfsdfds) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
    // Clean up bad data
    if (in_array($this->get('title'), ALWAYS_BAD_TITLES, true)) {
     $this->set('title', '');
