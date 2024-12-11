@@ -41,7 +41,7 @@ const DEPARMENTS = ['local', 'editorial', 'international', 'national', 'communic
         'arts', 'life', 'puzzles'];
 const BAD_VIA = [ '', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
         'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost', 'proquest',
-        'google scholar', 'google', 'bing', 'yahoo'] 
+        'google scholar', 'google', 'bing', 'yahoo'];
 const VOL_NUM = ['volume', 'issue', 'number'];
 
 final class Template
