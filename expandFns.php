@@ -11,7 +11,6 @@ const DAYS_OF_WEEKS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', '
 const TRY_ENCODE = ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"];
 const INSANE_ENCODE = ['utf-8-sig', 'x-user-defined'];
 const SANE_ENCODE = ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1', '8859-1', '8859-7'];
-const ENGLISH_WIKI = ['en', 'simple', 'mdwiki'];
 const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'];
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
