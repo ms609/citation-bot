@@ -625,11 +625,11 @@ final class constantsTest extends testBaseClass {
             if ($mappedp === 's#cid') {
             	$mappedp = 's2cid';
             }
-            if (!in_array($mapped, $okay_to_be_bad)) {
-            	if (!in_array($mappedp, PARAMETER_LIST)) {
+            if (!in_array($mapped, $okay_to_be_bad, true)) {
+            	if (!in_array($mappedp, PARAMETER_LIST, true)) {
                 	$errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
             	}
-            	if (in_array($mappedp, DEAD_PARAMETERS) || in_array($mapped, DEAD_PARAMETERS)) {
+            	if (in_array($mappedp, DEAD_PARAMETERS, true) || in_array($mapped, DEAD_PARAMETERS, true)) {
                 	$errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
             	}
             }

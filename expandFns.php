@@ -831,7 +831,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);                      // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-    if(in_array(WIKI_BASE, ['en', 'simple', 'mdwiki']) && (
+    if(in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'], true) && (
         (mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
