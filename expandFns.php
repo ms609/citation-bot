@@ -292,7 +292,17 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
             return true;
         }
         bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
-        return null; // @codeCoverageIgnoreEnd
+        return null;
+    }
+    if (strpos($resp0, '302') !== false && strpos($resp1, '503') !== false && $resp2 === '') {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;
+        }
+        bot_debug_log('Got two bad hops for HDL: ' . echoable_doi($doi));
+        return null;
     }
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
