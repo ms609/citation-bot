@@ -484,7 +484,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
 }
 
 /** @param array<string> $_ids
-        @param array<Template> $templates */
+    @param array<Template> $templates */
 function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_doi($template);
@@ -494,18 +494,17 @@ function query_doi_api(array $_ids, array &$templates): void { // $id not used y
 
 function expand_by_doi(Template $template, bool $force = false): void {
     set_time_limit(120);
-    // Because it can recover rarely used parameters such as editors, series & isbn,
-    // there will be few instances where it could not in principle be profitable to
-    // run this function, so we don't check this first.
 
-    if (!$template->verify_doi()) {
-        return; // TODO - sometimes CrossRef has Data even when DOI is broken, perhaps skip this
-    }
+    $template->verify_doi();  // Sometimes CrossRef has Data even when DOI is broken, so try CrossRef anyway even when return is false
+
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($doi === $template->last_searched_doi) {
         return;
     }
     $template->last_searched_doi = $doi;
+    if ($doi === '') {
+        return;
+    }
     if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
         return;
     }
