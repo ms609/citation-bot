@@ -10,15 +10,6 @@ final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
     private const MAX_CACHE_SIZE = 100000;
     public const MAX_HDL_SIZE = 1024;
-    private const BAD_DOI_ARRAY = [
-        '10.1126/science' => true,
-        '' => true,dsfdsafdsfadasd
-        '10.7556/jaoa' => true,
-        '10.1267/science.040579197' => true,
-        '10.0000/Rubbish_bot_failure_test' => true,
-        '10.0000/Rubbish_bot_failure_test2' => true,
-        '10.0000/Rubbish_bot_failure_test.x' => true,
-    ];
 
     /** @var array<bool> $cache_active */
     public static array $cache_active = [];              // DOI is in CrossRef and works
@@ -29,7 +20,7 @@ final class HandleCache {
     /** @var array<string> $cache_hdl_loc */
     public static array $cache_hdl_loc = [];             // Final HDL location URL
     /** @var array<bool> $cache_hdl_bad */
-    public static array $cache_hdl_bad = self::BAD_DOI_ARRAY;    // HDL/DOI does not resolve to anything
+    public static array $cache_hdl_bad = BAD_DOI_ARRAY;    // HDL/DOI does not resolve to anything
     /** @var array<bool> $cache_hdl_null */
     public static array $cache_hdl_null = [];            // HDL/DOI resolves to null
 
@@ -49,7 +40,7 @@ final class HandleCache {
         self::$cache_inactive = [];
         self::$cache_good = [];
         self::$cache_hdl_loc = [];
-        self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
+        self::$cache_hdl_bad = BAD_DOI_ARRAY;
         self::$cache_hdl_null = [];
         gc_collect_cycles();
     }
@@ -292,7 +283,17 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
             return true;
         }
         bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
-        return null; // @codeCoverageIgnoreEnd
+        return null;
+    }
+    if (strpos($resp0, '302') !== false && strpos($resp1, '503') !== false && $resp2 === '') {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;
+        }
+        bot_debug_log('Got two bad hops for HDL: ' . echoable_doi($doi));
+        return null;
     }
     if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
