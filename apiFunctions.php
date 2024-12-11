@@ -502,7 +502,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         return;
     }
     $template->last_searched_doi = $doi;
-    if ($doi === '') {
+    if (in_array($doi, BAD_DOI_ARRAY)) { // Really bad ones that do not really exist at all
         return;
     }
     if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
