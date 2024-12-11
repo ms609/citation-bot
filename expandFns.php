@@ -12,7 +12,7 @@ final class HandleCache {
     public const MAX_HDL_SIZE = 1024;
     private const BAD_DOI_ARRAY = [
         '10.1126/science' => true,
-        '' => true,
+        '' => true,dsfdsafdsfadasd
         '10.7556/jaoa' => true,
         '10.1267/science.040579197' => true,
         '10.0000/Rubbish_bot_failure_test' => true,
