@@ -24,7 +24,6 @@ const RIS_IS_BOOK = ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC'
 const RIS_IS_FULL_BOOK = ['BOOK', 'EBOOK', 'EDBOOK'];
 const GOOD_FREE = ['publisher', 'projectmuse', 'have free'];
 const BAD_OA_URL = ['10.4135/9781529742343', '10.1017/9781108859745'];
-const ENGLISH_WIKI = ['en', 'simple', 'mdwiki'];
 const REMOVE_SEMI = ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
 const REMOVE_PERIOD = ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
 const LINK_LIST = ['authorlink', 'chapterlink', 'contributorlink', 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink', 'subjectlink', 'titlelink', 'translatorlink'];
