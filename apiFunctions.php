@@ -506,9 +506,6 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
         return;
     }
-    if (in_array($doi, BAD_DOI_ARRAY)) { // Really bad ones that do not really exist at all
-        return;
-    }
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
         $template->add_if_new('jstor', substr($doi, 8));
     }
