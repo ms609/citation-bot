@@ -183,6 +183,7 @@ function author_is_human(string $author): bool {
         || substr(strtolower($author), -5) === " llc."
         || substr(strtolower($author), -5) === " book"
         || substr(strtolower($author), -6) === " books"
+        || substr(strtolower($author), -8) === " nyheter"
         || substr_count($author, ' ') > 3 // Even if human, hard to format
     ) {
         return false;
