@@ -40,7 +40,7 @@ final class HandleCache {
         self::$cache_inactive = [];
         self::$cache_good = [];
         self::$cache_hdl_loc = [];
-        self::$cache_hdl_bad = self::BAD_DOI_ARRAY;
+        self::$cache_hdl_bad = BAD_DOI_ARRAY;
         self::$cache_hdl_null = [];
         gc_collect_cycles();
     }
