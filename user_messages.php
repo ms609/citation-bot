@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+const BORING_STUFF = ["boring", "removed", "added", "changed", "subsubitem", "subitem"];
+
 require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text=''): void {
@@ -13,7 +15,7 @@ function html_echo(string $text, string $alternate_text=''): void {
 function user_notice(string $symbol, string $class, string $text): void {
     if (!TRAVIS || defined("TRAVIS_PRINT")) {
         // @codeCoverageIgnoreStart
-        if (defined('BIG_JOB_MODE') && in_array($class, ["boring", "removed", "added", "changed", "subsubitem", "subitem"], true)) {
+        if (defined('BIG_JOB_MODE') && in_array($class, BORING_STUFF, true)) {
             echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
             return;
         }
