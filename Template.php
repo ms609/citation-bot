@@ -257,7 +257,7 @@ final class Template
  public function prepare(): void
  {
   set_time_limit(120);
-  if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
+  if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
    // Clean up bad data
    if (in_array($this->get('title'), ALWAYS_BAD_TITLES, true)) {
     $this->set('title', '');
@@ -3771,7 +3771,7 @@ final class Template
 
  public function clean_google_books(): void
  {
-  if (!in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'])) { // TODO - support other countries
+  if (!in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'], true)) { // TODO - support other countries
    return;
   }
   foreach (ALL_URL_TYPES as $url_type) {
@@ -6103,20 +6103,20 @@ final class Template
       }
      }
      if ($this->wikiname() === 'cite book' && $the_title === '') {
-      if (in_array($this->get($param), ['Automata, Languages and Programming'])) {
+      if (in_array($this->get($param), ['Automata, Languages and Programming'], true)) {
        $this->rename($param, 'title');
        return;
       }
      }
      if ($this->wikiname() === 'cite book' && $this->blank('chapter')) {
       /**
-      if (in_array($this->get($param), [])) {
+      if (in_array($this->get($param), [], true)) {
        $this->rename('title', 'chapter');
        $this->rename($param, 'title');
        return;
       }
       */
-      if (in_array($this->get('series'), ['Lecture Notes in Computer Science', 'Klassische Texte der Wissenschaft'])) {
+      if (in_array($this->get('series'), ['Lecture Notes in Computer Science', 'Klassische Texte der Wissenschaft'], true)) {
        $this->rename('title', 'chapter');
        $this->rename($param, 'title');
        return;
