@@ -3976,10 +3976,10 @@ EP - 999 }}';
         $this->assertSame('Proceedings of the 1964 19th ACM national conference', $template->get2('title'));
     }
 
-    public function testNullDOInoCrash(): void {
+    public function testNullDOInoCrash(): void { // This DOI does not work, but CrossRef does have a record
         $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}';
         $template = $this->process_citation($text);
-        $this->assertSame($text, $template->parsed_text());
+        $this->assertSame('{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |date=2019 |last1=Kofel |first1=Dominika |journal=Światowit |volume=56 |pages=89–98 }}', $template->parsed_text());
     }
 
     public function testTidySomeStuff(): void {

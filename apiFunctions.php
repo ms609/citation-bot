@@ -494,9 +494,7 @@ function query_doi_api(array $_ids, array &$templates): void { // $id not used y
 
 function expand_by_doi(Template $template, bool $force = false): void {
     set_time_limit(120);
-    if (!$template->verify_doi()) {
-        return; // TODO - sometimes CrossRef has Data even when DOI is broken, perhaps skip this
-    }
+    $template->verify_doi();  // Sometimes CrossRef has Data even when DOI is broken, so try CrossRef anyway even when return is false
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($doi === $template->last_searched_doi) {
         return;
