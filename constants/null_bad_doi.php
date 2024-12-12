@@ -811,12 +811,14 @@ const NULL_DOI_ANNOYING = [
     '10.9774/GLEAF.4700.2016.ju.00011' => true, // page not found
 ];
 
-const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area
+const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area, see below
     '10.2277/',
     '10.3149/csm.',
     '10.5047/meep.' ,
     '10.5353/th_',
 ];
+
+const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047/meep.2012.00103.0121', '10.5353/th_b3198302'];
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
