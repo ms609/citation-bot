@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1111/b.9780631199960.1995.00018.x' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -820,6 +821,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1127/1864-1318/2003/0109-0213' => true,
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -909,7 +911,6 @@ const NULL_DOI_LIST = [
     '10.1017/S0003055403000492' => true,
     '10.1017/S0003055403000522' => true,
     '10.1017/S0003055403000534' => true,
-    '10.1017/S0003055403000571' => true,
     '10.1017/S0003055403000650' => true,
     '10.1017/s0003055403000650' => true,
     '10.1017/S0003055403000704' => true,
@@ -2046,7 +2047,7 @@ const NULL_DOI_LIST = [
     '10.1109/DAC.1998.10030' => true,
     '10.1109/MC.2008.515' => true,
     '10.1111/1477-4658.00243' => true, // not found
-    '10.1111/b.9780631199960.1995.00018.x' => true,
+    '10.1111/b.9780631199960.1995.00018.x' => true, // 404
     '10.1111/j.1365-2141.1982.tb02801.x' => true, // 404
     '10.1111/j.1502-3931.1983.tb01139.x' => true, // 404
     '10.1111/j.1502-3931.1984.tb00675.x' => true, // 404
