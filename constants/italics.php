@@ -537,7 +537,8 @@ const CAMEL_CASE = [
     'HyperRhetoric', 'HflXr', 'SteamBioAfrica', 'MindSpore', 'MathJax',
     'poreCov', 'PyArmadillo', 'QuasiFlow', 'RustBelt', 'AutoDock', 'TractoFlow',
     'libRoadRunner', 'pyJac', 'myGrid', 'Cp2TiCl', 'myExperiment',
-    'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse',
+    'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse', 'GazePlotter',
+    'ScanGraph',
 ];
 
 const ITALICS_HARDCODE_IN  = [
