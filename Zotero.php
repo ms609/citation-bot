@@ -7,7 +7,8 @@ require_once 'Template.php';  // @codeCoverageIgnore
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
-
+const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'];
+const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
 /**
     @param array<string> $_ids
     @param array<Template> $templates
@@ -342,7 +343,7 @@ final class Zotero {
     public static function expand_by_zotero(Template $template, ?string $url = null): void {
         $access_date = 0;
         if (is_null($url)) {
-            if (in_array($template->get('url-status'), ['usurped', 'unfit', 'dead', 'deviated'], true)) {
+            if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
                 return;
             }
             $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
@@ -1029,7 +1030,7 @@ final class Zotero {
                     if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
                         $type = (string) $result->thesisType;
                         $type = str_replace('.', '', $type);
-                        if (in_array($type, ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'], true)) {
+                        if (in_array($type, THESIS_TYPES, true)) {
                             $template->add_if_new('type', $type); // Prefer type since it exists in cite journal too
                         }
                     }

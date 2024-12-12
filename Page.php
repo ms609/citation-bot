@@ -17,6 +17,9 @@ require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
 
+const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
+const PROTECTED_PAGE = ["sysop", "templateeditor"];
+
 class Page {
     protected string $text = '';
     protected string $title = '';
@@ -87,9 +90,9 @@ class Page {
             foreach ($the_protections as $protects) {
                 if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
                     $the_level = (string) $protects->level;
-                    if (in_array($the_level, ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"], true)) {
+                    if (in_array($the_level, UNPROTECTED_PAGE, true)) {
                         // We are good
-                    } elseif (in_array($the_level, ["sysop", "templateeditor"], true)) {
+                    } elseif (in_array($the_level, PROTECTED_PAGE, true)) {
                         report_warning("Page is protected.");
                         return false;
                     } else {

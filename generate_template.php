@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+const VALID_PARAMS = ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'];
 set_time_limit(120);
 
 @header("Access-Control-Allow-Origin: null"); // This should not be set, this API is for humans
@@ -37,7 +38,7 @@ if ((strpos($value, "'") !== false) || (strpos($value, '"') !== false) || (strpo
     die_in_template('Invalid parameter value error'); // @codeCoverageIgnore
 }
 $param = mb_strtolower($param);
-if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'], true)) {
+if (!in_array($param, VALID_PARAMS, true)) {
     die_in_template('Unexpected parameter passed'); // @codeCoverageIgnore
 }
 

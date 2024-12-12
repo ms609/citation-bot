@@ -6,6 +6,14 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
+const MONTH_SEASONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
+const DAYS_OF_WEEKS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+const TRY_ENCODE = ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"];
+const INSANE_ENCODE = ['utf-8-sig', 'x-user-defined'];
+const SANE_ENCODE = ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1', '8859-1', '8859-7'];
+const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'];
+const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
+
 final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
     private const MAX_CACHE_SIZE = 100000;
@@ -364,7 +372,7 @@ function sanitize_doi(string $doi): string {
     $pos = (int) strrpos($doi, '.');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
+        if (in_array(strtolower($extension), DOI_BAD_ENDS, true)) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
@@ -385,7 +393,7 @@ function sanitize_doi(string $doi): string {
     $pos = (int) strrpos($doi, '/');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'], true)) {
+        if (in_array(strtolower($extension), DOI_BAD_ENDS2, true)) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
@@ -831,7 +839,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);                      // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-    if(in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'], true) && (
+    if(in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
         (mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
@@ -1929,7 +1937,7 @@ function convert_to_utf8_inside(string $value): string {
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
     $encode = strtolower($encode);
-    return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1', '8859-1', '8859-7'], true);
+    return !in_array($encode, SANE_ENCODE, true);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url): string {
@@ -1951,7 +1959,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if (preg_match('~^ISO\-(.+)$~', $encode)) {
         $encode = 'iso-' . $encode[1];
     }
-    if (in_array($encode, ['utf-8-sig', 'x-user-defined'], true)) { // Known wonky ones
+    if (in_array($encode, INSANE_ENCODE, true)) {
         return "";
     }
     $master_list = mb_list_encodings();
@@ -1960,7 +1968,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         $valid[] = strtolower($enc);
     }
     try {
-        if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"], true) ||
+        if (in_array(strtolower($encode), TRY_ENCODE, true) ||
             !in_array(strtolower($encode), $valid, true)) {
             $try = (string) @iconv($encode, "UTF-8", $title);
         } else {
@@ -2425,7 +2433,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, '.');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], true)) {
+            if (in_array(strtolower($extension), DOI_BAD_ENDS, true)) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2452,7 +2460,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, '/');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], true)) {
+            if (in_array(strtolower($extension), DOI_BAD_ENDS2, true)) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2959,9 +2967,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     if ($input === '0001-11-30') {
         return '';
     }
-    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
-    $months_seasons = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
-    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    $input = str_ireplace(MONTH_SEASONS, MONTH_SEASONS, $input); // capitalization
     if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
         return $matches[1] . '–' . $matches[2];
     }
@@ -3002,7 +3008,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
         return $matches[1];
     }
     if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
-        if (in_array($matches[1], $days_of_week, true)) {
+        if (in_array($matches[1], DAYS_OF_WEEKS, true)) {
             return $matches[2];
         }
     }
@@ -3018,7 +3024,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
         $year = $matches[1];
         $month = (int) $matches[2];
         if ($month > 0 && $month < 13) {
-            return $months_seasons[$month-1] . ' ' . $year;
+            return MONTH_SEASONS[$month-1] . ' ' . $year;
         }
     }
     return $input;

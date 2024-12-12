@@ -33,6 +33,8 @@ const DOT_DECODE = ["/", "[", "{", "}", "]", "<", ">", ";", "(", ")"];
 const DOI_URL_ENCODE = ["%23", "%3C", "%3E"];
 const DOI_URL_DECODE = ["#", "<", ">"];
 
+const ENGLISH_WIKI = ['en', 'simple', 'mdwiki'];
+
 enum DateStyle {
     case DATES_WHATEVER;
     case DATES_MDY;

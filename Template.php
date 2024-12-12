@@ -15,6 +15,34 @@ require_once 'constants.php';
 require_once 'NameTools.php';
 // @codeCoverageIgnoreEnd
 
+const REJECT_NEW = ['null', 'n/a', 'undefined', '0 0', '(:none)', '-'];
+const GOOFY_TITLES = ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None', 'usurped title'];
+const BAD_NEW_PAGES = ['0', '0-0', '0–0'];
+const BAD_ISBN = ['9780918678072', '978-0-918678-07-2', '0918678072', '0-918678-07-2'];
+const SHORT_STRING = ['the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't', 'an', 'as', 'at', 'and', 'but', 'how', 'why', 'by', 'when', 'with', 'who', 'where', ''];
+const RIS_IS_BOOK = ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'];
+const RIS_IS_FULL_BOOK = ['BOOK', 'EBOOK', 'EDBOOK'];
+const GOOD_FREE = ['publisher', 'projectmuse', 'have free'];
+const BAD_OA_URL = ['10.4135/9781529742343', '10.1017/9781108859745'];
+const REMOVE_SEMI = ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
+const REMOVE_PERIOD = ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
+const LINK_LIST = ['authorlink', 'chapterlink', 'contributorlink', 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink', 'subjectlink', 'titlelink', 'translatorlink'];
+const BAD_AGENT = ['United States Food and Drug Administration', 'Surgeon General of the United States', 'California Department of Public Health'];
+const BAD_AGENT_PUBS = ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''];
+const NO_LANGS = ['n', 'no', 'live', 'alive', 'কার্যকর', 'hayır', 'não', 'nao', 'false'];
+const YES_LANGS = ['y', 'yes', 'dead', 'si', 'sì', 'ja', 'evet', 'ei tööta', 'sim', 'ano', 'true'];
+const PDF_LINKS = ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]', '[[pdf]]'];
+const DEPARMENTS = ['local', 'editorial', 'international', 'national', 'communication', 'letter to the editor',
+        'review', 'coronavirus', 'race & reckoning', 'politics', 'opinion', 'opinions', 'investigations', 'tech',
+        'technology', 'world', 'sports', 'world', 'arts & entertainment', 'arts', 'entertainment', 'u.s.', 'n.y.',
+        'business', 'science', 'health', 'books', 'style', 'food', 'travel', 'real estate', 'magazine', 'economy',
+        'markets', 'life & arts', 'uk news', 'world news', 'health news', 'lifestyle', 'photos', 'education',
+        'arts', 'life', 'puzzles'];
+const BAD_VIA = [ '', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
+        'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost', 'proquest',
+        'google scholar', 'google', 'bing', 'yahoo'];
+const VOL_NUM = ['volume', 'issue', 'number'];
+
 final class Template
 {
  public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
@@ -1164,7 +1192,7 @@ final class Template
   }
 
   $low_value = strtolower($value);
-  if (in_array($low_value, ['null', 'n/a', 'undefined', '0 0', '(:none)', '-'], true)) {
+  if (in_array($low_value, REJECT_NEW, true)) {
    // Hopeully name is not actually null
    return false;
   }
@@ -1963,7 +1991,7 @@ final class Template
     }
     if (
      $this->blank($param_name) ||
-     in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None', 'usurped title'], true) ||
+     in_array($this->get($param_name), GOOFY_TITLES, true) ||
      (stripos($this->get($param_name), 'EZProxy') !== false && stripos($value, 'EZProxy') === false)
     ) {
      foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
@@ -2088,9 +2116,9 @@ final class Template
 
    case "page":
    case "pages":
-    if (in_array($value, ['0', '0-0', '0–0'], true)) {
+    if (in_array($value, BAD_NEW_PAGES, true)) {
      return false;
-    } // Reject bogus zero page number
+    }
     if ($this->has('at') || $this->has('article-number')) {
      return false;
     } // Leave at= alone.  People often use that for at=See figure 17 on page......
@@ -2443,9 +2471,9 @@ final class Template
     return false;
 
    case 'isbn':
-    if (in_array($value, ['9780918678072', '978-0-918678-07-2', '0918678072', '0-918678-07-2'], true)) {
+    if (in_array($value, BAD_ISBN, true)) {
      return false;
-    } // Not a good one
+    }
     if ($this->blank($param_name)) {
      $value = $this->isbn10Toisbn13($value);
      if (strlen($value) === 13 && substr($value, 0, 6) === '978019') {
@@ -2953,7 +2981,7 @@ final class Template
      $data = strip_diacritics($data);
      $data_array = explode(" ", $data);
      foreach ($data_array as $val) {
-      if (!in_array(strtolower($val), ['the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't', 'an', 'as', 'at', 'and', 'but', 'how', 'why', 'by', 'when', 'with', 'who', 'where', ''], true) && mb_strlen($val) > 3) {
+      if (!in_array(strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
        // Small words are NOT indexed
        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
       }
@@ -3200,7 +3228,7 @@ final class Template
     report_info("Database entry not complete"); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
    }
-   if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'], true)) {
+   if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) && !in_array($this->get('title'), GOOFY_TITLES, true)) {
     // Verify the title matches. We get some strange mis-matches {
     report_info("Similar title not found in database"); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
@@ -3323,10 +3351,10 @@ final class Template
     $ris_part[0] = "";
    } // Ignore
    if (trim($ris_part[0]) === "TY") {
-    if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'], true)) {
+    if (in_array(trim($ris_part[1]), RIS_IS_BOOK, true)) {
      $ris_book = true; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
     }
-    if (in_array(trim($ris_part[1]), ['BOOK', 'EBOOK', 'EDBOOK'], true)) {
+    if (in_array(trim($ris_part[1]), RIS_IS_FULL_BOOK, true)) {
      $ris_fullbook = true;
     }
    } elseif (trim($ris_part[0]) === "T2") {
@@ -3525,7 +3553,7 @@ final class Template
    return;
   }
   $return = $this->get_unpaywall_url($doi);
-  if (in_array($return, ['publisher', 'projectmuse', 'have free'], true)) {
+  if (in_array($return, GOOD_FREE, true)) {
    return;
   } // Do continue on
   $this->get_semanticscholar_url($doi);
@@ -3564,7 +3592,7 @@ final class Template
   if ($ch_oa === null) {
    $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
   }
-  if (in_array($doi, ['10.4135/9781529742343', '10.1017/9781108859745'], true)) {
+  if (in_array($doi, BAD_OA_URL, true)) {
    return 'wrong';
   } // TODO - maybe all ISBN
   set_time_limit(120);
@@ -3771,7 +3799,7 @@ final class Template
 
  public function clean_google_books(): void
  {
-  if (!in_array(WIKI_BASE, ['en', 'simple', 'mdwiki'], true)) { // TODO - support other countries
+  if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // TODO - support other countries
    return;
   }
   foreach (ALL_URL_TYPES as $url_type) {
@@ -5127,11 +5155,11 @@ final class Template
     $this->set($param, safe_preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
 
     // Remove final semi-colon from a few items
-    if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'], true) || in_array($param, FLATTENED_AUTHOR_PARAMETERS, true)) && strpos($this->get($param), '&') === false) {
+    if ((in_array($param, REMOVE_SEMI, true) || in_array($param, FLATTENED_AUTHOR_PARAMETERS, true)) && strpos($this->get($param), '&') === false) {
      $this->set($param, safe_preg_replace('~;$~u', '', $this->get($param)));
     }
     // Remove final period from a few items
-    if (in_array($param, ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'], true)) {
+    if (in_array($param, REMOVE_PERIOD, true)) {
      if (preg_match('~^(\d+)\.$~', $this->get($param), $match)) {
        $this->set($param, $match[1]);
      }
@@ -5174,7 +5202,7 @@ final class Template
   if (
    in_array(
     str_replace(['-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], '', strtolower($param)),
-    ['authorlink', 'chapterlink', 'contributorlink', 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink', 'subjectlink', 'titlelink', 'translatorlink'],
+    LINK_LIST,
     true
    ) &&
    $this->has($param) &&
@@ -5211,8 +5239,8 @@ final class Template
 
     case 'agency':
      if (
-      in_array($this->get('agency'), ['United States Food and Drug Administration', 'Surgeon General of the United States', 'California Department of Public Health'], true) &&
-      in_array($this->get('publisher'), ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''], true)
+      in_array($this->get('agency'), BAD_AGENT, true) &&
+      in_array($this->get('publisher'), BAD_AGENT_PUBS, true)
      ) {
       $this->forget('publisher');
       $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
@@ -5499,10 +5527,10 @@ final class Template
     case 'dead-url':
     case 'deadurl':
      $the_data = mb_strtolower($this->get($param));
-     if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja', 'evet', 'ei tööta', 'sim', 'ano'], true)) {
+     if (in_array($the_data, YES_LANGS, true)) {
       $this->rename($param, 'url-status', 'dead');
       $this->forget($param);
-     } elseif (in_array($the_data, ['n', 'no', 'live', 'alive', 'কার্যকর', 'hayır', 'não', 'nao'], true)) {
+     } elseif (in_array($the_data, NO_LANGS, true)) {
       $this->rename($param, 'url-status', 'live');
       $this->forget($param);
      } elseif (in_array($the_data, ['', 'bot: unknown'], true)) {
@@ -5515,10 +5543,10 @@ final class Template
 
     case 'arşivengelli': // "ignore archive"
      $the_data = mb_strtolower($this->get($param));
-     if (in_array($the_data, ['y', 'yes', 'evet'], true)) {
+     if (in_array($the_data, YES_LANGS, true)) {
       $this->rename($param, 'url-status', 'live');
       $this->forget($param);
-     } elseif (in_array($the_data, ['n', 'no', 'hayır'], true)) {
+     } elseif (in_array($the_data, NO_LANGS, true)) {
       $this->rename($param, 'url-status', 'dead');
       $this->forget($param);
      } elseif (in_array($the_data, ['', 'bot: unknown'], true)) {
@@ -5530,9 +5558,9 @@ final class Template
     
     case 'url-status':
      $the_data = mb_strtolower($this->get($param));
-     if (in_array($the_data, ['y', 'yes', 'si', 'sì', 'ei tööta'], true)) {
+     if (in_array($the_data, YES_LANGS, true)) {
       $this->set($param, 'dead');
-     } elseif (in_array($the_data, ['n', 'no', 'alive', 'কার্যকর'], true)) {
+     } elseif (in_array($the_data, NO_LANGS, true)) {
       $this->set($param, 'live');
      }
      return;
@@ -5546,11 +5574,11 @@ final class Template
     case 'last-author-amp':
     case 'lastauthoramp':
      $the_data = mb_strtolower($this->get($param));
-     if (in_array($the_data, ['n', 'no', 'false'], true)) {
+     if (in_array($the_data, NO_LANGS, true)) {
       $this->forget($param);
       return;
      }
-     if (in_array($the_data, ['y', 'yes', 'true'], true)) {
+     if (in_array($the_data, YES_LANGS, true)) {
       $this->rename($param, 'name-list-style', 'amp');
       $this->forget($param);
      }
@@ -5873,7 +5901,7 @@ final class Template
       $this->forget($param);
      }
      // Citation templates do this automatically -- also remove if there is no url
-     if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]', '[[pdf]]'], true)) {
+     if (in_array(strtolower($this->get($param)), PDF_LINKS, true)) {
       if ($this->blank('url') || strtolower(substr($this->get('url'), -4)) === '.pdf') {
        $this->forget($param);
       }
@@ -5886,7 +5914,7 @@ final class Template
       $this->forget($param);
      }
      // Citation templates do this automatically -- also remove if there is no url, which is template error
-     if (in_array(strtolower($this->get($param)), ['pdf', 'portable document format', '[[portable document format|pdf]]', '[[portable document format]]'], true)) {
+     if (in_array(strtolower($this->get($param)), PDF_LINKS, true)) {
       if ($this->has('chapter-url')) {
        if (substr($this->get('chapter-url'), -4) === '.pdf' || substr($this->get('chapter-url'), -4) === '.PDF') {
         $this->forget($param);
@@ -6527,56 +6555,7 @@ final class Template
        }
       }
       if (
-       in_array(
-        strtolower($this->get('work')),
-        [
-         'local',
-         'editorial',
-         'international',
-         'national',
-         'communication',
-         'letter to the editor',
-         'review',
-         'coronavirus',
-         'race & reckoning',
-         'politics',
-         'opinion',
-         'opinions',
-         'investigations',
-         'tech',
-         'technology',
-         'world',
-         'sports',
-         'world',
-         'arts & entertainment',
-         'arts',
-         'entertainment',
-         'u.s.',
-         'n.y.',
-         'business',
-         'science',
-         'health',
-         'books',
-         'style',
-         'food',
-         'travel',
-         'real estate',
-         'magazine',
-         'economy',
-         'markets',
-         'life & arts',
-         'uk news',
-         'world news',
-         'health news',
-         'lifestyle',
-         'photos',
-         'education',
-         'arts',
-         'life',
-         'puzzles',
-        ],
-        true
-       ) &&
+       in_array(strtolower($this->get('work')), DEPARMENTS, true) &&
        $this->blank('department')
       ) {
        $this->rename('work', 'department');
@@ -7466,29 +7445,7 @@ final class Template
       ) {
        $via = trim(str_replace(['[', ']'], '', strtolower($this->get('via'))));
        if (
-        in_array(
-         $via,
-         [
-          '',
-          'project muse',
-          'wiley',
-          'springer',
-          'questia',
-          'elsevier',
-          'wiley online library',
-          'wiley interscience',
-          'interscience',
-          'sciencedirect',
-          'science direct',
-          'ebscohost',
-          'proquest',
-          'google scholar',
-          'google',
-          'bing',
-          'yahoo',
-         ],
-         true
-        )
+        in_array($via, BAD_VIA, true)
        ) {
         $this->forget('via');
         return;
@@ -9008,7 +8965,7 @@ final class Template
      $no_dash_to_start = false;
     }
    }
-   if (in_array($old_name, ['volume', 'issue', 'number'], true)) {
+   if (in_array($old_name, VOL_NUM, true)) {
     if (strpos($old_data, '-') !== false) {
      $no_dash_to_start = false;
     }
@@ -9101,7 +9058,7 @@ final class Template
   if ($param === 'year') {
    return;
   }
-  if (!in_array($param, ['volume', 'issue', 'number'], true)) {
+  if (!in_array($param, VOL_NUM, true)) {
    report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
   }
   if (in_array($this->wikiname(), ['cite encyclopaedia', 'cite encyclopedia', 'cite book'], true)) {
