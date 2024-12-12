@@ -812,7 +812,6 @@ const NULL_DOI_ANNOYING = [
 ];
 
 const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area
-    '10.18814/epiiugs',
     '10.2277/',
     '10.3149/csm.',
     '10.5047/meep.' ,
