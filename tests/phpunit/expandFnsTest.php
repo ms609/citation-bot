@@ -582,7 +582,7 @@ final class expandFnsTest extends testBaseClass {
         $changes = "";
         // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAD
         $this->assertSame("", $changes);
-        foreach (['10.5047/meep.2012.00103.0121', '10.5353/th_b3198302', '10.2277/0521826179', '10.3149/csm.0302.160', '10.18814/epiiugs/1997/v20i3/003', '10.18814/epiiugs'] as $doi) {
+        foreach (BAD_DOI_EXAMPLES as $doi) {
             $works = doi_works($doi);
             if ($works === null) {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as null: " . $doi . "             ";
