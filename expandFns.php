@@ -1197,8 +1197,8 @@ function throttle(): void {
     }
     if ($time_since_last_write < $min_interval) {
         $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @codeCoverageIgnore
-        report_info("Throttling: waiting {$time_to_pause} seconds...");                   // @codeCoverageIgnore
-        sleep($time_to_pause);                                                                                              // @codeCoverageIgnore
+        report_info("Throttling: waiting " . $time_to_pause . " seconds..."); // @codeCoverageIgnore
+        sleep($time_to_pause);                                                // @codeCoverageIgnore
     }
     $last_write_time = time();
 }
