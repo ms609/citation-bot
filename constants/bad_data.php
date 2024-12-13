@@ -12201,6 +12201,7 @@ const NON_JOURNALS = [
     'Boston Almanac and Guide1',
     'Includes:reports from Commissioners, Inspectors and Others',
     'Digital Collections',
+    'X (Formerly Twitter)',
 ]; // Case-sensitive sub-string
 const ARE_MAGAZINES = [
     'the new yorker',
