@@ -629,6 +629,8 @@ final class Zotero {
                 unset($result->volume);
                 unset($result->pages);
                 unset($result->publicationTitle);
+            } elseif ($tester === 'x (formerly twitter)') {
+                $result->itemType === 'webpage';
             }
         }
 
