@@ -12672,6 +12672,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.33003/jaat.2022.0801.029' => true,
     '10.33019/society.v7i2.93' => true,
     '10.33021/ideas.v1i2.3428' => true,
+    '10.33029/9704-7312-2-nph-2022-1-728' => true,
     '10.3310/hta12110' => true,
     '10.3310/hta17070' => true,
     '10.33102/alazkiyaa43' => true,
