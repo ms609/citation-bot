@@ -526,6 +526,10 @@ final class Zotero {
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
 
+        if (stripos($url, '/x.com') !== false || stripos($url, 'twitter.com') !== false) {
+            $result->itemType = 'webpage';   // @codeCoverageIgnore
+        }
+
         if (stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
             unset($result->creators['1']);
             unset($result->author['1']);
@@ -629,8 +633,6 @@ final class Zotero {
                 unset($result->volume);
                 unset($result->pages);
                 unset($result->publicationTitle);
-            } elseif ($tester === 'x (formerly twitter)') {
-                $result->itemType === 'webpage';
             }
         }
 
