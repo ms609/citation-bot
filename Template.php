@@ -2839,7 +2839,7 @@ final class Template
     if (!isset($result->doi)) {
      return;
     }
-    report_info(" Successful!");
+    report_inline(" Successful!");
     $this->add_if_new('doi', (string) $result->doi);
     return;
    }
@@ -2862,7 +2862,7 @@ final class Template
   report_action("Checking semanticscholar database for doi. ");
   $doi = ConvertS2CID_DOI($this->get('s2cid') . $this->get('S2CID'));
   if ($doi) {
-   report_info(" Successful!");
+   report_inline(" Successful!");
    $this->add_if_new('doi', $doi);
   }
   return;
@@ -3156,7 +3156,7 @@ final class Template
    $record = $result->docs[0];
    if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {
     // Considering we searched for title, this is very paranoid
-    report_info("Similar title not found in database."); // @codeCoverageIgnore
+    report_inline("Similar title not found in database."); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
    }
    // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
@@ -3166,7 +3166,7 @@ final class Template
     mb_strtolower($record->title[0]) !== mb_strtolower($this->get_without_comments_and_placeholders('title'))
    ) {
     // Probably not a journal, trust zotero more
-    report_info("Exact title match not found in database."); // @codeCoverageIgnore
+    report_inline("Exact title match not found in database."); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
    }
   }
@@ -3194,8 +3194,8 @@ final class Template
    $journal_string = explode(",", (string) $result->docs[0]->pub);
    $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
    if (strlen($journal_string[0]) && strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)), mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))) === false) {
-    report_info(
-     "Partial match but database journal \"" . // @codeCoverageIgnoreStart
+    report_inline(   // @codeCoverageIgnoreStart
+     "Partial match but database journal \"" .
       echoable($journal_string[0]) .
       "\" didn't match \"" .
       echoable($journal) .
@@ -3224,12 +3224,12 @@ final class Template
    }
 
    if (!isset($record->title[0]) || !isset($record->bibcode)) {
-    report_info("Database entry not complete"); // @codeCoverageIgnore
+    report_inline("Database entry not complete"); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
    }
    if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) && !in_array($this->get('title'), GOOFY_TITLES, true)) {
     // Verify the title matches. We get some strange mis-matches {
-    report_info("Similar title not found in database"); // @codeCoverageIgnore
+    report_inline("Similar title not found in database"); // @codeCoverageIgnore
     return; // @codeCoverageIgnore
    }
 
@@ -4508,23 +4508,19 @@ final class Template
        break;
       }
       if ($subtemplate_name === 'oclc' && $subtemplate->has_multiple_params()) {
-       report_info("{{OCLC}} has multiple parameters: cannot convert.");
-       report_info(echoable($subtemplate->parsed_text()));
+       report_info("{{OCLC}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
        break;
       }
       if ($subtemplate_name === 'issn' && $subtemplate->has_multiple_params()) {
-       report_info("{{ISSN}} has multiple parameters: cannot convert.");
-       report_info(echoable($subtemplate->parsed_text()));
+       report_info("{{ISSN}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
        break;
       }
       if ($subtemplate_name === 'ismn' && $subtemplate->has_multiple_params()) {
-       report_info("{{ISMN}} has multiple parameters: cannot convert.");
-       report_info(echoable($subtemplate->parsed_text()));
+       report_info("{{ISMN}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
        break;
       }
       if ($subtemplate_name === 'biorxiv' && $subtemplate->has_multiple_params()) {
-       report_info("{{biorxiv}} has multiple parameters: cannot convert.");
-       report_info(echoable($subtemplate->parsed_text()));
+       report_info("{{biorxiv}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
        break;
       }
       if ($subtemplate_name === 'lcc') {
@@ -8340,7 +8336,7 @@ final class Template
       report_inline('DOI ok.');
      }
     } else {
-     report_info("Modified DOI:  " . echoable($try) . " is operational...");
+     report_inline("Modified DOI:  " . echoable($try) . " is operational...");
     }
     return true;
    }
@@ -8361,7 +8357,7 @@ final class Template
       report_inline('DOI ok.');
      }
     } else {
-     report_info("Modified DOI:  " . echoable($try) . " is operational...");
+     report_inline("Modified DOI:  " . echoable($try) . " is operational...");
     }
     return true;
    }
