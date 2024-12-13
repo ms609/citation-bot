@@ -934,16 +934,16 @@ function expand_by_jstor(Template $template): void {
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
     $dat = bot_curl_exec($ch);
     if ($dat === '') {
-        report_info("JSTOR API returned nothing for ". jstor_link($jstor));      // @codeCoverageIgnore
-        return;                                                            // @codeCoverageIgnore
+        report_info("JSTOR API returned nothing for ". jstor_link($jstor)); // @codeCoverageIgnore
+        return;                                                             // @codeCoverageIgnore
     }
     if (stripos($dat, 'No RIS data found for') !== false) {
-        report_info("JSTOR API found nothing for ".    jstor_link($jstor));        // @codeCoverageIgnore
-        return;                                                            // @codeCoverageIgnore
+        report_info("JSTOR API found nothing for ".    jstor_link($jstor)); // @codeCoverageIgnore
+        return;                                                             // @codeCoverageIgnore
     }
     if (stripos($dat, 'Block Reference') !== false) {
-        report_info("JSTOR API blocked bot for ".    jstor_link($jstor));          // @codeCoverageIgnore
-        return;                                                            // @codeCoverageIgnore
+        report_info("JSTOR API blocked bot for ".    jstor_link($jstor)); // @codeCoverageIgnore
+        return;                                                           // @codeCoverageIgnore
     }
     if (stripos($dat, 'A problem occurred trying to deliver RIS data')  !== false) {
         report_info("JSTOR API had a problem for ".    jstor_link($jstor));
@@ -1071,29 +1071,28 @@ function ConvertS2CID_DOI(string $s2cid): string {
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if (!$response) {
-        report_warning("No response from semanticscholar.");    // @codeCoverageIgnore
+        report_warning("No response from semanticscholar.");  // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
     }
     $json = @json_decode($response);
     unset($response);
     if (!$json) {
-        report_warning("Bad response from semanticscholar.");    // @codeCoverageIgnore
+        report_warning("Bad response from semanticscholar."); // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
     }
     if (!isset($json->doi)) {
-        report_info("No doi found from semanticscholar.");    // @codeCoverageIgnore
-        return '';                                          // @codeCoverageIgnore
+        return '';                                         // @codeCoverageIgnore
     }
     if (is_array($json->doi) || is_object($json->doi)) {
-        report_warning("Bad data from semanticscholar.");    // @codeCoverageIgnore
+        report_warning("Bad data from semanticscholar."); // @codeCoverageIgnore
         return '';                                        // @codeCoverageIgnore
     }
     $doi = (string) $json->doi;
-    if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
+    if (doi_works($doi)) {
         return $doi;
     } else {
-        report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
-        return '';                                                  // @codeCoverageIgnore
+        report_info("non-functional doi found from semanticscholar: " . echoable_doi($doi));// @codeCoverageIgnore
+        return '';                                                    // @codeCoverageIgnore
     }
 }
 
