@@ -2799,7 +2799,6 @@ final class Template
   }
 
   if (!$novel_data) {
-   report_info("No new data since last CrossRef search.");
    return;
   }
   // They already allow some fuzziness in matches
