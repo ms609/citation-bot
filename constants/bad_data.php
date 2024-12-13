@@ -11279,7 +11279,7 @@ const NON_JOURNAL_WEBSITES = [
     'twin2.co.jp/',
     'twitch.tv/',
     'twitter.com/',
-    '/x.com',
+    '/x.com/',
     'twreporter.org/',
     'twtd.co.uk/',
     'txexecutions.org/',
