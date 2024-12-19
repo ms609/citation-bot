@@ -2244,7 +2244,6 @@ const NULL_DOI_LIST = [
     '10.1180/minmag.1998.62A.2.234' => true,
     '10.1182/asheducation-2005.1.1' => true, // not found
     '10.1182/blood.V82.12.3648.bloodjournal82123648' => true, // not found
-    '10.1183/09031936.05.00117504' => true,
     '10.1186/s12862-015-0575-y' => true, // page not found
     '10.1186/s12862-015-0579-7' => true,
     '10.1186/s12863-015-0203-2' => true,
