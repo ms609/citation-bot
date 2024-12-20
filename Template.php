@@ -7503,7 +7503,7 @@ final class Template
      }
      // Remove leading zeroes
      $value = $this->get($param);
-     if ($value !== '') {
+     if ($value !== '' && $value !== '0') { // Single zero is valid for some CS journals
       $value = safe_preg_replace('~^0+~', '', $value);
       if ($value === '') {
        $this->forget($param); // Was all zeros
