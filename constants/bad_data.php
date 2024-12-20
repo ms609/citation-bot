@@ -998,7 +998,7 @@ const NO_DATE_WEBSITES = [
     'brema.suub.uni-bremen.de',
     'britannica.com',
     'catalogue.bnf.fr',
-    'chinesefilmclassics.org';
+    'chinesefilmclassics.org',
     'chroniclingamerica.loc.gov',
     'collections.louvre.fr',
     'corydondemocrat.com',
