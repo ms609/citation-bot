@@ -1351,8 +1351,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
             throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
         } elseif (isset($decoded->response)) {
             return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE */
-        } elseif (isset($decoded->error)) {                    // @codeCoverageIgnore
-            throw new Exception((string) $decoded->error, 5000);   // @codeCoverageIgnore
+        } elseif (isset($decoded->error)) {                  // @codeCoverageIgnore
+            throw new Exception('' . $decoded->error, 5000); // @codeCoverageIgnore
         } else {
             throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
         }
