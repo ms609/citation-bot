@@ -551,15 +551,6 @@ final class Zotero {
         if (stripos($url, 'tumblr.com') !== false) {
             $result->itemType = 'webpage';  // @codeCoverageIgnore
         }
-
-        // Ignore junk website names
-        if (isset($result->publicationTitle) && preg_match('~^https?://([^/]+)~', $url, $hostname) === 1) {
-            $hostname = str_ireplace('www.', '', (string) $hostname[1]);
-            $pub_name = str_ireplace('www.', '', (string) $result->publicationTitle);
-            if (str_i_same($pub_name, $hostname)) {
-                unset($result->publicationTitle);
-            }
-        }
         
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
@@ -641,6 +632,15 @@ final class Zotero {
                 unset($result->issue);
                 unset($result->volume);
                 unset($result->pages);
+                unset($result->publicationTitle);
+            }
+        }
+
+        // Ignore junk website names
+        if (isset($result->publicationTitle) && preg_match('~^https?://([^/]+)~', $url, $hostname) === 1) {
+            $hostname = str_ireplace('www.', '', (string) $hostname[1]);
+            $pub_name = str_ireplace('www.', '', (string) $result->publicationTitle);
+            if (str_i_same($pub_name, $hostname)) {
                 unset($result->publicationTitle);
             }
         }
@@ -916,8 +916,19 @@ final class Zotero {
                 $new_title = (string) $result->publicationTitle;
                 if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS, true)) {
                     $template->add_if_new('publisher', $new_title);
+                } elseif ($template->blank(WORK_ALIASES)) {
+                    $template->add_if_new('work', $new_title);
                 } else {
-                    $template->add_if_new('newspaper', $new_title);
+                    $use_it = false;
+                    foreach (WORK_ALIASES as $work_type) {
+                        $test_it = substr($template->get($work_type), -4);
+                        if (str_i_same($test_it, '.com') || str_i_same($test_it, '.org') || str_i_same($test_it, '.net')) {
+                            $use_it = true;
+                        }
+                    }
+                    if ($use_it) {
+                        $template->add_if_new('work', $new_title);
+                    }
                 }
             }
         } else {
