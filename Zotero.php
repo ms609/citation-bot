@@ -550,7 +550,16 @@ final class Zotero {
         }
         if (stripos($url, 'tumblr.com') !== false) {
             $result->itemType = 'webpage';  // @codeCoverageIgnore
-        }     
+        }
+
+        // Ignore junk website names
+        if (isset($result->publicationTitle) && preg_match('~^https?://([^/]+)~', $url, $hostname) === 1) {
+            $hostname = str_ireplace('www.', '', (string) $hostname[1]);
+            $pub_name = str_ireplace('www.', '', (string) $result->publicationTitle);
+            if (str_i_same($pub_name, $hostname)) {
+                unset($result->publicationTitle);
+            }
+        }
         
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
