@@ -8782,7 +8782,7 @@ final class Template
  }
  private function forgetter(string $par, bool $echo_forgetting): void
  {
-  if ($par === 'doi-broken-date' && $this->has('doi-broken-date') && !isset(NULL_DOI_BUT_GOOD[$this->get('doi')])) {
+  if ($par === 'doi-broken-date' && $this->has('doi-broken-date') && !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) && $this->has('doi')) {
     bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
   }
   // Do not call this function directly
