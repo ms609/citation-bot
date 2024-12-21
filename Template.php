@@ -1172,6 +1172,8 @@ final class Template
   $value = safe_preg_replace("~\xE2\x80\x8B$~", " ", $value); // Zero-width at end
   $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
   $value = safe_preg_replace('~  +~u', ' ', $value); // multiple spaces
+  $value = safe_preg_replace('~&#124;$~u', ' ', $value); // Ends with pipe
+  $value = safe_preg_replace('~^&#124;~u', ' ', $value); // Starts with pipe
   $value = trim($value);
   if ($value === '') {
    return false;
