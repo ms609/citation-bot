@@ -5483,6 +5483,9 @@ final class Template
      if ($this->blank('date') && $this->has('year')) {
       $this->forget('date');
      }
+     if (preg_match('~^([A-Za-z]+)\-([A-Za-z]+ \d{4})$~', $this->get('date'), $matched)) {
+      $this->set('date', $matched[1] . '–' . $matched[2]);
+     }
      return;
 
     case 'month':
