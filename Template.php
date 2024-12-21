@@ -6695,6 +6695,17 @@ final class Template
 
      return;
 
+    case 'quote':
+     $quote = $this->get('quote');
+     if ($quote === '') {
+      return;
+     }
+     $quote_out = safe_preg_replace('~[\n\r]+~', ' ', $quote);
+     if ($quote_out !== $quote && $quote_out !== '') {
+      $this->set('quote', $quote_out);
+     }
+     return;
+     
     case 'quotes':
      switch (strtolower(trim($this->get($param)))) {
       case 'yes':
