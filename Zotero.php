@@ -551,6 +551,11 @@ final class Zotero {
         if (stripos($url, 'tumblr.com') !== false) {
             $result->itemType = 'webpage';  // @codeCoverageIgnore
         }
+        if (stripos($url, 'tate.org.uk') !== false) {
+            $result->itemType = 'webpage';
+            unset($result->creators);
+            unset($result->author);
+        }
         
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
