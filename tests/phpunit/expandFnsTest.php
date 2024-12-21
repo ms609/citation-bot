@@ -514,6 +514,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testHostIsGoneDOIbasic(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         foreach (NULL_DOI_LIST as $doi => $value) {
             $this->assertSame(trim($doi), $doi);
             $this->assertTrue($value);
@@ -559,6 +560,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testHostIsGoneDOILoop(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $changes = "";
         $this->assertSame("", $changes);
         $null_list = array_keys(NULL_DOI_LIST);
@@ -579,6 +581,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testHostIsGoneDOIHosts(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $changes = "";
         // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAD
         $this->assertSame("", $changes);
