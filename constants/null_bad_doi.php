@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 7 NOV 2024
 const NULL_DOI_ANNOYING = [
+    '10.1016/j.cladistics.2003.09.001' => true, // page not found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -889,7 +890,7 @@ const NULL_DOI_LIST = [
     '10.1007/s13219-017-0185-x' => true,
     '10.1016/0003-3472(95)90033-0' => true, // not found
     '10.1016/0893-133X(89)90014-6' => true, // page not found
-    '10.1016/j.cladistics.2003.09.001' => true,
+    '10.1016/j.cladistics.2003.09.001' => true, // page not found
     '10.1016/j.icrp.2012.06.038' => true, // Error
     '10.1016/j.nhtm.2014.12.002' => true,
     '10.1016/j.nhtm.2015.12.001' => true,
@@ -2932,7 +2933,6 @@ const NULL_DOI_LIST = [
     '10.18551/issn1997-0749.2014-06' => true, // Key not found
     '10.18617/liinc.v16i2.5378' => true,
     '10.18638/hassacc.2015.3.1.169' => true, // casino
-    '10.18690/agricsci.20.1.1' => true,
     '10.18776/tcu/br/1/20' => true,
     '10.18803/capsi.v17.185-193' => true,
     '10.18809/jbms.2015.0111' => true, // hijacked domain
