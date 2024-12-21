@@ -12661,6 +12661,7 @@ const GOOD_10_1093_DOIS = [
     'omcr',
     'ons',
     'oq',
+    'oso',
     'oxrep',
     'pa',
     'painmedicine',
