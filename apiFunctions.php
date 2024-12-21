@@ -733,6 +733,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     // Examples of DOI usage  https://www.doi.org/demos.html
     // This basically does this:
     // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
+    // Data Quality is CrossRef > DX.doi.org > Zotero
     static $ch = null;
     if ($ch === null) {
     $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
@@ -767,6 +768,17 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         }
         if (str_ends_with(strtolower($data), '.pdf')) {
             return;
+        }
+        if (strpos($name, 'author') !== false) { // Remove dates from names from 10.11501/ dois
+            if (preg_match('~^(.+), \d{3,4}\-\d{3,4}$~', $data, $matched)) {
+                $data = $matched[1];
+            }
+            if (preg_match('~^(.+), \d{3,4}\-$~', $data, $matched)) {
+                $data = $matched[1];
+            }
+            if (preg_match('~^(.+), \-\d{3,4}$~', $data, $matched)) {
+                $data = $matched[1];
+            }
         }
         $template->add_if_new($name, $data, 'dx');
         return;
