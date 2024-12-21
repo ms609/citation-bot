@@ -3827,8 +3827,13 @@ final class Template
     if (preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $url, $matches)) {
      $url = str_replace('&#61;', '=', $url);
     }
-    if (preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $url, $matches)) {
+    if (preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?qid=(.+)$~', $url, $matches)) {
      $url = 'https://books.google.com/books?id=' . $matches[1];
+    }
+    if (preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?vid=(.+)$~', $url, $matches)) {
+     if (str_ireplace(['isbn', 'lccn', 'oclc'], '', $matches[1]) === $matches[1]) {
+      $url = 'https://books.google.com/books?id=' . $matches[1];
+     }
     }
     if (preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $url, $matches)) {
      $url = 'https://books.google.com/books?id=' . $matches[1];
