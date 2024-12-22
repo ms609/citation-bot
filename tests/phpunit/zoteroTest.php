@@ -637,7 +637,7 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite news', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
-        $this->assertSame('X', $template->get2('newspaper'));
+        $this->assertSame('X', $template->get2('work'));
     }
 
     public function testZoteroResponse38(): void {
