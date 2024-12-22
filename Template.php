@@ -5636,6 +5636,10 @@ final class Template
        return;
       }
      }
+     if (preg_match('~^(10\.2173\/bow\..+)species_shared\.bow\.project_name$~', $doi, $matched)) {
+      $this->set('doi',  $matched[1]);
+      $doi = $matched[1];
+     }
      if (substr($doi, 0, 8) === '10.5555/') {
       // Test DOI prefix. NEVER will work
       $this->forget('doi');
