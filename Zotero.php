@@ -1040,16 +1040,16 @@ final class Zotero {
                         $template->change_name_to('cite magazine');
                     }
                     break;
-                case 'newspaperArticle':
-                    if ($template->wikiname() === 'cite web') {
+                case 'newspaperArticle':  // Many things get called "news" in error
+                    /** if ($template->wikiname() === 'cite web') {
                         $test_data = $template->get('work') . $template->get('website') .
                             $template->get('url') . $template->get('chapter-url') .
                             $template->get('title') . $template->get('encyclopedia') .
-                            $template->get('encyclopædia') . $url; // Some things get called "news" in error
+                            $template->get('encyclopædia') . $url;
                         if (str_ireplace(['.gov', 'encyclopedia', 'encyclopædia'], '', $test_data) === $test_data) {
                             $template->change_name_to('cite news');
                         }
-                    }
+                    } **/
                     break;
                 case 'thesis':
                     $template->change_name_to('cite thesis');
