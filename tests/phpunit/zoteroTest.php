@@ -635,7 +635,7 @@ final class zoteroTest extends testBaseClass {
         $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X"];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        $this->assertSame('cite news', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('X', $template->get2('work'));
     }
