@@ -2097,7 +2097,7 @@ final class Zotero {
                     return true;
                 }
             /// THIS MUST BE LAST
-            } elseif (($template->has('chapterurl') || $template->has('chapter-url') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl') || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
+            } elseif (($template->has('chapterurl') || $template->has('chapter-url') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl') || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}(?:|fw_)/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
                 if (is_null($url_sent)) {
                     quietly('report_modification', 'Extracting URL from archive');
                     $template->set($url_type, $match[1]);
