@@ -1175,7 +1175,7 @@ final class Template
   $value = safe_preg_replace('~&#124;$~u', ' ', $value); // Ends with pipe
   $value = safe_preg_replace('~^&#124;~u', ' ', $value); // Starts with pipe
   $value = trim($value);
-  if ($value === '') {
+  if ($value === '' || $value === '--' || $value === '-') {
    return false;
   }
   $param_name = trim($param_name); // Pure paranoia
