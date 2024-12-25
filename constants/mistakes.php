@@ -1650,6 +1650,7 @@ const TEMPLATE_CONVERSIONS = [
     ['Pq', 'ProQuest'],
     ['pq', 'ProQuest'],
     ['PQ', 'ProQuest'],
+    ['pQ', 'ProQuest'],
     ['DOI', 'doi'],
     ['Doi', 'doi'],
     ['Deadurl', 'Dead link'],
