@@ -517,6 +517,9 @@ final class Zotero {
         unset($result->language);
         unset($result->source);
 
+        if (substr($result->publicationTitle, -2) === " |") {
+            $result->publicationTitle = substr($result->publicationTitle, 0, -2);
+        }
         if (stripos($url, 'www.royal.uk') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
