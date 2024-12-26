@@ -945,7 +945,12 @@ final class Zotero {
                     (stripos((string) $result->publicationTitle, ' edition') === false)) { // Do not add if "journal" includes "edition"
                     if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
                         if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
-                            $template->add_if_new('journal', (string) $result->publicationTitle);
+                            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) === $url) {
+                                bot_debug_log('Possible journal URL: ' . $url);
+                                $template->add_if_new('work', (string) $result->publicationTitle);
+                            } else {
+                                $template->add_if_new('journal', (string) $result->publicationTitle);
+                            }
                         } else {
                             $template->add_if_new('work', (string) $result->publicationTitle);
                         }
