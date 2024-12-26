@@ -449,10 +449,6 @@ final class constantsTest extends testBaseClass {
         $this->assertFalse($failed);
     }
 
-
-
-    JOURNAL_ARCHIVES_SITES
-
     public function testItalicsOrder(): void {
         $in_order = true;
         $spaces_at = 99999999;
