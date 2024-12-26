@@ -1118,6 +1118,7 @@ const ZOTERO_AVOID_REGEX = [
     'kijkcijferanalyse\.nl/', // highjacked
 ];
 const NON_JOURNAL_WEBSITES = [
+    '.nsw.gov.au/ ',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
