@@ -637,14 +637,14 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $url = 'www.nsw.gov.au/sss';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('X', $template->get2('work'));
 
         $template = $this->make_citation($text);
         $url = 'NotOnAnyList';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('X', $template->get2('work'));
     }
