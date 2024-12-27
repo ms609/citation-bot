@@ -32,6 +32,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function testRedirects(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
         $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
         $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
@@ -39,10 +40,12 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function testGetLastRevision(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('805321380', WikipediaBot::get_last_revision('User:Blocked testing account/readtest'));
     }
 
     public function testGetUserName(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $api = new WikipediaBot();
         $this->assertSame('Citation_bot', $api->get_the_user());
     }
@@ -52,10 +55,12 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function testIsValidUser1(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('Smith609');
         $this->assertTrue($result);
     }
     public function testIsValidUser2(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
         $this->assertTrue($result);
     }
@@ -80,10 +85,12 @@ require_once __DIR__ . '/../testBaseClass.php';
         $this->assertFalse($result);
     }
     public function testIsBlockedUser(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
         $this->assertFalse($result);
     }
     public function testGetLinks(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $json = WikipediaBot::get_links('Covid Watch');
         $this->assertTrue(substr_count($json, 'exists') > 15);
     }
@@ -129,6 +136,7 @@ require_once __DIR__ . '/../testBaseClass.php';
         $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page6(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $response = (object) ['batchcomplete' => 'we did it', 'query' => (object) ['pages' => (object) ['0' => (object) ['x' => 'y']]]];
         $this->assertNull(WikipediaBot::response2page($response));
     }
@@ -149,6 +157,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function test_resultsGood1(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $result = null;
         $this->assertFalse(WikipediaBot::resultsGood($result));
     }
