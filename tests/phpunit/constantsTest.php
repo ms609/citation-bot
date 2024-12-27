@@ -422,6 +422,29 @@ final class constantsTest extends testBaseClass {
                  echo "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' ' . $check . "\n\n";
                  $this->flush();
             }
+            $check = $journal;
+            foreach (JOURNAL_ARCHIVES_SITES as $bad) {
+                $check = str_ireplace($bad, '', $check);
+            }
+            if ($check !== $journal) {
+                 $failed = true;
+                 $this->flush();
+                 echo "\n\n JOURNAL_ARCHIVES_SITES damaged by NON_JOURNAL_WEBSITES: " . $journal . ' ' . $check . "\n\n";
+                 $this->flush();
+            }
+        }
+        foreach (NON_JOURNAL_WEBSITES as $journal) {
+            $journal = $journal . '/';
+            $check = $journal;
+            foreach (JOURNAL_ARCHIVES_SITES as $bad) {
+                $check = str_ireplace($bad, '', $check);
+            }
+            if ($check !== $journal) {
+                 $failed = true;
+                 $this->flush();
+                 echo "\n\n NON_JOURNAL_WEBSITES damaged by JOURNAL_ARCHIVES_SITES: " . $journal . ' ' . $check . "\n\n";
+                 $this->flush();
+            }
         }
         $this->assertFalse($failed);
     }

@@ -643,6 +643,12 @@ const CANONICAL_PUBLISHER_URLS = [
     'doi.library.ubc.ca',
 ];
 
+const JOURNAL_ARCHIVES_SITES = [
+    'zaguan.unizar.es',
+    'hal.science',
+    'shs.cairn.info',
+];
+
 const PROXY_HOSTS_TO_ALWAYS_DROP = [
     'proxy.libraries',
     'proxy.lib.',
