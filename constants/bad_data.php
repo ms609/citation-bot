@@ -9859,7 +9859,6 @@ const NON_JOURNAL_WEBSITES = [
     'shrewsburytown.com/',
     'shrinershospitalsforchildren.org/',
     'shrm.org/',
-    'shs.cairn.info/',
     'shtong.gov.cn/',
     'shudo.net/',
     'shueisha.co.jp/',
