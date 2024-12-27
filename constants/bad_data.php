@@ -569,6 +569,16 @@ const BAD_ZOTERO_TITLES = [
 
 const CANONICAL_PUBLISHER_URLS = [
     '.acm.org',
+    'archivespp.pl',
+    'radicalphilosophy.com',
+    '.erudit.org',
+    'metropolitics.org',
+    'metropolitiques.eu',
+    'revistas.upr.edu',
+    '.tci-thaijo.org',
+    'tidsskrift.dk',
+    'observatoria.rsl.ru',
+    'britishartstudies.ac.uk',
     '.oup.com',
     'academic.oup.com',
     'aeaweb.org',
@@ -616,10 +626,14 @@ const CANONICAL_PUBLISHER_URLS = [
     'psycnet.apa.org',
     'publications.aap.org',
     'pubs.geoscienceworld.org',
+    'muse.jhu.edu',
     'pubs.rsc.org',
+    'xlink.rsc.org',
     'sagepub.com',
     'sagepublications.com',
     'scholarpedia.org',
+    'arc.aiaa.org',
+    'bmcr.brynmawr.edu',
     'schweizerbart.de',
     'scielo.br',
     'scielo.org',
@@ -627,6 +641,7 @@ const CANONICAL_PUBLISHER_URLS = [
     'sciencemag.org',
     'springer.com',
     'tandfonline.com',
+    'pyglobal.com',
     'taylorandfrancis.com',
     'thelancet.com',
     'vertpala.ac.cn',
@@ -653,6 +668,8 @@ const JOURNAL_ARCHIVES_SITES = [
     'perspectivia.net',
     'shs.cairn.info',
     'zaguan.unizar.es',
+    'numdam.org',
+    'works.bepress.com',
 ];
 
 const PROXY_HOSTS_TO_ALWAYS_DROP = [
@@ -1134,6 +1151,7 @@ const ZOTERO_AVOID_REGEX = [
     'kijkcijferanalyse\.nl/', // highjacked
 ];
 const NON_JOURNAL_WEBSITES = [
+    'ourworldindata.org/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
