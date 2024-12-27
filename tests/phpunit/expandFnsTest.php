@@ -120,6 +120,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testExtractDoi(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
         $this->assertSame('10.1016/j.physletb.2010.03.064', extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
@@ -131,11 +132,13 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testSanitizeDoi1(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
     }
     public function testSanitizeDoi2(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test#page_scan_tab_contents'));
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test;jsessionid'));
@@ -143,6 +146,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testTidyDate1(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
         $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
         $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
@@ -150,6 +154,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
     public function testTidyDate2(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
         $this->assertSame('2011'      , tidy_date('05/11/2011 12:52:08'));
@@ -158,17 +163,20 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
     }
     public function testTidyDate3(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('-0001-11-30T00:00:00+00:00'));
         $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
         $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
         $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
     }
     public function testTidyDate4(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
         $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
     }
 
     public function testTidyDate5(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('Invalid'));
         $this->assertSame('', tidy_date('1/1/0001'));
         $this->assertSame('', tidy_date('0001-01-01'));
@@ -176,6 +184,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('', tidy_date('19xx'));
     }
     public function testTidyDate6(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('2000 1999-1998'));
         $this->assertSame('', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('0011-10-07'));
@@ -198,6 +207,7 @@ final class expandFnsTest extends testBaseClass {
     }
     
     public function testRemoveComments(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
     }
 
@@ -223,6 +233,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function test_titles_are_dissimilar_LONG(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
         $big1 = $big1 . $big1 .$big1 .$big1 .$big1 ;
         $big2 = $big1 . "X"; // stuff...X
@@ -233,15 +244,18 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function test_titles_are_similar_ticks(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
         $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
     }
 
     public function test_titles_are_similar_series(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(titles_are_similar('ABC  (clifton, n j ) ', 'ABC  '));
     }
 
     public function test_titles_are_similar_junk(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(titles_are_similar('DSFrHdseyJhgdtyhTSFDhge5safdsfasdfa', '��D��S��F��r��H��d��s��e��y��J��h��g��d��t��y��h��T��S��F��D��h��g��e��5��s��a��f��d��s��f��a��s��d��f��a��'));
     }
 
@@ -311,6 +325,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame("'Y'",straighten_quotes($text, false));
     }
     public function testArrowAreQuotes15(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame($text,straighten_quotes($text, false));
     }
@@ -374,6 +389,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testEm(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame("'''A'''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
     }
 
@@ -399,6 +415,7 @@ final class expandFnsTest extends testBaseClass {
 
     // The X prevents first character caps
     public function testCapitalization_lots_more(): void { // Double check that constants are in order when we sort - paranoid
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), true));
         $this->assertSame('X delle', title_capitalization(title_case('X delle'), true));
         $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), true));
@@ -460,6 +477,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testDOIWorks(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertFalse(doi_works(''));
         $this->assertFalse(doi_active(''));
         $this->assertFalse(doi_works('   '));
@@ -467,19 +485,23 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testDOIWorks2(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1594/PANGAEA.667386'));
         $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));
     }
 
     public function testDOIWorks3a(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1107/S2056989021000116'));
     }
 
     public function testDOIWorks3b(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
     public function testDOIWorks4(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
         $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
@@ -489,12 +511,14 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testHDLworks(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('10.1126fwerw4w4r2342314'));
         $this->assertFalse(hdl_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
         $this->assertFalse(hdl_works('10.112/springerreference.ado5059'));
     }
 
     public function testConference(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertFalse(conference_doi('10.1007/978-3-662-44777_ch3'));
     }
     
@@ -505,11 +529,13 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testDoubleHopDOI(): void { // Just runs over the code and basically does nothing
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.25300/MISQ/2014/38.2.08'));
         $this->assertTrue(doi_works('10.5479/si.00963801.5-301.449'));
     }
 
     public function testHeaderProblemDOI(): void { // Just runs over the code and basically does nothing
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.3403/bsiso10294')); // this one seems to be fussy
     }
 
@@ -741,6 +767,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testGoogleBookNormalize0(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $removed_redundant = 0;
         $removed_parts = '';
         $gid = [];
@@ -796,6 +823,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testGoogleBookNormalize5(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $removed_redundant = 0;
         $removed_parts = '';
         $gid = [];
@@ -812,6 +840,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testFixupGoogle(): void {
+        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
         $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
     }
