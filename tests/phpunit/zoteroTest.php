@@ -1087,11 +1087,11 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testHDLSimpler1(): void {
+        $text = '{{Cite web}}';
+        $template = $this->make_citation($text);
         hdl_works('2027/mdp.39015064245429');
         hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326');
         hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358');
-        $text = '{{Cite web}}';
-        $template = $this->make_citation($text);
         $template->get_identifiers_from_url('https://hdl.handle.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358');
         $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
         $template->get_identifiers_from_url('https://hdl.handle.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116urlappend-358');
@@ -1099,23 +1099,26 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testHDLSimpler2a(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertIsString(hdl_works('20.1000/100'));
     }
 
     public function testHDLSimpler2b(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326'));
     }
 
     public function testHDLSimpler2c(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35'));
     }
 
     public function testHDLSimpler2d(): void {
+        $text = '{{Cite web}}';
+        $template = $this->make_citation($text);
         hdl_works('20.1000/100');
         hdl_works('20.1000/100?urlappend=%3Bseq=326');
         hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35');
-        $text = '{{Cite web}}';
-        $template = $this->make_citation($text);
         $template->get_identifiers_from_url('https://hdl.handle.net/20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35');
         $this->assertSame('20.1000/100', $template->get2('hdl'));
     }
@@ -1157,6 +1160,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testPII(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $pii = 'S0960076019302699';
         $doi_expect = '10.1016/j.jsbmb.2019.105494';
         $doi = Zotero::get_doi_from_pii($pii);
