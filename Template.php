@@ -2649,8 +2649,16 @@ final class Template
 
    case 'work':
    case 'encyclopedia':
+    $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
+    $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
+    $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
+    if (mb_substr($value, -1) === '.') {
+     $value = sanitize_string($value) . '.';
+    } else {
+     $value = sanitize_string($value);
+    }
     if ($this->blank(WORK_ALIASES)) {
-     return $this->add($param_name, wikify_external_text($value));
+     return $this->add($param_name, $value);
     }
     return false;
 
