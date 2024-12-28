@@ -2648,8 +2648,13 @@ final class Template
     return false;
 
    case 'work':
-   case 'website':
    case 'encyclopedia':
+    if ($this->blank(WORK_ALIASES)) {
+     return $this->add($param_name, wikify_external_text($value));
+    }
+    return false;
+
+   case 'website':
     if ($this->blank(WORK_ALIASES)) {
      return $this->add($param_name, $value); // Do NOT Sanitize
     }
