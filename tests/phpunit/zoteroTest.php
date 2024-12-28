@@ -642,7 +642,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('X', $template->get2('work'));
 
         $template = $this->make_citation($text);
-        $url = 'NotOnAnyList';
+        $url = 'X';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
