@@ -686,9 +686,16 @@ const CANONICAL_PUBLISHER_URLS = [
 ];
 
 const JOURNAL_ARCHIVES_SITES = [
+    'actaenergetica.org',
     'digitalcommons.colby.edu',
+    'digitalcommons.csbsju.edu',
+    'digitalcommons.liberty.edu',
+    'digitalcommons.unl.edu',
+    'digitalcommons.wku.edu',
+    'digitalrepository.unm.edu',
     'ecommons.luc.edu',
     'hal.science',
+    'intr2dok.vifa-recht.de',
     'numdam.org',
     'perspectivia.net',
     'shs.cairn.info',
