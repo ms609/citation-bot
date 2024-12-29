@@ -571,6 +571,8 @@ const BAD_ZOTERO_TITLES = [
 const CANONICAL_PUBLISHER_URLS = [
     '-ezproxy.',
     '.acm.org',
+    '.bioline.org.br',
+    '.dbpia.co.kr/Journal/',
     '.ebscohost.com',
     '.erudit.org',
     '.ezproxy.',
@@ -581,6 +583,7 @@ const CANONICAL_PUBLISHER_URLS = [
     '/ezproxy.',
     '/hbr.org',
     'academic.oup.com',
+    'acta.tums.ac.ir',
     'aeaweb.org',
     'aip.scitation.org',
     'amjbot.org',
@@ -617,6 +620,8 @@ const CANONICAL_PUBLISHER_URLS = [
     'icce-ojs-tamu.tdl.org',
     'ieeexplore.ieee.org',
     'inderscience.com',
+    'ingentaconnect.com',
+    'intarch.ac.uk',
     'interstices.ac.nz',
     'iopscience.iop.org',
     'iospress.com',
@@ -643,6 +648,7 @@ const CANONICAL_PUBLISHER_URLS = [
     'noormags.com',
     'noormags.ir',
     'nrcresearchpress.',
+    'oaj.fupress.net',
     'observatoria.rsl.ru',
     'pensoft.net/journals',
     'pipss.revues.org',
@@ -664,6 +670,8 @@ const CANONICAL_PUBLISHER_URLS = [
     'recyt.fecyt.es ',
     'revistas.udd.cl',
     'revistas.upr.edu',
+    'revistes.urv.cat',
+    'riviste.fupress.net',
     'riviste.unimi.it',
     'rjpn.org',
     'sagepub.com',
@@ -1191,6 +1199,7 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    'suddinstitute.org/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
