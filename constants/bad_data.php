@@ -1507,7 +1507,7 @@ const NON_JOURNAL_WEBSITES = [
     'aparat.com/',
     'apnews.com/',
     'apple.com/',
-    'apress.com
+    'apress.com',
     'arabnews.com/',
     'arcade-museum.com/',
     'archdioceseofbombay.org/',
