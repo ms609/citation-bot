@@ -698,7 +698,6 @@ const JOURNAL_ARCHIVES_SITES = [
     'intr2dok.vifa-recht.de',
     'numdam.org',
     'perspectivia.net',
-    'shs.cairn.info',
     'works.bepress.com',
     'zaguan.unizar.es',
 ];
