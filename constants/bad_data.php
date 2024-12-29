@@ -567,6 +567,7 @@ const BAD_ZOTERO_TITLES = [
     '页面不存在',
 ];
 
+//  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
 const CANONICAL_PUBLISHER_URLS = [
     '-ezproxy.',
     '.acm.org',
@@ -679,9 +680,6 @@ const CANONICAL_PUBLISHER_URLS = [
     'www.revistas.usp.br',
     'xlink.rsc.org',
     'zookeys.pensoft.net',
-    //  Below are journal search engines
-    //  Below are proxys
-    //  Below are sites that are simply DOI resolvers, like dx.doi.org
     'doi.library.ubc.ca',
 ];
 
