@@ -946,7 +946,9 @@ final class Zotero {
                     if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
                         if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
                             if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) === $url && str_ireplace(JOURNAL_ARCHIVES_SITES, '', $url) === $url) {
-                                bot_debug_log('Possible journal URL: ' . $url);
+                                if ($url !== '' && strpos($url, 'dx.doi.org') === FALSE && $url !== 'X') { // '' and 'X" are only in test suite
+                                    bot_debug_log('Possible journal URL: ' . $url);
+                                }
                                 $template->add_if_new('work', (string) $result->publicationTitle);
                             } else {
                                 $template->add_if_new('journal', (string) $result->publicationTitle);
