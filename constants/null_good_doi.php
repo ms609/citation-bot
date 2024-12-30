@@ -7,6 +7,7 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.47749/T/UNICAMP.2005.351333' => true,
     '10.30762/realita.v19i2.3514' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
