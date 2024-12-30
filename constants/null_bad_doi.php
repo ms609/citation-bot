@@ -3977,7 +3977,6 @@ const NULL_DOI_LIST = [
     '10.46426/jp2kp.v20i2.49' => true, // domain for sale
     '10.46940/sjpmh.01.1003' => true,
     '10.47454/itqan.v5i1.710' => true,
-    '10.47749/T/UNICAMP.2005.351333' => true,
     '10.47750/jett.2021.12.01.014' => true,
     '10.48156/1388.2022.1917172' => true,
     '10.4997/JRCPE.2010.216' => true,
