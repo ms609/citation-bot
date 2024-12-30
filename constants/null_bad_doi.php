@@ -3663,7 +3663,6 @@ const NULL_DOI_LIST = [
     '10.30630/joiv.4.4.508' => true,
     '10.30699/pjas.2.6.53' => true,
     '10.30762/empirisma.v25i1.732' => true,
-    '10.30762/realita.v19i2.3514' => true,
     '10.30883/jba.v29i2.375' => true, // Localhost
     '10.30959/patanjala.v10i1.332' => true,
     '10.30959/patanjala.v5i3.101' => true,
