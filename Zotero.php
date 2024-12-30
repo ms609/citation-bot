@@ -520,7 +520,7 @@ final class Zotero {
         if (isset($result->publicationTitle) && substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = substr($result->publicationTitle, 0, -2);
         }
-        if (stripos($url, 'www.royal.uk') !== false) {
+        if (stripos($url, 'www.royal.uk') !== false || stripos($url, 'astanatimes.com'!== false)) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
         }
