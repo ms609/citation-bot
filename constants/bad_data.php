@@ -163,7 +163,8 @@ const ARE_WORKS = [
 ]; // Things with dois that should be {{cite document|work=THIS}}
 
 const PUBLISHERS_ARE_WORKS = [
-    '[[forbes]] (Russia)',
+    'hitfix',
+    'forbes (Russia)',
     'anchorage daily news',
     'arizona daily star',
     'belmontstakes.com',
