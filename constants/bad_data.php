@@ -832,6 +832,7 @@ const HOSTS_TO_NOT_ADD = [
 ];
 
 const HOSTNAME_MAP = [
+    'hitfix.com' => '[[HitFix]]';
     'abante.com.ph' => '[[Abante]]',
     'abc.com' => '[[American Broadcasting Company]]',
     'abc.net.au' => '[[Australian Broadcasting Corporation]]',
