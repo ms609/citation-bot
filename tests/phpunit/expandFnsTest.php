@@ -731,11 +731,13 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testcheck_memory_usage(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         check_memory_usage('testcheck_memory_usage');
         $this->assertTrue(true);
     }
 
     public function testCleanDates1(): void {
+        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame('', clean_dates(''));
     }
 
