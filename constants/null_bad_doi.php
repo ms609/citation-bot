@@ -879,6 +879,16 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.14241/asgp.2022.10' => true,
+    '10.14241/asgp.2018.017' => true,
+    '10.14241/asgp.2020.04' => true,
+    '10.14241/asgp.2020.17' => true,
+    '10.14241/asgp.2021.21' => true,
+    '10.14241/asgp.2023.01' => true,
+    '10.14241/asgp.2023.03' => true,
+    '10.14241/asgp.2023.17' => true,
+    '10.14241/asgp.2024.01' => true,
+    '10.18845/tm.v28i4.2438' => true,
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
