@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// TODO - manually check these from time to time - Last Check 7 NOV 2024
+// TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
     '10.4312/dp.45-1' => true, // 500
     '10.1001/archderm.133.1.49' => true, // 404
