@@ -214,7 +214,6 @@ const NULL_DOI_ANNOYING = [
     '10.1289/ehp.110-a15' => true, // error
     '10.1289/ehp.114-a19b' => true, // error
     '10.1289/ehp.7253' => true, // 404
-    '10.12970/2311-1755.2015.03.02.2' => true, // spam
     '10.12975/rastmd.2014.02.01.00020' => true, // 404
     '10.1300/J161v03n02_13' => true, // landing page
     '10.1308/003588405X71054' => true, // page not found
