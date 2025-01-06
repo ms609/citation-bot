@@ -231,9 +231,6 @@ function is_doi_works(string $doi): ?bool {
     $url = "https://doi.org/" . doi_encode($doi);
     $headers_test = get_headers_array($url);
     if ($headers_test === false) {
-        if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) {
-            return false;
-        }
         if (isset(NULL_DOI_LIST[$doi])) {
             return false;
         }
