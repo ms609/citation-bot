@@ -562,7 +562,7 @@ final class Zotero {
             unset($result->creators);
             unset($result->author);
         }
-        if (stripos(@$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709 
+        if (stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709 
             unset($result->publicationTitle); 
         }
         
