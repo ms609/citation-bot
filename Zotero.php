@@ -559,6 +559,9 @@ final class Zotero {
             unset($result->creators);
             unset($result->author);
         }
+        if (stripos(@$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709 
+            unset($result->publicationTitle); 
+        }
         
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
