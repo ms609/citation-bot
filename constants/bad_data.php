@@ -572,6 +572,15 @@ const BAD_ZOTERO_TITLES = [
 
 //  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
 const CANONICAL_PUBLISHER_URLS = [
+    'degenere-journal.it',
+    'cwejournal.org',
+    'apparatusjournal.net',
+    'ispan.waw.pl/journals',
+    'journal.iwc.int',
+    'journals.assaf.org.za',
+    'periodicals.karazin.ua',
+    'periodicos.ufsc.br',
+    'portaldeperiodicos.marinha.mil.br',
     '-ezproxy.',
     '.acm.org',
     '.bioline.org.br',
@@ -1279,6 +1288,8 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    'russianforces.org/',
+    'academia.edu/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
