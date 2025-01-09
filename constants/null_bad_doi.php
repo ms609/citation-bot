@@ -2854,7 +2854,6 @@ const NULL_DOI_LIST = [
     '10.1525/fsr.2007.19.issue-5' => true,
     '10.1525/hlq.2004.67.2.173' => true, // website gone
     '10.1525/hlq.2004.67.3.371' => true, // website gone
-    '10.1525/hlq.2004.67.3.401' => true,
     '10.1525/hlq.2004.67.3.401' => true, // website gone
     '10.1525/hlq.2004.67.3.473' => true, // website gone
     '10.1525/jams.1948.1.2.03a00020' => true,
