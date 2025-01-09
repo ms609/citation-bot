@@ -528,6 +528,9 @@ final class Zotero {
         if (stripos($url, 'theathletic.com') !== false) { // Returns NYT
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
+        if (stripos($url, 'newsen.com') !== false) { // Includes title of article
+            $result->publicationTitle = 'Newsen';
+        }
 
         if (stripos($url, '/x.com') !== false || stripos($url, 'twitter.com') !== false) {
             $result->itemType = 'webpage';   // @codeCoverageIgnore
