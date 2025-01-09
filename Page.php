@@ -295,11 +295,14 @@ class Page {
                                         substr_count($UPPER, '*') !== 0 || // A list!!!
                                         substr_count($UPPER, "\n") > 8 || // who knows
                                         substr_count($UPPER, 'SEE ALSO') !== 0 ||
+                                        substr_count($UPPER, ', SEE ') !== 0 ||
                                         substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
                                         substr_count($UPPER, '{{CITE') !== 0 ||
                                         substr_count($UPPER, '{{CITATION') !== 0 ||
                                         substr_count($UPPER, '{{ CITE') !== 0 ||
-                                        substr_count($UPPER, '{{ CITATION') !== 0) {
+                                        substr_count($UPPER, '{{ CITATION') !== 0 ||
+                                        strpos($matches[1], 'note') !== false
+                                   ) {
                                     return $matches[0];
                                 }
                                 return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6];
