@@ -86,6 +86,7 @@ const NON_HUMAN_AUTHORS = [
     ' at the ',
     ' for the ',
     ' of america',
+    ' ltd',
     'autarquia 360',
     'academy',
     'agencies',
