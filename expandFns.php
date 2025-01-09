@@ -416,6 +416,13 @@ function sanitize_doi(string $doi): string {
             }
         }
     }
+    // Clean up book DOIs
+    if (!doi_works($doi) && preg_match('~^(10\.\d+\/9\d{12})(\-\d{1,3})(\/.+)$~', $doi, $matches)) {
+        if (doi_works($matches[1] . $matches[2]) || doi_works($matches[1])) {
+            $doi = $matches[1] . $matches[2];
+        }
+    }
+   
     return $doi;
 }
 
