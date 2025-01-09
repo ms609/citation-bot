@@ -551,7 +551,7 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'archiveenabled', 'archivedisabled', 'edit', 'legislature', 'box office', 'yer', 'dead-link',
     'author-date', 'origtitle', 'document', 'lang-hide', 'species', 'paidid', 'paid', 'wayb',
     'star', 'band', 'title-volume', 'death_date', 'dodeurl', 'license', 'username', 'bsite',
-    'cite',
+    'cite', 'flag', 'access-website',
 ];
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
