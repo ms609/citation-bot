@@ -14604,6 +14604,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.3733/hilg.v36n15p567' => true,
     '10.3733/hilg.v41n13p343' => true,
     '10.3733/hilg.v52n02p057' => true,
+    '10.37334/eras.v4i3.86' => true,
     '10.3739/rikusui.38.94' => true,
     '10.37390/avancacinema.2020.a108' => true,
     '10.3746/pnf.2012.17.4.286' => true,
