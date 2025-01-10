@@ -5494,7 +5494,7 @@ final class Template
 
     case 'page':
     case 'pages':
-     if (preg_match('~^pp?\. ([0-9\-\–\s\,]+)$~', $this->get($param), $matched) {
+     if (preg_match('~^pp?\. ([0-9\-\–\s\,]+)$~', $this->get($param), $matched)) {
       $this->set($param, $matched[1]);
      }
      return;
