@@ -6769,7 +6769,7 @@ final class Template
      if ($this->wikiname() === 'cite book') {
       if ($this->blank('title')) {
        $this->rename('book-title', 'title');
-      } elseif ($this->black(CHAPTER_ALIASES)) {
+      } elseif ($this->blank(CHAPTER_ALIASES)) {
        $this->rename('title', 'chapter');
        $this->rename('book-title', 'title');
       } elseif (titles_are_similar($this->get('title'), $this->get('book-title'))) {
