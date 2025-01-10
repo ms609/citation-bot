@@ -6765,6 +6765,19 @@ final class Template
      }
      return;
 
+    case 'book-title':
+     if ($this->wikiname() === 'cite book') {
+      if ($this->blank('title')) {
+       $this->rename('book-title', 'title');
+      } elseif ($this->blank(CHAPTER_ALIASES)) {
+       $this->rename('title', 'chapter');
+       $this->rename('book-title', 'title');
+      } elseif (titles_are_similar($this->get('title'), $this->get('book-title'))) {
+       $this->forget('book-title');
+      }
+     }
+     return;
+
     case 'title':
      if ($this->blank($param)) {
       return;
