@@ -728,7 +728,6 @@ const NULL_DOI_ANNOYING = [
     '10.3369/tethys.2011.8.06' => true, // 404
     '10.3421/32412xxxxxxx' => true, // test suite bogus
     '10.37073/puriq.3.1.107' => true, // domain for sale
-    '10.37334/eras.v4i3.86' => true, // Virus
     '10.37389/abei.v12i0.3575' => true, // Bad gateway
     '10.3846/cpc.2017.286' => true, // File not found
     '10.3934/mbe' => true, // 404
