@@ -5492,6 +5492,13 @@ final class Template
      }
      return;
 
+    case 'page':
+    case 'pages':
+     if (preg_match('~^pp?\. ([0-9\-\–\s\,]+)$~', $this->get($param), $matched) {
+      $this->set($param, $matched[1]);
+     }
+     return;
+     
     case 'date':
      if ($this->blank('date') && $this->has('year')) {
       $this->forget('date');
