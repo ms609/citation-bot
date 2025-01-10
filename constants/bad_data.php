@@ -1289,7 +1289,6 @@ const ZOTERO_AVOID_REGEX = [
 ];
 const NON_JOURNAL_WEBSITES = [
     'russianforces.org/',
-    'academia.edu/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
