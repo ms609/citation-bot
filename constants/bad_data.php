@@ -6823,7 +6823,7 @@ const NON_JOURNAL_WEBSITES = [
     'litgrid.eu/',
     'lithoguru.com/',
     'littlefyodor.com/',
-    'lituanistika.lt',
+    'lituanistika.lt/',
     'liturgybrisbane.net.au/',
     'live2d.com/',
     'live95fm.ie/',
