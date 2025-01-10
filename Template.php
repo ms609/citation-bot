@@ -1825,7 +1825,7 @@ final class Template
     if (stripos($value, 'Report Number ') !== false) {
      return false;
     }
-    if (!$this->blank(['booktitle', 'book-title'])) {
+    if (!$this->blank('book-title')) {
      return false;
     }
     if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
@@ -1969,7 +1969,7 @@ final class Template
    case 'contribution':
    case 'article':
    case 'section': //  We do not add article/section, but sometimes found floating in a template
-    if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) {
+    if (!$this->blank('book-title') && $this->has('title')) {
      return false;
     }
     if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') {
@@ -2004,7 +2004,7 @@ final class Template
      if ($this->has('article') && ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) {
       return false;
      } // Probably the same thing
-     if (!$this->blank(['booktitle', 'book-title'])) {
+     if (!$this->blank('book-title')) {
       return false;
      } // Cite conference uses this
      if ($this->blank('script-title')) {
