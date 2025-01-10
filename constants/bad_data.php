@@ -4226,7 +4226,7 @@ const NON_JOURNAL_WEBSITES = [
     'exploresunda.com/',
     'express.co.uk/',
     'expressentertainment.tv/',
-    'extension.oregonstate.edu/
+    'extension.oregonstate.edu/',
     'extracar.ru/',
     'extreme-e.com/',
     'eyebeam.org/',
