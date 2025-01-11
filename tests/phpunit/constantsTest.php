@@ -614,7 +614,7 @@ final class constantsTest extends testBaseClass {
             $tem = str_replace(' ', '_', $tem);
             if (WikipediaBot::is_redirect($tem) !== 0 &&
                 $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
-                $tem !== 'Template:LCCN') { // We remove one layer of re-direct, but not both
+                $tem !== 'Template:LCCN' && $tem !== 'Template:PMC') { // We remove one layer of re-direct, but not both
                 $errors = $errors . '   Is now a redirect:' . $convert[1];
             }
         }
