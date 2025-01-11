@@ -3870,7 +3870,6 @@ const NULL_DOI_LIST = [
     '10.3727/000000006783991881' => true,
     '10.3733/ca.v044n02p25' => true,
     '10.3733/ca.v054n04p6' => true,
-    '10.37334/eras.v4i3.86' => true, // Virus
     '10.37389/abei.v12i0.3575' => true, // Bad gateway
     '10.3748/wjg.14.666' => true,
     '10.3748/wjg.15.1264' => true,
