@@ -4742,25 +4742,28 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertSame('A_X http', $expanded->get3('author-link3'));
     }
 
-    public function testBookTitleCleanUp(): void {
+    public function testBookTitleCleanUp1(): void {
         $text = "{{cite book|book-title=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('X', $expanded->get3('title'));
-        $this->assertNull($expanded->get3('book-title'));
-        $this->assertNull($expanded->get3('chapter'));
-
+        $this->assertNull($expanded->get2('chapter'));
+        $this->assertNull($expanded->get2('book-title'));
+    }
+    public function testBookTitleCleanUp2(): void {
         $text = "{{cite book|book-title=X|title=Y}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('X', $expanded->get3('title'));
-        $this->assertNull($expanded->get3('book-title'));
         $this->assertSame('Y', $expanded->get3('chapter'));
-
+        $this->assertNull($expanded->get2('book-title'));
+    }
+    public function testBookTitleCleanUp3(): void {
         $text = "{{cite book|book-title=X|title=X|chapter=Y}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('X', $expanded->get3('title'));
-        $this->assertNull($expanded->get3('book-title'));
         $this->assertSame('Y', $expanded->get3('chapter'));
-
+        $this->assertNull($expanded->get2('book-title'));
+    }
+    public function testBookTitleCleanUp4(): void {
         $text = "{{cite book|book-title=This is book-title|title=And title time|chapter=Chapter wapper}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('And title time', $expanded->get3('title'));
