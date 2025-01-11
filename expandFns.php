@@ -107,6 +107,7 @@ function doi_works(string $doi): ?bool {
                 return true;
             }
             bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
+            return true; // We log these and see if they have changed
         }
         return false;
     }
