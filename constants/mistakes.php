@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
     '_isbn' => 'isbn',
+    'websiten' => 'website',
     '–citeseerx' => 'citeseerx',
     '—publisher' => 'publisher',
     ';ast1' => 'last1',
