@@ -13992,7 +13992,6 @@ const NULL_DOI_BUT_GOOD = [
     '10.33102/alazkiyaa43' => true,
     '10.33102/jqss.vol5no1.97' => true,
     '10.33137/cal.v6i1.32565' => true,
-    '10.33153/glr.v17i1.2600' => true,
     '10.33172/jpbh.v11i1.1211' => true,
     '10.3318/dib.004040.v1' => true,
     '10.3318/dib.006500.v1' => true,
