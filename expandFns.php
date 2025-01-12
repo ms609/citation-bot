@@ -101,14 +101,11 @@ function doi_works(string $doi): ?bool {
         return null;   // @codeCoverageIgnore
     }
     if ($works === false) {
-        HandleCache::$cache_hdl_bad[$doi] = true;
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
-            if (strpos($doi, '10.1175/') === 0) { // TODO - just do them all and no longer even try????
-                return true;
-            }
             bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
             return true; // We log these and see if they have changed
         }
+        HandleCache::$cache_hdl_bad[$doi] = true;
         return false;
     }
     HandleCache::$cache_good[$doi] = true;
@@ -210,6 +207,14 @@ function is_doi_works(string $doi): ?bool {
     if (preg_match('~^10\.4435\/BSPI\.~i', $doi)) {
         return false;  // TODO: old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page
     }
+    if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+        if (strpos($doi, '10.1353/') === 0) {
+            return true; // TODO - muse is annoying
+        } elseif (strpos($doi, '10.1175/') === 0) {
+            return true; // TODO - American Meteorological Society is annoying
+        }
+    }
+
     $registrant = $matches[1];
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 17 August 2024 version is last check
