@@ -69,7 +69,7 @@ include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
-defined('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
+define('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
 
 if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
     define('EDIT_AS_USER', true);
