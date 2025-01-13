@@ -5,6 +5,8 @@ declare(strict_types=1);
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
     '10.5406/jbookmormstud.11.1.0040' => true, // 404
+    '10.5406/jbookmormstud.13.1-2.0050' => true, // 404
+    '10.5406/jbookmormstud.11.1.0016' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -886,6 +888,8 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
     '10.5406/jbookmormstud.11.1.0040' => true, // 404
+    '10.5406/jbookmormstud.13.1-2.0050' => true, // 404
+    '10.5406/jbookmormstud.11.1.0016' => true, // 404
     '10.1001/archinte.162.8.946' => true,
     '10.3315/jdcr.2010.1060' => true,
     '10.1057/9781137463296.0009' => true,
