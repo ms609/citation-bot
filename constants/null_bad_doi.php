@@ -884,6 +884,9 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1001/archinte.162.8.946' => true,
+    '10.3315/jdcr.2010.1060' => true,
+    '10.1057/9781137463296.0009' => true,
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
