@@ -572,6 +572,7 @@ const BAD_ZOTERO_TITLES = [
 
 //  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
 const CANONICAL_PUBLISHER_URLS = [
+    'migrationletters.com',
     '-ezproxy.',
     '.acm.org',
     '.bioline.org.br',
