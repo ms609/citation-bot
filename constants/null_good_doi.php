@@ -7,6 +7,18 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.5334/opt.010606' => true,
+    '10.5334/opt.040810' => true,
+    '10.4225/13/50BBF1BF4D141' => true,
+    '10.4225/13/50BBF9E610EA3' => true,
+    '10.4254/wjh.v2.i11.410' => true,
+    '10.4254/wjh.v3.i10.275' => true,
+    '10.4254/wjh.v5.i7.353' => true,
+    '10.33182/ml.v13i1.265' => true,
+    '10.33182/ml.v12i3.283' => true,
+    '10.33182/ml.v16i2.562' => true,
+    '10.16943/ijhs/2017/v52i3/49161' => true,
+    '10.17863/CAM.13713' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archgenpsychiatry.2009.141' => true,
