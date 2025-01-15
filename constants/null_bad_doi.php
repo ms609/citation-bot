@@ -4282,7 +4282,6 @@ const NULL_DOI_LIST = [
     '10.5944/signa.vol28.2019.25151' => true,
     '10.5944/signa.vol31.2022.29451' => true,
     '10.5944/trc.41.2018.22119' => true,
-    '10.59444/2024serredgor_seu_par21' => true,
     '10.5948/9781614442103' => true,
     '10.6019/blueprint_20130405' => true,
     '10.6024/jmbai.2013.55.2.01796-12' => true,
