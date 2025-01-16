@@ -2368,6 +2368,10 @@ final class Template
       return true;
      }
     }
+    if ($this->has('jstor') && strpos($this->get('doi'), '10.1355/') === 0) {
+     $this->quietly_forget('doi');
+     return true;
+    }
     // Forget any others that are blank
     foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
      if ($this->blank($alias)) {
