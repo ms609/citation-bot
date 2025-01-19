@@ -1250,6 +1250,7 @@ const NO_DATE_WEBSITES = [
     'weeksvillesociety.org',
     '.loc.gov',
     'parksandgardens.org',
+    'svenskfilmdatabas.se',
 ];
 
 const ZOTERO_AVOID_REGEX = [
