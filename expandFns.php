@@ -1218,7 +1218,33 @@ function throttle(): void {
 
 // ============================================= Data processing functions ======================================
 
-function tidy_date(string $string): string {
+function tidy_date(string $string): string { // Wrapper to change all pre-1900 dates to just years
+    $string = tidy_date_inside($string);
+    if ($string === '') {
+        return $string;
+    }
+    $time = strtotime($string);
+    if (!$time) {
+        return $string;
+    }
+    $old = strtotime('1 January 1900');
+    if ($old < $time) {
+        return $string;
+    }
+    $new = date('Y', $time);
+    if (strlen($new) === 4) {
+        return ltrim($new, "0"); // Also cleans up 0000
+    }
+    if (strlen($new) === 5 && substr($new, 0, 1) === '-') {
+        $new = ltrim($new, "-");
+        $new = ltrim($new, "0");
+        $new = $new . ' BC';
+        return $new;
+    }
+    return $string;
+}
+
+function tidy_date_inside(string $string): string {
     $string=trim($string);
     if (stripos($string, 'Invalid') !== false) {
         return '';

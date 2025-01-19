@@ -205,6 +205,16 @@ final class expandFnsTest extends testBaseClass {
     public function testTidyDate8c(): void {
         $this->assertSame('' , tidy_date('23--'));
     }
+
+    public function testTidyDate55(): void {
+        $this->assertSame('1800' , tidy_date('3 Feb 1800'));
+    }
+    public function testTidyDate56(): void {
+        $this->assertSame('542' , tidy_date('3 Feb 0542'));
+    }
+    public function testTidyDate57(): void {
+        $this->assertSame('3 BC' , tidy_date('-0003-10-22'));
+    }
     
     public function testRemoveComments(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
