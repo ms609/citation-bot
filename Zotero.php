@@ -90,7 +90,10 @@ final class Zotero {
 
         self::$zotero_announced = 1;
         foreach ($templates as $template) {
-            self::expand_by_zotero($template);
+            $doi = $template->get('doi');
+            if (!doi_active($doi)) { // Do not expand if DOI works with CrossRef
+                self::expand_by_zotero($template);
+            }
         }
         self::$zotero_announced = 2;
         foreach ($templates as $template) {
