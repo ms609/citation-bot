@@ -1249,6 +1249,7 @@ const NO_DATE_WEBSITES = [
     'tps.cr.nps.gov',
     'weeksvillesociety.org',
     '.loc.gov',
+    'parksandgardens.org',
 ];
 
 const ZOTERO_AVOID_REGEX = [
