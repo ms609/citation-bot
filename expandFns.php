@@ -1233,11 +1233,11 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
     }
     $new = date('Y', $time);
     if (strlen($new) === 4) {
-        return ltrim("0", $new); // Also cleans up 0000
+        return ltrim($new, "0"); // Also cleans up 0000
     }
     if (strlen($new) === 5 && substr($new, 0, 1) === '-') {
-        $new = ltrim("-", $new);
-        $new = ltrim("0", $new);
+        $new = ltrim($new, "-");
+        $new = ltrim($new, "0");
         $new = $new . ' BC';
         return $new;
     }
