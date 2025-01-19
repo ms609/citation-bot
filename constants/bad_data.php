@@ -1244,6 +1244,11 @@ const NO_DATE_WEBSITES = [
     'webcitation.org',
     'webharvest.gov',
     'wikipedia.org',
+    'www.ola.org',
+    '.ola.org',
+    'tps.cr.nps.gov',
+    'weeksvillesociety.org',
+    '.loc.gov',
 ];
 
 const ZOTERO_AVOID_REGEX = [
