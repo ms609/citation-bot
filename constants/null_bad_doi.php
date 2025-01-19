@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
-    dsfasdfdsaafdsfasd
+    '10.18809/jbms.2017.0116' => true, // host gone
+    '10.19151/LEEF.2015.1501b' => true, // domain for sale
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -992,6 +993,8 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.18809/jbms.2017.0116' => true, // host gone
+    '10.19151/LEEF.2015.1501b' => true, // domain for sale
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -3351,7 +3354,6 @@ const NULL_DOI_LIST = [
     '10.18809/jbms.2016.0108' => true, // hijacked domain
     '10.18809/jbms.2017.0101' => true, // hijacked domain
     '10.18809/jbms.2017.0106' => true,
-    '10.18809/jbms.2017.0116' => true,
     '10.18821/0023-2149-2016-94-11-875-880' => true,
     '10.18821/0023-2149-2016-94-2-154-160' => true,
     '10.18845/rc.v31i43.6279' => true,
