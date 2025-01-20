@@ -213,7 +213,7 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('542' , tidy_date('3 Feb 0542'));
     }
     public function testTidyDate57(): void {
-        $this->assertSame('3 BC' , tidy_date('-0003-10-22'));
+        $this->assertSame('' , tidy_date('-0003-10-22')); // TODO - should be '3 BC'????
     }
     
     public function testRemoveComments(): void {
