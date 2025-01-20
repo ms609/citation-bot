@@ -1327,7 +1327,7 @@ function tidy_date_inside(string $string): string {
     }
     $string = trim($string);
     if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) {
-        return tidy_date($matches[1]); // Remove time zone stuff from standard date format
+        return tidy_date_inside($matches[1]); // Remove time zone stuff from standard date format
     }
     if (preg_match('~^\-?\d+$~', $string)) {
         $string = intval($string);
@@ -1363,16 +1363,16 @@ function tidy_date_inside(string $string): string {
         return $string;
     }
     if (preg_match('~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) {
-        return tidy_date($matches[1]); // Starts with date
+        return tidy_date_inside($matches[1]); // Starts with date
     }
     if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~', $string, $matches)) {
-        return tidy_date($matches[1]);  // Ends with a date
+        return tidy_date_inside($matches[1]);  // Ends with a date
     }
     if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) {
-        return tidy_date($matches[1]); // Recursion to clean up 3/27/2000
+        return tidy_date_inside($matches[1]); // Recursion to clean up 3/27/2000
     }
     if (preg_match('~[^0-9](\d{1,2}/\d{1,2}/\d{4})$~', $string, $matches)) {
-        return tidy_date($matches[1]);
+        return tidy_date_inside($matches[1]);
     }
 
     // Dates with dots -- convert to slashes and try again.
@@ -1383,7 +1383,7 @@ function tidy_date_inside(string $string): string {
         if (intval($matches[3]) < 100)  {
             $matches[3] = (int) $matches[3] + 1900;
         }
-        return tidy_date((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
+        return tidy_date_inside((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
     }
 
     if (preg_match('~\s(\d{4})$~', $string, $matches)) {
