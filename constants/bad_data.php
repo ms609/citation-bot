@@ -572,6 +572,12 @@ const BAD_ZOTERO_TITLES = [
 
 //  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
 const CANONICAL_PUBLISHER_URLS = [
+    'harbinengineeringjournal.com',
+    'saber.ucv.ve',
+    'apcz.umk.pl',
+    'mycokeys.pensoft.net',
+    'ehu.eus/ojs',
+    'ojs.ehu.eus',
     '-ezproxy.',
     '.acm.org',
     '.bioline.org.br',
@@ -1320,6 +1326,7 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    'apps.dtic.mil/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
