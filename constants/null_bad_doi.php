@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.1603/0022-0493(2004)097[1071:rogsav]2.0.co;2' => true, // page not found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -3236,7 +3237,7 @@ const NULL_DOI_LIST = [
     '10.1598/JAAL.45.6.1' => true,
     '10.1598/RT.49.1.3' => true,
     '10.1603/0022-0493-97.2.525' => true,
-    '10.1603/0022-0493(2004)097[1071:rogsav]2.0.co;2' => true,
+    '10.1603/0022-0493(2004)097[1071:rogsav]2.0.co;2' => true, // page not found
     '10.1603/0022-0493(2007)100[148:AIBSIA]2.0.CO;2' => true,
     '10.1603/0022-0493(2007)100[39:asospo]2.0.co;2' => true,
     '10.1603/0022-0493(2007)100[916:gosrif]2.0.co;2' => true,
