@@ -1583,6 +1583,7 @@ final class Zotero {
                 return false;  // URL matched existing DOI, so we did not use it
             }
             if ($template->add_if_new('doi', $doi)) {
+                $doi = $template->get('doi');
                 if (doi_works($doi)) {
                     if (is_null($url_sent)) {
                         if (mb_strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
