@@ -775,7 +775,7 @@ final class Template
       // Often the pre-print year
       $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
      }
-     if ($this->has('doi') && doi_active($this->get('doi'))) {
+     if ($this->has('doi')) {
       expand_by_doi($this);
      }
      $this->this_array = [$this];
@@ -2312,12 +2312,12 @@ final class Template
       }
       $this->add('doi', $match[0]);
       return true;
-     } elseif (!str_i_same($this->get('doi'), $match[0]) && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+     } elseif (!str_i_same($this->get('doi'), $match[0]) && !$this->blank(DOI_BROKEN_ALIASES) && doi_works($match[0])) {
       report_action("Replacing non-working DOI with a working one");
       $this->set('doi', $match[0]);
       $this->tidy_parameter('doi');
       return true;
-     } elseif (!str_i_same($this->get('doi'), $match[0]) && strpos($this->get('doi'), '10.13140/') === 0 && doi_active($match[0])) {
+     } elseif (!str_i_same($this->get('doi'), $match[0]) && strpos($this->get('doi'), '10.13140/') === 0 && doi_works($match[0])) {
       report_action("Replacing ResearchGate DOI with publisher's");
       $this->set('doi', $match[0]);
       $this->tidy_parameter('doi');
@@ -2769,7 +2769,7 @@ final class Template
    if ($this->has('quote') && strpos($this->get('quote'), $doi) !== false) {
     return;
    }
-   if (doi_active($doi)) {
+   if (doi_works($doi)) {
     $this->add_if_new('doi', $doi);
    }
   }
@@ -3427,7 +3427,7 @@ final class Template
      $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "DO":
-     $ris_parameter = doi_active($ris_part[1]) ? "doi" : false;
+     $ris_parameter = doi_works($ris_part[1]) ? "doi" : false;
      break;
     case "JO":
     case "JF":
@@ -3880,7 +3880,7 @@ final class Template
  public function expand_by_google_books(): void
  {
   $this->clean_google_books();
-  if ($this->has('doi') && doi_active($this->get('doi'))) {
+  if ($this->has('doi') && doi_works($this->get('doi'))) {
    return;
   }
   foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
@@ -8379,27 +8379,6 @@ final class Template
    report_info("Checking that DOI " . echoable($doi) . " is operational...");
   }
   $trial = get_possible_dois($doi);
-  foreach ($trial as $try) {
-   // Check that it begins with 10.
-   if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
-    $try = "10." . $match[1];
-   }
-   if (doi_active($try)) {
-    $this->set('doi', $try);
-    $this->doi_valid = true;
-    foreach (DOI_BROKEN_ALIASES as $alias) {
-     $this->forget($alias);
-    }
-    if ($doi === $try) {
-     if ($chatty) {
-      report_inline('DOI ok.');
-     }
-    } else {
-     report_inline("Modified DOI:  " . echoable($try) . " is operational...");
-    }
-    return true;
-   }
-  }
   foreach ($trial as $try) {
    // Check that it begins with 10.
    if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
