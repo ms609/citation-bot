@@ -504,6 +504,8 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' Theoretics ',
+    ' The Last Magazine ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -1031,6 +1033,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' TheoretiCS ',
+    ' THE LAST MAGAZINE ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
