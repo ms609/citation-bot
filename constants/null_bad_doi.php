@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.1603/0022-2585(2007)44[175:IRITBB]2.0.CO;2' => true, // page not found
+    '10.17159/2309-8392/2017/v62n2a4' => true, // Not found
     '10.21614/jtmr-21-1-68' => true, // Hijacked
     '10.7190/ead/2015/69' => true, // 404
     '10.1603/0022-0493(2004)097[1071:rogsav]2.0.co;2' => true, // page not found
@@ -3248,7 +3250,7 @@ const NULL_DOI_LIST = [
     '10.1603/0022-2585(2006)43[1103:SOANTG]2.0.CO;2' => true,
     '10.1603/0022-2585(2006)43[731:rooole]2.0.co;2' => true,
     '10.1603/0022-2585(2006)43[737:RROLPA]2.0.CO;2' => true,
-    '10.1603/0022-2585(2007)44[175:IRITBB]2.0.CO;2' => true,
+    '10.1603/0022-2585(2007)44[175:IRITBB]2.0.CO;2' => true, // page not found
     '10.1603/0022-2585(2007)44[303:BLIIIR]2.0.CO;2' => true,
     '10.1603/0022-2585(2007)44[758:SOISOA]2.0.CO;2' => true,
     '10.1603/0022-2585(2008)45[1092:BAMAOD]2.0.CO;2' => true,
@@ -3288,7 +3290,7 @@ const NULL_DOI_LIST = [
     '10.17159/2078-5151/2018/v56n3a2557' => true, // Not found
     '10.17159/2305-7963/2015/v11n1a1' => true, // 404
     '10.17159/2309-8392/2015/V60N2A1' => true, // Not found
-    '10.17159/2309-8392/2017/v62n2a4' => true,
+    '10.17159/2309-8392/2017/v62n2a4' => true, // Not found
     '10.17159/2411-7870/2016/v22n1a5' => true,
     '10.17159/2411-7870/2018/v24n1a6' => true,
     '10.17159/2411-9717/2016/v116n6a1' => true,
