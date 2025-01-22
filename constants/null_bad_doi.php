@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.21614/jtmr-21-1-68' => true, // Hijacked
+    '10.7190/ead/2015/69' => true, // 404
     '10.1603/0022-0493(2004)097[1071:rogsav]2.0.co;2' => true, // page not found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
@@ -3414,7 +3416,7 @@ const NULL_DOI_LIST = [
     '10.21551/jhf.v2i1.5000176602' => true,
     '10.21567/adhyayan.v3i2.10183' => true,
     '10.21599/atjir.15384' => true, // domain for sale
-    '10.21614/jtmr-21-1-68' => true,
+    '10.21614/jtmr-21-1-68' => true, // Hijacked
     '10.21696/rcsl102820081086' => true,
     '10.2172/1220110' => true,
     '10.2174/0929867043364748' => true, // landing page
@@ -4529,7 +4531,7 @@ const NULL_DOI_LIST = [
     '10.7182/prtr.13.3.a368158t7662j463' => true, // Error
     '10.7189/jogh.08.021104' => true,
     '10.7189/jogh.12.03011' => true,
-    '10.7190/ead/2015/69' => true,
+    '10.7190/ead/2015/69' => true, // 404
     '10.7196/SAMJ.2016.v106i1.10324' => true, // website down for a long time
     '10.7196/SAMJ.2016.v106i1.9913' => true, // website down for a long time
     '10.7196/SAMJ.2016.v107.i1.12120' => true, // website down for a long time
