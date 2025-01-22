@@ -677,9 +677,7 @@ function query_crossref(string $doi): ?object {
         return null; // jstor API is better
     }
     set_time_limit(120);
-    $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
-    /** @psalm-taint-escape ssrf */
-    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:{$doi}&noredirect=TRUE";
+    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:" . doi_encode($doi) . "&noredirect=TRUE";
     curl_setopt($ch, CURLOPT_URL, $url);
     for ($i = 0; $i < 2; $i++) {
         $raw_xml = bot_curl_exec($ch);
@@ -1569,8 +1567,7 @@ function CrossRefTitle(string $doi): string {
         $ch = bot_curl_init(1.0,
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    /** @psalm-taint-escape ssrf */
-    $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
