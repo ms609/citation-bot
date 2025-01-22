@@ -246,7 +246,7 @@ final class Zotero {
                 } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
                     report_forget("Existing free DOI; dropping dead URL");
                     $template->forget($url_kind);
-                } elseif (doi_active($template->get('doi')) &&
+                } elseif (doi_works($template->get('doi')) &&
                             !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
                             $url_kind !== '' &&
                             (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) !== $template->get($url_kind)) &&
@@ -1583,7 +1583,8 @@ final class Zotero {
                 return false;  // URL matched existing DOI, so we did not use it
             }
             if ($template->add_if_new('doi', $doi)) {
-                if (doi_active($doi)) {
+                $doi = $template->get('doi');
+                if (doi_works($doi)) {
                     if (is_null($url_sent)) {
                         if (mb_strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
                             if ($template->has_good_free_copy()) {
