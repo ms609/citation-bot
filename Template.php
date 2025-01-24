@@ -7669,11 +7669,16 @@ final class Template
     // no break; pages, issue and year (the previous case) should be treated in this fashion.
     case 'pages':
     case 'page':
+    case 'p':
     case 'pp': // And cases 'year' and'issue' following from previous
      $value = $this->get($param);
      $value = str_replace('--', '-', $value);
      if (str_i_same('null', $value)) {
       $this->forget($param);
+      return;
+     }
+     if (str_i_same('n.p', $value)) {
+      $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD
       return;
      }
      if (strpos($value, "[//") === 0) {
