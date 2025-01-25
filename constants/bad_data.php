@@ -1337,6 +1337,7 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    'history.siggraph.org',
     'apps.dtic.mil/',
     '-news.co.uk/',
     '.ajc.com/',
