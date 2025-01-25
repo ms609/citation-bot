@@ -1337,8 +1337,6 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
-    'history.siggraph.org',
-    'apps.dtic.mil/',
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
@@ -1662,6 +1660,7 @@ const NON_JOURNAL_WEBSITES = [
     'aparat.com/',
     'apnews.com/',
     'apple.com/',
+    'apps.dtic.mil/',
     'arab-reform.net/',
     'arabnews.com/',
     'arcade-museum.com/',
@@ -5370,6 +5369,7 @@ const NON_JOURNAL_WEBSITES = [
     'history.navy.mil/',
     'history.org/',
     'history.pcusa.org/',
+    'history.siggraph.org/',
     'history.ucsb.edu/',
     'historyandtheheadlines.abc-clio.com/',
     'historycentral.com/',
