@@ -7,6 +7,15 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.14241/asgp.2018.017' => true,
+    '10.14241/asgp.2020.04' => true,
+    '10.14241/asgp.2020.17' => true,
+    '10.14241/asgp.2021.21' => true,
+    '10.14241/asgp.2022.10' => true,
+    '10.14241/asgp.2023.01' => true,
+    '10.14241/asgp.2023.03' => true,
+    '10.14241/asgp.2023.17' => true,
+    '10.14241/asgp.2024.01' => true,
     '10.1000/100' => true,
     '10.1001/archfami.9.10.1195' => true,
     '10.1001/archgenpsychiatry.2009.141' => true,
