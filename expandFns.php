@@ -55,17 +55,13 @@ final class HandleCache {
 }
 
 // ============================================= DOI functions ======================================
-function doi_active(string $doi): ?bool {
+function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
     $doi = trim($doi);
     if (isset(HandleCache::$cache_active[$doi])) {
         return true;
     }
     if (isset(HandleCache::$cache_inactive[$doi])) {
         return false;
-    }
-    $works = doi_works($doi);
-    if ($works !== true) {
-        return $works;
     }
     $works = is_doi_active($doi);
     if ($works === null) { // Temporary problem - do not cache
