@@ -45,7 +45,7 @@ final class HandleCache {
     }
     public static function free_memory(): void {
         self::$cache_active = [];
-        self::$cache_inactive = [];
+        self::$cache_inactive = BAD_DOI_ARRAY;
         self::$cache_good = [];
         self::$cache_hdl_loc = [];
         self::$cache_hdl_bad = BAD_DOI_ARRAY;
