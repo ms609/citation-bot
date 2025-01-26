@@ -20,17 +20,17 @@ final class HandleCache {
     public const MAX_HDL_SIZE = 1024;
 
     /** @var array<bool> $cache_active */
-    public static array $cache_active = [];              // DOI is in CrossRef and works
+    public static array $cache_active = BAD_DOI_ARRAY;  // DOI is in CrossRef, no claims if it still works.
     /** @var array<bool> $cache_inactive */
-    public static array $cache_inactive = [];           // DOI either is not in CrossRef or does not work
+    public static array $cache_inactive = [];           // DOI is not in CrossRef
     /** @var array<bool> $cache_good */
-    public static array $cache_good = [];                    // DOI works
+    public static array $cache_good = [];               // DOI works
     /** @var array<string> $cache_hdl_loc */
-    public static array $cache_hdl_loc = [];             // Final HDL location URL
+    public static array $cache_hdl_loc = [];            // Final HDL location URL
     /** @var array<bool> $cache_hdl_bad */
-    public static array $cache_hdl_bad = BAD_DOI_ARRAY;    // HDL/DOI does not resolve to anything
+    public static array $cache_hdl_bad = BAD_DOI_ARRAY; // HDL/DOI does not resolve to anything
     /** @var array<bool> $cache_hdl_null */
-    public static array $cache_hdl_null = [];            // HDL/DOI resolves to null
+    public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
 
     public static function check_memory_use(): void {
         $usage = count(self::$cache_inactive) +
@@ -45,7 +45,7 @@ final class HandleCache {
     }
     public static function free_memory(): void {
         self::$cache_active = [];
-        self::$cache_inactive = [];
+        self::$cache_inactive = BAD_DOI_ARRAY;
         self::$cache_good = [];
         self::$cache_hdl_loc = [];
         self::$cache_hdl_bad = BAD_DOI_ARRAY;
@@ -55,17 +55,13 @@ final class HandleCache {
 }
 
 // ============================================= DOI functions ======================================
-function doi_active(string $doi): ?bool {
+function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
     $doi = trim($doi);
     if (isset(HandleCache::$cache_active[$doi])) {
         return true;
     }
     if (isset(HandleCache::$cache_inactive[$doi])) {
         return false;
-    }
-    $works = doi_works($doi);
-    if ($works !== true) {
-        return $works;
     }
     $works = is_doi_active($doi);
     if ($works === null) { // Temporary problem - do not cache
