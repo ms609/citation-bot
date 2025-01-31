@@ -1984,6 +1984,9 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if ($encode === 'maccentraleurope') {
         $encode = 'mac-centraleurope';
     }
+    if ($encode === 'UTF-8; charset=UTF-8') {
+        $encode = 'UTF-8';
+    }
     if ($encode === 'Shift_JIS' || $encode === 'x-sjis' || $encode === 'SJIS') {
         $encode = 'SJIS-win';
     }
