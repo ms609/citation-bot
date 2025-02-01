@@ -83,6 +83,13 @@ function doi_works(string $doi): ?bool {
     if (isset(NULL_DOI_ANNOYING[$doi])) {
         return false;
     }
+    if (!TRAVIS) {
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+            if (stripos($doi, $bad_start) === 0) {
+                return false; // all gone
+            }
+        }
+    }
     if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
     }
