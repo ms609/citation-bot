@@ -5,6 +5,7 @@ declare(strict_types=1);
 const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
     ' AAOHN ',
     ' AAP ',
+    ' AAPG ',
     ' AAUP ',
     ' ABC ',
     ' AC ',
@@ -254,6 +255,7 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
     ' Aaohn ',
     ' Aap ',
+    ' Aapg ',
     ' Aaup ',
     ' Abc ',
     ' Ac ',
