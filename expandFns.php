@@ -80,6 +80,9 @@ function doi_works(string $doi): ?bool {
     if (TRUST_DOI_GOOD && isset(NULL_DOI_BUT_GOOD[$doi])) {
         return true;
     }
+    if (isset(NULL_DOI_ANNOYING[$doi])) {
+        return false;
+    }
     if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
     }
