@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.4449/aib.v149i1.1267' => true, // not found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -4450,7 +4451,7 @@ const NULL_DOI_LIST = [
     '10.4435/BSPI.2022.14' => true, // landing page
     '10.4435/BSPI.2024.08' => true, // landing page
     '10.4449/aib.v149i1.1260' => true,
-    '10.4449/aib.v149i1.1267' => true,
+    '10.4449/aib.v149i1.1267' => true, // not found
     '10.4454/jpp.v99i3.3945' => true,
     '10.46426/jp2kp.v20i1.42' => true, // domain for sale
     '10.46426/jp2kp.v20i2.49' => true, // domain for sale
@@ -4483,7 +4484,6 @@ const NULL_DOI_LIST = [
     '10.5244/C.26.103' => true,
     '10.5244/C.29.56' => true,
     '10.52486/01.00001.15' => true, // Journal in general
-    '10.52541/isiri.v41i1.4869' => true,
     '10.5260/cca.199318' => true,
     '10.5260/cca.199425' => true, // pay to login
     '10.52690/jswse.v1i3.114' => true, // domain for sale
