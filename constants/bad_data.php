@@ -659,6 +659,7 @@ const CANONICAL_PUBLISHER_URLS = [
     'gpejournal.org',
     'gragoata.uff.br',
     'gsapubs.org',
+    'gwse.iheg.org.cn',
     'hangqiaokeyan.com/academic-journal',
     'harbinengineeringjournal.com',
     'heart.bmj.com',
@@ -706,8 +707,10 @@ const CANONICAL_PUBLISHER_URLS = [
     'journals.pan.pl',
     'journals.royalsociety.org',
     'journals.rudn.ru',
+    'journals.sfu.ac.at',
     'journals.tdl.org',
     'journals.uchicago.edu',
+    'journals.ucp.pt',
     'journals.umt.edu.pk',
     'journals.uni-marburg.de',
     'journals.upress.ufl.edu',
@@ -738,6 +741,7 @@ const CANONICAL_PUBLISHER_URLS = [
     'nrcresearchpress.',
     'oaj.fupress.net',
     'observatoria.rsl.ru',
+    'offa-journal.org',
     'ojs.cimedoc.uniba.it',
     'ojs.ehu.eus',
     'ojs.umsa.bo/ojs',
@@ -1337,6 +1341,7 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    'arrow.tudublin.ie/'
     '-news.co.uk/',
     '.ajc.com/',
     '.al.com/',
