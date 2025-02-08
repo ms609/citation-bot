@@ -2311,9 +2311,14 @@ function doi_is_bad (string $doi): bool {
     $doi = strtolower($doi);
     if ($doi === '10.5284/1000184' || // DOI for the entire database
         $doi === '10.1267/science.040579197' || //  PMID test doi
-        $doi === '10.2307/3511692' || //    common review
-        $doi === '10.1377/forefront' || // / over-truncated
-        $doi === '10.1126/science' || //    // over-truncated
+        $doi === '10.2307/3511692' ||   // common review
+        $doi === '10.1377/forefront' || // over-truncated
+        $doi === '10.1126/science' ||   // over-truncated
+        $doi === '10.1111/j' ||         // over-truncated
+        $doi === '10.3138/j' ||         // over-truncated
+        $doi === '10.7556/jaoa' ||      // over-truncated
+        $doi === '10.7591/j' ||         // over-truncated
+        $doi === '10.7722/j' ||         // over-truncated
         strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
