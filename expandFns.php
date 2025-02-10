@@ -2322,6 +2322,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1002/bies' ||      // over-truncated
         $doi === '10.1002/job' ||       // over-truncated
         $doi === '10.5465/ame' ||       // over-truncated
+        $doi === '10.5465/amp' ||       // over-truncated
         strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
