@@ -1016,6 +1016,11 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.7547/1030161' => true,
+    '10.7596/taksad.v2i2.229' => true,
+    '10.7454/ai.v0i75.3514' => true,
+    '10.6024/jmbai.2016.58.1.1890-04' => true,
+    '10.7152/bippa.v30i0.9966' => true,
     '10.4103/0019-5545.31524' => true, // no paper found
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
