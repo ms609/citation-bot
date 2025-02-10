@@ -20,9 +20,9 @@ final class HandleCache {
     public const MAX_HDL_SIZE = 1024;
 
     /** @var array<bool> $cache_active */
-    public static array $cache_active = BAD_DOI_ARRAY;  // DOI is in CrossRef, no claims if it still works.
+    public static array $cache_active = [];             // DOI is in CrossRef, no claims if it still works.
     /** @var array<bool> $cache_inactive */
-    public static array $cache_inactive = [];           // DOI is not in CrossRef
+    public static array $cache_inactive = BAD_DOI_ARRAY;// DOI is not in CrossRef
     /** @var array<bool> $cache_good */
     public static array $cache_good = [];               // DOI works
     /** @var array<string> $cache_hdl_loc */
