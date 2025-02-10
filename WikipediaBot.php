@@ -482,7 +482,7 @@ final class WikipediaBot {
         }
         $response = str_replace(["\r", "\n"], '', $response);  // paranoid
         if (strpos($response, '"invalid"') !== false || // IP Address and similar stuff
-            strpos($response, '"blockid"') !== false || // Valid but blocked
+            (strpos($response, '"blockid"') !== false && strpos($response, '"blockpartial"') === false) || // Valid but blocked
             strpos($response, '"missing"') !== false || // No such account
             strpos($response, '"userid"')  === false) { // should actually never return false here
             return false;
