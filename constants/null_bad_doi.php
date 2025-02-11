@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.3371/1935-1232.10.3.163' => true, // hijacked domain
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -1016,6 +1017,11 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.24850/j-tyca-2018-01-01' => true,
+    '10.23885/1813-4289-2008-4-2-78-82' => true,
+    '10.25011/cim.v38i1.22410' => true,
+    '10.32098/mltj.04.2013.11' => true,
+    '10.3371/1935-1232.10.3.163' => true, // hijacked domain
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
