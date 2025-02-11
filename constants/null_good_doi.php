@@ -19473,7 +19473,6 @@ const NULL_DOI_BUT_GOOD = [
     '10.24216/9783838215631' => true,
     '10.24233/sribios.3.2.2022.367' => true,
     '10.24235/tamaddun.v9i1.8174' => true,
-    '10.24237/djps.15.03.474d' => true,
     '10.24251/hicss.2022.897' => true,
     '10.24260/alalbab.v6i1.608' => true,
     '10.24272/j.issn.2095-8137.2017.021' => true,
