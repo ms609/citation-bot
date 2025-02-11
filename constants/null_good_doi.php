@@ -9961,7 +9961,6 @@ const NULL_DOI_BUT_GOOD = [
     '10.1093/biomet/asaa076' => true,
     '10.1093/biosci/biaa092' => true,
     '10.1093/biosci/bix014' => true,
-    '10.1093/biosci/bix014' => true,
     '10.1093/biosci/biz088' => true,
     '10.1093/biosci/biz096' => true,
     '10.1093/bjd/ljae307' => true,
