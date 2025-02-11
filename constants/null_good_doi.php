@@ -19097,7 +19097,6 @@ const NULL_DOI_BUT_GOOD = [
     '10.17951/rh.2018.45.359-371' => true,
     '10.17990/rpf/2015_71_4_0753' =>  true,
     '10.18016/ksutarimdoga.vi.653241' =>  true,
-    '10.18016/ksutarimdoga.vi.653241' => true,
     '10.18042/hp.40.04' => true,
     '10.18046/recs.i18.2053' => true,
     '10.18060/17460' => true,
