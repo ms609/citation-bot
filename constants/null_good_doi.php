@@ -19463,7 +19463,6 @@ const NULL_DOI_BUT_GOOD = [
     '10.20411/pai.v1i1.72' => true,
     '10.20414/cordova.v14i1.9064' => true,
     '10.20417/nzjecol.44.23' =>  true,
-    '10.20417/nzjecol.44.23' => true,
     '10.20469/ijaps.3.50001-2' => true,
     '10.20473/jgs.11.2.2017.73-83' => true,
     '10.20473/mozaik.v20i1.15746' => true,
