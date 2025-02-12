@@ -2336,6 +2336,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi' ||        // over-truncated
         $doi === '10.1093/logcom' ||    // over-truncated
         $doi === '10.1111/bjep' ||      // over-truncated
+        $doi === '10.1146/annurev' ||   // over-truncated
         $doi === '10.1093/oi/authority' || // over-truncated
         strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         strpos($doi, '10.5555/') === 0 || // Test DOI prefix
