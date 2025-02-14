@@ -1666,7 +1666,7 @@ final class Zotero {
                     if ($template->blank('pmc')) {
                         quietly('report_modification', "Converting URL to PMC parameter");
                     }
-                    $new_pmc = @$match[1] . @$match[2] . @$match[3];
+                    $new_pmc = (string) @$match[1] . @$match[2] . @$match[3];
                     if ($new_pmc === '') {
                         bot_debug_log("PMC oops");
                         return false;
