@@ -3095,7 +3095,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
         }
     }
 
-    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
+    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches) && in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // 2020-12 i.e. backwards
         $year = $matches[1];
         $month = (int) $matches[2];
         if ($month > 0 && $month < 13) {
