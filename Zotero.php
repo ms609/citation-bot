@@ -1667,6 +1667,8 @@ final class Zotero {
                         quietly('report_modification', "Converting URL to PMC parameter");
                     }
                     $new_pmc = (string) @$match[1] . @$match[2] . @$match[3];
+                    // php stan does not understand that this could because of the insanity of regex and 8-bit characters and PHP bugs end up being empty
+                    // @phpstan-ignore-line
                     if ($new_pmc === '') {
                         bot_debug_log("PMC oops");
                         return false;
