@@ -7,8 +7,6 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
-    '10.14430/arctic1362' => true,
-    '10.14430/arctic2224' => true,
     '10.1000/100' => true,
     '10.1001/archderm.138.12.1584' => true,
     '10.1001/archderm.140.7.819' => true,
@@ -18912,6 +18910,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.14430/arctic1203' => true,
     '10.14430/arctic1206' => true,
     '10.14430/arctic1336' => true,
+    '10.14430/arctic1362' => true,
     '10.14430/arctic1529' => true,
     '10.14430/arctic1539' => true,
     '10.14430/arctic1984' => true,
@@ -18920,6 +18919,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.14430/arctic2062' => true,
     '10.14430/arctic2155' => true,   
     '10.14430/arctic219' => true,
+    '10.14430/arctic2224' => true,
     '10.14430/arctic2246' => true,
     '10.14430/arctic2521' => true,
     '10.14430/arctic2532' => true,
