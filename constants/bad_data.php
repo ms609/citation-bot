@@ -13166,6 +13166,8 @@ const JOURNAL_IS_BOOK_SERIES = [
     'reviews in modern astronomy',
     'studies in bilingualism',
     'the cambridge history of latin america',
+    'current topics in behavioral neuroscience',
+    'curr top behav neurosci',
 ];
 
 const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy'];
