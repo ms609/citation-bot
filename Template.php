@@ -3258,8 +3258,8 @@ final class Template
     } // New DOI does not match
    }
 
-   if (strpos((string) $record->bibcode, 'book') !== false) {
-    // Found a book. Need special code
+   if (strpos((string) $record->bibcode, 'book') !== false || strpos((string) $record->bibcode, 'conf') !== false) {
+    // Found a book or conference proceeding. Need special code
     $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
     expand_book_adsabs($this, $record);
     return;
