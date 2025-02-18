@@ -18942,6 +18942,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.14430/arctic4643' => true,
     '10.14430/arctic4645' => true,
     '10.14430/arctic51' => true,
+    '10.14430/arctic6' => true,
     '10.14430/arctic645' => true,
     '10.14430/arctic760' => true,
     '10.14430/arctic793' => true,
