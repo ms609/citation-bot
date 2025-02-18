@@ -450,7 +450,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
                 } elseif ($an_id !== (string) $record->bibcode) {  // Existing one is wrong case
                     $this_template->set('bibcode', (string) $record->bibcode);
                 }
-                if ((stripos($an_id, 'book') === false) && (stripos($an_id, 'PhD') === false)) {
+                if ((stripos($an_id, 'book') === false) && (stripos($an_id, 'PhD') === false) && (stripos($an_id, 'conf') === false)) {
                     process_bibcode_data($this_template, $record);
                 } else {
                     expand_book_adsabs($this_template, $record);
