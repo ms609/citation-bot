@@ -85,6 +85,11 @@ final class AdsAbsControl {
 
 }
 
+function is_a_book_bibcode(string $id): bool {
+    $check = str_replace(['book', 'conf', 'PhD'], '', $id);
+    return ($check !== $id);
+}
+
 /**
   @param array<string> $ids
   @param array<Template> $templates
@@ -450,10 +455,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
                 } elseif ($an_id !== (string) $record->bibcode) {  // Existing one is wrong case
                     $this_template->set('bibcode', (string) $record->bibcode);
                 }
-                if ((stripos($an_id, 'book') === false) && (stripos($an_id, 'PhD') === false)) {
-                    process_bibcode_data($this_template, $record);
-                } else {
+                if (is_a_book_bibcode($an_id)) {
                     expand_book_adsabs($this_template, $record);
+                } else {
+                    process_bibcode_data($this_template, $record);
                 }
             }
         }
