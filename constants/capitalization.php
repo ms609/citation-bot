@@ -1566,6 +1566,10 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     /* The above will be automatically updated to alphabetical order */
 ];
 const OBVIOUS_FOREIGN_WORDS = [
+    ' Jugoslavenske ',
+    ' akademije ',
+    ' znanosti ',
+    ' umjetnosti ',
     ' Abhandlungen ',
     ' Actes ',
     ' Annales ',
