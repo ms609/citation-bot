@@ -13199,6 +13199,8 @@ const ALWAYS_BAD_TITLES = [
 ];
 
 const DOI_FREE_PREFIX = [
+    '10.1002/aelm',
+    '10.1002/leap',
     '10.1016/j.heliyon',
     '10.1016/j.jbc.',
     '10.1016/j.proche',
