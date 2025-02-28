@@ -1111,7 +1111,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         static function (array $matches): string {
             return $matches[1] . 'ppm' . $matches[3];
         },
-        $new_case);    
+        $new_case);
+    $new_case = safe_preg_replace_callback(
+        "~(Serie )([a-z])( )~u",
+        static function (array $matches): string {
+            return $matches[1] . strtoupper($matches[2]) . $matches[3];
+        },
+        $new_case);
     $new_case = trim($new_case);
     // Special cases - Only if the full title
     if ($new_case === 'Bioscience') {
