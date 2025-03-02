@@ -7,6 +7,9 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1177/1010428316687894' => true,
+    '10.3406/noroi.1994.6599' => true,
+    '10.3406/rural.1983.2918' => true,
     '10.1000/100' => true,
     '10.1001/archderm.138.12.1584' => true,
     '10.1001/archderm.140.7.819' => true,
