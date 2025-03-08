@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.51437/jgns.v1i1' => true, // 404
     '10.1001/jama.285.6.738' => true, // 404
     '10.3949/ccjm.67.4.287' => true, // not found
     '10.1001/archderm.133.1.49' => true, // 404
@@ -4312,7 +4313,6 @@ const NULL_DOI_LIST = [
     '10.29078/rp.v1i23.220' => true, // malware
     '10.29145/2018/llr/040101' => true,
     '10.29252/ijrm.14.12.729' => true,
-    '10.29262/ram.v62i1.62' => true,
     '10.29300/disastra.v3i2.4455' => true,
     '10.2979/FIL.2000.12.3.344' => true,
     '10.2979/FIL.2000.12.3.358' => true,
@@ -4740,7 +4740,7 @@ const NULL_DOI_LIST = [
     '10.5118/bpbk.2003' => true,
     '10.5121/ijpla.2013.3401' => true,
     '10.51437/jgns.v1i1.29' => true,
-    '10.51437/jgns.v1i1' => true,
+    '10.51437/jgns.v1i1' => true, // 404
     '10.5149/uncp/9780807847619' => true,
     '10.5149/uncp/9780807849835' => true,
     '10.5152/jaem.2013.012' => true,
