@@ -1219,7 +1219,7 @@ final class Template
   }
 
   // If we already have name parameters for author, don't add more
-  if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS, true)) {
+  if ($this->had_initial_author() && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS, true)) {
    return false;
   }
 
@@ -2686,7 +2686,7 @@ final class Template
 
  public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void
  {
-  if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) {
+  if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor)) {
    return;
   } // Zotero does not know difference between editors and authors often
   if (
@@ -5358,13 +5358,13 @@ final class Template
      if ($this->has('author') && $this->has('authors')) {
       $this->rename('author', 'DUPLICATE_authors');
      }
-     if (!$this->initial_author_params) {
+     if (!$this->had_initial_author()) {
       $this->handle_et_al();
      }
     // no break; Continue from authors without break
     case 'last':
     case 'surname':
-     if (!$this->initial_author_params) {
+     if (!$this->had_initial_author()) {
       if ($pmatch[2]) {
        $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
        if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
