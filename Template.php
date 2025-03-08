@@ -4876,6 +4876,15 @@ final class Template
 
  private function join_params(): string
  {
+  $this->convert_to_vanc();
+  $ret = '';
+  foreach ($this->param as $p) {
+   $ret .= '|' . $p->parsed_text();
+  }
+  return $ret;
+ }
+
+ private function convert_to_vanc(): void {
   if (self::$name_list_style === VancStyle::NAME_LIST_STYLE_VANC && !$this->had_initial_author() && !$this->had_initial_editor) {
    $vanc_attribs = ['vauthors', 'veditors'];
    $vanc_fa = ['first', 'editor-first'];
@@ -4939,11 +4948,6 @@ final class Template
     }
    }
   }
-  $ret = '';
-  foreach ($this->param as $p) {
-   $ret .= '|' . $p->parsed_text();
-  }
-  return $ret;
  }
 
  public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void
