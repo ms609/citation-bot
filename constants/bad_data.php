@@ -85,6 +85,7 @@ const BAD_AUTHORS = [
     'object',
     'radio',
     'rundfunk',
+    'the editor',
     'united states. interstate commerce commission',
     'united states',
     'unknown',
