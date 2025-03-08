@@ -4876,7 +4876,7 @@ final class Template
 
  private function join_params(): string
  {
-  convert_to_vanc();
+  $this->convert_to_vanc();
   $ret = '';
   foreach ($this->param as $p) {
    $ret .= '|' . $p->parsed_text();
