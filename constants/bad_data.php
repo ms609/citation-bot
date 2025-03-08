@@ -486,6 +486,7 @@ const BAD_ZOTERO_TITLES = [
     'Browse publications',
     'Captcha',
     'Central Authentication Service',
+    'Client Challenge',
     'Compare Payday Loans',
     'Connecting to the iTunes Store',
     'cookie settings',
