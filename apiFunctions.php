@@ -633,14 +633,20 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                     if ((string) $author["contributor_role"] === 'editor') {
                         ++$ed_i;
+                        $ed_i_str = (string) $ed_i;
                         if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-                            $template->add_if_new("editor-last{$ed_i}", format_surname((string) $author->surname), 'crossref');
-                            $template->add_if_new("editor-first{$ed_i}", format_forename((string) $author->given_name), 'crossref');
+                            $template->add_if_new("editor-last" . $ed_i_str, format_surname((string) $author->surname), 'crossref');
+                            $template->add_if_new("editor-first" . $ed_i_str, format_forename((string) $author->given_name), 'crossref');
                         }
                     } elseif ((string) $author['contributor_role'] === 'author' && $add_authors) {
                         ++$au_i;
-                        $template->add_if_new("last{$au_i}", format_surname((string) $author->surname), 'crossref');
-                        $template->add_if_new("first{$au_i}", format_forename((string) $author->given_name), 'crossref');
+                        $au_i_str = (string) $au_i;
+                        if ((string) $author->surname === 'Editor' && (string) $author->given_name === 'The') {
+                            $template->add_if_new("author" . $au_i_str, 'The Editor', 'crossref');
+                        } else {
+                            $template->add_if_new("last" . $au_i_str, format_surname((string) $author->surname), 'crossref');
+                            $template->add_if_new("first" . $au_i_str, format_forename((string) $author->given_name), 'crossref');
+                        }
                     }
                 }
             }
