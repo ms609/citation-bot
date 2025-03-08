@@ -2,7 +2,6 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static3.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static3.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml)
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
