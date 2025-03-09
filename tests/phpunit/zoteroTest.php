@@ -947,7 +947,7 @@ final class zoteroTest extends testBaseClass {
         $this->requires_zotero(function(): void {
             $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
             $expanded = $this->process_citation($text);
-            $this->assertNull($expanded->get2('isbn')); // This citation used to crash code in ISBN search.     Mostly checking "something" to make Travis CI happy
+            $this->assertNull($expanded->get2('isbn')); // This citation used to crash code in ISBN search
         });
     }
 
