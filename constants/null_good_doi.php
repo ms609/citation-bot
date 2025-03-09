@@ -7,6 +7,16 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.1090/s0002-9904-1902-00923-3' => true,
+    '10.1090/S0025-5718-07-01990-4' => true,
+    '10.1090/S0025-5718-08-02050-9' => true,
+    '10.1090/S0025-5718-2012-02563-4' => true,
+    '10.1090/S0025-5718-2013-02776-7' => true,
+    '10.1090/S0025-5718-2015-02941-X' => true,
+    '10.1090/S0025-5718-99-01126-6' => true,
+    '10.1090/S0025-5718-99-01127-8' => true,
+    '10.1515/geo-2017-0020' => true,
+    '10.3390/math5030040' => true,
     '10.15302/j-sscae-2016.02.003' => true,
     '10.24114/ph.v3i1.11735' => true,
     '10.29262/ram.v62i1.62' => true,
