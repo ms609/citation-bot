@@ -81,7 +81,7 @@ final class WikipediaBot {
         if (isset($response->error)) {
             $error_code = (string) @$response->error->code;
             $respone_info = (string) @$response->error->info;
-            if ($error_code === 'blocked') { // GitHub CI IPs are blocked, even to logged in users.
+            if ($error_code === 'blocked') { // Most CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'The database has been automatically locked') !== false) {
                 report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
