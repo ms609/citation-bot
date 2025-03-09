@@ -522,6 +522,7 @@ const BAD_ZOTERO_TITLES = [
     'Missing page',
     'MR: Matches for:',
     'na een 404',
+    'National Center for Biotechnology Information',
     'not longer available',
     'OpenId transaction in progress',
     'Page non trouvée',
