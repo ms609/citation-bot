@@ -2928,9 +2928,9 @@ EP - 999 }}';
     }
 
     public function testJustAnISBN(): void {
-        $text = '{{cite book |isbn=0471186368}}';
+        $text = '{{cite book |isbn=1452934800}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('explosives engineering', strtolower($expanded->get('title')));
+        $this->assertSame('stories from jonestown', strtolower($expanded->get('title')));
         $this->assertNull($expanded->get2('url'));
     }
 
