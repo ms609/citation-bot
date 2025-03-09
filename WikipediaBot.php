@@ -81,7 +81,7 @@ final class WikipediaBot {
         if (isset($response->error)) {
             $error_code = (string) @$response->error->code;
             $respone_info = (string) @$response->error->info;
-            if ($error_code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+            if ($error_code === 'blocked') { // Most CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
             } elseif (strpos($respone_info, 'The database has been automatically locked') !== false) {
                 report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
@@ -491,7 +491,7 @@ final class WikipediaBot {
     }
 
     public static function NonStandardMode(): bool {
-        return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
+        return isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
     }
 
     private function get_the_user_internal(): string {
