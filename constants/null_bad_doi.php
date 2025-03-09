@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.1093/he/9780198788928.003.0004' => true, // not found
     '10.51437/jgns.v1i1' => true, // 404
     '10.1001/jama.285.6.738' => true, // 404
     '10.3949/ccjm.67.4.287' => true, // not found
@@ -2463,7 +2464,7 @@ const NULL_DOI_LIST = [
     '10.1093/he/9780191866128.003.0002' => true,
     '10.1093/he/9780198765899.003.0016' => true,
     '10.1093/he/9780198787679.003.0015' => true,
-    '10.1093/he/9780198788928.003.0004' => true,
+    '10.1093/he/9780198788928.003.0004' => true, // not found
     '10.1093/he/9780199586554.001.0001' => true, // access denied
     '10.1093/hepl/9780198707561.001.0001' => true,
     '10.1093/hepl/9780198707561.003.0003' => true,
