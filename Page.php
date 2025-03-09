@@ -852,12 +852,9 @@ class Page {
 
         if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
             gc_collect_cycles();
-            if (TRAVIS) {
-                report_error("Critical Error on page: " . echoable($this->title));
-            }
-            // @codeCoverageIgnoreStart
             $this->page_error = true;
-            report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
+            report_minor_error('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
+            // @codeCoverageIgnoreStart
             if ($class === "Template") {
                 if (WIKI_BASE === 'mk') {
                     $err1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
