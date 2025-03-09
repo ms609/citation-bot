@@ -3952,10 +3952,10 @@ final class Template
    if ($isbn) {
     // Try Books.Google.Com
     /** @psalm-taint-escape ssrf */
-    $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
+    $google_book_url = 'https://books.google.com/books?vid=ISBN' . $isbn;
     curl_setopt($ch, CURLOPT_URL, $google_book_url);
     $google_content = bot_curl_exec($ch);
-    if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+   if (preg_match_all('~(?:content|html)\?id=(............)(?:&amp|")~', $google_content, $google_results)) {
      $google_results = $google_results[1];
      $google_results = array_unique($google_results);
      if (count($google_results) === 1) {
