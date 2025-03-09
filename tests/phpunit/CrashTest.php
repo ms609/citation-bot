@@ -14,7 +14,6 @@ final class CrashTest extends testBaseClass {
         $bad_page = BAD_PAGE_API;
         $bad_page = str_replace(' ', '_', $bad_page);
         if ($bad_page !== "") {
-            define("TRAVIS_PRINT", "YES");
             Zotero::create_ch_zotero();
             WikipediaBot::make_ch();
             $page->get_text_from($bad_page);
@@ -25,7 +24,7 @@ final class CrashTest extends testBaseClass {
             AdsAbsControl::small_give_up();
             AdsAbsControl::big_give_up();
             Zotero::block_zotero();
-            $this->assertTrue(false); // prevent us from git committing with a website included
+            $this->assertTrue(false); // help prevent us from git committing with a website included
         }
         $this->assertTrue(true);
     }
