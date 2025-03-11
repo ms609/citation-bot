@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.1163/187633193x00234' => true, // page not found
     '10.1093/he/9780198788928.003.0004' => true, // not found
     '10.51437/jgns.v1i1' => true, // 404
     '10.1001/jama.285.6.738' => true, // 404
@@ -1071,8 +1072,8 @@ const NULL_DOI_ANNOYING = [
     '10.7751/telopea20065733' => true, // blank
     '10.7755/fb' => true, // error
     '10.7755/MFR.77.1.7' => true, // error
-    '10.7815/ijorcs.26.2012.051' => true, // domain for sale
-    '10.7815/ijorcs.35.2013.071' => true, // domain for sale
+    '10.7815/ijorcs.26.2012.051' => true, // domain for sale or slots
+    '10.7815/ijorcs.35.2013.071' => true, // domain for sale or slots
     '10.7916/D8MC90D6' => true, // 404
     '10.9774/gleaf.4700.2009.au.00010' => true, // page not found
     '10.9774/GLEAF.4700.2016.ju.00011' => true, // page not found
@@ -2670,7 +2671,7 @@ const NULL_DOI_LIST = [
     '10.1163/156852178x00197' => true, // Error
     '10.1163/182539109X00976' => true, // main page
     '10.1163/187525409X462395' => true, // main page
-    '10.1163/187633193x00234' => true,
+    '10.1163/187633193x00234' => true, // page not found
     '10.1163/187633193X00243' => true,
     '10.1163/187633193X00478' => true,
     '10.1163/187633193X00784' => true,
