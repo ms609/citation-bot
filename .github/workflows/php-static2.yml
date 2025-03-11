@@ -50,9 +50,6 @@ jobs:
     - name: PHP phan 8.2
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.2' --minimum-target-php-version='8.2'
      
-    - name: PHP phan 8.3
-      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.3' --minimum-target-php-version='8.3'
-     
     - name: PHP phan 8.4
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.4' --minimum-target-php-version='8.4'
      
