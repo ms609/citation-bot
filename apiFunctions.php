@@ -410,7 +410,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         return;
     }
 
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                     . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
                     . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
@@ -1552,7 +1552,7 @@ function expand_book_adsabs(Template $template, object $record): void {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
 function query_adsabs(string $options): object {
     set_time_limit(120);
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) {
         return (object) ['numFound' => 0];
     }
