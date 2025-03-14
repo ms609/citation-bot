@@ -549,6 +549,7 @@ const BAD_ZOTERO_TITLES = [
     'This is due to newswire licensing terms',
     'This is not the page you requested',
     'One moment, please',
+    'One moment, please...',
     'Untitled-1',
     'Untitled-2',
     'Untitled-3',
