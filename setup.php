@@ -121,7 +121,7 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
-if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== false)) { // Willing to take slight performance penalty on Gadget
+if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== false)) { // Willing to take slight performance penalty on Gadget
     ini_set("pcre.jit", "0");
 }
 
