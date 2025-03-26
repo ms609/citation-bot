@@ -125,6 +125,7 @@ const NON_HUMAN_AUTHORS = [
     'european central',
     'external',
     'eyewitness',
+    'filipino news',
     'foreign',
     'group',
     'humanities',
@@ -141,18 +142,23 @@ const NON_HUMAN_AUTHORS = [
     'natural history',
     'new york',
     'news desk',
+    'obituaries',
     'office of',
+    'please verify',
     'radio',
     'relations',
     'reporter',
     'rundfunk',
     'society',
     'staff',
+    'telegraph',
     'united',
     'university',
     'us census',
+    'web desk',
     'world bank',
     'world news',
+    'you are human'
     '試験所',
 ];
 const BAD_PUBLISHERS = [
@@ -1290,7 +1296,7 @@ const NO_DATE_WEBSITES = [
 const ZOTERO_AVOID_REGEX = [
     'arkive\.org',
     'australian-charts\.com', // Fails 100%
-    'biodiversity\.org\.au', // Zotero gives bad data
+    'biodiversity\.org\.au', // gives bad data
     'bloomberg\.com/tosv2.html', // Junk
     'books\.google\.', // We have special google books code
     'britishnewspaperarchive\.co\.uk', // Requires registration
@@ -1298,7 +1304,7 @@ const ZOTERO_AVOID_REGEX = [
     'censusindia\.gov\.in', // Fails 100%
     'charts\.nz', // Fails 100%
     'ebooks\.adelaide\.edu\.au', // Dead
-    'elonet\.finna\.fi', // Zotero cannot handle this data-base well at all
+    'elonet\.finna\.fi', // cannot handle this data-base well at all
     'explore\.bl\.uk/primo_library', // Fails 100%
     'ezproxy',
     'facebook\.com', // login and junk
