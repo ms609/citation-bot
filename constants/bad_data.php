@@ -159,7 +159,7 @@ const NON_HUMAN_AUTHORS = [
     'web desk',
     'world bank',
     'world news',
-    'you are human'
+    'you are human',
     '試験所',
 ];
 const BAD_PUBLISHERS = [
