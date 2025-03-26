@@ -2570,7 +2570,7 @@ final class Template
     if (mb_strtoupper($value) === $value || mb_strtolower($value) === $value) {
      $value = title_capitalization($value, true);
     }
-    if ($value === 'Oxford University PressOxford') {
+    if ($value === 'Oxford University PressOxford' || $value === 'OUP Oxford') {
      $value = 'Oxford University Press';
     }
     if ($this->blank($param_name)) {
