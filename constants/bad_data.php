@@ -98,6 +98,7 @@ const NON_HUMAN_AUTHORS = [
     'autarquia 360',
     'academy',
     'agencies',
+    'am730',
     'anchor',
     'association',
     'board of ',
