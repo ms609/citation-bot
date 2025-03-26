@@ -382,6 +382,7 @@ const BAD_TITLES = [
     'usa today - today\'s breaking news, us & world news',
     'wordpress › error',
     'zbmath',
+    'one moment, please',
 ];
 const IN_PRESS_ALIASES = [
     'forthcoming',
