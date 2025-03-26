@@ -3822,6 +3822,9 @@ final class Template
   foreach (ALL_URL_TYPES as $url_type) {
    if ($this->has($url_type)) {
     $url = $this->get($url_type);
+    if (strpos($url, '#about_author_anchor') !== false) {
+     continue;
+    }
     if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $url, $matches)) {
      $url = $matches[1]; // trailing ?
     }
@@ -3901,6 +3904,9 @@ final class Template
   if ($url_type) {
    $url = $this->get($url_type);
    if (!$url) {
+    return false;
+   }
+   if (strpos($url, '#about_author_anchor') !== false) {
     return false;
    }
    if (
