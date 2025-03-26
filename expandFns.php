@@ -1138,6 +1138,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case = 'JOM';
     } elseif ($new_case === 'NetWorker') {
         $new_case = 'netWorker';
+    } elseif ($new_case === 'Melus') {
+        $new_case = 'MELUS';
     }
     return $new_case;
 }
