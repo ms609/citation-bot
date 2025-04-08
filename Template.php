@@ -3168,7 +3168,29 @@ final class Template
 
   if ($result->numFound !== 1 && $this->has('title')) {
    // Do assume failure to find arXiv means that it is not there
-   $result = query_adsabs("title:" . urlencode('"' . trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $this->get_without_comments_and_placeholders("title")))) . '"'));
+   $have_more = false;
+   $the_query = "title:" . urlencode('"' . trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $this->get_without_comments_and_placeholders("title")))) . '"');
+   $pages = $this->page_range();
+   if ($pages) {
+    $the_query = $the_query . "&fq=page:" . urlencode('"' . $pages[1] . '"');
+    $have_more = true;
+   }
+   if ($this->year()) {
+    $the_query = $the_query . "&fq=year:" . urlencode($this->year());
+    $have_more = true;
+   }
+   if ($this->has('volume')) {
+    $the_query = $the_query . "&fq=volume:" . urlencode('"' . $this->get('volume') . '"');
+    $have_more = true;
+   }
+   if ($this->has('issn')) {
+    $the_query = $the_query . "&fq=issn:" . urlencode($this->get('issn'));
+    $have_more = true;
+   }
+   if (!$have_more) {
+    return; // A title is not enough
+   }
+   $result = query_adsabs($the_query);
    if ($result->numFound === 0) {
     return;
    }
