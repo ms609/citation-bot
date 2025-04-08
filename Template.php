@@ -5823,7 +5823,7 @@ final class Template
      }
      /** if (doi_works($doi)) { We are flagging free dois even when the do not work, since template does this right now */
      foreach (DOI_FREE_PREFIX as $prefix) {
-      if (strpos($doi, $prefix) === 0) {
+      if (stripos($doi, $prefix) === 0) {
        $this->add_if_new('doi-access', 'free');
       }
      }
