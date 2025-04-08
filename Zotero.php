@@ -482,7 +482,7 @@ final class Zotero {
             }
         }
         if (!isset($result->title)) {
-            $the_url = substr(echoable(substr($url, 0, 500), 0, 600)); // Limit length
+            $the_url = substr(echoable(substr($url, 0, 500)), 0, 600); // Limit length
             if (strpos($zotero_response, 'unknown_error') !== false) { // @codeCoverageIgnoreStart
                 report_info("Did not get a title for unknown reason from URL ". $the_url);
             } elseif (strpos($zotero_response, 'The remote document is not in a supported format') !== false) {
