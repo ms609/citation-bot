@@ -482,10 +482,23 @@ final class Zotero {
             }
         }
         if (!isset($result->title)) {
+            $the_url = substr(echoable(substr($url, 0, 500), 0, 600); // Limit length
             if (strpos($zotero_response, 'unknown_error') !== false) { // @codeCoverageIgnoreStart
-                report_info("Did not get a title for URL ". echoable($url));
+                report_info("Did not get a title for unknown reason from URL ". $the_url);
+            } elseif (strpos($zotero_response, 'The remote document is not in a supported format') !== false) {
+                report_info("Document type not supported (usually PDF) for URL ". $the_url);
+            } elseif (strpos($zotero_response, 'Unable to load URL') !== false) {
+                report_info("Zotero could not fetch anything for URL ". $the_url);
+            } elseif (strpos($zotero_response, 'Invalid host supplied') !== false) {
+                report_info("DNS lookup failed for URL ". $the_url);
+            } elseif (strpos($zotero_response, 'Unknown error') !== false) {
+                report_info("Did not get a title for unknown reason from URL ". $the_url);
+            } elseif (strpos($zotero_response, 'Unable to get any metadata from url') !== false) {
+                report_info("Did not get a title for unknown meta-data reason from URL ". $the_url);
+            } elseif (strpos($zotero_response, 'Maximum number of allowed redirects reached') !== false) {
+                report_info("Too many redirects for URL ". $the_url);
             } else {
-                report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
+                report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL ". $the_url); // Odd Error
             }
             return;  // @codeCoverageIgnoreEnd
         }
