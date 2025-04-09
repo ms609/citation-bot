@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.18034/abr.v2i1.309' => true, // hyjacked
     '10.2217/14750708.4.4.451' => true, // not found
     '10.2217/14750708.5.2.203' => true, // not found
     '10.22230/cjc.2007v32n2a1885' => true, // 404
@@ -3573,7 +3574,7 @@ const NULL_DOI_LIST = [
     '10.17955/tvr.110.2.m.627' => true,
     '10.18001/TRS.1.2.8' =>  true,
     '10.18001/TRS.3.2.10' => true,
-    '10.18034/abr.v2i1.309' => true,
+    '10.18034/abr.v2i1.309' => true, // hyjacked
     '10.18035/emj.v2i3.202' => true, // Virus
     '10.18037/ausbd.32859' => true,
     '10.18052/www.scipress.com/ILSHS.44.29' => true,
