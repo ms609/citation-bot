@@ -3983,6 +3983,7 @@ final class Template
     $google_book_url = 'https://books.google.com/books?vid=ISBN' . $isbn;
     curl_setopt($ch, CURLOPT_URL, $google_book_url);
     $google_content = bot_curl_exec($ch);
+    $google_content = preg_replace('~book_other_versions_anchor.*$~', '', $google_content);
     if (preg_match_all('~(?:content|html)\?id=(............)(?:&amp|")~', $google_content, $google_results)) {
      $google_results = $google_results[1];
      $google_results = array_unique($google_results);
