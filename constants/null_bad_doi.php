@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 3 January 2025
 const NULL_DOI_ANNOYING = [
+    '10.2478/hukin-2019-0096' => true, // 404
     '10.1001/archderm.133.1.49' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
@@ -4125,7 +4126,7 @@ const NULL_DOI_LIST = [
     '10.2478/folmed-2013-0007' => true, // 404
     '10.2478/frp-2014-0033' => true,
     '10.2478/hukin-2014-0020' => true, // 404
-    '10.2478/hukin-2019-0096' => true,
+    '10.2478/hukin-2019-0096' => true, // 404
     '10.2478/hukin-2020-0047' => true,
     '10.2478/limre-2021-0019' => true, // 404
     '10.2478/mape-2018-0039' => true, // 404
@@ -4145,8 +4146,6 @@ const NULL_DOI_LIST = [
     '10.24832/nw.v14i1.419' => true, // website down for a long time
     '10.24832/sba.v19i2.31' => true, // website down for a long time
     '10.24832/wln.v18i1.427' => true, // website down for a long time
-    '10.24841/fa.v18i1-2.333' => true,
-    '10.24841/fa.v4i1.182' => true,
     '10.24850/j-tyca-2018-01-01' => true,
     '10.24939/KJH.2022.4.57.241' => true,
     '10.25011/cim.v38i1.22410' => true, // main page
