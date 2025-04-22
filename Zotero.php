@@ -396,7 +396,7 @@ final class Zotero {
         }
 
         $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-        if (preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) {
+        if (preg_match("~^https?://(?:www\.|m\.|???\.|)(?:" . $bad_url . ")~i", $url)) {
             return;
         }
 
