@@ -1317,6 +1317,7 @@ const ZOTERO_AVOID_REGEX = [
     'ezproxy',
     'facebook\.com', // login and junk
     'findarticles\.com', // Gone
+    'ftp\.met\.fsu\.edu', // dead
     'google\.com/search', // Google search results
     'info\.hazu\.hr', // Fails 100%
     'jstor\.org/stable/', // We have special jstor code
