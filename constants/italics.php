@@ -538,7 +538,7 @@ const CAMEL_CASE = [
     'poreCov', 'PyArmadillo', 'QuasiFlow', 'RustBelt', 'AutoDock', 'TractoFlow',
     'libRoadRunner', 'pyJac', 'myGrid', 'Cp2TiCl', 'myExperiment',
     'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse', 'GazePlotter',
-    'ScanGraph', 'MusicBrainz', 'WontBe', 'InChIs', 'PolyChord',
+    'ScanGraph', 'MusicBrainz', 'WontBe', 'InChIs', 'PolyChord', 'CloudCom',
 ];
 
 const ITALICS_HARDCODE_IN  = [
