@@ -1502,6 +1502,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'location':
         case 'publisher':
         case 'edition':
+        case 'agency':
             return prior_parameters('page', array_merge(['pages'], $list));
         case 'doi':
             return prior_parameters('location', array_merge(['publisher', 'edition'], $list));
