@@ -2480,6 +2480,14 @@ final class Template
     if (in_array($value, BAD_ISBN, true)) {
      return false;
     }
+    $year = $this->year();
+    $today = intval(date("Y")) + 2; // padding
+    if ($year !== '') {
+     $year = intval($year);
+     if ($year < 1965 || $year > $today) {
+      return false; // Avoid bogus ISBN from pre-preprints and google
+     }
+    }
     if ($this->blank($param_name)) {
      $value = $this->isbn10Toisbn13($value);
      if (strlen($value) === 13 && substr($value, 0, 6) === '978019') {
