@@ -89,6 +89,7 @@ const BAD_AUTHORS = [
     'united states. interstate commerce commission',
     'united states',
     'unknown',
+    'all rights reserved',
 ];
 const NON_HUMAN_AUTHORS = [
     ' at the ',
