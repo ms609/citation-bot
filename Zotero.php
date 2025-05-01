@@ -546,7 +546,7 @@ final class Zotero {
             $result->itemType = 'webpage';   // @codeCoverageIgnore
         }
 
-        if ($result->publicationTitle === 'news') {
+        if (isset($result->publicationTitle) && $result->publicationTitle === 'news') {
             unset($result->publicationTitle);
         }
 
