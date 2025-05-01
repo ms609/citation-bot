@@ -3985,7 +3985,7 @@ final class Template
      $isbn = '';
     }
    }
-   if ($isbn) {
+   if ($isbn && !doi_works($this->get('doi'))) {
     // Try Books.Google.Com
     /** @psalm-taint-escape ssrf */
     $google_book_url = 'https://books.google.com/books?vid=ISBN' . $isbn;
