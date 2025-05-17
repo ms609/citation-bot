@@ -238,6 +238,29 @@ final class Template
     return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
    }
   }
+  if (stripos(trim($this->name), '#invoke:') === 0) {
+   $add_pipe = false;
+   $wikiname = $this->wikiname();
+   if (
+    in_array($wikiname, TEMPLATES_WE_PROCESS, true) ||
+    in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS, true) ||
+    in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS, true) ||
+    in_array($wikiname, TEMPLATES_WE_RENAME, true) ||
+    strpos($wikiname, 'cite ') === 0
+   ) {
+    $add_pipe = true;
+   }
+   if ($wikiname === 'cite') {
+    $add_pipe = false; // Do not double pipe this one
+   }
+   $joined = str_replace(["\t", "\n", "\r", " "], '', $this->join_params());
+   if (strpos($joined, "||") === 0) {
+    $add_pipe = false;
+   }
+   if ($add_pipe) {
+    return '{{' . $this->name . '|' . $this->join_params() . '}}';
+   }
+  }
   return '{{' . $this->name . $this->join_params() . '}}';
  }
 
