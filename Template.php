@@ -250,8 +250,8 @@ final class Template
    ) {
     $add_pipe = true;
    }
-   if ($wikiname === 'cite') {
-    $add_pipe = false; // Do not double pipe this one
+   if ($wikiname === 'citation') {
+    $add_pipe = false; // Do not double pipe this one - actually it is "cite"
    }
    $joined = str_replace(["\t", "\n", "\r", " "], '', $this->join_params());
    if (strpos($joined, "||") === 0) {
