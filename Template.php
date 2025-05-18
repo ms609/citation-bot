@@ -7305,17 +7305,6 @@ final class Template
        if ($this->has('via') && stripos($this->get('via'), 'proquest') === false) {
         $this->forget('via');
        }
-      } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
-       if ($matches[1] || $matches[2]) {
-        $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
-        report_info("Remove proxy from ProQuest URL");
-        if ($this->has('via') && stripos($this->get('via'), 'library') !== false) {
-         $this->forget('via');
-        }
-        if ($this->has('via') && stripos($this->get('via'), 'proquest') === false) {
-         $this->forget('via');
-        }
-       }
       } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:www|search).proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
        $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
        report_info("Remove proxy from ProQuest URL");
@@ -7380,10 +7369,6 @@ final class Template
          if (stripos($this->get('id'), 'Proquest Document ID') !== false) {
           $this->forget('id');
          }
-        } elseif (preg_match("~^https?://.+\.proquest\.com(?:|/)$~", $redirectedUrl)) {
-         $changed = true;
-         report_forget('Proquest.umi.com URL does not work.  Forgetting');
-         $this->forget($param);
         }
        }
        unset($ch);
