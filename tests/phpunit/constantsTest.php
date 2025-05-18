@@ -645,7 +645,8 @@ final class constantsTest extends testBaseClass {
         }
     }
 
-    public function testForISBNListUpdates(): void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
+    public function testForISBNListUpdates(): void {
+        // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
         $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
