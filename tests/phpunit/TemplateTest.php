@@ -4060,7 +4060,6 @@ EP - 999 }}';
         $this->assertSame("{{#invoke:Cite web||s2cid=X}}", $expanded->parsed_text());
     }
 
-
     public function testInvoke2(): void {
         $text = "{{#invoke:Cite web|| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->process_citation($text);
@@ -4071,7 +4070,7 @@ EP - 999 }}';
     public function testInvoke3(): void {
         $text = "<ref>{{#invoke:cite||title=X}}{{#invoke:Cite book||title=X}}{{Cite book||title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>";
         $page = $this->process_page($text);
-        $this->assertSame("<ref>{{#invoke:cite|title=X}}{{#invoke:Cite book||title=X}}{{Cite book|title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book |title=X}}{{#invoke:Cite book| title=X}}<ref>", $page->parsed_text());
+        $this->assertSame("<ref>{{#invoke:cite|title=X}}{{#invoke:Cite book||title=X}}{{Cite book|title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>", $page->parsed_text());
     }
 
     public function testInvoke4(): void {
