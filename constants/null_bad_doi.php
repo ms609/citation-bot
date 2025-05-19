@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.2307/148068' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -4002,7 +4003,7 @@ const NULL_DOI_LIST = [
     '10.2307/147879' => true,
     '10.2307/147938' => true,
     '10.2307/148065' => true,
-    '10.2307/148068' => true,
+    '10.2307/148068' => true, // 404
     '10.2307/148090' => true,
     '10.2307/148115' => true,
     '10.2307/148235' => true,
