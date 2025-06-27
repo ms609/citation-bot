@@ -2349,6 +2349,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
         $doi === '10.3905/jpm' ||       // over-truncated
+        strpos($doi, '10.0000/') === 0 || // just urls that look like DOIs
         strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
