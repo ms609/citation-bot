@@ -30,6 +30,7 @@ const HAS_NO_VOLUME = [
     'studia hibernica',
     'yale french studies',
     'zookeys',
+    'library and archives canada',
 ]; // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
 const HAS_NO_ISSUE = [
@@ -92,6 +93,8 @@ const BAD_AUTHORS = [
     'all rights reserved',
 ];
 const NON_HUMAN_AUTHORS = [
+    'library',
+    'archives',
     ' at the ',
     ' for the ',
     ' of america',
