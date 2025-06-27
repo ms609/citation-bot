@@ -65,6 +65,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
+    'yucatan times',
     '- -.',
     '- -',
     '(:unav)',
