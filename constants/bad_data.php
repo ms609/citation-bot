@@ -334,6 +334,7 @@ const PUBLISHER_ENDINGS = [
     'science',
 ];
 const BAD_TITLES = [
+    'sina visitor system',
     '403 unauthorized',
     '404 not found',
     '404',
