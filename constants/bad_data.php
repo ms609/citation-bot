@@ -1247,6 +1247,7 @@ const HOSTNAME_MAP = [
 ]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
+    'laws-lois.justice.gc.ca',
     'filmtv.it',
     'allmusic.com',
     'apopo.org',
