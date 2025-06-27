@@ -8391,6 +8391,21 @@ final class Template
    if ($this->get('url-status') === 'live' && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
     $this->forget('url-status');
    }
+   if (!empty($this->param)) {
+    $drop_me_maybe = [];
+    foreach (ALL_ALIASES as $alias_list) {
+     if (!$this->blank($alias_list)) {
+      // At least one is set
+      $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+     }
+    }
+    // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
+    foreach ($this->param as $key => $p) {
+     if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true)) {
+      unset($this->param[$key]);
+     }
+    }
+   }
   }
  }
 
