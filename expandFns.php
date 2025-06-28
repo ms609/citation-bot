@@ -1146,15 +1146,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     return $new_case;
 }
 
-function mb_ucfirst_bot(string $string): string
+function mb_ucfirst_bot(string $string, bool $force = false): string
 {
-    if($string[0]>="\xc3") {
-        return (($string[1]>="\xa0")?
-        ($string[0].chr(ord($string[1])-32)):
-        ($string[0].$string[1])).substr($string, 2);
-    } else {
-        return ucfirst($string);
+    $first = mb_substr($string, 0, 1);
+    if (mb_strlen($first) !== strlen($first) && $force === false) {
+        return $string;
     }
+    return ucfirst($string);
 }
 
 function mb_strrev(string $string, string $encode = ''): string
