@@ -3953,6 +3953,9 @@ final class Template
    if (strpos($url, '#about_author_anchor') !== false) {
     return false;
    }
+   if (strpos($url, 'vid=') !== false) {
+    return false; // Must be done by hand
+   }
    if (
     preg_match(
      '~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/[^\/\/\s\<\|\{\}\>\]]+\/([^\? \]\[]+)\?([^\s\<\|\{\}\>\]]+)$~i',
