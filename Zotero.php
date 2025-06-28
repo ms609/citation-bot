@@ -1444,7 +1444,7 @@ final class Zotero {
                 }
             }
             // Remove junk from URLs
-            while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?|#metadata_info_tab_contents)~i', $url, $matches)) {
+            while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1#|\?seq=1#|#metadata_info_tab_contents)~i', $url, $matches)) {
                 $url = 'https://www.jstor.org/stable/' . $matches[1] ;
                 if (is_null($url_sent)) {
                     $template->set($url_type, $url); // Update URL with cleaner one
