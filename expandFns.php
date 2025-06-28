@@ -932,7 +932,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-    $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
+    $new_case = trim($new_case); // Remove added spaces
 
     $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
     foreach(UC_SMALL_WORDS as $key=>$_value) {
@@ -1018,7 +1018,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Capitalization exceptions, e.g. Elife -> eLife
     $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .    $new_case . " ");
-    $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
+    $new_case = trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
     if (mb_substr($new_case, -2, 1) === ' ') {
