@@ -335,6 +335,7 @@ const PUBLISHER_ENDINGS = [
     'science',
 ];
 const BAD_TITLES = [
+    'stuff',
     'tnt sports is not available in your region',
     'google drive: sign-in',
     'sina visitor system',
