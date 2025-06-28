@@ -4926,7 +4926,7 @@ final class Template
  }
  public function had_initial_editor(): bool
  {
-  return $this->initial_initial_eds;
+  return $this->had_initial_eds;
  }
 
  private function join_params(): string
