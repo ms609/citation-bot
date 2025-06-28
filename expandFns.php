@@ -979,7 +979,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
         static function (array $matches): string {
-            return mb_strtolower($matches[1]) . mb_ucfirst_bot($matches[2]);
+            return mb_strtolower($matches[1]) . mb_ucfirst_bot($matches[2], true);
         },
         ' ' . $new_case
     );
