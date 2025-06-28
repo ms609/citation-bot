@@ -508,6 +508,7 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' Holz als Roh- und Werkstoff ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -1040,6 +1041,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' Holz Als Roh- und Werkstoff ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
