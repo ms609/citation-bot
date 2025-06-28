@@ -2051,6 +2051,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
     $removed_redundant = 0;
     $hash = '';
     $removed_parts ='';
+    if (strpos($url, "vid=")) {
+        return $url;  // These must be fixed by hand
+    }
     $url = str_replace('&quot;', '"', $url);
 
     if (strpos($url, "#")) {
