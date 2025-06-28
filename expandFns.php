@@ -1148,11 +1148,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
 function mb_ucfirst_bot(string $string): string
 {
-    $first = mb_substr($string, 0, 1);
-    if (mb_strlen($first) !== strlen($first)) {
-        return $string;
+    if($string[0]>="\xc3") {
+        return (($string[1]>="\xa0")?
+        ($string[0].chr(ord($string[1])-32)):
+        ($string[0].$string[1])).substr($string, 2);
     } else {
-        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+        return ucfirst($string);
     }
 }
 
