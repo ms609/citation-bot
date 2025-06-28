@@ -701,6 +701,7 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_replace(['       ', '    '], [' ', ' '], $str);
     $str = str_replace(" & ", " and ", $str);
     $str = str_replace(" / ", " and ", $str);
+    $str = str_ireplace(["®", "&reg;", "(r)"], [' ', ' ', ' '], $str);
     $str = trim($str);
     $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
                         ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''], $str);
