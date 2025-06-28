@@ -65,7 +65,7 @@ final class Template
  private array $initial_author_params = [];
  private string $initial_name = '';
  private bool $doi_valid = false;
- private bool $had_initial_editor = false;
+ private bool $had_initial_eds = false;
  private bool $had_initial_publisher = false;
  private bool $mod_dashes = false;
  private bool $mod_names = false;
@@ -179,13 +179,13 @@ final class Template
 
    // Save editor information for special handling
    if (in_array($p->param, FIRST_EDITOR_ALIASES, true) && $p->val) {
-    $this->had_initial_editor = true;
+    $this->had_initial_eds = true;
    }
    if ($p->param === 'veditors' && $p->val) {
-    $this->had_initial_editor = true;
+    $this->had_initial_eds = true;
    }
    if ($p->param === 'others' && $p->val) {
-    $this->had_initial_editor = true;
+    $this->had_initial_eds = true;
    } // Often tossed in there
   }
   $this->no_initial_doi = $this->blank('doi');
@@ -1252,7 +1252,7 @@ final class Template
   switch ($param_name) {
    // EDITORS
    case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match):
-    if ($this->had_initial_editor) {
+    if ($this->had_initial_editor()) {
      return false;
     }
     if (stripos($this->get('doi'), '10.1093/gmo') !== false) {
@@ -1267,7 +1267,7 @@ final class Template
     return false;
 
    case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match):
-    if ($this->had_initial_editor) {
+    if ($this->had_initial_editor()) {
      return false;
     }
     if (stripos($this->get('doi'), '10.1093/gmo') !== false) {
@@ -1282,7 +1282,7 @@ final class Template
     return false;
 
    case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match):
-    if ($this->had_initial_editor) {
+    if ($this->had_initial_editor()) {
      return false;
     }
     if (stripos($this->get('doi'), '10.1093/gmo') !== false) {
@@ -2697,7 +2697,7 @@ final class Template
 
  public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void
  {
-  if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor)) {
+  if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor())) {
    return;
   } // Zotero does not know difference between editors and authors often
   if (
@@ -4924,6 +4924,10 @@ final class Template
  {
   return count($this->initial_author_params) > 0;
  }
+ public function had_initial_editor(): bool
+ {
+  return $this->initial_initial_eds;
+ }
 
  private function join_params(): string
  {
@@ -4936,7 +4940,7 @@ final class Template
  }
 
  private function convert_to_vanc(): void {
-  if (self::$name_list_style === VancStyle::NAME_LIST_STYLE_VANC && !$this->had_initial_author() && !$this->had_initial_editor) {
+  if (self::$name_list_style === VancStyle::NAME_LIST_STYLE_VANC && !$this->had_initial_author() && !$this->had_initial_editor()) {
    $vanc_attribs = ['vauthors', 'veditors'];
    $vanc_fa = ['first', 'editor-first'];
    $vanc_la = ['last', 'editor-last'];
