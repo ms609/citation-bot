@@ -65,6 +65,9 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
+    '自由時報電子報'
+    'channel c',
+    'entertainment'
     'yucatan times',
     '- -.',
     '- -',
