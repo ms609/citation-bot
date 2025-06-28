@@ -3164,8 +3164,8 @@ final class Template
    // Avoid blowing through our quota
    if (
     !in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv'], true) || // Unlikely to find anything
-    ($this->wikiname() === 'cite book' && $this->has('isbn')) || // "complete" enough for a book
-    ($this->wikiname() === 'citation' && $this->has('isbn') && $this->has('chapter')) || // "complete" enough for a book
+    ($this->wikiname() === 'cite book' && ($this->has('isbn') || $this->has('oclc'))) || // "complete" enough for a book
+    ($this->wikiname() === 'citation' && ($this->has('isbn') || $this->has('oclc')) && $this->has('chapter')) || // "complete" enough for a book
     $this->has_good_free_copy() || // Alreadly links out to something free
     $this->has('s2cid') || // good enough, usually includes abstract and link to copy
     ($this->has('doi') && doi_works($this->get('doi'))) || // good enough, usually includes abstract
@@ -3180,6 +3180,10 @@ final class Template
   if ($result->numFound !== 1 && $this->has('title')) {
    // Do assume failure to find arXiv means that it is not there
    $have_more = false;
+   if (strlen($this->get_without_comments_and_placeholders("title")) < 15 ||
+       strpos($this->get_without_comments_and_placeholders("title"), ' ') === false) {
+    return;
+   }
    $the_query = "title:" . urlencode('"' . trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $this->get_without_comments_and_placeholders("title")))) . '"');
    $pages = $this->page_range();
    if ($pages) {
