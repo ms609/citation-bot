@@ -3869,6 +3869,9 @@ final class Template
     if (strpos($url, '#about_author_anchor') !== false) {
      continue;
     }
+    if (strpos($url, 'vid=') !== false) {
+     continue; // must be done by hand
+    }
     if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $url, $matches)) {
      $url = $matches[1]; // trailing ?
     }
