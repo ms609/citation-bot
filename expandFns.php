@@ -932,7 +932,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-    $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
+    $new_case = mb_trim_bot($new_case); // Remove added spaces
 
     $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
     foreach(UC_SMALL_WORDS as $key=>$_value) {
@@ -1018,7 +1018,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Capitalization exceptions, e.g. Elife -> eLife
     $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .    $new_case . " ");
-    $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
+    $new_case = mb_trim_bot($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
     if (mb_substr($new_case, -2, 1) === ' ') {
@@ -1148,17 +1148,28 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
 function mb_ucfirst_bot(string $string): string
 {
-    $first = mb_substr($string, 0, 1);
-    if (mb_strlen($first) !== strlen($first)) {
+    if (mb_strlen($string) !== strlen($string)) {
         return $string;
     } else {
-        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+        return ucfirst($string);
     }
 }
 
+function mb_trim_bot(string $string): string
+{
+    if (mb_strlen($string) !== strlen($string)) {
+        return $string;
+    } else {
+        return trim($string);
+    }
+}
 function mb_ucfirst_force(string $string): string
 {
-    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+    if (mb_strlen($string) !== strlen($string)) {
+        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+    } else {
+        return ucfirst($string);
+    }
 }
 
 function mb_strrev(string $string, string $encode = ''): string
