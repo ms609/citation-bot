@@ -979,7 +979,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
         static function (array $matches): string {
-            return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);
+            return mb_strtolower($matches[1]) . mb_ucfirst_bot($matches[2], true);
         },
         ' ' . $new_case
     );
@@ -1146,19 +1146,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     return $new_case;
 }
 
-function mb_ucfirst_bot(string $string): string
+function mb_ucfirst_bot(string $string, bool $force = false): string
 {
     $first = mb_substr($string, 0, 1);
-    if (mb_strlen($first) !== strlen($first)) {
+    if (mb_strlen($first) !== strlen($first) && $force === false) {
         return $string;
-    } else {
-        return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
     }
-}
-
-function mb_ucfirst_force(string $string): string
-{
-    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
+    return ucfirst($string);
 }
 
 function mb_strrev(string $string, string $encode = ''): string
