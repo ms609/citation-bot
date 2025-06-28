@@ -530,7 +530,7 @@ final class Zotero {
         if (isset($result->publicationTitle) && substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = substr($result->publicationTitle, 0, -2);
         }
-        if (stripos($url, 'www.royal.uk') !== false || stripos($url, 'astanatimes.com') !== false) {
+        if (stripos($url, 'www.royal.uk') !== false || stripos($url, 'astanatimes.com') !== false || stripos($url, 'theyucatantimes.com') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
         }
@@ -656,6 +656,8 @@ final class Zotero {
                 $result->publicationTitle = 'Bloomberg';
             } elseif ($tester === 'radiofreeeurope/radioliberty') {
                 $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
+            } elseif (strpos($tester, 'the yucatan times') === 0) {
+                $result->publicationTitle = 'The Yucatan Times';
             } elseif ($tester === 'advanced books') {
                 unset($result->issue);
                 unset($result->volume);
