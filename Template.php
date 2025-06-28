@@ -4922,6 +4922,9 @@ final class Template
  }
  public function had_initial_author(): bool
  {
+  if ($this->has('vauthors')) { // TODO - fix in better way {{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}
+   return true;
+  }
   return count($this->initial_author_params) > 0;
  }
 
