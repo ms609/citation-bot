@@ -3703,6 +3703,9 @@ final class Template
     if (stripos($oa_url, 'muse.jhu.edu') !== false) {
      return 'projectmuse';
     } // Same as DOI 99% of the time
+    if (stripos($oa_url, 'doaj.org') !== false) {
+     return 'doaj.org';
+    }
     if (stripos($oa_url, 'lib.myilibrary.com') !== false) {
      return 'proquest';
     } // Rubbish
