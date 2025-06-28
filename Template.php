@@ -3783,6 +3783,7 @@ final class Template
      ($this->has('doi') && $this->get('doi-access') === 'free') ||
      ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
      ($this->has('osti') && $this->get('osti-access') === 'free') ||
+     ($this->has('hdl') && $this->get('hdl-access') === 'free') ||
      ($this->has('ol') && $this->get('ol-access') === 'free')
     ) {
      return 'have free'; // do not add url if have OA already
