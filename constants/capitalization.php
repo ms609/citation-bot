@@ -33,7 +33,6 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' BBC ',
     ' be ',
     ' bei ',
-    ' Biawak ',
     ' BJPsych ',
     ' BJU ',
     ' BMC ',
@@ -284,7 +283,6 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' Bbc ',
     ' Be ',
     ' Bei ',
-    ' BIAWAK ',
     ' Bjpsych ',
     ' Bju ',
     ' Bmc ',
@@ -508,6 +506,8 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' Biawak ',
+    ' Biawak ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -1041,6 +1041,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+    ' biawak ',
+    ' BIAWAK ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
