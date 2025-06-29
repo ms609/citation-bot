@@ -526,6 +526,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
     return;
 }
 
+/**
+   @return array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>>
+   */
 function query_crossref(string $doi): array {
     static $ch = null;
     if ($ch === null) {
@@ -548,7 +551,7 @@ function query_crossref(string $doi): array {
         $xml = @json_decode($raw_xml);
         unset($raw_xml);
         if (is_object($xml) && isset($xml->message)) {
-            if ((string) @$xml->status === "ok") {
+            if (isset($xml->status) && (string) $xml->status === "ok") {
                 $result = $xml->message;
                 unset($xml, $result->reference, $result->assertion, $result->{'reference-count'},
                       $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
@@ -562,7 +565,7 @@ function query_crossref(string $doi): array {
                     $volume = intval(trim((string) @$result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
-                            $result->volume = $result->issue;
+                            $result->volume = trim((string) $result->issue);
                             unset($result->issue);
                         } else {
                             unset($result->volume);
