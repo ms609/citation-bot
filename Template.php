@@ -8098,6 +8098,8 @@ final class Template
      $orig_data = trim($this->get('volume'));
      $possible_issue = trim((string) @$crossRef->issue);
      $possible_volume = trim((string) @$crossRef->volume);
+     $doi_crossref = trim((string) @$crossRef->doi);
+     unset($crossRef);
      if ($possible_issue !== $possible_volume) {
       // They don't match
       if ((strpos($possible_issue, '-') > 0 || (int) $possible_issue > 1) && (int) $possible_volume > 0) {
@@ -8109,7 +8111,6 @@ final class Template
         $this->set('issue', $possible_issue);
         report_action('Citation had volume and issue the same. Changing issue.');
        } else {
-        $doi_crossref = $crossRef->doi;
         if (!is_string($doi_crossref) || strlen($doi_crossref) < 2) {
          $doi_crossref = $doi_template;
         }
