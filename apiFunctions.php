@@ -561,8 +561,8 @@ function query_crossref(string $doi): array {
                       $result->indexed, $result->{'references-count'}, $result->resource,
                       $result->subject, $result->ISSN, $result->{'issn-type'},
                       $result->language);
-                if (stripos($doi, '10.1515/crll') === 0) {
-                    $volume = intval(trim((string) @$result->volume));
+                if (stripos($doi, '10.1515/crll') === 0 && isset($result->volume)) {
+                    $volume = intval(trim((string) $result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
                             $result->volume = trim((string) $result->issue);
