@@ -1152,7 +1152,7 @@ function mb_ucfirst_bot(string $string, bool $force = false): string
     if (mb_strlen($first) !== strlen($first) && $force === false) {
         return $string;
     }
-    return ucfirst($string);
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, null);
 }
 
 function mb_strrev(string $string, string $encode = ''): string
