@@ -506,8 +506,6 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Biawak ',
-    ' Biawak ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -563,6 +561,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' B/gcvs ',
     ' B/gcvs ',
     ' Babesch ',
+    ' Biawak ',
+    ' Biawak ',
     ' Bibliotheca Enrico Damiani diretta da Nullo Minissi ',
     ' Bibliotheca Enrico Damiani diretta da Nullo Minissi ',
     ' Bild am Sonntag ',
@@ -1041,8 +1041,6 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' biawak ',
-    ' BIAWAK ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
@@ -1098,6 +1096,8 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' B/Gcvs ',
     ' b/gcvs ',
     ' BABesch ',
+    ' BIAWAK ',
+    ' biawak ',
     ' Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ',
     ' Bibliotheca Enrico Damiani Diretta da Nullo Minissi ',
     ' Bild Am Sonntag ',
