@@ -779,7 +779,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     process_doi_json($template, $doi, $json);
 }
 
-function process_doi_json(Template $template, string $doi, object $json): void {
+function process_doi_json(Template $template, string $doi, array $json): void {
     /** @param array|string|int|null $data */
     $try_to_add_it = static function(string $name, $data) use($template): void {
         if ($template->has($name)) {
