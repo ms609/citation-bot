@@ -754,6 +754,32 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         return;
     }
     set_time_limit(120);
+    if (!$doi) {
+        return;
+    }
+    /** @psalm-taint-escape ssrf */
+    $doi = trim($doi);
+    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
+    report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+    try {
+        $data = bot_curl_exec($ch);
+    } catch (Exception $e) {          // @codeCoverageIgnoreStart
+        $template->mark_inactive_doi();
+        return;
+    }                      // @codeCoverageIgnoreEnd
+    if ($data === "" || stripos($data, 'DOI Not Found') !== false || stripos($data, 'DOI prefix') !== false) {
+        $template->mark_inactive_doi();
+        return;
+    }
+    $json = @json_decode($data, true);
+    unset($data);
+    if($json === false || $json === null) {
+        return;
+    }
+    process_doi_json($template, $doi, $json);
+}
+
+function process_doi_json(Template $template, string $doi, object $json): void {
     /** @param array|string|int|null $data */
     $try_to_add_it = static function(string $name, $data) use($template): void {
         if ($template->has($name)) {
@@ -792,28 +818,6 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $template->add_if_new($name, $data, 'dx');
         return;
     };
-    if (!$doi) {
-        return;
-    }
-    /** @psalm-taint-escape ssrf */
-    $doi = trim($doi);
-    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
-    report_action("Querying dx.doi.org: doi:" . doi_link($doi));
-    try {
-        $data = bot_curl_exec($ch);
-    } catch (Exception $e) {          // @codeCoverageIgnoreStart
-        $template->mark_inactive_doi();
-        return;
-    }                      // @codeCoverageIgnoreEnd
-    if ($data === "" || stripos($data, 'DOI Not Found') !== false || stripos($data, 'DOI prefix') !== false) {
-        $template->mark_inactive_doi();
-        return;
-    }
-    $json = @json_decode($data, true);
-    unset($data);
-    if($json === false || $json === null) {
-        return;
-    }
     // BE WARNED:  this code uses the "@$var" method.
     // If the variable is not set, then PHP just passes null, then that is interpreted as a empty string
     if ($template->blank(['date', 'year'])) {
@@ -920,7 +924,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         if (!HTML_OUTPUT) {
             print_r($json);                              // @codeCoverageIgnore
         }
-        report_minor_error('dx.doi.org returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));    // @codeCoverageIgnore
+        report_minor_error('DOI returned unexpected data type ' . echoable($type) . ' for ' . doi_link($doi));    // @codeCoverageIgnore
     }
     return;
 }
