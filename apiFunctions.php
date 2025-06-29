@@ -754,11 +754,11 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         return;
     }
     set_time_limit(120);
+    /** @psalm-taint-escape ssrf */
+    $doi = trim($doi);
     if (!$doi) {
         return;
     }
-    /** @psalm-taint-escape ssrf */
-    $doi = trim($doi);
     curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
     try {
