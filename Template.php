@@ -7065,7 +7065,7 @@ final class Template
      } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
       $this->set($param, 'https://www.academia.edu/' . $matches[1]);
      } elseif (preg_match("~^https?://(?:www\.|)essopenarchive\.org/users/([0-9]+)/articles/([0-9]+)~i", $this->get($param), $matches)) {
-      $this->set($param, 'https://essopenarchive.org/users/' . $matches[1] . '/articles/' . $matches[2];
+      $this->set($param, 'https://essopenarchive.org/users/' . $matches[1] . '/articles/' . $matches[2]);
      } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
       $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
      } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
