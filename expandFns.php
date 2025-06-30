@@ -1457,10 +1457,8 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'authors':
         case 'last':
         case 'first':
-            return $list;
         case 'dummy':
             return $list;
-        case 'title':
         case 'others':
         case 'display-editors':
         case 'displayeditors':
@@ -1468,11 +1466,12 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'displayauthors':
         case 'author-link':
             return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+        case 'title':
         case 'title-link':
         case 'titlelink':
-            return prior_parameters('title', $list);
+            return prior_parameters('author-link', array_merge(['displayauthors', 'display-authors', 'displayeditors', 'display-editors'], $list));
         case 'chapter':
-            return prior_parameters('title-link', array_merge(['titlelink'], $list));
+            return prior_parameters('title-link', array_merge(['titlelink', 'title', 'title-link], $list));
         case 'journal':
         case 'work':
         case 'newspaper':
@@ -1501,7 +1500,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'agency':
             return prior_parameters('page', array_merge(['pages'], $list));
         case 'doi':
-            return prior_parameters('location', array_merge(['publisher', 'edition'], $list));
+            return prior_parameters('location', array_merge(['publisher', 'edition', 'agency'], $list));
         case 'doi-broken-date':
             return prior_parameters('doi', $list);
         case 'doi-access':
