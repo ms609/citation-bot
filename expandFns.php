@@ -1471,7 +1471,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'titlelink':
             return prior_parameters('author-link', array_merge(['displayauthors', 'display-authors', 'displayeditors', 'display-editors'], $list));
         case 'chapter':
-            return prior_parameters('title-link', array_merge(['titlelink', 'title', 'title-link], $list));
+            return prior_parameters('title-link', array_merge(['titlelink', 'title', 'title-link'], $list));
         case 'journal':
         case 'work':
         case 'newspaper':
