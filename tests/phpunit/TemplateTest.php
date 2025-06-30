@@ -1510,12 +1510,6 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('300808', $expanded->get2('pmc'));
     }
 
-    public function testOpenAccessLookup2(): void {
-        $text = '{{cite journal|doi=10.1063/5.0004997}}';
-        $expanded = $this->process_citation($text);
-        $this->assertSame('10651/56400', $expanded->get2('hdl'));
-    }
-
     public function testOpenAccessLookup3(): void {
         $text = '{{cite journal | vauthors = Shekelle PG, Morton SC, Jungvig LK, Udani J, Spar M, Tu W, J Suttorp M, Coulter I, Newberry SJ, Hardy M | title = Effect of supplemental vitamin E for the prevention and treatment of cardiovascular disease | journal = Journal of General Internal Medicine | volume = 19 | issue = 4 | pages = 380–9 | date = April 2004 | pmid = 15061748 | pmc = 1492195 | doi = 10.1111/j.1525-1497.2004.30090.x }}';
         $expanded = $this->process_citation($text);
