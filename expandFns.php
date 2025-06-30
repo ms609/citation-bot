@@ -1460,7 +1460,7 @@ function prior_parameters(string $par, array $list=[]): array {
             return $list;
         case 'dummy':
             return $list;
-        case 'title':
+        case 'title':dsfasdfdsfdsdsfsd
         case 'others':
         case 'display-editors':
         case 'displayeditors':
