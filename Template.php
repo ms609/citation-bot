@@ -8096,9 +8096,9 @@ final class Template
     $crossRef = query_crossref($doi_template);
     if ($crossRef) {
      $orig_data = trim($this->get('volume'));
-     $possible_issue = trim((string) @$crossRef->issue);
-     $possible_volume = trim((string) @$crossRef->volume);
-     $doi_crossref = trim((string) @$crossRef->doi);
+     $possible_issue = trim((string) @$crossRef['issue']);
+     $possible_volume = trim((string) @$crossRef['volume']);
+     $doi_crossref = trim((string) @$crossRef['doi']);
      unset($crossRef);
      if ($possible_issue !== $possible_volume) {
       // They don't match
