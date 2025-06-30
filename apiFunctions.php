@@ -829,6 +829,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     }
     $try_to_add_it('issue', @$json['issue']);
     $try_to_add_it('pages', @$json['pages']);
+    $try_to_add_it('page', @$json['pages']);
     $try_to_add_it('volume', @$json['volume']);
     $try_to_add_it('isbn', @$json['ISBN']['0']);
     $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
