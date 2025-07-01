@@ -2683,6 +2683,20 @@ final class Template
     }
     return false;
 
+    case 'article-number':
+    if ($this->blank($param_name)) {
+     if ($this->get('pages') === $value) {
+      $this->rename('pages', $param_name);
+      return true;
+     }
+     if ($this->get('page') === $value) {
+      $this->rename('page', $param_name);
+      return true;
+     }
+     return $this->add($param_name, $value); // Do NOT Sanitize
+    }
+    return false;
+
    default:
     // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
     // @codeCoverageIgnoreStart
