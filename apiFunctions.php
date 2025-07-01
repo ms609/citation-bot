@@ -594,7 +594,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
 
             $crossRefNewAPI = query_crossref_newapi($doi);
-            if (isset($result->title[0]) && !isset($result->title[1])) {
+            if (isset($crossRefNewAPI->title[0]) && !isset($crossRefNewAPI->title[1])) {
                 $new_title = (string) $crossRefNewAPI->title[0];
                 if (conference_doi($doi) && isset($crossRefNewAPI->subtitle[0]) && strlen((string) $crossRefNewAPI->subtitle[0]) > 4) {
                     $new_title .= ": " . (string) $crossRefNewAPI->subtitle[0];
