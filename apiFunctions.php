@@ -850,6 +850,23 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             }
         }
     }
+    if (isset($json['editor'])) {
+        $i = 0;
+        foreach ($json['editor'] as $auth) {
+            $i += 1;
+            $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            if (in_array($full_name, BAD_AUTHORS, true)) {
+                break;
+            }
+            if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
+                $try_to_add_it('editor' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
+            } else {
+                $try_to_add_it('editor-last' . (string) $i, @$auth['family']);
+                $try_to_add_it('editor-first' . (string) $i, @$auth['given']);
+                $try_to_add_it('editor' . (string) $i, @$auth['literal']);
+            }
+        }
+    }
     // Publisher hiding as journal name - defective data
     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
         unset($json['container-title']);   // @codeCoverageIgnore
