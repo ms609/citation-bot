@@ -3,6 +3,15 @@
 declare(strict_types=1);
 
 const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
+    ' AIP Advances ',
+    ' AIP Conference Proceedings ',
+    ' APL Bioengineering ',
+    ' APL Electronic Devices ',
+    ' APL Energy ',
+    ' APL Machine Learning ',
+    ' APL Materials ',
+    ' APL Photonics ',
+    ' APL Quantum ',
     ' AAOHN ',
     ' AAP ',
     ' AAPG ',
@@ -253,6 +262,15 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' U S A ',
 ];
 const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
+    ' Aip Advances ',
+    ' Aip Conference Proceedings ',
+    ' Apl Bioengineering ',
+    ' Apl Electronic Devices ',
+    ' Apl Energy ',
+    ' Apl Machine Learning ',
+    ' Apl Materials ',
+    ' Apl Photonics ',
+    ' Apl Quantum ',
     ' Aaohn ',
     ' Aap ',
     ' Aapg ',
