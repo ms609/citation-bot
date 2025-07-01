@@ -707,6 +707,23 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             }
         }
     }
+    if (isset($json['editor'])) {
+        $i = 0;
+        foreach ($json['editor'] as $auth) {
+            $i += 1;
+            $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            if (in_array($full_name, BAD_AUTHORS, true)) {
+                break;
+            }
+            if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
+                $try_to_add_it('editor' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
+            } else {
+                $try_to_add_it('editor-last' . (string) $i, @$auth['family']);
+                $try_to_add_it('editor-first' . (string) $i, @$auth['given']);
+                $try_to_add_it('editor' . (string) $i, @$auth['literal']);
+            }
+        }
+    }
     // Publisher hiding as journal name - defective data
     if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
         unset($json['container-title']);   // @codeCoverageIgnore
@@ -1435,24 +1452,42 @@ function query_adsabs(string $options): object {
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
 
-
 /**
 ALL THIS Code needs merged back in, and Special title code needs removed
-// Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-function CrossRefTitle(string $doi): string {
+
+function query_crossref_newapi(string $doi): string {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    $url = "https://api.crossref.org/v1/works/".doi_encode($doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+    $url = "https://api.crossref.org/v1/works/".doi_encode($doi)."?mailto=".CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
-    if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
-        $title = (string) $json->message->title[0];
-        if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
-            $title .= ": " . (string) $json->message->subtitle[0];
+    
+    if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
+        $result = $json->message;
+        unset($json);
+    } else {
+        sleep(2);  // @codeCoverageIgnore
+        return ''; // @codeCoverageIgnore
+    }
+    // A bunch of stuff we will never use - removing since at some point we will use this API for more things
+    // At that point we will probably find more things to unset.  
+
+    unset(  $result->reference, $result->assertion, $result->{'reference-count'},
+            $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
+            $result->{'published-online'}, $result->member, $result->score, $result->prefix, $result->source,
+            $result->abstract, $result->URL, $result->relation, $result->{'content-domain'},
+            $result->{'short-container-title'}, $result->license,
+            $result->indexed, $result->{'references-count'}, $result->resource,
+            $result->subject, $result->language);
+    
+    if (isset($result->title[0]) && !isset($result->title[1])) {
+        $title = (string) $result->title[0];
+        if (conference_doi($doi) && isset($result->subtitle[0]) && strlen((string) $result->subtitle[0]) > 4) {
+            $title .= ": " . (string) $result->subtitle[0];
         }
         return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
     } else {
