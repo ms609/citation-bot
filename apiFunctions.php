@@ -597,7 +597,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
                     $template->rename('title', 'chapter');
                 } else {
-                    $new_title = CrossRefTitle($doi);
+                    $new_title = query_crossref_newapi($doi);
                     if ($new_title !== '' && $crossRef->article_title) {
                         $template->add_if_new('chapter', $new_title);
                     } else {
@@ -606,7 +606,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 }
                 $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
             } else {
-                $new_title = CrossRefTitle($doi);
+                $new_title = query_crossref_newapi($doi);
                 if ($new_title !== '' && $crossRef->article_title) {
                     $template->add_if_new('title', $new_title, 'crossref');
                 } else {
@@ -1578,21 +1578,43 @@ function query_adsabs(string $options): object {
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
 
-// Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-function CrossRefTitle(string $doi): string {
+// TODO: look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
+// This API can get article numbers in addittion to page numbers
+// Will need to use exist DX code, and add all the extra checks cross ref code has
+
+function query_crossref_newapi(string $doi): string {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    $url = "https://api.crossref.org/v1/works/".doi_encode($doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+    $url = "https://api.crossref.org/v1/works/".doi_encode($doi)."?mailto=".CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
-    if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
-        $title = (string) $json->message->title[0];
-        if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
-            $title .= ": " . (string) $json->message->subtitle[0];
+    
+    if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
+        $result = $json->message;
+        unset($json);
+    } else {
+        sleep(2);  // @codeCoverageIgnore
+        return ''; // @codeCoverageIgnore
+    }
+    // A bunch of stuff we will never use - removing since at some point we will use this API for more things
+    // At that point we will probably find more things to unset.  
+
+    unset(  $result->reference, $result->assertion, $result->{'reference-count'},
+            $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
+            $result->{'published-online'}, $result->member, $result->score, $result->prefix, $result->source,
+            $result->abstract, $result->URL, $result->relation, $result->{'content-domain'},
+            $result->{'short-container-title'}, $result->license,
+            $result->indexed, $result->{'references-count'}, $result->resource,
+            $result->subject, $result->language);
+    
+    if (isset($result->title[0]) && !isset($result->title[1])) {
+        $title = (string) $result->title[0];
+        if (conference_doi($doi) && isset($result->subtitle[0]) && strlen((string) $result->subtitle[0]) > 4) {
+            $title .= ": " . (string) $result->subtitle[0];
         }
         return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
     } else {
