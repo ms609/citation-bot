@@ -4753,4 +4753,13 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertSame('This is book-title', $expanded->get3('book-title'));
         $this->assertSame('Chapter wapper', $expanded->get3('chapter'));
     }
+
+    public function testArticleNumber(): void {
+        $text = "{{cite journal|doi=10.1038/ncomms15367}}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame('15367', $expanded->get3('article-number'));
+        $this->assertNull($expanded->get3('pages'));
+        $this->assertNull($expanded->get3('page'));
+    }
+
 }
