@@ -593,20 +593,28 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 unset($crossRef->volume_title);
             }
 
+            $crossRefNewAPI = query_crossref_newapi($doi);
+            if (isset($result->title[0]) && !isset($result->title[1])) {
+                $new_title = (string) $crossRefNewAPI->title[0];
+                if (conference_doi($doi) && isset($crossRefNewAPI->subtitle[0]) && strlen((string) $crossRefNewAPI->subtitle[0]) > 4) {
+                    $new_title .= ": " . (string) $crossRefNewAPI->subtitle[0];
+                }
+                $new_title = str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $new_title);
+            } else {
+                $new_title = '';
+            }
             if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
                     $template->rename('title', 'chapter');
                 } else {
-                    $new_title = query_crossref_newapi($doi);
                     if ($new_title !== '' && $crossRef->article_title) {
-                        $template->add_if_new('chapter', $new_title);
+                        $template->add_if_new('chapter', $new_title, 'crossref');
                     } else {
                         $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref');
                     }
                 }
                 $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
             } else {
-                $new_title = query_crossref_newapi($doi);
                 if ($new_title !== '' && $crossRef->article_title) {
                     $template->add_if_new('title', $new_title, 'crossref');
                 } else {
@@ -617,7 +625,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
                 $template->add_if_new("year", (string) $crossRef->year, 'crossref');
             }
-            if (    $template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) // If editors present, authors may not be desired
+            if ($template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) // If editors present, authors may not be desired
                     && $crossRef->contributors->contributor
                 ) {
                 $au_i = 0;
@@ -1599,7 +1607,7 @@ function query_adsabs(string $options): object {
 // This API can get article numbers in addittion to page numbers
 // Will need to use exist DX code, and add all the extra checks cross ref code has
 
-function query_crossref_newapi(string $doi): string {
+function query_crossref_newapi(string $doi): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
@@ -1612,15 +1620,14 @@ function query_crossref_newapi(string $doi): string {
     
     if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
         $result = $json->message;
-        unset($json);
     } else {
         sleep(2);  // @codeCoverageIgnore
-        return ''; // @codeCoverageIgnore
+        return new stdClass(); // @codeCoverageIgnore
     }
-    // A bunch of stuff we will never use - removing since at some point we will use this API for more things
-    // At that point we will probably find more things to unset.  
 
-    unset(  $result->reference, $result->assertion, $result->{'reference-count'},
+    // A bunch of stuff we will never use - make dubug messages and memory smaller
+
+    unset(  $json, $result->reference, $result->assertion, $result->{'reference-count'},
             $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
             $result->{'published-online'}, $result->member, $result->score, $result->prefix, $result->source,
             $result->abstract, $result->URL, $result->relation, $result->{'content-domain'},
@@ -1628,14 +1635,5 @@ function query_crossref_newapi(string $doi): string {
             $result->indexed, $result->{'references-count'}, $result->resource,
             $result->subject, $result->language);
     
-    if (isset($result->title[0]) && !isset($result->title[1])) {
-        $title = (string) $result->title[0];
-        if (conference_doi($doi) && isset($result->subtitle[0]) && strlen((string) $result->subtitle[0]) > 4) {
-            $title .= ": " . (string) $result->subtitle[0];
-        }
-        return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
-    } else {
-        sleep(2);  // @codeCoverageIgnore
-        return ''; // @codeCoverageIgnore
-    }
+    return $result;
 }
