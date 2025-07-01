@@ -679,6 +679,9 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                 }
             }
+            if (isset($crossRefNewAPI->{"article-number"})) {
+                $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
+            }
         } else {
             report_info("No CrossRef record found for doi '" . echoable($doi) ."'");
             expand_doi_with_dx($template, $doi);
