@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.1071/EC87p36' => true, // domain for sale
+    '10.3167/ej.2011.44.01.15' => true, // not found
     '10.7499/j.issn.1008-8830.2013.07.018' => true, // hyjacked
     '10.1029/CE052p0155' => true, // 404
     '10.1029/GD022p0343' => true, // 404
@@ -1514,7 +1516,7 @@ const NULL_DOI_LIST = [
     '10.1067/mob.2002.121428' => true, // error
     '10.1067/mpd.2000.106225' => true,
     '10.1068/p2952' => true, // domain for sale
-    '10.1071/EC87p36' => true,
+    '10.1071/EC87p36' => true, // domain for sale
     '10.1071/ma05076' => true,
     '10.1071/MA15039' => true,
     '10.1071/MA17011' => true,
@@ -3497,7 +3499,7 @@ const NULL_DOI_LIST = [
     '10.3167/147335301782485144' => true, // not found
     '10.3167/apw2010010104' => true,
     '10.3167/cont.2016.040109' => true, // not found
-    '10.3167/ej.2011.44.01.15' => true,
+    '10.3167/ej.2011.44.01.15' => true, // not found
     '10.3167/ej.2013.46.01.02' => true, // not found
     '10.3167/fpcs.2014.320104' => true, // not found
     '10.3167/fpcs.2014.320209' => true, // not found
