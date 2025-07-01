@@ -1336,6 +1336,7 @@ const NO_DATE_WEBSITES = [
 ];
 
 const ZOTERO_AVOID_REGEX = [
+    'ftp\.unicode\.org', // Zotero goes insane on titles
     'arkive\.org',
     'australian-charts\.com', // Fails 100%
     'biodiversity\.org\.au', // gives bad data
