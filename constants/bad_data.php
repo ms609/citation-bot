@@ -65,6 +65,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
+    'prance-presse',
     '自由時報電子報',
     'channel c',
     'entertainment',
@@ -97,6 +98,8 @@ const BAD_AUTHORS = [
     'all rights reserved',
 ];
 const NON_HUMAN_AUTHORS = [
+    'france-presse',
+    'agence',
     'library',
     'archives',
     ' at the ',
@@ -338,6 +341,8 @@ const PUBLISHER_ENDINGS = [
     'science',
 ];
 const BAD_TITLES = [
+    '- youtube',
+    'browser check',
     'stuff',
     'tnt sports is not available in your region',
     'google drive: sign-in',
@@ -1331,6 +1336,7 @@ const NO_DATE_WEBSITES = [
 ];
 
 const ZOTERO_AVOID_REGEX = [
+    'ftp\.unicode\.org', // Zotero goes insane on titles
     'arkive\.org',
     'australian-charts\.com', // Fails 100%
     'biodiversity\.org\.au', // gives bad data

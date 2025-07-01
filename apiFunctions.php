@@ -1455,7 +1455,7 @@ function query_adsabs(string $options): object {
 /**
 ALL THIS Code needs merged back in, and Special title code needs removed
 
-function query_crossref_newapi(string $doi): string {
+function query_crossref_newapi(string $doi): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
@@ -1468,15 +1468,14 @@ function query_crossref_newapi(string $doi): string {
     
     if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
         $result = $json->message;
-        unset($json);
     } else {
         sleep(2);  // @codeCoverageIgnore
-        return ''; // @codeCoverageIgnore
+        return new stdClass(); // @codeCoverageIgnore
     }
-    // A bunch of stuff we will never use - removing since at some point we will use this API for more things
-    // At that point we will probably find more things to unset.  
 
-    unset(  $result->reference, $result->assertion, $result->{'reference-count'},
+    // A bunch of stuff we will never use - make dubug messages and memory smaller
+
+    unset(  $json, $result->reference, $result->assertion, $result->{'reference-count'},
             $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
             $result->{'published-online'}, $result->member, $result->score, $result->prefix, $result->source,
             $result->abstract, $result->URL, $result->relation, $result->{'content-domain'},
@@ -1484,16 +1483,7 @@ function query_crossref_newapi(string $doi): string {
             $result->indexed, $result->{'references-count'}, $result->resource,
             $result->subject, $result->language);
     
-    if (isset($result->title[0]) && !isset($result->title[1])) {
-        $title = (string) $result->title[0];
-        if (conference_doi($doi) && isset($result->subtitle[0]) && strlen((string) $result->subtitle[0]) > 4) {
-            $title .= ": " . (string) $result->subtitle[0];
-        }
-        return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
-    } else {
-        sleep(2);  // @codeCoverageIgnore
-        return ''; // @codeCoverageIgnore
-    }
+    return $result;
 }
 
 
