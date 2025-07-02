@@ -1493,12 +1493,15 @@ function prior_parameters(string $par, array $list=[]): array {
             return prior_parameters('volume', $list);
         case 'page':
         case 'pages':
+        case 'at':
             return prior_parameters('issue', array_merge(['number'], $list));
+        case 'article-number':
+            return prior_parameters('page', array_merge(['at', 'pages'], $list));
         case 'location':
         case 'publisher':
         case 'edition':
         case 'agency':
-            return prior_parameters('page', array_merge(['pages'], $list));
+            return prior_parameters('article-number', $list);
         case 'doi':
             return prior_parameters('location', array_merge(['publisher', 'edition', 'agency'], $list));
         case 'doi-broken-date':
