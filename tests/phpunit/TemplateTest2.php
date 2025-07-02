@@ -4758,8 +4758,8 @@ final class TemplateTest2 extends testBaseClass {
         $text = "{{cite journal|doi=10.1038/ncomms15367}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('15367', $expanded->get3('article-number'));
-        $this->assertNull($expanded->get3('pages'));
-        $this->assertNull($expanded->get3('page'));
+        $this->assertNull($expanded->get2('pages'));
+        $this->assertNull($expanded->get2('page'));
     }
 
 }
