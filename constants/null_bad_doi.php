@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.9751/TPAC.2497-006' => true, // database error
     '10.1029/GM112p0035' => true, // 404
     '10.1590/s0043-31442005000600002' => true, // 404
     '10.1590/S0717-14982006000100001' => true, // 404
@@ -1153,6 +1154,9 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.3166/bspe-2018-0011' => true,
+    '10.3166/dn.9.3-4.69-85' => true,
+    '10.3166/r2ie.2.119-141' => true,
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -3488,13 +3492,6 @@ const NULL_DOI_LIST = [
     '10.3149/jmh.1203.187' => true,
     '10.3163/1536-5050.95.2.156' => true,
     '10.31646/wa.252' => true, // domain for sale
-    '10.3166/bmsap-2018-0013' => true,
-    '10.3166/bmsap-2018-0029' => true,
-    '10.3166/bmsap-2018-0032' => true,
-    '10.3166/bspe-2018-0011' => true,
-    '10.3166/dn.9.3-4.69-85' => true,
-    '10.3166/r2ie.2.119-141' => true,
-    '10.3166/S13219-017-0199-4' => true,
     '10.31661/gmj.v8i0.1292' => true,
     '10.31661/gmj.v9i0.1898' => true,
     '10.3167/007587405781998534' => true, // not found
@@ -4216,7 +4213,7 @@ const NULL_DOI_LIST = [
     '10.9737/hist_572' => true, // landing page
     '10.9737/historyS1150' => true, // landing page
     '10.9737/historyS1560' => true, // landing page
-    '10.9751/TPAC.2497-006' => true,
+    '10.9751/TPAC.2497-006' => true, // database error
     '10.9752/ts056.12-25-2014' => true,
     '10.9770/jssi.2015.4.4(4)' => true,
     '10.9774/GLEAF.3062.1999.wi.00012' => true, // not found

@@ -2683,7 +2683,7 @@ final class Template
     }
     return false;
 
-    case 'article-number':
+   case 'article-number':
     if ($this->blank($param_name)) {
      if ($this->get('pages') === $value) {
       $this->rename('pages', $param_name);
