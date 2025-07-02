@@ -8,7 +8,7 @@ const LC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
     ' APL Bioengineering ',
     ' APL Electronic Devices ',
     ' APL Energy ',
-    ' APL Machine Learning ',
+    ' APL Machine Learning ',CONFLICT
     ' APL Materials ',
     ' APL Photonics ',
     ' APL Quantum ',
