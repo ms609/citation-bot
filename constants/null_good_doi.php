@@ -7,6 +7,14 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.5964/psyct.v8i2.139' => true,
+    '10.32865/fire201953138' => true,
+    '10.26153/tsw/8270' => true,
+    '10.26153/tsw/14268' => true,
+    '10.1163/1574-9347_bnp_e1202830' => true,
+    '10.1163/2589-7993_EECO_SIM_00000724' => true,
+    '10.1163/1574-9347_bnp_e622160' => true,
+    '10.1163/1574-9347_bnp_e1202830' => true,
     '10.3166/bmsap-2018-0029' => true,
     '10.3166/bmsap-2018-0032' => true,
     '10.3166/S13219-017-0199-4' => true,
