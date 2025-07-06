@@ -398,7 +398,7 @@ class Page {
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $this_template->tidy_parameter('title');
-            } elseif (strpos($this_template->wikiname(), 'cite ') === 0)) {
+            } elseif (strpos($this_template->wikiname(), 'cite ') === 0) {
                 $this_template->clean_google_books();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
