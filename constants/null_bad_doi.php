@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.22363/2313-0660-2018-18-1-124-134' => true, // Russia has gone to crap
     '10.26464/epp2022042' => true, // They suck
     '10.1074/jbc.M004218200' => true, // does not exist
     '10.22185/24487147.2016.90.033' => true, // landing page
@@ -3022,7 +3023,7 @@ const NULL_DOI_LIST = [
     '10.22258/hgh' => true,
     '10.22353/mjbs.2004.02.13' => true,
     '10.22353/mjbs.2005.02.02' => true,
-    '10.22363/2313-0660-2018-18-1-124-134' => true,
+    '10.22363/2313-0660-2018-18-1-124-134' => true, // Russia has gone to crap
     '10.22391/920.182945' => true,
     '10.22394/0869-5377-2019-5-203-225' => true, // Not found
     '10.22409/conflu12i1.p20015' => true, // login
