@@ -2693,6 +2693,10 @@ final class Template
       $this->rename('page', $param_name);
       return true;
      }
+     if ($this->get('at') === $value) {
+      $this->rename('at', $param_name);
+      return true;
+     }
      return $this->add($param_name, $value); // Do NOT Sanitize
     }
     return false;
