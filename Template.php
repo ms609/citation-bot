@@ -218,13 +218,6 @@ final class Template
   if (in_array($this->wikiname(), TEMPLATES_WE_HARV, true)) {
    $this->tidy_parameter('ref'); // Remove ref=harv or empty ref=
   }
-  if (in_array($this->wikiname(), TEMPLATES_VCITE, true)) {
-   if ($this->has('doi')) {
-    if ($this->verify_doi()) {
-     $this->forget('doi-broken-date');
-    }
-   }
-  }
  }
 
  // Re-assemble parsed template into string
