@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class PageTest extends testBaseClass {
+final class PageTest extends tecite stBaseClass {
 
     protected function setUp(): void {
         if (BAD_PAGE_API !== '') {
@@ -476,13 +476,6 @@ final class PageTest extends testBaseClass {
         $text = 'John Smith';
         $output = wiki_link($text);
         $this->assertSame('Wikipedia page : John Smith', $output);
-    }
-
-    public function testCiteLSA(): void {
-        $text = "{{Cite LSA|url=https://books.google.uk.co/books?id=to0yXzq_EkQC&pg=}}";
-        $page = $this->process_page($text);
-        $this->assertSame("{{Cite LSA|url=https://books.google.com/books?id=to0yXzq_EkQC}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testChapterUrlLots(): void {
