@@ -388,10 +388,6 @@ class Page {
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
-            } elseif ($this_template->wikiname() === 'cite lsa') {
-                $this_template->clean_google_books();
-                $this_template->forget('ref'); // Common parameter that does not actually work
-                $this_template->tidy_parameter('title');
             } elseif ($this_template->wikiname() === 'cite odnb') {
                 $this_template->clean_cite_odnb();
                 $this_template->clean_google_books();
