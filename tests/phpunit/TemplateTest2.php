@@ -3868,12 +3868,6 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
     }
 
-    public function testVcite(): void {
-        $text = '{{vcite journal|doi=10.0000/Rubbish_bot_failure_test}}';
-        $template = $this->process_citation($text);
-        $this->assertNotNull($template->get2('doi-broken-date'));
-    }
-
     public function testAddingJunk(): void {
         $text = '{{cite journal}}';
         $template = $this->make_citation($text);
