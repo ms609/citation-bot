@@ -155,7 +155,7 @@ final class Zotero {
                             if (count($dois) === 1) {
                                 if ($template->add_if_new('doi', $dois[0])) {
                                     if (strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
-                                        // SEP 2020 $template->forget($kind);  // It is one of those DOIs with the document number in it
+                                        $template->forget($kind);
                                     }
                                 }
                             }
@@ -198,8 +198,8 @@ final class Zotero {
                 !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
                 $template->blank(DOI_BROKEN_ALIASES) &&
                 preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
-                // SEP 2020 report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
-                // SEP 2020 $template->forget($url_kind);
+                report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
+                $template->forget($url_kind);
             }
 
             if ($doi &&
@@ -228,11 +228,11 @@ final class Zotero {
                     report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
                 } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && $template->has('pmid')) {
-                    // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
-                    // SEP 2020 $template->forget($url_kind);
+                    report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
+                    $template->forget($url_kind);
                 } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
-                    // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-                    // SEP 2020 $template->forget($url_kind);;
+                    report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
+                    $template->forget($url_kind);;
                     $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
                 } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
                     report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
@@ -2018,7 +2018,7 @@ final class Zotero {
                     quietly('report_modification', "Converting URL to MR parameter");
                 }
                 if (is_null($url_sent)) {
-                    // SEP 2020 $template->forget($url_type); This points to a review and not the article
+                    $template->forget($url_type); // This points to a review and not the article
                 }
                     return $template->add_if_new('mr', $match[1]);
             } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
@@ -2077,7 +2077,7 @@ final class Zotero {
                         $template->change_name_to('cite book');  // Better template choice
                     }
                     if (is_null($url_sent)) {
-                        // SEP 2020 $template->forget($url_type);
+                        $template->forget($url_type);
                     }
                     return $template->add_if_new('oclc', $match[1]);
                 } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
@@ -2088,7 +2088,7 @@ final class Zotero {
                         $template->change_name_to('cite journal'); // Better template choice
                     }
                     if (is_null($url_sent)) {
-                        // SEP 2020 $template->forget($url_type);
+                        $template->forget($url_type);
                     }
                     return $template->add_if_new('issn_force', $match[1] . '-' . $match[2]);
                 }
@@ -2102,7 +2102,7 @@ final class Zotero {
                     quietly('report_modification', "Converting URL to LCCN parameter");
                 }
                 if (is_null($url_sent)) {
-                    // SEP 2020 $template->forget($url_type);
+                    $template->forget($url_type);
                 }
                 return $template->add_if_new('lccn', $match[1]);
             } elseif (preg_match("~^https?://openlibrary\.org/books/OL/?(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
@@ -2113,7 +2113,7 @@ final class Zotero {
                     $template->change_name_to('cite book');  // Better template choice
                 }
                 if (is_null($url_sent)) {
-                    // SEP 2020 $template->forget($url_type);
+                    $template->forget($url_type);
                 }
                 return $template->add_if_new('ol', $match[1]);
             } elseif (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $template->has('title') && $template->blank('id')) {
