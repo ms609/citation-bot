@@ -2070,6 +2070,10 @@ final class Zotero {
                         report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . echoable($match[1]));
                         return false;
                     }
+                    $check_me = $template->get('work') . $template->get('website') . $template->get('publisher');
+                    if (stripos($check_me, 'oclc') !== false || stripos($check_me, 'open library') !== false) {
+                        return $template->add_if_new('oclc', $match[1]);
+                    }
                     if ($template->blank('oclc')) {
                         quietly('report_modification', "Converting URL to OCLC parameter");
                     }
