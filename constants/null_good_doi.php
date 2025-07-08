@@ -7,6 +7,21 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.31610/trudyzin/2008.312.1-2.3' => true,
+    '10.31610/trudyzin/2010.314.1.24' => true,
+    '10.31610/trudyzin/2010.314.1.42' => true,
+    '10.31610/trudyzin/2012.316.1.40' => true,
+    '10.31610/trudyzin/2018.322.3.222' => true,
+    '10.31610/trudyzin/2018.322.3.241' => true,
+    '10.31610/trudyzin/2018.322.3.306' => true,
+    '10.31610/trudyzin/2019.323.2.65' => true,
+    '10.31610/trudyzin/2020.324.1.41' => true,
+    '10.31610/trudyzin/2021.325.4.379' => true,
+    '10.31610/trudyzin/2022.326.2.47' => true,
+    '10.31610/zsr/2012.21.1.131' => true,
+    '10.31610/zsr/2021.30.2.213' => true,
+    '10.31610/zsr/2021.30.2.298' => true,
+    '10.3993/jfbim02171' => true,
     '10.1000/100' => true,
     '10.1001/archderm.138.12.1584' => true,
     '10.1001/archderm.140.7.819' => true,
