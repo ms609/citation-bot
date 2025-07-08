@@ -2017,10 +2017,10 @@ final class Zotero {
                 if ($template->blank('mr')) {
                     quietly('report_modification', "Converting URL to MR parameter");
                 }
-                if (is_null($url_sent)) {
-                    $template->forget($url_type); // This points to a review and not the article
-                }
-                    return $template->add_if_new('mr', $match[1]);
+                //if (is_null($url_sent)) {
+                //    $template->forget($url_type); // This points to a review and not the article
+                //}
+                return $template->add_if_new('mr', $match[1]);
             } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
                 if ($template->blank('ssrn')) {
                     quietly('report_modification', "Converting URL to SSRN parameter");
