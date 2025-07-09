@@ -861,7 +861,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             }
         }
     }
-    if (isset($json['editor'])) {
+    if (isset($json['editor']) && $template->wikiname() !== 'cite journal') {
         $i = 0;
         foreach ($json['editor'] as $auth) {
             $i += 1;
