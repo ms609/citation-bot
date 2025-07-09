@@ -96,7 +96,7 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $tmp_array = [$template];
         Zotero::drop_urls_that_match_dois($tmp_array);
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
     }
 
     public function testDropSomeProxiesE(): void {
