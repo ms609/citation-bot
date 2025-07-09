@@ -2377,7 +2377,7 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234-1234', $template->get2('issn'));
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL4(): void {
@@ -2385,7 +2385,7 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234', $template->get2('lccn'));
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL5(): void {
@@ -2393,7 +2393,7 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234W', $template->get2('ol'));
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
     }
 
     public function testTidyJSTOR(): void {
@@ -2606,7 +2606,7 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234', $template->get2('oclc'));
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
         $this->assertSame('cite book', $template->wikiname());
 
         $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234&referer=brief_results}}";
