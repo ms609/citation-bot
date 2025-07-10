@@ -1458,6 +1458,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'last':
         case 'first':
         case 'dummy':
+        CONFLICT
             return $list;
         case 'others':
         case 'display-editors':
