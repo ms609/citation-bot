@@ -203,7 +203,7 @@ final class apiFunctionsTest extends testBaseClass {
          if ($expanded->parsed_text() === '{{Cite journal}}') {
              $this->assertSame('{{Cite journal}}',$expanded->parsed_text()) ;
          } else {
-             $this->assertSame('{{Cite journal| date=2018 | volume=無 | issue=57 | author1=Jun Aoyama | author2=Sam Wouthuyzen | author3=Michael J. Miller | author4=Hagi Y. Sugeha | author5=Mari Kuroki | author6=Shun Watanabe | author7=Augy Syahailatua | author8=Fadly Y. Tantu | author9=Seishi Hagihara | author10=Triyanto | author11=Tsuguo Otake | author12=Katsumi Tsukamoto | title=Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia | journal=Zoological Studies }}', $expanded->parsed_text());
+             $this->assertSame('{{Cite journal| author1=Jun Aoyama | author2=Sam Wouthuyzen | author3=Michael J. Miller | author4=Hagi Y. Sugeha | author5=Mari Kuroki | author6=Shun Watanabe | author7=Augy Syahailatua | author8=Fadly Y. Tantu | author9=Seishi Hagihara | author10=Triyanto | author11=Tsuguo Otake | author12=Katsumi Tsukamoto | title=Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia | journal=Zoological Studies | date=2018 | volume=無 | issue=57 }}', $expanded->parsed_text());
          }
     }
 
@@ -226,9 +226,9 @@ final class apiFunctionsTest extends testBaseClass {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.2788/14231');
          if ($expanded->has('author1')) {
-             $this->assertSame('{{Cite journal| date=2007 | author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
-         } else {
              $this->assertSame('{{Cite journal| author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | date=2007 | publisher=Publications Office }}', $expanded->parsed_text());
+         } else {
+             $this->assertSame('FIX ME', $expanded->parsed_text());
          }
     }
 
