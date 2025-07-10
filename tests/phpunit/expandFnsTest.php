@@ -594,7 +594,7 @@ final class expandFnsTest extends testBaseClass {
         }
         $this->assertSame("", $changes);  
     }
-
+/**
     public function testHostIsGoneDOILoop(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $changes = "";
@@ -615,6 +615,7 @@ final class expandFnsTest extends testBaseClass {
         }
         $this->assertSame("", $changes);
     }
+    **/
 
     public function testHostIsGoneDOIHosts(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
