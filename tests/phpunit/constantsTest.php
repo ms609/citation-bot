@@ -699,7 +699,7 @@ final class constantsTest extends testBaseClass {
         $err = '';
         foreach (PARAMETER_LIST as $p) {
             $x = str_replace("#", "2", $p);
-            $prior = prior_parameter($x);
+            $prior = prior_parameters($x);
             if (empty($prior)) {
                 $err = $err . ' ' . $p;
             }
