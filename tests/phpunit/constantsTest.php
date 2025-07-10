@@ -694,5 +694,17 @@ final class constantsTest extends testBaseClass {
         }
         $this->assertSame('', $errors);
     }
+
+    function testPrior(): void {
+        $err = '';
+        foreach (PARAMETER_LIST as $p) {
+            $x = str_replace("#", "2", $p);
+            $prior = prior_parameter($x);
+            if (empty($prior)) {
+                $err = $err . ' ' . $p;
+            }
+        }
+        $this->assertSame('', $err);  
+    }
   
 }
