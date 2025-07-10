@@ -691,59 +691,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
 }
 
 function query_crossref(string $doi): ?object {
-    static $ch = null;
-    if ($ch === null) {
-        $ch = bot_curl_init(1.0, []);
-    }
-    if (strpos($doi, '10.2307') === 0) {
-        return null; // jstor API is better
-    }
-    set_time_limit(120);
-    $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:" . doi_encode($doi) . "&noredirect=TRUE";
-    curl_setopt($ch, CURLOPT_URL, $url);
-    for ($i = 0; $i < 2; $i++) {
-        $raw_xml = bot_curl_exec($ch);
-        if (!$raw_xml) {
-            sleep(1);                // @codeCoverageIgnore
-            continue;                // @codeCoverageIgnore
-            // Keep trying...
-        }
-        $raw_xml = preg_replace(
-            '~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
-                    '<year media_type="print">',
-                    $raw_xml);
-        $xml = @simplexml_load_string($raw_xml);
-        unset($raw_xml);
-        if (is_object($xml) && isset($xml->query_result->body->query)) {
-            $result = $xml->query_result->body->query;
-            if ((string) @$result["status"] === "resolved") {
-                if (stripos($doi, '10.1515/crll') === 0) {
-                    $volume = intval(trim((string) @$result->volume));
-                    if ($volume > 1820) {
-                        if (isset($result->issue)) {
-                            $result->volume = $result->issue;
-                            unset($result->issue);
-                        } else {
-                            unset($result->volume);
-                        }
-                    }
-                }
-                if (stripos($doi, '10.3897/ab.') === 0) {
-                    unset($result->volume);
-                    unset($result->page);
-                    unset($result->issue);
-                }
-                return $result;
-            } else {
-                return null;
-            }
-        } else {
-            sleep(1);                // @codeCoverageIgnore
-            // Keep trying...
-        }
-    }
-    report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");      // @codeCoverageIgnore
-    return null;                                                                        // @codeCoverageIgnore
+    doi_works($doi);
+    return null;
 }
 
 function expand_doi_with_dx(Template $template, string $doi): void {
