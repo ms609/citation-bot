@@ -4939,9 +4939,6 @@ final class Template
  }
  public function had_initial_author(): bool
  {
-  if ($this->has('vauthors')) { // TODO - fix in better way {{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}
-   return true;
-  }
   return count($this->initial_author_params) > 0;
  }
  public function had_initial_editor(): bool
@@ -5022,6 +5019,13 @@ final class Template
      array_push($this->param, $p);
     }
    }
+  }
+   // Deal with {{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}
+  if ($this->has('vauthors')) {
+   $this->initial_author_params['vauthors'] = $this->get('vauthors');
+  }
+  if ($this->has('veditors')) {
+   $this->had_initial_eds = true;
   }
  }
 

@@ -4091,4 +4091,9 @@ EP - 999 }}';
         $this->assertSame($text, $expanded->parsed_text());
     }
 
+    public function testVADuplicate(): void {
+        $text = "{{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}";
+        $page = $this->process_page($text);
+        $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | pmc=11503076 | date=2024 | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
+    }
 }
