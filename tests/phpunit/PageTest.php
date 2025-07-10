@@ -310,7 +310,7 @@ final class PageTest extends testBaseClass {
     public function testUrlReferencesWithText3(): void {
         $text = "<ref>Raymond O. Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
         $page = $this->process_page($text);
-        $this->assertSame(<ref>{{cite journal | last1=Silverstein | first1=Raymond O. | title=A note on the term "Bantu" as first used by W. H. I. Bleek | journal=African Studies | date=1968 | volume=27 | issue=4 | pages=211–212 | doi=10.1080/00020186808707298 | url=https://www.doi.org/10.1080/00020186808707298 }}</ref>', $page->parsed_text());
+        $this->assertSame('<ref>{{cite journal | last1=Silverstein | first1=Raymond O. | title=A note on the term "Bantu" as first used by W. H. I. Bleek | journal=African Studies | date=1968 | volume=27 | issue=4 | pages=211–212 | doi=10.1080/00020186808707298 | url=https://www.doi.org/10.1080/00020186808707298 }}</ref>', $page->parsed_text());
     }
 
     public function testUrlReferencesWithText4(): void { // Has [[ ]] in it
