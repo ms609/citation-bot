@@ -2615,7 +2615,7 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234', $template->get2('oclc'));
-        $this->assertSame('https://worldcat.org/title/stuff/oclc/1234', $template->get2('url'));
+        $this->assertNull($template->get2('url'));
         $this->assertSame('cite book', $template->wikiname());
     }
 
