@@ -1458,6 +1458,7 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'last':
         case 'first':
         case 'dummy':
+        case 'vauthors':
             return $list;
         case 'others':
         case 'display-editors':
@@ -1465,11 +1466,12 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'display-authors':
         case 'displayauthors':
         case 'author-link':
+        case 'veditors':
             return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
         case 'title':
         case 'title-link':
         case 'titlelink':
-            return prior_parameters('author-link', array_merge(['displayauthors', 'display-authors', 'displayeditors', 'display-editors'], $list));
+            return prior_parameters('author-link', array_merge(['displayauthors', 'display-authors', 'displayeditors', 'display-editors', 'veditors'], $list));
         case 'chapter':
             return prior_parameters('title-link', array_merge(['titlelink', 'title', 'title-link'], $list));
         case 'journal':
@@ -1480,9 +1482,10 @@ function prior_parameters(string $par, array $list=[]): array {
         case 'periodical':
         case 'encyclopedia':
         case 'encyclopaedia':
+        case 'book-title':
             return prior_parameters('chapter', $list);
         case 'series':
-            return prior_parameters('journal', array_merge(['work', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia'], $list));
+            return prior_parameters('journal', array_merge(['work', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia', 'book-title'], $list));
         case 'year':
         case 'date':
             return prior_parameters('series', $list);
