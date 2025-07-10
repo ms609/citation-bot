@@ -228,7 +228,7 @@ final class apiFunctionsTest extends testBaseClass {
          if ($expanded->has('author1')) {
              $this->assertSame('{{Cite journal| date=2007 | author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
          } else {
-             $this->assertSame({{Cite journal| author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | date=2007 | publisher=Publications Office }}', $expanded->parsed_text());
+             $this->assertSame('{{Cite journal| author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | date=2007 | publisher=Publications Office }}', $expanded->parsed_text());
          }
     }
 
