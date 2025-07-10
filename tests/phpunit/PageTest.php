@@ -32,7 +32,7 @@ final class PageTest extends testBaseClass {
 
     public function testPageChangeSummary31(): void {
         $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
-        $this->assertSame('Altered template type. Add: pages, issue, volume, journal, date, title, doi, authors 1-2. Changed bare reference to CS1/2. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));
+        $this->assertSame('Altered template type. Add: doi, pages, issue, volume, date, journal, title, authors 1-2. Changed bare reference to CS1/2. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));
     }
 
     public function testPageChangeSummary32(): void { // Mixture of droping chapter-url and moving URL to chapter-url. Bogus template content
@@ -59,12 +59,12 @@ final class PageTest extends testBaseClass {
 
     public function testPageChangeSummary8(): void {
         $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-        $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
+        $this->assertSame({{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
     public function testPageChangeSummary9(): void {
         $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-        $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
+        $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
