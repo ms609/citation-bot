@@ -120,31 +120,31 @@ final class apiFunctionsTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefBook(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
-         $this->assertSame('{{Cite book| date=1996 | isbn=978-0-521-57290-3 | last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | publisher=Cambridge University Press }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite book| last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | date=1996 | publisher=Cambridge University Press | isbn=978-0-521-57290-3 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefBookChapter(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-         $this->assertSame('{{Cite book| date=2001 | isbn=978-0-471-97514-4 | title=Internetworking LANs and WANs | chapter=Network Concepts | publisher=Wiley }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite book| title=Internetworking LANs and WANs | chapter=Network Concepts | date=2001 | publisher=Wiley | isbn=978-0-471-97514-4 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefDataCiteSubsets(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
-         $this->assertSame('{{Cite journal| date=2009 | last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797 }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797 | date=2009 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefDataCiteEarthquake(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-         $this->assertSame('{{Cite journal| date=2009 | author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | date=2009 | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-         $this->assertSame('{{Cite book| date=2008 | last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | publisher=Pangaea }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite book| last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | date=2008 | publisher=Pangaea }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefDataCitevideo(): void {
