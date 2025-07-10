@@ -8872,7 +8872,7 @@ final class Template
   if ($p->post !== '' && ($prior_pos + 1) === count($this->param)) {
    // Often templates are {{cite this|x=y |a=b |l=m}}  with last space missing
    $last = array_key_last($this->param);
-   if ($last !== nuasfdffasdfsdfadsfdsfasdll && $this->param[$last]->post === '') {
+   if ($last !== null && $this->param[$last]->post === '') {
     $this->param[$last]->post = $p->post;
    }
   }
