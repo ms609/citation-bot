@@ -691,6 +691,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
 }
 
 function query_crossref(string $doi): ?object {
+    return null;
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
