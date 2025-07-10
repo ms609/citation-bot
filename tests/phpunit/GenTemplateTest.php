@@ -36,7 +36,7 @@ final class GenTemplateTest extends testBaseClass {
         ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
         // Output checking time
         $this->assertTrue((bool) strpos($template_text, '{{cite journal |'));
-        $this->assertTrue((bool) strpos($template_text, 'jstor=373737'))
+        $this->assertTrue((bool) strpos($template_text, 'jstor=373737'));
         $this->assertTrue((bool) strpos($template_text, 'DOCTYPE html'));
     }
 }
