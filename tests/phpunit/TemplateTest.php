@@ -1858,12 +1858,12 @@ final class TemplateTest extends testBaseClass {
     public function testDropDuplicates3aa14(): void {
         $text = "{{Cite web|year|year 2000}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite web|year| date=2000 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite web| date=2000 |year}}', $expanded->parsed_text());
     }
     public function testDropDuplicates3aa15(): void {
         $text = "{{Cite web|year 2000|year }}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite web|year | date=2000 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite web| date=2000 |year }}', $expanded->parsed_text());
     }
     public function testDropDuplicates3aa16(): void {
         $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
@@ -3673,12 +3673,12 @@ EP - 999 }}';
     public function testTidyGoofyFirsts1(): void {
         $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
         $template = $this->process_citation($text_in);
-        $this->assertSame('{{Citation | last1=Dude|first1=Girl |author1-link=Hose }}', $template->parsed_text());
+        $this->assertSame('{{Citation |author1-link=Hose | last1=Dude|first1=Girl }}', $template->parsed_text());
     }
     public function testTidyGoofyFirsts2(): void {
         $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John]] }}";
         $template = $this->process_citation($text_in);
-        $this->assertSame('{{Citation | last1=Dude|first1=Girl |author1-link=Hose }}', $template->parsed_text());
+        $this->assertSame('{{Citation |author1-link=Hose | last1=Dude|first1=John }}', $template->parsed_text());
     }
 
   public function testFixLotsOfDOIs1(): void {
@@ -4115,6 +4115,6 @@ EP - 999 }}';
     public function testVADuplicate(): void {
         $text = "{{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}";
         $page = $this->process_page($text);
-        $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | pmc=11503076 | date=2024 | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
+        $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | date=2024 | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | pmc=11503076 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
     }
 }
