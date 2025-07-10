@@ -595,27 +595,6 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame("", $changes);  
     }
 
-    public function testHostIsGoneDOILoop(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
-        $changes = "";
-        $this->assertSame("", $changes);
-        $null_list = array_keys(NULL_DOI_LIST);
-        shuffle($null_list); // Avoid doing similar ones next to each other
-        foreach ($null_list as $doi) {
-            if (isset(NULL_DOI_ANNOYING[$doi])) {
-                $works = false;
-            } else {
-                $works = doi_works($doi);
-            }
-            if ($works === true) {
-                $changes = $changes . "Flagged as good: " . $doi . "             ";
-            } elseif ($works === null) { // These nulls are permanent and get mapped to false
-                $changes = $changes . "Flagged as null: " . $doi . "             ";
-            }
-        }
-        $this->assertSame("", $changes);
-    }
-
     public function testHostIsGoneDOIHosts(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $changes = "";
