@@ -65,6 +65,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
+    'admin',
     'prance-presse',
     '自由時報電子報',
     'channel c',
@@ -98,6 +99,7 @@ const BAD_AUTHORS = [
     'all rights reserved',
 ];
 const NON_HUMAN_AUTHORS = [
+    'admin',
     'france-presse',
     'agence',
     'library',
