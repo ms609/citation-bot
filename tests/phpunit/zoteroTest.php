@@ -800,7 +800,7 @@ final class zoteroTest extends testBaseClass {
         $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        $this->assertSame('{{cite web|id=|title=Billy|translator1=Smitht, Joet|editor1=Smithe, Joee|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor2=Smithex, Joeex|translator2=Smithtx, Joetx}}', $template->parsed_text());
+        $this->assertSame('{{cite web|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor1=Smithe, Joee|editor2=Smithex, Joeex|translator1=Smitht, Joet|translator2=Smithtx, Joetx|title=Billy|id=}}', $template->parsed_text());
     }
 
     public function testZoteroResponse49(): void {

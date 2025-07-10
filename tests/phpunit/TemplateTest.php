@@ -21,8 +21,8 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testLotsOfFloaters2(): void {
-        $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
-        $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal=L Dog | series=Not mine today }}";
+        $text_in = '{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}';
+        $text_out= '{{cite journal| journal=L Dog | series=Not mine today |isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe }}';
         $prepared = $this->prepare_citation($text_in);
         $this->assertSame($text_out, $prepared->parsed_text());
     }
@@ -495,7 +495,7 @@ final class TemplateTest extends testBaseClass {
     public function testGroveMusic4(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 }}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online |doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testGroveMusic5(): void {
@@ -742,7 +742,7 @@ final class TemplateTest extends testBaseClass {
     public function testAmazonExpansion3(): void {
         $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store| website=Amazon }}", $expanded->parsed_text());   // We do not touch this kind of URL other than adding website
+        $this->assertSame("{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store | website=Amazon }}", $expanded->parsed_text());   // We do not touch this kind of URL other than adding website
     }
 
     public function testAmazonExpansion4(): void {
@@ -1789,83 +1789,103 @@ final class TemplateTest extends testBaseClass {
         $text = '{{citation|year=2000|year=}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa1(): void {
         $text = '{{citation|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa2(): void {
         $text = '{{citation|year= | year= |year=| year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa3(): void {
         $text = '{{citation|year=2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa4(): void {
         $text = '{{citation|year 2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa5(): void {
         $text = '{{citation|year=|year 2000|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa6(): void {
         $text = '{{citation|year 2000|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa7(): void {
         $text = '{{citation|year=2000|year 2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa8(): void {
         $text = '{{citation|year=2000|year=2000|year 2000|year=|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa9(): void {
         $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa10(): void {
         $text = "{{Cite web|year=|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa11(): void {
         $text = "{{Cite web|year=2000|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa12(): void {
         $text = "{{Cite web|year|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year|year=2000}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa13(): void {
         $text = "{{Cite web|year|year}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web|year|year}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa14(): void {
         $text = "{{Cite web|year|year 2000}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite web|year| date=2000 }}', $expanded->parsed_text());
-
+        $this->assertSame('{{Cite web| date=2000 |year}}', $expanded->parsed_text());
+    }
+    public function testDropDuplicates3aa15(): void {
         $text = "{{Cite web|year 2000|year }}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite web|year | date=2000 }}', $expanded->parsed_text());
-
+        $this->assertSame('{{Cite web| date=2000 |year }}', $expanded->parsed_text());
+    }
+    public function testDropDuplicates3aa16(): void {
         $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
+    }
+    public function testDropDuplicates3aa17(): void {
         $text = "{{citation|year=|title=X|year=2000}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|title=X|year=2000}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa18(): void {
         $text = "{{citation|year=2000|title=X|year=}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|year=2000|title=X}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa19(): void {
         $text = '{{Cite web |title= | year=2003 | title= Ten}}'; // Something between the two but with blank first is different code path, and the item of interest is not year
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite web | year=2003 | title= Ten}}', $expanded->parsed_text());
-
+    }
+    public function testDropDuplicates3aa20(): void {
         $text = '{{citation|title=2000|title=2000|title 2000|title=|title=2000}}';
         $prepared = $this->process_citation($text);
         $this->assertSame('{{citation|title=2000}}', $prepared->parsed_text());
@@ -3650,14 +3670,15 @@ EP - 999 }}';
         $this->assertNull($template->get2('pages'));
     }
 
-    public function testTidyGoofyFirsts(): void {
+    public function testTidyGoofyFirsts1(): void {
         $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
         $template = $this->process_citation($text_in);
-        $this->assertSame('{{Citation | last1=Dude|first1=Girl |author1-link=Hose }}', $template->parsed_text());
-
+        $this->assertSame('{{Citation |author1-link=Hose | last1=Dude|first1=Girl }}', $template->parsed_text());
+    }
+    public function testTidyGoofyFirsts2(): void {
         $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John]] }}";
         $template = $this->process_citation($text_in);
-        $this->assertSame('{{Citation | last1=Dude|first1=John |author1-link=Hose }}', $template->parsed_text());
+        $this->assertSame('{{Citation |author1-link=Hose | last1=Dude|first1=John }}', $template->parsed_text());
     }
 
   public function testFixLotsOfDOIs1(): void {
@@ -3973,7 +3994,7 @@ EP - 999 }}';
     public function testNullDOInoCrash(): void { // This DOI does not work, but CrossRef does have a record
         $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |date=2019 |last1=Kofel |first1=Dominika |journal=Światowit |volume=56 |pages=89–98 }}', $template->parsed_text());
+        $this->assertSame('{{cite journal |last1=Kofel |first1=Dominika |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |journal=Światowit |date=2019 |volume=56 |pages=89–98 | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}', $template->parsed_text());
     }
 
     public function testTidySomeStuff(): void {
@@ -4058,7 +4079,7 @@ EP - 999 }}';
         $text = "{{#invoke:Cite web|| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite journal', $expanded->wikiname());
-        $this->assertSame('{{#invoke:Cite journal|| jstor=1701972 |s2cid= <!-- --> | title=Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec | last1=Labandeira | first1=Conrad C. | last2=Beall | first2=Bret S. | last3=Hueber | first3=Francis M. | journal=Science | date=1988 | volume=242 | issue=4880 | pages=913–916 | doi=10.1126/science.242.4880.913 }}', $expanded->parsed_text());
+        $this->assertSame('{{#invoke:Cite journal|| last1=Labandeira | first1=Conrad C. | last2=Beall | first2=Bret S. | last3=Hueber | first3=Francis M. | title=Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec | journal=Science | date=1988 | volume=242 | issue=4880 | pages=913–916 | doi=10.1126/science.242.4880.913 | jstor=1701972 |s2cid= <!-- --> }}', $expanded->parsed_text());
     }
 
     public function testInvoke3(): void {
@@ -4094,6 +4115,6 @@ EP - 999 }}';
     public function testVADuplicate(): void {
         $text = "{{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}";
         $page = $this->process_page($text);
-        $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | pmc=11503076 | date=2024 | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
+        $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | date=2024 | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | pmc=11503076 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
     }
 }

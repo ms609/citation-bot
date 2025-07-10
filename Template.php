@@ -8869,19 +8869,14 @@ final class Template
    }
   }
   $prior_pos = $prior_pos_best;
-  if ($prior_pos > -1) {
-   $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
-   return true;
-  }
-
-  if ($p->post !== '') {
+  if ($p->post !== '' && ($prior_pos + 1) === count($this->param)) {
    // Often templates are {{cite this|x=y |a=b |l=m}}  with last space missing
    $last = array_key_last($this->param);
    if ($last !== null && $this->param[$last]->post === '') {
     $this->param[$last]->post = $p->post;
    }
   }
-  $this->param[] = $p;
+  $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
   return true;
  }
 
