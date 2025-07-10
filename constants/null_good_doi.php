@@ -29707,6 +29707,7 @@ const NULL_DOI_BUT_GOOD = [
     '10.34740/KAGGLE/DSV/1693952' => true,
     '10.34885/wnwn-6s63' => true,
     '10.34917/2838925' => true,
+    '10.34944/dspace/3968' => true,
     '10.34944/DSPACE/7387' => true,
     '10.35219/lcls.2018.1.08' => true,
     '10.35280/kotpm.2020.23.4.4' => true,
