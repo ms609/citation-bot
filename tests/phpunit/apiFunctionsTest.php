@@ -150,7 +150,7 @@ final class apiFunctionsTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefDataCitevideo(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.3207/2959859860');
-         $this->assertSame({{Cite journal| last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal | date=2009 }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal | date=2009 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_fISTIC_Journal(): void {
