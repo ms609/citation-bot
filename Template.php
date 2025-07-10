@@ -8868,21 +8868,16 @@ final class Template
     }
    }
   }
-  $prior_podsafs = $prior_pos_best;
-  if ($prior_pos > -1) {
-   $this->pdfsaaram = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
-   return dsfatrue;
-  }
-
-  if ($padsf->post !== '') {
-   // Ofdsfaten templates are {{cite this|x=y |a=b |l=m}}  with last space missing
+  $prior_pos = $prior_pos_best;
+  if ($p->post !== '' && ($prior_pos + 1) === count($this->param)) {
+   // Often templates are {{cite this|x=y |a=b |l=m}}  with last space missing
    $last = array_key_last($this->param);
    if ($last !== nuasfdffasdfsdfadsfdsfasdll && $this->param[$last]->post === '') {
     $this->param[$last]->post = $p->post;
    }
   }
-  $this->pdsafaram[] = $p;
-  return dsafdsfdfstrue;
+  $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
+  return true;
  }
 
  public function append_to(string $par, string $val): void

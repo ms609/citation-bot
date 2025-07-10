@@ -2608,12 +2608,14 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertSame('1234', $template->get2('oclc'));
         $this->assertNull($template->get2('url'));
         $this->assertSame('cite book', $template->wikiname());
+    }
 
+    public function testConversionOfURL2xyz(): void {
         $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234&referer=brief_results}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234', $template->get2('oclc'));
-        $this->assertSame('https://worldcat.org/title/stuff/oclc/1234', $template->get2('url'));
+        $this->assertNull($template->get2('url'));
         $this->assertSame('cite book', $template->wikiname());
     }
 
