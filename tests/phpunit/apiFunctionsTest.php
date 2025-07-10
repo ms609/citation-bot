@@ -150,13 +150,13 @@ final class apiFunctionsTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefDataCitevideo(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.3207/2959859860');
-         $this->assertSame('{{Cite journal| date=2009 | last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal }}', $expanded->parsed_text());
+         $this->assertSame({{Cite journal| last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal | date=2009 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_fISTIC_Journal(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-         $this->assertSame('{{Cite journal| date=2012 | volume=28 | issue=3 | last1=Yu | first1=ZHANG | last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | last1=Yu | first1=ZHANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica | date=2012 | volume=28 | issue=3 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_fISTIC_Data(): void {
@@ -174,13 +174,13 @@ final class apiFunctionsTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossref_JaLC_Journal(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-         $this->assertSame('{{Cite journal| date=2009 | volume=7 | last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-         $this->assertSame('{{Cite journal| date=2013 | volume=2 | last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー }}', $expanded->parsed_text());
+         $this->assertSame('{{Cite journal| last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー | date=2013 | volume=2 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_mEDRA_Journal(): void {
