@@ -3659,7 +3659,6 @@ const NULL_DOI_LIST = [
     '10.34134/reap.1991.208c' => true,
     '10.3421/32412xxxxxxx' => true, // test suite bogus
     '10.34260/jaebs.311' => true,
-    '10.34944/dspace/3968' => true,
     '10.35013/3jtd-ct91' => true, // page not found
     '10.35305/lt.v10i0.155' => true,
     '10.35370/bjost.2019.1.1-01' => true,
