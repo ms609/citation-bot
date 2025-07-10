@@ -1432,7 +1432,6 @@ function remove_comments(string $string): string {
 }
 
 /** @param array<string> $list
-
     @return array<string> */
 function prior_parameters(string $par, array $list=[]): array {
     array_unshift($list, $par);
@@ -1442,11 +1441,35 @@ function prior_parameters(string $par, array $list=[]): array {
             case 'first':
             case 'initials':
             case 'forename':
-                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before];
+                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before];
             case 'last':
             case 'surname':
             case 'author':
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before];
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor' . $before, 'contributor-first' . $before, 'contributor-given' . $before];
+            case 'editor':
+            case 'editor-last':
+            case 'editor-surname':
+            case 'editor-given':
+            case 'editor-first':
+                return ['editor' . $before, 'editor-last' . $before, 'editor-surname' . $before, 'editor-first' . $before, 'editor-given' . $before];
+            case 'interviewer':
+            case 'interviewer-first':
+            case 'interviewer-given':
+            case 'interviewer-last':
+            case 'interviewer-surname':
+                return ['interviewer' . $before, 'interviewer-first' . $before, 'interviewer-given' . $before, 'interviewer-last' . $before, 'interviewer-surname' . $before];
+            case 'inventor':
+            case 'inventor-first':
+            case 'inventor-given':
+            case 'inventor-last':
+            case 'inventor-surname':
+                return ['inventor' . $before, 'inventor-first' . $before, 'inventor-given' . $before, 'inventor-last' . $before, 'inventor-surname' . $before];
+            case 'translator':
+            case 'translator-first':
+            case 'translator-given':
+            case 'translator-last':
+            case 'translator-surname':
+                return ['translator' . $before, 'translator-first' . $before, 'translator-given' . $before, 'translator-last' . $before, 'translator-surname' . $before];
             default:
                 $base = $match[1] . $before;
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [$base, $base . '-last', $base . '-first']);
