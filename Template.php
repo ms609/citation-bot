@@ -5714,6 +5714,10 @@ final class Template
        $this->set('doi', $try);
       }
      }
+     if (preg_match('~^10\.(10520\/.+)$~', $doi, $matches) {
+      $this->rename($param, 'hdl', $matches[1]);
+      return;
+     }
      if ($doi === '10.1267/science.040579197') {
       // This is a bogus DOI from the PMID example file
       $this->forget('doi');
