@@ -2401,7 +2401,7 @@ final class Template
      return $this->add($param_name, $value);
     }
     // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
-    $last_day = strtotime("23:59:59 31 January 2024");
+    $last_day = strtotime("23:59:59 1 July 2025");
     $check_date = $last_day - 126000;
     // @codeCoverageIgnoreStart
     if ($the_new > $last_day && $existing < $check_date) {
