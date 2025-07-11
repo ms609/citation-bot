@@ -5714,7 +5714,7 @@ final class Template
        $this->set('doi', $try);
       }
      }
-     if (preg_match('~^10\.(10520\/.+)$~', $doi, $matches) {
+     if (preg_match('~^10\.(10520\/.+)$~', $doi, $matches)) {
       $this->rename($param, 'hdl', $matches[1]);
       return;
      }
