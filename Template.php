@@ -4757,6 +4757,9 @@ final class Template
      case "project euclid":
      case "circa":
      case "ndlpid":
+     case "core output":
+     case "core work":
+     case "internet archive id":
      case "lccn8": // Assume not normal template for a reason
      case "google books": // Usually done for fancy formatting and because already has title-link/url
      case "url": // Untrustable: used by bozos
