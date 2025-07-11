@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.1017/S1049096500011422' => true, // error
     '10.2307/147085' => true, // 404
     '10.2307/147199' => true, // 404
     '10.2307/148143' => true, // 404
@@ -1190,6 +1191,7 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1017/S1049096500011422' => true, // error
     '10.2307/147085' => true, // 404
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
