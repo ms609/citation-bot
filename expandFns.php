@@ -1434,6 +1434,7 @@ function remove_comments(string $string): string {
 /** @param array<string> $list
     @return array<string> */
 function prior_parameters(string $par, array $list=[]): array {
+    dsfafsdfsfd
     array_unshift($list, $par);
     if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
