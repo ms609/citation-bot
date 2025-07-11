@@ -1444,14 +1444,25 @@ function prior_parameters(string $par, array $list=[]): array {
             case 'first':
             case 'initials':
             case 'forename':
-                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before];
+            case 'contributor-first':
+            case 'contributor-given':
+                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
             case 'last':
             case 'surname':
             case 'author':
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before];
+            case 'contributor-last':
+            case 'contributor-surname':
+            case 'contributor':
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
-                $base = $match[1] . $before;
-                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [$base, $base . '-last', $base . '-first']);
+                $base = $match[1];
+                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
+                                   $base . $before,
+                                   $base . $before . '-last', $base . $before . '-first',
+                                   $base . '-last' . $before, $base . '-first' . $before,
+                                   $base . $before . '-surname', $base . $before . '-given',
+                                   $base . '-surname' . $before, $base . '-given' . $before,
+                                   ]);
         }
     }
     $group1 = ['author', 'authors', 'last', 'first', 'vauthors'];
