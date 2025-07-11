@@ -20,7 +20,6 @@ const NULL_DOI_ANNOYING = [
     '10.1355/SEAA93E' => true, // moved to muse/jstor
     '10.1355/SJ14-2D' => true, // moved to muse/jstor
     '10.2307/1990583' => true, // not found
-    '10.2307/1990583' => true, // not foundot found
     '10.4043/22685-MS' => true, // 404
     '10.7152/bippa.v15i0.11553' => true, // not found
     '10.1001/archderm.134.11.1484' => true, // 404
