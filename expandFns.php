@@ -1446,14 +1446,14 @@ function prior_parameters(string $par, array $list=[]): array {
             case 'forename':
             case 'contributor-first':
             case 'contributor-given':
-                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, , 'contributor' . $before];
+                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-last'e, 'contributor' . $before . '-first'];
             case 'last':
             case 'surname':
             case 'author':
             case 'contributor-last':
             case 'contributor-surname':
             case 'contributor':
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before];
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
                 $base = $match[1];
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
