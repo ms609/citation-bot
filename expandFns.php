@@ -14,7 +14,7 @@ const SANE_ENCODE = ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii
 const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'];
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
-const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors'];
+const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname'];
 const GROUP2  = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors'];
 const GROUP3  = ['title', 'title-link', 'titlelink'];
 const GROUP4  = ['chapter'];
