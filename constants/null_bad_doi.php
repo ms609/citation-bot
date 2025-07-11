@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.2307/148143' => true, // 404
     '10.1001/archpsyc.56.6.573' => true, // 404
     '10.5334/sta.az' => true, // hijacked
     '10.5334/sta.be' => true, // hijacked
@@ -3147,7 +3148,7 @@ const NULL_DOI_LIST = [
     '10.2307/148068' => true, // 404
     '10.2307/148090' => true,
     '10.2307/148115' => true,
-    '10.2307/148143' => true,
+    '10.2307/148143' => true, // 404
     '10.2307/148220' => true,
     '10.2307/148235' => true,
     '10.2307/148320' => true,
