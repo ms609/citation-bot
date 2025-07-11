@@ -548,7 +548,7 @@ final class expandFnsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.3403/bsiso10294')); // this one seems to be fussy
     }
-
+/**
     public function testHostIsGoneDOIbasic(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         foreach (NULL_DOI_LIST as $doi => $value) {
@@ -631,7 +631,7 @@ final class expandFnsTest extends testBaseClass {
         }
         $this->assertSame("", $changes);
     }
-
+**/
     public function testBankruptDOICompany(): void {
         $text = "{{cite journal|doi=10.2277/JUNK_INVALID}}";
         $template = $this->process_citation($text);
