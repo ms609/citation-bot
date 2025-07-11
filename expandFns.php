@@ -1432,7 +1432,6 @@ function remove_comments(string $string): string {
 }
 
 /** @param array<string> $list
-
     @return array<string> */
 function prior_parameters(string $par, array $list=[]): array {
     if ($par === '') {
@@ -1455,136 +1454,97 @@ function prior_parameters(string $par, array $list=[]): array {
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [$base, $base . '-last', $base . '-first']);
         }
     }
+    $group1 = ['author', 'authors', 'last', 'first', 'vauthors'];
+    $group2 = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors'];
+    $group3 = ['title', 'title-link', 'titlelink'];
+    $group4 = ['chapter'];
+    $group5 = ['journal', 'work', 'newspaper', 'website', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia', 'book-title'];
+    $group6 = ['series'];
+    $group7 = ['year', 'date'];
+    $group8 = ['volume'];
+    $group9 = ['issue', 'number'];
+    $group10 = ['page', 'pages', 'at'];
+    $group11 = ['article-number'];
+    $group12 = ['location', 'publisher', 'edition', 'agency'];
+    $group13 = ['doi'];
+    $group14 = ['doi-broken-date'];
+    $group15 = ['doi-access'];
+    $group16 = ['doi-broken-date'];
+    $group17 = ['jstor'];
+    $group18 = ['pmid'];
+    $group19 = ['pmc'];
+    $group20 = ['pmc-embargo-date'];
+    $group21 = ['arxiv', 'eprint', 'class'];
+    $group22 = ['bibcode'];
+    $group23 = ['hdl'];
+    $group24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'];
+    $group25 = ['lccn', 'issn', 'ol', 'oclc', 'asin', 's2cid'];
+    $group26 = ['url'];
+    $group27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl', 'URL'];
+    $group28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date'];
+    $group29 = ['archive-date', 'archivedate'];
+    $group30 = ['id', 'type', 'via'];
     switch ($par) {
-        case 'author':
-        case 'authors':
-        case 'last':
-        case 'first':
-        case 'dummy':
-        case 'vauthors':
+        case in_array($par, $group1, true):
             return $list;
-        case 'others':
-        case 'display-editors':
-        case 'displayeditors':
-        case 'display-authors':
-        case 'displayauthors':
-        case 'author-link':
-        case 'veditors':
-            return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-        case 'title':
-        case 'title-link':
-        case 'titlelink':
-            return prior_parameters('author-link', array_merge(['displayauthors', 'display-authors', 'displayeditors', 'display-editors', 'veditors'], $list));
-        case 'chapter':
-            return prior_parameters('title-link', array_merge(['titlelink', 'title', 'title-link'], $list));
-        case 'journal':
-        case 'work':
-        case 'newspaper':
-        case 'website':
-        case 'magazine':
-        case 'periodical':
-        case 'encyclopedia':
-        case 'encyclopaedia':
-        case 'book-title':
-            return prior_parameters('chapter', $list);
-        case 'series':
-            return prior_parameters('journal', array_merge(['work', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia', 'book-title'], $list));
-        case 'year':
-        case 'date':
-            return prior_parameters('series', $list);
-        case 'volume':
-            return prior_parameters('year', array_merge(['date'], $list));
-        case 'issue':
-        case 'number':
-            return prior_parameters('volume', $list);
-        case 'page':
-        case 'pages':
-        case 'at':
-            return prior_parameters('issue', array_merge(['number'], $list));
-        case 'article-number':
-            return prior_parameters('page', array_merge(['at', 'pages'], $list));
-        case 'location':
-        case 'publisher':
-        case 'edition':
-        case 'agency':
-            return prior_parameters('article-number', $list);
-        case 'doi':
-            return prior_parameters('location', array_merge(['publisher', 'edition', 'agency'], $list));
-        case 'doi-broken-date':
-            return prior_parameters('doi', $list);
-        case 'doi-access':
-            return prior_parameters('doi-broken-date', $list);
-        case 'jstor':
-            return prior_parameters('doi-access', $list);
-        case 'pmid':
-            return prior_parameters('jstor', $list);
-        case 'pmc':
-            return prior_parameters('pmid', $list);
-        case 'pmc-embargo-date':
-            return prior_parameters('pmc', $list);
-        case 'arxiv':
-        case 'eprint':
-        case 'class':
-            return prior_parameters('pmc-embargo-date', $list);
-        case 'bibcode':
-            return prior_parameters('arxiv', array_merge(['eprint', 'class'], $list));
-        case 'hdl':
-            return prior_parameters('bibcode', $list);
-        case 'isbn':
-        case 'biorxiv':
-        case 'citeseerx':
-        case 'jfm':
-        case 'zbl':
-        case 'mr':
-        case 'osti':
-        case 'ssrn':
-        case 'rfc':
-            return prior_parameters('hdl', $list);
-        case 'lccn':
-        case 'issn':
-        case 'ol':
-        case 'oclc':
-        case 'asin':
-        case 's2cid':
-            return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
-        case 'url':
-            return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
-        case 'chapter-url':
-        case 'article-url':
-        case 'chapterurl':
-        case 'conference-url':
-        case 'conferenceurl':
-        case 'contribution-url':
-        case 'contributionurl':
-        case 'entry-url':
-        case 'event-url':
-        case 'eventurl':
-        case 'lay-url':
-        case 'layurl':
-        case 'map-url':
-        case 'mapurl':
-        case 'section-url':
-        case 'sectionurl':
-        case 'transcript-url':
-        case 'transcripturl':
-        case 'URL':
-            return prior_parameters('url', $list);
-        case 'archive-url':
-        case 'archiveurl':
-        case 'accessdate':
-        case 'access-date':
-            return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
-                'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
-                'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                'transcripturl', 'URL',
-            ], $list));
-        case 'archive-date':
-        case 'archivedate':
-            return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
-        case 'id':
-        case 'type':
-        case 'via':
-            return prior_parameters('archive-date', array_merge(['archivedate'], $list));
+        case in_array($par, $group2, true):
+            return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+        case in_array($par, $group3, true):
+            return prior_parameters('', array_merge($group2, $list));
+        case in_array($par, $group4, true):
+            return prior_parameters('', array_merge($group3, $list));
+        case in_array($par, $group5);
+            return prior_parameters('', array_merge($group4, $list));
+        case in_array($par, $group6);
+            return prior_parameters('', array_merge($group5, $list));
+        case in_array($par, $group7);
+            return prior_parameters('', array_merge($group6, $list));
+        case in_array($par, $group8);
+            return prior_parameters('', array_merge($group7, $list));
+        case in_array($par, $group9);
+            return prior_parameters('', array_merge($group8, $list));
+        case in_array($par, $group10);
+            return prior_parameters('', array_merge($group9, $list));
+        case in_array($par, $group11);
+            return prior_parameters('', array_merge($group10, $list));
+        case in_array($par, $group12);
+            return prior_parameters('', array_merge($group11, $list));
+        case in_array($par, $group13);
+            return prior_parameters('', array_merge($group12, $list));
+        case in_array($par, $group14);
+            return prior_parameters('', array_merge($group13, $list));
+        case in_array($par, $group15);
+            return prior_parameters('', array_merge($group14, $list));
+        case in_array($par, $group16);
+            return prior_parameters('', array_merge($group15, $list));
+        case in_array($par, $group17);
+            return prior_parameters('', array_merge($group16, $list));
+        case in_array($par, $group18);
+            return prior_parameters('', array_merge($group17, $list));
+        case in_array($par, $group19);
+            return prior_parameters('', array_merge($group18, $list));
+        case in_array($par, $group20);
+            return prior_parameters('', array_merge($group19, $list));
+        case in_array($par, $group21);
+            return prior_parameters('', array_merge($group20, $list));
+        case in_array($par, $group22);
+            return prior_parameters('', array_merge($group21, $list));
+        case in_array($par, $group23);
+            return prior_parameters('', array_merge($group22, $list));
+        case in_array($par, $group24);
+            return prior_parameters('', array_merge($group23, $list));
+        case in_array($par, $group25);
+            return prior_parameters('', array_merge($group24, $list));
+        case in_array($par, $group26);
+            return prior_parameters('', array_merge($group25, $list));
+        case in_array($par, $group27);
+            return prior_parameters('', array_merge($group26, $list));
+        case in_array($par, $group28);
+            return prior_parameters('', array_merge($group27, $list));
+        case in_array($par, $group29);
+            return prior_parameters('', array_merge($group28, $list));
+        case in_array($par, $group30);
+            return prior_parameters('', array_merge($group29, $list));
         default:
             bot_debug_log("prior_parameters missed: " . $par);
             return $list;
