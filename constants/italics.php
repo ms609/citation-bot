@@ -539,6 +539,7 @@ const CAMEL_CASE = [
     'libRoadRunner', 'pyJac', 'myGrid', 'Cp2TiCl', 'myExperiment',
     'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse', 'GazePlotter',
     'ScanGraph', 'MusicBrainz', 'WontBe', 'InChIs', 'PolyChord', 'CloudCom',
+    'SmartTechCon',
 ];
 
 const ITALICS_HARDCODE_IN  = [
