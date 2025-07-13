@@ -930,7 +930,11 @@ final class Zotero {
         }
 
         if (isset($result->issue)) {
-            $template->add_if_new('issue', self::clean_volume((string) $result->issue));
+            $the_issue = (string) $result->issue;
+            if (strlen($the_issue) < 10) { // Sometimes issues are full on phrases
+                $template->add_if_new('issue', self::clean_volume($the_issue);
+            }
+            unset($the_issue);
         }
         if (isset($result->pages)) {
             $pos_pages = (string) $result->pages;
