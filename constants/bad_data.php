@@ -546,6 +546,7 @@ const BAD_ZOTERO_TITLES = [
     'Log In ',
     'Login • Instagram',
     'metaTags',
+    'Making sure you\'re not a bot!',
     'Missing page',
     'MR: Matches for:',
     'na een 404',
