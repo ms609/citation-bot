@@ -371,7 +371,7 @@ final class Template
      $this->use_sici();
    }
    $the_title = $this->get('title');
-   if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false stripos($this->rawtext, 'citation_bot_placeholder_comment') === false) {
+   if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false && stripos($this->rawtext, 'citation_bot_placeholder_comment') === false) {
      $the_website = $this->get('website');
      $this->set('title', '');
      if ($this->has('website')) {
