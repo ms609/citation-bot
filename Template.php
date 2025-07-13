@@ -370,6 +370,24 @@ final class Template
     case "cite journal":
      $this->use_sici();
    }
+   $the_title = $this->get('title');
+   if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false stripos($this->rawtext, 'citation_bot_placeholder_comment') === false) {
+     $the_website = $this->get('website');
+     $this->set('title', '');
+     if ($this->has('website')) {
+      $this->set('website', '');
+     }
+     Zotero::expand_by_zotero($this);
+     if ($this->has('title')) {
+      $the_title = $this->get('title');
+     } else {
+      $this->set('title', $the_title);
+      if ($the_website !== '') {
+       $this->set('website', $the_website);
+      }
+     }
+   }
+   unset($the_title, $the_website);
    if (
     stripos($this->rawtext, 'citation_bot_placeholder_comment') === false &&
     stripos($this->rawtext, 'graph drawing') === false &&
@@ -402,23 +420,6 @@ final class Template
      $the_journal = '';
      $this->forget('journal');
      $bad_data = true;
-    }
-    if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false) {
-     $the_website = $this->get('website');
-     $this->set('title', '');
-     if ($this->has('website')) {
-      $this->set('website', '');
-     }
-     Zotero::expand_by_zotero($this);
-     if ($this->has('title')) {
-      $the_title = $this->get('title');
-     } else {
-      $this->set('title', $the_title);
-      if ($the_website !== '') {
-       $this->set('website', $the_website);
-      }
-     }
-     unset($the_website);
     }
     $ieee_insanity = false;
     if (
