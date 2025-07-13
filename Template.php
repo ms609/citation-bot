@@ -409,7 +409,7 @@ final class Template
      if ($this->has('website')) {
       $this->set('website', '');
      }
-     Zotero::expand_by_zotero($this->expanded);
+     Zotero::expand_by_zotero($this);
      if ($this->has('title')) {
       $the_title = $this->get('title');
      } else {
