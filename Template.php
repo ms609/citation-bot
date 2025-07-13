@@ -3178,8 +3178,9 @@ final class Template
    // Avoid blowing through our quota
    if (
     !in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv'], true) || // Unlikely to find anything
-    ($this->wikiname() === 'cite book' && ($this->has('isbn') || $this->has('oclc'))) || // "complete" enough for a book
-    ($this->wikiname() === 'citation' && ($this->has('isbn') || $this->has('oclc')) && $this->has('chapter')) || // "complete" enough for a book
+    // If the book has someway to find it, or it is just a chapter and not the full book, or it has a location and publisher so it can be googled
+    // This also greatly reduces the book review false positives
+    (($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') && ($this->has('isbn') || $this->has('oclc') || $this->has('chapter') || ($this->has('location') && $this->has('publisher')))) ||
     $this->has_good_free_copy() || // Alreadly links out to something free
     $this->has('s2cid') || // good enough, usually includes abstract and link to copy
     ($this->has('doi') && doi_works($this->get('doi'))) || // good enough, usually includes abstract
