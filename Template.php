@@ -2088,6 +2088,9 @@ final class Template
     if ($value === '0') {
      return false;
     }
+    if ($value === '1' && $this->year() !== '' && intval($this->year()) < 1960) {
+     return false;
+    }
     if ($value === 'Online First') {
      return false;
     }
