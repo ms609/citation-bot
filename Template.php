@@ -403,6 +403,23 @@ final class Template
      $this->forget('journal');
      $bad_data = true;
     }
+    if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false) {
+     $the_website = $this->get('website');
+     $this->set('title', '');
+     if ($this->has('website') {
+      $this->set('website', '');
+     }
+     Zotero::expand_by_zotero($this->expanded);
+     if ($this->has('title')) {
+      $the_title = $this->get('title');
+     } else {
+      $this->set('title', $the_title);
+      if ($the_website !== '') {
+       $this->set('website', $the_website);
+      }
+     }
+     unset($the_website);
+    }
     $ieee_insanity = false;
     if (
      conference_doi($this->get('doi')) &&
