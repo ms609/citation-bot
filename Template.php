@@ -2880,6 +2880,9 @@ final class Template
     if (!isset($result->doi)) {
      return;
     }
+    if ((string) $result->doi === '10.1355/9789812306319') { // todo make common errors into an array
+     return;
+    }
     report_inline(" Successful!");
     $this->add_if_new('doi', (string) $result->doi);
     return;
