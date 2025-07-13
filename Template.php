@@ -2065,6 +2065,9 @@ final class Template
      if (intval($value) > 1820 && stripos($this->get('doi'), '10.1515/crll') === 0) {
       return false;
      }
+     if (strlen($value) > 20) {
+      return false;
+     }
      $temp_string = strtolower($this->get('journal'));
      if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {
       // Wikilinked journal title
