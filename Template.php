@@ -406,7 +406,7 @@ final class Template
     if ($the_title === 'APA PsycNet' && strpos($this->get('url'), 'psycnet.apa.org/record') !== false) {
      $the_website = $this->get('website');
      $this->set('title', '');
-     if ($this->has('website') {
+     if ($this->has('website')) {
       $this->set('website', '');
      }
      Zotero::expand_by_zotero($this->expanded);
