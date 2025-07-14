@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
-
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
@@ -1727,7 +1726,7 @@ const NULL_DOI_LIST = [
     '10.1017/s0012162299000870' => true, // 404
     '10.1017/S0021963098002595' => true, // 404
     '10.1017/s0021963098002601' => true, // 404
-    '10.1017/s0021963099213832' => true,c
+    '10.1017/s0021963099213832' => true, // 404
     '10.1017/s0022381611001484' => true, // dead
     '10.1017/S003803850122015X' => true, // Error
     '10.1017/S0038713400157203' => true, // 404
