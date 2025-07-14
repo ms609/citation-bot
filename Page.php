@@ -275,7 +275,7 @@ class Page {
                                                 } else {
                                                     $type = 'journal';
                                                 }
-                                                return $matches[1] . '{{cite ' . $type . ' | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3];
+                                                return $matches[1] . '{{cite ' . $type . ' | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 .' }}' . $matches[3];
                                             },
                                             $this->text
                                             );
