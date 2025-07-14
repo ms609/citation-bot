@@ -7420,6 +7420,10 @@ final class Template
        $changed = true;
        $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
       }
+      if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/([0-9]+)/$~i", $this->get($param), $matches)) {
+       $changed = true;
+       $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+      }
       if (preg_match("~^https?://(?:www|search)\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/?\??$~", $this->get($param), $matches)) {
        $changed = true;
        $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
