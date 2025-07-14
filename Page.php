@@ -222,12 +222,18 @@ class Page {
                                             substr_count($this->text, '{{citation') +
                                             substr_count($this->text, '{{Citation');
         $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
+        if (preg_match('~{{ *CS1 config *| *mode *= *cs2 *}}~i', $this->text) === 1) {
+         $add_cs2 = " |mode=cs2";
+        } else {
+         $add_cs2 = "";
+        }
+        
         // PLAIN URLS Converted to Templates
         // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
         $this->text = preg_replace_callback(
                                             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 . ' }}' . $matches[4];
                                             },
                                             $this->text
                                             );
@@ -235,7 +241,7 @@ class Page {
         $this->text = preg_replace_callback(
                                             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 . ' }}' . $matches[4];
                                             },
                                             $this->text
                                             );
@@ -243,7 +249,7 @@ class Page {
         $this->text = preg_replace_callback(
                                             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 . ' }}' . $matches[4];
                                             },
                                             $this->text
                                             );
@@ -252,7 +258,7 @@ class Page {
                                             "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
                                                 if ($matches[4] === $matches[6]) {
-                                                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8] ;
+                                                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 . ' }}' . $matches[8] ;
                                                 }
                                                 return $matches[0];
                                             },
@@ -277,7 +283,7 @@ class Page {
         $this->text = preg_replace_callback(        // like <ref>10.1244/abc</ref>
                                             "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
-                                                return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3];
+                                                return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . $add_cs2 . ' }}' . $matches[3];
                                             },
                                             $this->text
                                             );
@@ -305,7 +311,7 @@ class Page {
                                    ) {
                                     return $matches[0];
                                 }
-                                return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6];
+                                return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . $add_cs2 . ' }}' . $matches[6];
                             },
                             $this->text
                             );
