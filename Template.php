@@ -7876,15 +7876,13 @@ final class Template
      }
      return;
 
-    case 'postscript': // postscript=. is the default in CS1 templates.  It literally does nothing.
-     if ($this->wikiname() !== 'citation') {
-      if ($this->get($param) === '.') {
-       $this->forget($param);
-      } // Default action does not need specified
-      if ($this->blank($param)) {
-       $this->forget($param);
-      } // Misleading -- blank means period!!!!
+    case 'postscript':
+     if ($this->wikiname() !== 'citation' && $this->get('mode' !== 'cs2') && $this->get($param) === '.') {
+       $this->forget($param); // Default action does not need specified
      }
+     if ($this->wikiname() !== 'citation' && $this->blank($param)) {
+      $this->forget($param);
+     } // Misleading -- blank means default, not blank!!!!
      return;
 
     case 'website':
