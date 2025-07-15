@@ -7877,7 +7877,7 @@ final class Template
      return;
 
     case 'postscript':
-     if ($this->wikiname() !== 'citation' && $this->get('mode' !== 'cs2') && $this->get($param) === '.') {
+     if ($this->wikiname() !== 'citation' && $this->get('mode') !== 'cs2' && $this->get($param) === '.') {
        $this->forget($param); // Default action does not need specified
      }
      if ($this->wikiname() !== 'citation' && $this->blank($param)) {
