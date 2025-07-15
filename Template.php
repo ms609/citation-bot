@@ -7440,20 +7440,6 @@ final class Template
        $changed = true;
        $this->set($param, $matches[1]);
       }
-      if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-       $ch = bot_curl_init(1.5, [CURLOPT_URL => $matches[0]]);
-       if (bot_curl_exec($ch) !== "") {
-        $redirectedUrl = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL); // Final URL
-        if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) || preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
-         $changed = true;
-         $this->set($param, 'https://search' . $matches[1]);
-         if (stripos($this->get('id'), 'Proquest Document ID') !== false) {
-          $this->forget('id');
-         }
-        }
-       }
-       unset($ch);
-      }
       if (preg_match("~^(.+)/se-[^\/]+/?$~", $this->get($param), $matches)) {
        $this->set($param, $matches[1]);
        $changed = true;
