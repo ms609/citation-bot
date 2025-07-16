@@ -7009,6 +7009,7 @@ final class Template
       preg_match('~ancestryinstitution~', $this->get($param)) ||
       preg_match('~ancestry\.com/cs/offers~', $this->get($param)) ||
       preg_match('~myprivacy\.dpgmedia\.nl~', $this->get($param)) ||
+      preg_match('~^https://web\.archive\.org/web/\d+/https://wikipedialibrary\.wmflabs\.org/\?next_url=/ezproxy/~', $this->get($param)) ||
       preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))
      ) {
       $this->forget($param);
