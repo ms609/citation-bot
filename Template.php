@@ -7413,11 +7413,19 @@ final class Template
         $this->set($param, 'https://www.proquest.com/docview/' . $matches[2]); // Remove specific search engine
        }
       }
-      if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
+      if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)/(?:abstract|record|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
        $changed = true;
        $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // You have to login to get that
       }
       if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+       $changed = true;
+       $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+      }
+      if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/([0-9]+)/$~i", $this->get($param), $matches)) {
+       $changed = true;
+       $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+      }
+      if (preg_match("~^https?://(?:www|search)\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/?\??$~", $this->get($param), $matches)) {
        $changed = true;
        $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
       }
