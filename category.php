@@ -10,6 +10,7 @@ set_time_limit(120);
 require_once 'setup.php';
 
 const GET_IS_OKAY = [
+    'CS1 errors: archive-url',
     'CS1 maint: PMC format',
     'CS1 maint: date format',
     'CS1 maint: MR format',
