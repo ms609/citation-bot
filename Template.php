@@ -6375,10 +6375,19 @@ final class Template
      if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
       $this->set($param, $matches[1]);
      }
-    // no break; continue from pmc to pmid:
+     if ($this->blank($param)) {
+      return;
+     }
+     $this->change_name_to('cite journal', false);
+     return;
+
     case 'pmid':
      if ($this->blank($param)) {
       return;
+     }
+     if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') || 
+         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid')) {
+         $this->forget('url');
      }
      $this->change_name_to('cite journal', false);
      return;
