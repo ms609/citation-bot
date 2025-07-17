@@ -6386,7 +6386,10 @@ final class Template
       return;
      }
      if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') || 
-         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid')) {
+         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') ||
+         $this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' || 
+         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/'
+        ) {
          $this->forget('url');
      }
      $this->change_name_to('cite journal', false);
