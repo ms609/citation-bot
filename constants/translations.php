@@ -47,3 +47,26 @@ const RU_TRANS = [
     'Linked from' => 'Ссылки с',
     '[[Category:' => '[[Категория:',
 ];
+
+const SR_TRANS = [
+    'Altered' => 'Промењен',
+    'Alter:' => 'Промени:',
+    'URLs might have been anonymized. ' => 'УРЛ адресе су можда анонимизиране. ',
+    'Added' => 'Додано',
+    'Add:' => 'Додај:',
+    'Removed or converted URL. ' => 'Уклоњен или конвертован URL. ',
+    'Removed URL that duplicated identifier. ' => 'Уклоњен URL који је дуплирао идентификатор. ',
+    'Removed access-date with no URL. ' => 'Уклоњен датум приступа без URL. ',
+    'Changed bare reference to CS1/2. ' => 'Промењене гола референце на CS1/2. ',
+    'Removed parameters. ' => 'Уклоњени параметри. ',
+    'Some additions/deletions were parameter name changes. ' => 'Неке допуне/брисања без промене имена параметра. ',
+    'Upgrade ISBN10 to 13. ' => 'Надограђен ISBN10 на ISBN13. ',
+    'Removed Template redirect. ' => 'Уклоњено преусмерење шаблона. ',
+    'Misc citation tidying. ' => 'Различита сређивања навода. ',
+    'Use this bot]].' => 'Користи овог бота]].',
+    '|Report bugs]]' => '|Пријави грешку]]',
+    'Formatted ' => 'Форматиран ',
+    'Suggested by' => 'Предложено од',
+    'Linked from' => 'Повезано од',
+    '[[Category:' =>'[[Категорија:',
+];
