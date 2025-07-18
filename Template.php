@@ -6388,7 +6388,11 @@ final class Template
      if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') || 
          $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') ||
          $this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' || 
-         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/'
+         $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' ||
+         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') || 
+         $this->get('url') === 'http://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') ||
+         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/' || 
+         $this->get('url') === 'http://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/'
         ) {
          $this->forget('url');
      }
