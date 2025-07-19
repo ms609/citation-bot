@@ -2082,9 +2082,9 @@ final class Zotero {
                         quietly('report_modification', "Converting URL to OCLC parameter");
                     }
                     if ($template->wikiname() === 'cite web') {
-                        $template->change_name_to('cite book');  // Better template choice
+                        // $template->change_name_to('cite book');  // Better template choice
                     }
-                    if (is_null($url_sent)) {
+                    if (is_null($url_sent) && $template->wikiname() === 'cite book') {
                         $template->forget($url_type);
                     }
                     return $template->add_if_new('oclc', $match[1]);
