@@ -223,7 +223,7 @@ class Page {
                                             substr_count($this->text, '{{Citation');
         $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
         $add_cs2 = "";
-        if (preg_match('~{{ *CS1 config *| *mode *= *cs2 *}}~i', $this->text) === 1) {
+        if (preg_match('~{{ *CS1 config *\|[^\{\}]*mode *= *cs2[^\{\}]*}}~i', $this->text) === 1) {
          $add_cs2 = " |mode=cs2";
         }
         
