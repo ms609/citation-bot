@@ -93,3 +93,18 @@ const VI_TRANS = [
     'Linked from' => 'Liên kết từ',
     '[[Category:' =>'[[Thể loại:',
 ];
+
+const MK_ERR1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
+const MK_ERR2 = 'Ако тоа не е проблемот, тогаш стартувајте ја единствената страница со &prce=1 додадена на URL-то за да го промените моторот за парсирање';
+
+const RU_ERR1 = 'Следующий текст может помочь вам выяснить, где находится ошибка на странице (ищите одинокие символы { и } или незакрытый комментарий)';
+const RU_ERR1 = 'Если проблема не в этом, то запустите отдельную страницу с &prce=1, добавленным к URL, чтобы изменить механизм синтаксического анализа.';
+
+const SR_ERR1 = 'Следећи текст би вам могао помоћи да схватите где је грешка на страници (потражите усамљене знакове { и } или незатворени коментар).';
+const SR_ERR2 =  'Ако то није проблем, онда покрените једну страницу са додатком &prce=1 у URL да бисте променили механизам за парсирање';
+
+const ENG_ERR1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
+const ENG_ERR2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
+
+const VI_ERR1 = 'Văn bản sau đây có thể giúp bạn tìm ra lỗi ở đâu trên trang (Tìm ký tự { và } đơn lẻ hoặc bình luận chưa đóng)';
+const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trang đơn với &prce=1 được thêm vào URL để thay đổi công cụ phân tích cú pháp';
