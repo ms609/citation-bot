@@ -5155,7 +5155,7 @@ final class Template
     if (in_array(mb_strtolower($this->name), NONENG_TEMPLATES_MAP)) {
      foreach(NONENG_TEMPLATES_MAP as $map_in => $map_out) {
       if ($new_name === $map_out) {
-       $new_name_mapped === $map_in;
+       $new_name_mapped = $map_in;
       }
      }
     }
