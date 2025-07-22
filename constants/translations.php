@@ -70,3 +70,26 @@ const SR_TRANS = [
     'Linked from' => 'Повезано од',
     '[[Category:' =>'[[Категорија:',
 ];
+
+const VI_TRANS = [
+    'Altered' => 'Đã thay đổi',
+    'Alter:' => 'Thay đổi:',
+    'URLs might have been anonymized. ' => 'Các URL có thể đã được ẩn danh. ',
+    'Added' => 'Đã thêm',
+    'Add:' => 'Thêm:',
+    'Removed or converted URL. ' => 'Đã xóa hoặc chuyển đổi URL. ',
+    'Removed URL that duplicated identifier. ' => 'Đã xóa URL trùng với định danh. ',
+    'Removed access-date with no URL. ' => 'Đã xóa ngày truy cập không kèm URL. ',
+    'Changed bare reference to CS1/2. ' => 'Đã chuyển đổi chú thích trần sang CS1/2. ',
+    'Removed parameters. ' => 'Đã xóa tham số. ',
+    'Some additions/deletions were parameter name changes. ' => 'Một số lần thêm hoặc xóa chỉ là do đổi tên tham số. ',
+    'Upgrade ISBN10 to 13. ' => 'Nâng cấp ISBN10 lên ISBN13. ',
+    'Removed Template redirect. ' => 'Đã xóa chuyển hướng bản mẫu. ',
+    'Misc citation tidying. ' => 'Dọn dẹp chú thích khác. ',
+    'Use this bot]].' => 'Sử dụng bot]].',
+    '|Report bugs]]' => '|Báo lỗi]]',
+    'Formatted ' => 'Định dạng ',
+    'Suggested by' => 'Được đề xuất bởi',
+    'Linked from' => 'Liên kết từ',
+    '[[Category:' =>'[[Thể loại:',
+];
