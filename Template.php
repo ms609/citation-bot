@@ -5152,11 +5152,12 @@ final class Template
    }
    $new_name_mapped = $new_name;
    if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
-    if (in_array(mb_strtolower($this->name), NONENG_TEMPLATES_MAP)) {
-     return; // This code needs fixed
-     foreach(NONENG_TEMPLATES_MAP as $map_in => $map_out) {
-      if ($new_name === $map_out) {
-       $new_name_mapped = $map_in;
+    foreach(ALL_TEMPLATES_MAP as $map_array) {
+     if (in_array(mb_strtolower($this->name), $map_array)) {
+      foreach($map_array as $map_in => $map_out) {
+       if ($new_name === $map_out) {
+         $new_name_mapped = $map_in;
+       }
       }
      }
     }
@@ -5218,9 +5219,11 @@ final class Template
    $name = 'citation';
   }
   if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // Do not map on english wiki's
-   foreach (NONENG_TEMPLATES_MAP as $map_in => $map_out) {
-    if ($name === $map_in) {
-     $name = $map_out;
+   foreach (ALL_TEMPLATES_MAP as $map_array) {
+    foreach ($map_array as $map_in => $map_out) {
+     if ($name === $map_in) {
+      $name = $map_out;
+     }
     }
    }
   }
