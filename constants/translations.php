@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Also need added to: both Page.php case statements, setup.php list of valid wikis, and index.html
+// Also need added to: both Page.php case statements, setup.php list of valid wikis, and both places in index.html
 
 const MK_ERR1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
 const MK_ERR2 = 'Ако тоа не е проблемот, тогаш стартувајте ја единствената страница со &prce=1 додадена на URL-то за да го промените моторот за парсирање';
