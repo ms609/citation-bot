@@ -19,6 +19,26 @@ const ENG_ERR2 = 'If that is not the problem, then run the single page with &prc
 const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
 const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
 
+// WARNING: mb_strtolower versions
+const NONENG_TEMPLATES_MAP = [
+  // mk.wikipedia.org
+  'наведено списание' => 'cite journal',
+  'наведена книга' => 'cite book',
+  'наведена мрежна страница' => 'cite web',
+  'наведен нестручен часопис' => 'cite magazine',
+  'наведување' => 'citation',
+  'наведен arxiv' => 'cite arxiv',
+  'наведени_вести' => 'cite news',
+  // vi.wikipedia.org
+  'chú thích tập san học thuật' => 'cite journal',
+  'chú thích sách' => 'cite book',
+  'chú thích web' => 'cite web',
+  'chú_thích_tạp_chí' => 'cite magazine',
+  'chú_thích' => 'citation',
+  'chú_thích_arxiv' => 'cite arxiv',
+  'chú_thích_báo' => 'cite news',
+];
+
 const MK_TRANS = [
     'Altered' => 'Променет',
     'Alter:' => 'Промени:',
