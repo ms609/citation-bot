@@ -735,6 +735,11 @@ class Page {
                     $auto_summary = str_replace($eng, $not_eng, $auto_summary);
                 }
                 break; // Serbian
+            case 'vi':
+                foreach (VI_TRANS as $eng => $not_eng) {
+                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
+                }
+                break; // Vietnamese
             default:
                 report_error('invalid wiki in edit summary');
         }
@@ -857,19 +862,31 @@ class Page {
             report_minor_error('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
             // @codeCoverageIgnoreStart
             if ($class === "Template") {
-                if (WIKI_BASE === 'mk') {
-                    $err1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
-                    $err2 = 'Ако тоа не е проблемот, тогаш стартувајте ја единствената страница со &prce=1 додадена на URL-то за да го промените моторот за парсирање';
-                } elseif (WIKI_BASE === 'ru') {
-                    $err1 = 'Следующий текст может помочь вам выяснить, где находится ошибка на странице (ищите одинокие символы { и } или незакрытый комментарий)';
-                    $err2 = 'Если проблема не в этом, то запустите отдельную страницу с &prce=1, добавленным к URL, чтобы изменить механизм синтаксического анализа.';
-                } elseif (WIKI_BASE === 'sr') {
-                    $err1 = 'Следећи текст би вам могао помоћи да схватите где је грешка на страници (потражите усамљене знакове { и } или незатворени коментар).';
-                    $err2 = 'Ако то није проблем, онда покрените једну страницу са додатком &prce=1 у URL да бисте променили механизам за парсирање';
-                } else {
-                    $err1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
-                    $err2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
-                }
+                switch (WIKI_BASE) {
+                    case 'en':
+                    case 'simple':
+                    case 'mdwiki':
+                        $err1 = ENG_ERR1;
+                        $err2 = ENG_ERR2;
+                        break;
+                    case 'ru':
+                        $err1 = RU_ERR1;
+                        $err2 = RU_ERR2;
+                        break;
+                    case 'mk':
+                        $err1 = MK_ERR1;
+                        $err2 = MK_ERR2;
+                        break;
+                    case 'sr':
+                        $err1 = SR_ERR1;
+                        $err2 = SR_ERR2;
+                        break;
+                    case 'vi':
+                        $err1 = VI_ERR1;
+                        $err2 = VI_ERR2;
+                        break;
+                    default:
+                        report_error('invalid wiki in Template error message');
                 echo '<p><h3>', $err1, '</h3><h4>', $err2, '</h4></p><p>', echoable($text), '</p>';
             }
             // @codeCoverageIgnoreEnd
@@ -946,7 +963,7 @@ class Page {
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
         $date_style = DateStyle::DATES_WHATEVER;
-        if (WIKI_BASE === 'mk' || WIKI_BASE === 'ru') {
+        if (!in_array(WIKI_BASE, ENGLISH_WIKI) { // anything that is not en, simple, mdwiki
             $date_style = DateStyle::DATES_ISO;
         }
         if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
