@@ -2,11 +2,6 @@
 
 declare(strict_types=1);
 
-// These lines should be included if webserver does not block these
-//if (get_included_files()[0] === __FILE__) {
-//    exit;
-//}
-
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
