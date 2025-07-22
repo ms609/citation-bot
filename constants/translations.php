@@ -70,9 +70,9 @@ const MK_TEMPLATES_MAP = [
   'наведување' => 'citation',
   'наведен arxiv' => 'cite arxiv',
   'наведени вести' => 'cite news',
-  // not there yet '' => 'cite document',
+  'наведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this
   'наведен научен собир' => 'cite conference',
-]
+];
 const VI_TEMPLATES_MAP = [
   'chú thích tập san học thuật' => 'cite journal',
   'chú thích sách' => 'cite book',
