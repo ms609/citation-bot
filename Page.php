@@ -887,6 +887,7 @@ class Page {
                         break;
                     default:
                         report_error('invalid wiki in Template error message');
+                        exit;
                 }
                 echo '<p><h3>', $err1, '</h3><h4>', $err2, '</h4></p><p>', echoable($text), '</p>';
             }
