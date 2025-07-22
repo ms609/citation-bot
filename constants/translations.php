@@ -19,6 +19,73 @@ const ENG_ERR2 = 'If that is not the problem, then run the single page with &prc
 const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
 const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
 
+/** links to verify
+https://mk.wikipedia.org/wiki/Template:Cite_journal
+https://mk.wikipedia.org/wiki/Template:Cite_book
+https://mk.wikipedia.org/wiki/Template:Cite_web
+https://mk.wikipedia.org/wiki/Template:Cite_magazine
+https://mk.wikipedia.org/wiki/Template:Citation
+https://mk.wikipedia.org/wiki/Template:Cite_arxiv
+https://mk.wikipedia.org/wiki/Template:Cite_news
+https://mk.wikipedia.org/wiki/Template:Cite_document
+https://mk.wikipedia.org/wiki/Template:Cite_conference
+
+https://ru.wikipedia.org/wiki/Template:Cite_journal
+https://ru.wikipedia.org/wiki/Template:Cite_book
+https://ru.wikipedia.org/wiki/Template:Cite_web
+https://ru.wikipedia.org/wiki/Template:Cite_magazine
+https://ru.wikipedia.org/wiki/Template:Citation
+https://ru.wikipedia.org/wiki/Template:Cite_arxiv
+https://ru.wikipedia.org/wiki/Template:Cite_news
+https://ru.wikipedia.org/wiki/Template:Cite_document
+https://ru.wikipedia.org/wiki/Template:Cite_conference
+
+https://sr.wikipedia.org/wiki/Template:Cite_journal
+https://sr.wikipedia.org/wiki/Template:Cite_book
+https://sr.wikipedia.org/wiki/Template:Cite_web
+https://sr.wikipedia.org/wiki/Template:Cite_magazine
+https://sr.wikipedia.org/wiki/Template:Citation
+https://sr.wikipedia.org/wiki/Template:Cite_arxiv
+https://sr.wikipedia.org/wiki/Template:Cite_news
+https://sr.wikipedia.org/wiki/Template:Cite_document
+https://sr.wikipedia.org/wiki/Template:Cite_conference
+
+https://vi.wikipedia.org/wiki/Template:Cite_journal
+https://vi.wikipedia.org/wiki/Template:Cite_book
+https://vi.wikipedia.org/wiki/Template:Cite_web
+https://vi.wikipedia.org/wiki/Template:Cite_magazine
+https://vi.wikipedia.org/wiki/Template:Citation
+https://vi.wikipedia.org/wiki/Template:Cite_arxiv
+https://vi.wikipedia.org/wiki/Template:Cite_news
+https://vi.wikipedia.org/wiki/Template:Cite_document
+https://vi.wikipedia.org/wiki/Template:Cite_conference
+**/
+
+// WARNING: mb_strtolower versions - code also assumes that only the first character could be uppercase
+const MK_TEMPLATES_MAP = [
+  'наведено списание' => 'cite journal',
+  'наведена книга' => 'cite book',
+  'наведена мрежна страница' => 'cite web',
+  'наведен нестручен часопис' => 'cite magazine',
+  'наведување' => 'citation',
+  'наведен arxiv' => 'cite arxiv',
+  'наведени вести' => 'cite news',
+  'Hаведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this.  Use capital H so that it is not a duplicate key
+  'наведен научен собир' => 'cite conference',
+];
+const VI_TEMPLATES_MAP = [
+  'chú thích tập san học thuật' => 'cite journal',
+  'chú thích sách' => 'cite book',
+  'chú thích web' => 'cite web',
+  'chú thích tạp chí' => 'cite magazine',
+  'chú thích' => 'citation',
+  'chú thích arxiv' => 'cite arxiv',
+  'chú thích báo' => 'cite news',
+  'chú thích tài liệu' => 'cite document',
+  'chú thích hội thảo' => 'cite conference',
+];
+const ALL_TEMPLATES_MAP = [MK_TEMPLATES_MAP, VI_TEMPLATES_MAP];
+
 const MK_TRANS = [
     'Altered' => 'Променет',
     'Alter:' => 'Промени:',

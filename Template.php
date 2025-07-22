@@ -5137,7 +5137,6 @@ final class Template
     ) {
      return;
     } // Unsupported parameters
-    $new_name = 'cite arXiv'; // Without the capital X is the alias
    }
    if (stripos($this->name, '#invoke:') !== false) {
     $this->name = str_ireplace('#invoke:', '', $this->name);
@@ -5151,12 +5150,24 @@ final class Template
     $spacing[1] = '';
     $spacing[2] = ''; // @codeCoverageIgnoreEnd
    }
-   if (substr($this->name, 0, 1) === 'c') {
-    $this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
-   } else {
-    $this->name = $spacing[1] . $invoke . mb_ucfirst_bot($new_name) . $spacing[2];
+   $new_name_mapped = $new_name;
+   if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
+    foreach(ALL_TEMPLATES_MAP as $map_array) {
+     if (in_array(mb_strtolower($this->name), $map_array)) {
+      foreach($map_array as $map_in => $map_out) {
+       if ($new_name === $map_out) {
+         $new_name_mapped = $map_in;
+       }
+      }
+     }
+    }
    }
-   switch (strtolower($new_name)) {
+   $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
+   if (ctype_upper(substr($this->name, 0, 1))) {
+    $new_name_mapped =  mb_ucfirst_bot($new_name_mapped);
+   }
+   $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
+   switch ($new_name) {
     case 'cite journal':
      $this->rename('eprint', 'arxiv');
      $this->forget('class');
@@ -5207,27 +5218,14 @@ final class Template
   if ($name === 'cite') {
    $name = 'citation';
   }
-  // Macedonia wiki uses localized names
-  if ($name === 'наведено списание') {
-   $name = 'cite journal';
-  }
-  if ($name === 'наведена книга') {
-   $name = 'cite book';
-  }
-  if ($name === 'наведена мрежна страница') {
-   $name = 'cite web';
-  }
-  if ($name === 'наведен нестручен часопис') {
-   $name = 'cite magazine';
-  }
-  if ($name === 'наведување') {
-   $name = 'citation';
-  }
-  if ($name === 'наведен arxiv') {
-   $name = 'cite arxiv';
-  }
-  if ($name === 'наведени_вести') {
-   $name = 'cite news';
+  if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // Do not map on english wiki's
+   foreach (ALL_TEMPLATES_MAP as $map_array) {
+    foreach ($map_array as $map_in => $map_out) {
+     if ($name === $map_in) {
+      $name = $map_out;
+     }
+    }
+   }
   }
   return $name;
  }
