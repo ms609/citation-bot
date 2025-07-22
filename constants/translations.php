@@ -84,6 +84,7 @@ const VI_TEMPLATES_MAP = [
   'chú thích tài liệu' => 'cite document',
   'chú thích hội thảo' => 'cite conference',
 ];
+const ALL_TEMPLATES_MAP = [MK_TEMPLATES_MAP, VI_TEMPLATES_MAP];
 
 const MK_TRANS = [
     'Altered' => 'Променет',
