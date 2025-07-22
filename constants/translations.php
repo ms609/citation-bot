@@ -19,7 +19,7 @@ const ENG_ERR2 = 'If that is not the problem, then run the single page with &prc
 const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
 const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
 
-// WARNING: mb_strtolower versions
+// WARNING: mb_strtolower versions - code also assumes that only the first character could be uppercase
 const NONENG_TEMPLATES_MAP = [
   // mk.wikipedia.org
   'наведено списание' => 'cite journal',
