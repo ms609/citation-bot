@@ -16,8 +16,8 @@ const SR_ERR2 =  'Ако то није проблем, онда покренит
 const ENG_ERR1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
 const ENG_ERR2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
 
-const VI_ERR1 = 'Văn bản sau đây có thể giúp bạn tìm ra lỗi ở đâu trên trang (Tìm ký tự { và } đơn lẻ hoặc bình luận chưa đóng)';
-const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trang đơn với &prce=1 được thêm vào URL để thay đổi công cụ phân tích cú pháp';
+const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
+const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
 
 const MK_TRANS = [
     'Altered' => 'Променет',
