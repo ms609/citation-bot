@@ -5155,18 +5155,17 @@ final class Template
     if (in_array(mb_strtolower($this->name), NONENG_TEMPLATES_MAP)) {
      foreach(NONENG_TEMPLATES_MAP as $map_in => $map_out) {
       if ($new_name === $map_out) {
-       $new_name === $map_in;
+       $new_name_mapped === $map_in;
       }
      }
     }
    }
-   $new_name = str_replace('arxiv', 'arXiv', $new_name); // Without the capital X is the alias
-   if (ctype_lower($this->name, 0, 1)) {
-    $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
-   } else {
-    $this->name = $spacing[1] . $invoke . mb_ucfirst_bot($new_name_mapped) . $spacing[2];
+   $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
+   if (ctype_upper(substr($this->name, 0, 1))) {
+    $new_name_mapped =  mb_ucfirst_bot($new_name_mapped);
    }
-   switch (strtolower($new_name)) {
+   $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
+   switch ($new_name) {
     case 'cite journal':
      $this->rename('eprint', 'arxiv');
      $this->forget('class');
