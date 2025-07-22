@@ -964,7 +964,7 @@ class Page {
     private function set_date_pattern(): void {
         // see {{use_mdy_dates}} and {{use_dmy_dates}}
         $date_style = DateStyle::DATES_WHATEVER;
-        if (!in_array(WIKI_BASE, ENGLISH_WIKI) { // anything that is not en, simple, mdwiki
+        if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // anything that is not en, simple, mdwiki
             $date_style = DateStyle::DATES_ISO;
         }
         if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i', $this->text)) {
