@@ -5153,6 +5153,7 @@ final class Template
    $new_name_mapped = $new_name;
    if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
     if (in_array(mb_strtolower($this->name), NONENG_TEMPLATES_MAP)) {
+     return; // This code needs fixed
      foreach(NONENG_TEMPLATES_MAP as $map_in => $map_out) {
       if ($new_name === $map_out) {
        $new_name_mapped = $map_in;
