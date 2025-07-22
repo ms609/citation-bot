@@ -123,7 +123,7 @@ final class Template
    }
   }
 
-  if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
+  if (in_array(WIKI_BASE, ENGLISH_WIKI)) {
    foreach (TEMPLATE_CONVERSIONS as $trial) {
     if ($trim_name === $trial[0]) {
      $this->name = $spacing[1] . $trial[1] . $spacing[2];
