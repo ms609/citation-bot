@@ -62,8 +62,7 @@ https://vi.wikipedia.org/wiki/Template:Cite_conference
 **/
 
 // WARNING: mb_strtolower versions - code also assumes that only the first character could be uppercase
-const NONENG_TEMPLATES_MAP = [
-  // mk.wikipedia.org
+const MK_TEMPLATES_MAP = [
   'наведено списание' => 'cite journal',
   'наведена книга' => 'cite book',
   'наведена мрежна страница' => 'cite web',
@@ -73,7 +72,8 @@ const NONENG_TEMPLATES_MAP = [
   'наведени вести' => 'cite news',
   // not there yet '' => 'cite document',
   'наведен научен собир' => 'cite conference',
-  // vi.wikipedia.org
+]
+const VI_TEMPLATES_MAP = [
   'chú thích tập san học thuật' => 'cite journal',
   'chú thích sách' => 'cite book',
   'chú thích web' => 'cite web',
