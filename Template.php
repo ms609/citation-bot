@@ -5137,7 +5137,6 @@ final class Template
     ) {
      return;
     } // Unsupported parameters
-    $new_name = 'cite arXiv'; // Without the capital X is the alias
    }
    if (stripos($this->name, '#invoke:') !== false) {
     $this->name = str_ireplace('#invoke:', '', $this->name);
@@ -5151,10 +5150,21 @@ final class Template
     $spacing[1] = '';
     $spacing[2] = ''; // @codeCoverageIgnoreEnd
    }
-   if (substr($this->name, 0, 1) === 'c') {
-    $this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
+   $new_name_mapped = $new_name;
+   if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
+    if (in_array(mb_strtolower($this->name), NONENG_TEMPLATES_MAP)) {
+     foreach(NONENG_TEMPLATES_MAP as $map_in => $map_out) {
+      if ($new_name === $map_out) {
+       $new_name === $map_in;
+      }
+     }
+    }
+   }
+   $new_name = str_replace('arxiv', 'arXiv', $new_name); // Without the capital X is the alias
+   if (ctype_lower($this->name, 0, 1)) {
+    $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
    } else {
-    $this->name = $spacing[1] . $invoke . mb_ucfirst_bot($new_name) . $spacing[2];
+    $this->name = $spacing[1] . $invoke . mb_ucfirst_bot($new_name_mapped) . $spacing[2];
    }
    switch (strtolower($new_name)) {
     case 'cite journal':
