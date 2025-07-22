@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.14296/RiH/2014/2042' => true, // 404
+    '10.2307/843761' => true, // 404
     '10.1029/2010gm001015' => true, // 404
     '10.1159/000472311' => true,  // 404
     '10.1357/002224005775247616' => true, // not found
