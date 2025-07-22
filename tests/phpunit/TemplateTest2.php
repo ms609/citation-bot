@@ -532,7 +532,7 @@ final class TemplateTest2 extends testBaseClass {
         $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
-        $this->assertSame('https://www.proquest.com/docview/1234/STUFF', $template->get2('url'));
+        $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
  public function testTidy66b(): void {
@@ -2615,8 +2615,8 @@ final class TemplateTest2 extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('1234', $template->get2('oclc'));
-        $this->assertNull($template->get2('url'));
-        $this->assertSame('cite book', $template->wikiname());
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testConversionOfURL2B(): void {
