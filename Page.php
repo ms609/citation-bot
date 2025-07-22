@@ -886,7 +886,7 @@ class Page {
                         $err2 = VI_ERR2;
                         break;
                     default:
-                        report_error('invalid wiki in Template error message');
+                        report_warning('invalid wiki in Template error message code');
                         exit;
                 }
                 echo '<p><h3>', $err1, '</h3><h4>', $err2, '</h4></p><p>', echoable($text), '</p>';
