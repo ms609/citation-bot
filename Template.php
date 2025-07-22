@@ -5207,27 +5207,12 @@ final class Template
   if ($name === 'cite') {
    $name = 'citation';
   }
-  // Macedonia wiki uses localized names
-  if ($name === 'наведено списание') {
-   $name = 'cite journal';
-  }
-  if ($name === 'наведена книга') {
-   $name = 'cite book';
-  }
-  if ($name === 'наведена мрежна страница') {
-   $name = 'cite web';
-  }
-  if ($name === 'наведен нестручен часопис') {
-   $name = 'cite magazine';
-  }
-  if ($name === 'наведување') {
-   $name = 'citation';
-  }
-  if ($name === 'наведен arxiv') {
-   $name = 'cite arxiv';
-  }
-  if ($name === 'наведени_вести') {
-   $name = 'cite news';
+  if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // Do not map on english wiki's
+   foreach (NONENG_TEMPLATES_MAP as $map_in => $map_out) {
+    if ($name === $map_in) {
+     $name = $map_out;
+    }
+   }
   }
   return $name;
  }
