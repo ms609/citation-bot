@@ -28,15 +28,19 @@ const NONENG_TEMPLATES_MAP = [
   'наведен нестручен часопис' => 'cite magazine',
   'наведување' => 'citation',
   'наведен arxiv' => 'cite arxiv',
-  'наведени_вести' => 'cite news',
+  'наведени вести' => 'cite news',
+  // not there yet '' => 'cite document',
+  'наведен научен собир' => 'cite conference',
   // vi.wikipedia.org
   'chú thích tập san học thuật' => 'cite journal',
   'chú thích sách' => 'cite book',
   'chú thích web' => 'cite web',
-  'chú_thích_tạp_chí' => 'cite magazine',
-  'chú_thích' => 'citation',
-  'chú_thích_arxiv' => 'cite arxiv',
-  'chú_thích_báo' => 'cite news',
+  'chú thích tạp chí' => 'cite magazine',
+  'chú thích' => 'citation',
+  'chú thích arxiv' => 'cite arxiv',
+  'chú thích báo' => 'cite news',
+  'chú thích tài liệu' => 'cite document',
+  'chú thích hội thảo' => 'cite conference',
 ];
 
 const MK_TRANS = [
