@@ -1407,6 +1407,8 @@ const ZOTERO_AVOID_REGEX = [
     'www\.wrecksite\.eu', // Fails 100%
 ];
 const NON_JOURNAL_WEBSITES = [
+    '.newsen.com',
+    '/newsen.com',
     'arrow.tudublin.ie/',
     '-news.co.uk/',
     '.ajc.com/',
