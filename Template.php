@@ -8925,8 +8925,8 @@ final class Template
     $this->param[$last]->post = $p->post;
    }
   }
-  if (0 === stripos(trim($this->name), '#invoke:') && 0 === $prior_pos) {
-    $prior_pos = 1;
+  if (0 === stripos(trim($this->name), '#invoke:') && $prior_pos < 2) {
+    $prior_pos = 2;
   }
   $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
   return true;
