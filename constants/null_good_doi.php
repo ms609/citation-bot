@@ -7,6 +7,10 @@ declare(strict_types=1);
 // TODO - these need to be manually double checked once in a great while
 //  We cannot add hdls to this list, since we need the final URL
 const NULL_DOI_BUT_GOOD = [
+    '10.14431/aw.2014.03.30.2.85' => true,
+    '10.19182/bft2015.325.a31271' => true,
+    '10.7155/jgaa.00301' => true,
+    '10.7939/r3-4g03-jt64' => true,
     '10.1000/100' => true,
     '10.1001/archderm.138.12.1584' => true,
     '10.1001/archderm.140.7.819' => true,
