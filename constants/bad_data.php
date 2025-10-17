@@ -97,6 +97,7 @@ const BAD_AUTHORS = [
     'united states',
     'unknown',
     'all rights reserved',
+    'edit',
 ];
 const NON_HUMAN_AUTHORS = [
     'admin',
@@ -387,6 +388,7 @@ const BAD_TITLES = [
     'page not found',
     'pagina inicia',
     'privacy settings',
+    'Private Site',
     'professional paper',
     'proquest ebook central',
     'Rate limit reached',
@@ -564,6 +566,7 @@ const BAD_ZOTERO_TITLES = [
     'Preview unavailable',
     'privacy settings',
     'Rate limit reached',
+    'Private Site',
     'register to view',
     'Seite nicht gefunden',
     'sex cams',
