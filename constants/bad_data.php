@@ -351,6 +351,7 @@ const BAD_TITLES = [
     'google drive: sign-in',
     'sina visitor system',
     '403 unauthorized',
+    '403 Forbidden',
     '404 not found',
     '404',
     '404错误',
