@@ -97,6 +97,7 @@ const BAD_AUTHORS = [
     'united states',
     'unknown',
     'all rights reserved',
+    'edit',
 ];
 const NON_HUMAN_AUTHORS = [
     'admin',
