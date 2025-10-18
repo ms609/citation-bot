@@ -12586,7 +12586,6 @@ const NON_JOURNAL_DOIS = [
     '10.5531/db.vz.0001',
 ]; // lowercase exact matches
 const NON_JOURNALS = [
-    'Advances in Enzymology and Related Subjects of Biochemistry',
     'Amphibian Species of the World',
     'an Online Reference',
     'An Online Reference',
@@ -13191,7 +13190,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'advances in advertising research',
     'advances in anatomy embryology and cell biology',
     'advances in enzymology and related areas of molecular biology',
-    'advances in experimental medicine and biology',
+    'advances in enzymology and related subjects of biochemistry',
     'advances in experimental medicine and biology',
     'advances in genetics',
     'advances in heterocyclic chemistry',
