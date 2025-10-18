@@ -13444,6 +13444,7 @@ const DOI_FREE_PREFIX = [
     '10.7717/',
     '10.7759/cureus.',
     '10.7766/',
+    '10.9778/cmajo',
 ];
 
 const BAD_DOI_ARRAY = [
