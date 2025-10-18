@@ -117,7 +117,7 @@ const NON_HUMAN_AUTHORS = [
     'anchor',
     'association',
     'board of ',
-    'bontangpost'
+    'bontangpost',
     'bureau',
     'business',
     'center for',
