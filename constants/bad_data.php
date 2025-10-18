@@ -478,6 +478,7 @@ const BAD_ZOTERO_TITLES = [
     '.org',
     '{{',
     '}}',
+    '403 Forbidden',
     '404 - - ',
     '404 - ',
     '404 - File or directory not found',
