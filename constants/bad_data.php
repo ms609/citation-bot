@@ -1344,6 +1344,7 @@ const NO_DATE_WEBSITES = [
     '.loc.gov',
     'parksandgardens.org',
     'svenskfilmdatabas.se',
+    'thepracticalleader.com'
 ];
 
 const ZOTERO_AVOID_REGEX = [
