@@ -12586,6 +12586,7 @@ const NON_JOURNAL_DOIS = [
     '10.5531/db.vz.0001',
 ]; // lowercase exact matches
 const NON_JOURNALS = [
+    'Advances in Enzymology and Related Subjects of Biochemistry'
     'Amphibian Species of the World',
     'an Online Reference',
     'An Online Reference',
