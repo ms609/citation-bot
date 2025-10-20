@@ -16,7 +16,7 @@ require_once 'setup.php';
 function die_in_template(string $err): never {
     echo $err, '</pre></main></body></html>'; // @codeCoverageIgnore
     exit; // @codeCoverageIgnore
-} 
+}
 
 if (count($_GET) !== 1) {
     die_in_template('Exactly one parameters must be passed'); // @codeCoverageIgnore
