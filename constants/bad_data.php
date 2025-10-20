@@ -703,7 +703,7 @@ const CANONICAL_PUBLISHER_URLS = [
     'ejts.revues.org',
     'elsevier.com',
     'emerald.com',
-    'emeraldinsight.com',    
+    'emeraldinsight.com',
     'eurekamag.com',
     'europeanjournaloftaxonomy.eu',
     'evistaderecho.posgrado.unam.mx',
