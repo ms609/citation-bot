@@ -93,6 +93,7 @@ const BAD_AUTHORS = [
     'rundfunk',
     'super user',
     'the editor',
+    'top gear'
     'user',
     'united states',
     'united states. interstate commerce commission',
