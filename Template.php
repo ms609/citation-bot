@@ -5390,7 +5390,7 @@ final class Template
        $the_url .= $this->get($thingy);
       }
       $cleaned = strtolower(str_replace(['[', ']', '.'], '', $this->get($param)));
- 
+
       if (in_array($cleaned, ['reuters'], true)) {
        if (stripos($the_url, 'reuters.co') !== false) {
         $this->rename($param, 'work');
@@ -5605,7 +5605,7 @@ final class Template
       }
      }
      return;
-    
+
     case 'class':
      if ($this->blank('class')) {
       if ($this->wikiname() !== 'cite arxiv' && !$this->blank(['doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'])) {
@@ -5695,7 +5695,7 @@ final class Template
       $this->forget($param);
      }
      return;
-    
+
     case 'url-status':
      $the_data = mb_strtolower($this->get($param));
      if (in_array($the_data, YES_LANGS, true)) {
@@ -6385,13 +6385,13 @@ final class Template
      if ($this->blank($param)) {
       return;
      }
-     if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') || 
+     if ($this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') ||
          $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') ||
-         $this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' || 
+         $this->get('url') === 'https://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' ||
          $this->get('url') === 'http://pubmed.ncbi.nlm.nih.gov/' . $this->get('pmid') . '/' ||
-         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') || 
+         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') ||
          $this->get('url') === 'http://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') ||
-         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/' || 
+         $this->get('url') === 'https://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/' ||
          $this->get('url') === 'http://www.ncbi.nlm.nih.gov/pubmed/' . $this->get('pmid') . '/'
         ) {
          $this->forget('url');
@@ -6864,7 +6864,7 @@ final class Template
       $this->set('quote', $quote_out);
      }
      return;
-     
+
     case 'quotes':
      switch (strtolower(trim($this->get($param)))) {
       case 'yes':
@@ -7920,7 +7920,7 @@ final class Template
          ) {
        $this->forget($param);
        return;
-      } 
+      }
      }
      if (stripos($this->get($param), 'archive.org') !== false && stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === false) {
       $this->forget($param);

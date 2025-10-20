@@ -93,11 +93,13 @@ const BAD_AUTHORS = [
     'rundfunk',
     'super user',
     'the editor',
+    'top gear',
     'user',
     'united states',
     'united states. interstate commerce commission',
     'unknown',
     'yucatan times',
+    'Радіо',
     '自由時報電子報',
 ];
 const NON_HUMAN_AUTHORS = [
@@ -176,6 +178,7 @@ const NON_HUMAN_AUTHORS = [
     'world bank',
     'world news',
     'you are human',
+    'Радіо',
     '試験所',
 ];
 const BAD_PUBLISHERS = [
