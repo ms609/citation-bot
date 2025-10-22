@@ -71,6 +71,7 @@ const BAD_AUTHORS = [
     'admin',
     'all rights reserved',
     'channel c',
+    'creatorlink'
     'daily sabah',
     'dk eyewitness',
     'edit',
