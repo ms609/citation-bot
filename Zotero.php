@@ -576,10 +576,10 @@ final class Zotero {
             unset($result->creators);
             unset($result->author);
         }
-        if (stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709 
-            unset($result->publicationTitle); 
+        if (stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
+            unset($result->publicationTitle);
         }
-        
+
         // Reject if we find more than 5 or more than 10% of the characters are �. This means that character
         // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
         // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
@@ -1518,7 +1518,7 @@ final class Zotero {
                 $template->set($url_type, $url); // Update URL with cleaner one
             }
         }
-     
+
         if (preg_match('~^https?://(?:dx\.|)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
             $url = 'http://www.springerreference.com/index/doi/10.1007/springerreference_' . $matches[1];
             if (is_null($url_sent)) {

@@ -369,7 +369,7 @@ class Page {
                 $this_template->tidy_parameter('deadurl');
                 if ($this_template->wikiname() === 'cite conference') {
                     $our_templates_conferences[] = $this_template;
-                }                                                                               
+                }
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL, true)) {
                 $our_templates_slight[] = $this_template;
                 $this_template->rename('chapterurl', 'chapter-url');

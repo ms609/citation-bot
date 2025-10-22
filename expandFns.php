@@ -468,7 +468,7 @@ function sanitize_doi(string $doi): string {
             $doi = $matches[1] . $matches[2];
         }
     }
-   
+
     return $doi;
 }
 
@@ -537,9 +537,9 @@ function wikify_external_text(string $title): string {
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6);
     }
-    if (mb_substr($title, -10) === "&amp;nbsp;") {       
+    if (mb_substr($title, -10) === "&amp;nbsp;") {
         $title = mb_substr($title, 0, -10);
-    } 
+    }
     // Sometimes stuff is encoded more than once
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");

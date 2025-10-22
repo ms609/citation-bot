@@ -478,7 +478,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
                 report_warning("No match for bibcode identifier: " . $bad_boy);
             }
         }
-            
+
     }
     foreach ($templates as $template) {
         if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
@@ -1620,7 +1620,7 @@ function query_crossref_newapi(string $doi): object {
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
-    
+
     if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
         $result = $json->message;
     } else {
@@ -1637,6 +1637,6 @@ function query_crossref_newapi(string $doi): object {
             $result->{'short-container-title'}, $result->license,
             $result->indexed, $result->{'references-count'}, $result->resource,
             $result->subject, $result->language);
-    
+
     return $result;
 }
