@@ -179,6 +179,7 @@ const NON_HUMAN_AUTHORS = [
     'world news',
     'you are human',
     'Радіо',
+    '기자',
     '試験所',
 ];
 const BAD_PUBLISHERS = [
