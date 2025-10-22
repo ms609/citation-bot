@@ -164,6 +164,7 @@ const NON_HUMAN_AUTHORS = [
     'news desk',
     'obituaries',
     'office of',
+    'overseas correspondent',
     'please verify',
     'radio',
     'relations',
@@ -180,6 +181,7 @@ const NON_HUMAN_AUTHORS = [
     'world news',
     'you are human',
     'Радіо',
+    '재외기자',
     '기자',
     '試験所',
 ];
