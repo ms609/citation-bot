@@ -177,6 +177,7 @@ const NON_HUMAN_AUTHORS = [
     'university',
     'us census',
     'web desk',
+    'webmaster',
     'world bank',
     'world news',
     'you are human',
