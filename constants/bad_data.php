@@ -70,6 +70,7 @@ const BAD_AUTHORS = [
     '(:unav)',
     'admin',
     'all rights reserved',
+    'author',
     'channel c',
     'creatorlink',
     'daily sabah',
