@@ -1280,7 +1280,7 @@ const HOSTNAME_MAP = [
     'youtube.com' => '[[YouTube]]',
     'zap2it.com' => '[[Zap2it]]',
     'zdnet.com' => '[[ZDNet]]',
-]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
+]; // Be warned, some website host a separate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
     'laws-lois.justice.gc.ca',
