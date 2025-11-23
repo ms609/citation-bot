@@ -105,7 +105,7 @@ final class PageTest extends testBaseClass {
         $this->assertTrue(strlen($page->parsed_text()) > 200);
     }
 
-    public function testBotReadNonExistant(): void {
+    public function testBotReadNonExistent(): void {
         $page = new TestPage();
         $this->assertFalse($page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
     }

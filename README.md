@@ -57,7 +57,7 @@ Class files:
   `Template::add_if_new()` is generally (but not always) used to add
    parameters to the updated template; `Template::tidy()` cleans up the
    template, but may add parameters as well and have side effects.
-* `Comment.php`: Handles comments, nokwiki, etc. tags
+* `Comment.php`: Handles comments, nowiki, etc. tags
 * `Parameter.php`: contains information about template parameter names, values,
    and metadata, and methods to parse template parameters.
 
@@ -94,7 +94,7 @@ In order to run on the command line one needs OAuth tokens as documented in `env
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
     
-The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | seperated page names.  This code requires PHP 8.2 with optional packages included: php82-mbstring php82-sockets php82-opcache php82-openssl php82-xmlrpc php82-gettext php82-curl php82-intl php82-iconv
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | separated page names.  This code requires PHP 8.2 with optional packages included: php82-mbstring php82-sockets php82-opcache php82-openssl php82-xmlrpc php82-gettext php82-curl php82-intl php82-iconv
 
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls

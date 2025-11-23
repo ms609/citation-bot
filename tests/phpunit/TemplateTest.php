@@ -1726,7 +1726,7 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testChangeParamaters1(): void {
+    public function testChangeParameters1(): void {
         // publicationplace
         $text = '{{citation|publicationplace=Home}}';
         $prepared = $this->prepare_citation($text);
@@ -1734,14 +1734,14 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('{{citation|publication-place=Home}}', $prepared->parsed_text());
     }
 
-    public function testChangeParamaters2(): void {
+    public function testChangeParameters2(): void {
         $text = '{{citation|publication-place=Home|location=Away}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame($text, $prepared->parsed_text());
     }
 
-    public function testChangeParamaters3(): void {
+    public function testChangeParameters3(): void {
         // publicationdate
         $text = '{{citation|publicationdate=2000}}';
         $prepared = $this->prepare_citation($text);
@@ -1749,14 +1749,14 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('{{citation|publication-date=2000}}', $prepared->parsed_text());
     }
 
-    public function testChangeParamaters4(): void {
+    public function testChangeParameters4(): void {
         $text = '{{citation|publicationdate=2000|date=1999}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();
         $this->assertSame('{{citation|publication-date=2000|date=1999}}', $prepared->parsed_text());
     }
 
-    public function testChangeParamaters5(): void {
+    public function testChangeParameters5(): void {
         // origyear
         $text = '{{citation|origyear=2000}}';
         $prepared = $this->prepare_citation($text);
@@ -1764,7 +1764,7 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('{{citation|orig-date=2000}}', $prepared->parsed_text());
     }
 
-    public function testChangeParamaters6(): void {
+    public function testChangeParameters6(): void {
         $text = '{{citation|origyear=2000|date=1999}}';
         $prepared = $this->prepare_citation($text);
         $prepared->final_tidy();

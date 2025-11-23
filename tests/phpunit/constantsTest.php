@@ -664,7 +664,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $errors = '';
         $all_maps = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL);
-        $okay_to_be_bad = ['coauthors', 'deadurl', 'lay-date', 'lay-source', 'lay-url', 'month', 'authors'];  // We upgrade dead paramters to better dead parameters
+        $okay_to_be_bad = ['coauthors', 'deadurl', 'lay-date', 'lay-source', 'lay-url', 'month', 'authors'];  // We upgrade dead parameters to better dead parameters
         foreach ($all_maps as $map_me => $mapped) {
             if (isset($all_maps[$mapped])) {
                 $errors .= ' re-mapped: ' . $map_me . '/' . $mapped . '    ';
@@ -680,7 +680,7 @@ final class constantsTest extends testBaseClass {
             }
             if (!in_array($mapped, $okay_to_be_bad, true)) {
             	if (!in_array($mappedp, PARAMETER_LIST, true)) {
-                	$errors .= ' mapped to non-existant parameter: ' . $map_me . '/' . $mapped . '    ';
+                	$errors .= ' mapped to non-existent parameter: ' . $map_me . '/' . $mapped . '    ';
             	}
             	if (in_array($mappedp, DEAD_PARAMETERS, true) || in_array($mapped, DEAD_PARAMETERS, true)) {
                 	$errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
