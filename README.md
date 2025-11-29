@@ -9,7 +9,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yaml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yaml)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![PHP ](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net)
@@ -105,6 +105,7 @@ The command line tool will also accept `page_list.txt` and `page_list2.txt` as p
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
+
 
 
 
