@@ -2672,11 +2672,10 @@ final class Template
     return false;
 
    case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
+    /** @psalm-suppress NoValue */
     if ($this->blank($param_name)) {
-     /** @psalm-suppress NoValue */
      return $this->add($param_name, sanitize_string($value));
     }
-    /** @psalm-suppress NoValue */
     return false;
 
    case 'id':
