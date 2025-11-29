@@ -737,7 +737,7 @@ function query_crossref(string $doi): ?object {
                     $volume = intval(trim((string) @$result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
-                            /** @psalm-suppress UndefinedThisPropertyAssignment */
+                            /** @psalm-suppress UndefinedPropertyAssignment */
                             $result->volume = $result->issue;
                             unset($result->issue);
                         } else {
