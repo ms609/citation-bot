@@ -832,10 +832,10 @@ class Page {
                 $objects[] = $obj;
             }
         }
-        if ($preg_ok === false && isset($regexp)) {
+        if ($preg_ok === false && isset($regexp) && is_string($regexp)) {
             // @codeCoverageIgnoreStart
-            $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
-            while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
+            $regexp = str_replace('~su', '~s', $regexp);
+            while ($preg_ok = preg_match($regexp, $text, $match)) { // try last most powerful REGEX without unicode
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);

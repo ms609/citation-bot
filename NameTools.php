@@ -114,7 +114,7 @@ function format_surname_2(string $surname): string {
         },
         $ret);
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
-    return preg_replace_callback('~;\w~',
+    return safe_preg_replace_callback('~;\w~',
         static function(array $matches): string {
             return mb_strtolower($matches[0]);
         },
@@ -353,7 +353,7 @@ function format_multiple_authors(string $authors): string {
     foreach ($frags as $frag){
         $return[] = is_initials($frag) ? format_initials($frag) : $frag;
     }
-    return preg_replace("~;$~", "", trim(implode(" ", $return)));
+    return safe_preg_replace("~;$~", "", trim(implode(" ", $return)));
 }
 
 function under_two_authors(string $text): bool {
