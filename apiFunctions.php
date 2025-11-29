@@ -310,13 +310,17 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         if (isset($entry_map[$id])) {
             $sorted_arxiv_data[] = $entry_map[$id];
         } else {
-            $sorted_arxiv_data[] = (object) array();
+            $sorted_arxiv_data[] = FALSE;
         }
     }
     unset($entry_map);
 
     $this_template = current($templates); // advance at end of foreach loop
     foreach ($sorted_arxiv_data as $entry) {
+        if ($entry === FALSE) {
+            $this_template = next($templates);
+            continue;
+        }
         $i = 0;
         report_info("Found match for arXiv " . echoable($ids[$i]));
         if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
