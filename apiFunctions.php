@@ -306,6 +306,8 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     foreach ($ids as $id) {
         if (isset($entry_map[$id])) {
             $sorted_arxiv_data[] = $entry_map[$id];
+        } else {
+            $sorted_arxiv_data[] = (object) array();
         }
     }
 
@@ -379,7 +381,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         $this_template = next($templates);
     }
     if ($this_template !== false) {
-        report_minor_error('Unexpected error in arxiv_api()' . echoable($this_template->parsed_text()));    // @codeCoverageIgnore
+        report_error('Had more Templates than data in arxiv_api()');    // @codeCoverageIgnore
     }
     return;
 }
