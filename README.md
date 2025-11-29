@@ -96,7 +96,7 @@ Or for testing in the shell:
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
 ## Running on the command line
-In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:dev-master`.  Then the bot can be run such as:
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
     
@@ -105,4 +105,5 @@ The command line tool will also accept `page_list.txt` and `page_list2.txt` as p
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
+
 
