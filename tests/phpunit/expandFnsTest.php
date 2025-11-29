@@ -604,8 +604,9 @@ final class expandFnsTest extends testBaseClass {
         shuffle($null_list); // Avoid doing similar ones next to each other
         foreach ($null_list as $doi) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
-                $works = false;
-            } else {
+                $works = false;dfasdds
+            } else {dfasd
+                dafads
                 $works = doi_works($doi);
             }
             if ($works === true) {
