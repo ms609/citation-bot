@@ -296,9 +296,12 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     // Arxiv currently does not order the data recieved according to id_list. This is causing CitationBot to mix up
     // which Arxiv ID is associated with which citation. As a result, we first perform a sorting pass to make sure we
     // order the arxiv data based on our id_list so that we have a 1 to 1 ordering of both.
+    // Include both with and without version numbered ones
     $entry_map = [];
     foreach ($xml->entry as $entry) {
-        $arxiv_id = preg_replace('#http://arxiv\.org/abs/([^v]+)v\d+#', '$1', (string)$entry->id);
+        $arxiv_id = preg_replace('~https?://arxiv\.org/abs/([^v]+)v\d+~', '$1', (string)$entry->id);
+        $entry_map[$arxiv_id] = $entry;
+        $arxiv_id = preg_replace('~https?://arxiv\.org/abs/~', '$1', (string)$entry->id);
         $entry_map[$arxiv_id] = $entry;
     }
 
@@ -310,6 +313,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
             $sorted_arxiv_data[] = (object) array();
         }
     }
+    unset($entry_map);
 
     $this_template = current($templates); // advance at end of foreach loop
     foreach ($sorted_arxiv_data as $entry) {
