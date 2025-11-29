@@ -323,7 +323,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         }
         $i = 0;
         report_info("Found match for arXiv " . echoable($ids[$i]));
-        if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
+        if ($this_template->add_if_new("doi", (string) @$entry->arxivdoi, 'arxiv')) {
             if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
                 // Move outdated/bad arXiv title out of the way
                 $the_arxiv_title = $this_template->get('title');
