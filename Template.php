@@ -1280,6 +1280,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first', 'editor-last' . $match[1], 'editor-first' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_full_names($value));
     }
     return false;
@@ -1295,6 +1296,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_first_names($value));
     }
     return false;
@@ -1310,6 +1312,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_last_names($value));
     }
     return false;
@@ -1320,6 +1323,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_full_names($value));
     }
     return false;
@@ -2669,8 +2673,10 @@ final class Template
 
    case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
     if ($this->blank($param_name)) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, sanitize_string($value));
     }
+    /** @psalm-suppress NoValue */
     return false;
 
    case 'id':
