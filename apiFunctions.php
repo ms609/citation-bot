@@ -310,7 +310,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         if (isset($entry_map[$id])) {
             $sorted_arxiv_data[] = $entry_map[$id];
         } else {
-            $sorted_arxiv_data[] = (object) array();
+            $sorted_arxiv_data[] = (object) array(); CONFLICT
         }
     }
     unset($entry_map);
