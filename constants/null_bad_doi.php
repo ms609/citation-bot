@@ -1590,11 +1590,10 @@ const NULL_DOI_ANNOYING = [
 const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area, see below
     '10.2277/',
     '10.3149/csm.',
-    '10.5047/meep.',
     '10.5860/choice.',
 ];
 
-const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5047/meep.2012.00103.0121', '10.5860/choice.28-3158'];
+const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860/choice.28-3158'];
 // TODO: need to manually check old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page - special code block ALL of these
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
