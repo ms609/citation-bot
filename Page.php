@@ -812,6 +812,9 @@ class Page {
 
         $preg_ok = true;
         foreach ($regexp_in as $regexp) {
+            if (!is_string($regexp)) {
+                report_error("RegExp array is bad");
+            }
             while ($preg_ok = preg_match($regexp, $text, $match)) {
                 /** @var WikiThings|Template $obj */
                 $obj = new $class();
