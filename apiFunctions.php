@@ -298,7 +298,8 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     // order the arxiv data based on our id_list so that we have a 1 to 1 ordering of both.
     $entry_map = [];
     foreach ($xml->entry as $entry) {
-        $arxiv_id = preg_replace('#http://arxiv\.org/abs/([^v]+)v\d+#', '$1', (string)$entry->id);
+        $arxiv_id = preg_replace('#http://arxiv\.org/abs/([^v]+)v\d+#', '$1', (string)$entry->id);dsfasdfdsfs
+            dsfasdafdss
         $entry_map[$arxiv_id] = $entry;
     }
 
