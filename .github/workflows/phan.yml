@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2'
+        php-version: '8.4'
         ini-values: pcov.directory=.
         coverage: pcov
         extensions: mbstring, intl
@@ -44,9 +44,6 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
 
-    - name: PHP phan 8.2
-      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.2' --minimum-target-php-version='8.2'
-     
-    - name: PHP phan 8.4
+    - name: PHP phan
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.4' --minimum-target-php-version='8.4'
      

@@ -11,7 +11,7 @@ Then, run the following command from the command line :
 
 To run the tests on Toolforge, first
 
-    webservice --backend=kubernetes php8.2 shell
+    webservice --backend=kubernetes php8.4 shell
 
 then install phpunit and then test:
 
