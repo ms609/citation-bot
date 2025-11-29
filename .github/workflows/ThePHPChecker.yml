@@ -1,4 +1,4 @@
-name: PHP Static Size Tests
+name: PHP Static Security Tests - The PHP Security Checker
 
 on:
   push:
@@ -44,12 +44,5 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
 
-# https://docs.github.com/en/search-github/github-code-search/about-github-code-search
-# Only files smaller than 350 KiB are searchable
-    - name: Size limit to make sure search works
-      uses: actionsdesk/lfs-warning@v3.3
-      with:
-        filesizelimit: 358400b
-
-     
-      
+    - name: The PHP Security Checker
+      uses: symfonycorp/security-checker-action@v4

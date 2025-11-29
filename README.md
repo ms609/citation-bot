@@ -1,12 +1,18 @@
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml)
-[![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/lint.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![PHP ](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://www.php.net)
+[![PHP ](https://img.shields.io/badge/PHP-8.4-blue.svg)](https://www.php.net)
 [![GitHub issues](https://img.shields.io/github/issues/ms609/citation-bot.png)](https://github.com/ms609/citation-bot/issues)
 
 
@@ -71,7 +77,7 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires PHP >= 8.2.
+The bot requires PHP >= 8.4.
 
 To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
@@ -81,21 +87,24 @@ To run the bot from a new environment, you will need to create an `env.php` file
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes php8.2 start
+    webservice --backend=kubernetes php8.4 start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes php8.2 shell
+    webservice --backend=kubernetes php8.4 shell
 
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
 ## Running on the command line
-In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:dev-master`.  Then the bot can be run such as:
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
     
-The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | separated page names.  This code requires PHP 8.2 with optional packages included: php82-mbstring php82-sockets php82-opcache php82-openssl php82-xmlrpc php82-gettext php82-curl php82-intl php82-iconv
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
 
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
+
+
+

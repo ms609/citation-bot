@@ -22,9 +22,9 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: Run Trivy vulnerability scanner on the cloned repository files
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
-          version: 'v0.61.1'
+          version: 'v0.67.2'
           scan-type: 'fs'
           scanners: 'vuln,misconfig,secret,license'
           ignore-unfixed: true

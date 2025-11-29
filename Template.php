@@ -1280,6 +1280,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first', 'editor-last' . $match[1], 'editor-first' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_full_names($value));
     }
     return false;
@@ -1295,6 +1296,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_first_names($value));
     }
     return false;
@@ -1310,6 +1312,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_last_names($value));
     }
     return false;
@@ -1320,6 +1323,7 @@ final class Template
      return false;
     } // Existing incompatible data
     if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
+     /** @psalm-suppress NoValue */
      return $this->add($param_name, clean_up_full_names($value));
     }
     return false;
@@ -2668,6 +2672,7 @@ final class Template
     return false;
 
    case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
+    /** @psalm-suppress NoValue */
     if ($this->blank($param_name)) {
      return $this->add($param_name, sanitize_string($value));
     }
@@ -5185,6 +5190,14 @@ final class Template
    } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
     $this->forget('url');
    } // otherwise they are different urls
+
+   // If there is work=/title= pair and we are converting the template to a cite book
+   // we need to convert them to use the chapter=/title= pair instead as required by CS1
+   if ( $this->has( 'work' ) && $this->has( 'title' ) ) {
+    $tmp = $this->get( 'work' );
+    $this->rename( 'title', 'chapter' );
+    $this->add('title', $tmp);
+   }
   }
  }
 

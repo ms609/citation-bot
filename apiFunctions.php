@@ -293,8 +293,24 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         return;
     }
 
-    $this_template = current($templates); // advance at end of foreach loop
+    // Arxiv currently does not order the data recieved according to id_list. This is causing CitationBot to mix up
+    // which Arxiv ID is associated with which citation. As a result, we first perform a sorting pass to make sure we
+    // order the arxiv data based on our id_list so that we have a 1 to 1 ordering of both.
+    $entry_map = [];
     foreach ($xml->entry as $entry) {
+        $arxiv_id = preg_replace('#http://arxiv\.org/abs/([^v]+)v\d+#', '$1', (string)$entry->id);
+        $entry_map[$arxiv_id] = $entry;
+    }
+
+    $sorted_arxiv_data = [];
+    foreach ($ids as $id) {
+        if (isset($entry_map[$id])) {
+            $sorted_arxiv_data[] = $entry_map[$id];
+        }
+    }
+
+    $this_template = current($templates); // advance at end of foreach loop
+    foreach ($sorted_arxiv_data as $entry) {
         $i = 0;
         report_info("Found match for arXiv " . echoable($ids[$i]));
         if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
@@ -721,6 +737,7 @@ function query_crossref(string $doi): ?object {
                     $volume = intval(trim((string) @$result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
+                            /** @psalm-suppress UndefinedPropertyAssignment */
                             $result->volume = $result->issue;
                             unset($result->issue);
                         } else {
