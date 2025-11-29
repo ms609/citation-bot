@@ -604,8 +604,9 @@ final class expandFnsTest extends testBaseClass {
         foreach ($null_list as $doi) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
-            } else {
-                $works = doi_works($doi);
+                dsafdsaf
+            } else {sdfasdf d
+                $works =sd doi_works($doi);
             }
             if ($works === true) {
                 $changes = $changes . "Flagged as good: " . $doi . "             ";
