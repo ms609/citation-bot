@@ -1,4 +1,4 @@
-name: PHP Static Security Tests
+name: PHP Static Security Tests - DesignSecurity
 
 on:
   push:
