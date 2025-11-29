@@ -3,50 +3,6 @@
 [
     {
         "source_name": [
-            "$headers_test"
-        ],
-        "source_line": [
-            376
-        ],
-        "source_column": [
-            16345
-        ],
-        "source_file": [
-            "\/home\/runner\/work\/citation-bot\/citation-bot\/expandFns.php"
-        ],
-        "tainted_flow": [
-            [
-                {
-                    "flow_name": "$headers_test",
-                    "flow_line": 1871,
-                    "flow_column": 83628,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/expandFns.php"
-                },
-                {
-                    "flow_name": "$get_headers_array_return",
-                    "flow_line": 3141,
-                    "flow_column": 144115,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/expandFns.php"
-                },
-                {
-                    "flow_name": "$get_headers_return",
-                    "flow_line": 3141,
-                    "flow_column": 144123,
-                    "flow_file": "generate_template.php"
-                }
-            ]
-        ],
-        "sink_name": "print_r",
-        "sink_line": 386,
-        "sink_column": 17145,
-        "sink_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/expandFns.php",
-        "vuln_name": "xss",
-        "vuln_cwe": "CWE_79",
-        "vuln_id": "24d076799764e7ff212bf5d1e36195ca338e6090845dc94d53327d6870b7b4ab",
-        "vuln_type": "taint-style"
-    },
-    {
-        "source_name": [
             "$where"
         ],
         "source_line": [
