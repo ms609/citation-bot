@@ -5185,6 +5185,14 @@ final class Template
    } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
     $this->forget('url');
    } // otherwise they are different urls
+
+   // If there is work=/title= pair and we are converting the template to a cite book
+   // we need to convert them to use the chapter=/title= pair instead as required by CS1
+   if ( $this->has( 'work' ) && $this->has( 'title' ) ) {
+    $tmp = $this->get( 'work' );
+    $this->rename( 'title', 'chapter' );
+    $this->add('title', $tmp);
+   }
   }
  }
 
