@@ -1,9 +1,15 @@
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-static2.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/php-security.yml)
-[![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/lint.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/size-limit.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/ThePHPChecker.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![PHP ](https://img.shields.io/badge/PHP-8.2-blue.svg)](https://www.php.net)
@@ -99,3 +105,4 @@ The command line tool will also accept `page_list.txt` and `page_list2.txt` as p
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
+
