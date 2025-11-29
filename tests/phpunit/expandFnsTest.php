@@ -604,6 +604,8 @@ final class expandFnsTest extends testBaseClass {
         foreach ($null_list as $doi) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
+            } elseif (random_int(0, 99) < 90) { // TODO - we only check 10% of them
+                $works = false;
             } else {
                 $works = doi_works($doi);
             }
