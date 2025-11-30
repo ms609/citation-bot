@@ -1120,7 +1120,7 @@ function getS2CID(string $url): string {
     if ($ch === null) {
         $ch = bot_curl_init(0.5, HEADER_S2);
     }
-    $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
+    $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' .  urlencode(urldecode($url)) . '?fields=corpusId';
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if (!$response) {
@@ -1150,7 +1150,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
         $ch = bot_curl_init(0.5, HEADER_S2);
     }
     /** @psalm-taint-escape ssrf */
-    $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
+    $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid);
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if (!$response) {
