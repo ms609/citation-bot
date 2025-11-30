@@ -1080,9 +1080,9 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroExpansion_hdl(): void {
         $this->requires_zotero(function(): void {
-            $text = '{{Cite journal| hdl=10411/OF7UCA }}';
+            $text = '{{Cite journal| hdl=2027/mdp.39015064245429 }}';
             $expanded = $this->process_citation($text);
-            $this->assertSame('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get2('title'));
+            $this->assertSame('The Jewish encyclopedia: A descriptive record of the history, religion, literature, and customs of the Jewish people from the earliest times to the present day', $expanded->get2('title'));
         });
     }
 
