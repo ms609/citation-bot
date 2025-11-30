@@ -39,7 +39,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
 
-![Citation bot's architecture](architecture.svg)
+[![Citation bot's architecture](architecture.svg)](architecture.svg)
 
 ## Structure
 
