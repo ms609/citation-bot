@@ -147,7 +147,6 @@ final class WikipediaBot {
             ]);
 
             $data = @curl_exec(self::$ch_write);
-            print_r($data);
             if ($data === false)
             {     // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_write);
@@ -160,6 +159,7 @@ final class WikipediaBot {
             print_r($ret);
             if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
                 (string) $ret->error->code === 'assertuserfailed' ||
+                (string) $ret->error->code === 'blocked' ||                                                          
                 stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
                 stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
                 stripos((string) $ret->error->info, 'protected') !== false ||
