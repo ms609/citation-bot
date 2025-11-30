@@ -718,7 +718,9 @@ final class apiFunctionsTest extends testBaseClass {
 
     public function testS2CIDlicenseTrue(): void {
         sleep(2);
-        $this->assertTrue(get_semanticscholar_license('52813129'));
+        $this->assertFalse(get_semanticscholar_license('52813129'));
+        sleep(2);
+        $this->assertTrue(get_semanticscholar_license('73436496'));
     }
 
     public function testUse_ISSN(): void {
