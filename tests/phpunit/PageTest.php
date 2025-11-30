@@ -211,7 +211,7 @@ final class PageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('.'));
     }
 
-    public function testBotExpandWrite(): void {
+    public function testBotExpandWrite(): void { // @runInSeparateProcess
         $api = new WikipediaBot();
         $page = new TestPage();
         $writeTestPage = 'User:Blocked Testing Account/writetest';
