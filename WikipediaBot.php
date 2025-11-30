@@ -130,15 +130,21 @@ final class WikipediaBot {
         }
         $params['format'] = 'json';
 
+        print_r($params);
+
         $token = $this->bot_token;
         $consumer = $this->bot_consumer;
         if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) { // @codeCoverageIgnoreStart
              $token = $this->user_token;
              $consumer = $this->user_consumer;
         }                                                                // @codeCoverageIgnoreEnd
+        print_r($token);
         $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
+        print_r($request);
         $request->signRequest(new HmacSha1(), $consumer, $token);
+        print_r($request);
         $authenticationHeader = $request->toHeader();
+        print_r($authenticationHeader);
 
         try {
             curl_setopt_array(self::$ch_write, [
@@ -147,6 +153,7 @@ final class WikipediaBot {
             ]);
 
             $data = @curl_exec(self::$ch_write);
+            print_r($data);
             if ($data === false)
             {     // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_write);
@@ -156,6 +163,7 @@ final class WikipediaBot {
             $data = (string) $data;
             $ret = @json_decode($data);
             unset($data);
+            print_r($ret);
             if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
                 (string) $ret->error->code === 'assertuserfailed' ||
                 stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
@@ -203,7 +211,6 @@ final class WikipediaBot {
             report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
             return true;                                                      // @codeCoverageIgnore
         }  // This returns true so that we do not try again
-        print_r($response);
         if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
             report_warning('unable to get bot tokens');     // @codeCoverageIgnore
             return false;                                   // @codeCoverageIgnore
@@ -232,9 +239,7 @@ final class WikipediaBot {
             "watchlist" => "nochange",
             'token' => $auth_token,
         ];
-        print_r($submit_vars);
         $result = $this->fetch($submit_vars);
-        print_r($result);
         if (!self::resultsGood($result)) {
             return false;  // @codeCoverageIgnore
         }
