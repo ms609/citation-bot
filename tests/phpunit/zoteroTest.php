@@ -12,6 +12,7 @@ final class zoteroTest extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
+        parent::setUp();
     }
 
     public function testFillCache(): void {
