@@ -39,7 +39,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     private bool $testing_skip_wiki;
 
     protected function setUp(): void {
-        exit;
         if (!PHP_ADSABSAPIKEY) {
              $this->testing_skip_bibcode = true;
         } else {
