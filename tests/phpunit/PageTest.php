@@ -212,8 +212,9 @@ final class PageTest extends testBaseClass {
     }
 
     /**
-        @runInSeparateProcess
-    */
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testBotExpandWrite(): void {
         $api = new WikipediaBot();
         $page = new TestPage();
