@@ -193,6 +193,8 @@ final class WikipediaBot {
         ]);
 
         $myPage = self::response2page($response);
+        print_r($myPage);
+        echo $x->y->z;
         if ($myPage === null) {
             return false;  // @codeCoverageIgnore
         }
