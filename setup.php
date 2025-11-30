@@ -161,7 +161,6 @@ unset($nlm_email, $nlm_apikey, $nlm_tool);
 function check_blocked(): void {
     if (!WikipediaBot::is_valid_user('Citation_bot')) {
         echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction or disagreement about its edits.</h1><br/><h1>Alternatively, the bot has not been fully enabled on this wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank"  aria-label="Join the discussion (opens a new window)">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>';
-        ob_end_clean();
         exit;
     }
 }
