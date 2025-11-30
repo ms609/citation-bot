@@ -40,7 +40,7 @@ jobs:
     - name: Configure composer
       run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true
 
-    - name: Configure composer and dependencies
+    - name: Configure dependencies
       run: composer require mediawiki/oauthclient:2.3.0 phpunit/phpunit:9.*.* phpunit/php-invoker
 
     - name: Install dependencies
