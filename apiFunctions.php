@@ -1150,7 +1150,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
         $ch = bot_curl_init(0.5, HEADER_S2);
     }
     /** @psalm-taint-escape ssrf */
-    $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid);
+    $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) , '?fields=externalIds';
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if (!$response) {
@@ -1163,14 +1163,15 @@ function ConvertS2CID_DOI(string $s2cid): string {
         report_warning("Bad response from semanticscholar."); // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
     }
-    if (!isset($json->doi)) {
+    if (!isset($json->externalIds->DOI)) {
         return '';                                         // @codeCoverageIgnore
     }
-    if (is_array($json->doi) || is_object($json->doi)) {
+    $doi = $json->externalIds->DOI;
+    if (is_array($doi) || is_object($doi)) {
         report_warning("Bad data from semanticscholar."); // @codeCoverageIgnore
         return '';                                        // @codeCoverageIgnore
     }
-    $doi = (string) $json->doi;
+    $doi = (string) $doi;
     if (doi_works($doi)) {
         return $doi;
     } else {
