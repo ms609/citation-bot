@@ -701,7 +701,6 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testArxivExpansion(): void {
-        $this->markTestSkipped();
         $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
                     . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
                     . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
@@ -1506,7 +1505,6 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testOpenAccessLookup1(): void {
-        $this->markTestSkipped();
         $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('300808', $expanded->get2('pmc'));
@@ -1647,7 +1645,6 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testId2Param1(): void {
-        $this->markTestSkipped();
         $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.0000/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('978-1234-9583-068', $expanded->get2('isbn'));
@@ -1660,21 +1657,18 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testId2Param2(): void {
-        $this->markTestSkipped();
         $text = '{{cite book | id={{arxiv|id=1234.5678}}}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('1234.5678', $expanded->get2('arxiv'));
     }
 
     public function testId2Param3(): void {
-        $this->markTestSkipped();
         $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
     }
 
     public function testId2Param4(): void {
-        $this->markTestSkipped();
         $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
         $expanded = $this->process_citation($text);
         $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
@@ -1682,7 +1676,6 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testId2Param5(): void {
-        $this->markTestSkipped();
         $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
         $expanded = $this->process_page($text);
         $this->assertSame('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678 }}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
@@ -4083,7 +4076,6 @@ EP - 999 }}';
     }
 
     public function testInvoke2(): void {
-        $this->markTestSkipped();
         $text = "{{#invoke:Cite web|| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite journal', $expanded->wikiname());
