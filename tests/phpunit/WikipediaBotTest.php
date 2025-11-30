@@ -13,6 +13,7 @@ require_once __DIR__ . '/../testBaseClass.php';
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
+        parent::setUp();
     }
 
     public function testCoverageFixer(): void {

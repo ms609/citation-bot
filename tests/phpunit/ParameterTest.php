@@ -13,6 +13,7 @@ final class ParameterTest extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
+        parent::setUp();
     }
 
     public function testValueWithPipeAndTrailingNewline(): void {

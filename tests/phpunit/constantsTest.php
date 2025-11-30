@@ -13,6 +13,7 @@ final class constantsTest extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
+        parent::setUp();
     }
 
     public function testConstantsDefined(): void {
