@@ -16,11 +16,6 @@ final class ParameterTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testValueWithPipeAndTrailingNewline(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";

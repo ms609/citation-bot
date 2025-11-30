@@ -16,7 +16,7 @@ final class CrashTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testBadPage2(): void {  // Use this when debugging pages that crash the bot
+    public function testBadPage(): void {  // Use this when using PHPUnit to debug pages that crash the bot - There are better ways to debug it, but this allows debugging using GitHub's actions
         $page = new TestPage();
         $bad_page = BAD_PAGE_API;
         $bad_page = str_replace(' ', '_', $bad_page);

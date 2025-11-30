@@ -15,11 +15,6 @@ final class zoteroTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testZoteroExpansion_biorxiv1(): void {
         $text = '{{Cite journal| biorxiv=326363 }}';
         $expanded = $this->process_citation($text);

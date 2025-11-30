@@ -16,11 +16,6 @@ final class constantsTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testConstantsDefined(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));

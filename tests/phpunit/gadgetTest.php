@@ -16,11 +16,6 @@ final class gadgetTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testGadget(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         ob_start();

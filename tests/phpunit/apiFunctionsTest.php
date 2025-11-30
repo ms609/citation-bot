@@ -16,11 +16,6 @@ final class apiFunctionsTest extends testBaseClass {
         parent::setUp();
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testS2CIDlicenseFalse(): void {
         sleep(1);
         $this->assertFalse(get_semanticscholar_license('94502986'));
