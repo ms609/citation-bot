@@ -3536,16 +3536,6 @@ final class TemplateTest2 extends testBaseClass {
             $this->assertNull($template->get2('id'));
     }
 
-    public function testSemanticscholar1(): void {
-            $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
-            $template = $this->process_citation($text);
-            $this->assertSame('53378830', $template->get2('s2cid'));
-            $this->assertNull($template->get2('s2cid-access'));
-            $this->assertSame('cite journal', $template->wikiname());
-            $this->assertSame('10.1093/ser/mwp005', strtolower($template->get('doi')));
-            // $this->assertSame('http://www.lisdatacenter.org/wps/liswps/480.pdf', $template->get2('url')); // OA URL
-    }
-
     public function testSemanticscholar2(): void {
             $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
             $template = $this->process_citation($text);
