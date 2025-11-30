@@ -50,7 +50,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
              $this->testing_skip_bibcode = false;
         }
         if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-                !getenv('PHP_OAUTH_ACCESS_TOKEN') || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+                !getenv('PHP_OAUTH_ACCESS_TOKEN') || !getenv('PHP_OAUTH_ACCESS_SECRET') ||
+                !WikipediaBot::is_valid_user('Citation_bot')) {
              $this->testing_skip_wiki = true;
         } else {
              $this->testing_skip_wiki = false;
