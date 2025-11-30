@@ -13,6 +13,7 @@ final class TemplateTest2 extends testBaseClass {
         if (BAD_PAGE_API !== '') {
             $this->markTestSkipped();
         }
+        parent::setUp();
     }
 
     public function testFillCache(): void {
