@@ -17,32 +17,12 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v6.0.0
 
-    - name: Setup PHP with PCOV
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.4'
-        ini-values: pcov.directory=.
-        coverage: pcov
-        extensions: mbstring, intl
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v4.3.0
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
-# https://docs.github.com/en/search-github/github-code-search/about-github-code-search
-# Only files smaller than 350 KiB are searchable
     - name: Size limit to make sure search works
       uses: actionsdesk/lfs-warning@v3.3
       with:
         filesizelimit: 358400b
 
-     
+
+# https://docs.github.com/en/search-github/github-code-search/about-github-code-search
+# Only files smaller than 350 KiB are searchable  
       
