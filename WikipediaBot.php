@@ -158,6 +158,7 @@ final class WikipediaBot {
             unset($data);
             if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
                 (string) $ret->error->code === 'assertuserfailed' ||
+                (string) $ret->error->code === 'blocked' ||
                 stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
                 stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
                 stripos((string) $ret->error->info, 'protected') !== false ||
