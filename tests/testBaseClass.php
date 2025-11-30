@@ -18,6 +18,10 @@ final class TestPage extends Page {
         }
         $this->title = $trace[$i]['function'];
         self::$last_title = $this->title;
+        Zotero::create_ch_zotero();
+        $wb = new WikipediaBot();
+        unset($wb);
+        WikipediaBot::make_ch();
         parent::__construct();
     }
 
@@ -189,10 +193,4 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
-    protected function fill_cache(): void { // Name is outdated
-        Zotero::create_ch_zotero();
-        $wb = new WikipediaBot();
-        unset($wb);
-        WikipediaBot::make_ch();
-    }
 }

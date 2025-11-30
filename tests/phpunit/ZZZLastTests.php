@@ -15,11 +15,6 @@ final class ZZZLastTests extends testBaseClass {
         }
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testFlushCacheAtEnd(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         HandleCache::free_memory();
