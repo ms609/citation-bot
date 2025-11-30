@@ -191,10 +191,7 @@ final class WikipediaBot {
             'meta' => 'tokens',
             'titles' => $page,
         ]);
-
         $myPage = self::response2page($response);
-        print_r($myPage);
-        echo $x->y->z;
         if ($myPage === null) {
             return false;  // @codeCoverageIgnore
         }
@@ -206,7 +203,7 @@ final class WikipediaBot {
             report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
             return true;                                                      // @codeCoverageIgnore
         }  // This returns true so that we do not try again
-
+        print_r($response);
         if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
             report_warning('unable to get bot tokens');     // @codeCoverageIgnore
             return false;                                   // @codeCoverageIgnore
@@ -235,8 +232,9 @@ final class WikipediaBot {
             "watchlist" => "nochange",
             'token' => $auth_token,
         ];
+        print_r($submit_vars);
         $result = $this->fetch($submit_vars);
-
+        print_r($result);
         if (!self::resultsGood($result)) {
             return false;  // @codeCoverageIgnore
         }
