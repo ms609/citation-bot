@@ -15,11 +15,6 @@ final class NameToolsTest extends testBaseClass {
         }
     }
 
-    public function testFillCache(): void {
-        $this->fill_cache();
-        $this->assertTrue(true);
-    }
-
     public function testFormatMultipleAuthors1(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
