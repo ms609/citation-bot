@@ -130,21 +130,15 @@ final class WikipediaBot {
         }
         $params['format'] = 'json';
 
-        print_r($params);
-
         $token = $this->bot_token;
         $consumer = $this->bot_consumer;
         if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) { // @codeCoverageIgnoreStart
              $token = $this->user_token;
              $consumer = $this->user_consumer;
         }                                                                // @codeCoverageIgnoreEnd
-        print_r($token);
         $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
-        print_r($request);
         $request->signRequest(new HmacSha1(), $consumer, $token);
-        print_r($request);
         $authenticationHeader = $request->toHeader();
-        print_r($authenticationHeader);
 
         try {
             curl_setopt_array(self::$ch_write, [
