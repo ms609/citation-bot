@@ -402,7 +402,7 @@ const BAD_TITLES = [
     'page not found',
     'pagina inicia',
     'privacy settings',
-    'Private Site',
+    'private site',
     'professional paper',
     'proquest ebook central',
     'rate limit reached',
