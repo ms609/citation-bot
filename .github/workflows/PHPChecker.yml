@@ -45,4 +45,4 @@ jobs:
       run: composer install --prefer-dist  -vvv --no-progress
 
     - name: PHP Security Checker
-      uses: StephaneBour/actions-php-security-checker@1.1
+      uses: StephaneBour/actions-php-security-checker@1.2
