@@ -26,7 +26,7 @@ jobs:
       run: composer validate
 
     - name: Remove conflicting packages
-      run: composer remove designsecurity/progpilot overtrue/phplint phan/phan phpstan/phpstan phpunit/php-invoker phpunit/phpunit 
+      run: composer remove --dev designsecurity/progpilot overtrue/phplint phan/phan phpstan/phpstan phpunit/php-invoker phpunit/phpunit 
 
     - name: Install dependencies
       run: composer install -vvv --no-progress
