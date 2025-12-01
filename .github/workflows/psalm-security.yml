@@ -32,4 +32,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G
+      run: php ./vendor/bin/psalm --taint-analysis
