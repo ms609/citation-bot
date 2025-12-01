@@ -531,10 +531,10 @@ final class TemplateTest extends testBaseClass {
     }
 
     public function testBrokenDoiUrlRetention4(): void {
-        // This is an ISSN only doi: it is valid, but leave url too
+        // This is an ISSN only doi: it is valid but we do not add those, but leave url too
         $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
         $expanded = $this->process_citation($text);
-        $this->assertNotNull($expanded->get2('doi'));
+        $this->assertNull($expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
     }
 
