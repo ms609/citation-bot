@@ -5,8 +5,6 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
-ob_implicit_flush(true);
-flush();
 
 if (file_exists('git_pull.lock')) {
     sleep(5);
