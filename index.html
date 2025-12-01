@@ -3,11 +3,11 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="license" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
-  <link rel="stylesheet" type="text/css" href="results.css" />
+  <link rel="stylesheet" type="text/css" href="assets/results.css" />
   <title>
    Citation Bot
   </title>
-  <script src="index.js"></script>
+  <script src="assets/index.js"></script>
  </head>
  <body>
   <header>
@@ -27,7 +27,7 @@
       <label for="botPage"><code>Single page:&nbsp;</code></label>
       <input name="page" id="botPage" value="" placeholder="Page name" />
       <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
-      <img style="display:none" src="spinner_18_18.gif" id="PageSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="PageSpinner" alt="" aria-hidden="true" />
       <br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)
     </p>
     <p>– or –</p>
@@ -35,7 +35,7 @@
       <label for="botCat"><code>Category:&nbsp;</code></label>
       <input name="cat" id="botCat" value="" placeholder="Category name" />
       <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
-      <img style="display:none" src="spinner_18_18.gif" id="CatSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="CatSpinner" alt="" aria-hidden="true" />
       <br />
     </p>
     <p>– or –</p>
@@ -43,7 +43,7 @@
       <label for="botLinked"><code>Linked pages:&nbsp;</code></label>
       <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" />
       <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
-      <img style="display:none" src="spinner_18_18.gif" id="LinkSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="" aria-hidden="true" />
       <br />
     </p>
     <p>
