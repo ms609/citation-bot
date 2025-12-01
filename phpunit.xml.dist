@@ -6,7 +6,6 @@
   requireCoverageMetadata="false"
   beStrictAboutCoverageMetadata="false"
   processIsolation="false"
-  failOnPhpunitDeprecation="true"
   failOnRisky="true"
   failOnWarning="true"
 >
@@ -16,22 +15,6 @@
     </testsuite>
   </testsuites>
   <coverage>
-    <include>
-      <directory suffix=".php">.</directory>
-    </include>
-    <exclude>
-      <directory>./constants</directory>
-      <directory>./tests</directory>
-      <directory>./vendor</directory>
-      <file>./process_page.php</file>
-      <file>./gitpull.php</file>
-      <file>./category.php</file>
-      <file>./linked_pages.php</file>
-      <file>./authenticate.php</file>
-      <file>./setup.php</file>
-      <file>./kill_big_job.php</file>
-      <file>./big_jobs.php</file>
-    </exclude>
     <report>
       <clover outputFile="coverage.xml"/>
     </report>
