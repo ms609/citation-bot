@@ -1594,7 +1594,7 @@ final class Zotero {
             }
             $template->tidy_parameter('doi'); // Sanitize DOI before comparing
             if ($template->has('doi') && stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
-                if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+                if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && strpos(strtolower($url), "supplemental") === false && strpos(strtolower($url), "figure") === false) {
                     if ($template->has_good_free_copy()) {
                         report_forget("Recognized existing DOI in URL; dropping URL");
                         $template->forget($url_type);
