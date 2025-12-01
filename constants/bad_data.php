@@ -65,6 +65,9 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
+    'yg ent.',
+    'yg ent',
+    'segye.com',
     '鉄道省',
     'uncut',
     'tabloid',
@@ -366,6 +369,7 @@ const PUBLISHER_ENDINGS = [
     'science',
 ];
 const BAD_TITLES = [
+    'ฟังเพลง หาเพลงฮอต เพลงฮิต ฟังเพลงออนไลน์ เนื้อเพลง เพลงไทย เพลงสากล mthai Music | มิวสิคเอ็มไทย โดนใจ ทุกเพลง',
     '- youtube',
     'browser check',
     'stuff',
