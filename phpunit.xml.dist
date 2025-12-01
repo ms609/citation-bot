@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit>
-  <testsuites>
-    <testsuite name="TestSuite">
-      <directory suffix=".php">./tests/phpunit</directory>
-    </testsuite>
-  </testsuites>
-  <coverage>
+<phpunit
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
+  colors="true"
+  requireCoverageMetadata="false"
+  beStrictAboutCoverageMetadata="false"
+  processIsolation="false"
+  failOnRisky="true"
+  failOnWarning="true"
+  cacheResult="false"
+>
+  <source>
     <include>
       <directory suffix=".php">.</directory>
     </include>
@@ -22,6 +27,13 @@
       <file>./kill_big_job.php</file>
       <file>./big_jobs.php</file>
     </exclude>
+  </source>
+  <testsuites>
+    <testsuite name="TestSuite">
+      <directory suffix=".php">./tests/phpunit</directory>
+    </testsuite>
+  </testsuites>
+  <coverage>
     <report>
       <clover outputFile="coverage.xml"/>
     </report>
