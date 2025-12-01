@@ -1775,7 +1775,7 @@ function bot_html_header(): void {
     ' <head>', "\n",
     '  <title>Citation Bot: running</title>', "\n",
     '  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
-    '  <link rel="stylesheet" type="text/css" href="results.css" />', "\n",
+    '  <link rel="stylesheet" type="text/css" href="assets/results.css" />', "\n",
     ' </head>', "\n",
     ' <body>', "\n",
     '  <header>', "\n",
