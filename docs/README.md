@@ -109,5 +109,5 @@ Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
 
-
-
+## Running in web browser locally
+One way to set up a localhost that runs in your web browser is to use Docker. A docker-compose.yml file is provided with the necessary configuration settings. Simply create an .env file (see above), install Docker, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit https://localhost:8081.
