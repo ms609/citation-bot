@@ -31,4 +31,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis
+      run: php ./vendor/bin/psalm --taint-analysis  -dopcache.enable_cli=false
