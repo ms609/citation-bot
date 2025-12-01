@@ -538,6 +538,9 @@ final class Zotero {
         if (stripos($url, 'theathletic.com') !== false) { // Returns NYT
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
+        if (stripos($url, 'music.mthai.com') !== false) { // Returns spamming ad verbage
+            unset($result->publicationTitle);  // @codeCoverageIgnore
+        }
         if (stripos($url, 'newsen.com') !== false) { // Includes title of article
             $result->publicationTitle = 'Newsen';
         }
