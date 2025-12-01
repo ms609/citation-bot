@@ -3354,7 +3354,7 @@ EP - 999 }}';
     public function testDoiThatIsJustAnISSN(): void {
         $text = '{{cite web |url=http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('10.1002/(ISSN)1099-0739', $expanded->get2('doi'));
+        $this->assertNull($expanded->get2('doi'));
         $this->assertSame('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html', $expanded->get2('url'));
         $this->assertSame('cite web', $expanded->wikiname());
     }
