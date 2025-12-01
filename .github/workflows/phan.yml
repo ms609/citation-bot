@@ -28,7 +28,7 @@ jobs:
       run: composer validate
 
     - name: Install dependencies
-      run: composer install --prefer-dist  -vvv --no-progress
+      run: composer install -vvv --no-progress
 
     - name: PHP phan
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.4' --minimum-target-php-version='8.4'
