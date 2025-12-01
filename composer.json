@@ -11,6 +11,6 @@
         "overtrue/phplint": "",
         "phan/phan": "",
         "phpstan/phpstan": "^1.12.32",
-        "vimeo/psalm": "",
+        "vimeo/psalm": ""
     }
 }
