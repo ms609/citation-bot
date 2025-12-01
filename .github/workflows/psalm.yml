@@ -23,6 +23,7 @@ jobs:
         php-version: '8.4'
         ini-values: pcov.directory=.
         coverage: pcov
+        extensions: ':opcache' # The colon disables the extension
 
     - name: Validate composer.json and composer.lock
       run: composer validate
