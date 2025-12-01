@@ -524,8 +524,6 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
 const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Zealand Te Papa ',
-    ' Skrifter om Svalbard ',
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -958,6 +956,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' SIAM Journal on ',
     ' SIAM Review ',
     ' SICOT-J ',
+    ' Skrifter om Svalbard ',
     ' SoftwareX ',
     ' spp. ',
     ' spp. ',
@@ -1049,6 +1048,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' za g. ',
     ' za likovne umjetnosti ',
     ' zbMATH ',
+    ' Zealand Te Papa ',
     ' Zeitschrift für Geologische Wissenschaften ',
     ' Zeitschrift für Physik A Hadrons and Nuclei ',
     ' Zeitschrift für Physik A: Hadrons and Nuclei ',
@@ -1061,8 +1061,6 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     /* The above will be automatically updated to alphabetical order */
 ];
 const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
-    ' Zealand te Papa ',
-    ' Skrifter Om Svalbard ',
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
@@ -1495,6 +1493,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Siam Journal on ',
     ' Siam Review ',
     ' Sicot-J ',
+    ' Skrifter Om Svalbard ',
     ' Softwarex ',
     ' SPP. ',
     ' Spp. ',
@@ -1586,6 +1585,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' za G. ',
     ' Za Likovne Umjetnosti ',
     ' ZbMATH ',
+    ' Zealand te Papa ',
     ' Zeitschrift Für Geologische Wissenschaften ',
     ' Zeitschrift für Physik a Hadrons and Nuclei ',
     ' Zeitschrift Für Physik a: Hadrons And Nuclei ',
@@ -2232,3 +2232,4 @@ const MAP_DIACRITICS = [
     'ʮ' => 'h',
     'ʯ' => 'h',
 ];
+
