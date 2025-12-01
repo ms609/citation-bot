@@ -12,7 +12,7 @@
         "allow-plugins": {
             "third-party/required-plugin": true,
         },
-        "prefer-stable": true
+        "prefer-stable": true,
         "config minimum-stability": "dev"
     }
 }
