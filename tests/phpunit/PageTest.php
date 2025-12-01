@@ -208,6 +208,7 @@ final class PageTest extends testBaseClass {
     }
 
     public function testBotExpandWrite(): void {
+        CONFLICG
         $api = new WikipediaBot();
         $page = new TestPage();
         $writeTestPage = 'User:Blocked Testing Account/writetest';
