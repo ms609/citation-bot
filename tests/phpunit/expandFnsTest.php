@@ -627,7 +627,7 @@ final class expandFnsTest extends testBaseClass {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as good: " . $doi . "             ";
             }
         }
-        if ($chnages === '') {
+        if ($changes === '') {
             $this->assertTrue(true);
         } else {
             bot_debug_log($changes);
