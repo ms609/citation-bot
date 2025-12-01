@@ -5928,7 +5928,7 @@ final class Template
       return;
      }
      if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-      if (!in_array(strtolower($doi), NON_JOURNAL_DOIS, true) && strpos($doi, '10.14344/') === false && stripos($doi, '10.7289/V') === false && stripos($doi, '10.7282/') === false && stripos($doi, '10.5962/bhl.title.') === false) {
+      if (!in_array(strtolower($doi), NON_JOURNAL_DOIS, true) && strpos($doi, '10.14344/') === false && stripos($doi, '10.7289/V') === false && stripos($doi, '10.7282/') === false && stripos($doi, '10.5962/bhl.title.') === false && stripos($doi, '10.20944/preprints') === false) {
        $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
        if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal && !$this->blank(WORK_ALIASES) && ($the_journal !== '' || doi_active($doi))) { // Be pickier with non-crossref DOIs
         $this->change_name_to('cite journal', false);
