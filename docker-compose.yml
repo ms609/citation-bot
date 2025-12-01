@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  php:
+    image: php:8.4-apache
+    ports:
+      - "8081:80" # https://localhost:8081
+    volumes:
+      - .:/var/www/html
