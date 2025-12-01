@@ -65,7 +65,15 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'symbolic placeholder',
 ];
 const BAD_AUTHORS = [
-        '- -',
+    '鉄道省',
+    'uncut',
+    'tabloid',
+    'peru21',
+    '연합뉴스',
+    '헤럴드경제',
+    '亚洲流行音乐大奖',
+    'starnews',
+    '- -',
     '- -.',
     '(:unav)',
     'admin',
@@ -105,6 +113,9 @@ const BAD_AUTHORS = [
     '自由時報電子報',
 ];
 const NON_HUMAN_AUTHORS = [
+    'tabloid',
+    'peru21',
+    ' news',
     'admin',
     'france-presse',
     'agence',
@@ -1283,6 +1294,7 @@ const HOSTNAME_MAP = [
 ]; // Be warned, some website host a separate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
+    'tidal.com',
     'laws-lois.justice.gc.ca',
     'filmtv.it',
     'allmusic.com',
