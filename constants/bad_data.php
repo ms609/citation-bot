@@ -12608,6 +12608,7 @@ const NON_JOURNAL_WEBSITES = [
 // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we do not want to grab too many sites
 
 const NON_JOURNAL_DOIS = [
+    '10.20944/preprints',
     '10.1163/2352-0248',
     '10.17487/rfc',
     '10.2139/ssrn',
