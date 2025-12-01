@@ -1685,6 +1685,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     $done = 0;
 
     foreach ($pages_in_category as $page_title) {
+        flush();
         big_jobs_check_killed();
         $done++;
         if (strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
