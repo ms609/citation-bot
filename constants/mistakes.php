@@ -3,6 +3,19 @@
 declare(strict_types=1);
 
 const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
+    'archivr-url' => 'archive-url',
+    'chapter-rul' => 'chapter-url',
+    'chaptere' => 'chapter',
+    'daet' => 'date',
+    'display-editor' => 'display-editors',
+    'ediotion' => 'edition',
+    'editor-1last' => 'editor-last',
+    'firste' => 'first',
+    'iss n' => 'issn',
+    'jornal' => 'journal',
+    'locattion' => 'location',
+    'oriyear' => 'orig-year',
+    'pagess' => 'pages',
     'شابک' => 'isbn',
     '_isbn' => 'isbn',
     'wokr' => 'work',
