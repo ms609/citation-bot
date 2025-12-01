@@ -672,15 +672,15 @@ final class constantsTest extends testBaseClass {
             $mappedp = preg_replace('~\d+~', '#', $mapped);
             $mappedp = preg_replace('~##+~', '#', $mappedp);
             if ($mappedp === 's#cid') {
-            	$mappedp = 's2cid';
+                $mappedp = 's2cid';
             }
             if (!in_array($mapped, $okay_to_be_bad, true)) {
-            	if (!in_array($mappedp, PARAMETER_LIST, true)) {
-                	$errors .= ' mapped to non-existent parameter: ' . $map_me . '/' . $mapped . '    ';
-            	}
-            	if (in_array($mappedp, DEAD_PARAMETERS, true) || in_array($mapped, DEAD_PARAMETERS, true)) {
-                	$errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
-            	}
+                if (!in_array($mappedp, PARAMETER_LIST, true)) {
+                    $errors .= ' mapped to non-existent parameter: ' . $map_me . '/' . $mapped . '    ';
+                }
+                if (in_array($mappedp, DEAD_PARAMETERS, true) || in_array($mapped, DEAD_PARAMETERS, true)) {
+                    $errors .= ' mapped to dead parameter: ' . $map_me . '/' . $mapped . '    ';
+                }
             }
         }
         foreach (COMMON_MISTAKES_TOOL as $map_me) {
