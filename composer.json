@@ -6,6 +6,8 @@
         "mediawiki/oauthclient": "2.3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^12"
+        "phpunit/phpunit": "^12",
+        "overtrue/phplint",
+        "phpunit/php-invoker",
     }
 }
