@@ -32,4 +32,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm
-      run: php ./vendor/bin/psalm --memory-limit=2G
+      run: php ./vendor/bin/psalm --memory-limit=4G
