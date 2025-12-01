@@ -2348,7 +2348,7 @@ function doi_is_bad (string $doi): bool {
         (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
         (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
         strpos($doi, '10.48550/arxiv') === 0 ||  // ignore
-        preg_match('~^10.\d+/(ISSN)\d{4}\-\d{4}$~i', $doi) // Journal landing page
+        preg_match('~^10.\d+/\(ISSN\)\d{4}\-\d{4}$~i', $doi) // Journal landing page
        ) {
         return true;
     }
