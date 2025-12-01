@@ -7,7 +7,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^12"
-    }
+    },
     "config": {
         "allow-plugins": {
             "third-party/required-plugin": true,
