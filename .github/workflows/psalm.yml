@@ -31,4 +31,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm
-      run: php ./vendor/bin/psalm
+      run: php ./vendor/bin/psalm -dopcache.enable_cli=false
