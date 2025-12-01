@@ -538,7 +538,6 @@ final class WikipediaBot {
                 $this->the_user = $user;
                 $_SESSION['citation_bot_user_id'] = $this->the_user;
                 session_write_close(); // Done with the session
-                flush();
                 return;
             }
             catch (Throwable $e) {
@@ -553,7 +552,6 @@ final class WikipediaBot {
             $return = $_SERVER['REQUEST_URI'];
             unset($_SERVER['REQUEST_URI']);
             session_write_close();
-            flush();
             if (mb_substr($return, 0, 1) !== '/' || preg_match('~\s+~', $return)) { // Security paranoia
                 report_error('Invalid URL passes to internal API');
             }
