@@ -6,6 +6,11 @@
         "mediawiki/oauthclient": "2.3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^12"
+        "phpunit/phpunit": "^12",
+        "designsecurity/progpilot": "",
+        "overtrue/phplint": "",
+        "phan/phan": "",
+        "phpstan/phpstan": "^1.12.32",
+        "vimeo/psalm": "",
     }
 }
