@@ -4164,6 +4164,9 @@ final class Template
   }
 
   $google_date = sanitize_string(trim((string) $xml->dc___date)); // Google often sends us YYYY-MM
+  if ('101-01-01' === $google_date) {
+   $google_date = '';
+  }
   if (substr_count($google_date, "-") === 1) {
    $date = @date_create($google_date);
    if ($date !== false) {
