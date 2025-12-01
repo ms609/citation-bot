@@ -21,7 +21,6 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
-        ini-values: opcache.enable_cli=0 opcache.jit=disable
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -33,4 +32,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G
+      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G --debug-by-line
