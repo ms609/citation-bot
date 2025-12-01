@@ -6,6 +6,8 @@
         "mediawiki/oauthclient": "2.3.0"
     },
     "require-dev": {
+        "phan/phan": "^5",
+        "phpunit/php-invoker": "^6",
         "phpunit/phpunit": "^12"
     },
     "config": {

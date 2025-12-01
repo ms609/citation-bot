@@ -36,9 +36,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
-    - name: Configure dependencies
-      run: composer require phan/phan
-
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
