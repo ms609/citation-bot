@@ -7,10 +7,10 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^12",
-        "designsecurity/progpilot": "",
-        "overtrue/phplint": "",
-        "phan/phan": "",
+        "designsecurity/progpilot": "^1.3.0",
+        "overtrue/phplint": "^9.7.1",
+        "phan/phan": "^5.5.2",
         "phpstan/phpstan": "^1.12.32",
-        "vimeo/psalm": ""
+        "vimeo/psalm": "^6.13.1"
     }
 }
