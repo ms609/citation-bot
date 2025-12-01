@@ -9,7 +9,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'authorname' => 'author',
     'conference name' => 'conference',
     'auteur' => 'author',
-    'access- date' => 'access-date',
     'archivr-url' => 'archive-url',
     'trasnalator' => 'translator',
     'chapter-rul' => 'chapter-url',
