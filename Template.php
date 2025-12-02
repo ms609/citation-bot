@@ -2574,27 +2574,16 @@ final class Template
     if (preg_match('~^(.+), \d{4}$~', $value, $match)) {
      $value = $match[1];
     } // remove years from zotero
-    if (strpos(strtolower($value), 'london') !== false) {
+
+    if (strpos(strtolower($value), 'london') !== false ||   // Common junk from archive.org
+        strpos(strtolower($value), 'edinburg') !== false ||
+        strpos(strtolower($value), 'privately printed') !== false ||
+        str_equivalent($this->get('location'), $value) ||
+        strpos(strtolower($value), 'impressum') !== false ||
+        strpos(strtolower($value), ':') !== false ||
+        strpos(strtolower($value), '[etc.]') !== false) { // biodiversitylibrary.org
      return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), 'edinburg') !== false) {
-     return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), 'privately printed') !== false) {
-     return false;
-    } // Common from archive.org
-    if (str_equivalent($this->get('location'), $value)) {
-     return false;
-    } // Catch some bad archive.org data
-    if (strpos(strtolower($value), 'impressum') !== false) {
-     return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), ':') !== false) {
-     return false;
-    } // Common from archive.org when location is included
-    if (strpos(strtolower($value), '[etc.]') !== false) {
-     return false;
-    } // common from biodiversitylibrary.org - what does the etc. mean?
+    }
     if ($this->wikiname() !== 'cite book' && !$this->blank(WORK_ALIASES)) {
      return false;
     } // Do not add if work is set, unless explicitly a book
