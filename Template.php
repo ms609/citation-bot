@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /*
- * Handle most aspects of citation templates
- * add_if_new() is generally called to add or sometimes overwrite parameters.
+ * Template means wiki {{}} templates
+ * add_if_new()/tidy() do most work
  */
 
 // @codeCoverageIgnoreStart
@@ -86,7 +86,7 @@ final class Template
 
  public function __construct()
  {
-  // Construction is in parse_text() and above in variable initialization
+  // Done in parse_text() and in variable initialization
  }
 
  public function parse_text(string $text): void
@@ -1183,7 +1183,6 @@ final class Template
   * Adds a parameter to a template if the parameter and its equivalents are blank
   * $api (string) specifies the API route by which a parameter was found; this will log the
   * parameter so it is not used to trigger a new search via the same API.
-  *
   */
  public function add_if_new(string $param_name, string $value, string $api = ''): bool
  {
@@ -1317,7 +1316,6 @@ final class Template
     }
     return false;
 
-   // TRANSLATOR
    case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match):
     if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) {
      return false;
@@ -3031,8 +3029,7 @@ final class Template
  }
 
  /** @param array<string> $terms
-
-  @return array{0: string, 1: int, 2: array<string>} */
+     @return array{0: string, 1: int, 2: array<string>} */
  private function do_pumbed_query(array $terms): array
  {
   set_time_limit(120);
