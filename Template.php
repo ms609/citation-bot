@@ -3175,7 +3175,6 @@ final class Template
    return;
   }
 
-  // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
   if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === false && stripos($this->get('bibcode'), 'arxiv') === false) {
    return;
   }
@@ -3191,10 +3190,6 @@ final class Template
    return;
   }
   report_action("Checking AdsAbs database");
-  // No longer use this code for exanding existing bibcodes
-  // if ($this->has('bibcode')) {
-  // $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
-  // } else
   if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
    $result = query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"')); // In DOI we trust
   } elseif ($this->has('eprint')) {
@@ -3363,13 +3358,7 @@ final class Template
 
    if ($this->blank('bibcode')) {
     $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-    // The code below is not used anymore, since bot always uses interface in APIfunctions for existing bibcodes
-    // @codeCoverageIgnoreStart
-   } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === false) {
-    report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " . bibcode_link((string) $record->bibcode));
-    $this->set('bibcode', (string) $record->bibcode);
    }
-   // @codeCoverageIgnoreEnd
    process_bibcode_data($this, $record);
    return;
   } elseif ($result->numFound === 0) {
@@ -9379,7 +9368,6 @@ final class Template
 
  public function use_issn(): void
  {
-  // Only add if helpful and not a series of books
   if ($this->blank('issn')) {
    return;
   }
@@ -9409,7 +9397,7 @@ final class Template
   } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
    $this->set('newspaper', '[[The Wall Street Journal]]');
   }
-  return; // TODO - the API is gone
+  return;
  }
 
  private function is_book_series(string $param): bool
