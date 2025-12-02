@@ -26,8 +26,8 @@ jobs:
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: Install dependencies
-      run: composer install -vvv --no-progress
+    - name: Create composer.lock file
+      run: composer update --lock
 
     - name: PHP Security Checker
       uses: StephaneBour/actions-php-security-checker@1.2
