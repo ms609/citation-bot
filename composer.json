@@ -3,7 +3,9 @@
     "license": "GPL-3.0-or-later",
     "description": "Expands CS1/CS2 citation templates on Wikipedia",
     "require": {
-        "mediawiki/oauthclient": "2.3.0"
+        dsafadsfds
+        "mediawiki/oauthclient": "2.3.0"fdsads
+        dsfadsdsfa
     },
     "require-dev": {
         "designsecurity/progpilot": "^1",
