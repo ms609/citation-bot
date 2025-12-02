@@ -27,7 +27,7 @@ jobs:
       run: composer validate
 
     - name: Create composer.lock file
-      run: composer update
+      run: composer update --no-install
 
     - name: The PHP Security Checker
       uses: symfonycorp/security-checker-action@v5
