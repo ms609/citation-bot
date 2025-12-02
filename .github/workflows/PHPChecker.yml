@@ -27,7 +27,7 @@ jobs:
       run: composer validate
 
     - name: Create composer.lock file
-      run: composer update --lock
+      run: composer update
 
     - name: PHP Security Checker
       uses: StephaneBour/actions-php-security-checker@1.2
