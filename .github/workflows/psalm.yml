@@ -22,6 +22,7 @@ jobs:
       with:
         php-version: '8.4'
         extensions: mbstring, intl, dom, filter, json, libxml, pcre, reflection, simplexml, spl, tokenizer
+        coverage: none
 
     - name: Validate composer.json and composer.lock
       run: composer validate
