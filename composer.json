@@ -10,7 +10,7 @@
         "designsecurity/progpilot": "^1",
         "overtrue/phplint": "^9",
         "phan/phan": "^5",
-        "phpstan/phpstan": "^1.12.32",
+        "phpstan/phpstan": "^2.1.32",
         "phpunit/php-invoker": "^6",
         "phpunit/phpunit": "^12",
         "vimeo/psalm": "^6"
