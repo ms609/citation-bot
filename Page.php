@@ -794,6 +794,8 @@ class Page {
         $text = $this->text;
         /** @var array<string> $regexp_in */
         $regexp_in = $class::REGEXP;
+        /** @var string $regexp */
+        $regexp = ""; // Bad regex always fails - make static tools happy
         /** @var string $placeholder_text */
         $placeholder_text = $class::PLACEHOLDER_TEXT;
         /** @var bool $treat_identical_separately */
