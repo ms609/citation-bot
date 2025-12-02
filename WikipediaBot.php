@@ -21,7 +21,7 @@ final class WikipediaBot {
     private static CurlHandle $ch_write;
     private static CurlHandle $ch_logout;
     private string $the_user = '';
-    private static ?self $last_WikipediaBot; // For NonStandardMode()
+    private static ?self $last_WikipediaBot = null;
 
     public static function make_ch(): void {
         static $init_done = false;
