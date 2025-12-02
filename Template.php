@@ -53,7 +53,7 @@ final class Template
   'zotero' => [],
  ];
  /** @var array<Template> $this_array */
- private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
+ private array $this_array = [];
 
  public function __construct()
  {
@@ -1013,7 +1013,6 @@ final class Template
    $two_authors = false;
   }
   if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) {
-   // Assume book
    if ($this->display_authors() >= $this->number_of_authors()) {
     return true;
    }
@@ -1025,7 +1024,7 @@ final class Template
     return false;
    }
   }
-  // And now everything else
+
   if (
    $this->blank(['pages', 'page', 'at', 'article-number']) ||
    preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
@@ -1038,7 +1037,7 @@ final class Template
   }
 
   if ($this->wikiname() === 'citation' && $this->has('work')) {
-   return true; // Should consider changing the work parameter, since {{citation}} uses the work parameter type to determine format :-(
+   return true;
   }
 
   return !(
@@ -1053,10 +1052,8 @@ final class Template
   );
  }
 
- public function profoundly_incomplete(string $url = ''): bool
+ public function profoundly_incomplete(string $url = ''): bool // For Zotero, whose data is low quality
  {
-  // Zotero translation server often returns bad data, which is worth having if we have no data,
-  // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
   $has_date = $this->has('date') || $this->has('year');
   foreach (NO_DATE_WEBSITES as $bad_website) {
    if (stripos($url, $bad_website) !== false) {
@@ -1152,9 +1149,8 @@ final class Template
 
  /*
   * Adds a parameter to a template if the parameter and its equivalents are blank
-  * $api (string) specifies the API route by which a parameter was found; this will log the
+  * $api specifies the API route by which a parameter was found; this will log the
   * parameter so it is not used to trigger a new search via the same API.
-  *
   */
  public function add_if_new(string $param_name, string $value, string $api = ''): bool
  {
@@ -1760,7 +1756,7 @@ final class Template
     return false;
 
    case 'ismn':
-    $value = str_ireplace('m', '9790', $value); // update them
+    $value = str_ireplace('m', '9790', $value);
     if ($this->blank('ismn')) {
      return $this->add('ismn', $value);
     }
@@ -1772,53 +1768,24 @@ final class Template
    case 'magazine':
     if ($value === 'HEP Lib.Web') {
      $value = 'High Energy Physics Libraries Webzine';
-    } // These should be array
-    if ($value === 'Peoplemag') {
+    } elesif ($value === 'Peoplemag') {
      $value = 'People';
     }
-    if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) {
-     return false;
-    }
-    if (preg_match('~International Workshop~', $value)) {
-     return false;
-    }
-    if (preg_match('~ Held at ~', $value)) {
-     return false;
-    }
-    if ($value === 'Wiley Online Library') {
-     return false;
-    }
-    if (stripos($value, 'Capstone Projects') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Dissertations') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Theses and Projects') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Electronic Thesis') !== false) {
-     return false;
-    }
-    if (stripos($value, ' and Capstones') !== false) {
-     return false;
-    }
-    if (stripos($value, ' and Problem Reports') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Doctoral ') !== false) {
-     return false;
-    }
-    if (stripos($value, 'IETF Datatracker') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Springerlink') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Report No. ') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Report Number ') !== false) {
+    if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value) ||
+        preg_match('~International Workshop~', $value) ||
+        preg_match('~ Held at ~', $value) ||
+        $value === 'Wiley Online Library' ||
+        stripos($value, 'Capstone Projects') !== false ||
+        stripos($value, 'Dissertations') !== false ||
+        stripos($value, 'Theses and Projects') !== false ||
+        stripos($value, 'Electronic Thesis') !== false ||
+        stripos($value, ' and Capstones') !== false ||
+        stripos($value, ' and Problem Reports') !== false || 
+        stripos($value, 'Doctoral ') !== false ||
+        stripos($value, 'IETF Datatracker') !== false ||
+        stripos($value, 'Springerlink') !== false ||
+        stripos($value, 'Report No. ') !== false ||
+        stripos($value, 'Report Number ') !== false) {
      return false;
     }
     if (!$this->blank('book-title')) {
@@ -1976,9 +1943,6 @@ final class Template
      return $this->add($param_name, wikify_external_text($value));
     }
     return false;
-
-   //  ARTICLE LOCATORS
-   // (page, volume etc)
 
    case 'title':
     if ($this->has('trans-title')) {
@@ -2234,8 +2198,6 @@ final class Template
      return true;
     }
     return false;
-
-   //  ARTICLE IDENTIFIERS
 
    case 'url':
     // look for identifiers in URL - might be better to add a PMC parameter, say
@@ -2545,27 +2507,16 @@ final class Template
     if (preg_match('~^(.+), \d{4}$~', $value, $match)) {
      $value = $match[1];
     } // remove years from zotero
-    if (strpos(strtolower($value), 'london') !== false) {
+    // Common junk from archive.org
+    if (strpos(strtolower($value), 'london') !== false ||
+        strpos(strtolower($value), 'edinburg') !== false ||
+        strpos(strtolower($value), 'privately printed') !== false ||
+        str_equivalent($this->get('location'), $value) ||
+        strpos(strtolower($value), 'impressum') !== false ||
+        strpos(strtolower($value), ':') !== false ||
+        strpos(strtolower($value), '[etc.]') !== false) { // biodiversitylibrary.org
      return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), 'edinburg') !== false) {
-     return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), 'privately printed') !== false) {
-     return false;
-    } // Common from archive.org
-    if (str_equivalent($this->get('location'), $value)) {
-     return false;
-    } // Catch some bad archive.org data
-    if (strpos(strtolower($value), 'impressum') !== false) {
-     return false;
-    } // Common from archive.org
-    if (strpos(strtolower($value), ':') !== false) {
-     return false;
-    } // Common from archive.org when location is included
-    if (strpos(strtolower($value), '[etc.]') !== false) {
-     return false;
-    } // common from biodiversitylibrary.org - what does the etc. mean?
+    }
     if ($this->wikiname() !== 'cite book' && !$this->blank(WORK_ALIASES)) {
      return false;
     } // Do not add if work is set, unless explicitly a book
