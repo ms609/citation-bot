@@ -5292,7 +5292,8 @@ final class Template
    ) {
     $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
     $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
-    $this->set($param, safe_preg_replace('~﻿~u', ' ', $this->get($param)));
+    $bom = pack('H*','EFBBBF');
+    $this->set($param, safe_preg_replace('~' . $bom . '~', ' ', $this->get($param)));
     $this->set($param, safe_preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
     $this->set($param, safe_preg_replace('~(?<!:)[:,]$~u', '', $this->get($param))); // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
     $this->set($param, safe_preg_replace('~^[:,;](?!:)~u', '', $this->get($param))); // Remove leading commas, colons, and semi-colons
