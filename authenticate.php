@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// To use the oauthclient library, run: composer require mediawiki/oauthclient
+use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\ClientConfig;
+use MediaWiki\OAuthClient\Consumer;
+use MediaWiki\OAuthClient\Token;
+
 set_time_limit(120);
 
 @header('Access-Control-Allow-Origin: null');
@@ -14,16 +20,10 @@ session_start();
 
 require_once 'setup.php';
 
-// To use the oauthclient library, run: composer require mediawiki/oauthclient
-use MediaWiki\OAuthClient\Client;
-use MediaWiki\OAuthClient\ClientConfig;
-use MediaWiki\OAuthClient\Consumer;
-use MediaWiki\OAuthClient\Token;
-
 // The two ways we leave this script
 function death_time(string $err): never {
     unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>', $err, '</main></body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentication System Failure</title></head><body><main>', $err, '</main></body></html>';
     exit;
 }
 
