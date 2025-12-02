@@ -8,18 +8,6 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 
-set_time_limit(120);
-
-@header('Access-Control-Allow-Origin: null');
-
-if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
-    return_to_sender();
-}
-
-session_start();
-
-require_once 'setup.php';
-
 // The two ways we leave this script
 function death_time(string $err): never {
     unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
@@ -34,6 +22,18 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/'): n
     header("Location: " . $where);
     exit;
 }
+
+set_time_limit(120);
+
+@header('Access-Control-Allow-Origin: null');
+
+if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
+    return_to_sender();
+}
+
+session_start();
+
+require_once 'setup.php';
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
     death_time("Citation Bot's authorization tokens not configured");
