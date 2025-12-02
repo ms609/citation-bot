@@ -96,7 +96,8 @@ if (isset($argv) && in_array('--savetofiles', $argv, true)) {
 if (file_exists('env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
-    /** @psalm-suppress MissingFile */ /** @phpstan-ignore includeOnce.fileNotFound */
+    /** @phpstan-ignore includeOnce.fileNotFound 
+        @psalm-suppress MissingFile */
     include_once 'env.php';
     $env_output = trim(ob_get_contents());
     if ($env_output) {
