@@ -1819,7 +1819,7 @@ final class Template
         stripos($value, 'IETF Datatracker') !== false ||
         stripos($value, 'Springerlink') !== false ||
         stripos($value, 'Report No. ') !== false ||
-        stripos($value, 'Report Number ') !== false) ||
+        stripos($value, 'Report Number ') !== false ||
         !$this->blank('book-title') ||
         !$this->blank(['trans-work', 'script-work']) ||
         in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
