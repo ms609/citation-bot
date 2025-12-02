@@ -182,7 +182,7 @@ require_once 'Page.php';
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);
 } else {
-    define("MAX_PAGES", 3850);
+    define("MAX_PAGES", 1);
 }
 
 if (!TRAVIS) { // This is explicity "tested" in test suite
