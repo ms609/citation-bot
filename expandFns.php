@@ -893,6 +893,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
     if(in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
             (mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
+            /** @phpstan-ignore notIdentical.alwaysTrue */
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
         if ($do_more){

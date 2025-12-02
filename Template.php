@@ -4084,6 +4084,7 @@ final class Template
    $date = @date_create($google_date);
    if ($date !== false) {
     $date = @date_format($date, "F Y");
+    /** @phpstan-ignore notIdentical.alwaysTrue */
     if ($date !== false) {
      $google_date = $date; // only now change data
     }
@@ -4326,6 +4327,7 @@ final class Template
    $parameter_list = array_reverse($parameter_list); // Longer things first
 
    foreach ($parameter_list as $parameter) {
+    /** @phpstan-ignore argument.invalidPregQuote */
     if (strpos($parameter, '#') === false && $parameter === strtolower($parameter) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) {
      // Avoid adding "URL" instead of "url"
      $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
@@ -4924,6 +4926,7 @@ final class Template
     $vanc_f = $vanc_fa[$vanc_idx];
     $vanc_l = $vanc_la[$vanc_idx];
     $v = '';
+    /** @phpstan-ignore isset.offset */
     if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib])) {
      $arr = [];
      foreach ($this->param as $k => $p) {
@@ -4943,6 +4946,7 @@ final class Template
       if (array_key_exists($fk, $arr)) {
        $tfk = $arr[$fk];
        unset($arr[$fk]);
+       /** @phpstan-ignore function.alreadyNarrowedType */
        if (is_string($tfk) && strlen($tfk) > 0) {
         $fv = $tfk;
        }
@@ -4951,6 +4955,7 @@ final class Template
       if (array_key_exists($lk, $arr)) {
        $tlk = $arr[$lk];
        unset($arr[$lk]);
+       /** @phpstan-ignore function.alreadyNarrowedType */
        if (is_string($tlk) && strlen($tlk) > 0) {
         $lv = $tlk;
        }
@@ -5475,7 +5480,7 @@ final class Template
      return;
 
     case 'first':
-     if (!$pmatch[2] && $pmatch[1] === 'first' && !$this->blank(['last1', 'first2', 'last2'])) {
+     if (!$pmatch[2] && !$this->blank(['last1', 'first2', 'last2'])) {
       if ($this->blank('last1')) {
        $this->rename('last', 'last1');
        $this->rename('author-link', 'author-link1');
@@ -8105,7 +8110,7 @@ final class Template
         $this->set('issue', $possible_issue);
         report_action('Citation had volume and issue the same. Changing issue.');
        } else {
-        if (!is_string($doi_crossref) || strlen($doi_crossref) < 2) {
+        if (strlen($doi_crossref) < 2) {
          $doi_crossref = $doi_template;
         }
         report_inaction(
@@ -9172,6 +9177,7 @@ final class Template
    $the_issue = 'issue';
   } elseif ($param === 'number') {
    $the_issue = 'number';
+   /** @phpstan-ignore identical.alwaysTrue */
   } elseif ($param === 'volume' && $this->has('number')) {
    $the_issue = 'number';
   } else {

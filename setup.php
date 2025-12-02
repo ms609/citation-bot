@@ -97,7 +97,7 @@ if (file_exists('env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
     /** @psalm-suppress MissingFile */
-    include_once 'env.php';
+    include_once 'env.php';   /** @phpstan-ignore includeOnce.fileNotFound */
     $env_output = trim(ob_get_contents());
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
