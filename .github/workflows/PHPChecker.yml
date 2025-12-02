@@ -17,5 +17,8 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v6.0.0
 
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
     - name: PHP Security Checker
       uses: StephaneBour/actions-php-security-checker@1.2
