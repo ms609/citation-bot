@@ -17,5 +17,11 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v6.0.0
 
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install -vvv --no-progress
+
     - name: The PHP Security Checker
       uses: symfonycorp/security-checker-action@v5
