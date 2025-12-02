@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v6.0.0
+      uses: actions/checkout@v6.0.1
 
     - name: Size limit to make sure search works
       uses: actionsdesk/lfs-warning@v3.3
