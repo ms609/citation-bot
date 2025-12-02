@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-CRASH
+
 // @codeCoverageIgnoreStart
 // all new constant files needed listed here
 require_once 'constants/bad_data.php';
