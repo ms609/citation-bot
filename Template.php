@@ -1769,61 +1769,30 @@ final class Template
    case 'journal':
    case 'newspaper':
    case 'magazine':
-    if ($value === 'HEP Lib.Web') {
-     $value = 'High Energy Physics Libraries Webzine';
-    } // These should be array
+    if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
+     return false;
+    }
     if ($value === 'Peoplemag') {
      $value = 'People';
     }
-    if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) {
-     return false;
-    }
-    if (preg_match('~International Workshop~', $value)) {
-     return false;
-    }
-    if (preg_match('~ Held at ~', $value)) {
-     return false;
-    }
-    if ($value === 'Wiley Online Library') {
-     return false;
-    }
-    if (stripos($value, 'Capstone Projects') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Dissertations') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Theses and Projects') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Electronic Thesis') !== false) {
-     return false;
-    }
-    if (stripos($value, ' and Capstones') !== false) {
-     return false;
-    }
-    if (stripos($value, ' and Problem Reports') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Doctoral ') !== false) {
-     return false;
-    }
-    if (stripos($value, 'IETF Datatracker') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Springerlink') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Report No. ') !== false) {
-     return false;
-    }
-    if (stripos($value, 'Report Number ') !== false) {
-     return false;
-    }
-    if (!$this->blank('book-title')) {
-     return false;
-    }
-    if (in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
+    if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value) ||
+        preg_match('~International Workshop~', $value) ||
+        preg_match('~ Held at ~', $value) ||
+        $value === 'Wiley Online Library' ||
+        stripos($value, 'Capstone Projects') !== false ||
+        stripos($value, 'Dissertations') !== false ||
+        stripos($value, 'Theses and Projects') !== false ||
+        stripos($value, 'Electronic Thesis') !== false ||
+        stripos($value, ' and Capstones') !== false ||
+        stripos($value, ' and Problem Reports') !== false || 
+        stripos($value, 'Doctoral ') !== false ||
+        stripos($value, 'IETF Datatracker') !== false ||
+        stripos($value, 'Springerlink') !== false ||
+        stripos($value, 'Report No. ') !== false ||
+        stripos($value, 'Report Number ') !== false ||
+        !$this->blank('book-title') ||
+        !$this->blank(['trans-work', 'script-work']) ||
+        in_array(strtolower(sanitize_string($value)), BAD_TITLES, true)) {
      return false;
     }
     if (in_array(strtolower($value), ARE_MANY_THINGS, true)) {
@@ -1832,9 +1801,6 @@ final class Template
      } else {
       $param_name = 'website';
      }
-    }
-    if (!$this->blank(['trans-work', 'script-work'])) {
-     return false;
     }
     if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES, true)) {
      $this->forget('journal');
