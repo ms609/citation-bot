@@ -80,34 +80,34 @@ final class WikipediaBot {
         }
         if (isset($response->error)) {
             $error_code = (string) @$response->error->code;
-            $respone_info = (string) @$response->error->info;
+            $response_info = (string) @$response->error->info;
             if ($error_code === 'blocked') { // Most CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, 'The database has been automatically locked') !== false) {
+            } elseif (strpos($response_info, 'The database has been automatically locked') !== false) {
                 report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-            } elseif (strpos($respone_info, 'abusefilter-warning-predatory') !== false) {
+            } elseif (strpos($response_info, 'abusefilter-warning-predatory') !== false) {
                 report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos($respone_info, 'protected') !== false) {
+            } elseif (strpos($response_info, 'protected') !== false) {
                 report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos($respone_info, 'Wikipedia:Why create an account') !== false) {
+            } elseif (strpos($response_info, 'Wikipedia:Why create an account') !== false) {
                 report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, 'The authorization headers in your request are not valid') !== false) {
+            } elseif (strpos($response_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, 'Edit conflict') !== false) {
+            } elseif (strpos($response_info, 'Edit conflict') !== false) {
                 report_warning('Edit Conflict while saving changes');  // @codeCoverageIgnore
                 return true;  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, 'Invalid CSRF token') !== false) {
+            } elseif (strpos($response_info, 'Invalid CSRF token') !== false) {
                 report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, 'Bad title') !== false) {
+            } elseif (strpos($response_info, 'Bad title') !== false) {
                 report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, "The page you specified does not exist") !== false) {
+            } elseif (strpos($response_info, "The page you specified does not exist") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($respone_info, "The page you specified doesn") !== false) {
+            } elseif (strpos($response_info, "The page you specified doesn") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
             } else {
-                $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($respone_info);
+                $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($response_info);
                 bot_debug_log($err_string); // Good to know about about these things
                 report_warning($err_string);
             }
