@@ -794,8 +794,6 @@ class Page {
         $text = $this->text;
         /** @var array<string> $regexp_in */
         $regexp_in = $class::REGEXP;
-        /** @var string $regexp */
-        $regexp = ""; // Bad regex always fails - make static tools happy
         /** @var string $placeholder_text */
         $placeholder_text = $class::PLACEHOLDER_TEXT;
         /** @var bool $treat_identical_separately */
@@ -813,6 +811,7 @@ class Page {
         }
 
         $preg_ok = true;
+        /** @var string $regexp */
         foreach ($regexp_in as $regexp) {
             while ($preg_ok = preg_match($regexp, $text, $match)) {
                 /** @var WikiThings|Template $obj */
