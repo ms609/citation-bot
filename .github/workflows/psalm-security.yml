@@ -21,17 +21,13 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
-        extensions: mbstring, intl, dom, filter, json, libxml, pcre, reflection, simplexml, spl, tokenizer
         coverage: none
 
     - name: Validate composer.json and composer.lock
       run: composer validate
 
-    - name: Remove conflicting packages
-      run: composer remove --dev designsecurity/progpilot overtrue/phplint phan/phan phpstan/phpstan phpunit/php-invoker phpunit/phpunit 
-
     - name: Install dependencies
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G --debug-by-line
+      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G
