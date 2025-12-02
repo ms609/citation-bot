@@ -4,7 +4,7 @@
     "description": "Expands CS1/CS2 citation templates on Wikipedia",
     "require": {
         "mediawiki/oauthclient": "2.3.0",
-        "php": ">=8.4",
+        "php": ">=8.4"
     },
     "require-dev": {
         "designsecurity/progpilot": "^1",
