@@ -115,11 +115,11 @@ function doi_works(string $doi): ?bool {
         return false;
     }
     if (!TRAVIS) {
-        foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
             if (stripos($doi, $bad_start) === 0) {
                 return false; // all gone
             }
-        }
+        }                                             // @codeCoverageIgnoreEnd
     }
     if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
