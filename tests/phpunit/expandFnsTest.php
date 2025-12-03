@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class expandFnsTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testCapitalization1a(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), true));
