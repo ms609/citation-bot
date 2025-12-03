@@ -8,13 +8,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../testBaseClass.php';
 final class zoteroTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testZoteroExpansion_biorxiv1(): void {
         $text = '{{Cite journal| biorxiv=326363 }}';
         $expanded = $this->process_citation($text);
