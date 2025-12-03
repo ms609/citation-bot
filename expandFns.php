@@ -1709,6 +1709,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 if ($total === 1) {
                     $edit_sum = $edit_summary_end;
                 } else {
+                    /** @psalm-suppress InvalidCast */
                     $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
                 }
                 while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
@@ -1744,6 +1745,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (!HTML_OUTPUT) {
             $final_edit_overview = '';
         }
+        /** @psalm-suppress InvalidCast */
         echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
     } else {
         echo "\n Done with page.";
