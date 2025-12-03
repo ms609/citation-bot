@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 header("Access-Control-Allow-Origin: null");
 
+require_once 'env.php';
+
+if ( ($_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
+    http_response_code(403);
+    die('Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your .env file (DEPLOY_PASSWORD).');
+}
+
 ob_implicit_flush(true);
 flush();
 
