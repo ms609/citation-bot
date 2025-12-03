@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class constantsTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testConstantsDefined(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));

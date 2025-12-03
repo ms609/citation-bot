@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
     final class WikipediaBotTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testCoverageFixer(): void {
             WikipediaBot::make_ch();
             $this->assertTrue(true);

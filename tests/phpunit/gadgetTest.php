@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class gadgetTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testGadget(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         ob_start();

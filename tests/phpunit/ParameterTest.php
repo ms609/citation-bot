@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class ParameterTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testValueWithPipeAndTrailingNewline(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";

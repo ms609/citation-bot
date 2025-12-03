@@ -9,13 +9,6 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class apiFunctionsTest extends testBaseClass {
 
-    protected function setUp(): void {
-        if (BAD_PAGE_API !== '') {
-            $this->markTestSkipped();
-        }
-        parent::setUp();
-    }
-
     public function testS2CIDlicenseFalse(): void {
         sleep(1);
         $this->assertFalse(get_semanticscholar_license('94502986'));
