@@ -44,7 +44,7 @@ jobs:
       run: ./vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2
 
     - name: Code Coverage
-      if: always()
+      if: github.ref == 'refs/heads/master'
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v5.5.1
