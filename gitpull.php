@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/env.php';
+require_once 'env.php';
 
 if ( ($_GET['password'] ?? '') !== getenv('DEPLOY_PASSWORD') ) {
     http_response_code(403);
