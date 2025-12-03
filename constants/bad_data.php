@@ -1298,6 +1298,7 @@ const HOSTNAME_MAP = [
 ]; // Be warned, some website host a separate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = [
+    'civiroglu.net',
     'tidal.com',
     'laws-lois.justice.gc.ca',
     'filmtv.it',
