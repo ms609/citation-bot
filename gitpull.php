@@ -7,7 +7,7 @@ header("Access-Control-Allow-Origin: null");
 /** @psalm-suppress MissingFile */
 require_once 'env.php';
 
-if ((@$_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
+if (($_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
     http_response_code(403);
     exit('Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your .env file (DEPLOY_PASSWORD).');
 }
