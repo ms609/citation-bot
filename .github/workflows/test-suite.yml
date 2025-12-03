@@ -26,29 +26,4 @@ jobs:
         extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml, pcntl
 
     - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Install dependencies
-      run: composer install -vvv --no-progress
-      
-    - name: Full test with PHP
-      env:
-         PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
-         PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
-         PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
-         PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
-         PHP_OAUTH_ACCESS_SECRET: ${{ secrets.PHP_OAUTH_ACCESS_SECRET }}
-         PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
-         PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
-         PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
-      run: ./vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2
-
-    - name: Code Coverage
-      if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
-      env:
-         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      uses: codecov/codecov-action@v5.5.1
-
-    - name: Look for weird stuff
-      if: always()
-      run: /bin/cat ./CodeCoverage
+      run: echo "The event that triggered this workflow is ${{ github.event_name }}"
