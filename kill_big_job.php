@@ -18,4 +18,3 @@ if (!isset($_SESSION['citation_bot_user_id'])) {
 } else {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Killing the big job</title></head><body><main><pre>Existing large job flagged for stopping</pre></main></body></html>';
 }
-?>

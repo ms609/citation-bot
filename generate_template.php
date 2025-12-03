@@ -58,5 +58,3 @@ $text = $page->parsed_text();
 unset($page);
 
 echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n</pre></main></body></html>";
-
-?>

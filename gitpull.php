@@ -19,4 +19,3 @@ if (@mkdir('git_pull.lock', 0700)) {
     echo 'Please try again';
 }
 echo '</pre></main></body></html>';
-?>

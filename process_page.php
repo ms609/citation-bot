@@ -92,5 +92,3 @@ unset($pages);
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 edit_a_list_of_pages($pages_to_do, $api, $edit_summary_end);
-
-?>
