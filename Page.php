@@ -715,7 +715,7 @@ class Page {
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
-        switch (WIKI_BASE) {
+        switch (WIKI_BASE) {  // @codeCoverageIgnoreStart
             case 'en':
             case 'simple':
             case 'mdwiki':
@@ -742,7 +742,7 @@ class Page {
                 break; // Vietnamese
             default:
                 report_error('invalid wiki in edit summary');
-        }
+        }    // @codeCoverageIgnoreEnd
         return $auto_summary;
     }
 
