@@ -110,4 +110,8 @@ Command line parameters:
 * `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
 
 ## Running in web browser locally
-One way to set up a localhost that runs in your web browser is to use Docker. A docker-compose.yml file is provided with the necessary configuration settings. Simply create an .env file (see above), install Docker, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit https://localhost:8081.
+One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit https://localhost:8081.
+
+To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
+
+To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See env.php.example in the root.
