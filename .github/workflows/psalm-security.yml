@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.4'
+        php-version: '8.5'
         coverage: none
 
     - name: Validate composer.json and composer.lock
@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G
+      run: php ./vendor/bin/psalm --taint-analysis --memory-limit=4G --php-version='8.4'
