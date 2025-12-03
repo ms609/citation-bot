@@ -925,9 +925,6 @@ class Page {
     }
 
     private function allow_bots(): bool {
-        if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {    // When testing the bot on a specific page, allow "editing"
-            return true; // @codeCoverageIgnore
-        }
         // see {{bots}} and {{nobots}}
         $bot_username = 'Citation[ _]bot';
         if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {

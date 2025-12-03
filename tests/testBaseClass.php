@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
-
 final class TestPage extends Page {
     public function __construct() {
         $bad_functions = ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
