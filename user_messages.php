@@ -58,7 +58,7 @@ function report_forget(string $text): void {
 }
 
 function report_inline(string $text): void {
-    if ((!TRAVIS && defined('BIG_JOB_MODE')) || (defined("BAD_PAGE_API") && BAD_PAGE_API !== '')) {
+    if (!TRAVIS && defined('BIG_JOB_MODE')) {
         echo " ", $text;   // @codeCoverageIgnore
     }
 }
