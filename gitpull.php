@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 header("Access-Control-Allow-Origin: null");
 
+/** @psalm-suppress MissingFile */
 require_once 'env.php';
 
 if ((@$_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
