@@ -120,4 +120,3 @@ catch (Throwable $e) {
     /** fall through */
 }
 death_time("Unable to initiate OAuth.");
-?>

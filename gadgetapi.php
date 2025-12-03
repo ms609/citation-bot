@@ -63,5 +63,3 @@ try {
     @ob_end_clean(); // @codeCoverageIgnore
     // Above is paranoid panic code.    So paranoid that we even empty buffers two extra times
 }
-
-?>
