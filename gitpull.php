@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-header("Access-Control-Allow-Origin: null"); // Humans only
+header("Access-Control-Allow-Origin: null");
 
-set_time_limit(120);
 ob_implicit_flush(true);
+flush();
 
-echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>';
-
-clearstatcache();
+clearstatcache(true);
 if (@mkdir('git_pull.lock', 0700)) {
+    sleep(1); // paranoid
     /** @psalm-suppress ForbiddenCode */
-    echo htmlspecialchars((string) shell_exec("(/usr/bin/git fetch  --all; /usr/bin/git reset --hard origin/master)  2>&1"), ENT_QUOTES);
+    $git_hub = htmlspecialchars((string) shell_exec("(/usr/bin/git fetch  --all; /usr/bin/git reset --hard origin/master)  2>&1"), ENT_QUOTES);
+    sleep(2);
     rmdir('git_pull.lock');
 } else {
-    sleep(2);
-    echo 'Please try again';
+    sleep(3);
+    $git_hub = "Please try again";
 }
-echo '</pre></main></body></html>';
+echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>', $git_hub, '</pre></main></body></html>';
