@@ -22,4 +22,4 @@ if (($_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
     $git_hub = "Please try again";
 }
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>', $git_hub, '</pre></main></body></html>';
-flush(); // paradnoid about disk I/O
+flush(); // paranoid about disk I/O
