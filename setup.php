@@ -182,7 +182,7 @@ require_once 'Page.php';
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);
 } else {
-    define("MAX_PAGES", 1); // When changing this back, also remove the psalm InvalidCast lines from expandFns.php.  It is smart enough to detect that the variable would never the greater than one.
+    define("MAX_PAGES", 2);
 }
 
 if (!TRAVIS) { // This is explicity "tested" in test suite
