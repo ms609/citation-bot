@@ -4,7 +4,7 @@
 FROM php:8.4-apache
 
 # Install composer. Once the container is built and running, you can do `composer update` with the following shell command: `docker exec -it citation-bot-php-1 composer update`
-RUN apt-get update && apt-get install -y git zip unzip \
+RUN apt-get update && apt-get install -y git zip unzip --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
