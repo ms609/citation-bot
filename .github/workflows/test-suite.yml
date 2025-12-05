@@ -76,7 +76,7 @@ jobs:
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v5.5.1
-
+      
     - name: Look for weird stuff
       if: always()
       run: /bin/cat ./CodeCoverage
