@@ -5,6 +5,30 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/codeql-analysis.yml'
+      - '.github/workflows/DesignSecurity.yml'
+      - '.github/workflows/lint.yml'
+      - '.github/workflows/phan.yml'
+      - '.github/workflows/PHPChecker.yml'
+      - '.github/workflows/phpstan.yml'
+      - '.github/workflows/psalm-security.yml'
+      - '.github/workflows/psalm.yml'
+      - '.github/workflows/size-limit.yml'
+      - '.github/workflows/ThePHPChecker.yml'
+      - '.github/workflows/trivy-analysis.yml'
+      - '.gitignore'
+      - '.phan'
+      - 'docker-compose.yml'
+      - 'Dockerfile'
+      - 'index.html'
+      - 'LICENSE'
+      - 'phpstan.neon'
+      - 'progpilot.json'
+      - 'progpilot.yml'
+      - 'psalm.xml'
+
   schedule:
     - cron: '25 17 * * 1'
 
