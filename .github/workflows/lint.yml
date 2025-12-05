@@ -23,12 +23,6 @@ jobs:
         php-version: '8.4'
         coverage: none
 
-    - name: lame test
-      run: echo ${{ github.event_name }}
-
-    - name: lame test2
-      run: echo ${{ github.event.pull_request.merged }}
-
     - name: Validate composer.json and composer.lock
       run: composer validate
 
