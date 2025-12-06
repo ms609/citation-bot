@@ -2223,8 +2223,7 @@ function expand_by_adsabs(Template $template): void
  }
  
  
-
- public function get_open_access_url(Template $template): void
+ function get_open_access_url(Template $template): void
  {
   if (!$template->blank(DOI_BROKEN_ALIASES)) {
    return;
