@@ -12,7 +12,7 @@ to test.
 All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.
 The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting.
 The GitHub provided CodeQL test suite is also enabled, but that just checks the one JavaScript file.
-Because files over 384K are not indexed by GitHub, there is a test to check for large files: the test will suggest LFS on failure, but do not do that. Template.php is currently the only file failing.
+Because large files are not indexed by GitHub, there is a test to check for large files: the test will suggest LFS on failure, but we do not use LFS. Template.php is currently the only important file failing (the DOI database files also fail).
 
 ## Submitting changes
 
@@ -62,3 +62,9 @@ The bot reports its activity to users using:
     * `!` is used to denote an outcome that may require review by the user or bot maintainer
       
   We recommend using the "report_" family of functions defined in `user_messages.php` to communicate with the user.
+
+## Defensive programming is necessary
+  * Template.php is often too big for search to search on GitHub - so you may have to search it offline (such as VSCode) or manually on gihub.com.
+  * External data sources that send unexpected data, including wikipedia - be defensive in your programming.
+  * External data sources that suddenly change data - we need tests to detect this
+  * CS1/CS2 sometimes changes and what was a good edit yesterday is bad edit today.  Thus the wikipedia talk page for the bot need to be monitored for bugs and suggestions.
