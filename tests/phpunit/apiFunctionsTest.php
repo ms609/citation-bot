@@ -618,7 +618,7 @@ final class apiFunctionsTest extends testBaseClass {
 
         $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
         $prepared = $this->make_citation($text);
-        $prepared->expand_by_adsabs();
+        expand_by_adsabs($prepared);
         $this->assertSame('10.1007/s00339-014-8468-2', $prepared->get2('doi'));
 
         $text = "{{cite journal| doi=10.1007/s00339-014-8468-2}}";
@@ -627,7 +627,7 @@ final class apiFunctionsTest extends testBaseClass {
 
         $text = "{{cite journal| doi=10.1007/s00339-014-8468-2}}";
         $prepared = $this->make_citation($text);
-        $prepared->expand_by_adsabs();
+        expand_by_adsabs($prepared);
         $this->assertSame('2014ApPhA.116..403G', $prepared->get2('bibcode'));
     }
 
@@ -640,7 +640,7 @@ final class apiFunctionsTest extends testBaseClass {
 
         $text = "{{cite journal| bibcode=2000AAS...19713707B}}";
         $prepared = $this->make_citation($text);
-        $prepared->expand_by_adsabs();
+        expand_by_adsabs($prepared);
         $this->assertSame($text, $prepared->parsed_text());
 
         $text = "{{cite journal| doi=X}}";
@@ -649,7 +649,7 @@ final class apiFunctionsTest extends testBaseClass {
 
         $text = "{{cite journal| doi=X}}";
         $prepared = $this->make_citation($text);
-        $prepared->expand_by_adsabs();
+        expand_by_adsabs($prepared);
         $this->assertNull($prepared->get2('bibcode'));
     }
 
