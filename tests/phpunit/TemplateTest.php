@@ -569,7 +569,7 @@ final class TemplateTest extends testBaseClass {
         sleep(1);
         $text = '{{cite journal|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|volume=[[91]]|issue=[[7|7]]|pages=4346|year=2019|last1=Colby}}';
         $template = $this->make_citation($text);
-        $template->find_pmid();
+        find_pmid($template);
         $this->assertSame('30741529', $template->get2('pmid'));
     }
 
@@ -1530,7 +1530,7 @@ final class TemplateTest extends testBaseClass {
     public function testSemanticScholar(): void {
         $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
-        $return = $template->get_unpaywall_url($template->get2('doi'));
+        $return = get_unpaywall_url($template, $template->get2('doi'));
         $this->assertSame('nothing', $return);
         $this->assertNull($template->get2('url'));
     }
@@ -1540,7 +1540,7 @@ final class TemplateTest extends testBaseClass {
     public function testUnPaywall1(): void {
         $text = "{{cite journal|doi=10.1206/0003-0082(2006)3508[1:EEALSF]2.0.CO;2}}";
         $template = $this->make_citation($text);
-        $template->get_unpaywall_url($template->get2('doi'));
+        get_unpaywall_url($template, $template->get2('doi'));
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -1548,14 +1548,14 @@ final class TemplateTest extends testBaseClass {
     public function testUnPaywall2(): void {
         $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
         $template = $this->make_citation($text);
-        $template->get_unpaywall_url($template->get2('doi'));
+        get_unpaywall_url($template, $template->get2('doi'));
         $this->assertNull($template->get2('url'));
     }
 
     public function testUnPaywall3(): void { // This DOI is free and resolves to doi.org
         $text = "{{cite journal|doi=10.1016/j.ifacol.2017.08.010}}";
         $template = $this->make_citation($text);
-        $template->get_unpaywall_url($template->get2('doi'));
+        get_unpaywall_url($template, $template->get2('doi'));
         $this->assertNull($template->get2('url'));
     }
 
@@ -3929,7 +3929,7 @@ EP - 999 }}';
     public function testChaptURLisDup(): void {
         $text = "{{cite book|url=https://www.cnn.com/ }}";
         $template = $this->make_citation($text);
-        $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
+        get_unpaywall_url($template, '10.1007/978-3-319-18111-0_47');
         $this->assertFalse($template->add_if_new('chapter-url', 'https://www.cnn.com/'));
         $this->assertNull($template->get2('chapter-url'));
     }
