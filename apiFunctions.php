@@ -1803,7 +1803,7 @@ function find_pmid(Template $template): void
    return;
   }
   report_action("Searching PubMed... ");
-  $results = $template->query_pubmed();
+  $results = query_pubmed($template);
   if ($results[1] === 1) {
    // Double check title if we did not use DOI
    if ($template->has('title') && !in_array('doi', $results[2], true)) {
@@ -1850,7 +1850,7 @@ function query_pubmed(Template $template): array
   $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi) {
    if (doi_works($doi)) {
-    $results = $template->do_pumbed_query(["doi"]);
+    $results = do_pumbed_query($template, ["doi"]);
     if ($results[1] !== 0) {
      return $results;
     } // If more than one, we are doomed
@@ -1859,19 +1859,19 @@ function query_pubmed(Template $template): array
   // If we've got this far, the DOI was unproductive or there was no DOI.
 
   if ($template->has('journal') && $template->has('volume') && $template->page_range()) {
-   $results = $template->do_pumbed_query(["journal", "volume", "issue", "page"]);
+   $results = do_pumbed_query($template, ["journal", "volume", "issue", "page"]);
    if ($results[1] === 1) {
     return $results;
    }
   }
   $is_book = $template->looksLikeBookReview((object) []);
   if ($template->has('title') && $template->first_surname() && !$is_book) {
-   $results = $template->do_pumbed_query(["title", "surname", "year", "volume"]);
+   $results = do_pumbed_query($template, ["title", "surname", "year", "volume"]);
    if ($results[1] === 1) {
     return $results;
    }
    if ($results[1] > 1) {
-    $results = $template->do_pumbed_query(["title", "surname", "year", "volume", "issue"]);
+    $results = do_pumbed_query($template, ["title", "surname", "year", "volume", "issue"]);
     if ($results[1] === 1) {
      return $results;
     }
