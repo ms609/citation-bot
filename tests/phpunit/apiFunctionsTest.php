@@ -627,7 +627,7 @@ final class apiFunctionsTest extends testBaseClass {
 
         $text = "{{cite journal| doi=10.1007/s00339-014-8468-2}}";
         $prepared = $this->make_citation($text);
-        $expand_by_adsabs($prepared);
+        expand_by_adsabs($prepared);
         $this->assertSame('2014ApPhA.116..403G', $prepared->get2('bibcode'));
     }
 
