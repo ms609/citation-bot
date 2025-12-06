@@ -3185,7 +3185,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testFindDOIBadAuthorAndFinalPage(): void { // Testing this code:        If fail, try again with fewer constraints...
             $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019}}';
             $template = $this->make_citation($text);
-            $template->get_doi_from_crossref();
+            get_doi_from_crossref($template);
             $this->assertSame('10.1021/acs.analchem.8b04567', $template->get2('doi'));
     }
 
@@ -3692,7 +3692,7 @@ final class TemplateTest2 extends testBaseClass {
         $this->requires_bibcode(function(): void {      // don't add isbn. It causes early exit
         $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
         $expanded = $this->make_citation($text);
-        $expanded->expand_by_adsabs(); // Won't expand because of bookish stuff
+        expand_by_adsabs($expanded); // Won't expand because of bookish stuff
         $this->assertNull($expanded->get2('bibcode'));
         });
     }
@@ -3701,7 +3701,7 @@ final class TemplateTest2 extends testBaseClass {
         $this->requires_bibcode(function(): void {
         $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999 |issn = 1463-9076}}";
         $expanded = $this->make_citation($text);
-        $expanded->expand_by_adsabs();
+        expand_by_adsabs($expanded);
         $this->assertSame('1999PCCP....1..967G', $expanded->get2('bibcode'));
         });
     }
@@ -3710,7 +3710,7 @@ final class TemplateTest2 extends testBaseClass {
         $this->requires_bibcode(function(): void {
         $text = "{{Cite journal | doi=10.2277/0521815363}}";
         $expanded = $this->make_citation($text);
-        $expanded->expand_by_adsabs();
+        expand_by_adsabs($expanded);
         $this->assertSame('2003hoe..book.....K', $expanded->get2('bibcode'));
         });
     }
