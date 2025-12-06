@@ -2235,16 +2235,16 @@ function expand_by_adsabs(Template $template): void
   if (strpos($doi, '10.1093/') === 0) {
    return;
   }
-  $return = $template->get_unpaywall_url($doi);
+  $return = get_unpaywall_url($template, $doi);
   if (in_array($return, GOOD_FREE, true)) {
    return;
   } // Do continue on
-  $template->get_semanticscholar_url($doi);
+  $template->get_semanticscholar_url($template, $doi);
  }
 
 
 
- private function get_semanticscholar_url(Template $template, string $doi): void
+function get_semanticscholar_url(Template $template, string $doi): void
  {
   static $ch = null;
   if ($ch === null) {
