@@ -2391,7 +2391,7 @@ final class Template
       $this->change_name_to('cite journal');
      }
      $this->add($param_name, sanitize_string($value));
-     $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi')); //Force = true if missing DOI or PMC
+     expand_by_pubmed($this, $this->blank('pmc') || $this->blank('doi')); //Force = true if missing DOI or PMC
      get_doi_from_crossref($this);
      return true;
     }
@@ -2404,7 +2404,7 @@ final class Template
     if ($this->blank($param_name)) {
      $this->add($param_name, sanitize_string($value));
      if ($this->blank('pmid')) {
-      $this->expand_by_pubmed(true); // Almost always can get a PMID (it is rare not too)
+      expand_by_pubmed($this, true); // Almost always can get a PMID (it is rare not too)
      }
      return true;
     }
@@ -2939,24 +2939,6 @@ final class Template
     $this->add_if_new('publisher', $ris_publisher);
    }
   }
- }
-
- public function expand_by_pubmed(bool $force = false): void
- {
-  if (!$force && !$this->incomplete()) {
-   return;
-  }
-  $this->this_array = [$this];
-  $pmid = $this->get('pmid');
-  $pmc = $this->get('pmc');
-  if ($pmid) {
-   report_action('Checking ' . pubmed_link('pmid', $pmid) . ' for more details');
-   query_pmid_api([$pmid], $this->this_array);
-  } elseif ($pmc) {
-   report_action('Checking ' . pubmed_link('pmc', $pmc) . ' for more details');
-   query_pmc_api([$pmc], $this->this_array);
-  }
-  $this->this_array = [];
  }
 
  public function looksLikeBookReview(object $record): bool
