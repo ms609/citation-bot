@@ -60,7 +60,6 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: Full test with PHP
-      continue-on-error: true
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
@@ -73,11 +72,11 @@ jobs:
       run: ./vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2
 
     - name: Code Coverage
-      continue-on-error: truefasdfsdf
       if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v5.5.1
 
     - name: Look for weird stuff
+      if: always()
       run: /bin/cat ./CodeCoverage
