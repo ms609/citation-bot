@@ -443,15 +443,15 @@ class Page {
         report_phase('Expand individual templates by API calls');
         foreach ($our_templates as $this_template) {
             set_time_limit(120);
-            $this_template->expand_by_google_books();
-            $this_template->get_doi_from_crossref();
-            $this_template->get_doi_from_semanticscholar();
-            $this_template->find_pmid();
+            expand_by_google_books($this_template);
+            get_doi_from_crossref($this_template);
+            get_doi_from_semanticscholar($this_template);
+            find_pmid($this_template);
             if ($this_template->blank('bibcode') ||
                     stripos($this_template->get('bibcode'), 'arxiv') !== false ||
                     stripos($this_template->get('bibcode'), 'tmp') !== false) {
                 $no_arxiv = $this_template->blank('arxiv');
-                $this_template->expand_by_adsabs(); // Try to get a bibcode
+                expand_by_adsabs($this_template); // Try to get a bibcode
                 if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
                     $tmp_array = [$this_template];                  // @codeCoverageIgnore
                     expand_arxiv_templates($tmp_array);         // @codeCoverageIgnore
