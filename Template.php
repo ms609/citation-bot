@@ -7493,7 +7493,7 @@ final class Template
   return '';
  }
 
- private function first_surname(): string
+ public function first_surname(): string
  {
   // Fetch the surname of the first author only
   if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
