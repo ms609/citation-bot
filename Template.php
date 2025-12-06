@@ -7534,7 +7534,7 @@ final class Template
  }
 
  /** @return array<string> */
- private function page_range(): array
+ public function page_range(): array
  {
   preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
   return $pagenos;
