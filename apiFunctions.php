@@ -2197,7 +2197,7 @@ function expand_by_adsabs(Template $template): void
    }
    if (is_a_book_bibcode((string) $record->bibcode)) {
     $template->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-    expand_book_adsabs($this, $record);
+    expand_book_adsabs($template, $record);
     return;
    }
 
@@ -2210,7 +2210,7 @@ function expand_by_adsabs(Template $template): void
    if ($template->blank('bibcode')) {
     $template->add_if_new('bibcode_nosearch', (string) $record->bibcode);
    }
-   process_bibcode_data($this, $record);
+   process_bibcode_data($template, $record);
    return;
   } elseif ($result->numFound === 0) {
    // @codeCoverageIgnoreStart
@@ -2239,7 +2239,7 @@ function expand_by_adsabs(Template $template): void
   if (in_array($return, GOOD_FREE, true)) {
    return;
   } // Do continue on
-  $template->get_semanticscholar_url($template, $doi);
+  get_semanticscholar_url($template, $doi);
  }
 
 
@@ -2544,7 +2544,7 @@ function clean_google_books(Template $template): void
       bot_debug_log('dropped google url completely');
      }
     }
-    $template->expand_by_google_books_inner($url_type, false);
+    expand_by_google_books_inner($template, $url_type, false);
     if (preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $template->get($url_type), $matches)) {
      if ($matches[1] !== 'com') {
       $template->set($url_type, 'https://books.google.com/books?' . $matches[2]);
@@ -2556,16 +2556,16 @@ function clean_google_books(Template $template): void
 
 function expand_by_google_books(Template $template): void
  {
-  $template->clean_google_books();
+  clean_google_books($template);
   if ($template->has('doi') && doi_works($template->get('doi'))) {
    return;
   }
   foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
-   if ($template->expand_by_google_books_inner($url_type, true)) {
+   if (expand_by_google_books_inner($template, $url_type, true)) {
     return;
    }
   }
-  $template->expand_by_google_books_inner('', true);
+  expand_by_google_books_inner($template, '', true);
   return;
  }
 
@@ -2666,7 +2666,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
     $template->set($url_type, $url);
    }
    if ($use_it) {
-    $template->google_book_details($gid[1]);
+    google_book_details($template, $gid[1]);
    }
    return true;
   }
@@ -2676,7 +2676,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
     $template->set($url_type, $gid[1] . $gid[2]);
    }
    if ($use_it) {
-    $template->google_book_details($gid[2]);
+    google_book_details($template, $gid[2]);
    }
    return true;
   }
