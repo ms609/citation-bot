@@ -354,14 +354,14 @@ class Page {
                 $this_template->correct_param_mistakes();
                 $this_template->prepare(); // does very little
                 $this_template->get_identifiers_from_url();
-                $this_template->expand_by_google_books();
+                expand_by_google_books($this_template);
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $our_templates_ieee[] = $this_template;
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) { // No capitalization of thesis, etc.
                 $our_templates_slight[] = $this_template;
-                $this_template->clean_google_books();
+                clean_google_books($this_template);
                 $this_template->correct_param_mistakes();
                 $this_template->get_identifiers_from_url();
                 $this_template->tidy();
@@ -384,22 +384,22 @@ class Page {
                 $this_template->correct_param_mistakes();
                 $this_template->prepare(); // does very little
                 $this_template->get_identifiers_from_url();
-                $this_template->expand_by_google_books();
+                expand_by_google_books($this_template);
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
             } elseif ($this_template->wikiname() === 'cite odnb') {
                 $this_template->clean_cite_odnb();
-                $this_template->clean_google_books();
+                clean_google_books($this_template);
                 $this_template->tidy_parameter('title');
             } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
-                $this_template->clean_google_books();
+                clean_google_books($this_template);
                 $this_template->correct_param_mistakes();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $this_template->tidy_parameter('title');
             } elseif (strpos($this_template->wikiname(), 'cite ') === 0) {
-                $this_template->clean_google_books();
+                clean_google_books($this_template);
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $this_template->tidy_parameter('title');
@@ -457,7 +457,7 @@ class Page {
                     expand_arxiv_templates($tmp_array);         // @codeCoverageIgnore
                 }
             }
-            $this_template->get_open_access_url();
+            get_open_access_url($this_template);
         }
         $this->expand_templates_from_identifier('doi', $our_templates);
         set_time_limit(120);
