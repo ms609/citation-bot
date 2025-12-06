@@ -73,7 +73,7 @@ jobs:
       run: ./vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2
 
     - name: Code Coverage
-      continue-on-error: true
+      continue-on-error: truefasdfsdf
       if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
