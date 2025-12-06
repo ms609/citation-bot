@@ -18,7 +18,7 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
     entrez_api($pmcs, $templates, 'pmc');
 }
 
-public function expand_by_pubmed(Template $template, bool $force = false): void
+function expand_by_pubmed(Template $template, bool $force = false): void
  {
   if (!$force && !template->incomplete()) {
    return;
