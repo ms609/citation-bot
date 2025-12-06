@@ -18,6 +18,24 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
     entrez_api($pmcs, $templates, 'pmc');
 }
 
+public function expand_by_pubmed(Template $template, bool $force = false): void
+ {
+  if (!$force && !template->incomplete()) {
+   return;
+  }
+  $template->this_array = [$template];
+  $pmid = $template->get('pmid');
+  $pmc = $template->get('pmc');
+  if ($pmid) {
+   report_action('Checking ' . pubmed_link('pmid', $pmid) . ' for more details');
+   query_pmid_api([$pmid], $template->this_array);
+  } elseif ($pmc) {
+   report_action('Checking ' . pubmed_link('pmc', $pmc) . ' for more details');
+   query_pmc_api([$pmc], $template->this_array);
+  }
+  $template->this_array = [];
+}
+
 final class AdsAbsControl {
     private const MAX_CACHE_SIZE = 50000;
     private static int $big_counter = 0;
