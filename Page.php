@@ -26,6 +26,8 @@ require_once 'user_messages.php';
 require_once 'Zotero.php';        // @codeCoverageIgnoreEnd
 
 
+require_once 'includes/APIissn.php';
+
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
 const PROTECTED_PAGE = ["sysop", "templateeditor"];
 
@@ -477,7 +479,7 @@ class Page {
         $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
         foreach ($all_templates as $this_template) {
             if (in_array($this_template->wikiname(), $issn_templates, true)) {
-                $this_template->use_issn();
+                use_issn($this_template);
             }
         }
         expand_templates_from_archives($our_templates);
