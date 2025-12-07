@@ -15,12 +15,14 @@ const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'];
 const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
+
+require_once('includes/urls2ID.php'); // todo use directly
+
+
 /**
     @param array<string> $_ids
     @param array<Template> $templates
 */
-
-require_once('includes/urls2ID.php'); // todo use directly
 
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
     Zotero::query_url_api_class($templates);
