@@ -1,0 +1,28 @@
+name: PHP Code Sniffer
+
+on: [push, pull]
+
+jobs:
+  build:
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v6.0.1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        coverage: none
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install composer packages
+      run: composer update
+
+    - name: PHP Code Sniffer
+      uses: php-actions/phpcs@v1
+      with:
+        php_version: 8.4
+        path: /
+        #  standard: phpcs.xml
