@@ -56,10 +56,8 @@ A quick tour of the main files:
 * `NameTools.php`: defines name functions
 * `setup.php`: sets up needed functions, requires most of the other files listed here
 * `expandFns.php`: a variety of functions
-* `apiFunctions.php`: sets up needed functions for expanding pmid/doi/etc
+* `API*.php`: sets up needed functions for expanding pmid/doi/etc
 * `Zotero.php`: URL expansion related functions organized in a static class 
-
-Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 * `Template.php`: most of the actual expansion happens here.
