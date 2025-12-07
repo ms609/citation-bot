@@ -127,7 +127,7 @@ function expand_by_jstor(Template $template): void {
             return;
         }
     }
-    (expand_by_RIS, $dat, false);
+    expand_by_RIS($template, $dat, false);
     return;
 }
 
