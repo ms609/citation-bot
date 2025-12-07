@@ -1,4 +1,4 @@
-name: PHP Static Coding Tests - lint
+name: PHPLint (PHP syntax check - no style rules)
 
 on:
   push:
