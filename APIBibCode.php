@@ -617,3 +617,106 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
     // @codeCoverageIgnoreEnd
 }
 
+function process_bibcode_data(Template $this_template, object $record): void {
+    $this_template->record_api_usage('adsabs', 'bibcode');
+    if (!isset($record->title[0])) {
+        return;
+    }
+    $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
+    if (stripos((string) $record->title[0], 'book') !== false && stripos((string) $record->title[0], 'review') !== false) {
+        unset($record->author); // often book author
+    }
+    $i = 0;
+    if (isset($record->author)) {
+        foreach ($record->author as $author) {
+            ++$i;
+            $this_template->add_if_new('author' . (string) $i, $author, 'adsabs');
+        }
+    }
+    if (isset($record->pub)) {
+        $journal_string = explode(',', (string) $record->pub);
+        $journal_start = mb_strtolower($journal_string[0]);
+        if (preg_match("~\bthesis\b~ui", $journal_start)) {
+            // Do nothing
+        } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
+            if (substr($journal_start, 0, 13) === 'eprint arxiv:') {          //@codeCoverageIgnore
+                if (isset($record->arxivclass)) {
+                    $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
+                }
+                $this_template->add_if_new('arxiv', substr($journal_start, 13));    //@codeCoverageIgnore
+            }
+        } else {
+            $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
+        }
+    }
+    if (isset($record->page)) {
+        $tmp = implode($record->page);
+        if ((stripos($tmp, 'arxiv') !== false) || (strpos($tmp, '/') !== false)) {  // Bad data
+            unset($record->page);
+            unset($record->volume);
+            unset($record->issue);
+        } elseif (preg_match('~[A-Za-z]~', $tmp)) { // Do not trust anything with letters
+            unset($record->page);
+        } elseif (($tmp === $this_template->get('issue')) || ($tmp === $this_template->get('volume'))) {
+            unset($record->page); // Probably is journal without pages, but article numbers and got mis-encoded
+        }
+    }
+    if (isset($record->volume)) {
+        $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
+    }
+    if (isset($record->issue)) {
+        $this_template->add_if_new('issue', (string) $record->issue, 'adsabs');
+    }
+    if (isset($record->year)) {
+        $this_template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year), 'adsabs');
+    }
+    if (isset($record->page)) {
+        $dum = implode('–', $record->page);
+        if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+            $this_template->add_if_new('pages', $dum, 'adsabs');
+        }
+        unset($record->page);
+    }
+    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+        foreach ($record->identifier as $recid) {
+            $recid = (string) $recid;
+            if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+                if (isset($record->arxivclass)) {
+                    $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
+                }
+                $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+            }
+        }
+    }
+    if (isset($record->doi)){
+        $doi = (string) @$record->doi[0];
+        if (doi_works($doi)) {
+            $this_template->add_if_new('doi', $doi);
+            if ($this_template->has('bibcode')) {
+                AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+            }
+        }
+    } elseif ($this_template->has('bibcode')) { // Slow mode looks for existent bibcodes
+        AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');
+    }
+}
+
+function expand_book_adsabs(Template $template, object $record): void {
+    set_time_limit(120);
+    if (isset($record->year)) {
+        $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
+    }
+    if (isset($record->title)) {
+        $template->add_if_new('title', (string) $record->title[0]);
+    }
+    if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+        $i = 0;
+        if (isset($record->author)) {
+            foreach ($record->author as $author) {
+                ++$i;
+                $template->add_if_new('author' . (string) $i, $author);
+            }
+        }
+    }
+    return;
+}
