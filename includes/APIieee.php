@@ -16,10 +16,10 @@ declare(strict_types=1);
                 /** @psalm-taint-escape ssrf */
                 $the_url = $template->get($kind);
                 if (preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $the_url, $matches_url)) {
-                    curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
+                    curl_setopt($ch_ieee, CURLOPT_URL, $the_url);
                     if ($template->blank('doi')) {
                         usleep(100000); // 0.10 seconds
-                        $return = bot_curl_exec(self::$ch_ieee);
+                        $return = bot_curl_exec($ch_ieee);
                         if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
                             $dois = array_unique($matches[1]);
                             if (count($dois) === 1) {
@@ -32,7 +32,7 @@ declare(strict_types=1);
                         }
                     } elseif (doi_works($template->get('doi'))) {
                         usleep(100000); // 0.10 seconds
-                        $return = bot_curl_exec(self::$ch_ieee);
+                        $return = bot_curl_exec($ch_ieee);
                         if ($return !== "" && strpos($return, "<title> -  </title>") !== false) {
                             report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
                             $template->forget($kind);                   // @codeCoverageIgnore
