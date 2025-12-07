@@ -50,8 +50,6 @@ final class Zotero {
         self::$ch_jstor = bot_curl_init($time, []);
 
         self::$ch_pmc = bot_curl_init($time, []);
-
-        self::$ch_doi = bot_curl_init($time, []);
     }
 
     public static function block_zotero(): void {
