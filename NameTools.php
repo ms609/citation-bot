@@ -373,3 +373,15 @@ function split_authors(string $str): array {
     }
     return explode(',', $str);
 }
+
+    // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
+    function is_bad_author(string $aut): bool {
+        if ($aut === '|') {
+            return true;
+        }
+        $aut = strtolower($aut);
+        if ($aut === 'published') {
+            return true;
+        }
+        return false;
+    }
