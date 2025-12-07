@@ -2303,7 +2303,7 @@ final class Template
                         $this->forget('url');
                     }
                     $this->this_array = [$this];
-                    Zotero::drop_urls_that_match_dois($this->this_array);
+                    drop_urls_that_match_dois($this->this_array);
                     $this->this_array = [];
                 }
           return true;
