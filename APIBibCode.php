@@ -307,7 +307,7 @@ function expand_by_adsabs(Template $template): void
     return;
    }
 
-   if ($template->looksLikeBookReview($record)) {
+   if (looksLikeBookReview($template, $record)) {
     // Possible book and we found book review in journal
     report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review. Rejecting.");
     return;
@@ -720,3 +720,56 @@ function expand_book_adsabs(Template $template, object $record): void {
     }
     return;
 }
+
+
+
+ public function looksLikeBookReview(Template $template, object $record): bool
+ {
+  if ($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') {
+   $book_count = 0;
+   if ($template->has('publisher')) {
+    $book_count += 1;
+   }
+   if ($template->has('isbn')) {
+    $book_count += 2;
+   }
+   if ($template->has('location')) {
+    $book_count += 1;
+   }
+   if ($template->has('chapter')) {
+    $book_count += 2;
+   }
+   if ($template->has('oclc')) {
+    $book_count += 1;
+   }
+   if ($template->has('lccn')) {
+    $book_count += 2;
+   }
+   if ($template->has('journal')) {
+    $book_count -= 2;
+   }
+   if ($template->has('series')) {
+    $book_count += 1;
+   }
+   if ($template->has('edition')) {
+    $book_count += 2;
+   }
+   if ($template->has('asin')) {
+    $book_count += 2;
+   }
+   if (stripos($template->get('url'), 'google') !== false && stripos($template->get('url'), 'book') !== false) {
+    $book_count += 2;
+   }
+   if (isset($record->year) && $template->year() && (int) $record->year !== (int) $template->year()) {
+    $book_count += 1;
+   }
+   if ($template->wikiname() === 'cite book') {
+    $book_count += 3;
+   }
+   if ($book_count > 3) {
+    return true;
+   }
+  }
+  return false;
+ }
+ 
