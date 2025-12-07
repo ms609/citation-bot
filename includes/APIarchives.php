@@ -125,3 +125,117 @@ function expand_templates_from_archives(array &$templates): void { // This is do
         }
     }
 }
+
+
+
+
+function convert_to_utf8(string $value): string {
+    $value = convert_to_utf8_inside($value);
+    $test = preg_replace('~[\'a-zA-Z0-9 ]+~', '', $value);
+    $test = mb_convert_encoding($test, 'utf-8', 'windows-1252');
+    $count_cr1 = substr_count($value, '®') + substr_count($value, '©');
+    $count_cr2 = substr_count($test, '®') + substr_count($test, '©');
+    $len1 = strlen($value);
+    $len2 = strlen($test);
+    $bad1 = substr_count($value, "");
+    $bad2 = substr_count($test, "");
+    $rq1 = substr_count($value, "”");
+    $rq2 = substr_count($test, "”");
+    $lq1 = substr_count($value, "„");
+    $lq2 = substr_count($test, "„");
+    if ((1 + $count_cr1) === $count_cr2 && (4 + $len1 > $len2) && ($bad1 >= $bad2) && ($lq1 <= $lq2) && ($rq1 <= $rq2)) { // Special case for single (c) or (r) and did not grow much
+        $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
+    }
+    // Special cases
+    $value = str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"],[' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
+    return $value;
+}
+
+function convert_to_utf8_inside(string $value): string {
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 === false || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') {
+        return $value;
+    }
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 !== $encode2) {
+        return $value;
+    }
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
+    if ($encode1 !== $encode3) {
+        return $value;
+    }
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
+    if ($encode1 !== $encode4) {
+        return $value;
+    }
+    $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
+    if ($new_value === "") {
+        return $value;
+    }
+    return $new_value;
+}
+
+function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
+    $encode = strtolower($encode);
+    return !in_array($encode, SANE_ENCODE, true);
+}
+
+function smart_decode(string $title, string $encode, string $archive_url): string {
+    if ($title === "") {
+        return "";
+    }
+    if ($encode === 'maccentraleurope') {
+        $encode = 'mac-centraleurope';
+    }
+    if ($encode === 'UTF-8; charset=UTF-8') {
+        $encode = 'UTF-8';
+    }
+    if ($encode === 'en-utf-8') {
+        $encode = 'UTF-8';
+    }
+    if ($encode === 'utf8') {
+        $encode = 'UTF-8';
+    }
+    if ($encode === 'windows-utf-8') {
+        $encode = 'UTF-8';
+    }
+    if ($encode === 'utf8_unicode_ci') {
+        $encode = 'UTF-8';
+    }
+    if ($encode === 'Shift_JIS' || $encode === 'x-sjis' || $encode === 'SJIS') {
+        $encode = 'SJIS-win';
+    }
+    if ($encode === 'big5') {
+        $encode = 'BIG-5';
+    }
+    if (preg_match('~^\d{4}\-\d{1,2}$~', $encode)) {
+        $encode = 'iso-' . $encode;
+    }
+    if (preg_match('~^ISO\-(.+)$~', $encode)) {
+        $encode = 'iso-' . $encode[1];
+    }
+    if (in_array($encode, INSANE_ENCODE, true)) {
+        return "";
+    }
+    $master_list = mb_list_encodings();
+    $valid = [];
+    foreach ($master_list as $enc) {
+        $valid[] = strtolower($enc);
+    }
+    try {
+        if (in_array(strtolower($encode), TRY_ENCODE, true) ||
+            !in_array(strtolower($encode), $valid, true)) {
+            $try = (string) @iconv($encode, "UTF-8", $title);
+        } else {
+            $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+        }
+    } catch (Exception $e) { // @codeCoverageIgnoreStart
+        $try = "";
+    } catch (ValueError $v) {
+        $try = "";
+    }                                                // @codeCoverageIgnoreEnd
+    if ($try === "") {
+        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
+    }
+    return $try;
+}
