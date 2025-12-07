@@ -216,3 +216,27 @@ function get_unpaywall_url(Template $template, string $doi): string
   }
   return 'nothing';
  }
+
+
+ function get_open_access_url(Template $template): void
+ {
+  if (!$template->blank(DOI_BROKEN_ALIASES)) {
+   return;
+  }
+  $doi = $template->get_without_comments_and_placeholders('doi');
+  if (!$doi) {
+   return;
+  }
+  if (strpos($doi, '10.1093/') === 0) {
+   return;
+  }
+  $return = get_unpaywall_url($template, $doi);
+  if (in_array($return, GOOD_FREE, true)) {
+   return;
+  } // Do continue on
+  get_semanticscholar_url($template, $doi);
+ }
+
+
+
+
