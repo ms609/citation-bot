@@ -41,7 +41,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer [] to array()
   * in_array should always pass the strict parameter
   * Directly comparing strings to integer with comparision operators is different in PHP 7 and 8, so they should not be used
-  * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
+  * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the API php files for lots of examples of non-coverage code.
   * All curl_init() should be replaced with bot_curl_init() calls, which sets reasonable defaults.  Also reasonable timeouts should be set depending upon the website.
   * error_reporting(E_ALL) and declare(strict_types=1) are both set
   * Multi-byte functions should be used in most cases, such as mb_ucwords instead of ucwords (there are many non-standard ones provided within the source code)
