@@ -3583,19 +3583,19 @@ EP - 999 }}';
         $text='{{cite journal|journal=X|url=book}}';
         $template = $this->make_citation($text);
         $record = (object) null;
-        $this->assertFalse($template->looksLikeBookReview($record));
+        $this->assertFalse(looksLikeBookReview($template, $record));
 
         $text='{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
         $record = (object) null;
         $record->year = '2000';
-        $this->assertFalse($template->looksLikeBookReview($record));
+        $this->assertFalse(looksLikeBookReview($template, $record));
 
         $text='{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
         $record = (object) null;
         $record->year = '2000';
-        $this->assertTrue($template->looksLikeBookReview($record));
+        $this->assertTrue(looksLikeBookReview($template, $record));
     }
 
     public function testDropBadDq(): void {
