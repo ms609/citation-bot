@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="MyProject">
+    <description>My custom coding standards</description>
+
+    <!-- Include your desired coding standards here -->
+    <rule ref="PSR12"/> 
+
+    <!-- Exclude the vendor directory -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Or, if you want to exclude a specific directory within vendor: -->
+    <!-- <exclude-pattern>*/vendor/some_package/*</exclude-pattern> -->
+
+</ruleset>
