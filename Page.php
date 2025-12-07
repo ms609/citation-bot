@@ -9,13 +9,22 @@ declare(strict_types=1);
  * handle collected page modifications, and save the edited page text.
  */
 
-require_once 'Comment.php';       // @codeCoverageIgnore
-require_once 'Template.php';      // @codeCoverageIgnore
-require_once 'apiFunctions.php';  // @codeCoverageIgnore
-require_once 'expandFns.php';     // @codeCoverageIgnore
-require_once 'user_messages.php'; // @codeCoverageIgnore
-require_once 'Zotero.php';        // @codeCoverageIgnore
-require_once 'constants.php';     // @codeCoverageIgnore
+require_once 'Comment.php';       // @codeCoverageIgnoreStart
+require_once 'Template.php';
+require_once 'constants.php';
+require_once 'includes/APIdoi.php';
+require_once 'includes/APIS2.php';
+require_once 'includes/APIBibCode.php';
+require_once 'includes/APIPubMed.php';
+require_once 'includes/APIgoogle.php';
+require_once 'includes/APIunpaywall.php';
+require_once 'includes/APIjstor.php';
+require_once 'includes/APIarXiv.php';
+require_once 'includes/APIarchives.php';
+require_once 'expandFns.php';
+require_once 'user_messages.php';
+require_once 'Zotero.php';        // @codeCoverageIgnoreEnd
+
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
 const PROTECTED_PAGE = ["sysop", "templateeditor"];
