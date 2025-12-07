@@ -473,3 +473,147 @@ function query_adsabs(string $options): object {
     ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
+
+
+
+/** @param array<int|string|bool|array<string>> $curl_opts */
+function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): object {
+    try {
+        $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
+        $return = bot_curl_exec($ch);
+        if ($return === "") {
+            // @codeCoverageIgnoreStart
+            $errorStr = curl_error($ch);
+            $errnoInt = curl_errno($ch);
+            throw new Exception('Curl error from AdsAbs website: ' . $errorStr, $errnoInt);
+            // @codeCoverageIgnoreEnd
+        }
+        $http_response_code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        if ($http_response_code === 0 || $header_length === 0) {
+            throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
+        }
+        $header = substr($return, 0, $header_length);
+        $body = substr($return, $header_length);
+        unset($return);
+        $decoded = @json_decode($body);
+
+        $ratelimit_total = null;
+        $ratelimit_left = null;
+        $ratelimit_current = null;
+
+        if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
+            // @codeCoverageIgnoreStart
+            if ($rate_limit[1][2]) {
+                $ratelimit_total = intval($rate_limit[1][0]);
+                $ratelimit_left = intval($rate_limit[1][1]);
+                $ratelimit_current = $ratelimit_total - $ratelimit_left;
+                report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
+            } else {
+                throw new Exception('Too many requests', $http_response_code);
+            }
+            // @codeCoverageIgnoreEnd
+        }
+
+        if (is_object($decoded) && isset($decoded->error)) {
+            $retry_msg='';                                                  // @codeCoverageIgnoreStart
+            $time_to_sleep = null;
+            $limit_action = null;
+            if (is_int($ratelimit_total) && is_int($ratelimit_left) && is_int($ratelimit_current) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+                // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
+                // available actions are: sleep, exit, ignore (default).
+                $rai=intval($retry_after[1]);
+                $retry_msg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+                if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
+                    $limit_action = strtolower(PHP_ADSABSAPILIMITACTION);
+                }
+                if ($limit_action === 'sleep') {
+                    $time_to_sleep = $rai+1;
+                } elseif ($limit_action === 'exit') {
+                    $time_to_sleep = -1;
+                } elseif ($limit_action === 'ignore' || $limit_action === '' || $limit_action === null) {
+                    // just ignore the limit and continue
+                } else {
+                    $retry_msg.= ' The AdsAbs API limit reached, but the on-limit action "'.strval($limit_action).'" is not recognized and thus ignored.';
+                }
+            }
+            if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
+                $rlr=intval($rate_limit_reset[1]);
+                $retry_msg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
+            }
+            $retry_msg = trim($retry_msg);
+            if ($retry_msg !== '') {
+                if (is_int($time_to_sleep) && ($time_to_sleep > 0)) {
+                    $retry_msg .= ' Sleeping...';
+                    report_warning($retry_msg);
+                    sleep($time_to_sleep);
+                } elseif (is_int($time_to_sleep) && ($time_to_sleep < 0)) {
+                    $retry_msg .= ' Exiting. Please run the bot later to retry AdsAbs API call when the limit will reset.';
+                    report_warning($retry_msg);
+                    report_error('The AdsAbs API limit reached, exiting due to "'.strval($limit_action).'" action configured in PHP_ADSABSAPILIMITACTION environment variable.');
+                } else {
+                    report_warning($retry_msg);
+                }
+            }
+            unset($retry_msg);
+            unset($time_to_sleep);
+
+            if (isset($decoded->error->trace)) {
+                bot_debug_log("AdsAbs website returned a stack trace - URL was:    " . $adsabs_url);
+                throw new Exception("AdsAbs website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
+                ($decoded->error->code ?? 999));
+            } else {
+                    throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
+                ($decoded->error->code ?? 999));
+            }
+            // @codeCoverageIgnoreEnd
+        }
+        if ($http_response_code !== 200) {
+            // @codeCoverageIgnoreStart
+            $message = (string) explode("\n", $header, 2)[0];
+            throw new Exception($message, $http_response_code);
+            // @codeCoverageIgnoreEnd
+        }
+
+        if (!is_object($decoded)) {
+            if (stripos($body, 'down for maintenance') !== false) {
+                AdsAbsControl::big_give_up();  // @codeCoverageIgnore
+                AdsAbsControl::small_give_up();  // @codeCoverageIgnore
+                throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
+            }
+            bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
+            throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
+        } elseif (isset($decoded->response)) {
+            return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE */
+        } elseif (isset($decoded->error)) {                  // @codeCoverageIgnore
+            throw new Exception('' . $decoded->error, 5000); // @codeCoverageIgnore
+        } else {
+            throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
+        }
+    // @codeCoverageIgnoreStart
+    } catch (Exception $e) {
+        if ($e->getCode() === 5000) { // made up code for AdsAbs error
+            report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
+        } elseif ($e->getCode() === 60) {
+            AdsAbsControl::big_give_up();
+            AdsAbsControl::small_give_up();
+            report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
+        } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
+            report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+        } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
+            report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+        } elseif (strpos($e->getMessage(), 'Too many requests') !== false) {
+            report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+            if (strpos($adsabs_url, 'bigquery') !== false) {
+                AdsAbsControl::big_give_up();
+            } else {
+                AdsAbsControl::small_give_up();
+            }
+        } else {
+            report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
+        }
+    }
+    return (object) ['numFound' => 0];
+    // @codeCoverageIgnoreEnd
+}
+
