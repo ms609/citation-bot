@@ -1,4 +1,4 @@
-name: PHP Static Coding Tests - psalm
+name: PHP psalm coding
 
 on:
   push:
