@@ -933,7 +933,7 @@ final class Zotero {
         }
 
         if (isset($result->issue)) {
-            $the_issue = self::clean_volume((string) $result->issue);
+            $the_issue = clean_volume((string) $result->issue);
             if (strlen($the_issue) < 10) { // Sometimes issues are full on phrases
                 $template->add_if_new('issue', $the_issue);
             }
@@ -990,7 +990,7 @@ final class Zotero {
             }
         }
         if (isset($result->volume)) {
-            $template->add_if_new('volume', self::clean_volume((string) $result->volume));
+            $template->add_if_new('volume', clean_volume((string) $result->volume));
         }
         if (isset($result->date) && strlen((string) $result->date)>3) {
             $new_date = tidy_date((string) $result->date);
@@ -1011,10 +1011,10 @@ final class Zotero {
         }
         $i = 0;
         while (isset($result->author[$i])) {
-            if (self::is_bad_author((string) @$result->author[$i][1])) {
+            if (is_bad_author((string) @$result->author[$i][1])) {
                 unset($result->author[$i][1]);
             }
-            if (self::is_bad_author((string) @$result->author[$i][0])) {
+            if (is_bad_author((string) @$result->author[$i][0])) {
                 unset($result->author[$i][0]);
             }
             $i++;
@@ -1178,10 +1178,10 @@ final class Zotero {
                                 $authorParam = '';                          // @codeCoverageIgnore
                         }
                         if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-                            if (self::is_bad_author((string) $result->creators[$i]->lastName)) {
+                            if (is_bad_author((string) $result->creators[$i]->lastName)) {
                                 $result->creators[$i]->lastName  ='';
                             }
-                            if (self::is_bad_author((string) $result->creators[$i]->firstName)) {
+                            if (is_bad_author((string) $result->creators[$i]->firstName)) {
                                 $result->creators[$i]->firstName ='';
                             }
                             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
@@ -2155,17 +2155,6 @@ final class Zotero {
         return false ;
     }
 
-    // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
-    private static function is_bad_author(string $aut): bool {
-        if ($aut === '|') {
-            return true;
-        }
-        $aut = strtolower($aut);
-        if ($aut === 'published') {
-            return true;
-        }
-        return false;
-    }
 
     public static function get_doi_from_pii(string $pii): string {
         curl_setopt(self::$ch_pii, CURLOPT_URL, "https://api.elsevier.com/content/object/pii/" . $pii);
@@ -2174,24 +2163,6 @@ final class Zotero {
                return $match[1];
         }
         return '';
-    }
-
-    private static function clean_volume(string $volume): string {
-        if (strpos($volume, "(") !== false) {
-            return '';
-        }
-        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
-            return ''; // Do not add date
-        }
-        if (stripos($volume, "november") !== false) {
-            return '';
-        }
-        if (stripos($volume, "nostradamus") !== false) {
-            return '';
-        }
-        return trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
-         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
-         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
     }
 
 } // End of CLASS

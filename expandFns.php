@@ -3407,3 +3407,23 @@ function string_is_book_series(string $str): bool {
 function echoable_doi(string $doi): string {
     return str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi));
 }
+
+
+    function clean_volume(string $volume): string {
+        if (strpos($volume, "(") !== false) {
+            return '';
+        }
+        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+            return ''; // Do not add date
+        }
+        if (stripos($volume, "november") !== false) {
+            return '';
+        }
+        if (stripos($volume, "nostradamus") !== false) {
+            return '';
+        }
+        return trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
+         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
+         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
+    }
+
