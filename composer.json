@@ -13,8 +13,8 @@
         "phpstan/phpstan": "^2.1.32",
         "phpunit/php-invoker": "^6",
         "phpunit/phpunit": "^12",
-        "vimeo/psalm": "^6",
-        "squizlabs/php_codesniffer": "^4.0"
+        "squizlabs/php_codesniffer": "^4.0",
+        "vimeo/psalm": "^6"
     },
     "config": {
         "allow-plugins": {
