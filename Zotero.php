@@ -1193,7 +1193,7 @@ final class Zotero {
         return;
     }
 
-    require_once('urls2ID.php');
+    require_once('includes/urls2ID.php'); // todo use directly
 
     public static function url_simplify(string $url): string {
         $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
