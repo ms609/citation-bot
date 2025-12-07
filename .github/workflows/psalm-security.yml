@@ -1,4 +1,4 @@
-name: PHP Static Security Tests - psalm
+name: PHP psalm security check
 
 on:
   push:
