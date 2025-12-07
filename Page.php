@@ -358,11 +358,11 @@ class Page {
             set_time_limit(120);
             if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, true)) {
                 $our_templates[] = $this_template;
-                $this_template->correct_param_mistakes();
+                correct_param_mistakes($this_template);
                 $this_template->prepare();
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
                 $our_templates_slight[] = $this_template;
-                $this_template->correct_param_mistakes();
+                correct_param_mistakes($this_template);
                 $this_template->prepare(); // does very little
                 $this_template->get_identifiers_from_url();
                 expand_by_google_books($this_template);
@@ -373,7 +373,7 @@ class Page {
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) { // No capitalization of thesis, etc.
                 $our_templates_slight[] = $this_template;
                 clean_google_books($this_template);
-                $this_template->correct_param_mistakes();
+                correct_param_mistakes($this_template);
                 $this_template->get_identifiers_from_url();
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
@@ -392,7 +392,7 @@ class Page {
                 if ($this_template->has('magazine')) {
                     $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine')), true));
                 }
-                $this_template->correct_param_mistakes();
+                correct_param_mistakes($this_template);
                 $this_template->prepare(); // does very little
                 $this_template->get_identifiers_from_url();
                 expand_by_google_books($this_template);
@@ -405,7 +405,7 @@ class Page {
                 $this_template->tidy_parameter('title');
             } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
                 clean_google_books($this_template);
-                $this_template->correct_param_mistakes();
+                correct_param_mistakes($this_template);
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $this_template->tidy_parameter('title');
