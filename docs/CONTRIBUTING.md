@@ -12,7 +12,6 @@ to test.
 All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.
 The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting.
 The GitHub provided CodeQL test suite is also enabled, but that just checks the one JavaScript file.
-Because large files are not indexed by GitHub, there is a test to check for large files: the test will suggest LFS on failure, but we do not use LFS. The DOI database files currently fail, but they are not really code.
 
 ## Submitting changes
 
@@ -29,7 +28,6 @@ Always write a clear log message for your commits. One-line messages are fine fo
 ## Coding conventions
 
   * We indent using four spaces (soft tabs - note that many files do not currently match this). No files should have tabs in them
-  * Template.php uses one space indents (this keeps it under the GitHub size limit)
   * Constants are named using CAPITALS, functions and variables using under_scores()
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
