@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+// TOOO pull out
+require_once('includes/APIpii.php');
+require_once('includes/RemoveDupURL.php');
+
 require_once 'constants.php'; // @codeCoverageIgnore
 require_once 'Template.php';  // @codeCoverageIgnore
 
@@ -2009,7 +2013,3 @@ final class Zotero {
 
 } // End of CLASS
 
-
-// TOOO pull out
-require_once('includes/APIpii.php');
-require_once('includes/RemoveDupURL.php');
