@@ -127,11 +127,11 @@ function expand_by_jstor(Template $template): void {
             return;
         }
     }
-    $template->expand_by_RIS($dat, false);
+    (expand_by_RIS, $dat, false);
     return;
 }
 
- public function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
+function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
  {
   // Pass by pointer to wipe this data when called from use_unnamed_params()
   $ris_review = false;
