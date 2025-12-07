@@ -9,6 +9,8 @@ require_once('includes/RemoveDupURL.php');
 require_once 'constants.php'; // @codeCoverageIgnore
 require_once 'Template.php';  // @codeCoverageIgnore
 
+require_once 'includes/APIieee.php'; // Todo - directly use
+
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'];
@@ -27,7 +29,6 @@ final class Zotero {
     private const ERROR_DONE = 'ERROR_DONE';
     private static int $zotero_announced = 0;
     private static CurlHandle $zotero_ch;
-    private static CurlHandle $ch_ieee;
     private static CurlHandle $ch_jstor;
     private static CurlHandle $ch_pmc;
     private static int $zotero_failures_count = 0;
@@ -47,8 +48,6 @@ final class Zotero {
             CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Accept-Language: en-US,en,en-GB,en-CA', 'Cache-Control: no-cache, must-revalidate'],
         ]);
-
-        self::$ch_ieee = bot_curl_init($time, [CURLOPT_USERAGENT => 'curl']); // IEEE requires JavaScript, unless curl is specified
 
         self::$ch_jstor = bot_curl_init($time, []);
 
@@ -130,44 +129,6 @@ final class Zotero {
             }
         }
     }
-
-    /**
-        @param array<Template> $templates
-    */
-    public static function query_ieee_webpages(array &$templates): void {  // Pointer to save memory
-        foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
-            foreach ($templates as $template) {
-                set_time_limit(120);
-                /** @psalm-taint-escape ssrf */
-                $the_url = $template->get($kind);
-                if (preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $the_url, $matches_url)) {
-                    curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
-                    if ($template->blank('doi')) {
-                        usleep(100000); // 0.10 seconds
-                        $return = bot_curl_exec(self::$ch_ieee);
-                        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
-                            $dois = array_unique($matches[1]);
-                            if (count($dois) === 1) {
-                                if ($template->add_if_new('doi', $dois[0])) {
-                                    if (strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
-                                        $template->forget($kind);
-                                    }
-                                }
-                            }
-                        }
-                    } elseif (doi_works($template->get('doi'))) {
-                        usleep(100000); // 0.10 seconds
-                        $return = bot_curl_exec(self::$ch_ieee);
-                        if ($return !== "" && strpos($return, "<title> -  </title>") !== false) {
-                            report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
-                            $template->forget($kind);                   // @codeCoverageIgnore
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 
     private static function zotero_request(string $url): string {
         set_time_limit(120);
