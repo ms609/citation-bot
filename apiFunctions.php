@@ -14,7 +14,7 @@ require_once 'APIBibCode.php';
 require_once 'APIPubMed.php';
 require_once 'APIgoogle.php';
 require_once 'APIunpaywall.php';
-require_once 'APIjstsor.php';
+require_once 'APIjstor.php';
 require_once 'APIarXiv.php';
 require_once 'APIarchives.php';
 
