@@ -328,26 +328,122 @@ function expand_by_adsabs(Template $template): void
   }
  }
  
- 
- function get_open_access_url(Template $template): void
- {
-  if (!$template->blank(DOI_BROKEN_ALIASES)) {
-   return;
-  }
-  $doi = $template->get_without_comments_and_placeholders('doi');
-  if (!$doi) {
-   return;
-  }
-  if (strpos($doi, '10.1093/') === 0) {
-   return;
-  }
-  $return = get_unpaywall_url($template, $doi);
-  if (in_array($return, GOOD_FREE, true)) {
-   return;
-  } // Do continue on
-  get_semanticscholar_url($template, $doi);
- }
+/**
+  @param array<string> $ids
+  @param array<Template> $templates
+*/
+function adsabs_api(array $ids, array &$templates, string $identifier): void {  // Pointer to save memory
+    set_time_limit(120);
+    if (count($ids) === 0) {
+        return;
+    }
 
+    foreach ($ids as $key => $bibcode) {
+        if (stripos($bibcode, 'CITATION') !== false || strlen($bibcode) !== 19) {
+            unset($ids[$key]);  // @codeCoverageIgnore
+        }
+    }
 
+    // Use cache
+    foreach ($templates as $template) {
+        if ($template->has('bibcode') && $template->blank('doi')) {
+            $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
+            if (doi_works($doi)) {
+                $template->add_if_new('doi', $doi);
+            }
+        }
+    }
 
+    $NONE_IS_INCOMPLETE = true;
+    foreach ($templates as $template) {
+        if ($template->has('bibcode') && $template->incomplete()) {
+            $NONE_IS_INCOMPLETE = false;
+            break;
+        }
+        if (stripos($template->get('bibcode'), 'tmp') !== false || stripos($template->get('bibcode'), 'arxiv') !== false) {
+            $NONE_IS_INCOMPLETE = false;
+            break;
+        }
+    }
+    if ($NONE_IS_INCOMPLETE ||
+        AdsAbsControl::big_gave_up_yet() || !PHP_ADSABSAPIKEY) {
+        return;
+    }
 
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
+    $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+                    . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
+                    . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+                    . "issue,page,pub,pubdate,title,volume,year&rows=2000";
+
+    report_action("Expanding from BibCodes via AdsAbs API");
+    $curl_opts=[
+        CURLOPT_URL => $adsabs_url,
+        CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+        CURLOPT_HEADER => "1",
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids),
+    ];
+    $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
+    if (!isset($response->docs)) {
+        return;
+    }
+
+    foreach ($response->docs as $record) { // Check for remapped bibcodes
+        $record = (object) $record; // Make static analysis happy
+        if (isset($record->bibcode) && !in_array($record->bibcode, $ids, true) && isset($record->identifier)) {
+            foreach ($record->identifier as $identity) {
+                if (in_array($identity, $ids, true)) {
+                    $record->citation_bot_new_bibcode = $record->bibcode; // save it
+                    $record->bibcode = $identity; // unmap it
+                }
+            }
+        }
+    }
+
+    $matched_ids = [];
+    foreach ($response->docs as $record) {
+        report_info("Found match for bibcode " . bibcode_link($record->bibcode));
+        $matched_ids[] = $record->bibcode;
+        foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+            if (isset($record->bibcode) && strtolower($an_id) === strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
+                $this_template = $templates[$template_key];
+                if (isset($record->citation_bot_new_bibcode)) {
+                    $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
+                    $record->bibcode = $record->citation_bot_new_bibcode;
+                    unset($record->citation_bot_new_bibcode);
+                } elseif ($an_id !== (string) $record->bibcode) {  // Existing one is wrong case
+                    $this_template->set('bibcode', (string) $record->bibcode);
+                }
+                if (is_a_book_bibcode($an_id)) {
+                    expand_book_adsabs($this_template, $record);
+                } else {
+                    process_bibcode_data($this_template, $record);
+                }
+            }
+        }
+    }
+    $unmatched_ids = array_udiff($ids, $matched_ids, 'strcasecmp');
+    if (count($unmatched_ids)) {
+        foreach ($unmatched_ids as $bad_boy) {
+            if (preg_match('~^(\d{4}NatSR....)E(.....)$~i', $bad_boy, $match_bad)) {
+                $good_boy = $match_bad[1] . '.' . $match_bad[2];
+                foreach ($templates as $template) {
+                    if ($template->get('bibcode') === $bad_boy) {
+                        $template->set('bibcode', $good_boy);
+                    }
+                }
+            } else {
+                bot_debug_log("No match for bibcode identifier: " . $bad_boy);
+                report_warning("No match for bibcode identifier: " . $bad_boy);
+            }
+        }
+
+    }
+    foreach ($templates as $template) {
+        if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
+            $template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
+        }
+    }
+    return;
+}
