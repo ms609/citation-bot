@@ -36,7 +36,8 @@
         <file name="Zotero.php" />
         <file name="big_jobs.php" />
         <file name="kill_big_job.php" />
-        <directory name="constants" />
+        <directory name="includes" />
+        <directory name="includes/constants" /> 
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
