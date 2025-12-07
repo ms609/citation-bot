@@ -2959,56 +2959,6 @@ final class Template
   $this->this_array = [];
  }
 
- public function looksLikeBookReview(object $record): bool
- {
-  if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') {
-   $book_count = 0;
-   if ($this->has('publisher')) {
-    $book_count += 1;
-   }
-   if ($this->has('isbn')) {
-    $book_count += 2;
-   }
-   if ($this->has('location')) {
-    $book_count += 1;
-   }
-   if ($this->has('chapter')) {
-    $book_count += 2;
-   }
-   if ($this->has('oclc')) {
-    $book_count += 1;
-   }
-   if ($this->has('lccn')) {
-    $book_count += 2;
-   }
-   if ($this->has('journal')) {
-    $book_count -= 2;
-   }
-   if ($this->has('series')) {
-    $book_count += 1;
-   }
-   if ($this->has('edition')) {
-    $book_count += 2;
-   }
-   if ($this->has('asin')) {
-    $book_count += 2;
-   }
-   if (stripos($this->get('url'), 'google') !== false && stripos($this->get('url'), 'book') !== false) {
-    $book_count += 2;
-   }
-   if (isset($record->year) && $this->year() && (int) $record->year !== (int) $this->year()) {
-    $book_count += 1;
-   }
-   if ($this->wikiname() === 'cite book') {
-    $book_count += 3;
-   }
-   if ($book_count > 3) {
-    return true;
-   }
-  }
-  return false;
- }
- 
  public function use_sici(): void
  {
   if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
