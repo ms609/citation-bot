@@ -32,8 +32,6 @@ final class Zotero {
     private const ERROR_DONE = 'ERROR_DONE';
     private static int $zotero_announced = 0;
     private static CurlHandle $zotero_ch;
-    private static CurlHandle $ch_jstor;
-    private static CurlHandle $ch_pmc;
     private static int $zotero_failures_count = 0;
 
     public static function create_ch_zotero(): void {
@@ -51,10 +49,6 @@ final class Zotero {
             CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Accept-Language: en-US,en,en-GB,en-CA', 'Cache-Control: no-cache, must-revalidate'],
         ]);
-
-        self::$ch_jstor = bot_curl_init($time, []);
-
-        self::$ch_pmc = bot_curl_init($time, []);
     }
 
     public static function block_zotero(): void {
