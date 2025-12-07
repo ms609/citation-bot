@@ -15,6 +15,9 @@ const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
     @param array<string> $_ids
     @param array<Template> $templates
 */
+
+require_once('includes/urls2ID.php'); // todo use directly
+
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
     Zotero::query_url_api_class($templates);
 }
@@ -1192,8 +1195,6 @@ final class Zotero {
         }
         return;
     }
-
-    require_once('includes/urls2ID.php'); // todo use directly
 
     public static function url_simplify(string $url): string {
         $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
