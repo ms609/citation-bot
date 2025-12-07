@@ -35,4 +35,5 @@ jobs:
         php_version: 8.4
         path: /
         output: text
+        args: '--exclude vendor'
         ruleset: ruleset.xml
