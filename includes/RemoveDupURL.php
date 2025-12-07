@@ -5,7 +5,7 @@ declare(strict_types=1);
         @param array<Template> $templates
     */
     function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
-        static CurlHandle? $ch_dx;
+        static $ch_dx;
         if (null === $ch_pii) {
         	$ch_dx = bot_curl_init($time, []);
         }
