@@ -7967,40 +7967,6 @@ final class Template
         }
     }
 
-    public function use_issn(): void
-    {
-        if ($this->blank('issn')) {
-            return;
-        }
-        if (!$this->blank(WORK_ALIASES)) {
-            return;
-        }
-        if ($this->has('series')) {
-            return;
-        }
-        if ($this->wikiname() === 'cite book' && $this->has('isbn')) {
-            return;
-        }
-        $issn = $this->get('issn');
-        if ($issn === '9999-9999') {
-            return;
-        }
-        if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) {
-            return;
-        }
-        if ($issn === '0140-0460') {
-         // Use set to avoid escaping [[ and ]]
-            $this->set('newspaper', '[[The Times]]');
-        } elseif ($issn === '0190-8286') {
-            $this->set('newspaper', '[[The Washington Post]]');
-        } elseif ($issn === '0362-4331') {
-            $this->set('newspaper', '[[The New York Times]]');
-        } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-            $this->set('newspaper', '[[The Wall Street Journal]]');
-        }
-        return;
-    }
-
     private function is_book_series(string $param): bool
     {
         return string_is_book_series($this->get($param));
