@@ -26,7 +26,7 @@ jobs:
       run: composer validate
 
     - name: Install composer packages
-      run: composer remove designsecurity/progpilot overtrue/phplint phan/phan phpstan/phpstan phpunit/php-invoker phpunit/phpunit vimeo/psalm && composer install -vvv --no-progress
+      run: composer remove --dev designsecurity/progpilot overtrue/phplint phan/phan phpstan/phpstan phpunit/php-invoker phpunit/phpunit vimeo/psalm && composer install -vvv --no-progress
 
     - name: PHP Code Sniffer
       uses: php-actions/phpcs@v1
