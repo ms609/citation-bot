@@ -1,4 +1,4 @@
-name: PHP Static Security Tests - The PHP Security Checker
+name: The PHP Security Checker
 
 on:
   push:
