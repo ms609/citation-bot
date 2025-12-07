@@ -8,6 +8,11 @@ declare(strict_types=1);
     function query_ieee_webpages(array &$templates): void {  // Pointer to save memory
         static $ch_ieee;
         if (null === $ch_ieee) {
+            if (TRAVIS) {
+                $time = 3.0;
+            } else {
+                $time = 1.0; // @codeCoverageIgnore
+            }
             $ch_ieee = bot_curl_init($time, [CURLOPT_USERAGENT => 'curl']); // IEEE requires JavaScript, unless curl is specified
         }
         foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
