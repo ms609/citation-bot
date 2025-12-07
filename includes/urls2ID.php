@@ -3,6 +3,17 @@
 declare(strict_types=1);
 
     function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
+        static $ch_jstor;
+        static $ch_pmc;
+        if (null === $ch_jstor) {
+            if (TRAVIS) {
+                $time = 3.0;
+            } else {
+                $time = 1.0; // @codeCoverageIgnore
+            }
+            $ch_jstor = bot_curl_init($time, []);
+            $ch_pmc = bot_curl_init($time, []);        
+        }
         set_time_limit(120);
         if (is_null($url_sent)) {
             // Chapter URLs are generally better than URLs for the whole book.
