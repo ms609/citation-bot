@@ -1,6 +1,6 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/lint.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phplint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phplint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phan.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPChecker.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phpstan.yml)
