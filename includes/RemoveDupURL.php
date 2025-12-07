@@ -8,6 +8,11 @@ declare(strict_types=1);
         static $ch_dx;
         static $ch_doi;
         if (null === $ch_dx) {
+            if (TRAVIS) {
+                $time = 3.0;
+            } else {
+                $time = 1.0; // @codeCoverageIgnore
+            }
         	$ch_dx = bot_curl_init($time, []);
         	$ch_doi = bot_curl_init($time, []);
         }
