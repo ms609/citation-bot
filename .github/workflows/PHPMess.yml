@@ -35,4 +35,4 @@ jobs:
         php_version: 8.4
         path: /
         output: text
-        # ruleset: ruleset.xml
+        ruleset: ruleset.xml
