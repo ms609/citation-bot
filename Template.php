@@ -14,6 +14,7 @@ require_once 'user_messages.php';
 require_once 'constants.php';
 require_once 'NameTools.php';
 require_once 'includes/ID2param.php';
+require_once 'includes/fixMistakes.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
