@@ -1,9 +1,17 @@
 name: PHP Code Sniffer
 
-on: [push, pull]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '25 17 * * 1'
 
 jobs:
   build:
+    runs-on: ubuntu-22.04
+
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v6.0.1
