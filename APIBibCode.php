@@ -723,7 +723,7 @@ function expand_book_adsabs(Template $template, object $record): void {
 
 
 
- public function looksLikeBookReview(Template $template, object $record): bool
+function looksLikeBookReview(Template $template, object $record): bool
  {
   if ($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') {
    $book_count = 0;
