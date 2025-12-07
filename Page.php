@@ -448,8 +448,8 @@ class Page {
         $this->expand_templates_from_identifier('doi', $our_templates);
         expand_arxiv_templates($our_templates);
         $this->expand_templates_from_identifier('url', $our_templates);
-        Zotero::query_ieee_webpages($our_templates_ieee);
-        Zotero::query_ieee_webpages($our_templates);
+        query_ieee_webpages($our_templates_ieee);
+        query_ieee_webpages($our_templates);
 
         report_phase('Expand individual templates by API calls');
         foreach ($our_templates as $this_template) {
