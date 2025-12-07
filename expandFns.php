@@ -2092,11 +2092,11 @@ function get_possible_dois(string $doi): array {
         }
         if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
             if ($matches[1] === $matches[2]) {
-                $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
+                $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . mb_str_pad($matches[3], 4, "0", STR_PAD_LEFT);
             }
         }
         if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
-            $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+            $trial[] = '10.1093/med/9780199592548.003.' . mb_str_pad($matches[1], 4, "0", STR_PAD_LEFT);
         }
         if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
             if ($matches[1] === $matches[2]) {
@@ -2573,7 +2573,7 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
     if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/(oso|acprof:oso)/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $template->get($param), $matches)) {
         if ($matches[2] === $matches[3]) {
             $template->add_if_new('isbn', $matches[2]);
-            $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . str_pad($matches[4], 4, "0", STR_PAD_LEFT);
+            $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . mb_str_pad($matches[4], 4, "0", STR_PAD_LEFT);
             if (doi_works($new_doi)) {
                 if ($template->has('doi') && $template->has('doi-broken-date')) {
                     $template->set('doi', '');
@@ -2587,7 +2587,7 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
     }
 
     if (preg_match('~^https?://(?:www\.|)oxfordmedicine\.com/(?:view|abstract)/10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $template->get($param), $matches)) {
-        $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+        $new_doi = '10.1093/med/9780199592548.003.' . mb_str_pad($matches[1], 4, "0", STR_PAD_LEFT);
         if (doi_works($new_doi)) {
             $template->add_if_new('isbn', '978-0-19-959254-8');
             if ($template->has('doi') && ($template->has('doi-broken-date') || $template->get('doi') === '10.1093/med/9780199592548.001.0001')) {
