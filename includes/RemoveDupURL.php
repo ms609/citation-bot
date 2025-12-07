@@ -6,8 +6,10 @@ declare(strict_types=1);
     */
     function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
         static $ch_dx;
-        if (null === $ch_pii) {
+        static $ch_doi;
+        if (null === $ch_dx) {
         	$ch_dx = bot_curl_init($time, []);
+        	$ch_doi = bot_curl_init($time, []);
         }
         // Now that we have expanded URLs, try to lose them
         foreach ($templates as $template) {
@@ -106,10 +108,10 @@ declare(strict_types=1);
                         } else { // See if $url redirects
                             /** @psalm-taint-escape ssrf */
                             $the_url = $url;
-                            curl_setopt(self::$ch_doi, CURLOPT_URL, $the_url);
-                            $ch_return = bot_curl_exec(self::$ch_doi);
+                            curl_setopt($ch_doi, CURLOPT_URL, $the_url);
+                            $ch_return = bot_curl_exec($ch_doi);
                             if (strlen($ch_return) > 60) {
-                                $redirectedUrl_url = curl_getinfo(self::$ch_doi, CURLINFO_EFFECTIVE_URL);
+                                $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
                                 $redirectedUrl_url =url_simplify($redirectedUrl_url);
                                 if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
                                                 stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
