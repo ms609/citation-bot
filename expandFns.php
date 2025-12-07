@@ -377,14 +377,6 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
     }                // @codeCoverageIgnoreEnd
 }
 
-/** @param array<string> $_ids
-    @param array<Template> $templates */
-function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to save memory
-    foreach ($templates as $template) {
-        expand_by_jstor($template);
-    }
-}
-
 function sanitize_doi(string $doi): string {
     if (substr($doi, -1) === '.') {
         $try_doi = substr($doi, 0, -1);
