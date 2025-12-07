@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once 'constants.php'; // @codeCoverageIgnore
 require_once 'Template.php';  // @codeCoverageIgnore
 
-require_once 'APIieee.php'; // Todo - directly use
+require_once 'includes/APIieee.php'; // Todo - directly use
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
