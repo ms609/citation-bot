@@ -447,3 +447,29 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     }
     return;
 }
+
+
+
+  // $options should be a series of field names, colons (optionally urlencoded), and
+  // URL-ENCODED search strings, separated by (unencoded) ampersands.
+  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
+function query_adsabs(string $options): object {
+    set_time_limit(120);
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
+    if (AdsAbsControl::small_gave_up_yet()) {
+        return (object) ['numFound' => 0];
+    }
+    if (!PHP_ADSABSAPIKEY) {
+        return (object) ['numFound' => 0]; // @codeCoverageIgnore
+    }
+    $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+                    . ".adsabs.harvard.edu/v1/search/query"
+                    . "?q={$options}&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+                    . "issue,page,pub,pubdate,title,volume,year";
+    $curl_opts=[
+        CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+        CURLOPT_HEADER => "1",
+        CURLOPT_URL => $adsabs_url,
+    ];
+    return Bibcode_Response_Processing($curl_opts, $adsabs_url);
+}
