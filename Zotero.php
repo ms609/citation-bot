@@ -30,7 +30,6 @@ final class Zotero {
     private static CurlHandle $ch_ieee;
     private static CurlHandle $ch_jstor;
     private static CurlHandle $ch_pmc;
-    private static CurlHandle $ch_doi;
     private static int $zotero_failures_count = 0;
 
     public static function create_ch_zotero(): void {
@@ -71,7 +70,7 @@ final class Zotero {
         foreach ($templates as $template) {
             if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
                 if ($template->blank('doi')) {
-                    $doi = self::get_doi_from_pii($matches[1]);
+                    $doi = get_doi_from_pii($matches[1]);
                     if (doi_works($doi)) {
                         $template->add_if_new('doi', $doi);
                     }
