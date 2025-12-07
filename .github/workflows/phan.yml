@@ -1,4 +1,4 @@
-name: PHP Static Coding Tests - phan
+name: PHP phan
 
 on:
   push:
