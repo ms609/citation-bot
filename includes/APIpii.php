@@ -5,6 +5,11 @@ declare(strict_types=1);
     function get_doi_from_pii(string $pii): string {
         static $ch_pii;
         if (null === $ch_pii) {
+            if (TRAVIS) {
+                $time = 3.0;
+            } else {
+                $time = 1.0; // @codeCoverageIgnore
+            }
         	$ch_pii = bot_curl_init($time, []);
         }
         curl_setopt($ch_pii, CURLOPT_URL, "https://api.elsevier.com/content/object/pii/" . $pii);
