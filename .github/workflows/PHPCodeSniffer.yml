@@ -33,4 +33,4 @@ jobs:
       with:
         php_version: 8.4
         path: /
-        #  standard: phpcs.xml
+        standard: phpcs.xml
