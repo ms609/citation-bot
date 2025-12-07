@@ -1,4 +1,4 @@
-name: PHP Static Coding Tests - phpstan
+name: PHPStan
 
 on:
   push:
