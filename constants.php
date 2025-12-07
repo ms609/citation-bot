@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 // @codeCoverageIgnoreStart
 // all new constant files needed listed here
-require_once 'constants/bad_data.php';
-require_once 'constants/capitalization.php';
-require_once 'constants/math.php';
-require_once 'constants/mistakes.php';
-require_once 'constants/parameters.php';
-require_once 'constants/regular_expressions.php';
-require_once 'constants/italics.php';
-require_once 'constants/isbn.php';
-require_once 'constants/null_good_doi.php';
-require_once 'constants/null_bad_doi.php';
-require_once 'constants/translations.php';
+require_once 'includes/constants/bad_data.php';
+require_once 'includes/constants/capitalization.php';
+require_once 'includes/constants/math.php';
+require_once 'includes/constants/mistakes.php';
+require_once 'includes/constants/parameters.php';
+require_once 'includes/constants/regular_expressions.php';
+require_once 'includes/constants/italics.php';
+require_once 'includes/constants/isbn.php';
+require_once 'includes/constants/null_good_doi.php';
+require_once 'includes/constants/null_bad_doi.php';
+require_once 'includes/constants/translations.php';
 // @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
