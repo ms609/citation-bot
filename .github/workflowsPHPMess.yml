@@ -1,0 +1,38 @@
+name: PHP Static Coding Tests - Mess Detector
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '25 17 * * 1'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v6.0.1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+        coverage: none
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install -vvv --no-progress
+
+    - name: PHP Mess Detector
+      uses: php-actions/phpmd@v1
+      with:
+        php_version: 8.4
+        path: /
+        output: text
+        # ruleset: ruleset.xml
