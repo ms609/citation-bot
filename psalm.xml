@@ -21,7 +21,6 @@
         <file name="Parameter.php" />
         <file name="Template.php" />
         <file name="WikipediaBot.php" />
-        <file name="apiFunctions.php" />
         <file name="authenticate.php" />
         <file name="category.php" />
         <file name="constants.php" />
