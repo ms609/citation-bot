@@ -30,5 +30,4 @@ jobs:
       uses: php-actions/phpcs@v1
       with:
         php_version: 8.4
-        path: /
-        standard: ruleset.xml
+        standard: .phpcs.xml

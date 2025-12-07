@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="CustomIndentationStandard">
     <file>Template.php</file>
-    <!-- Code MUST use an indent of 4 spaces for each indent level, and MUST NOT use tabs for indenting. -->
     <rule ref="Generic.WhiteSpace.ScopeIndent">
         <properties>
             <property name="ignoreIndentationTokens" type="array">
