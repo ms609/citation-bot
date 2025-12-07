@@ -52,7 +52,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=proxy.libraries}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -60,7 +60,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/B1234-13241234-343242/}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -68,7 +68,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/pii/2222}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -76,7 +76,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.springerlink.com/content/s}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -84,7 +84,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://insights.ovid.com/pubmed|pmid=2222}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -92,7 +92,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -100,7 +100,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://iopscience.iop.org/324234}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -108,7 +108,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -116,7 +116,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -124,7 +124,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -132,7 +132,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333|pmc=123|doi-access=free}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -140,7 +140,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|pmc=XYZ|doi=XDOI|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertSame('https://dx.doi.org/XDOI', $template->get2('url'));
     }
 
@@ -148,7 +148,7 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|pmc=XYZ|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -156,13 +156,13 @@ final class zoteroTest extends testBaseClass {
         $text = "{{cite journal|url=https://pubs.acs.org/doi/10.1021/acs.analchem.8b04567|doi=10.1021/acs.analchem.8b04567|doi-access=free|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
     public function testSimpleIEEE(): void {
         $url = "http://ieeexplore.ieee.org/arnumber=123456789";
-        $url = Zotero::url_simplify($url);
+        $url = url_simplify($url);
         $this->assertSame('http:/ieeexplore.ieee.org/123456789', $url);
     }
 
@@ -842,7 +842,7 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -850,7 +850,7 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -858,13 +858,13 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
 
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -872,13 +872,13 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
 
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -886,14 +886,14 @@ final class zoteroTest extends testBaseClass {
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
     public function testRemoveURLwithProxy3b(): void { // CANONICAL_PUBLISHER_URLS
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
-        Zotero::drop_urls_that_match_dois($tmp_array);
+        drop_urls_that_match_dois($tmp_array);
         $this->assertNull($template->get2('url'));
     }
 
@@ -1152,7 +1152,7 @@ final class zoteroTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $pii = 'S0960076019302699';
         $doi_expect = '10.1016/j.jsbmb.2019.105494';
-        $doi = Zotero::get_doi_from_pii($pii);
+        $doi = get_doi_from_pii($pii);
         $this->assertSame($doi_expect, $doi);
     }
 }
