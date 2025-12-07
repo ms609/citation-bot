@@ -2729,7 +2729,7 @@ final class Template
  // it looks for a parameter before adding the url.
     public function get_identifiers_from_url(?string $url_sent = null): bool
     {
-        return Zotero::find_indentifiers_in_urls($this, $url_sent);
+        return find_indentifiers_in_urls($this, $url_sent);
     }
 
     private function get_doi_from_text(): void
