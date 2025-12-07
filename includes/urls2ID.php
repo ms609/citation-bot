@@ -224,8 +224,8 @@ declare(strict_types=1);
                     }
                     return false;
                 } elseif ($template->blank('jstor')) {
-                    curl_setopt(self::$ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
-                    $dat = bot_curl_exec(self::$ch_jstor);
+                    curl_setopt($ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
+                    $dat = bot_curl_exec($ch_jstor);
                     if ($dat &&
                             stripos($dat, 'No RIS data found for') === false &&
                             stripos($dat, 'Block Reference') === false &&
@@ -457,9 +457,9 @@ declare(strict_types=1);
                     if (is_null($url_sent)) {
                         if (stripos($url, ".pdf") !== false) {
                             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
-                            curl_setopt(self::$ch_pmc, CURLOPT_URL, $test_url);
-                            $the_pmc_body = bot_curl_exec(self::$ch_pmc);
-                            $httpCode = (int) curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
+                            curl_setopt($ch_pmc, CURLOPT_URL, $test_url);
+                            $the_pmc_body = bot_curl_exec($ch_pmc);
+                            $httpCode = (int) curl_getinfo($ch_pmc, CURLINFO_HTTP_CODE);
                             if ($httpCode > 399 || $httpCode === 0 || strpos($the_pmc_body, 'Administrative content — journal masthead, notices, indexes, etc - PMC') !== false) { // Some PMCs do NOT resolve. So leave URL
                                 return $template->add_if_new('pmc', $new_pmc);
                             }
