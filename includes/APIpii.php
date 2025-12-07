@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
     function get_doi_from_pii(string $pii): string {
-        static CurlHandle? $ch_pii;
+        static $ch_pii;
         if (null === $ch_pii) {
         	$ch_pii = bot_curl_init($time, []);
         }
