@@ -2,22 +2,17 @@
 
 declare(strict_types=1);
 
-// TOOO pull out
+require_once 'constants.php'; // @codeCoverageStart
+require_once 'Template.php';
+require_once('includes/APIieee.php');
+require_once('includes/urls2ID.php');
 require_once('includes/APIpii.php');
-require_once('includes/RemoveDupURL.php');
-
-require_once 'constants.php'; // @codeCoverageIgnore
-require_once 'Template.php';  // @codeCoverageIgnore
-
-require_once 'includes/APIieee.php'; // Todo - directly use
+require_once('includes/RemoveDupURL.php'); // @codeCoverageEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'];
 const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
-
-require_once('includes/urls2ID.php'); // todo use directly
-
 
 /**
     @param array<string> $_ids
