@@ -2011,5 +2011,5 @@ final class Zotero {
 
 
 // TOOO pull out
-require_once('include/APIpii.php');
-require_once('include/RemoveDupURL.php');
+require_once('includes/APIpii.php');
+require_once('includes/RemoveDupURL.php');
