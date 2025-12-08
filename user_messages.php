@@ -106,8 +106,8 @@ function echoable(?string $string): string {
 
 function pubmed_link(string $identifier, string $pm): string {
     return HTML_OUTPUT
-       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank" aria-label="Open PMID in new window">' . strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
-       : strtoupper($identifier) . ' ' . echoable($pm);
+       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank" aria-label="Open PMID in new window">' . mb_strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
+       : mb_strtoupper($identifier) . ' ' . echoable($pm);
 }
 
 function bibcode_link(string $id): string {
