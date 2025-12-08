@@ -340,7 +340,7 @@ final class Template
                         $this->quietly_forget('CITATION_BOT_PLACEHOLDER_year'); // @codeCoverageIgnore
                         $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date'); // @codeCoverageIgnore
                     }
-              break;
+                    break;
                 case "cite journal":
                     $this->use_sici();
             }
@@ -1254,7 +1254,7 @@ final class Template
                     /** @psalm-suppress NoValue */
                     return $this->add($param_name, clean_up_full_names($value));
                 }
-          return false;
+                return false;
 
             case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match):
                 if ($this->had_initial_editor()) {
@@ -1270,7 +1270,7 @@ final class Template
                     /** @psalm-suppress NoValue */
                     return $this->add($param_name, clean_up_first_names($value));
                 }
-          return false;
+                return false;
 
             case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match):
                 if ($this->had_initial_editor()) {
@@ -1286,7 +1286,7 @@ final class Template
                     /** @psalm-suppress NoValue */
                     return $this->add($param_name, clean_up_last_names($value));
                 }
-          return false;
+                return false;
 
             case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match):
                 if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) {
@@ -1296,7 +1296,7 @@ final class Template
                     /** @psalm-suppress NoValue */
                     return $this->add($param_name, clean_up_full_names($value));
                 }
-          return false;
+                return false;
 
             // AUTHORS
             case "author":
@@ -1316,14 +1316,14 @@ final class Template
                         return $this->add($param_name, clean_up_last_names($value));
                     }
                 }
-          return false;
+                return false;
 
             case "first":
             case "first1":
                 if ($this->blank(FIRST_FORENAME_ALIASES)) {
                     return $this->add($param_name, clean_up_first_names($value));
                 }
-          return false;
+                return false;
             case "last2":
             case "last3":
             case "last4":
@@ -1535,7 +1535,7 @@ final class Template
                         return $this->add($param_name, $value);
                     }
                 }
-          return false;
+                return false;
             case "first2":
             case "first3":
             case "first4":
@@ -1637,21 +1637,21 @@ final class Template
                 if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo])) && under_two_authors($this->get('author'))) {
                     return $this->add($param_name, clean_up_first_names($value));
                 }
-          return false;
+                return false;
 
             case 'displayauthors':
             case 'display-authors':
                 if ($this->blank(DISPLAY_AUTHORS)) {
                     return $this->add('display-authors', $value);
                 }
-          return false;
+                return false;
 
             case 'displayeditors':
             case 'display-editors':
                 if ($this->blank(DISPLAY_EDITORS)) {
                     return $this->add('display-editors', $value);
                 }
-          return false;
+                return false;
 
             case 'accessdate':
             case 'access-date':
@@ -1663,7 +1663,7 @@ final class Template
                     $value = self::localize_dates($time);
                     return $this->add('access-date', $value);
                 }
-          return false;
+                return false;
 
             case 'archivedate':
             case 'archive-date':
@@ -1675,7 +1675,7 @@ final class Template
                     $value = self::localize_dates($time);
                     return $this->add('archive-date', $value);
                 }
-          return false;
+                return false;
 
             case 'pmc-embargo-date': // Must come in formatted right!
                 if (!$this->blank('pmc-embargo-date')) {
@@ -1689,7 +1689,7 @@ final class Template
                 if ($now_date > $new_date) {
                     return false;
                 }
-          return $this->add('pmc-embargo-date', $value);
+                return $this->add('pmc-embargo-date', $value);
 
             // DATE AND YEAR
 
@@ -1741,7 +1741,7 @@ final class Template
                     $this->tidy_parameter('isbn');
                     return true;
                 }
-          return false;
+                return false;
 
             // JOURNAL IDENTIFIERS
 
@@ -1750,20 +1750,20 @@ final class Template
                     // Only add ISSN if journal is unspecified
                     return $this->add($param_name, $value);
                 }
-          return false;
+                return false;
 
             case 'issn_force': // When dropping URL, force adding it
                 if ($this->blank('issn') && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
                     return $this->add('issn', $value);
                 }
-          return false;
+                return false;
 
             case 'ismn':
                 $value = str_ireplace('m', '9790', $value); // update them
                 if ($this->blank('ismn')) {
                     return $this->add('ismn', $value);
                 }
-          return false;
+                return false;
 
             case 'periodical':
             case 'journal':
@@ -1905,7 +1905,7 @@ final class Template
                         return $my_return;
                     }
                 }
-          return false;
+                return false;
 
             case 'series':
                 if ($this->blank($param_name)) {
@@ -1924,7 +1924,7 @@ final class Template
                     }
                     return $this->add($param_name, $value);
                 }
-          return false;
+                return false;
 
             case 'chapter':
             case 'contribution':
@@ -1940,7 +1940,7 @@ final class Template
                 if ($this->blank(CHAPTER_ALIASES)) {
                     return $this->add($param_name, wikify_external_text($value));
                 }
-          return false;
+                return false;
 
             //  ARTICLE LOCATORS
             // (page, volume etc)
@@ -1979,7 +1979,7 @@ final class Template
                         }
                     }
                 }
-          return false;
+                return false;
 
             case 'volume':
                 if ($this->blank($param_name) || str_i_same('in press', $this->get($param_name))) {
@@ -2029,7 +2029,7 @@ final class Template
                         return $this->add($param_name, $value);
                     }
                 }
-          return false;
+                return false;
 
             case 'issue':
             case 'number':
@@ -2081,7 +2081,7 @@ final class Template
                     $this->set($param_name, $value); // Updating bad data
                     return true;
                 }
-          return false;
+                return false;
 
             case "page":
             case "pages":
@@ -2198,7 +2198,7 @@ final class Template
                     $this->tidy_parameter($param_name); // Clean up dashes etc
                     return true;
                 }
-          return false;
+                return false;
 
             //  ARTICLE IDENTIFIERS
 
@@ -2222,7 +2222,7 @@ final class Template
                         return false;
                     }
                 }
-          return $this->add($param_name, $value);
+                return $this->add($param_name, $value);
 
             case 'chapter-url':
                 $value = sanitize_string($value);
@@ -2238,7 +2238,7 @@ final class Template
                 if (preg_match('~\[\[.+\]\]~', $chap)) {
                     return false;
                 } // Chapter is already wikilinked
-          return $this->add($param_name, $value);
+                return $this->add($param_name, $value);
 
             case 'archive-url':
                 if ($this->blank(['archive-url', 'archiveurl'])) {
@@ -2246,13 +2246,13 @@ final class Template
                     $this->tidy_parameter($param_name);
                     return true;
                 }
-          return false;
+                return false;
 
             case 'title-link':
                 if ($this->blank(array_merge(TITLE_LINK_ALIASES, ['url']))) {
                     return $this->add($param_name, $value); // We do not sanitize this, since it is not new data
                 }
-          return false;
+                return false;
 
             case 'class':
                 if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === false) {
@@ -2262,7 +2262,7 @@ final class Template
                         return $this->add($param_name, sanitize_string($value));
                     }
                 }
-          return false;
+                return false;
 
             case 'doi':
                 if (doi_is_bad($value)) {
@@ -2291,7 +2291,7 @@ final class Template
                         return true;
                     }
                 }
-          return false;
+                return false;
 
             case 'doi-access':
                 if ($this->blank('doi') || $this->has($param_name)) {
@@ -2306,7 +2306,7 @@ final class Template
                     drop_urls_that_match_dois($this->this_array);
                     $this->this_array = [];
                 }
-          return true;
+                return true;
 
             case 's2cid':
                 if (in_array($value, ['11008564'], true)) {
@@ -2317,7 +2317,7 @@ final class Template
                     get_doi_from_semanticscholar($this);
                     return true;
                 }
-          return false;
+                return false;
 
             case 'eprint':
             case 'arxiv':
@@ -2325,7 +2325,7 @@ final class Template
                     $this->add($param_name, $value);
                     return true;
                 }
-          return false;
+                return false;
 
             case 'doi-broken-date':
                 if ($this->blank('jstor')) {
@@ -2380,7 +2380,7 @@ final class Template
                     return $this->add($param_name, $last_day);
                 }
                 // @codeCoverageIgnoreEnd
-          return false;
+                return false;
 
             case 'pmid':
                 if ($value === "0") {
@@ -2395,7 +2395,7 @@ final class Template
                     get_doi_from_crossref($this);
                     return true;
                 }
-          return false;
+                return false;
 
             case 'pmc':
                 if ($value === "PMC0" || $value === "0") {
@@ -2408,7 +2408,7 @@ final class Template
                     }
                     return true;
                 }
-          return false;
+                return false;
 
             case 'bibcode_nosearch': // Avoid recursive loop
             case 'bibcode':
@@ -2441,7 +2441,7 @@ final class Template
                     }
                     return true;
                 }
-          return false;
+                return false;
 
             case 'isbn':
                 if (in_array($value, BAD_ISBN, true)) {
@@ -2467,7 +2467,7 @@ final class Template
                     $value = addISBNdashes($value);
                     return $this->add($param_name, $value);
                 }
-          return false;
+                return false;
 
             case 'asin':
                 if ($this->blank($param_name)) {
@@ -2489,7 +2489,7 @@ final class Template
                         return $this->add($param_name, sanitize_string($value));
                     }
                 }
-          return false;
+                return false;
 
             case 'publisher':
                 if ($this->had_initial_publisher) {
@@ -2540,7 +2540,7 @@ final class Template
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, $value);
                 }
-          return false;
+                return false;
 
             case 'type':
                 if (
@@ -2553,13 +2553,13 @@ final class Template
                 ) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case 'agency':
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case 'location':
                 if ($this->had_initial_publisher) {
@@ -2568,7 +2568,7 @@ final class Template
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case 'jstor':
                 if ($value === '3511692') {
@@ -2577,7 +2577,7 @@ final class Template
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case 'zbl':
             case 'oclc':
@@ -2594,27 +2594,27 @@ final class Template
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
                 /** @psalm-suppress NoValue */
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
-          return false;
+                return false;
 
             case 'id':
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, $value); // Do NOT Sanitize.  It includes templates often
                 }
-          return false;
+                return false;
 
             case 'edition':
                 if ($this->blank($param_name)) {
                     $this->add($param_name, $value);
                     return true;
                 }
-          return false;
+                return false;
 
             case 'work':
             case 'encyclopedia':
@@ -2629,13 +2629,13 @@ final class Template
                 if ($this->blank(WORK_ALIASES)) {
                     return $this->add($param_name, $value);
                 }
-          return false;
+                return false;
 
             case 'website':
                 if ($this->blank(WORK_ALIASES)) {
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
-          return false;
+                return false;
 
             case 'article-number':
                 if ($this->blank($param_name)) {
@@ -2653,7 +2653,7 @@ final class Template
                     }
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
-          return false;
+                return false;
 
             default:
                 // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
@@ -2662,7 +2662,7 @@ final class Template
                 // if ($this->blank($param_name)) {
                 //  return $this->add($param_name, sanitize_string($value));
                 // }
-          return false;
+                return false;
             // @codeCoverageIgnoreEnd
         }
     }
@@ -2897,28 +2897,28 @@ final class Template
                             break;
                         case "I":
                             $endnote_parameter = "publisher";
-                         break;
+                            break;
                         case "C":
                             $endnote_parameter = "location";
-                         break;
+                            break;
                         case "J":
                             $endnote_parameter = "journal";
-                         break;
+                            break;
                         case "N":
                                      $endnote_parameter = "issue";
-                break;
+                            break;
                         case "P":
                                   $endnote_parameter = "pages";
-                break;
+                            break;
                         case "T":
                                $endnote_parameter = "title";
-                break;
+                            break;
                         case "U":
                             $endnote_parameter = "url";
-                break;
+                            break;
                         case "V":
                             $endnote_parameter = "volume";
-             break;
+                            break;
                         case "@": // ISSN / ISBN
                             if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_line, $matches)) {
                                 $endnote_datum = $matches[1];
@@ -2929,7 +2929,7 @@ final class Template
                             } else {
                                 $endnote_parameter = false;
                             }
-             break;
+                            break;
                         case "R": // Resource identifier... *may* be DOI but probably isn't always.
                             $matches = extract_doi($endnote_datum)[1];
                             if ($matches !== '') {
@@ -2938,14 +2938,14 @@ final class Template
                             } else {
                                 $endnote_parameter = false;
                             }
-             break;
+                            break;
                         case "8": // Date
                         case "0": // Citation type
                         case "X": // Abstract
                         case "M": // Object identifier
                             $dat = mb_trim(str_replace("\n%" . $endnote_line, "", "\n" . $dat));
                             $endnote_parameter = false;
-             break;
+                            break;
                         default:
                             $endnote_parameter = false;
                     }
@@ -3187,7 +3187,7 @@ final class Template
                             $this->add_if_new('arxiv', $subtemplate->param_value(0));
                         }
                         $id = str_replace($matches[0][$i], '', $id);
-                  break;
+                        break;
                     case "asin":
                     case "oclc":
                     case "bibcode":
@@ -3257,7 +3257,7 @@ final class Template
                         if ($did_it) {
                             $id = str_replace($matches[0][$i], '', $id);
                         }
-                  break;
+                        break;
 
                     // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
                     case "circe":
@@ -3392,7 +3392,7 @@ final class Template
                     case "lccn8": // Assume not normal template for a reason
                     case "google books": // Usually done for fancy formatting and because already has title-link/url
                     case "url": // Untrustable: used by bozos
-                  break;
+                        break;
                     default:
                            report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
                 }
@@ -3770,7 +3770,7 @@ final class Template
                 case 'cite journal':
                     $this->rename('eprint', 'arxiv');
                     $this->forget('class');
-              break;
+                    break;
             }
         }
         if ($new_name === 'cite book' && $this->wikiname() === 'cite book') {
@@ -3978,7 +3978,7 @@ final class Template
                     if ($this->has($param) && $this->blank(ALL_URL_TYPES)) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'agency':
                     if (
@@ -4032,13 +4032,13 @@ final class Template
                             }
                         }
                     }
-              return;
+                    return;
 
                 case 'arxiv':
                     if ($this->has($param) && $this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
-              return;
+                    return;
 
                 case 'author':
                     $the_author = $this->get($param);
@@ -4148,7 +4148,7 @@ final class Template
                             $this->rename('author-mask', 'author-mask1');
                         }
                     }
-              return;
+                    return;
 
                 case 'first':
                     if (!$pmatch[2] && !$this->blank(['last1', 'first2', 'last2'])) {
@@ -4163,7 +4163,7 @@ final class Template
                             $this->rename('author-mask', 'author-mask1');
                         }
                     }
-              return;
+                    return;
 
                 case 'bibcode':
                     if ($this->blank($param)) {
@@ -4183,7 +4183,7 @@ final class Template
                     } else {
                         $this->change_name_to('cite journal', false);
                     }
-              return;
+                    return;
 
                 case 'chapter':
                     if ($this->has('chapter')) {
@@ -4202,7 +4202,7 @@ final class Template
                     if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
                         $this->change_name_to('cite book');
                     }
-              return;
+                    return;
 
                 case 'contribution':
                     if ($this->has('contribution') && $this->has('url') && $this->blank('contribution-url')) {
@@ -4210,7 +4210,7 @@ final class Template
                                $this->rename('url', 'contribution-url');
                         }
                     }
-              return;
+                    return;
 
                 case 'class':
                     if ($this->blank('class')) {
@@ -4218,7 +4218,7 @@ final class Template
                                $this->forget('class');
                         }
                     }
-              return;
+                    return;
 
                 case 'date':
                     if ($this->blank('date') && $this->has('year')) {
@@ -4227,7 +4227,7 @@ final class Template
                     if (preg_match('~^([A-Za-z]+)\-([A-Za-z]+ \d{4})$~', $this->get('date'), $matched)) {
                         $this->set('date', $matched[1] . '–' . $matched[2]);
                     }
-              return;
+                    return;
 
                 case 'month':
                     if ($this->blank($param)) {
@@ -4268,7 +4268,7 @@ final class Template
                     $new_date = mb_trim($day . ' ' . $month . ' ' . $year);
                     $this->forget('day');
                     $this->rename($param, 'date', $new_date);
-              return;
+                    return;
 
                 case 'dead-url':
                 case 'deadurl':
@@ -4285,7 +4285,7 @@ final class Template
                         $this->rename($param, 'url-status');
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'arşivengelli': // "ignore archive"
                     $the_data = mb_strtolower($this->get($param));
@@ -4300,7 +4300,7 @@ final class Template
                     } else {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'url-status':
                     $the_data = mb_strtolower($this->get($param));
@@ -4309,13 +4309,13 @@ final class Template
                     } elseif (in_array($the_data, NO_LANGS, true)) {
                         $this->set($param, 'live');
                     }
-              return;
+                    return;
 
                 case 'df':
                     if ($this->blank('df')) {
                         $this->forget('df');
                     }
-              return;
+                    return;
 
                 case 'last-author-amp':
                 case 'lastauthoramp':
@@ -4328,13 +4328,13 @@ final class Template
                         $this->rename($param, 'name-list-style', 'amp');
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'doi-access':
                     if ($this->blank('doi') && $this->has('doi-access')) {
                         $this->forget('doi-access');
                     }
-              return;
+                    return;
 
                 case 'doi':
                     $doi = $this->get($param);
@@ -4582,7 +4582,7 @@ final class Template
                             }
                         }
                     }
-              return;
+                    return;
 
                 case 'hdl':
                     $handle = $this->get($param);
@@ -4612,7 +4612,7 @@ final class Template
                         }
                     }
                     $this->set('hdl', $handle);
-              return;
+                    return;
 
                 case 'doi-broken':
                 case 'doi_brokendate':
@@ -4622,14 +4622,14 @@ final class Template
                     if ($this->blank('doi')) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'edition':
                     if ($this->blank($param)) {
                         return;
                     }
                     $this->set($param, safe_preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
-              return; // Don't want 'Edition ed.'
+                    return; // Don't want 'Edition ed.'
 
                 case 'eprint':
                     if ($this->blank($param)) {
@@ -4638,7 +4638,7 @@ final class Template
                     if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
-              return;
+                    return;
 
                 case 'encyclopedia':
                 case 'encyclopeadia':
@@ -4648,7 +4648,7 @@ final class Template
                     if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite encyclopedia');
                     }
-              return;
+                    return;
 
                 case 'format': // clean up bot's old (pre-2018-09-18) edits
                     if ($this->get($param) === 'Accepted manuscript' || $this->get($param) === 'Submitted manuscript' || $this->get($param) === 'Full text') {
@@ -4660,7 +4660,7 @@ final class Template
                             $this->forget($param);
                         }
                     }
-              return;
+                    return;
 
                 case 'chapter-format':
                     // clean up bot's old (pre-2018-09-18) edits
@@ -4681,7 +4681,7 @@ final class Template
                             $this->forget($param); // Has no chapter URL at all
                         }
                     }
-              return;
+                    return;
 
                 case 'isbn':
                     if ($this->blank('isbn')) {
@@ -4693,7 +4693,7 @@ final class Template
                         $this->change_name_to('cite book');
                     }
                     $this->forget('asin');
-              return;
+                    return;
 
                 case 'issn':
                 case 'eissn':
@@ -4709,7 +4709,7 @@ final class Template
                     if ($orig !== $new) {
                         $this->set($param, $new);
                     }
-              return;
+                    return;
 
                 case 'asin':
                     if ($this->blank($param)) {
@@ -4728,7 +4728,7 @@ final class Template
                             $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn));
                         }
                     }
-              return;
+                    return;
 
                 case 'journal':
                 case 'periodical':
@@ -4905,7 +4905,7 @@ final class Template
                         }
                     }
 
-              return;
+                    return;
 
                 case 'jstor':
                     if ($this->blank($param)) {
@@ -4917,7 +4917,7 @@ final class Template
                         $this->set($param, $matches[1]);
                     }
                     $this->change_name_to('cite journal', false);
-              return;
+                    return;
 
                 case 'magazine':
                     if ($this->blank($param)) {
@@ -4927,7 +4927,7 @@ final class Template
                     if ($this->wikiname() === 'cite journal' && !$this->has('journal')) {
                         $this->rename('magazine', 'journal');
                     }
-              return;
+                    return;
 
                 case 'orig-year':
                 case 'origyear':
@@ -4941,25 +4941,25 @@ final class Template
                             $this->rename($param, 'year');
                         }
                     }
-              return;
+                    return;
 
                 case 'mr':
                     if (preg_match("~mr(\d+)$~i", $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     }
-              return;
+                    return;
 
                 case 'day':
                     if ($this->blank($param)) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'others':
                     if ($this->blank($param)) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'pmc-embargo-date':
                     if ($this->blank($param)) {
@@ -4975,7 +4975,7 @@ final class Template
                     if ($now_date > $pmc_date) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'pmc':
                     if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
@@ -4985,7 +4985,7 @@ final class Template
                         return;
                     }
                     $this->change_name_to('cite journal', false);
-              return;
+                    return;
 
                 case 'pmid':
                     if ($this->blank($param)) {
@@ -5003,7 +5003,7 @@ final class Template
                         $this->forget('url');
                     }
                     $this->change_name_to('cite journal', false);
-              return;
+                    return;
 
                 case 'publisher':
                     if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
@@ -5458,7 +5458,7 @@ final class Template
                         return;
                     }
 
-              return;
+                    return;
 
                 case 'quote':
                     $quote = $this->get('quote');
@@ -5469,7 +5469,7 @@ final class Template
                     if ($quote_out !== $quote && $quote_out !== '') {
                         $this->set('quote', $quote_out);
                     }
-              return;
+                    return;
 
                 case 'quotes':
                     switch (mb_strtolower(mb_trim($this->get($param)))) {
@@ -5481,7 +5481,7 @@ final class Template
                         case 'false':
                                $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'ref':
                     $content = mb_strtolower($this->get($param));
@@ -5490,7 +5490,7 @@ final class Template
                     } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
                         $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
                     }
-              return;
+                    return;
 
                 case 'series':
                     if (str_equivalent($this->get($param), $this->get('work'))) {
@@ -5504,7 +5504,7 @@ final class Template
                             }
                         }
                     }
-              return;
+                    return;
 
                 case 'book-title':
                     if ($this->wikiname() === 'cite book') {
@@ -5517,7 +5517,7 @@ final class Template
                             $this->forget('book-title');
                         }
                     }
-              return;
+                    return;
 
                 case 'title':
                     if ($this->blank($param)) {
@@ -5599,13 +5599,13 @@ final class Template
                     if (preg_match("~^in (Proc\.? .+)$~i", $this->get($param), $matches)) {
                         $this->set($param, mb_trim($matches[1]));
                     }
-              return;
+                    return;
 
                 case 'archivedate':
                     if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
                         $this->forget('archivedate');
                     }
-              return;
+                    return;
 
                 case 'archive-url':
                 case 'archiveurl':
@@ -5715,7 +5715,7 @@ final class Template
                             }
                         }
                     }
-              return;
+                    return;
 
                 case 'chapter-url':
                 case 'chapterurl':
@@ -6096,7 +6096,7 @@ final class Template
                             }
                         }
                     }
-              return;
+                    return;
 
                 case 'work':
                     if (
@@ -6122,10 +6122,10 @@ final class Template
                     switch ($this->wikiname()) {
                         case 'cite book':
                             $work_becomes = 'title';
-                      break;
+                            break;
                         case 'cite journal':
                             $work_becomes = 'journal';
-                      break;
+                            break;
                         // case 'cite web': $work_becomes = 'website'; break;  this change should correct, but way too much crap gets put in work that does not belong there.  Secondly this make no change to the what the user sees
                         default:
                             $work_becomes = 'work';
@@ -6190,7 +6190,7 @@ final class Template
                         }
                     }
 
-              return;
+                    return;
 
                 case 'via': // Should just remove all 'via' with no url, but do not want to make people angry
                     if ($this->blank(ALL_URL_TYPES)) {
@@ -6245,7 +6245,7 @@ final class Template
                     if (str_i_same('researchgate', $this->get('via'))) {
                         $this->set('via', 'ResearchGate');
                     }
-              return;
+                    return;
                 case 'volume':
                     if ($this->blank($param)) {
                         return;
@@ -6291,7 +6291,7 @@ final class Template
                         }
                     }
                     $this->volume_issue_demix($this->get($param), $param);
-              return;
+                    return;
 
                 case 'year':
                     if ($this->blank('year')) {
@@ -6485,13 +6485,13 @@ final class Template
                             $this->set($param, $matches[1]);
                         }
                     }
-              return;
+                    return;
 
                 case 'pages totales':
                     if ($this->blank($param) || !$this->blank(PAGE_ALIASES)) {
                         $this->forget($param);
                     }
-              return;
+                    return;
 
                 case 'postscript':
                     if ($this->wikiname() !== 'citation' && $this->get('mode') !== 'cs2' && $this->get($param) === '.') {
@@ -6500,7 +6500,7 @@ final class Template
                     if ($this->wikiname() !== 'citation' && $this->blank($param)) {
                         $this->forget($param);
                     } // Misleading -- blank means default, not blank!!!!
-              return;
+                    return;
 
                 case 'website':
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined' || $this->get($param) === 'myprivacy.dpgmedia.nl') {
@@ -6614,7 +6614,7 @@ final class Template
                         }
                     }
 
-              return;
+                    return;
 
                 case 'location':
                     // Check if it is a URL
@@ -6632,7 +6632,7 @@ final class Template
                     } else {
                         $this->rename($param, 'url');
                     }
-              return;
+                    return;
 
                 case 'article-url':
                 case 'conference-url':
@@ -6654,7 +6654,7 @@ final class Template
                     if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && stripos($this->get($param), 'citation') === false) {
                         $this->set($param, 'http://' . $matches[0]);
                     }
-              return;
+                    return;
             }
         }
     }
