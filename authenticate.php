@@ -85,7 +85,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         if (is_string(@$_GET['return'])) {
             // This could only be tainted input if OAuth server itself was hacked, so flag as safe
             /** @psalm-taint-escape header */
-            $where = trim($_GET['return']);
+            $where = mb_trim($_GET['return']);
             if (mb_substr($where, 0, 1) !== '/' || preg_match('~\s+~', $where)) {
                 death_time('Invalid Access URL');
             }
