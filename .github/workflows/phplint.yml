@@ -1,4 +1,4 @@
-name: PHPLint (PHP syntax check - no style rules)
+name: PHPLint (PHP syntax check)
 
 on:
   push:
