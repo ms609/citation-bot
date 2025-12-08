@@ -30,6 +30,7 @@ on:
       - 'psalm.xml'
       - '.trivyignore'
       - '.phpcs.xml'
+      - '.phplint.yml'
 
   schedule:
     - cron: '25 17 * * 1'
