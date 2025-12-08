@@ -5117,7 +5117,9 @@ final class Template
                     }
                     if ($this->blank(WORK_ALIASES)) {
                         if (in_array(str_replace(['[', ']', '"', "'", 'www.'], '', $publisher), PUBLISHERS_ARE_WORKS, true)) {
-                            if ($this->wikiname() !== 'cite book') $this->rename($param, 'work'); // Don't think about which work it is
+                            if ($this->wikiname() !== 'cite book') {
+                                $this->rename($param, 'work'); // Don't think about which work it is
+                            }
                             return;
                         }
                     } elseif ($this->has('website')) {
