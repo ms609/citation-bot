@@ -283,7 +283,7 @@ final class apiFunctionsTest extends testBaseClass {
         $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
     }
     public function testCrossRefAddSeries2(): void {
-    // Kind of messed up, but "matches" enough to expand
+        // Kind of messed up, but "matches" enough to expand
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
         $template = $this->process_citation($text);
         $this->assertSame("2008", $template->get2('date'));
