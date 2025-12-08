@@ -37,10 +37,10 @@ if (mb_strtolower(substr($category, 0, 9)) === 'category:') {
     $category = mb_trim(substr($category, 9));
 }
 if ($category === '' && isset($_GET["cat"])) {
-   $try = mb_trim(urldecode((string) $_GET["cat"]));
-   if (in_array($try, GET_IS_OKAY, true)) {
-       $category = $try;
-   }
+    $try = mb_trim(urldecode((string) $_GET["cat"]));
+    if (in_array($try, GET_IS_OKAY, true)) {
+        $category = $try;
+    }
 }
 if (!$category) {
     bot_html_header();
@@ -73,7 +73,7 @@ if ($total > intval(MAX_PAGES / 4)) {
     report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
-       echo echoable(str_replace(' ', '_', (string) $page_title)) , "\n";
+        echo echoable(str_replace(' ', '_', (string) $page_title)) , "\n";
     }
     echo "\n\n";
     bot_html_footer();

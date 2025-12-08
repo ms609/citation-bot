@@ -524,64 +524,64 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
- public function testTidy66b(): void {
+    public function testTidy66b(): void {
         $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
- public function testTidy66c(): void {
+    public function testTidy66c(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
     }
 
- public function testTidy66d(): void {
+    public function testTidy66d(): void {
         $text = "{{cite journal|url=https://search.proquest.com/openview/1234abc}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/openview/1234abc', $template->get2('url'));
     }
 
- public function testTidy66e(): void {
+    public function testTidy66e(): void {
         $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc/se-32413232}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
- }
+    }
 
- public function testTidy67(): void {
+    public function testTidy67(): void {
         $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
     }
 
- public function testTidy67b(): void {
+    public function testTidy67b(): void {
         $text = "{{cite journal|url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=library proquest}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
         $this->assertNull($template->get2('via'));
- }
+    }
 
- public function testTidy67c(): void {
+    public function testTidy67c(): void {
         $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
         $this->assertNull($template->get2('via'));
- }
+    }
 
- public function testTidy67d(): void {
+    public function testTidy67d(): void {
         $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
         $this->assertNull($template->get2('via'));
- }
+    }
 
     public function testTidy69(): void {
         $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
@@ -3621,12 +3621,12 @@ final class TemplateTest2 extends testBaseClass {
             $this->assertTrue($template->incomplete());
 
             $this->requires_bibcode(function(): void {
-            $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
-            $template = $this->make_citation($text);
-            $template_array = [$template];
-            $bibcode_array = [$template->get('bibcode')];
-            query_bibcode_api($bibcode_array, $template_array);
-            $this->assertSame('X', $template->get2('bibcode'));
+                $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+                $template = $this->make_citation($text);
+                $template_array = [$template];
+                $bibcode_array = [$template->get('bibcode')];
+                query_bibcode_api($bibcode_array, $template_array);
+                $this->assertSame('X', $template->get2('bibcode'));
             });
     }
 
@@ -3672,46 +3672,46 @@ final class TemplateTest2 extends testBaseClass {
 
     public function testBadBibcodeARXIVPages(): void {
         $this->requires_bibcode(function(): void {
-        $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
-        $expanded = $this->process_citation($text);
-        $pages = (string) $expanded->get2('pages');
-        $this->assertFalse(stripos($pages, 'astro'));
-        $this->assertNull($expanded->get2('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+            $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+            $expanded = $this->process_citation($text);
+            $pages = (string) $expanded->get2('pages');
+            $this->assertFalse(stripos($pages, 'astro'));
+            $this->assertNull($expanded->get2('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
         });
     }
 
     public function testNoBibcodesForArxiv(): void {
         $this->requires_bibcode(function(): void {
-        $text = "{{Cite arXiv|last1=Sussillo|first1=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
-        $expanded = $this->process_citation($text);
-        $this->assertNull($expanded->get2('bibcode'));  // If this eventually gets a journal, we will have to change the test
+            $text = "{{Cite arXiv|last1=Sussillo|first1=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+            $expanded = $this->process_citation($text);
+            $this->assertNull($expanded->get2('bibcode'));  // If this eventually gets a journal, we will have to change the test
         });
     }
 
     public function testNoBibcodesForBookReview(): void {
         $this->requires_bibcode(function(): void {      // don't add isbn. It causes early exit
-        $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
-        $expanded = $this->make_citation($text);
-        expand_by_adsabs($expanded); // Won't expand because of bookish stuff
-        $this->assertNull($expanded->get2('bibcode'));
+            $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
+            $expanded = $this->make_citation($text);
+            expand_by_adsabs($expanded); // Won't expand because of bookish stuff
+            $this->assertNull($expanded->get2('bibcode'));
         });
     }
 
     public function testFindBibcodeNoTitle(): void {
         $this->requires_bibcode(function(): void {
-        $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999 |issn = 1463-9076}}";
-        $expanded = $this->make_citation($text);
-        expand_by_adsabs($expanded);
-        $this->assertSame('1999PCCP....1..967G', $expanded->get2('bibcode'));
+            $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999 |issn = 1463-9076}}";
+            $expanded = $this->make_citation($text);
+            expand_by_adsabs($expanded);
+            $this->assertSame('1999PCCP....1..967G', $expanded->get2('bibcode'));
         });
     }
 
     public function testFindBibcodeForBook(): void {
         $this->requires_bibcode(function(): void {
-        $text = "{{Cite journal | doi=10.2277/0521815363}}";
-        $expanded = $this->make_citation($text);
-        expand_by_adsabs($expanded);
-        $this->assertSame('2003hoe..book.....K', $expanded->get2('bibcode'));
+            $text = "{{Cite journal | doi=10.2277/0521815363}}";
+            $expanded = $this->make_citation($text);
+            expand_by_adsabs($expanded);
+            $this->assertSame('2003hoe..book.....K', $expanded->get2('bibcode'));
         });
     }
 

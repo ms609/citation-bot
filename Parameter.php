@@ -17,11 +17,11 @@ final class Parameter {
     public string $val = '';
     public string $post = '';
 
-/*
- * Breaks a citation template down to component parts.
- * Expects that any instances of "|" in $text will have been replaced with
- * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
- */
+    /**
+     * Breaks a citation template down to component parts.
+     * Expects that any instances of "|" in $text will have been replaced with
+     * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
+     */
     public function parse_text(string $text): void {
         $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
         $split = explode('=', $text, 2);
@@ -74,9 +74,9 @@ final class Parameter {
             }
         }
     }
-/*
- * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
- */
+    /**
+     * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
+     */
     public function parsed_text(): string {
         return $this->pre . $this->param . $this->eq . $this->val . $this->post;
     }

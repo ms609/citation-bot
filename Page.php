@@ -155,7 +155,7 @@ class Page {
     }
     // $identifier: parameter to send to api_function, e.g. "pmid"
     // $templates: array of pointers to the templates
-/** @param array<Template> $templates */
+    /** @param array<Template> $templates */
     public function expand_templates_from_identifier(string $identifier, array &$templates): void { // Pointer to save memory
         $ids = [];
         set_time_limit(120);
@@ -713,10 +713,10 @@ class Page {
                 'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
                 'cite new |', 'cite new |', 'cite |', 'Cite |',
             ] as $try_me) {
-                    if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
-                        $auto_summary .= 'Removed Template redirect. ';
-                        break;
-                    }
+                if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
+                    $auto_summary .= 'Removed Template redirect. ';
+                    break;
+                }
             }
         }
         if (!$auto_summary) {

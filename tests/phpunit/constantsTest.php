@@ -111,12 +111,12 @@ final class constantsTest extends testBaseClass {
     public function testAllFreeOfUTF(): void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS, HAS_NO_ISSUE already has UTF-8)
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
-                                 PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                                 JOURNAL_IS_BOOK_SERIES, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
-                                 PREFER_ISSUES, PARAMETER_LIST, LOTS_OF_EDITORS,
-                                 TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS,
-                                 TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
-                                 TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
+                                PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                                JOURNAL_IS_BOOK_SERIES, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                                PREFER_ISSUES, PARAMETER_LIST, LOTS_OF_EDITORS,
+                                TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS,
+                                TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
+                                TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
         foreach ($big_array as $actual) {
             $this->assertSame(mb_strtolower($actual), /** Do not make mb_ */strtolower($actual));
             $this->assertSame(mb_strtoupper($actual), /** Do not make mb_ */strtoupper($actual));
@@ -126,9 +126,9 @@ final class constantsTest extends testBaseClass {
     public function testNoSpacesOnEnds(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
-                                 PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                                 JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
-                                 PREFER_ISSUES);
+                                PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                                JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                                PREFER_ISSUES);
         foreach ($big_array as $actual) {
             if (!in_array($actual, ["sign up "], true)) {
                 $this->assertSame(mb_trim($actual), $actual);
@@ -201,14 +201,14 @@ final class constantsTest extends testBaseClass {
         preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
         $their_whitelist = $matches[1];
         $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
-                             'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
-                             'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
-                             'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
-                             'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
-                             'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-                             'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+                            'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
+                            'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
+                            'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
+                            'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
+                            'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
+                            'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
         $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
-                                             $patent_whitelist, $their_whitelist);
+                                            $patent_whitelist, $their_whitelist);
         $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
         $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
@@ -217,34 +217,34 @@ final class constantsTest extends testBaseClass {
         $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
 
         if (count($our_internal_extra) !== 0) {
-             $this->flush();
-             echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
-             print_r($our_internal_extra);
-             $this->flush();
-             $we_failed = true;
+            $this->flush();
+            echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
+            print_r($our_internal_extra);
+            $this->flush();
+            $we_failed = true;
         }
         if (count($our_extra) !== 0) {
-             $this->flush();
-             echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
-             print_r($our_extra);
-             $this->flush();
-             $we_failed = true;
+            $this->flush();
+            echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+            print_r($our_extra);
+            $this->flush();
+            $we_failed = true;
         }
         if (count($our_missing) !== 0) {
-             $this->flush();
-             echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
-             print_r($our_missing);
-             $this->flush();
-             $we_failed = true;
+            $this->flush();
+            echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+            print_r($our_missing);
+            $this->flush();
+            $we_failed = true;
         }
         if ($our_whitelist !== $our_whitelist_sorted) {
-             $this->flush();
-             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
-             foreach($our_whitelist_sorted as $value) {
-                 echo "    '" . $value . "',\n";
-             }
-             $this->flush();
-             $we_failed = true;
+            $this->flush();
+            echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+            foreach($our_whitelist_sorted as $value) {
+                echo "    '" . $value . "',\n";
+            }
+            $this->flush();
+            $we_failed = true;
         }
         $this->assertFalse($we_failed);
     }
@@ -345,32 +345,32 @@ final class constantsTest extends testBaseClass {
         $missing_flat = array_diff($test_flat, $flat);
 
         if (!empty($extra_flat)) {
-             $this->flush();
-             echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
-             print_r($extra_flat);
-             $this->flush();
-             $failed = true;
+            $this->flush();
+            echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
+            print_r($extra_flat);
+            $this->flush();
+            $failed = true;
         }
         if (!empty($missing_flat)) {
-             $this->flush();
-             echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
-             print_r($missing_flat);
-             echo "\n expected \n";
-             print_r($test_flat);
-             $this->flush();
-             $failed = true;
+            $this->flush();
+            echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+            print_r($missing_flat);
+            echo "\n expected \n";
+            print_r($test_flat);
+            $this->flush();
+            $failed = true;
         }
         if (count($flat) !== count(array_unique($flat))) {
-             $this->flush();
-             echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
-             sort($flat);
-             $last = 'XXXXXXXX';
-             foreach ($flat as $param) {
-                 if ($param === $last) echo "\n" . $param . "\n";
-                 $last = $param;
-             }
-             $this->flush();
-             $failed = true;
+            $this->flush();
+            echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+            sort($flat);
+            $last = 'XXXXXXXX';
+            foreach ($flat as $param) {
+                if ($param === $last) echo "\n" . $param . "\n";
+                $last = $param;
+            }
+            $this->flush();
+            $failed = true;
         }
         $this->assertFalse($failed);
     }
@@ -383,28 +383,28 @@ final class constantsTest extends testBaseClass {
         $last = 'XXXXXXXX';
         foreach ($flat as $param) {
             if (substr($param, -1) !== '/') {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+                $this->flush();
             }
             if ($param === $last) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+                $this->flush();
             }
             if (strpos($param, '.') === false) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+                $this->flush();
             }
             if (preg_match('~\s~', $param) !== 0) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+                $this->flush();
             }
             $last = $param;
         }
@@ -421,20 +421,20 @@ final class constantsTest extends testBaseClass {
                 $check = str_ireplace($bad, '', $check);
             }
             if ($check !== $journal) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
+                $this->flush();
             }
             $check = $journal;
             foreach (JOURNAL_ARCHIVES_SITES as $bad) {
                 $check = str_ireplace($bad, '', $check);
             }
             if ($check !== $journal) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n JOURNAL_ARCHIVES_SITES damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n JOURNAL_ARCHIVES_SITES damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
+                $this->flush();
             }
         }
         foreach (NON_JOURNAL_WEBSITES as $journal) {
@@ -444,10 +444,10 @@ final class constantsTest extends testBaseClass {
                 $check = str_ireplace($bad, '', $check);
             }
             if ($check !== $journal) {
-                 $failed = true;
-                 $this->flush();
-                 echo "\n\n NON_JOURNAL_WEBSITES damaged by JOURNAL_ARCHIVES_SITES: " . $journal . ' changed to ' . $check . "\n\n";
-                 $this->flush();
+                $failed = true;
+                $this->flush();
+                echo "\n\n NON_JOURNAL_WEBSITES damaged by JOURNAL_ARCHIVES_SITES: " . $journal . ' changed to ' . $check . "\n\n";
+                $this->flush();
             }
         }
         $this->assertFalse($failed);
@@ -473,9 +473,9 @@ final class constantsTest extends testBaseClass {
             echo "const ITALICS_LIST =\n";
             for ($i = $max_spaces; $i > -1 ; $i--) {
                 foreach ($italics as $item) {
-                     if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
-                          echo ' "' . $item . '|" .' . "\n";
-                     }
+                    if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
+                         echo ' "' . $item . '|" .' . "\n";
+                    }
                 }
             }
             echo ' "END_OF_CITE_list_junk";' . "\n";

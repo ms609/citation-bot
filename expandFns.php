@@ -2939,8 +2939,8 @@ function simplify_google_search(string $url): string {
             case "kponly":
                 $url .=  $part . "&" ;
                 break;
-            default:
             // @codeCoverageIgnoreStart
+            default:
                 report_minor_error("Unexpected Google URL component:    " . echoable($part));
                 $url .=  $part . "&" ;
                 break;
@@ -3004,21 +3004,21 @@ function echoable_doi(string $doi): string {
 }
 
 
-    function clean_volume(string $volume): string {
-        if (strpos($volume, "(") !== false) {
-            return '';
-        }
-        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
-            return ''; // Do not add date
-        }
-        if (stripos($volume, "november") !== false) {
-            return '';
-        }
-        if (stripos($volume, "nostradamus") !== false) {
-            return '';
-        }
-        return mb_trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
-         'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
-         'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
+function clean_volume(string $volume): string {
+    if (strpos($volume, "(") !== false) {
+        return '';
     }
+    if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+        return ''; // Do not add date
+    }
+    if (stripos($volume, "november") !== false) {
+        return '';
+    }
+    if (stripos($volume, "nostradamus") !== false) {
+        return '';
+    }
+    return mb_trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
+     'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
+     'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
+}
 

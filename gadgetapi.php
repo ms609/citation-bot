@@ -35,13 +35,13 @@ try {
     ob_end_clean();
     $newText = $page->parsed_text();
     if ($newText === "") {
-       throw new Exception('text lost');    // @codeCoverageIgnore
+        throw new Exception('text lost');    // @codeCoverageIgnore
     }
 
     //Modify edit summary to identify bot-assisted edits
     if ($newText !== $originalText) {
         if ($editSummary) {
-           $editSummary .= ' | '; // Add pipe if already something there.
+            $editSummary .= ' | '; // Add pipe if already something there.
         }
         $editSummary .= str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
     }
