@@ -4704,7 +4704,7 @@ final class Template
                     $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
                     $new = str_replace('x', 'X', $new);
                     if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
-                        $new = $matches[1] . '-' . strtoupper($matches[2]); // Add dash
+                        $new = $matches[1] . '-' . mb_strtoupper($matches[2]); // Add dash
                     }
                     if ($orig !== $new) {
                         $this->set($param, $new);
