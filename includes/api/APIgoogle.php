@@ -235,7 +235,7 @@ function google_book_details(Template $template, string $gid): void
   if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) {
    // Too many errors in gBook database to add to existing data. Only add if blank.
    foreach ($xml->dc___creator as $author) {
-    if (strtolower(str_replace("___", ":", (string) $author)) === "gale group") {
+    if (mb_strtolower(str_replace("___", ":", (string) $author)) === "gale group") {
      break;
     }
     if (preg_match('~\d{4}~', (string) $author)) {
@@ -541,7 +541,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         }
     }
     if (isset($book_array['sitesec'])) { // Overrides all other setting
-        if (strtolower($book_array['sitesec']) === 'reviews') {
+        if (mb_strtolower($book_array['sitesec']) === 'reviews') {
             $url .= '&sitesec=reviews';
             unset($book_array['q']);
             unset($book_array['pg']);
