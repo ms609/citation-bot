@@ -187,7 +187,7 @@ function expand_by_adsabs(Template $template): void
        strpos($template->get_without_comments_and_placeholders("title"), ' ') === false) {
     return;
    }
-   $the_query = "title:" . urlencode('"' . trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $template->get_without_comments_and_placeholders("title")))) . '"');
+   $the_query = "title:" . urlencode('"' . mb_trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $template->get_without_comments_and_placeholders("title")))) . '"');
    $pages = $template->page_range();
    if ($pages) {
     $the_query = $the_query . "&fq=page:" . urlencode('"' . $pages[1] . '"');
@@ -541,7 +541,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
                 $rlr=intval($rate_limit_reset[1]);
                 $retry_msg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
             }
-            $retry_msg = trim($retry_msg);
+            $retry_msg = mb_trim($retry_msg);
             if ($retry_msg !== '') {
                 if (is_int($time_to_sleep) && ($time_to_sleep > 0)) {
                     $retry_msg .= ' Sleeping...';
