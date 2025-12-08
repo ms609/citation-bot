@@ -130,11 +130,11 @@ final class constantsTest extends testBaseClass {
         $old_contents = file_get_contents($filename);
         $sections = explode($start_alpha, $old_contents);
         foreach ($sections as &$section) {
-            $alpha_end = stripos($section, $end_alpha);
+            $alpha_end = mb_stripos($section, $end_alpha);
             if (!$alpha_end) {
                 continue;
             }
-            $alpha_bit = substr($section, 0, $alpha_end);
+            $alpha_bit = mb_substr($section, 0, $alpha_end);
             $alpha_bits = preg_split('~(?<=\'),~', $alpha_bit);
             $alpha_bits = array_map('mb_trim', $alpha_bits);
             if ($leader) {
@@ -167,12 +167,12 @@ final class constantsTest extends testBaseClass {
 
         $new_contents = implode($start_alpha, $sections);
 
-        if (preg_replace('/\s+/','', $new_contents) === preg_replace('/\s+/','', $old_contents)) {
+        if (preg_replace('~\s+~','', $new_contents) === preg_replace('~\s+~','', $old_contents)) {
             $this->assertTrue(true);
         } else {
             $this->flush();
-            echo "\n\n" . $filename . " needs alphabetized as follows\n";
-            echo $new_contents . "\n\n\n";
+            echo "\n\n", $filename, " needs alphabetized as follows\n";
+            echo $new_contents, "\n\n\n";
             $this->flush();
             $this->assertTrue(false);
         }
