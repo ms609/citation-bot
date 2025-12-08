@@ -98,52 +98,52 @@ function get_semanticscholar_license(string $s2cid): ?bool {
 
 function get_doi_from_semanticscholar(Template $template): void
  {
-  set_time_limit(120);
-  if ($template->has('doi')) {
-   return;
-  }
-  if ($template->blank(['s2cid', 'S2CID'])) {
-   return;
-  }
-  if ($template->has('s2cid') && $template->has('S2CID')) {
-   return;
-  }
-  report_action("Checking semanticscholar database for doi. ");
-  $doi = ConvertS2CID_DOI($template->get('s2cid') . $template->get('S2CID'));
-  if ($doi) {
-   report_inline(" Successful!");
-   $template->add_if_new('doi', $doi);
-  }
-  return;
- }
+    set_time_limit(120);
+    if ($template->has('doi')) {
+        return;
+    }
+    if ($template->blank(['s2cid', 'S2CID'])) {
+        return;
+    }
+    if ($template->has('s2cid') && $template->has('S2CID')) {
+        return;
+    }
+    report_action("Checking semanticscholar database for doi. ");
+    $doi = ConvertS2CID_DOI($template->get('s2cid') . $template->get('S2CID'));
+    if ($doi) {
+        report_inline(" Successful!");
+        $template->add_if_new('doi', $doi);
+    }
+    return;
+}
 
 
 
 
 function get_semanticscholar_url(Template $template, string $doi): void
  {
-  static $ch = null;
-  if ($ch === null) {
-   $ch = bot_curl_init(0.5, HEADER_S2);
-  }
-  set_time_limit(120);
-  if ($template->has('pmc') || ($template->has('doi') && $template->get('doi-access') === 'free') || ($template->has('jstor') && $template->get('jstor-access') === 'free')) {
-   return;
-  } // do not add url if have OA already. Do indlude preprints in list
-  if ($template->has('s2cid') || $template->has('S2CID')) {
-   return;
-  }
-  $url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
-  curl_setopt($ch, CURLOPT_URL, $url);
-  $response = bot_curl_exec($ch);
-  if ($response) {
-   $oa = @json_decode($response);
-   unset($response);
-   if ($oa !== false && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed && isset($oa->openAccessPdf) && $oa->openAccessPdf) {
-    $url = $oa->url;
-    unset($oa);
-    $template->get_identifiers_from_url($url);
-   }
-  }
- }
+    static $ch = null;
+    if ($ch === null) {
+        $ch = bot_curl_init(0.5, HEADER_S2);
+    }
+    set_time_limit(120);
+    if ($template->has('pmc') || ($template->has('doi') && $template->get('doi-access') === 'free') || ($template->has('jstor') && $template->get('jstor-access') === 'free')) {
+        return;
+    } // do not add url if have OA already. Do indlude preprints in list
+    if ($template->has('s2cid') || $template->has('S2CID')) {
+        return;
+    }
+    $url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $response = bot_curl_exec($ch);
+    if ($response) {
+        $oa = @json_decode($response);
+        unset($response);
+        if ($oa !== false && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed && isset($oa->openAccessPdf) && $oa->openAccessPdf) {
+            $url = $oa->url;
+            unset($oa);
+            $template->get_identifiers_from_url($url);
+        }
+    }
+}
 

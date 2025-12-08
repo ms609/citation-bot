@@ -179,8 +179,8 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
             }
             if (((strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
-            // "1" may refer to a journal without issue numbers,
-            //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.    Best ignore.
+                // "1" may refer to a journal without issue numbers,
+                //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.    Best ignore.
                 $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
             }
             if ($template->blank("page")) {
@@ -272,7 +272,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     // Data Quality is CrossRef > DX.doi.org > Zotero
     static $ch = null;
     if ($ch === null) {
-    $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
+        $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
         [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
     }
     if (strpos($doi, '10.2307') === 0 || // jstor API is better
@@ -515,98 +515,97 @@ function query_crossref_newapi(string $doi): object {
 
 
 
-function get_doi_from_crossref(Template $template): void
- {
-  static $ch = null;
-  if ($ch === null) {
-   $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-  }
-  set_time_limit(120);
-  if ($template->has('doi')) {
-   return;
-  }
-  report_action("Checking CrossRef database for doi. ");
-  $page_range = $template->page_range();
-  $data = [
-   'title' => de_wikify($template->get('title')),
-   'journal' => de_wikify($template->get('journal')),
-   'author' => $template->first_surname(),
-   'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $template->year()),
-   'volume' => $template->get('volume'),
-   'start_page' => (string) @$page_range[1],
-   'end_page' => (string) @$page_range[2],
-   'issn' => $template->get('issn'),
-  ];
-
-  if ($data['year'] < 1900 || $data['year'] > (int) date("Y") + 3) {
-   $data['year'] = null;
-  } else {
-   $data['year'] = (string) $data['year'];
-  }
-  if ((int) $data['end_page'] < (int) $data['start_page']) {
-   $data['end_page'] = null;
-  }
-
-  $novel_data = false;
-  foreach ($data as $key => $value) {
-   if ($value) {
-    if (!$template->api_has_used('crossref', equivalent_parameters($key))) {
-     $novel_data = true;
+function get_doi_from_crossref(Template $template): void {
+    static $ch = null;
+    if ($ch === null) {
+        $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    $template->record_api_usage('crossref', $key);
-   }
-  }
+    set_time_limit(120);
+    if ($template->has('doi')) {
+        return;
+    }
+    report_action("Checking CrossRef database for doi. ");
+    $page_range = $template->page_range();
+    $data = [
+    'title' => de_wikify($template->get('title')),
+    'journal' => de_wikify($template->get('journal')),
+    'author' => $template->first_surname(),
+    'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $template->year()),
+    'volume' => $template->get('volume'),
+    'start_page' => (string) @$page_range[1],
+    'end_page' => (string) @$page_range[2],
+    'issn' => $template->get('issn'),
+    ];
 
-  if (!$novel_data) {
-   return;
-  }
-  // They already allow some fuzziness in matches
-  if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
-   /** @psalm-taint-escape ssrf */
-   $url =
-    "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" .
-    CROSSREFUSERNAME .
-    ($data['title'] ? "&atitle=" . urlencode($data['title']) : '') .
-    ($data['author'] ? "&aulast=" . urlencode($data['author']) : '') .
-    ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '') .
-    ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '') .
-    ($data['year'] ? "&date=" . urlencode($data['year']) : '') .
-    ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '') .
-    ($data['issn'] ? "&issn=" . urlencode($data['issn']) : "&title=" . urlencode($data['journal'])) .
-    "&mailto=" .
-    CROSSREFUSERNAME; // do not encode crossref email
-   curl_setopt($ch, CURLOPT_URL, $url);
-   $xml = bot_curl_exec($ch);
-   if (strlen($xml) > 0) {
-    $result = @simplexml_load_string($xml);
-    unset($xml);
-   } else {
-    $result = false;
-   }
-   if ($result === false) {
-    report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
-    return; // @codeCoverageIgnore
-   }
-   if (!isset($result->query_result->body->query)) {
-    report_warning("Unexpected simpleXML file from CrossRef."); // @codeCoverageIgnore
-    return; // @codeCoverageIgnore
-   }
-   $result = $result->query_result->body->query;
-   if ((string) $result->attributes()->status === 'malformed') {
-    report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg)); // @codeCoverageIgnore
-   } elseif ((string) $result->attributes()->status === "resolved") {
-    if (!isset($result->doi)) {
-     return;
+    if ($data['year'] < 1900 || $data['year'] > (int) date("Y") + 3) {
+        $data['year'] = null;
+    } else {
+        $data['year'] = (string) $data['year'];
     }
-    if ((string) $result->doi === '10.1355/9789812306319') { // todo make common errors into an array
-     return;
+    if ((int) $data['end_page'] < (int) $data['start_page']) {
+        $data['end_page'] = null;
     }
-    report_inline(" Successful!");
-    $template->add_if_new('doi', (string) $result->doi);
+
+    $novel_data = false;
+    foreach ($data as $key => $value) {
+        if ($value) {
+            if (!$template->api_has_used('crossref', equivalent_parameters($key))) {
+                $novel_data = true;
+            }
+            $template->record_api_usage('crossref', $key);
+        }
+    }
+
+    if (!$novel_data) {
+        return;
+    }
+    // They already allow some fuzziness in matches
+    if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
+        /** @psalm-taint-escape ssrf */
+        $url =
+        "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" .
+        CROSSREFUSERNAME .
+        ($data['title'] ? "&atitle=" . urlencode($data['title']) : '') .
+        ($data['author'] ? "&aulast=" . urlencode($data['author']) : '') .
+        ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '') .
+        ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '') .
+        ($data['year'] ? "&date=" . urlencode($data['year']) : '') .
+        ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '') .
+        ($data['issn'] ? "&issn=" . urlencode($data['issn']) : "&title=" . urlencode($data['journal'])) .
+        "&mailto=" .
+        CROSSREFUSERNAME; // do not encode crossref email
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $xml = bot_curl_exec($ch);
+        if (strlen($xml) > 0) {
+            $result = @simplexml_load_string($xml);
+            unset($xml);
+        } else {
+            $result = false;
+        }
+        if ($result === false) {
+            report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
+            return; // @codeCoverageIgnore
+        }
+        if (!isset($result->query_result->body->query)) {
+            report_warning("Unexpected simpleXML file from CrossRef."); // @codeCoverageIgnore
+            return; // @codeCoverageIgnore
+        }
+        $result = $result->query_result->body->query;
+        if ((string) $result->attributes()->status === 'malformed') {
+            report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg)); // @codeCoverageIgnore
+        } elseif ((string) $result->attributes()->status === "resolved") {
+            if (!isset($result->doi)) {
+                return;
+            }
+            if ((string) $result->doi === '10.1355/9789812306319') { // todo make common errors into an array
+                return;
+            }
+            report_inline(" Successful!");
+            $template->add_if_new('doi', (string) $result->doi);
+            return;
+        }
+    }
     return;
-   }
-  }
-  return;
- }
+}
  
  

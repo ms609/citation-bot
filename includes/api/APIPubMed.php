@@ -199,184 +199,184 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
 
 function find_pmid(Template $template): void
  {
-  set_time_limit(120);
-  if (!$template->blank('pmid')) {
-   return;
-  }
-  report_action("Searching PubMed... ");
-  $results = query_pubmed($template);
-  if ($results[1] === 1) {
-   // Double check title if we did not use DOI
-   if ($template->has('title') && !in_array('doi', $results[2], true)) {
-    usleep(100000); // Wait 1/10 of a second since we just tried
-    $xml = get_entrez_xml('pubmed', $results[0]);
-    if ($xml === null || !is_object($xml->DocSum->Item)) {
-     report_inline("Unable to query pubmed."); // @codeCoverageIgnore
-     return; // @codeCoverageIgnore
-    }
-    $Items = $xml->DocSum->Item;
-    foreach ($Items as $item) {
-     if ((string) $item->attributes()->Name === 'Title') {
-      $new_title = str_replace(["[", "]"], "", (string) $item);
-      foreach (THINGS_THAT_ARE_TITLES as $possible) {
-       if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
-        $template->add_if_new('pmid', $results[0]);
+    set_time_limit(120);
+    if (!$template->blank('pmid')) {
         return;
-       }
-      }
-      // @codeCoverageIgnoreStart
-      report_inline("Similar matching pubmed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
-      return;
-      // @codeCoverageIgnoreEnd
-     }
     }
-   }
-   $template->add_if_new('pmid', $results[0]);
-  } else {
-   report_inline("nothing found.");
-  }
- }
+    report_action("Searching PubMed... ");
+    $results = query_pubmed($template);
+    if ($results[1] === 1) {
+        // Double check title if we did not use DOI
+        if ($template->has('title') && !in_array('doi', $results[2], true)) {
+            usleep(100000); // Wait 1/10 of a second since we just tried
+            $xml = get_entrez_xml('pubmed', $results[0]);
+            if ($xml === null || !is_object($xml->DocSum->Item)) {
+                report_inline("Unable to query pubmed."); // @codeCoverageIgnore
+                return; // @codeCoverageIgnore
+            }
+            $Items = $xml->DocSum->Item;
+            foreach ($Items as $item) {
+                if ((string) $item->attributes()->Name === 'Title') {
+                    $new_title = str_replace(["[", "]"], "", (string) $item);
+                    foreach (THINGS_THAT_ARE_TITLES as $possible) {
+                        if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
+                            $template->add_if_new('pmid', $results[0]);
+                            return;
+                        }
+                    }
+                    // @codeCoverageIgnoreStart
+                    report_inline("Similar matching pubmed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
+                    return;
+                    // @codeCoverageIgnoreEnd
+                }
+            }
+        }
+        $template->add_if_new('pmid', $results[0]);
+    } else {
+        report_inline("nothing found.");
+    }
+}
 
 
 
  /** @return array{0: string, 1: int, 2: array<string>} */
 function query_pubmed(Template $template): array
  {
-  /*
-   * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
-   * Returns an array:
-   * [0] => PMID of first matching result
-   * [1] => total number of results
-   */
-  $doi = $template->get_without_comments_and_placeholders('doi');
-  if ($doi) {
-   if (doi_works($doi)) {
-    $results = do_pumbed_query($template, ["doi"]);
-    if ($results[1] !== 0) {
-     return $results;
-    } // If more than one, we are doomed
-   }
-  }
-  // If we've got this far, the DOI was unproductive or there was no DOI.
-
-  if ($template->has('journal') && $template->has('volume') && $template->page_range()) {
-   $results = do_pumbed_query($template, ["journal", "volume", "issue", "page"]);
-   if ($results[1] === 1) {
-    return $results;
-   }
-  }
-  $is_book = looksLikeBookReview($template, (object) []);
-  if ($template->has('title') && $template->first_surname() && !$is_book) {
-   $results = do_pumbed_query($template, ["title", "surname", "year", "volume"]);
-   if ($results[1] === 1) {
-    return $results;
-   }
-   if ($results[1] > 1) {
-    $results = do_pumbed_query($template, ["title", "surname", "year", "volume", "issue"]);
-    if ($results[1] === 1) {
-     return $results;
+    /*
+    * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
+    * Returns an array:
+    * [0] => PMID of first matching result
+    * [1] => total number of results
+    */
+    $doi = $template->get_without_comments_and_placeholders('doi');
+    if ($doi) {
+        if (doi_works($doi)) {
+            $results = do_pumbed_query($template, ["doi"]);
+            if ($results[1] !== 0) {
+                return $results;
+            } // If more than one, we are doomed
+        }
     }
-   }
-  }
-  return ['', 0, []];
- }
+    // If we've got this far, the DOI was unproductive or there was no DOI.
+
+    if ($template->has('journal') && $template->has('volume') && $template->page_range()) {
+        $results = do_pumbed_query($template, ["journal", "volume", "issue", "page"]);
+        if ($results[1] === 1) {
+            return $results;
+        }
+    }
+    $is_book = looksLikeBookReview($template, (object) []);
+    if ($template->has('title') && $template->first_surname() && !$is_book) {
+        $results = do_pumbed_query($template, ["title", "surname", "year", "volume"]);
+        if ($results[1] === 1) {
+            return $results;
+        }
+        if ($results[1] > 1) {
+            $results = do_pumbed_query($template, ["title", "surname", "year", "volume", "issue"]);
+            if ($results[1] === 1) {
+                  return $results;
+            }
+        }
+    }
+    return ['', 0, []];
+}
 
  /** @param array<string> $terms
      @return array{0: string, 1: int, 2: array<string>} */
- function do_pumbed_query(Template $template, array $terms): array
- {
-  set_time_limit(120);
-  /* do_query
-   *
-   * Searches pubmed based on terms provided in an array.
-   * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed search query and
-   * return the results as array (first result, # of results)
-   */
-  $key_index = [
-   'issue' => 'Issue',
-   'journal' => 'Journal',
-   'pmid' => 'PMID',
-   'volume' => 'Volume',
-  ];
-  $query = '';
-  foreach ($terms as $term) {
-   $term = mb_strtolower($term);
-   if ($term === "title") {
-    $data = $template->get_without_comments_and_placeholders('title');
-    if ($data) {
-     $key = 'Title';
-     $data = straighten_quotes($data, true);
-     $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
-     $data = strip_diacritics($data);
-     $data_array = explode(" ", $data);
-     foreach ($data_array as $val) {
-      if (!in_array(mb_strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
-       // Small words are NOT indexed
-       $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
-      }
-     }
+function do_pumbed_query(Template $template, array $terms): array
+{
+    set_time_limit(120);
+    /* do_query
+    *
+    * Searches pubmed based on terms provided in an array.
+    * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed search query and
+    * return the results as array (first result, # of results)
+    */
+    $key_index = [
+    'issue' => 'Issue',
+    'journal' => 'Journal',
+    'pmid' => 'PMID',
+    'volume' => 'Volume',
+    ];
+    $query = '';
+    foreach ($terms as $term) {
+        $term = mb_strtolower($term);
+        if ($term === "title") {
+            $data = $template->get_without_comments_and_placeholders('title');
+            if ($data) {
+                $key = 'Title';
+                $data = straighten_quotes($data, true);
+                $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
+                $data = strip_diacritics($data);
+                $data_array = explode(" ", $data);
+                foreach ($data_array as $val) {
+                    if (!in_array(mb_strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
+                        // Small words are NOT indexed
+                        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+                    }
+                }
+            }
+        } elseif ($term === "page") {
+            $pages = $template->page_range();
+            if ($pages) {
+                  $val = $pages[1];
+                  $key = 'Pagination';
+                  $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+            }
+        } elseif ($term === "surname") {
+            $val = $template->first_surname();
+            if ($val) {
+                $key = 'Author';
+                $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+            }
+        } elseif ($term === "year") {
+            $key = 'Publication Date';
+            $val = $template->year();
+            if ($val) {
+                $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+            }
+        } elseif ($term === "doi") {
+            $key = 'AID';
+            $val = $template->get_without_comments_and_placeholders($term);
+            if ($val) {
+                  $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
+            }
+        } else {
+            $key = $key_index[$term]; // Will crash if bad data is passed
+            $val = $template->get_without_comments_and_placeholders($term);
+            if ($val) {
+                if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
+                    $val = $matches[1]; // @codeCoverageIgnore
+                } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
+                    $val = $matches[2]; // @codeCoverageIgnore
+                }
+                $val = strip_diacritics($val);
+                $val = straighten_quotes($val, true);
+                $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+            }
+        }
     }
-   } elseif ($term === "page") {
-    $pages = $template->page_range();
-    if ($pages) {
-     $val = $pages[1];
-     $key = 'Pagination';
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+    $query = substr($query, 5); // Chop off initial " AND "
+    usleep(20000); // Wait 1/50 of a second since we probably just tried
+    $xml = get_entrez_xml('esearch_pubmed', $query);
+    // @codeCoverageIgnoreStart
+    if ($xml === null) {
+        sleep(1);
+        report_inline("no results.");
+        return ['', 0, []];
     }
-   } elseif ($term === "surname") {
-    $val = $template->first_surname();
-    if ($val) {
-     $key = 'Author';
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
+    if (isset($xml->ErrorList)) {
+        // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
+        report_inline('no results.');
+        return ['', 0, []];
     }
-   } elseif ($term === "year") {
-    $key = 'Publication Date';
-    $val = $template->year();
-    if ($val) {
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
-    }
-   } elseif ($term === "doi") {
-    $key = 'AID';
-    $val = $template->get_without_comments_and_placeholders($term);
-    if ($val) {
-     $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
-    }
-   } else {
-    $key = $key_index[$term]; // Will crash if bad data is passed
-    $val = $template->get_without_comments_and_placeholders($term);
-    if ($val) {
-     if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
-      $val = $matches[1]; // @codeCoverageIgnore
-     } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
-      $val = $matches[2]; // @codeCoverageIgnore
-     }
-     $val = strip_diacritics($val);
-     $val = straighten_quotes($val, true);
-     $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
-    }
-   }
-  }
-  $query = substr($query, 5); // Chop off initial " AND "
-  usleep(20000); // Wait 1/50 of a second since we probably just tried
-  $xml = get_entrez_xml('esearch_pubmed', $query);
-  // @codeCoverageIgnoreStart
-  if ($xml === null) {
-   sleep(1);
-   report_inline("no results.");
-   return ['', 0, []];
-  }
-  if (isset($xml->ErrorList)) {
-   // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
-   report_inline('no results.');
-   return ['', 0, []];
-  }
-  // @codeCoverageIgnoreEnd
+    // @codeCoverageIgnoreEnd
 
-  if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
-   return [(string) $xml->IdList->Id[0], (int) (string) $xml->Count, $terms]; // first results; number of results
-  } else {
-   return ['', 0, []];
-  }
- }
+    if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
+        return [(string) $xml->IdList->Id[0], (int) (string) $xml->Count, $terms]; // first results; number of results
+    } else {
+        return ['', 0, []];
+    }
+}
 
 

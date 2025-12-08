@@ -69,8 +69,8 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     set_time_limit(120); // Slow regex sometimes
                     if ($raw_html && preg_match($regex, $raw_html, $match)) {
                         set_time_limit(120);
-                            $title = mb_trim($match[1]);
-                            if (stripos($title, 'archive') === false &&
+                        $title = mb_trim($match[1]);
+                        if (stripos($title, 'archive') === false &&
                             stripos($title, 'wayback') === false &&
                             $title !== ''
                             ) {
@@ -106,7 +106,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             unset($encode, $cleaned, $try, $match, $pos_encode);
                             $good_title = true;
                             if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
-                                    in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
+                                in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
                                 $good_title = false;
                             }
                             foreach (BAD_ZOTERO_TITLES as $bad_title) {

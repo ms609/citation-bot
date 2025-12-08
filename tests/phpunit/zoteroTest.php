@@ -308,7 +308,7 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite web', $template->wikiname()); // Does not change because no work parameter is set
         $this->assertSame('Billy', $template->get2('title'));
-        }
+    }
 
     public function testZoteroResponse12(): void {
         $text = '{{cite web|id=}}';
@@ -1032,9 +1032,9 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroExpansion_rfc(): void {
         $this->requires_zotero(function(): void {
-        $text = '{{Cite journal| rfc=6679 }}';
-        $expanded = $this->process_citation($text);
-        $this->assertTrue($expanded->get('title') != ''); // Zotero gives different titles from time to time
+            $text = '{{Cite journal| rfc=6679 }}';
+            $expanded = $this->process_citation($text);
+            $this->assertTrue($expanded->get('title') != ''); // Zotero gives different titles from time to time
         });
     }
 

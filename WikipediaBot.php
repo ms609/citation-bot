@@ -169,7 +169,7 @@ final class WikipediaBot {
 
             }         // @codeCoverageIgnoreEnd
             return self::ret_okay($ret) ? $ret : null;
-        // @codeCoverageIgnoreStart
+            // @codeCoverageIgnoreStart
         } catch(Exception $E) {
             report_warning("Exception caught!\n");
             report_info("Response: ". echoable($E->getMessage()));
@@ -399,34 +399,34 @@ final class WikipediaBot {
 
     /** @param array<string> $params */
     private static function QueryAPI(array $params): string {
-     try {
-        $params['format'] = 'json';
-        curl_setopt_array(self::$ch_logout, [
+        try {
+            $params['format'] = 'json';
+            curl_setopt_array(self::$ch_logout, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_URL => API_ROOT,
-        ]);
+            ]);
 
-        $data = @curl_exec(self::$ch_logout);
-        if ($data === false) {
+            $data = @curl_exec(self::$ch_logout);
+            if ($data === false) {
+                // @codeCoverageIgnoreStart
+                $errnoInt = curl_errno(self::$ch_logout);
+                $errorStr = curl_error(self::$ch_logout);
+                report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
+            }   // @codeCoverageIgnoreEnd
+            $data = (string) $data;
+            if ($data === '') {
+                sleep(4);                                       // @codeCoverageIgnore
+                $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+            }
+            return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
-            $errnoInt = curl_errno(self::$ch_logout);
-            $errorStr = curl_error(self::$ch_logout);
-            report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
-        }   // @codeCoverageIgnoreEnd
-        $data = (string) $data;
-        if ($data === '') {
-             sleep(4);                                       // @codeCoverageIgnore
-             $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+        } catch(Exception $E) {
+            report_warning("Exception caught!!\n");
+            report_info("Response: ". echoable($E->getMessage()));
         }
-        return self::ret_okay(@json_decode($data)) ? $data : '';
-        // @codeCoverageIgnoreStart
-     } catch(Exception $E) {
-        report_warning("Exception caught!!\n");
-        report_info("Response: ". echoable($E->getMessage()));
-     }
-     return '';
-    // @codeCoverageIgnoreEnd
+        return '';
+        // @codeCoverageIgnoreEnd
     }
 
     public static function ReadDetails(string $title): object {
@@ -505,9 +505,9 @@ final class WikipediaBot {
         return '';  // @codeCoverageIgnore
     }
 
-/**
- * @codeCoverageIgnore
- */
+    /**
+     * @codeCoverageIgnore
+     */
     private function authenticate_user(): void {
         @setcookie(session_name(), session_id(), time()+(7*24*3600), "", "", true, true); // 7 days
         if (isset($_SESSION['citation_bot_user_id']) &&

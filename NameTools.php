@@ -141,29 +141,29 @@ function format_forename(string $forename): string {
  */
 function format_initials(string $str): string {
     $str = mb_trim($str);
-        if ($str === "") {
-            return "";
-        }
-        $end = substr($str, strlen($str)-1) === ";" ? ";" : '';
-        preg_match_all("~\w~u", $str, $match);
-        return mb_strtoupper(implode(".", $match[0]) . ".") . $end;
+    if ($str === "") {
+        return "";
+    }
+    $end = substr($str, strlen($str)-1) === ";" ? ";" : '';
+    preg_match_all("~\w~u", $str, $match);
+    return mb_strtoupper(implode(".", $match[0]) . ".") . $end;
 }
 
 function is_initials(string $str): bool {
-        $str = mb_trim($str);
-        if (!$str) {
-            return false;
-        }
-        if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
-            return false;
-        }
-        if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) {
-            return true;
-        }
-        if (mb_strtoupper($str) !== $str) {
-            return false;
-        }
+    $str = mb_trim($str);
+    if (!$str) {
+        return false;
+    }
+    if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
+        return false;
+    }
+    if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) {
         return true;
+    }
+    if (mb_strtoupper($str) !== $str) {
+        return false;
+    }
+    return true;
 }
 
 /*
@@ -375,13 +375,13 @@ function split_authors(string $str): array {
 }
 
     // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
-    function is_bad_author(string $aut): bool {
-        if ($aut === '|') {
-            return true;
-        }
-        $aut = mb_strtolower($aut);
-        if ($aut === 'published') {
-            return true;
-        }
-        return false;
+function is_bad_author(string $aut): bool {
+    if ($aut === '|') {
+        return true;
     }
+    $aut = mb_strtolower($aut);
+    if ($aut === 'published') {
+        return true;
+    }
+    return false;
+}
