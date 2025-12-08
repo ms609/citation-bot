@@ -113,7 +113,7 @@ const BAD_AUTHORS = [
     'united states. interstate commerce commission',
     'unknown',
     'yucatan times',
-    'Радіо',
+    'pадіо',
     '自由時報電子報',
 ];
 const NON_HUMAN_AUTHORS = [
@@ -197,7 +197,7 @@ const NON_HUMAN_AUTHORS = [
     'world bank',
     'world news',
     'you are human',
-    'Радіо',
+    'pадіо',
     '재외기자',
     '기자',
     '試験所',
