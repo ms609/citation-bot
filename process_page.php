@@ -17,7 +17,7 @@ require_once 'setup.php';
 if (isset($argv[1])) {
     $pages = $argv[1];
     if (in_array($pages, ['page_list.txt', 'page_list2.txt'], true)) {
-        $pages = trim((string) file_get_contents($pages));
+        $pages = mb_trim((string) file_get_contents($pages));
     }
 } elseif (isset($_GET["page"])) {
     $pages = $_GET["page"];

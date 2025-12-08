@@ -25,7 +25,7 @@ $api = new WikipediaBot();
 bot_html_header();
 check_blocked();
 
-$page_name = str_replace(' ', '_', trim($page_name));
+$page_name = str_replace(' ', '_', mb_trim($page_name));
 if ($page_name === '') {
     report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
     bot_html_footer();

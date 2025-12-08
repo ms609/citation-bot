@@ -31,13 +31,13 @@ const GET_IS_OKAY = [
 
 $category = '';
 if (isset($_POST["cat"]) && is_string($_POST["cat"])) {
-    $category = trim($_POST["cat"]);
+    $category = mb_trim($_POST["cat"]);
 }
 if (strtolower(substr($category, 0, 9)) === 'category:') {
-    $category = trim(substr($category, 9));
+    $category = mb_trim(substr($category, 9));
 }
 if ($category === '' && isset($_GET["cat"])) {
-   $try = trim(urldecode((string) $_GET["cat"]));
+   $try = mb_trim(urldecode((string) $_GET["cat"]));
    if (in_array($try, GET_IS_OKAY, true)) {
        $category = $try;
    }
