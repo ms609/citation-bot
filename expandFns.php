@@ -1261,7 +1261,7 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
 }
 
 function tidy_date_inside(string $string): string {
-    $string=trim($string);
+    $string = mb_trim($string);
     if (stripos($string, 'Invalid') !== false) {
         return '';
     }
