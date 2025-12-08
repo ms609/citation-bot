@@ -25,4 +25,5 @@
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
+    <rule ref="Generic.ControlStructures.InlineControlStructure.NotAllowed"/>
 </ruleset>
