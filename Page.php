@@ -23,10 +23,8 @@ require_once 'includes/api/APIarXiv.php';
 require_once 'includes/api/APIarchives.php';
 require_once 'expandFns.php';
 require_once 'user_messages.php';
-require_once 'Zotero.php';        // @codeCoverageIgnoreEnd
-
-
-require_once 'includes/api/APIissn.php';
+require_once 'includes/api/APIzotero.php';
+require_once 'includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
 const PROTECTED_PAGE = ["sysop", "templateeditor"];

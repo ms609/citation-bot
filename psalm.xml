@@ -32,7 +32,6 @@
         <file name="process_page.php" />
         <file name="setup.php" />
         <file name="user_messages.php" />
-        <file name="Zotero.php" />
         <file name="big_jobs.php" />
         <file name="kill_big_job.php" />
         <directory name="includes" />
