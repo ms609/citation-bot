@@ -11,7 +11,7 @@ set_time_limit(120);
 
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>';
 
-require_once 'setup.php';
+require_once './includes/setup.php';
 
 function die_in_template(string $err): never {
     echo $err, '</pre></main></body></html>'; // @codeCoverageIgnore
