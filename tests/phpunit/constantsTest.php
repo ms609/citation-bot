@@ -145,7 +145,7 @@ final class constantsTest extends testBaseClass {
         $old_contents = file_get_contents($filename);
         $sections = explode($start_alpha, $old_contents);
         foreach ($sections as &$section) {
-            $alpha_end = stripos($section, $end_alpha);
+            $alpha_end = mb_stripos($section, $end_alpha);
             if (!$alpha_end) {
                 continue;
             }
@@ -260,7 +260,7 @@ final class constantsTest extends testBaseClass {
         $new = '';
         foreach($whitelist as $value) {
             $value = str_replace('#', '1', $value);
-            if (stripos($value, '_bot')) {
+            if (mb_stripos($value, '_bot')) {
                 $value = 'title'; // basically skip it
             }
             $text = '{{citation | ' . $value . ' = Z123Z }}';
@@ -603,7 +603,7 @@ final class constantsTest extends testBaseClass {
             if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
                 $page->get_text_from($tem);
                 $text = $page->parsed_text();
-                if (stripos($text, 'safesubst:') === false) {
+                if (mb_stripos($text, 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
             }
