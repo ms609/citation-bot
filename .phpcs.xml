@@ -22,6 +22,7 @@
     <file>WikipediaBot.php</file>
     <file>./includes</file>
     <file>./tests</file>
+    <rule ref="PSR2.Files.ClosingTag"/>
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
