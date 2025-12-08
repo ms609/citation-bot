@@ -32,7 +32,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
-            if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+            if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
                 return ;
             }
             if ($template->has('title') && mb_trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
@@ -330,7 +330,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         if ($data === 'Array') {
             return;
         }
-        if (str_ends_with(strtolower($data), '.pdf')) {
+        if (str_ends_with(mb_strtolower($data), '.pdf')) {
             return;
         }
         if (strpos($name, 'author') !== false) { // Remove dates from names from 10.11501/ dois
