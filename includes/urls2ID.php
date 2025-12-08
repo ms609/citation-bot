@@ -49,10 +49,10 @@ declare(strict_types=1);
                 $url_type = 'article-url';
             } elseif ($template->has('website')) { // No URL, but a website
                 $url = mb_trim($template->get('website'));
-                if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+                if (mb_strtolower(substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
                     $url = "h" . $url;
                 }
-                if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
+                if (mb_strtolower(substr( $url, 0, 4 )) !== "http" ) {
                     $url = "http://" . $url; // Try it with http
                 }
                 if (preg_match(REGEXP_IS_URL, $url) !== 1) {
@@ -78,7 +78,7 @@ declare(strict_types=1);
             $url_type = 'An invalid value';
         }
 
-        if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+        if (mb_strtolower(substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
             $url = "h" . $url;
             if (is_null($url_sent)) {
                 $template->set($url_type, $url); // Save it
@@ -361,7 +361,7 @@ declare(strict_types=1);
             }
             $template->tidy_parameter('doi'); // Sanitize DOI before comparing
             if ($template->has('doi') && stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
-                if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && strpos(strtolower($url), "supplemental") === false && strpos(strtolower($url), "figure") === false) {
+                if (doi_works($doi) && is_null($url_sent) && strpos(mb_strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && strpos(mb_strtolower($url), "supplemental") === false && strpos(mb_strtolower($url), "figure") === false) {
                     if ($template->has_good_free_copy()) {
                         report_forget("Recognized existing DOI in URL; dropping URL");
                         $template->forget($url_type);
@@ -373,7 +373,7 @@ declare(strict_types=1);
                 $doi = $template->get('doi');
                 if (doi_works($doi)) {
                     if (is_null($url_sent)) {
-                        if (mb_strpos(strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+                        if (mb_strpos(mb_strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
                             if ($template->has_good_free_copy()) {
                                 report_forget("Recognized DOI in URL; dropping URL");
                                 $template->forget($url_type);
@@ -392,7 +392,7 @@ declare(strict_types=1);
             $template->tidy_parameter('doi'); // Sanitize DOI before comparing
             $doi = $template->get('doi');
             if (stripos($url, $doi) !== false) { // DOIs are case-insensitive
-                if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === false && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+                if (doi_works($doi) && is_null($url_sent) && strpos(mb_strtolower($url), ".pdf") === false && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
                     if ($template->has_good_free_copy()) {
                         report_forget("Recognized the existing DOI in URL; dropping URL");
                         $template->forget($url_type);
