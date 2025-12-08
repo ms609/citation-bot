@@ -35,7 +35,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
                 return ;
             }
-            if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
+            if ($template->has('title') && mb_trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
                 $bad_data = true;
                 $new = (string) $crossRef->article_title;
                 if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
@@ -233,7 +233,7 @@ function query_crossref(string $doi): ?object {
             $result = $xml->query_result->body->query;
             if ((string) @$result["status"] === "resolved") {
                 if (stripos($doi, '10.1515/crll') === 0) {
-                    $volume = intval(trim((string) @$result->volume));
+                    $volume = intval(mb_trim((string) @$result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
                             /** @psalm-suppress UndefinedPropertyAssignment */
@@ -282,7 +282,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     set_time_limit(120);
     /** @psalm-taint-escape ssrf */
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     if (!$doi) {
         return;
     }
@@ -364,7 +364,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $i = 0;
         foreach ($json['author'] as $auth) {
             $i += 1;
-            $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            $full_name = mb_strtolower(mb_trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
             if (in_array($full_name, BAD_AUTHORS, true)) {
                 break;
             }
@@ -381,7 +381,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $i = 0;
         foreach ($json['editor'] as $auth) {
             $i += 1;
-            $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            $full_name = mb_strtolower(mb_trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
             if (in_array($full_name, BAD_AUTHORS, true)) {
                 break;
             }
