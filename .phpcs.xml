@@ -55,6 +55,7 @@
                 <element key="strtolower" value="mb_strtolower"/>
                 <element key="strtoupper" value="mb_strtoupper"/>
                 <element key="substr" value="mb_substr"/>
+                <element key="substr_count" value="mb_substr_count"/>
             </property>
         </properties>
     </rule>
