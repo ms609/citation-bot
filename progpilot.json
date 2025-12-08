@@ -6,10 +6,10 @@
             "$where"
         ],
         "source_line": [
-            30
+            18
         ],
         "source_column": [
-            879
+            682
         ],
         "source_file": [
             "authenticate.php"
@@ -23,13 +23,13 @@
                     "flow_file": "authenticate.php"
                 },
                 {
-                    "flow_name": "$trim_return",
+                    "flow_name": "$mb_trim_return",
                     "flow_line": 88,
                     "flow_column": 3254,
                     "flow_file": "authenticate.php"
                 },
                 {
-                    "flow_name": "$trim_param0_line88_column3254_progpilot",
+                    "flow_name": "$mb_trim_param0_line88_column3254_progpilot",
                     "flow_line": 88,
                     "flow_column": 3254,
                     "flow_file": "authenticate.php"
@@ -37,18 +37,18 @@
                 {
                     "flow_name": "$_GET[\"return\"]",
                     "flow_line": 88,
-                    "flow_column": 3259,
+                    "flow_column": 3262,
                     "flow_file": "authenticate.php"
                 }
             ]
         ],
         "sink_name": "header",
-        "sink_line": 34,
-        "sink_column": 1038,
+        "sink_line": 22,
+        "sink_column": 841,
         "sink_file": "authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "3876197ce178befb4185671de556c812e8c6614dc8bc8b2907ccdff306eed402",
+        "vuln_id": "95187832f1e0033c2d6e53f7f276f6310404df48ac842f1e83ebf4dca50543da",
         "vuln_type": "taint-style"
     }
 ]
