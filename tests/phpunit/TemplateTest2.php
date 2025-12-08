@@ -3675,7 +3675,7 @@ final class TemplateTest2 extends testBaseClass {
             $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
             $expanded = $this->process_citation($text);
             $pages = (string) $expanded->get2('pages');
-            $this->assertFalse(stripos($pages, 'astro'));
+            $this->assertFalse(mb_stripos($pages, 'astro'));
             $this->assertNull($expanded->get2('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
         });
     }

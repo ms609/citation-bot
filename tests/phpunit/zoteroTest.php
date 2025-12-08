@@ -928,7 +928,7 @@ final class zoteroTest extends testBaseClass {
             $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
             $expanded = $this->process_citation($text);
             $this->assertNotNull($expanded->get2('journal'));
-            $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== false);// Sometimes includes a journal of....
+            $this->assertTrue(mb_strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== false);// Sometimes includes a journal of....
         });
     }
 
@@ -1042,10 +1042,10 @@ final class zoteroTest extends testBaseClass {
         $this->requires_zotero(function(): void {
             $text = '{{Use mdy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/ |pmid=<!-- -->|pmc=<!-- -->|doi=<!-- -->|bibcode=<!-- --> |arxiv=<!-- -->|s2cid=<!-- -->}}';
             $page = $this->process_page($text);
-            $this->assertTrue((bool) strpos($page->parsed_text(), 'August 26, 2010'));
+            $this->assertTrue((bool) mb_strpos($page->parsed_text(), 'August 26, 2010'));
             $text = '{{Use dmy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/ |pmid=<!-- -->|pmc=<!-- -->|doi=<!-- -->|bibcode=<!-- --> |arxiv=<!-- -->|s2cid=<!-- -->}}';
             $page = $this->process_page($text);
-            $this->assertTrue((bool) strpos($page->parsed_text(), '26 August 2010'));
+            $this->assertTrue((bool) mb_strpos($page->parsed_text(), '26 August 2010'));
         });
     }
 
