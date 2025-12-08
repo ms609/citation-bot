@@ -326,7 +326,7 @@ final class Zotero {
             }
             return;  // @codeCoverageIgnoreEnd
         }
-        if (substr(strtolower(mb_trim($result->title)), 0, 9) === 'not found') {
+        if (substr(mb_strtolower(mb_trim($result->title)), 0, 9) === 'not found') {
             report_info("Could not resolve URL " . echoable($url));
             return;
         }
@@ -423,7 +423,7 @@ final class Zotero {
 
         report_info("Retrieved info from " . echoable($url));
         // Verify that Zotero translation server did not think that this was a website and not a journal
-        if (strtolower(substr(mb_trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
+        if (mb_strtolower(substr(mb_trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
             $template->add_if_new('title', substr(mb_trim($result->title), 0, -9)); // @codeCoverageIgnore
             return;  // @codeCoverageIgnore
         }
@@ -444,10 +444,10 @@ final class Zotero {
         if ($test_data === '404' || $test_data === '/404') {
             return;
         }
-        if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') {
+        if (isset($result->bookTitle) && mb_strtolower($result->bookTitle) === 'undefined') {
             unset($result->bookTitle); // S2 without journals
         }
-        if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') {
+        if (isset($result->publicationTitle) && mb_strtolower($result->publicationTitle) === 'undefined') {
             unset($result->publicationTitle); // S2 without journals
         }
         if (isset($result->bookTitle)) {
@@ -474,7 +474,7 @@ final class Zotero {
                 }
             }
             // Specific bad data that is correctable
-            $tester = strtolower($result->publicationTitle);
+            $tester = mb_strtolower($result->publicationTitle);
             if ($tester === 'nationalpost') {
                 $result->publicationTitle = 'National Post';
             } elseif ($tester === 'financialpost') {
@@ -775,7 +775,7 @@ final class Zotero {
         if (isset($result->itemType) && $result->itemType === 'newspaperArticle') {
             if (isset($result->publicationTitle)) {
                 $new_title = (string) $result->publicationTitle;
-                if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS, true)) {
+                if (in_array(mb_strtolower($new_title), WORKS_ARE_PUBLISHERS, true)) {
                     $template->add_if_new('publisher', $new_title);
                 } elseif ($template->blank(WORK_ALIASES)) {
                     $template->add_if_new('work', $new_title);
