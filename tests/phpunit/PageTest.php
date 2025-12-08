@@ -379,25 +379,25 @@ final class PageTest extends testBaseClass {
     public function testUrlReferencesWithText16(): void {
         $text = "<ref>{{arxiv|0806.0013}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     }
 
     public function testUrlReferencesWithText17(): void {
         $text = "<ref>{{isbn|9781782626299}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), '978-1-78262-629-9'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), '978-1-78262-629-9'));
     }
 
     public function testUrlReferencesWithText18(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testUrlReferencesWithText19(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testConfer(): void {
