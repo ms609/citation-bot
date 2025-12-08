@@ -36,7 +36,8 @@
         <file name="big_jobs.php" />
         <file name="kill_big_job.php" />
         <directory name="includes" />
-        <directory name="includes/constants" /> 
+        <directory name="includes/constants" />
+        <directory name="includes/api" /> 
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
