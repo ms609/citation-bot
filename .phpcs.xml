@@ -39,7 +39,7 @@
                 <element key="proc_open" value="null"/>
                 <element key="create_function" value="null"/>
                 <element key="assert" value="null"/>
-                <element key="ltrim" key="mb_ltrim"/>
+                <element key="ltrim" value="mb_ltrim"/>
                 <element key="rtrim" value="mb_rtrim"/>
                 <element key="str_pad" value="mb_str_pad"/>
                 <element key="str_split" value="mb_str_split"/>
