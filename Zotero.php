@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 require_once 'constants.php'; // @codeCoverageStart
 require_once 'Template.php';
-require_once 'includes/APIieee.php';
+require_once 'includes/api/APIieee.php';
 require_once 'includes/urls2ID.php';
-require_once 'includes/APIpii.php';
+require_once 'includes/api/APIpii.php';
 require_once 'includes/RemoveDupURL.php'; // @codeCoverageEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';

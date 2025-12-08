@@ -177,15 +177,15 @@ require_once 'Parameter.php';
 require_once 'expandFns.php';
 require_once 'Template.php';
 require_once 'Zotero.php';
-require_once 'includes/APIdoi.php';
-require_once 'includes/APIS2.php';
-require_once 'includes/APIBibCode.php';
-require_once 'includes/APIPubMed.php';
-require_once 'includes/APIgoogle.php';
-require_once 'includes/APIunpaywall.php';
-require_once 'includes/APIjstor.php';
-require_once 'includes/APIarXiv.php';
-require_once 'includes/APIarchives.php';
+require_once 'includes/api/APIdoi.php';
+require_once 'includes/api/APIS2.php';
+require_once 'includes/api/APIBibCode.php';
+require_once 'includes/api/APIPubMed.php';
+require_once 'includes/api/APIgoogle.php';
+require_once 'includes/api/APIunpaywall.php';
+require_once 'includes/api/APIjstor.php';
+require_once 'includes/api/APIarXiv.php';
+require_once 'includes/api/APIarchives.php';
 require_once 'Page.php';
 
 if (isset($argv)) {
