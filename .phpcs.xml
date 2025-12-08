@@ -25,4 +25,40 @@
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <!-- unsafe functions -->
+                <element value="eval" />
+                <element value="exec" />
+                <element value="shell_exec" />
+                <element value="passthru" />
+                <element value="system" />
+                <element value="popen" />
+                <element value="proc_open" />
+                <element value="create_function" />
+                <element value="assert" />
+                <!-- non-multi-byte functions -->
+                <element value="convert_case" />
+                <element value="ereg" />
+                <element value="ereg_replace" />
+                <element value="ltrim" />
+                <element value="rtrim" />
+                <element value="str_pad" />
+                <element value="str_split" />
+                <element value="stripos" />
+                <element value="strlen" />
+                <element value="strpos" />
+                <element value="strrev" />
+                <element value="strrpos" />
+                <element value="strtolower" />
+                <element value="strtoupper" />
+                <element value="substr" />
+                <element value="trim" />
+                <element value="ucfirst" />
+                <element value="ucwords" />
+            </property>
+        </properties>
+    </rule>
+
 </ruleset>
