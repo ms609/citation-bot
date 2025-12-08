@@ -247,7 +247,7 @@ final class Zotero {
             return;  // Error message already printed in zotero_request()
         }
 
-        switch (trim($zotero_response)) {
+        switch (mb_trim($zotero_response)) {
             case '':
                 report_info("Nothing returned for URL " . echoable($url));
                 return;
@@ -326,7 +326,7 @@ final class Zotero {
             }
             return;  // @codeCoverageIgnoreEnd
         }
-        if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
+        if (substr(strtolower(mb_trim($result->title)), 0, 9) === 'not found') {
             report_info("Could not resolve URL " . echoable($url));
             return;
         }
@@ -423,8 +423,8 @@ final class Zotero {
 
         report_info("Retrieved info from " . echoable($url));
         // Verify that Zotero translation server did not think that this was a website and not a journal
-        if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
-            $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
+        if (strtolower(substr(mb_trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
+            $template->add_if_new('title', substr(mb_trim($result->title), 0, -9)); // @codeCoverageIgnore
             return;  // @codeCoverageIgnore
         }
 
@@ -510,156 +510,156 @@ final class Zotero {
         if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
             if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
                 if (!isset($result->DOI)) {
-                    $result->DOI = trim($matches[1]);
+                    $result->DOI = mb_trim($matches[1]);
                 }
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
             if (preg_match('~\stype:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) { // [extra] => type: dataset has been seen in the wild
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
             if (preg_match('~\sPMID: (\d+)\s+PMCID: PMC(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 $template->add_if_new('pmid', $matches[1]);
                 $template->add_if_new('pmc', $matches[2]);
             }
             if (preg_match('~\sPMID: (\d+), (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 if ($matches[1] === $matches[2]) {
                     $template->add_if_new('pmid', $matches[1]);
                 }
             }
             if (preg_match('~\sPMID: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 $template->add_if_new('pmid', $matches[1]);
             }
             if (preg_match('~\sOCLC: (?:|ocn|ocm)(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 $template->add_if_new('oclc', $matches[1]);
             }
             if (preg_match('~\sOpen Library ID: OL(\d+M)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 $template->add_if_new('ol', $matches[1]);
             }
 
             // UNUSED stuff goes below
 
             if (preg_match('~\sFormat: PDF\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
             if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
             if (preg_match('~\s(original-date: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Google-Books-ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(ISSN: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Page Version ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(number-of-pages: [ivx]+, \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(RSLID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(QID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(National Archives Identifier: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Catalog Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(BMCR ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(PubAg AGID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(IP-\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\s(Accession Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
                 $template->add_if_new('bibcode', $matches[1]);
             }
             if (preg_match('~\s(arXiv: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - only comes from arXiv DOIs
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
             }
             if (preg_match('~\s(INIS Reference Number: \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - https://inis.iaea.org
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
             }
             if (preg_match('~\s(ERIC Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
             }
             if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - size of book
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra)); // @codeCoverageIgnore
             }
             // These go at end since it is unbound on end often with linefeeds and such
             if (preg_match('~submitted:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~event\-location:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it and it is long verbose
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Translated title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~reviewed\-title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Physical Description:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~BBK:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Place Manufactured: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Dimensions: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Category: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Credit: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Manufacturer: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~pl., cartes, errata.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Post URL:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~Reference Number:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             if (preg_match('~jurisdiction:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
-                $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
+                $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
-            $result->extra = trim($result->extra);
+            $result->extra = mb_trim($result->extra);
             if ($result->extra !== '') {
                 // TODO - check back later on report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));     // @codeCoverageIgnore
             }
@@ -767,7 +767,7 @@ final class Zotero {
             $pos_pages = (string) $result->pages;
             if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
                 $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
-                $pos_pages = trim($pos_pages);
+                $pos_pages = mb_trim($pos_pages);
                 $pos_pages = str_ireplace(['  ', '  ', '  '], [' ', ' ', ' '], $pos_pages);
                 $template->add_if_new('pages', $pos_pages);
             }
@@ -1025,21 +1025,21 @@ final class Zotero {
                     $i++;
                 }
             }
-            if (stripos(trim($template->get('publisher')), 'Associated Press') !== false &&
+            if (stripos(mb_trim($template->get('publisher')), 'Associated Press') !== false &&
                 stripos($url, 'ap.org') === false  ) {
                 if ($template->wikiname() === 'cite news') {
                     $template->rename('publisher', 'agency'); // special template parameter just for them
                 }
-                if (stripos(trim($template->get('author')), 'Associated Press') === 0) {
+                if (stripos(mb_trim($template->get('author')), 'Associated Press') === 0) {
                     $template->forget('author'); // all too common
                 }
             }
-            if (stripos(trim($template->get('publisher')), 'Reuters') !== false &&
+            if (stripos(mb_trim($template->get('publisher')), 'Reuters') !== false &&
                 stripos($url, 'reuters.org') === false ) {
                 if ($template->wikiname() === 'cite news') {
                     $template->rename('publisher', 'agency'); // special template parameter just for them
                 }
-                if (stripos(trim($template->get('author')), 'Reuters') === 0) {
+                if (stripos(mb_trim($template->get('author')), 'Reuters') === 0) {
                     $template->forget('author'); // all too common
                 }
             }

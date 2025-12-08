@@ -20,7 +20,7 @@ function expand_by_jstor(Template $template): void {
         return;
     }
     if ($template->has('jstor')) {
-        $jstor = trim($template->get('jstor'));
+        $jstor = mb_trim($template->get('jstor'));
     } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
         $jstor = $match[1];
     } else {
@@ -30,7 +30,7 @@ function expand_by_jstor(Template $template): void {
         $jstor = $match[1]; // remove ?seq= stuff
     }
     /** @psalm-taint-escape ssrf */
-    $jstor = trim($jstor);
+    $jstor = mb_trim($jstor);
     if (strpos($jstor, ' ') !== false) {
         return ; // Comment/template found
     }
@@ -63,12 +63,12 @@ function expand_by_jstor(Template $template): void {
             if (!isset($ris_part[1])) {
                 $ris_part[0] = ""; // Ignore
             }
-            switch (trim($ris_part[0])) {
+            switch (mb_trim($ris_part[0])) {
                 case "T1":
                 case "TI":
                 case "T2":
                 case "BT":
-                    $new_title = trim($ris_part[1]);
+                    $new_title = mb_trim($ris_part[1]);
                     foreach (THINGS_THAT_ARE_TITLES as $possible) {
                         if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
                             $bad_data = false;
@@ -87,13 +87,13 @@ function expand_by_jstor(Template $template): void {
                 if (!isset($ris_part[1])) {
                     $ris_part[0] = ""; // Ignore
                 }
-                switch (trim($ris_part[0])) {
+                switch (mb_trim($ris_part[0])) {
                     case "T1":
-                        $new_title .= trim($ris_part[1]);
+                        $new_title .= mb_trim($ris_part[1]);
                         $got_count += 10;
                         break;
                     case "TI":
-                        $new_title = trim($ris_part[1]) . $new_title;
+                        $new_title = mb_trim($ris_part[1]) . $new_title;
                         $got_count += 100;
                         break;
                     default:
@@ -115,12 +115,12 @@ function expand_by_jstor(Template $template): void {
                     $ris_part[0] = ""; // Ignore
                 }
                 $ris_part = explode(" - ", $ris_line . " ", 2);
-                switch (trim($ris_part[0])) {
+                switch (mb_trim($ris_part[0])) {
                     case "T1":
                     case "TI":
                     case "T2":
                     case "BT":
-                        $new_title = trim($ris_part[1]);
+                        $new_title = mb_trim($ris_part[1]);
                         if ($new_title) report_info("    Possible new title: " . echoable($new_title));
                         break;
                     default: // @codeCoverageIgnore
@@ -154,7 +154,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
   $ris_authors = 0;
 
   if (preg_match('~(?:T[I1]).*-(.*)$~m', $dat, $match)) {
-   if (in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+   if (in_array(strtolower(mb_trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
     return;
    }
   }
@@ -164,18 +164,18 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
    if (!isset($ris_part[1])) {
     $ris_part[0] = "";
    } // Ignore
-   if (trim($ris_part[0]) === "TY") {
-    if (in_array(trim($ris_part[1]), RIS_IS_BOOK, true)) {
+   if (mb_trim($ris_part[0]) === "TY") {
+    if (in_array(mb_trim($ris_part[1]), RIS_IS_BOOK, true)) {
      $ris_book = true; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
     }
-    if (in_array(trim($ris_part[1]), RIS_IS_FULL_BOOK, true)) {
+    if (in_array(mb_trim($ris_part[1]), RIS_IS_FULL_BOOK, true)) {
      $ris_fullbook = true;
     }
-   } elseif (trim($ris_part[0]) === "T2") {
+   } elseif (mb_trim($ris_part[0]) === "T2") {
     $has_T2 = true;
-   } elseif (trim($ris_part[0]) === "SP" && (trim($ris_part[1]) === 'i' || trim($ris_part[1]) === '1')) {
+   } elseif (mb_trim($ris_part[0]) === "SP" && (mb_trim($ris_part[1]) === 'i' || mb_trim($ris_part[1]) === '1')) {
     $bad_SP = true;
-   } elseif (trim($ris_part[0]) === "EP" && preg_match('~^\d{3,}$~', trim($ris_part[1]))) {
+   } elseif (mb_trim($ris_part[0]) === "EP" && preg_match('~^\d{3,}$~', mb_trim($ris_part[1]))) {
     $bad_EP = true;
    }
   }
@@ -186,7 +186,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
    if (!isset($ris_part[1])) {
     $ris_part[0] = "";
    } // Ignore
-   switch (trim($ris_part[0])) {
+   switch (mb_trim($ris_part[0])) {
     case "T1":
      if ($ris_fullbook) {
       // Sub-title of main title most likely
@@ -215,12 +215,12 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
      $ris_part[1] = preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1]));
      break;
     case "SP": // Deal with start pages later
-     $start_page = trim($ris_part[1]);
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+     $start_page = mb_trim($ris_part[1]);
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "EP": // Deal with end pages later
-     $end_page = trim($ris_part[1]);
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+     $end_page = mb_trim($ris_part[1]);
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "DO":
      $ris_parameter = doi_works($ris_part[1]) ? "doi" : false;
@@ -244,19 +244,19 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
      $ris_parameter = "issue";
      break;
     case "RI": // Deal with review titles later
-     $ris_review = "Reviewed work: " . trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+     $ris_review = "Reviewed work: " . mb_trim($ris_part[1]); // Get these from JSTOR
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "SN": // Deal with ISSN later
-     $ris_issn = trim($ris_part[1]);
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+     $ris_issn = mb_trim($ris_part[1]);
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "UR":
      $ris_parameter = "url";
      break;
     case "PB": // Deal with publisher later
-     $ris_publisher = trim($ris_part[1]); // Get these from JSTOR
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+     $ris_publisher = mb_trim($ris_part[1]); // Get these from JSTOR
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
      break;
     case "M3":
     case "N1":
@@ -282,20 +282,20 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
     case "Provider: JSTOR http://www.jstor.org":
     case "Database: JSTOR":
     case "Content: text/plain; charset=\"UTF-8\"":
-     $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
+     $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
      break;
     default:
      if (isset($ris_part[1])) { // After logging this for several years, nothing of value ever found
-      report_info("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1]))); // @codeCoverageIgnore
+      report_info("Unexpected RIS data type ignored: " . echoable(mb_trim($ris_part[0])) . " set to " . echoable(mb_trim($ris_part[1]))); // @codeCoverageIgnore
      }
    }
    unset($ris_part[0]);
-   if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $template->add_if_new($ris_parameter, trim(implode($ris_part))))) {
-    $dat = trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+   if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $template->add_if_new($ris_parameter, mb_trim(implode($ris_part))))) {
+    $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
    }
   }
   if ($ris_review) {
-   $template->add_if_new('title', trim($ris_review));
+   $template->add_if_new('title', mb_trim($ris_review));
   } // Do at end in case we have real title
   if (isset($start_page) && (!$bad_EP || !$bad_SP)) {
    // Have to do at end since might get end pages before start pages
