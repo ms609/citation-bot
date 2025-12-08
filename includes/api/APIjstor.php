@@ -195,40 +195,40 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
                 } else {
                     $ris_parameter = "title";
                 }
-     break;
+                break;
             case "TI":
                 $ris_parameter = "title";
                 if ($ris_book && $has_T2) {
                     $ris_parameter = "chapter";
                 }
-         break;
+                break;
             case "AU":
                 $ris_authors++;
                 $ris_parameter = "author". $ris_authors;
                 $ris_part[1] = format_author($ris_part[1]);
-         break;
+                break;
             case "Y1":
                 $ris_parameter = "date";
-         break;
+                break;
             case "PY":
                 $ris_parameter = "date";
                 $ris_part[1] = preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1]));
-         break;
+                break;
             case "SP": // Deal with start pages later
                 $start_page = mb_trim($ris_part[1]);
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-         break;
+                break;
             case "EP": // Deal with end pages later
                 $end_page = mb_trim($ris_part[1]);
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-         break;
+                break;
             case "DO":
                 $ris_parameter = doi_works($ris_part[1]) ? "doi" : false;
-         break;
+                break;
             case "JO":
             case "JF":
                 $ris_parameter = "journal";
-         break;
+                break;
             case "T2":
             case "BT":
                 if ($ris_book) {
@@ -236,28 +236,28 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
                 } else {
                     $ris_parameter = "journal";
                 }
-         break;
+                break;
             case "VL":
                 $ris_parameter = "volume";
-         break;
+                break;
             case "IS":
                 $ris_parameter = "issue";
-         break;
+                break;
             case "RI": // Deal with review titles later
                 $ris_review = "Reviewed work: " . mb_trim($ris_part[1]); // Get these from JSTOR
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-         break;
+                break;
             case "SN": // Deal with ISSN later
                 $ris_issn = mb_trim($ris_part[1]);
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-         break;
+                break;
             case "UR":
                 $ris_parameter = "url";
-         break;
+                break;
             case "PB": // Deal with publisher later
                 $ris_publisher = mb_trim($ris_part[1]); // Get these from JSTOR
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-         break;
+                break;
             case "M3":
             case "N1":
             case "N2":
@@ -283,7 +283,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
             case "Database: JSTOR":
             case "Content: text/plain; charset=\"UTF-8\"":
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
-         break;
+                break;
             default:
                 if (isset($ris_part[1])) { // After logging this for several years, nothing of value ever found
                     report_info("Unexpected RIS data type ignored: " . echoable(mb_trim($ris_part[0])) . " set to " . echoable(mb_trim($ris_part[1]))); // @codeCoverageIgnore
