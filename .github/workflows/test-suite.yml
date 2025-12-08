@@ -28,6 +28,7 @@ on:
       - 'progpilot.json'
       - 'progpilot.yml'
       - 'psalm.xml'
+      - '.trivyignore'
 
   schedule:
     - cron: '25 17 * * 1'
