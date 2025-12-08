@@ -69,7 +69,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     set_time_limit(120); // Slow regex sometimes
                     if ($raw_html && preg_match($regex, $raw_html, $match)) {
                         set_time_limit(120);
-                            $title = trim($match[1]);
+                            $title = mb_trim($match[1]);
                             if (stripos($title, 'archive') === false &&
                             stripos($title, 'wayback') === false &&
                             $title !== ''
