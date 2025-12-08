@@ -151,7 +151,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 $add_authors = $existing_author === '' || author_is_human($existing_author);
 
                 foreach ($crossRef->contributors->contributor as $author) {
-                    if (strtoupper((string) $author->surname) === '&NA;') {
+                    if (mb_strtoupper((string) $author->surname) === '&NA;') {
                         break; // No Author, leave loop now!  Have only seen upper-case in the wild
                     }
                     if ((string) $author["contributor_role"] === 'editor') {
