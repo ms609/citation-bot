@@ -98,7 +98,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         $subItem = $jr_test[0];
                                         $junior = $jr_test[1];
                                         if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-                                            $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
+                                            $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
                                             if (strpos($first, '.') && substr($first, -1) !== '.') {
                                                 $first .= '.';
                                             }
