@@ -257,7 +257,7 @@ function google_book_details(Template $template, string $gid): void
    $template->add_if_new('publisher', str_replace("___", ":", (string) $xml->dc___publisher));
   }
 
-  $google_date = sanitize_string(trim((string) $xml->dc___date)); // Google often sends us YYYY-MM
+  $google_date = sanitize_string(mb_trim((string) $xml->dc___date)); // Google often sends us YYYY-MM
   if ('101-01-01' === $google_date) {
    $google_date = '';
   }
@@ -437,7 +437,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         }
     }
     // Clean up hash first
-    $hash = '&' . trim($hash) . '&';
+    $hash = '&' . mb_trim($hash) . '&';
     $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
     $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&', '%20&%20'], ['&', '&', '&', '&', '&', '%20%26%20'], $hash);
     if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
