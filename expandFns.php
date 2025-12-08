@@ -1073,7 +1073,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
         $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
-        $replace = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
+        $replace = 'Series ' . mb_strtoupper($matches[1]) . $matches[2] . mb_strtoupper($matches[3]);
         $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
     }
 
@@ -1088,31 +1088,31 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~ part ([xvil]+): ~iu",
         static function (array $matches): string {
-            return " Part " . strtoupper($matches[1]) . ": ";
+            return " Part " . mb_strtoupper($matches[1]) . ": ";
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
         "~ part ([xvi]+) ~iu",
         static function (array $matches): string {
-            return " Part " . strtoupper($matches[1]) . " ";
+            return " Part " . mb_strtoupper($matches[1]) . " ";
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
         "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
         static function (array $matches): string {
-            return strtoupper($matches[0]);
+            return mb_strtoupper($matches[0]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
         "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
         static function (array $matches): string {
-            return strtoupper($matches[0]);
+            return mb_strtoupper($matches[0]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
         "~ Proceedings ([a-z]) ~u",
         static function (array $matches): string {
-            return ' Proceedings ' . strtoupper($matches[1]) . ' ';
+            return ' Proceedings ' . mb_strtoupper($matches[1]) . ' ';
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
@@ -1130,7 +1130,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~(Serie )([a-z])( )~u",
         static function (array $matches): string {
-            return $matches[1] . strtoupper($matches[2]) . $matches[3];
+            return $matches[1] . mb_strtoupper($matches[2]) . $matches[3];
         },
         $new_case);
     $new_case = trim($new_case);
