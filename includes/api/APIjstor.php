@@ -121,7 +121,9 @@ function expand_by_jstor(Template $template): void {
                     case "T2":
                     case "BT":
                         $new_title = mb_trim($ris_part[1]);
-                        if ($new_title) report_info("    Possible new title: " . echoable($new_title));
+                        if ($new_title) {
+                            report_info("    Possible new title: " . echoable($new_title));
+                        }
                         break;
                     default: // @codeCoverageIgnore
                 }

@@ -146,7 +146,9 @@ final class constantsTest extends testBaseClass {
         $sections = explode($start_alpha, $old_contents);
         foreach ($sections as &$section) {
             $alpha_end = stripos($section, $end_alpha);
-            if (!$alpha_end) continue;
+            if (!$alpha_end) {
+                continue;
+            }
             $alpha_bit = substr($section, 0, $alpha_end);
             $alpha_bits = preg_split('~(?<=\'),~', $alpha_bit);
             $alpha_bits = array_map('mb_trim', $alpha_bits);
@@ -171,7 +173,9 @@ final class constantsTest extends testBaseClass {
                 $alphaed .= $bit ? ($bit . ",") : '';
                 $alphaed .= $new_line;
             }
-            if ($alphaed === $new_line) $alphaed = '';
+            if ($alphaed === $new_line) {
+                $alphaed = '';
+            }
             $section = $alphaed . substr($section, $alpha_end);
         }
         unset ($section); // Destroy pointer to be safe
@@ -366,7 +370,9 @@ final class constantsTest extends testBaseClass {
             sort($flat);
             $last = 'XXXXXXXX';
             foreach ($flat as $param) {
-                if ($param === $last) echo "\n" . $param . "\n";
+                if ($param === $last) {
+                    echo "\n" . $param . "\n";
+                }
                 $last = $param;
             }
             $this->flush();
@@ -462,7 +468,9 @@ final class constantsTest extends testBaseClass {
         $this->assertSame("END_OF_CITE_list_junk", end($italics));
         foreach ($italics as $item) {
             $spaces = substr_count($item, " ");
-            if ($spaces > $spaces_at) $in_order = false;
+            if ($spaces > $spaces_at) {
+                $in_order = false;
+            }
             $spaces_at = $spaces;
             $max_spaces = max($max_spaces, $spaces);
         }

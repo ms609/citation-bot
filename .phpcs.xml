@@ -22,9 +22,11 @@
     <file>WikipediaBot.php</file>
     <file>./includes</file>
     <file>./tests</file>
+    <rule ref="PSR2.Files.ClosingTag"/>
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
+    <rule ref="Generic.ControlStructures.InlineControlStructure.NotAllowed"/>
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
@@ -37,9 +39,6 @@
                 <element value="proc_open" value="null"/>
                 <element value="create_function" value="null"/>
                 <element value="assert" value="null"/>
-                <element value="convert_case" value="mb_convert_case"/>
-                <element value="ereg" value="mb_ereg"/>
-                <element value="ereg_replace" value="mb_ereg_replace"/>
                 <element value="ltrim" value="mb_ltrim"/>
                 <element value="rtrim" value="mb_rtrim"/>
                 <element value="str_pad" value="mb_str_pad"/>
@@ -60,5 +59,4 @@
             </property>
         </properties>
     </rule>
-
 </ruleset>
