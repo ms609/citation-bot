@@ -30,32 +30,32 @@
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
-                <element value="eval" value="null"/>
-                <element value="exec" value="null"/>
-                <element value="shell_exec" value="null"/>
-                <element value="passthru" value="null"/>
-                <element value="system" value="null"/>
-                <element value="popen" value="null"/>
-                <element value="proc_open" value="null"/>
-                <element value="create_function" value="null"/>
-                <element value="assert" value="null"/>
-                <element value="ltrim" value="mb_ltrim"/>
-                <element value="rtrim" value="mb_rtrim"/>
-                <element value="str_pad" value="mb_str_pad"/>
-                <element value="str_split" value="mb_str_split"/>
-                <element value="stripos" value="mb_stripos"/>
-                <element value="strlen" value="mb_strlen"/>
-                <element value="strpos" value="mb_strpos"/>
-                <element value="strrev" value="mb_strrev"/>
-                <element value="strrpos" value="mb_strrpos"/>
-                <element value="strtolower" value="mb_strtolower"/>
-                <element value="strtoupper" value="mb_strtoupper"/>
-                <element value="substr" value="mb_substr"/>
-                <element value="trim" value="mb_trim"/>
-                <element value="die" value="exit"/>
-                <element value="print" value="echo"/>
-                <element value="ucfirst" value="mb_ucfirst"/>
-                <element value="ucwords" value="mb_ucwords"/>
+                <element key="eval" value="null"/>
+                <element key="exec" value="null"/>
+                <element key="shell_exec" value="null"/>
+                <element key="passthru" value="null"/>
+                <element key="system" value="null"/>
+                <element key="popen" value="null"/>
+                <element key="proc_open" value="null"/>
+                <element key="create_function" value="null"/>
+                <element key="assert" value="null"/>
+                <element key="ltrim" key="mb_ltrim"/>
+                <element key="rtrim" value="mb_rtrim"/>
+                <element key="str_pad" value="mb_str_pad"/>
+                <element key="str_split" value="mb_str_split"/>
+                <element key="stripos" value="mb_stripos"/>
+                <element key="strlen" value="mb_strlen"/>
+                <element key="strpos" value="mb_strpos"/>
+                <element key="strrev" value="mb_strrev"/>
+                <element key="strrpos" value="mb_strrpos"/>
+                <element key="strtolower" value="mb_strtolower"/>
+                <element key="strtoupper" value="mb_strtoupper"/>
+                <element key="substr" value="mb_substr"/>
+                <element key="trim" value="mb_trim"/>
+                <element key="die" value="exit"/>
+                <element key="print" value="echo"/>
+                <element key="ucfirst" value="mb_ucfirst"/>
+                <element key="ucwords" value="mb_ucwords"/>
             </property>
         </properties>
     </rule>
