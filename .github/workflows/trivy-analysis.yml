@@ -31,7 +31,6 @@ jobs:
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
           severity: 'CRITICAL'
-          ignore-policy: AVD-DS-0002 AVD-DS-0026 # These issues are noted in the docker files
 
       - name: Check Trivy scan results existence
         run: |
