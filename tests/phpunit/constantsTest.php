@@ -400,7 +400,7 @@ final class constantsTest extends testBaseClass {
                 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
                 $this->flush();
             }
-            if (strpos($param, '.') === false) {
+            if (mb_strpos($param, '.') === false) {
                 $failed = true;
                 $this->flush();
                 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
@@ -622,7 +622,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         foreach (DOI_FREE_PREFIX as $prefix) {
             $this->assertTrue($prefix != '');
-            if (strpos($prefix, '/') === false) {
+            if (mb_strpos($prefix, '/') === false) {
                 $this->assertSame('This needs a slash', $prefix);
             }
         }
