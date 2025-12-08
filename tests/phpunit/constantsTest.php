@@ -13,7 +13,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
         for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
-            $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(mb_ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), true)));
+            $this->assertSame(mb_trim(JOURNAL_ACRONYMS[$i]), mb_trim(title_capitalization(mb_ucwords(mb_trim(UCFIRST_JOURNAL_ACRONYMS[$i])), true)));
             // Verify that they are padded with a space
             $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
             $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  0, 1));
@@ -47,10 +47,10 @@ final class constantsTest extends testBaseClass {
     public function testConstantsOoops(): void { // Did we forget to upper/lower case one of them?
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
-            $this->assertNotEquals(trim(JOURNAL_ACRONYMS[$i]), trim(UCFIRST_JOURNAL_ACRONYMS[$i]));
+            $this->assertNotEquals(mb_trim(JOURNAL_ACRONYMS[$i]), mb_trim(UCFIRST_JOURNAL_ACRONYMS[$i]));
         }
         for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
-            $this->assertNotEquals(trim(UC_SMALL_WORDS[$i]), trim(LC_SMALL_WORDS[$i]));
+            $this->assertNotEquals(mb_trim(UC_SMALL_WORDS[$i]), mb_trim(LC_SMALL_WORDS[$i]));
         }
     }
 
@@ -102,8 +102,8 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $big_array = JOURNAL_IS_BOOK_SERIES;
         foreach ($big_array as $actual) {
-            $simple = trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
-            $simple = trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple));
+            $simple = mb_trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
+            $simple = mb_trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple));
             $this->assertSame($simple, $actual);
         }
     }
@@ -131,7 +131,7 @@ final class constantsTest extends testBaseClass {
                                  PREFER_ISSUES);
         foreach ($big_array as $actual) {
             if (!in_array($actual, ["sign up "], true)) {
-                $this->assertSame(trim($actual), $actual);
+                $this->assertSame(mb_trim($actual), $actual);
             }
         }
     }
@@ -149,7 +149,7 @@ final class constantsTest extends testBaseClass {
             if (!$alpha_end) continue;
             $alpha_bit = substr($section, 0, $alpha_end);
             $alpha_bits = preg_split('~(?<=\'),~', $alpha_bit);
-            $alpha_bits = array_map('trim', $alpha_bits);
+            $alpha_bits = array_map('mb_trim', $alpha_bits);
             if ($leader) {
                 $leader_bits = $alpha_bits;
                 sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
@@ -658,7 +658,7 @@ final class constantsTest extends testBaseClass {
             if (isset($all_maps[$mapped])) {
                 $errors .= ' re-mapped: ' . $map_me . '/' . $mapped . '    ';
             }
-            if (trim($mapped) !== $mapped || trim($map_me) !== $map_me) {
+            if (mb_trim($mapped) !== $mapped || mb_trim($map_me) !== $map_me) {
                 $errors .= ' extra white space: ' . $map_me . '/' . $mapped . '    ';
             }
             // Number replaced with pound
