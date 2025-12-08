@@ -32,7 +32,6 @@
             <property name="forbiddenFunctions" type="array">
                 <element key="eval" value="null"/>
                 <element key="exec" value="null"/>
-                <element key="shell_exec" value="null"/>
                 <element key="passthru" value="null"/>
                 <element key="system" value="null"/>
                 <element key="popen" value="null"/>
