@@ -1,4 +1,4 @@
-name: PHP Code Sniffer
+name: PHP CodeSniffer
 
 on:
   push:
@@ -27,7 +27,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Code Sniffer
-      uses: php-actions/phpcs@v1
-      with:
-        php_version: 8.4
-        standard: .phpcs.xml
+      run: ./vendor/bin/phpcbf --standard=.phpcs.xml -d memory_limit=1000M
