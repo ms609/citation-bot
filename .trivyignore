@@ -1,0 +1,5 @@
+# Accept the risk of root user in docker
+AVD-DS-0002
+
+# No impact to missing HEALTHCHECK
+AVD-DS-0026
