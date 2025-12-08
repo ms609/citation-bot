@@ -260,7 +260,7 @@ final class constantsTest extends testBaseClass {
         $new = '';
         foreach($whitelist as $value) {
             $value = str_replace('#', '1', $value);
-            if (stripos($value, '_bot')) {
+            if (mb_stripos($value, '_bot')) {
                 $value = 'title'; // basically skip it
             }
             $text = '{{citation | ' . $value . ' = Z123Z }}';
@@ -400,7 +400,7 @@ final class constantsTest extends testBaseClass {
                 echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
                 $this->flush();
             }
-            if (strpos($param, '.') === false) {
+            if (mb_strpos($param, '.') === false) {
                 $failed = true;
                 $this->flush();
                 echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
@@ -603,7 +603,7 @@ final class constantsTest extends testBaseClass {
             if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
                 $page->get_text_from($tem);
                 $text = $page->parsed_text();
-                if (stripos($text, 'safesubst:') === false) {
+                if (mb_stripos($text, 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
             }
@@ -622,7 +622,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         foreach (DOI_FREE_PREFIX as $prefix) {
             $this->assertTrue($prefix != '');
-            if (strpos($prefix, '/') === false) {
+            if (mb_strpos($prefix, '/') === false) {
                 $this->assertSame('This needs a slash', $prefix);
             }
         }

@@ -1,4 +1,4 @@
-name: PHPLint (PHP syntax check - no style rules)
+name: PHPLint (Basic PHP syntax check)
 
 on:
   push:
@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Lint test
-      run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
+      run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./

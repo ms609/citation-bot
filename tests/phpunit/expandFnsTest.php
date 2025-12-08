@@ -553,7 +553,7 @@ final class expandFnsTest extends testBaseClass {
         foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
             $this->assertSame(mb_trim($doi), $doi);
             $this->assertTrue($value);
-            $this->assertTrue(strpos($doi, '10.') === 0); // No HDLs allowed
+            $this->assertTrue(mb_strpos($doi, '10.') === 0); // No HDLs allowed
             $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         $changes = "";
@@ -564,14 +564,14 @@ final class expandFnsTest extends testBaseClass {
         }
         foreach (NULL_DOI_LIST as $doi => $value) {
             foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-                if (stripos($doi, $bad_start) === 0) {
+                if (mb_stripos($doi, $bad_start) === 0) {
                     $changes = $changes . "Both in bad and bad start: " . $doi . "                ";
                 }
             }
         }
         foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
             foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-                if (stripos($doi, $bad_start) === 0) {
+                if (mb_stripos($doi, $bad_start) === 0) {
                     $changes = $changes . "Both in good and bad start: " . $doi . "                ";
                 }
             }

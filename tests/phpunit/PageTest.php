@@ -222,15 +222,15 @@ final class PageTest extends testBaseClass {
             $this->assertTrue(TRAVIS || $page_result); // If we have tokens and are not in TRAVIS, then should have worked
             $page->overwrite_text($trialCitation);
             $page->expand_text();
-            $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
-            $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
+            $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
+            $this->assertTrue(mb_strpos($page->edit_summary(), ' Removed ') > 3);
             if ($page_result) {
                 $this->assertTrue($page->write($api));
             } else {
                 $this->assertFalse($page->write($api));
             }
             $page->get_text_from($writeTestPage);
-            $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5); // This can fail, if the page gets edited and is no longer {{Cite journal | doi = 10.1038/nature09068 | title=Bot Testing | date=2010 | pmid=20505727 | last1=Smith | first1=M. R. | last2=Caron | first2=J. B. | journal=Nature | volume=465 | issue=7297 | pages=469–472 | hdl=1807/32368 | s2cid=4421029 }}
+            $this->assertTrue(mb_strpos($page->parsed_text(), 'Nature') > 5); // This can fail, if the page gets edited and is no longer {{Cite journal | doi = 10.1038/nature09068 | title=Bot Testing | date=2010 | pmid=20505727 | last1=Smith | first1=M. R. | last2=Caron | first2=J. B. | journal=Nature | volume=465 | issue=7297 | pages=469–472 | hdl=1807/32368 | s2cid=4421029 }}
         });
     }
 
@@ -264,12 +264,12 @@ final class PageTest extends testBaseClass {
 
     public function testUrlReferencesAA(): void {
         $page = $this->process_page(" text <ref name='dog' > 10.1063/1.2263373 </ref>");
-        $this->assertTrue((bool) strpos($page->parsed_text(), 'title'));
+        $this->assertTrue((bool) mb_strpos($page->parsed_text(), 'title'));
     }
 
     public function testUrlReferencesBB(): void {
         $page = $this->process_page(" text <ref name='dog' >[http://doi.org/10.1007/s12668-011-0022-5 http://doi.org/10.1007/s12668-011-0022-5]</ref>");
-        $this->assertTrue((bool) strpos($page->parsed_text(), 'title'));
+        $this->assertTrue((bool) mb_strpos($page->parsed_text(), 'title'));
     }
 
     public function testUrlReferencesThatFail(): void {
@@ -379,25 +379,25 @@ final class PageTest extends testBaseClass {
     public function testUrlReferencesWithText16(): void {
         $text = "<ref>{{arxiv|0806.0013}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     }
 
     public function testUrlReferencesWithText17(): void {
         $text = "<ref>{{isbn|9781782626299}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), '978-1-78262-629-9'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), '978-1-78262-629-9'));
     }
 
     public function testUrlReferencesWithText18(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testUrlReferencesWithText19(): void {
         $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
         $page = $this->process_page($text);
-        $this->assertTrue((bool) stripos($page->parsed_text(), 'jstor=962034'));
+        $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testConfer(): void {
@@ -409,7 +409,7 @@ final class PageTest extends testBaseClass {
     public function testMagazine(): void {
         $text = '{{cite magazine|work=Yup}}';
         $page = $this->process_page($text);
-        $this->assertTrue((bool) strpos($page->parsed_text(), 'magazine=Yup'));
+        $this->assertTrue((bool) mb_strpos($page->parsed_text(), 'magazine=Yup'));
     }
 
     public function testThesis(): void {
