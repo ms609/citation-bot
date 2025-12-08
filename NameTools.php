@@ -35,9 +35,9 @@ function split_author(string $value): array {
 }
 
 function clean_up_full_names(string $value): string {
-    $value = trim($value);
+    $value = mb_trim($value);
     $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " and ", ";", " ", "", ""], $value);
-    $value = trim(straighten_quotes($value, true));
+    $value = mb_trim(straighten_quotes($value, true));
     if (mb_substr($value, -1) === '.') { // Do not lose last period
         $value = sanitize_string($value) . '.';
     } else {
@@ -47,9 +47,9 @@ function clean_up_full_names(string $value): string {
 }
 
 function clean_up_last_names(string $value): string {
-    $value = trim($value);
+    $value = mb_trim($value);
     $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
-    $value = trim(straighten_quotes($value, true));
+    $value = mb_trim(straighten_quotes($value, true));
     if (mb_substr($value, -1) === '.') { // Do not lose last period
         $value = sanitize_string($value) . '.';
     } else {
@@ -59,9 +59,9 @@ function clean_up_last_names(string $value): string {
 }
 
 function clean_up_first_names(string $value): string {
-    $value = trim($value);
+    $value = mb_trim($value);
     $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " ", ";", " ", "", ""], $value);
-    $value = trim(straighten_quotes($value, true));
+    $value = mb_trim(straighten_quotes($value, true));
     if (mb_substr($value, -1) === '.') { // Do not lose last period
         $value = sanitize_string($value) . '.';
     } else {
@@ -80,7 +80,7 @@ function clean_up_first_names(string $value): string {
 }
 
 function format_surname(string $surname): string {
-    $surname = trim($surname);
+    $surname = mb_trim($surname);
     if ($surname === '-') {
         return '';
     }
@@ -90,7 +90,7 @@ function format_surname(string $surname): string {
     if (preg_match('~^\S\.?$~u', $surname)) {
         return mb_strtoupper($surname); // Just a single initial, with or without period
     }
-    $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
+    $surname = mb_convert_case(mb_trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
     if (mb_substr($surname, 0, 2) === "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
     }
@@ -122,11 +122,11 @@ function format_surname_2(string $surname): string {
 }
 
 function format_forename(string $forename): string {
-    $forename = trim($forename);
+    $forename = mb_trim($forename);
     if ($forename === '-' || $forename === '') {
         return '';
     }
-    return str_replace([" ."], "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
+    return str_replace([" ."], "", mb_trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
             static function(array $matches): string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
             },
@@ -140,7 +140,7 @@ function format_forename(string $forename): string {
  *
  */
 function format_initials(string $str): string {
-    $str = trim($str);
+    $str = mb_trim($str);
         if ($str === "") {
             return "";
         }
@@ -150,7 +150,7 @@ function format_initials(string $str): string {
 }
 
 function is_initials(string $str): bool {
-        $str = trim($str);
+        $str = mb_trim($str);
         if (!$str) {
             return false;
         }
@@ -171,7 +171,7 @@ function is_initials(string $str): bool {
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
 function author_is_human(string $author): bool {
-    $author = trim($author);
+    $author = mb_trim($author);
     $chars = count_chars($author);
     if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
         || substr(strtolower($author), 0, 4) === "the "
@@ -201,10 +201,10 @@ function format_author(string $author): string {
     $author = preg_replace("~^( ?sir )~", "", $author);
     $author = preg_replace("~^(, sir )~", ", ", $author);
 
-    $ends_with_period = (substr(trim($author), -1) === ".");
+    $ends_with_period = (substr(mb_trim($author), -1) === ".");
 
-    $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
-    $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
+    $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", mb_trim($author)); //Housekeeping
+    $author = preg_replace("~^[aA]nd ~", "", mb_trim($author)); // Just in case it has been split from a Smith; Jones; and Western
     if ($author === "") {
             return "";
     }
@@ -279,9 +279,9 @@ function format_author(string $author): string {
         }
     }
     // Special cases when code cannot fully determine things, or if the name is only Smith
-    if (trim($surname) === '') { // get this with A. B. C.
+    if (mb_trim($surname) === '') { // get this with A. B. C.
         $full_name = format_forename($fore);
-    } elseif (trim($fore) === '') {  // Get this with just Smith
+    } elseif (mb_trim($fore) === '') {  // Get this with just Smith
         $full_name = format_surname($surname);
     } else {
         $full_name = format_surname($surname) . ", " . format_forename($fore);
@@ -289,7 +289,7 @@ function format_author(string $author): string {
     $full_name = str_replace("..", ".", $full_name);  // Sometimes add period after period
     $full_name = str_replace(".", ". ", $full_name);  // Add spaces after all periods
     $full_name = str_replace(["   ", "  "], [" ", " "], $full_name); // Remove extra spaces
-    return trim($full_name);
+    return mb_trim($full_name);
 }
 
 function format_multiple_authors(string $authors): string {
@@ -301,11 +301,11 @@ function format_multiple_authors(string $authors): string {
 
     $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
     $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
-    if (preg_match("~[,;]$~", trim($authors))) {
-        $authors = substr(trim($authors), 0, strlen(trim($authors))-1); // remove trailing punctuation
+    if (preg_match("~[,;]$~", mb_trim($authors))) {
+        $authors = substr(mb_trim($authors), 0, strlen(mb_trim($authors))-1); // remove trailing punctuation
     }
 
-    $authors = trim($authors);
+    $authors = mb_trim($authors);
     if ($authors === "") {
         return '';
     }
@@ -315,7 +315,7 @@ function format_multiple_authors(string $authors): string {
     $bits = [];
     if (isset($authors[1])) {
         foreach ($authors as $A){
-            if (trim($A) !== "") {
+            if (mb_trim($A) !== "") {
                 $return[] = format_author($A);
             }
         }
@@ -323,7 +323,7 @@ function format_multiple_authors(string $authors): string {
         //Use commas as delimiters
         $chunks = explode(",", $authors[0]);
         foreach ($chunks as $chunk){
-            $chunk = trim($chunk);
+            $chunk = mb_trim($chunk);
             if ($chunk === '') {
                 continue; // Odd things with extra commas
             }
@@ -353,13 +353,13 @@ function format_multiple_authors(string $authors): string {
     foreach ($frags as $frag){
         $return[] = is_initials($frag) ? format_initials($frag) : $frag;
     }
-    return safe_preg_replace("~;$~", "", trim(implode(" ", $return)));
+    return safe_preg_replace("~;$~", "", mb_trim(implode(" ", $return)));
 }
 
 function under_two_authors(string $text): bool {
     return !(strpos($text, ';') !== false  //if there is a semicolon
             || substr_count($text, ',') > 1  //if there is more than one comma
-            || substr_count($text, ',') < substr_count(trim($text), ' '));  //if the number of commas is less than the number of spaces in the trimmed string
+            || substr_count($text, ',') < substr_count(mb_trim($text), ' '));  //if the number of commas is less than the number of spaces in the shrunk string
 }
 
 /* split_authors
