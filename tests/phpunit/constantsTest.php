@@ -145,7 +145,7 @@ final class constantsTest extends testBaseClass {
         $old_contents = file_get_contents($filename);
         $sections = explode($start_alpha, $old_contents);
         foreach ($sections as &$section) {
-            $alpha_end = mb_stripos($section, $end_alpha);
+            $alpha_end = stripos($section, $end_alpha);
             if (!$alpha_end) {
                 continue;
             }
