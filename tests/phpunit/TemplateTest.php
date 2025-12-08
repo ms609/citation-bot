@@ -296,7 +296,7 @@ final class TemplateTest extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $this->assertSame('40237667', $prepared->get2('jstor'));
         $this->assertNull($prepared->get2('doi'));
-        $this->assertSame(2, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.   Formerly testOverwriteBlanks()
+        $this->assertSame(2, mb_substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.   Formerly testOverwriteBlanks()
     }
 
     public function testJstorExpansion3(): void {
@@ -2712,7 +2712,7 @@ EP - 999 }}';
         $this->assertSame('1961', $expanded->get2('date'));
         $this->assertSame('81', $expanded->get2('volume'));
         $this->assertSame('1', $expanded->get2('issue'));
-        $this->assertSame('43', substr($expanded->get('pages') . $expanded->get('page'), 0, 2));  // The jstor expansion can add the page ending
+        $this->assertSame('43', mb_substr($expanded->get('pages') . $expanded->get('page'), 0, 2));  // The jstor expansion can add the page ending
     }
 
     public function testJstorSICIEncoded(): void {
@@ -3535,12 +3535,12 @@ EP - 999 }}';
                         "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
                         "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
         $page = $this->process_page($text);
-        if (substr_count($page->parsed_text(), 'JSTOR') !== 0) {
+        if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
                 sleep(3);
                 $text = $page->parsed_text();
                 $page = $this->process_page($text);
         }
-        $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
+        $this->assertSame(0, mb_substr_count($page->parsed_text(), 'JSTOR'));
     }
 
     public function testJunkData2(): void {
