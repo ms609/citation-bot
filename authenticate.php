@@ -33,7 +33,7 @@ if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
 
 session_start();
 
-require_once 'setup.php';
+require_once './includes/setup.php';
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
     death_time("Citation Bot's authorization tokens not configured");
