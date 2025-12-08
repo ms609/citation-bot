@@ -176,7 +176,7 @@ require_once 'WikipediaBot.php';
 require_once 'Parameter.php';
 require_once 'expandFns.php';
 require_once 'Template.php';
-require_once 'Zotero.php';
+require_once 'includes/api/APIzotero.php';
 require_once 'includes/api/APIdoi.php';
 require_once 'includes/api/APIS2.php';
 require_once 'includes/api/APIBibCode.php';
