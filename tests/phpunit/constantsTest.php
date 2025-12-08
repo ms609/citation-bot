@@ -118,8 +118,8 @@ final class constantsTest extends testBaseClass {
                                  TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
                                  TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
         foreach ($big_array as $actual) {
-            $this->assertSame(mb_strtolower($actual), strtolower($actual));
-            $this->assertSame(mb_strtoupper($actual), strtoupper($actual));
+            $this->assertSame(mb_strtolower($actual), /** Do not make mb_ */strtolower($actual));
+            $this->assertSame(mb_strtoupper($actual), /** Do not make mb_ */strtoupper($actual));
         }
     }
 
