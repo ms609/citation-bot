@@ -87,7 +87,7 @@ final class HandleCache {
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     if (isset(HandleCache::$cache_active[$doi])) {
         return true;
     }
@@ -107,7 +107,7 @@ function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but 
 }
 
 function doi_works(string $doi): ?bool {
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     if (TRUST_DOI_GOOD && isset(NULL_DOI_BUT_GOOD[$doi])) {
         return true;
     }
@@ -164,7 +164,7 @@ function is_doi_active(string $doi): ?bool {
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
         ]);
     }
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
     curl_setopt($ch, CURLOPT_URL, $url);
     $return = bot_curl_exec($ch);
@@ -216,7 +216,7 @@ function throttle_dx (): void {
 }
 
 function is_doi_works(string $doi): ?bool {
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     // And now some obvious fails
     if (strpos($doi, '/') === false){
         return false;
@@ -392,7 +392,7 @@ function sanitize_doi(string $doi): string {
     $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
     $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
-    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
+    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
     $pos = (int) strrpos($doi, '.');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
@@ -565,12 +565,12 @@ function wikify_external_text(string $title): string {
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>'];
     $wikiTags = ['. ','. ','. ','. ','. ','. ', ' ',' ',' '];
-    $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+    $title = mb_trim(str_ireplace($originalTags, $wikiTags, $title));
     if (preg_match("~^\. (.+)$~", $title, $matches)) {
-        $title = trim($matches[1]);
+        $title = mb_trim($matches[1]);
     }
     if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
-        $title = trim($matches[1] . ".");
+        $title = mb_trim($matches[1] . ".");
     }
     $title_orig = '';
     while ($title !== $title_orig) {
@@ -614,9 +614,9 @@ function wikify_external_text(string $title): string {
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     if (mb_strlen($title) === strlen($title)) {
-        $title = trim($title, " \t\n\r\0\x0B\xc2\xa0");
+        $title = mb_trim($title, " \t\n\r\0\x0B\xc2\xa0");
     } else {
-        $title = trim($title, " \t\n\r\0");
+        $title = mb_trim($title, " \t\n\r\0");
     }
 
     $num_replace = count($replacement);
@@ -633,12 +633,12 @@ function wikify_external_text(string $title): string {
 }
 
 function restore_italics (string $text): string {
-    $text = trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
+    $text = mb_trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
     // <em> tags often go missing around species names in CrossRef
     /** $old = $text; */
     $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
     $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
-    $text = trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
+    $text = mb_trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
     while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\(\,]|species|genus| in| the|$)~', $text, $matches)) {
         if (in_array($matches[3], [':', '.', '-', ','], true)) {
             $pad = "";
@@ -647,7 +647,7 @@ function restore_italics (string $text): string {
         }
         $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
     }
-    $text = trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
+    $text = mb_trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
     $padded = ' '. $text . ' ';
     if (str_replace(CAMEL_CASE, '', $padded) !== $padded) {
         return $text; // Words with capitals in the middle, but not the first character
@@ -666,7 +666,7 @@ function sanitize_string(string $str): string {
     if ($str === '') {
         return '';
     }
-    if (strtolower(trim($str)) === 'science (new york, n.y.)') {
+    if (strtolower(mb_trim($str)) === 'science (new york, n.y.)') {
         return 'Science';
     }
     if (preg_match('~^\[http.+\]$~', $str)) {
@@ -685,7 +685,7 @@ function sanitize_string(string $str): string {
     }
     $dirty = ['[', ']', '|', '{', '}', " what�s "];
     $clean = ['&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's "];
-    $str = trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
+    $str = mb_trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
     if ($math_templates_present) {
         $str = str_replace($placeholder, $replacement, $str);
     }
@@ -700,11 +700,11 @@ function str_remove_irrelevant_bits(string $str): string {
     if ($str === '') {
         return '';
     }
-    $str = trim($str);
+    $str = mb_trim($str);
     $str = str_replace('�', 'X', $str);
     $str = safe_preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);     // Convert [[X]] wikilinks into X
     $str = safe_preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);     // Convert [[Y|X]] wikilinks into X
-    $str = trim($str);
+    $str = mb_trim($str);
     $str = safe_preg_replace("~^the\s+~i", "", $str);    // Ignore leading "the" so "New York Times" == "The New York Times"
     $str = safe_preg_replace("~\s~u", ' ', $str);
     // punctuation
@@ -715,7 +715,7 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_replace(" / ", " and ", $str);
     $str = str_ireplace(["®", "&reg;", "(r)"], [' ', ' ', ' '], $str);
     $str = str_replace(['   ', '  '], [' ', ' '], $str);
-    $str = trim($str);
+    $str = mb_trim($str);
     $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
                         ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''], $str);
     $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
@@ -728,7 +728,7 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = safe_preg_replace('~^Retracted~i', '', $str);
     $str = safe_preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
     $str = safe_preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
-    $str = trim($str);
+    $str = mb_trim($str);
     return strip_diacritics($str);
 }
 
@@ -738,8 +738,8 @@ function str_equivalent(string $str1, string $str2): bool {
         return true;
     }
     if (string_is_book_series($str1) && string_is_book_series($str2)) { // Both series, but not the same
-        $str1 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str1)));
-        $str2 = trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str2)));
+        $str1 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str1)));
+        $str2 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str2)));
         if ($str1 === $str2) {
             return true;
         }
@@ -817,11 +817,11 @@ function titles_simple(string $inTitle): string {
     $inTitle = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             static function (array $matches): string {
                 return $matches[1];
-            }, trim($inTitle));
+            }, mb_trim($inTitle));
     // Chapter number at start
-    $inTitle = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
+    $inTitle = safe_preg_replace('~^\[\d+\]\s*~iu', '', mb_trim($inTitle));
     // Trailing "a review"
-    $inTitle = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+    $inTitle = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', mb_trim($inTitle));
     // Strip trailing Online
     $inTitle = safe_preg_replace('~ Online$~iu', '', $inTitle);
     // Strip trailing (Third Edition)
@@ -845,7 +845,7 @@ function titles_simple(string $inTitle): string {
     // Drop normal quotes
     $inTitle = str_replace(["'", '"'], "", $inTitle);
     // Strip trailing periods
-    $inTitle = trim(rtrim($inTitle, '.'));
+    $inTitle = mb_trim(mb_rtrim($inTitle, '.'));
     // &
     $inTitle = str_replace(" & ", " and ", $inTitle);
     $inTitle = str_replace(" / ", " and ", $inTitle);
@@ -916,7 +916,7 @@ function title_case(string $text): string {
  */
 function title_capitalization(string $in, bool $caps_after_punctuation): string {
     // Use 'straight quotes' per WP:MOS
-    $new_case = straighten_quotes(trim($in), false);
+    $new_case = straighten_quotes(mb_trim($in), false);
     if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
         return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                                              // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
@@ -927,7 +927,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     if ($new_case === mb_strtoupper($new_case)
-            && mb_strlen(str_replace(["[", "]"], "", trim($in))) > 6
+            && mb_strlen(str_replace(["[", "]"], "", mb_trim($in))) > 6
             ) {
         // ALL CAPS to Title Case
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
@@ -945,9 +945,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-    $new_case = trim($new_case); // Remove added spaces
+    $new_case = mb_trim($new_case); // Remove added spaces
 
-    $new_case = trim(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "));
+    $new_case = mb_trim(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "));
     foreach(UC_SMALL_WORDS as $key=>$_value) {
         $upper = UC_SMALL_WORDS[$key];
         $lower = LC_SMALL_WORDS[$key];
@@ -978,7 +978,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
-        trim($new_case)
+        mb_trim($new_case)
     );
 
     $new_case = safe_preg_replace_callback(
@@ -986,7 +986,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         static function (array $matches): string {
             return mb_strtolower($matches[0]);
         },
-        trim($new_case)
+        mb_trim($new_case)
     );
     /** French l'Words and d'Words */
     $new_case = safe_preg_replace_callback(
@@ -1006,12 +1006,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case
     );
 
-    $new_case = mb_ucfirst(trim($new_case));
+    $new_case = mb_ucfirst(mb_trim($new_case));
 
     // Solitary 'a' should be lowercase
     $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
     // but not in "U S A"
-    $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
+    $new_case = mb_trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
     // This should be capitalized
     $new_case = str_replace(['(new Series)', '(new series)'], ['(New Series)', '(New Series)'], $new_case);
@@ -1031,7 +1031,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Capitalization exceptions, e.g. Elife -> eLife
     $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .    $new_case . " ");
-    $new_case = trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
+    $new_case = mb_trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
     if (mb_substr($new_case, -2, 1) === ' ') {
@@ -1043,8 +1043,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     // Trust existing "ITS", "its", ...
-    $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
-    $new_case = trim($new_case);
+    $its_in = preg_match_all('~ its(?= )~iu', ' ' . mb_trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+    $new_case = mb_trim($new_case);
     $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
     if ($its_in === $its_out && $its_in !== 0 && $its_in !== false) {
         $matches_in = $matches_in[0];
@@ -1052,13 +1052,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
         }
     }
     // Trust existing "DOS", "dos", ...
-    $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
-    $new_case = trim($new_case);
+    $its_in = preg_match_all('~ dos(?= )~iu', ' ' . mb_trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+    $new_case = mb_trim($new_case);
     $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
     if ($its_in === $its_out && $its_in !== 0 && $its_in !== false) {
         $matches_in = $matches_in[0];
@@ -1066,7 +1066,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
         }
     }
@@ -1074,14 +1074,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
         $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
         $replace = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
-        $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
+        $new_case = mb_trim(str_replace($replace_me, $replace, $new_case . ' '));
     }
 
     // 42th, 33rd, 1st, ...
     if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
         $replace = strtolower($matches[0]);
-        $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+        $new_case = mb_trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
     }
 
     // Part XII: Roman numerals
@@ -1133,7 +1133,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
             return $matches[1] . strtoupper($matches[2]) . $matches[3];
         },
         $new_case);
-    $new_case = trim($new_case);
+    $new_case = mb_trim($new_case);
     // Special cases - Only if the full title
     if ($new_case === 'Bioscience') {
         $new_case = 'BioScience';
@@ -1249,11 +1249,11 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
     }
     $new = date('Y', $time);
     if (strlen($new) === 4) {
-        return ltrim($new, "0"); // Also cleans up 0000
+        return mb_ltrim($new, "0"); // Also cleans up 0000
     }
     if (strlen($new) === 5 && substr($new, 0, 1) === '-') {
-        $new = ltrim($new, "-");
-        $new = ltrim($new, "0");
+        $new = mb_ltrim($new, "-");
+        $new = mb_ltrim($new, "0");
         $new = $new . ' BC';
         return $new;
     }
@@ -1302,7 +1302,7 @@ function tidy_date_inside(string $string): string {
     $string = safe_preg_replace("~[^\x01-\x7F]~", "-", $string); // Convert any non-ASCII Characters to dashes
     $string = safe_preg_replace('~[\s\-]*\-[\s\-]*~', '-', $string); // Combine dash with any following or preceding white space and other dash
     $string = safe_preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
-    $string = trim($string);
+    $string = mb_trim($string);
     // End of character clean-up
     $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
     $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
@@ -1341,7 +1341,7 @@ function tidy_date_inside(string $string): string {
             return $matches[3];// do not know. just give year
         }
     }
-    $string = trim($string);
+    $string = mb_trim($string);
     if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) {
         return tidy_date_inside($matches[1]); // Remove time zone stuff from standard date format
     }
@@ -1571,7 +1571,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
         return;
     }
     /** @psalm-taint-escape ssrf */
-    $doi = trim($doi);
+    $doi = mb_trim($doi);
     if ($doi === '') {
         return;
     }
@@ -1605,7 +1605,7 @@ function can_safely_modify_dashes(string $value): bool {
             && (substr_count($value, "<") === 0) // <span></span> stuff
             && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
             && (strpos($value, "(") === false)
-            && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', trim($value)) !== 1) // Spaces and letters
+            && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', mb_trim($value)) !== 1) // Spaces and letters
             && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
             && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u', $value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
             && (preg_match('~^\d{4}\-[a-zA-Z]+$~u', $value) !== 1); // 2005-A used in {{sfn}} junk
@@ -1785,7 +1785,7 @@ function bot_html_footer(): void {
 
 /** null/false/String of location */
 function hdl_works(string $hdl): string|null|false {
-    $hdl = trim($hdl);
+    $hdl = mb_trim($hdl);
     $hdl = str_replace('%2F', '/', $hdl);
     // And now some obvious fails
     if (strpos($hdl, '/') === false) {
@@ -1837,7 +1837,7 @@ function hdl_works(string $hdl): string|null|false {
 
     /** Returns null/false/String of location */
 function is_hdl_works(string $hdl): string|null|false {
-    $hdl = trim($hdl);
+    $hdl = mb_trim($hdl);
     usleep(100000);
     $url = "https://hdl.handle.net/" . $hdl;
     $headers_test = get_headers_array($url);
@@ -1980,7 +1980,7 @@ function get_possible_dois(string $doi): array {
             $trial[] = "10." . $doi;
         }
     }
-    if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
+    if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", mb_trim($doi), $match)) {
         $trial[] = $match[1];
         $trial[] = $match[2];
     }
@@ -2213,7 +2213,7 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
                 preg_match('~^(.+) # # # (?:CITATION_BOT_PLACEHOLDER_TEMPLATE|citation_bot_placeholder_template) \d+ # # # Oxford Dictionary of National Biography$~i', $the_title, $matches) ||
                 preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
                 preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
-            $template->set('title', trim($matches[1]));
+            $template->set('title', mb_trim($matches[1]));
         }
     }
 
@@ -2994,8 +2994,8 @@ function addISBNdashes(string $isbn): string {
 }
 
 function string_is_book_series(string $str): bool {
-    $simple = trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
-    $simple = trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
+    $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
 
@@ -3017,7 +3017,7 @@ function echoable_doi(string $doi): string {
         if (stripos($volume, "nostradamus") !== false) {
             return '';
         }
-        return trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
+        return mb_trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
          'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
          'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
     }
