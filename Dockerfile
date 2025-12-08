@@ -15,5 +15,6 @@ RUN echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All
     && a2enconf directory-listing
 
 # If ever deployed into production instead of just for testing, then two things need done:
-# 1.  Do not run the webserver as root
+# 1.  Do not run the webserver as root - would need to change ownership of a bunch of files, create user, run apache as user, etc.
 # 2.  Add a HEALTHCHECK to the container
+# These are both set to be ignored in trivy-analysis.yml
