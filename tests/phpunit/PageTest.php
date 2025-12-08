@@ -91,7 +91,7 @@ final class PageTest extends testBaseClass {
     public function testBotRead(): void {
         $page = new TestPage();
         $page->get_text_from('User:Citation_bot');
-        $this->assertTrue(strlen($page->parsed_text()) > 200);
+        $this->assertTrue(mb_strlen($page->parsed_text()) > 200);
     }
 
     public function testBotReadNonExistent(): void {
