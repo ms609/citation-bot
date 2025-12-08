@@ -31,6 +31,7 @@ jobs:
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
           severity: 'CRITICAL'
+          trivyignores: '.trivyignore'
 
       - name: Check Trivy scan results existence
         run: |
