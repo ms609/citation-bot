@@ -27,4 +27,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Code Sniffer
-      run: ./vendor/bin/phpcbf --standard=.phpcs.xml -d memory_limit=1000M
+      run: ./vendor/bin/phpcs --standard=.phpcs.xml -d memory_limit=1000M
