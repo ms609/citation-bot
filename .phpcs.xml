@@ -47,6 +47,14 @@
                 <element key="print" value="echo"/>
                 <element key="ucfirst" value="mb_ucfirst"/>
                 <element key="ucwords" value="mb_ucwords"/>
+                <element key="str_split" value="mb_str_split"/>
+                <element key="stripos" value="mb_stripos"/>
+                <element key="strlen" value="mb_strlen"/>
+                <element key="strpos" value="mb_strpos"/>
+                <element key="strrpos" value="mb_strrpos"/>
+                <element key="strtolower" value="mb_strtolower"/>
+                <element key="strtoupper" value="mb_strtoupper"/>
+                <element key="substr" value="mb_substr"/>
             </property>
         </properties>
     </rule>
