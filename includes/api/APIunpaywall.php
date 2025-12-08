@@ -164,10 +164,10 @@ function get_unpaywall_url(Template $template, string $doi): string
      return 'have free';
     }
     if (preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match)) {
-     $new_host_name = str_replace('www.', '', strtolower($match[1]));
+     $new_host_name = str_replace('www.', '', mb_strtolower($match[1]));
      foreach (ALL_URL_TYPES as $old_url) {
       if (preg_match("~^https?://([^\/]+)/~", $template->get($old_url), $match)) {
-       $old_host_name = str_replace('www.', '', strtolower($match[1]));
+       $old_host_name = str_replace('www.', '', mb_strtolower($match[1]));
        if ($old_host_name === $new_host_name) {
         return 'have free';
        }
