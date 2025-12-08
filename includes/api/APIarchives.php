@@ -27,15 +27,15 @@ function expand_templates_from_archives(array &$templates): void { // This is do
     }
     foreach ($templates as $template) {
         set_time_limit(120);
-        if ($template->has('script-title') && (strtolower($template->get('title')) === 'usurped title' || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
+        if ($template->has('script-title') && (mb_strtolower($template->get('title')) === 'usurped title' || mb_strtolower($template->get('title')) === 'archived copy' || mb_strtolower($template->get('title')) === 'archive copy')) {
             $template->forget('title');
         }
         if ($template->blank(['chapter', 'series', 'script-title']) &&
             !$template->blank(['archive-url', 'archiveurl']) &&
             ($template->blank(WORK_ALIASES) || $template->has('website'))    &&
-            ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
-            strtolower($template->get('title')) === 'archive copy' ||
-            strtolower($template->get('title')) === 'usurped title' ||
+            ($template->blank('title') || mb_strtolower($template->get('title')) === 'archived copy' ||
+            mb_strtolower($template->get('title')) === 'archive copy' ||
+            mb_strtolower($template->get('title')) === 'usurped title' ||
             substr_count($template->get('title'), '?') > 10 ||
             substr_count($template->get('title'), '') >0 ||
             substr_count($template->get('title'), '') >0 ||
@@ -87,7 +87,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                 }
                             }
                             if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-                                if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1') {
+                                if (mb_strtolower($match[1]) !== 'utf-8' && mb_strtolower($match[1]) !== 'iso-8859-1') {
                                     $encode[] = $match[1];
                                 }
                             }
@@ -105,8 +105,8 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             }
                             unset($encode, $cleaned, $try, $match, $pos_encode);
                             $good_title = true;
-                            if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
-                                    in_array(strtolower($title), IN_PRESS_ALIASES, true)) {
+                            if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
+                                    in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
                                 $good_title = false;
                             }
                             foreach (BAD_ZOTERO_TITLES as $bad_title) {
@@ -188,7 +188,7 @@ function convert_to_utf8_inside(string $value): string {
 }
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
-    $encode = strtolower($encode);
+    $encode = mb_strtolower($encode);
     return !in_array($encode, SANE_ENCODE, true);
 }
 
@@ -232,11 +232,11 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     $master_list = mb_list_encodings();
     $valid = [];
     foreach ($master_list as $enc) {
-        $valid[] = strtolower($enc);
+        $valid[] = mb_strtolower($enc);
     }
     try {
-        if (in_array(strtolower($encode), TRY_ENCODE, true) ||
-            !in_array(strtolower($encode), $valid, true)) {
+        if (in_array(mb_strtolower($encode), TRY_ENCODE, true) ||
+            !in_array(mb_strtolower($encode), $valid, true)) {
             $try = (string) @iconv($encode, "UTF-8", $title);
         } else {
             $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);

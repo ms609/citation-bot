@@ -154,7 +154,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
   $ris_authors = 0;
 
   if (preg_match('~(?:T[I1]).*-(.*)$~m', $dat, $match)) {
-   if (in_array(strtolower(mb_trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
+   if (in_array(mb_strtolower(mb_trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
     return;
    }
   }

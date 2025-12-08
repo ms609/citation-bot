@@ -310,7 +310,7 @@ function query_pubmed(Template $template): array
      $data = strip_diacritics($data);
      $data_array = explode(" ", $data);
      foreach ($data_array as $val) {
-      if (!in_array(strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
+      if (!in_array(mb_strtolower($val), SHORT_STRING, true) && mb_strlen($val) > 3) {
        // Small words are NOT indexed
        $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[{$key}])";
       }

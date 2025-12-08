@@ -406,7 +406,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         report_info("Found match for bibcode " . bibcode_link($record->bibcode));
         $matched_ids[] = $record->bibcode;
         foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-            if (isset($record->bibcode) && strtolower($an_id) === strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
+            if (isset($record->bibcode) && mb_strtolower($an_id) === mb_strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
                 $this_template = $templates[$template_key];
                 if (isset($record->citation_bot_new_bibcode)) {
                     $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
@@ -525,7 +525,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
                 $rai=intval($retry_after[1]);
                 $retry_msg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
                 if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
-                    $limit_action = strtolower(PHP_ADSABSAPILIMITACTION);
+                    $limit_action = mb_strtolower(PHP_ADSABSAPILIMITACTION);
                 }
                 if ($limit_action === 'sleep') {
                     $time_to_sleep = $rai+1;
@@ -680,7 +680,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
             $recid = (string) $recid;
-            if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+            if(mb_strtolower(substr($recid, 0, 6)) === 'arxiv:') {
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
                 }

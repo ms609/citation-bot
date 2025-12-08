@@ -396,28 +396,28 @@ function sanitize_doi(string $doi): string {
     $pos = (int) strrpos($doi, '.');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (in_array(strtolower($extension), DOI_BAD_ENDS, true)) {
+        if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, '#');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+        if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, ';');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (strpos(strtolower($extension), ';jsessionid') === 0) {
+        if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, '/');
     if ($pos) {
         $extension = (string) substr($doi, $pos);
-        if (in_array(strtolower($extension), DOI_BAD_ENDS2, true)) {
+        if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
             $doi = (string) substr($doi, 0, $pos);
         }
     }
@@ -666,7 +666,7 @@ function sanitize_string(string $str): string {
     if ($str === '') {
         return '';
     }
-    if (strtolower(mb_trim($str)) === 'science (new york, n.y.)') {
+    if (mb_strtolower(mb_trim($str)) === 'science (new york, n.y.)') {
         return 'Science';
     }
     if (preg_match('~^\[http.+\]$~', $str)) {
@@ -738,8 +738,8 @@ function str_equivalent(string $str1, string $str2): bool {
         return true;
     }
     if (string_is_book_series($str1) && string_is_book_series($str2)) { // Both series, but not the same
-        $str1 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str1)));
-        $str2 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, strtolower($str2)));
+        $str1 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, mb_strtolower($str1)));
+        $str2 = mb_trim(str_replace(COMPARE_SERIES_IN, COMPARE_SERIES_OUT, mb_strtolower($str2)));
         if ($str1 === $str2) {
             return true;
         }
@@ -1080,7 +1080,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // 42th, 33rd, 1st, ...
     if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
-        $replace = strtolower($matches[0]);
+        $replace = mb_strtolower($matches[0]);
         $new_case = mb_trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
     }
 
@@ -1118,7 +1118,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = safe_preg_replace_callback(
         "~ var\. ([A-Z])~u",
         static function (array $matches): string {
-            return ' var. ' . strtolower($matches[1]);
+            return ' var. ' . mb_strtolower($matches[1]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
@@ -1415,7 +1415,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
     if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
         return true;
     }
-    $test = strtolower($match[1]);
+    $test = mb_strtolower($match[1]);
     // March 2019 Good list
     if (in_array($test, GOOD_10_1093_DOIS, true)) {
         return true;
@@ -1900,7 +1900,7 @@ function numberToRomanRepresentation(int $number): string { // https://stackover
 }
 
 function doi_is_bad (string $doi): bool {
-    $doi = strtolower($doi);
+    $doi = mb_strtolower($doi);
     if ($doi === '10.5284/1000184' || // DOI for the entire database
         $doi === '10.1267/science.040579197' || //  PMID test doi
         $doi === '10.2307/3511692' ||   // common review
@@ -2104,7 +2104,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, '.');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (in_array(strtolower($extension), DOI_BAD_ENDS, true)) {
+            if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2113,7 +2113,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, '#');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+            if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2122,7 +2122,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, ';');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (strpos(strtolower($extension), ';jsessionid') === 0) {
+            if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2131,7 +2131,7 @@ function get_possible_dois(string $doi): array {
         $pos = strrpos($try, '/');
         if ($pos) {
             $extension = substr($try, $pos);
-            if (in_array(strtolower($extension), DOI_BAD_ENDS2, true)) {
+            if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
                 $try = substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
@@ -2994,7 +2994,7 @@ function addISBNdashes(string $isbn): string {
 }
 
 function string_is_book_series(string $str): bool {
-    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($str)));
+    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], mb_strtolower($str)));
     $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }

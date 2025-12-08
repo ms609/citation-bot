@@ -3192,7 +3192,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testCAPSParams(): void {
             $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
             $template = $this->process_citation($text);
-            $this->assertSame(strtolower($text), $template->parsed_text());
+            $this->assertSame(mb_strtolower($text), $template->parsed_text());
     }
 
     public function testTidyTAXON(): void {
@@ -3234,7 +3234,7 @@ final class TemplateTest2 extends testBaseClass {
             $template = $this->make_citation($text);
             $template->tidy_parameter('publisher');
             $this->assertNull($template->get2('publisher'));
-            $this->assertSame('[[abc|abc]]', strtolower($template->get2('journal'))); // Might "fix" Abc redirect to ABC
+            $this->assertSame('[[abc|abc]]', mb_strtolower($template->get2('journal'))); // Might "fix" Abc redirect to ABC
     }
 
     public function testRemoveAuthorLinks(): void {
@@ -3530,7 +3530,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testSemanticscholar2(): void {
             $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
             $template = $this->process_citation($text);
-            $this->assertSame('10.1046/j.1365-2699.1999.00329.x', strtolower($template->get('doi')));
+            $this->assertSame('10.1046/j.1365-2699.1999.00329.x', mb_strtolower($template->get('doi')));
             $this->assertSame('cite journal', $template->wikiname());
             $this->assertNull($template->get2('s2cid-access'));
             $this->assertSame('11733879', $template->get2('s2cid'));

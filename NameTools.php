@@ -174,16 +174,16 @@ function author_is_human(string $author): bool {
     $author = mb_trim($author);
     $chars = count_chars($author);
     if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
-        || substr(strtolower($author), 0, 4) === "the "
+        || substr(mb_strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
-        || substr(strtolower($author), -4) === " inc"
-        || substr(strtolower($author), -5) === " inc."
-        || substr(strtolower($author), -4) === " llc"
-        || substr(strtolower($author), -5) === " llc."
-        || substr(strtolower($author), -5) === " book"
-        || substr(strtolower($author), -6) === " books"
-        || substr(strtolower($author), -8) === " nyheter"
+        || substr(mb_strtolower($author), -4) === " inc"
+        || substr(mb_strtolower($author), -5) === " inc."
+        || substr(mb_strtolower($author), -4) === " llc"
+        || substr(mb_strtolower($author), -5) === " llc."
+        || substr(mb_strtolower($author), -5) === " book"
+        || substr(mb_strtolower($author), -6) === " books"
+        || substr(mb_strtolower($author), -8) === " nyheter"
         || substr_count($author, ' ') > 3 // Even if human, hard to format
     ) {
         return false;
@@ -379,7 +379,7 @@ function split_authors(string $str): array {
         if ($aut === '|') {
             return true;
         }
-        $aut = strtolower($aut);
+        $aut = mb_strtolower($aut);
         if ($aut === 'published') {
             return true;
         }
