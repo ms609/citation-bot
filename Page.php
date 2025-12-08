@@ -390,7 +390,7 @@ class Page {
                     $this_template->rename('work', 'magazine');
                 }
                 if ($this_template->has('magazine')) {
-                    $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine')), true));
+                    $this_template->set('magazine', straighten_quotes(mb_trim($this_template->get('magazine')), true));
                 }
                 $this_template->correct_param_mistakes();
                 $this_template->prepare(); // does very little

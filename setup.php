@@ -35,7 +35,7 @@ function bot_debug_log(string $log_this): void {
 // Should add all these to index.html web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
 if (isset($_REQUEST["wiki_base"])){
-    $wiki_base = trim((string) $_REQUEST["wiki_base"]);
+    $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
         echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
         exit;
@@ -98,7 +98,7 @@ if (file_exists('env.php')) {
     ob_start();
     /** @psalm-suppress MissingFile */
     include_once 'env.php';   /** @phpstan-ignore includeOnce.fileNotFound */
-    $env_output = trim(ob_get_contents());
+    $env_output = mb_trim(ob_get_contents());
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
     }
@@ -120,7 +120,7 @@ if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (strpos((string) 
 
 if (isset($_REQUEST['PHP_ADSABSAPIKEY'])) {
     $key = (string) $_REQUEST['PHP_ADSABSAPIKEY'];
-    $key = trim($key);
+    $key = mb_trim($key);
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
@@ -130,7 +130,7 @@ if (isset($_REQUEST['PHP_ADSABSAPIKEY'])) {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
 
-$env_limit_action = trim((string) getenv("PHP_ADSABSAPILIMITACTION"));
+$env_limit_action = mb_trim((string) getenv("PHP_ADSABSAPILIMITACTION"));
 if ($env_limit_action !== '') {
     define("PHP_ADSABSAPILIMITACTION", $env_limit_action);
 }

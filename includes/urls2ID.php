@@ -48,7 +48,7 @@ declare(strict_types=1);
                 $url = $template->get('article-url');
                 $url_type = 'article-url';
             } elseif ($template->has('website')) { // No URL, but a website
-                $url = trim($template->get('website'));
+                $url = mb_trim($template->get('website'));
                 if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
                     $url = "h" . $url;
                 }
@@ -125,7 +125,7 @@ declare(strict_types=1);
             if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
                 $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
                 if (is_null($url_sent)) {
-                    $template->set($url_type, $url); // Trimming leading zeroes
+                    $template->set($url_type, $url); // remove leading zeroes
                 }
             }
         }
@@ -171,7 +171,7 @@ declare(strict_types=1);
         }
 
         if (stripos($url, 'jstor') !== false) {
-            // Trim ?seq=1#page_scan_tab_contents off of jstor urls
+            // remove ?seq=1#page_scan_tab_contents off of jstor urls
             // We do this since not all jstor urls are recognized below
             if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
                 $url = $matches[1];
@@ -691,7 +691,7 @@ declare(strict_types=1);
                 if ($handle === false) {
                     return false;
                 }
-                // Trim off session stuff - urlappend seems to be used for page numbers and such
+                // take off session stuff - urlappend seems to be used for page numbers and such
                 $handle = str_ireplace('%3B', ';', $handle);
                 while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|;ui=embed)~',
                                                      $handle, $matches)) {
