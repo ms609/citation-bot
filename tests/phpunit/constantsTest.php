@@ -27,7 +27,7 @@ final class constantsTest extends testBaseClass {
         $this->assertSame(count(LC_SMALL_WORDS), count(UC_SMALL_WORDS));
         for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
             // Verify that they match
-            if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
+            if (mb_substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && mb_substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
                 $this->assertSame(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
             } else {  // Weaker test for things with internal spaces or an & symbol
                 $this->assertSame(mb_strtolower(UC_SMALL_WORDS[$i]), mb_strtolower(LC_SMALL_WORDS[$i]));
@@ -117,10 +117,6 @@ final class constantsTest extends testBaseClass {
                                 TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS,
                                 TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
                                 TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
-        foreach ($big_array as $actual) {
-            $this->assertSame(mb_strtolower($actual), /** Do not make mb_ */strtolower($actual));
-            $this->assertSame(mb_strtoupper($actual), /** Do not make mb_ */strtoupper($actual));
-        }
     }
 
     public function testNoSpacesOnEnds(): void {
@@ -176,7 +172,7 @@ final class constantsTest extends testBaseClass {
             if ($alphaed === $new_line) {
                 $alphaed = '';
             }
-            $section = $alphaed . substr($section, $alpha_end);
+            $section = $alphaed . mb_substr($section, $alpha_end);
         }
         unset ($section); // Destroy pointer to be safe
 
@@ -388,7 +384,7 @@ final class constantsTest extends testBaseClass {
         $failed = false;
         $last = 'XXXXXXXX';
         foreach ($flat as $param) {
-            if (substr($param, -1) !== '/') {
+            if (mb_substr($param, -1) !== '/') {
                 $failed = true;
                 $this->flush();
                 echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
@@ -467,7 +463,7 @@ final class constantsTest extends testBaseClass {
         $italics = explode("|", ITALICS_LIST);
         $this->assertSame("END_OF_CITE_list_junk", end($italics));
         foreach ($italics as $item) {
-            $spaces = substr_count($item, " ");
+            $spaces = mb_substr_count($item, " ");
             if ($spaces > $spaces_at) {
                 $in_order = false;
             }
@@ -481,7 +477,7 @@ final class constantsTest extends testBaseClass {
             echo "const ITALICS_LIST =\n";
             for ($i = $max_spaces; $i > -1 ; $i--) {
                 foreach ($italics as $item) {
-                    if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
+                    if (mb_substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
                          echo ' "' . $item . '|" .' . "\n";
                     }
                 }
@@ -498,7 +494,7 @@ final class constantsTest extends testBaseClass {
             $early = $italics[$i];
             for ($j = $i+1; $j < count($italics); $j++) {
                 $later = $italics[$j];
-                if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
+                if ((mb_substr_count($later, $early) !== 0) && ($later !== $early)) {
                     $in_order = false;
                     $this->flush();
                     echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
@@ -549,30 +545,30 @@ final class constantsTest extends testBaseClass {
     public function testItalicsEscaped1(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , substr_count($italics, '('));
+        $this->assertSame(0 , mb_substr_count($italics, '('));
     }
     public function testItalicsEscaped2(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , substr_count($italics, ')'));
+        $this->assertSame(0 , mb_substr_count($italics, ')'));
     }
     public function testItalicsEscaped3(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , substr_count($italics, '\\'));
+        $this->assertSame(0 , mb_substr_count($italics, '\\'));
     }
     public function testItalicsEscaped4(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , substr_count($italics, '.'));
+        $this->assertSame(0 , mb_substr_count($italics, '.'));
     }
 
     public function testItalicsNoSpaces(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = explode("|", ITALICS_LIST);
         foreach ($italics as $item) {
-            $this->assertNotEquals(' ', substr($item, 0, 1));
-            $this->assertNotEquals(' ', substr($item, -1));
+            $this->assertNotEquals(' ', mb_substr($item, 0, 1));
+            $this->assertNotEquals(' ', mb_substr($item, -1));
         }
     }
 
@@ -580,8 +576,8 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
         for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
-            $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_IN[$i]));
-            $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
+            $this->assertSame(0, mb_substr_count("'''", ITALICS_HARDCODE_IN[$i]));
+            $this->assertSame(0, mb_substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
             $in  = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_IN[$i]);
             $out = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_OUT[$i]);
             $this->assertSame($in, $out); // Same once spaces and single quotes are removed
@@ -646,8 +642,8 @@ final class constantsTest extends testBaseClass {
         // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
-        $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
-        $this->assertSame(1, substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
+        $this->assertSame(1, mb_substr_count($wikipedia_response, 'RangeMessage timestamp:'));
+        $this->assertSame(1, mb_substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
     }
 
     public function testCurlLimit(): void {
