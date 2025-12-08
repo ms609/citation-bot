@@ -7,7 +7,7 @@ i.e. the folder containing setup.php.
 
 Then, run the following command from the command line :
 
-    phpunit --bootstrap ./setup.php tests/phpunit/ParameterTest.php
+    phpunit --bootstrap ./includes/setup.php tests/phpunit/ParameterTest.php
 
 To run the tests on Toolforge, first
 
