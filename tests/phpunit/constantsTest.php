@@ -29,8 +29,8 @@ final class constantsTest extends testBaseClass {
             // Verify that they match
             if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
                 $this->assertSame(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
-            } else {  // Weaker test for things with internal spaces or an & symbol (PHP 7.3 and 5.6 treat & differently)
-                $this->assertSame(strtolower(UC_SMALL_WORDS[$i]), strtolower(LC_SMALL_WORDS[$i]));
+            } else {  // Weaker test for things with internal spaces or an & symbol
+                $this->assertSame(mb_strtolower(UC_SMALL_WORDS[$i]), mb_strtolower(LC_SMALL_WORDS[$i]));
             }
             // Verify that they are padded with a space
             $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
@@ -94,7 +94,7 @@ final class constantsTest extends testBaseClass {
                                  JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
                                  PREFER_ISSUES);
         foreach ($big_array as $actual) {
-            $this->assertSame(strtolower($actual), $actual);
+            $this->assertSame(mb_strtolower($actual), $actual);
         }
     }
 
