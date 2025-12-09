@@ -51,7 +51,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             mb_substr_count($template->get('title'), '�') >0 )) {
             /** @psalm-taint-escape ssrf */
             $archive_url = $template->get('archive-url') . $template->get('archiveurl');
-            if (mb_stripos($archive_url, 'archive') !== false && stripos($archive_url, '.pdf') === false) {
+            if (mb_stripos($archive_url, 'archive') !== false && mb_stripos($archive_url, '.pdf') === false) {
                 set_time_limit(120);
                 throttle_archive();
                 curl_setopt($ch, CURLOPT_URL, $archive_url);
