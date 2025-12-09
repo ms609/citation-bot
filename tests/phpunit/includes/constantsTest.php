@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for constants.php.
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once __DIR__ . '/../../testBaseClass.php';
 
 final class constantsTest extends testBaseClass {
 
@@ -126,7 +126,7 @@ final class constantsTest extends testBaseClass {
         $leader = true;
         $start_alpha = '/* The following will be automatically updated to alphabetical order */';
         $end_alpha = '/* The above will be automatically updated to alphabetical order */';
-        $filename = __DIR__ . '/../../includes/constants/capitalization.php';
+        $filename = __DIR__ . '/../../../includes/constants/capitalization.php';
         $old_contents = file_get_contents($filename);
         $sections = explode($start_alpha, $old_contents);
         foreach ($sections as &$section) {

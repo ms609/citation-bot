@@ -5,7 +5,7 @@ declare(strict_types=1);
  * expandFns.php tests
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once __DIR__ . '/../../testBaseClass.php';
 
 final class expandFnsTest extends testBaseClass {
 
@@ -776,7 +776,6 @@ final class expandFnsTest extends testBaseClass {
         $in  = "ショッピング";
         $out = "ショッXング";
         $this->assertSame($out, mb_substr_replace($in, 'X', 3, 1));
-        $this->assertNotSame($out, substr_replace($in, 'X', 3, 1));
     }
 
     public function testGoogleBookNormalize0(): void {

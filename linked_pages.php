@@ -30,7 +30,7 @@ if ($page_name === '') {
     report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
     bot_html_footer();
     exit;
-} elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
+} elseif (mb_substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
     report_warning('API only intended for User generated pages for fixing specific issues ');
     bot_html_footer();
     exit;
@@ -60,7 +60,7 @@ foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
         $linked_page = (string) $link['*'];
         $linked_page = str_replace(' ', '_', $linked_page);
-        if(!in_array($linked_page, AVOIDED_LINKS, true) && stripos($linked_page, 'disambiguation') === false) {
+        if(!in_array($linked_page, AVOIDED_LINKS, true) && mb_stripos($linked_page, 'disambiguation') === false) {
             $pages_in_category[] = $linked_page;
         }
     }

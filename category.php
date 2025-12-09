@@ -33,8 +33,8 @@ $category = '';
 if (isset($_POST["cat"]) && is_string($_POST["cat"])) {
     $category = mb_trim($_POST["cat"]);
 }
-if (mb_strtolower(substr($category, 0, 9)) === 'category:') {
-    $category = mb_trim(substr($category, 9));
+if (mb_strtolower(mb_substr($category, 0, 9)) === 'category:') {
+    $category = mb_trim(mb_substr($category, 9));
 }
 if ($category === '' && isset($_GET["cat"])) {
     $try = mb_trim(urldecode((string) $_GET["cat"]));

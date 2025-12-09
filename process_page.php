@@ -27,7 +27,7 @@ if (isset($argv[1])) {
         bot_html_footer();
         exit;
     }
-    if (strpos($pages, '|') !== false) {
+    if (mb_strpos($pages, '|') !== false) {
         bot_html_header();
         report_warning('Use the webform for multiple pages.');
         bot_html_footer();
