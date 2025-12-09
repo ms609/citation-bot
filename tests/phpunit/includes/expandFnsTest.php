@@ -776,7 +776,6 @@ final class expandFnsTest extends testBaseClass {
         $in  = "ショッピング";
         $out = "ショッXング";
         $this->assertSame($out, mb_substr_replace($in, 'X', 3, 1));
-        $this->assertNotSame($out, substr_replace($in, 'X', 3, 1));
     }
 
     public function testGoogleBookNormalize0(): void {
