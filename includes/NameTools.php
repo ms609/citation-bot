@@ -11,24 +11,24 @@ require_once 'includes/constants.php';    // @codeCoverageIgnore
 
 /** @return array<string> */
 function junior_test(string $name): array {
-    $junior = dfsa($name, -3) === " Jr" ? " Jr" : "";
+    $junior = mb_substr($name, -3) === " Jr" ? " Jr" : "";
     if ($junior) {
-        $name = substr($name, 0, -3);
+        $name = mb_substr($name, 0, -3);
     } else {
-        $junior = substr($name, -4) === " Jr." ? " Jr." : "";
+        $junior = mb_substr($name, -4) === " Jr." ? " Jr." : "";
         if ($junior) {
-            $name = substr($name, 0, -4);
+            $name = mb_substr($name, 0, -4);
         }
     }
-    if (substr($name, -1) === ",") {
-        $name = substr($name, 0, -1);
+    if (mb_substr($name, -1) === ",") {
+        $name = mb_substr($name, 0, -1);
     }
     return [$name, $junior];
 }
 
 /** @return array<string> */
 function split_author(string $value): array {
-    if (substr_count($value, ',') !== 1) {
+    if (mb_substr_count($value, ',') !== 1) {
         return [];
     }
     return explode(',', $value, 2);
@@ -97,7 +97,7 @@ function format_surname(string $surname): string {
     if (mb_substr($surname, 0, 2) === "mc") {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
+    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
     }
     if (mb_substr($surname, 0, 1) === "&") {
@@ -144,7 +144,7 @@ function format_initials(string $str): string {
     if ($str === "") {
         return "";
     }
-    $end = substr($str, strlen($str)-1) === ";" ? ";" : '';
+    $end = mb_substr($str, mb_strlen($str)-1) === ";" ? ";" : '';
     preg_match_all("~\w~u", $str, $match);
     return mb_strtoupper(implode(".", $match[0]) . ".") . $end;
 }
@@ -154,10 +154,10 @@ function is_initials(string $str): bool {
     if (!$str) {
         return false;
     }
-    if (strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
+    if (mb_strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
         return false;
     }
-    if (strlen(str_replace(["-", ".", ";"], "", $str)) === 1) {
+    if (mb_strlen(str_replace(["-", ".", ";"], "", $str)) === 1) {
         return true;
     }
     if (mb_strtoupper($str) !== $str) {
@@ -173,18 +173,18 @@ function is_initials(string $str): bool {
 function author_is_human(string $author): bool {
     $author = mb_trim($author);
     $chars = count_chars($author);
-    if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
-        || substr(mb_strtolower($author), 0, 4) === "the "
+    if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || mb_strlen($author) > 33
+        || mb_substr(mb_strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
-        || substr(mb_strtolower($author), -4) === " inc"
-        || substr(mb_strtolower($author), -5) === " inc."
-        || substr(mb_strtolower($author), -4) === " llc"
-        || substr(mb_strtolower($author), -5) === " llc."
-        || substr(mb_strtolower($author), -5) === " book"
-        || substr(mb_strtolower($author), -6) === " books"
-        || substr(mb_strtolower($author), -8) === " nyheter"
-        || substr_count($author, ' ') > 3 // Even if human, hard to format
+        || mb_substr(mb_strtolower($author), -4) === " inc"
+        || mb_substr(mb_strtolower($author), -5) === " inc."
+        || mb_substr(mb_strtolower($author), -4) === " llc"
+        || mb_substr(mb_strtolower($author), -5) === " llc."
+        || mb_substr(mb_strtolower($author), -5) === " book"
+        || mb_substr(mb_strtolower($author), -6) === " books"
+        || mb_substr(mb_strtolower($author), -8) === " nyheter"
+        || mb_substr_count($author, ' ') > 3 // Even if human, hard to format
     ) {
         return false;
     }
@@ -201,7 +201,7 @@ function format_author(string $author): string {
     $author = preg_replace("~^( ?sir )~", "", $author);
     $author = preg_replace("~^(, sir )~", ", ", $author);
 
-    $ends_with_period = (substr(mb_trim($author), -1) === ".");
+    $ends_with_period = (mb_substr(mb_trim($author), -1) === ".");
 
     $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", mb_trim($author)); //Housekeeping
     $author = preg_replace("~^[aA]nd ~", "", mb_trim($author)); // Just in case it has been split from a Smith; Jones; and Western
@@ -302,7 +302,7 @@ function format_multiple_authors(string $authors): string {
     $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
     $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
     if (preg_match("~[,;]$~", mb_trim($authors))) {
-        $authors = substr(mb_trim($authors), 0, strlen(mb_trim($authors))-1); // remove trailing punctuation
+        $authors = mb_substr(mb_trim($authors), 0, mb_strlen(mb_trim($authors))-1); // remove trailing punctuation
     }
 
     $authors = mb_trim($authors);
@@ -357,9 +357,9 @@ function format_multiple_authors(string $authors): string {
 }
 
 function under_two_authors(string $text): bool {
-    return !(strpos($text, ';') !== false  //if there is a semicolon
-            || substr_count($text, ',') > 1  //if there is more than one comma
-            || substr_count($text, ',') < substr_count(mb_trim($text), ' '));  //if the number of commas is less than the number of spaces in the shrunk string
+    return !(mb_strpos($text, ';') !== false  //if there is a semicolon
+            || mb_substr_count($text, ',') > 1  //if there is more than one comma
+            || mb_substr_count($text, ',') < mb_substr_count(mb_trim($text), ' '));  //if the number of commas is less than the number of spaces in the shrunk string
 }
 
 /* split_authors
@@ -368,7 +368,7 @@ function under_two_authors(string $text): bool {
  */
 /** @return array<string> */
 function split_authors(string $str): array {
-    if (strpos($str, ';')) {
+    if (mb_strpos($str, ';')) {
         return explode(';', $str);
     }
     return explode(',', $str);

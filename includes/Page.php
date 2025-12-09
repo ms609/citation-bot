@@ -127,9 +127,9 @@ class Page {
 
         if (preg_match('~\#redirect *\[\[~i', $this->text)) {
             report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
-            if (strlen($this->text) > 2000) {
+            if (mb_strlen($this->text) > 2000) {
                 $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
-                if (strlen($test_text) > 1500) {
+                if (mb_strlen($test_text) > 1500) {
                      bot_debug_log($this->title . " is probably not a redirect");
                 }
             }
@@ -226,11 +226,11 @@ class Page {
             $this->text = $this->start_text;
             return false;
         }
-        $citation_count = substr_count($this->text, '{{cite ') +
-                                            substr_count($this->text, '{{Cite ') +
-                                            substr_count($this->text, '{{citation') +
-                                            substr_count($this->text, '{{Citation');
-        $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
+        $citation_count = mb_substr_count($this->text, '{{cite ') +
+                                            mb_substr_count($this->text, '{{Cite ') +
+                                            mb_substr_count($this->text, '{{citation') +
+                                            mb_substr_count($this->text, '{{Citation');
+        $ref_count = mb_substr_count($this->text, '<ref') + mb_substr_count($this->text, '<Ref');
         // PLAIN URLS Converted to Templates
         // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
         $this->text = preg_replace_callback(
@@ -271,9 +271,9 @@ class Page {
         $this->text = preg_replace_callback(        // like <ref>{{doi|10.1244/abc}}</ref>
                                             "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string  {
-                                                if (stripos($matches[2], 'arxiv')) {
+                                                if (mb_stripos($matches[2], 'arxiv')) {
                                                     $type = 'arxiv';
-                                                } elseif (stripos($matches[2], 'isbn') || stripos($matches[2], 'oclc')) {
+                                                } elseif (mb_stripos($matches[2], 'isbn') || mb_stripos($matches[2], 'oclc')) {
                                                     $type = 'book';
                                                 } else {
                                                     $type = 'journal';
@@ -299,18 +299,18 @@ class Page {
                             "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                             static function(array $matches): string  {
                                 $UPPER = mb_strtoupper($matches[0]);
-                                if (substr_count($UPPER, 'HTTP') !== 1 || // more than one url
-                                        substr_count($UPPER, '10.') > 3 || // More than one doi probably
-                                        substr_count($UPPER, '*') !== 0 || // A list!!!
-                                        substr_count($UPPER, "\n") > 8 || // who knows
-                                        substr_count($UPPER, 'SEE ALSO') !== 0 ||
-                                        substr_count($UPPER, ', SEE ') !== 0 ||
-                                        substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
-                                        substr_count($UPPER, '{{CITE') !== 0 ||
-                                        substr_count($UPPER, '{{CITATION') !== 0 ||
-                                        substr_count($UPPER, '{{ CITE') !== 0 ||
-                                        substr_count($UPPER, '{{ CITATION') !== 0 ||
-                                        strpos($matches[1], 'note') !== false
+                                if (mb_substr_count($UPPER, 'HTTP') !== 1 || // more than one url
+                                        mb_substr_count($UPPER, '10.') > 3 || // More than one doi probably
+                                        mb_substr_count($UPPER, '*') !== 0 || // A list!!!
+                                        mb_substr_count($UPPER, "\n") > 8 || // who knows
+                                        mb_substr_count($UPPER, 'SEE ALSO') !== 0 ||
+                                        mb_substr_count($UPPER, ', SEE ') !== 0 ||
+                                        mb_substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
+                                        mb_substr_count($UPPER, '{{CITE') !== 0 ||
+                                        mb_substr_count($UPPER, '{{CITATION') !== 0 ||
+                                        mb_substr_count($UPPER, '{{ CITE') !== 0 ||
+                                        mb_substr_count($UPPER, '{{ CITATION') !== 0 ||
+                                        mb_strpos($matches[1], 'note') !== false
                                    ) {
                                     return $matches[0];
                                 }
@@ -407,7 +407,7 @@ class Page {
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
                 $this_template->tidy_parameter('title');
-            } elseif (strpos($this_template->wikiname(), 'cite ') === 0) {
+            } elseif (mb_strpos($this_template->wikiname(), 'cite ') === 0) {
                 clean_google_books($this_template);
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
@@ -457,8 +457,8 @@ class Page {
             get_doi_from_semanticscholar($this_template);
             find_pmid($this_template);
             if ($this_template->blank('bibcode') ||
-                    stripos($this_template->get('bibcode'), 'arxiv') !== false ||
-                    stripos($this_template->get('bibcode'), 'tmp') !== false) {
+                    mb_stripos($this_template->get('bibcode'), 'arxiv') !== false ||
+                    mb_stripos($this_template->get('bibcode'), 'tmp') !== false) {
                 $no_arxiv = $this_template->blank('arxiv');
                 expand_by_adsabs($this_template); // Try to get a bibcode
                 if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
@@ -566,7 +566,7 @@ class Page {
         unset($comments);
         set_time_limit(120);
 
-        if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
+        if (mb_stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== false) {
             echo '<p>', echoable($this->text), '</p>'; // @codeCoverageIgnoreStart
             $this->text = $this->start_text;
             if ($this->title !== "") {
@@ -581,7 +581,7 @@ class Page {
         $last_first_in  = [' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
         $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','ite news',      '',            '',              '',             '',             '',             '',               '',              '',              '',             '',               '',              '',              '',              '',                '',               '',               'Cite',  'cite',  'ubscription',          'work'];
         // @codeCoverageIgnoreStart
-        if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (stripos($this->title, "draft:") === 0)) { // Backload clean-up
+        if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (mb_stripos($this->title, "draft:") === 0)) { // Backload clean-up
             $caps_ok = [];
             $last_first_in   = [];
             $last_first_out = [];
@@ -603,7 +603,7 @@ class Page {
             unset($op);
         }
         unset($altered_list);
-        if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== false) {
+        if (mb_strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== false) {
             $auto_summary .= "URLs might have been anonymized. ";
         }
         if (count($this->modifications['additions']) !== 0) {
@@ -646,7 +646,7 @@ class Page {
                 $auto_summary .= "editors {$min_ed}-{$max_ed}. ";
             }
             if (!$max_ed && !$max_au) {
-                $auto_summary = substr($auto_summary, 0, -2) . '. ';
+                $auto_summary = mb_substr($auto_summary, 0, -2) . '. ';
             }
         }
 
@@ -676,7 +676,7 @@ class Page {
                 unset($this->modifications["deletions"][$pos6]);
             }
             if ($pos1 !==false || $pos2 !==false || $pos3 !==false) {
-                if (strpos($auto_summary, 'chapter-url') !== false) {
+                if (mb_strpos($auto_summary, 'chapter-url') !== false) {
                     $auto_summary .= "Removed or converted URL. ";
                 } else {
                     $auto_summary .= "Removed URL that duplicated identifier. ";
@@ -698,13 +698,13 @@ class Page {
         if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
             $auto_summary .= 'Some additions/deletions were parameter name changes. ';
         }
-        $isbn978_added = (substr_count($this->text, '978 ') + substr_count($this->text, '978-')) - (substr_count($this->start_text, '978 ') + substr_count($this->start_text, '978-'));
-        $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
-                      (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
+        $isbn978_added = (mb_substr_count($this->text, '978 ') + mb_substr_count($this->text, '978-')) - (mb_substr_count($this->start_text, '978 ') + mb_substr_count($this->start_text, '978-'));
+        $isbn_added = (mb_substr_count($this->text, 'isbn') + mb_substr_count($this->text, 'ISBN')) -
+                      (mb_substr_count($this->start_text, 'isbn') + mb_substr_count($this->start_text, 'ISBN'));
         if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
             $auto_summary .= 'Upgrade ISBN10 to 13. ';
         }
-        if (stripos($auto_summary, 'template') !== false) {
+        if (mb_stripos($auto_summary, 'template') !== false) {
             foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
                 'book reference', 'Book reference', 'citejournal', 'Citejournal', 'citeweb', 'Citeweb',
                 'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
@@ -713,7 +713,7 @@ class Page {
                 'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
                 'cite new |', 'cite new |', 'cite |', 'Cite |',
             ] as $try_me) {
-                if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
+                if (mb_substr_count($this->text, $try_me) < mb_substr_count($this->start_text, $try_me)) {
                     $auto_summary .= 'Removed Template redirect. ';
                     break;
                 }
