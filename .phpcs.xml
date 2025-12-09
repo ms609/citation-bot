@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="CustomIndentationStandard">
     <file>authenticate.php</file>
-    <file>big_jobs.php</file>
     <file>category.php</file>
     <file>env.php.example</file>
     <file>gadgetapi.php</file>
