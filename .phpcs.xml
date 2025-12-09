@@ -1,25 +1,14 @@
 <?xml version="1.0"?>
 <ruleset name="CustomIndentationStandard">
     <file>authenticate.php</file>
-    <file>big_jobs.php</file>
     <file>category.php</file>
-    <file>Comment.php</file>
-    <file>constants.php</file>
     <file>env.php.example</file>
-    <file>expandFndsafs.php</file>
     <file>gadgetapi.php</file>
     <file>generate_template.php</file>
     <file>gitpull.php</file>
     <file>kill_big_job.php</file>
     <file>linked_pages.php</file>
-    <file>NameTools.php</file>
-    <file>Page.php</file>
-    <file>Parameter.php</file>
     <file>process_page.php</file>
-    <file>setup.php</file>
-    <file>Template.php</file>
-    <file>user_messages.php</file>
-    <file>WikipediaBot.php</file>
     <file>./includes</file>
     <file>./tests</file>
     <rule ref="PSR2.Files.ClosingTag"/>

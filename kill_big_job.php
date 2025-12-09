@@ -7,7 +7,7 @@ header("Access-Control-Allow-Origin: null"); // Humans only
 set_time_limit(120);
 session_start(['read_and_close' => true]);
 
-require_once 'big_jobs.php';
+require_once 'includes/big_jobs.php';
 
 ob_implicit_flush(true);
 

@@ -7,8 +7,8 @@ declare(strict_types=1);
  * from templates.
  */
 
-require_once 'user_messages.php';  // @codeCoverageIgnore
-require_once 'constants.php';      // @codeCoverageIgnore
+require_once 'includes/user_messages.php';  // @codeCoverageIgnore
+require_once 'includes/constants.php';      // @codeCoverageIgnore
 
 final class Parameter {
     public string $pre = '';
