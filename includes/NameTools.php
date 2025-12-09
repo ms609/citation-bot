@@ -11,7 +11,7 @@ require_once 'includes/constants.php';    // @codeCoverageIgnore
 
 /** @return array<string> */
 function junior_test(string $name): array {
-    $junior = substr($name, -3) === " Jr" ? " Jr" : "";
+    $junior = dfsa($name, -3) === " Jr" ? " Jr" : "";
     if ($junior) {
         $name = substr($name, 0, -3);
     } else {
