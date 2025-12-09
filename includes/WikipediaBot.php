@@ -83,28 +83,28 @@ final class WikipediaBot {
             $response_info = (string) @$response->error->info;
             if ($error_code === 'blocked') { // Most CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, 'The database has been automatically locked') !== false) {
+            } elseif (mb_strpos($response_info, 'The database has been automatically locked') !== false) {
                 report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-            } elseif (strpos($response_info, 'abusefilter-warning-predatory') !== false) {
+            } elseif (mb_strpos($response_info, 'abusefilter-warning-predatory') !== false) {
                 report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos($response_info, 'protected') !== false) {
+            } elseif (mb_strpos($response_info, 'protected') !== false) {
                 report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
                 return true;
-            } elseif (strpos($response_info, 'Wikipedia:Why create an account') !== false) {
+            } elseif (mb_strpos($response_info, 'Wikipedia:Why create an account') !== false) {
                 report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, 'The authorization headers in your request are not valid') !== false) {
+            } elseif (mb_strpos($response_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, 'Edit conflict') !== false) {
+            } elseif (mb_strpos($response_info, 'Edit conflict') !== false) {
                 report_warning('Edit Conflict while saving changes');  // @codeCoverageIgnore
                 return true;  // @codeCoverageIgnore
-            } elseif (strpos($response_info, 'Invalid CSRF token') !== false) {
+            } elseif (mb_strpos($response_info, 'Invalid CSRF token') !== false) {
                 report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, 'Bad title') !== false) {
+            } elseif (mb_strpos($response_info, 'Bad title') !== false) {
                 report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, "The page you specified does not exist") !== false) {
+            } elseif (mb_strpos($response_info, "The page you specified does not exist") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
-            } elseif (strpos($response_info, "The page you specified doesn") !== false) {
+            } elseif (mb_strpos($response_info, "The page you specified doesn") !== false) {
                 report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($response_info);
@@ -159,10 +159,10 @@ final class WikipediaBot {
             if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
                 (string) $ret->error->code === 'assertuserfailed' ||
                 (string) $ret->error->code === 'blocked' ||
-                stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
-                stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
-                stripos((string) $ret->error->info, 'protected') !== false ||
-                stripos((string) $ret->error->info, 'Nonce already used') !== false))
+                mb_stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
+                mb_stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
+                mb_stripos((string) $ret->error->info, 'protected') !== false ||
+                mb_stripos((string) $ret->error->info, 'Nonce already used') !== false))
             ) {
                 unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
                 return $this->fetch($params, $depth+1);
@@ -180,7 +180,7 @@ final class WikipediaBot {
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
-        if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
+        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
             return false;                                                                             // @codeCoverageIgnore
         }
@@ -325,22 +325,22 @@ final class WikipediaBot {
             if (isset($res->query->categorymembers)) {
                 foreach ($res->query->categorymembers as $page) {
                     // We probably only want to visit pages in the main namespace
-                    if (stripos($page->title, 'talk:') === false &&
-                            stripos($page->title, 'Special:') === false &&
-                            stripos($page->title, '/doc') === false &&
-                            stripos($page->title, 'Template:') === false &&
-                            stripos($page->title, 'Mediawiki:') === false &&
-                            stripos($page->title, 'help:') === false &&
-                            stripos($page->title, 'Gadget:') === false &&
-                            stripos($page->title, 'Portal:') === false &&
-                            stripos($page->title, 'timedtext:') === false &&
-                            stripos($page->title, 'module:') === false &&
-                            stripos($page->title, 'category:') === false &&
-                            stripos($page->title, 'Wikipedia:') === false &&
-                            stripos($page->title, 'Gadget definition:') === false &&
-                            stripos($page->title, 'Topic:') === false &&
-                            stripos($page->title, 'Education Program:') === false &&
-                            stripos($page->title, 'Book:') === false) {
+                    if (mb_stripos($page->title, 'talk:') === false &&
+                            mb_stripos($page->title, 'Special:') === false &&
+                            mb_stripos($page->title, '/doc') === false &&
+                            mb_stripos($page->title, 'Template:') === false &&
+                            mb_stripos($page->title, 'Mediawiki:') === false &&
+                            mb_stripos($page->title, 'help:') === false &&
+                            mb_stripos($page->title, 'Gadget:') === false &&
+                            mb_stripos($page->title, 'Portal:') === false &&
+                            mb_stripos($page->title, 'timedtext:') === false &&
+                            mb_stripos($page->title, 'module:') === false &&
+                            mb_stripos($page->title, 'category:') === false &&
+                            mb_stripos($page->title, 'Wikipedia:') === false &&
+                            mb_stripos($page->title, 'Gadget definition:') === false &&
+                            mb_stripos($page->title, 'Topic:') === false &&
+                            mb_stripos($page->title, 'Education Program:') === false &&
+                            mb_stripos($page->title, 'Book:') === false) {
                         $list[] = $page->title;
                     }
                 }
@@ -470,11 +470,11 @@ final class WikipediaBot {
             "ususers" => $user,
         ];
         $response = self::QueryAPI($query);
-        if (strpos($response, '"userid"')  === false) { // try again if weird
+        if (mb_strpos($response, '"userid"')  === false) { // try again if weird
             sleep(5);
             $response = self::QueryAPI($query);
         }
-        if (strpos($response, '"userid"')  === false) { // try yet again if weird
+        if (mb_strpos($response, '"userid"')  === false) { // try yet again if weird
             sleep(10);
             $response = self::QueryAPI($query);
         }
@@ -482,10 +482,10 @@ final class WikipediaBot {
             return false;  // @codeCoverageIgnore
         }
         $response = str_replace(["\r", "\n"], '', $response);  // paranoid
-        if (strpos($response, '"invalid"') !== false || // IP Address and similar stuff
-            (strpos($response, '"blockid"') !== false && strpos($response, '"blockpartial"') === false) || // Valid but blocked
-            strpos($response, '"missing"') !== false || // No such account
-            strpos($response, '"userid"')  === false) { // should actually never return false here
+        if (mb_strpos($response, '"invalid"') !== false || // IP Address and similar stuff
+            (mb_strpos($response, '"blockid"') !== false && mb_strpos($response, '"blockpartial"') === false) || // Valid but blocked
+            mb_strpos($response, '"missing"') !== false || // No such account
+            mb_strpos($response, '"userid"')  === false) { // should actually never return false here
             return false;
         }
         return true;
@@ -519,7 +519,7 @@ final class WikipediaBot {
             $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
             return;
         }
-        if (strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
+        if (mb_strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
             report_warning('You need to run the bot on a page normally first to get permission tokens');
             bot_html_footer();
             exit;
