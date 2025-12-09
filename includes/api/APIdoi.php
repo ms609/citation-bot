@@ -27,7 +27,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         return;
     }
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
-        $template->add_if_new('jstor', substr($doi, 8));
+        $template->add_if_new('jstor', mb_substr($doi, 8));
     }
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
@@ -111,7 +111,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             $crossRefNewAPI = query_crossref_newapi($doi);
             if (isset($crossRefNewAPI->title[0]) && !isset($crossRefNewAPI->title[1])) {
                 $new_title = (string) $crossRefNewAPI->title[0];
-                if (conference_doi($doi) && isset($crossRefNewAPI->subtitle[0]) && strlen((string) $crossRefNewAPI->subtitle[0]) > 4) {
+                if (conference_doi($doi) && isset($crossRefNewAPI->subtitle[0]) && mb_strlen((string) $crossRefNewAPI->subtitle[0]) > 4) {
                     $new_title .= ": " . (string) $crossRefNewAPI->subtitle[0];
                 }
                 $new_title = str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $new_title);
@@ -137,7 +137,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 }
             }
             $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
-            if (strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
+            if (mb_strpos($doi, '10.7817/jameroriesoci') === false || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
                 $template->add_if_new("year", (string) $crossRef->year, 'crossref');
             }
             if ($template->blank(['editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1']) // If editors present, authors may not be desired
@@ -178,18 +178,18 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if ((int) $crossRef->volume > 0) {
                 $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
             }
-            if (((strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
+            if (((mb_strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
                 // "1" may refer to a journal without issue numbers,
                 //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.    Best ignore.
                 $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
             }
             if ($template->blank("page")) {
                 if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
-                    if (strpos((string) $crossRef->first_page . (string) $crossRef->last_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
+                    if (mb_strpos((string) $crossRef->first_page . (string) $crossRef->last_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
                         $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
                     }
                 } else {
-                    if (strpos((string) $crossRef->first_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
+                    if (mb_strpos((string) $crossRef->first_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
                         $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
                     }
                 }
@@ -210,7 +210,7 @@ function query_crossref(string $doi): ?object {
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
     }
-    if (strpos($doi, '10.2307') === 0) {
+    if (mb_strpos($doi, '10.2307') === 0) {
         return null; // jstor API is better
     }
     set_time_limit(120);
@@ -232,7 +232,7 @@ function query_crossref(string $doi): ?object {
         if (is_object($xml) && isset($xml->query_result->body->query)) {
             $result = $xml->query_result->body->query;
             if ((string) @$result["status"] === "resolved") {
-                if (stripos($doi, '10.1515/crll') === 0) {
+                if (mb_stripos($doi, '10.1515/crll') === 0) {
                     $volume = intval(mb_trim((string) @$result->volume));
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
@@ -244,7 +244,7 @@ function query_crossref(string $doi): ?object {
                         }
                     }
                 }
-                if (stripos($doi, '10.3897/ab.') === 0) {
+                if (mb_stripos($doi, '10.3897/ab.') === 0) {
                     unset($result->volume);
                     unset($result->page);
                     unset($result->issue);
@@ -275,9 +275,9 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
         [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
     }
-    if (strpos($doi, '10.2307') === 0 || // jstor API is better
-        strpos($doi, '10.24436') === 0 || // They have horrible meta-data
-        strpos($doi, '10.5284/1028203') === 0) { // database
+    if (mb_strpos($doi, '10.2307') === 0 || // jstor API is better
+        mb_strpos($doi, '10.24436') === 0 || // They have horrible meta-data
+        mb_strpos($doi, '10.5284/1028203') === 0) { // database
         return;
     }
     set_time_limit(120);
@@ -294,7 +294,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $template->mark_inactive_doi();
         return;
     }                      // @codeCoverageIgnoreEnd
-    if ($data === "" || stripos($data, 'DOI Not Found') !== false || stripos($data, 'DOI prefix') !== false) {
+    if ($data === "" || mb_stripos($data, 'DOI Not Found') !== false || mb_stripos($data, 'DOI prefix') !== false) {
         $template->mark_inactive_doi();
         return;
     }
@@ -333,7 +333,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         if (str_ends_with(mb_strtolower($data), '.pdf')) {
             return;
         }
-        if (strpos($name, 'author') !== false) { // Remove dates from names from 10.11501/ dois
+        if (mb_strpos($name, 'author') !== false) { // Remove dates from names from 10.11501/ dois
             if (preg_match('~^(.+), \d{3,4}\-\d{3,4}$~', $data, $matched)) {
                 $data = $matched[1];
             }
@@ -461,7 +461,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
         $try_to_add_it('publisher', @$json['publisher']);
-        if (stripos(@$json['URL'], 'hdl.handle.net')) {
+        if (mb_stripos(@$json['URL'], 'hdl.handle.net')) {
             $template->get_identifiers_from_url($json['URL']);
         }
     } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture' || $type === 'patent' || $type === 'database') { // posted-content is from bioRxiv
@@ -576,7 +576,7 @@ function get_doi_from_crossref(Template $template): void {
         CROSSREFUSERNAME; // do not encode crossref email
         curl_setopt($ch, CURLOPT_URL, $url);
         $xml = bot_curl_exec($ch);
-        if (strlen($xml) > 0) {
+        if (mb_strlen($xml) > 0) {
             $result = @simplexml_load_string($xml);
             unset($xml);
         } else {
