@@ -86,7 +86,7 @@ final class Zotero {
                 if ($template->blank('doi')) {
                     $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
                     expand_by_doi($template, true); // this data is better than zotero
-                } elseif (strstr($template->get('doi'), '10.1101') === false) {
+                } elseif (mb_strstr($template->get('doi'), '10.1101') === false) {
                     expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
                     self::expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv')); // Rare case there is a different DOI
                 }
@@ -117,7 +117,7 @@ final class Zotero {
                 if (!doi_active($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
                     self::expand_by_zotero($template, 'https://dx.doi.org/' . $doi);  // DOIs without meta-data
                 }
-                if ($template->blank('title') && stripos($doi, "10.1023/A:") === 0) {
+                if ($template->blank('title') && mb_stripos($doi, "10.1023/A:") === 0) {
                     self::expand_by_zotero($template, 'https://link.springer.com/article/' . $doi); // DOIs without title meta-data
                 }
             }
@@ -151,7 +151,7 @@ final class Zotero {
         if ($zotero_response === '') {
             // @codeCoverageIgnoreStart
             report_warning(curl_error(self::$zotero_ch) . "  For URL: " . echoable($url));
-            if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== false) {
+            if (mb_strpos(curl_error(self::$zotero_ch), 'timed out after') !== false) {
                 self::$zotero_failures_count += 1;
                 if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
                     report_warning("Giving up on URL expansion for a while");
@@ -207,7 +207,7 @@ final class Zotero {
             return; // Only risk unvetted data if there's little good data to sully
         }
 
-        if (stripos($url, 'CITATION_BOT_PLACEHOLDER') !== false) {
+        if (mb_stripos($url, 'CITATION_BOT_PLACEHOLDER') !== false) {
             return; // That's a bad url
         }
 
@@ -265,15 +265,15 @@ final class Zotero {
                 return;
         }
 
-        if (strpos($zotero_response, '502 Bad Gateway') !== false) {
+        if (mb_strpos($zotero_response, '502 Bad Gateway') !== false) {
             report_warning("Bad Gateway error for URL ". echoable($url));
             return;
         }
-        if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== false) {
+        if (mb_strpos($zotero_response, '503 Service Temporarily Unavailable') !== false) {
             report_warning("Temporarily Unavailable error for URL " . echoable($url)); // @codeCoverageIgnore
             return;                           // @codeCoverageIgnore
         }
-        if (strpos($zotero_response, '<title>Wikimedia Error</title>') !== false) {
+        if (mb_strpos($zotero_response, '<title>Wikimedia Error</title>') !== false) {
             report_warning("Temporarily giving an error for URL " . echoable($url)); // @codeCoverageIgnore
             return;                           // @codeCoverageIgnore
         }
@@ -354,22 +354,22 @@ final class Zotero {
         if (isset($result->publicationTitle) && substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = substr($result->publicationTitle, 0, -2);
         }
-        if (stripos($url, 'www.royal.uk') !== false || stripos($url, 'astanatimes.com') !== false || stripos($url, 'theyucatantimes.com') !== false) {
+        if (mb_stripos($url, 'www.royal.uk') !== false || mb_stripos($url, 'astanatimes.com') !== false || mb_stripos($url, 'theyucatantimes.com') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
         }
 
-        if (stripos($url, 'theathletic.com') !== false) { // Returns NYT
+        if (mb_stripos($url, 'theathletic.com') !== false) { // Returns NYT
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
-        if (stripos($url, 'music.mthai.com') !== false) { // Returns spamming ad verbage
+        if (mb_stripos($url, 'music.mthai.com') !== false) { // Returns spamming ad verbage
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
-        if (stripos($url, 'newsen.com') !== false) { // Includes title of article
+        if (mb_stripos($url, 'newsen.com') !== false) { // Includes title of article
             $result->publicationTitle = 'Newsen';
         }
 
-        if (stripos($url, '/x.com') !== false || stripos($url, 'twitter.com') !== false) {
+        if (mb_stripos($url, '/x.com') !== false || mb_stripos($url, 'twitter.com') !== false) {
             $result->itemType = 'webpage';   // @codeCoverageIgnore
         }
 
@@ -377,33 +377,33 @@ final class Zotero {
             unset($result->publicationTitle);
         }
 
-        if (stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
+        if (mb_stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
             unset($result->creators['1']);
             unset($result->author['1']);
         }
 
-        if (stripos($url, 'flickr.') !== false) {
+        if (mb_stripos($url, 'flickr.') !== false) {
             $result->itemType = 'webpage';
             unset($result->publicationTitle); //Flickr is not a work
         }
 
-        if (stripos($url, 'pressbooks.online.ucf.edu') !== false) {
+        if (mb_stripos($url, 'pressbooks.online.ucf.edu') !== false) {
             $result->itemType = 'webpage';
             unset($result->author); // They list themself
         }
 
-        if (stripos($url, '.tumblr.com') !== false) { // Returns tumblr, and it is a sub-domain
+        if (mb_stripos($url, '.tumblr.com') !== false) { // Returns tumblr, and it is a sub-domain
             unset($result->publicationTitle);  // @codeCoverageIgnore
         }
-        if (stripos($url, 'tumblr.com') !== false) {
+        if (mb_stripos($url, 'tumblr.com') !== false) {
             $result->itemType = 'webpage';  // @codeCoverageIgnore
         }
-        if (stripos($url, 'tate.org.uk') !== false) {
+        if (mb_stripos($url, 'tate.org.uk') !== false) {
             $result->itemType = 'webpage';
             unset($result->creators);
             unset($result->author);
         }
-        if (stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
+        if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);
         }
 
@@ -673,7 +673,7 @@ final class Zotero {
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
                 expand_by_doi($template);
-                if (stripos($url, 'jstor')) {
+                if (mb_stripos($url, 'jstor')) {
                     check_doi_for_jstor($template->get('doi'), $template);
                 }
                 if (!$template->profoundly_incomplete()) {
@@ -684,7 +684,7 @@ final class Zotero {
 
         if (isset($result->date)) {
             foreach (NO_DATE_WEBSITES as $bad_website ) {
-                if (stripos($url, $bad_website) !== false) {
+                if (mb_stripos($url, $bad_website) !== false) {
                     unset($result->date);
                     break;
                 }
@@ -795,7 +795,7 @@ final class Zotero {
         } else {
             if (isset($result->publicationTitle)) {
                 if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
-                    (stripos((string) $result->publicationTitle, ' edition') === false)) { // Do not add if "journal" includes "edition"
+                    (mb_stripos((string) $result->publicationTitle, ' edition') === false)) { // Do not add if "journal" includes "edition"
                     if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
                         if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
                             if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) === $url && str_ireplace(JOURNAL_ARCHIVES_SITES, '', $url) === $url) {
@@ -818,7 +818,7 @@ final class Zotero {
         }
         if (isset($result->date) && strlen((string) $result->date)>3) {
             $new_date = tidy_date((string) $result->date);
-            if (stripos($url, 'indiatimes') !== false) { // "re-posted" website all at once
+            if (mb_stripos($url, 'indiatimes') !== false) { // "re-posted" website all at once
                 $maybe_date = (int) strtotime($new_date);
                 $end_date1 = strtotime('10 January 2017');
                 $end_date2 = strtotime('21 January 2017');
@@ -830,7 +830,7 @@ final class Zotero {
                 $template->add_if_new('date', $new_date);
             }
         }
-        if (isset($result->series) && stripos($url, '.acm.org')===false) {
+        if (isset($result->series) && mb_stripos($url, '.acm.org')===false) {
             $template->add_if_new('series', (string) $result->series);
         }
         $i = 0;
@@ -861,7 +861,7 @@ final class Zotero {
         }
         unset($i);
 
-        if ((stripos($url, '/sfdb.org') !== false || stripos($url, '.sfdb.org') !== false) && $template->blank(WORK_ALIASES)) {
+        if ((mb_stripos($url, '/sfdb.org') !== false || mb_stripos($url, '.sfdb.org') !== false) && $template->blank(WORK_ALIASES)) {
                 $template->add_if_new('website', 'sfdb.org');
         }
 
@@ -874,15 +874,15 @@ final class Zotero {
                     // also reject 'review'
                     if ($template->wikiname() === 'cite web' &&
                             $template->blank('website') && // Leads to error
-                            stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === false &&
-                            stripos($url, 'archive.org') === false && !preg_match('~^https?://[^/]*journal~', $url) &&
-                            stripos($url, 'booklistonline') === false &&
-                            stripos($url, 'catalogue.bnf') === false &&
-                            stripos($url, 'finna.fi') === false &&
-                            stripos($url, 'planetebd.com') === false &&
-                            stripos($url, 'data.bnf.fr') === false &&
-                            stripos($url, 'audible.com') === false &&
-                            stripos($url, 'elonet.fi') === false
+                            mb_stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === false &&
+                            mb_stripos($url, 'archive.org') === false && !preg_match('~^https?://[^/]*journal~', $url) &&
+                            mb_stripos($url, 'booklistonline') === false &&
+                            mb_stripos($url, 'catalogue.bnf') === false &&
+                            mb_stripos($url, 'finna.fi') === false &&
+                            mb_stripos($url, 'planetebd.com') === false &&
+                            mb_stripos($url, 'data.bnf.fr') === false &&
+                            mb_stripos($url, 'audible.com') === false &&
+                            mb_stripos($url, 'elonet.fi') === false
                         ) {
                         $template->change_name_to('cite book');
                     }
@@ -1025,30 +1025,30 @@ final class Zotero {
                     $i++;
                 }
             }
-            if (stripos(mb_trim($template->get('publisher')), 'Associated Press') !== false &&
-                stripos($url, 'ap.org') === false  ) {
+            if (mb_stripos(mb_trim($template->get('publisher')), 'Associated Press') !== false &&
+                mb_stripos($url, 'ap.org') === false  ) {
                 if ($template->wikiname() === 'cite news') {
                     $template->rename('publisher', 'agency'); // special template parameter just for them
                 }
-                if (stripos(mb_trim($template->get('author')), 'Associated Press') === 0) {
+                if (mb_stripos(mb_trim($template->get('author')), 'Associated Press') === 0) {
                     $template->forget('author'); // all too common
                 }
             }
-            if (stripos(mb_trim($template->get('publisher')), 'Reuters') !== false &&
-                stripos($url, 'reuters.org') === false ) {
+            if (mb_stripos(mb_trim($template->get('publisher')), 'Reuters') !== false &&
+                mb_stripos($url, 'reuters.org') === false ) {
                 if ($template->wikiname() === 'cite news') {
                     $template->rename('publisher', 'agency'); // special template parameter just for them
                 }
-                if (stripos(mb_trim($template->get('author')), 'Reuters') === 0) {
+                if (mb_stripos(mb_trim($template->get('author')), 'Reuters') === 0) {
                     $template->forget('author'); // all too common
                 }
             }
         }
         if ($template->wikiname() === 'cite web') {
-            if (stripos($url, 'businesswire.com/news') !== false ||
-                stripos($url, 'prnewswire.com/') !== false ||
-                stripos($url, 'globenewswire.com/') !== false ||
-                stripos($url, 'newswire.com/') !== false) {
+            if (mb_stripos($url, 'businesswire.com/news') !== false ||
+                mb_stripos($url, 'prnewswire.com/') !== false ||
+                mb_stripos($url, 'globenewswire.com/') !== false ||
+                mb_stripos($url, 'newswire.com/') !== false) {
                 $template->change_name_to('cite press release');
             }
         }
