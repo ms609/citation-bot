@@ -111,7 +111,7 @@ try {
     [$authUrl, $token] = $client->initiate();
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
-    if (strpos($authUrl, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=') !== 0 || preg_match('~\s+~', $authUrl)) {
+    if (mb_strpos($authUrl, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=') !== 0 || preg_match('~\s+~', $authUrl)) {
         death_time('Corrupted OAuth URL');
     }
     return_to_sender($authUrl);
