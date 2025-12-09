@@ -31,10 +31,10 @@ function expand_by_jstor(Template $template): void {
     }
     /** @psalm-taint-escape ssrf */
     $jstor = mb_trim($jstor);
-    if (strpos($jstor, ' ') !== false) {
+    if (mb_strpos($jstor, ' ') !== false) {
         return ; // Comment/template found
     }
-    if (substr($jstor, 0, 1) === 'i') {
+    if (mb_substr($jstor, 0, 1) === 'i') {
         return ; // We do not want i12342 kind
     }
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
@@ -43,15 +43,15 @@ function expand_by_jstor(Template $template): void {
         report_info("JSTOR API returned nothing for ". jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                             // @codeCoverageIgnore
     }
-    if (stripos($dat, 'No RIS data found for') !== false) {
+    if (mb_stripos($dat, 'No RIS data found for') !== false) {
         report_info("JSTOR API found nothing for ".    jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                             // @codeCoverageIgnore
     }
-    if (stripos($dat, 'Block Reference') !== false) {
+    if (mb_stripos($dat, 'Block Reference') !== false) {
         report_info("JSTOR API blocked bot for ".    jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                           // @codeCoverageIgnore
     }
-    if (stripos($dat, 'A problem occurred trying to deliver RIS data')  !== false) {
+    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data')  !== false) {
         report_info("JSTOR API had a problem for ".    jstor_link($jstor));
         return;
     }
