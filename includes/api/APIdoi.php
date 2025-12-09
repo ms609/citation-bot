@@ -27,7 +27,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         return;
     }
     if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
-        $template->add_if_new('jstor', substr($doi, 8));
+        $template->add_if_new('jstor', mb_substr($doi, 8));
     }
     if ($doi && ($force || $template->incomplete())) {
         $crossRef = query_crossref($doi);
