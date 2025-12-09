@@ -5,7 +5,7 @@ declare(strict_types=1);
  * expandFns.php tests
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once __DIR__ . '/../../testBaseClass.php';
 
 final class expandFnsTest extends testBaseClass {
 
