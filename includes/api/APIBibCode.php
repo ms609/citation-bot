@@ -492,8 +492,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         if ($http_response_code === 0 || $header_length === 0) {
             throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
         }
-        $header = substr($return, 0, $header_length);
-        $body = substr($return, $header_length);
+        $header = mb_substr($return, 0, $header_length);
+        $body = mb_substr($return, $header_length);
         unset($return);
         $decoded = @json_decode($body);
 
@@ -637,12 +637,12 @@ function process_bibcode_data(Template $this_template, object $record): void {
         $journal_start = mb_strtolower($journal_string[0]);
         if (preg_match("~\bthesis\b~ui", $journal_start)) {
             // Do nothing
-        } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
-            if (substr($journal_start, 0, 13) === 'eprint arxiv:') {          //@codeCoverageIgnore
+        } elseif (mb_substr($journal_start, 0, 6) === 'eprint') {  // No longer used
+            if (mb_substr($journal_start, 0, 13) === 'eprint arxiv:') {          //@codeCoverageIgnore
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
                 }
-                $this_template->add_if_new('arxiv', substr($journal_start, 13));    //@codeCoverageIgnore
+                $this_template->add_if_new('arxiv', mb_substr($journal_start, 13));    //@codeCoverageIgnore
             }
         } else {
             $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
@@ -679,11 +679,11 @@ function process_bibcode_data(Template $this_template, object $record): void {
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
             $recid = (string) $recid;
-            if(mb_strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+            if(mb_strtolower(mb_substr($recid, 0, 6)) === 'arxiv:') {
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
                 }
-                $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+                $this_template->add_if_new('arxiv', mb_substr($recid, 6), 'adsabs');
             }
         }
     }
