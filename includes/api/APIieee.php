@@ -29,7 +29,7 @@ function query_ieee_webpages(array &$templates): void {  // Pointer to save memo
                         $dois = array_unique($matches[1]);
                         if (count($dois) === 1) {
                             if ($template->add_if_new('doi', $dois[0])) {
-                                if (strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
+                                if (mb_strpos($template->get('doi'), $matches_url[1]) !== false && doi_works($template->get('doi'))) {
                                     $template->forget($kind);
                                 }
                             }
@@ -38,7 +38,7 @@ function query_ieee_webpages(array &$templates): void {  // Pointer to save memo
                 } elseif (doi_works($template->get('doi'))) {
                     usleep(100000); // 0.10 seconds
                     $return = bot_curl_exec($ch_ieee);
-                    if ($return !== "" && strpos($return, "<title> -  </title>") !== false) {
+                    if ($return !== "" && mb_strpos($return, "<title> -  </title>") !== false) {
                         report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
                         $template->forget($kind);                   // @codeCoverageIgnore
                     }
