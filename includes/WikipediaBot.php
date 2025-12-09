@@ -159,10 +159,10 @@ final class WikipediaBot {
             if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
                 (string) $ret->error->code === 'assertuserfailed' ||
                 (string) $ret->error->code === 'blocked' ||
-                stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
-                stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
-                stripos((string) $ret->error->info, 'protected') !== false ||
-                stripos((string) $ret->error->info, 'Nonce already used') !== false))
+                mb_stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
+                mb_stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
+                mb_stripos((string) $ret->error->info, 'protected') !== false ||
+                mb_stripos((string) $ret->error->info, 'Nonce already used') !== false))
             ) {
                 unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
                 return $this->fetch($params, $depth+1);
@@ -180,7 +180,7 @@ final class WikipediaBot {
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
-        if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
+        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
             return false;                                                                             // @codeCoverageIgnore
         }
@@ -325,22 +325,22 @@ final class WikipediaBot {
             if (isset($res->query->categorymembers)) {
                 foreach ($res->query->categorymembers as $page) {
                     // We probably only want to visit pages in the main namespace
-                    if (stripos($page->title, 'talk:') === false &&
-                            stripos($page->title, 'Special:') === false &&
-                            stripos($page->title, '/doc') === false &&
-                            stripos($page->title, 'Template:') === false &&
-                            stripos($page->title, 'Mediawiki:') === false &&
-                            stripos($page->title, 'help:') === false &&
-                            stripos($page->title, 'Gadget:') === false &&
-                            stripos($page->title, 'Portal:') === false &&
-                            stripos($page->title, 'timedtext:') === false &&
-                            stripos($page->title, 'module:') === false &&
-                            stripos($page->title, 'category:') === false &&
-                            stripos($page->title, 'Wikipedia:') === false &&
-                            stripos($page->title, 'Gadget definition:') === false &&
-                            stripos($page->title, 'Topic:') === false &&
-                            stripos($page->title, 'Education Program:') === false &&
-                            stripos($page->title, 'Book:') === false) {
+                    if (mb_stripos($page->title, 'talk:') === false &&
+                            mb_stripos($page->title, 'Special:') === false &&
+                            mb_stripos($page->title, '/doc') === false &&
+                            mb_stripos($page->title, 'Template:') === false &&
+                            mb_stripos($page->title, 'Mediawiki:') === false &&
+                            mb_stripos($page->title, 'help:') === false &&
+                            mb_stripos($page->title, 'Gadget:') === false &&
+                            mb_stripos($page->title, 'Portal:') === false &&
+                            mb_stripos($page->title, 'timedtext:') === false &&
+                            mb_stripos($page->title, 'module:') === false &&
+                            mb_stripos($page->title, 'category:') === false &&
+                            mb_stripos($page->title, 'Wikipedia:') === false &&
+                            mb_stripos($page->title, 'Gadget definition:') === false &&
+                            mb_stripos($page->title, 'Topic:') === false &&
+                            mb_stripos($page->title, 'Education Program:') === false &&
+                            mb_stripos($page->title, 'Book:') === false) {
                         $list[] = $page->title;
                     }
                 }
