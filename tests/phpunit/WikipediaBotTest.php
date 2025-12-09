@@ -81,7 +81,7 @@ final class WikipediaBotTest extends testBaseClass {
     public function testGetLinks(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $json = WikipediaBot::get_links('Covid Watch');
-        $this->assertTrue(substr_count($json, 'exists') > 15);
+        $this->assertTrue(mb_substr_count($json, 'exists') > 15);
     }
 
     public function test_ret_okay1(): void {
