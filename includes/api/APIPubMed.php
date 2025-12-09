@@ -99,7 +99,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         $junior = $jr_test[1];
                                         if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                                             $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                                            if (strpos($first, '.') && substr($first, -1) !== '.') {
+                                            if (strpos($first, '.') && mb_substr($first, -1) !== '.') {
                                                 $first .= '.';
                                             }
                                             $i++;
@@ -356,7 +356,7 @@ function do_pumbed_query(Template $template, array $terms): array
             }
         }
     }
-    $query = substr($query, 5); // Chop off initial " AND "
+    $query = mb_substr($query, 5); // Chop off initial " AND "
     usleep(20000); // Wait 1/50 of a second since we probably just tried
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
