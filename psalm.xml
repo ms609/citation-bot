@@ -14,25 +14,13 @@
     findUnusedCode="false"
 >
     <projectFiles>
-        <file name="setup.php" />
-        <file name="Comment.php" />
-        <file name="NameTools.php" />
-        <file name="Page.php" />
-        <file name="Parameter.php" />
-        <file name="Template.php" />
-        <file name="WikipediaBot.php" />
         <file name="authenticate.php" />
         <file name="category.php" />
-        <file name="constants.php" />
-        <file name="expandFns.php" />
         <file name="gadgetapi.php" />
         <file name="generate_template.php" />
         <file name="gitpull.php" />
         <file name="linked_pages.php" />
         <file name="process_page.php" />
-        <file name="setup.php" />
-        <file name="user_messages.php" />
-        <file name="big_jobs.php" />
         <file name="kill_big_job.php" />
         <directory name="includes" />
         <directory name="includes/constants" />
