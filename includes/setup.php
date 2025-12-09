@@ -60,7 +60,7 @@ require_once 'includes/constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
-define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
+define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
 define('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
 
@@ -75,7 +75,7 @@ if (TRAVIS || isset($argv)) {
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === false) {
+if (mb_strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === false) {
     define("FLUSHING_OKAY", true);
 } else {
     define("FLUSHING_OKAY", false);
@@ -114,7 +114,7 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
-if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== false)) { // Willing to take slight performance penalty on Gadget
+if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (mb_strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== false)) { // Willing to take slight performance penalty on Gadget
     ini_set("pcre.jit", "0");
 }
 
@@ -147,10 +147,10 @@ if ((string) getenv("PHP_S2APIKEY") !== "") {
 $nlm_tool = "WikipediaCitationBot";
 $nlm_apikey = (string) getenv("NLM_APIKEY");
 $nlm_email = (string) getenv("NLM_EMAIL");
-if (!(strpos($nlm_email, '@') > 0)) {
+if (!(mb_strpos($nlm_email, '@') > 0)) {
     $nlm_email = PUBMEDUSERNAME;
 }
-if (strlen($nlm_apikey) < 8) {
+if (mb_strlen($nlm_apikey) < 8) {
     $nlm_apikey = "";
 }
 define("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
