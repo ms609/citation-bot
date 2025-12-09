@@ -81,7 +81,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     if ($response === '') {
         return null; // @codeCoverageIgnore
     }
-    if (stripos($response, 'Paper not found') !== false) {
+    if (mb_stripos($response, 'Paper not found') !== false) {
         return false; // @codeCoverageIgnore
     }
     $oa = @json_decode($response);
