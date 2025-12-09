@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-
-
 function throttle_archive (): void {
     static $last = 0.0;
     $min_time = 1000000.0; // One second
@@ -36,24 +34,24 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             ($template->blank('title') || mb_strtolower($template->get('title')) === 'archived copy' ||
             mb_strtolower($template->get('title')) === 'archive copy' ||
             mb_strtolower($template->get('title')) === 'usurped title' ||
-            substr_count($template->get('title'), '?') > 10 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '') >0 ||
-            substr_count($template->get('title'), '�') >0 )) {
+            mb_substr_count($template->get('title'), '?') > 10 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '') >0 ||
+            mb_substr_count($template->get('title'), '�') >0 )) {
             /** @psalm-taint-escape ssrf */
             $archive_url = $template->get('archive-url') . $template->get('archiveurl');
-            if (stripos($archive_url, 'archive') !== false && stripos($archive_url, '.pdf') === false) {
+            if (mb_stripos($archive_url, 'archive') !== false && stripos($archive_url, '.pdf') === false) {
                 set_time_limit(120);
                 throttle_archive();
                 curl_setopt($ch, CURLOPT_URL, $archive_url);
@@ -70,8 +68,8 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     if ($raw_html && preg_match($regex, $raw_html, $match)) {
                         set_time_limit(120);
                         $title = mb_trim($match[1]);
-                        if (stripos($title, 'archive') === false &&
-                            stripos($title, 'wayback') === false &&
+                        if (mb_stripos($title, 'archive') === false &&
+                            mb_stripos($title, 'wayback') === false &&
                             $title !== ''
                             ) {
                             $cleaned = false;
@@ -122,7 +120,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                 if ($new === '') {
                                     $template->set('title', $old); // UTF-8 craziness
                                 } else {
-                                    $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%') + substr_count($new, '');
+                                    $bad_count = mb_substr_count($new, '�') + mb_mb_substr_count($new, '$') + mb_mb_substr_count($new, '%') + mb_substr_count($new, '');
                                     if ($bad_count > 5) {
                                         $template->set('title', $old); // UTF-8 craziness
                                     } else {
@@ -145,16 +143,16 @@ function convert_to_utf8(string $value): string {
     $value = convert_to_utf8_inside($value);
     $test = preg_replace('~[\'a-zA-Z0-9 ]+~', '', $value);
     $test = mb_convert_encoding($test, 'utf-8', 'windows-1252');
-    $count_cr1 = substr_count($value, '®') + substr_count($value, '©');
-    $count_cr2 = substr_count($test, '®') + substr_count($test, '©');
-    $len1 = strlen($value);
-    $len2 = strlen($test);
-    $bad1 = substr_count($value, "");
-    $bad2 = substr_count($test, "");
-    $rq1 = substr_count($value, "”");
-    $rq2 = substr_count($test, "”");
-    $lq1 = substr_count($value, "„");
-    $lq2 = substr_count($test, "„");
+    $count_cr1 = mb_substr_count($value, '®') + mb_substr_count($value, '©');
+    $count_cr2 = mb_substr_count($test, '®') + mb_substr_count($test, '©');
+    $len1 = mb_strlen($value);
+    $len2 = mb_strlen($test);
+    $bad1 = mb_substr_count($value, "");
+    $bad2 = mb_substr_count($test, "");
+    $rq1 = mb_substr_count($value, "”");
+    $rq2 = mb_substr_count($test, "”");
+    $lq1 = mb_substr_count($value, "„");
+    $lq2 = mb_substr_count($test, "„");
     if ((1 + $count_cr1) === $count_cr2 && (4 + $len1 > $len2) && ($bad1 >= $bad2) && ($lq1 <= $lq2) && ($rq1 <= $rq2)) { // Special case for single (c) or (r) and did not grow much
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
     }
