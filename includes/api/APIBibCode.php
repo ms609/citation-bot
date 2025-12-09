@@ -44,7 +44,7 @@ final class AdsAbsControl {
             self::$bib2doi[$bib] = 'X';
         } elseif (doi_works($doi)) { // paranoid
             self::$bib2doi[$bib] = $doi;
-            if (stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
+            if (CONFLICT stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
                 self::$doi2bib[$doi] = $bib;
             }
         }
