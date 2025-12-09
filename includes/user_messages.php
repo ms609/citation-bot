@@ -21,9 +21,9 @@ function user_notice(string $symbol, string $class, string $text): void {
         }
         // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
         echo "\n ", (HTML_OUTPUT ? "<span class='{$class}'>" : ""), $symbol;
-        if (defined('BIG_JOB_MODE') && strlen($text) > 1000) { // No one looks at this anyway - long ones are often URLs in zotero errors
+        if (defined('BIG_JOB_MODE') && mb_strlen($text) > 900) { // No one looks at this anyway - long ones are often URLs in zotero errors
             echo "HUGE amount of text NOT printed";
-            bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " .  substr($text, 0, 500));
+            bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " .  mb_substr($text, 0, 500));
         } else {
             echo $text;
         }
