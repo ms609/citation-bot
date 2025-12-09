@@ -16,7 +16,7 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
             $this_template->rename('eprint', 'arxiv');
         }
         $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
-        if ($eprint && stripos($eprint, 'CITATION_BOT') === false) {
+        if ($eprint && mb_stripos($eprint, 'CITATION_BOT') === false) {
             $ids[] = $eprint;
             $arxiv_templates[] = $this_template;
         }
@@ -57,7 +57,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     }
     if ((string) $xml->entry->title === "Error") {
         $the_error = (string) $xml->entry->summary;
-        if (stripos($the_error, 'incorrect id format for') !== false) {
+        if (mb_stripos($the_error, 'incorrect id format for') !== false) {
             report_warning("arXiv search failed: " . echoable($the_error));
         } else {
             report_minor_error("arXiv search failed - please report the error: " . echoable($the_error));    // @codeCoverageIgnore
@@ -154,7 +154,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         }
 
         if ($this_template->has('publisher')) {
-            if (stripos($this_template->get('publisher'), 'arxiv') !== false) {
+            if (mb_stripos($this_template->get('publisher'), 'arxiv') !== false) {
                 $this_template->forget('publisher');
             }
         }
