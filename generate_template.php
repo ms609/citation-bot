@@ -28,13 +28,13 @@ unset($_GET, $_POST, $_REQUEST); // Memory minimize
 if (!is_string($param) || !is_string($value)) {
     die_in_template('Invalid parameter type error for passed parameter'); // @codeCoverageIgnore
 }
-if (strlen($value) < 3) {
+if (mb_strlen($value) < 3) {
     die_in_template('Unset parameter error'); // @codeCoverageIgnore
 }
-if (strlen($value) > 100) {
+if (mb_strlen($value) > 100) {
     die_in_template('Excessive parameter error'); // @codeCoverageIgnore
 }
-if ((strpos($value, "'") !== false) || (strpos($value, '"') !== false) || (strpos($value, "|") !== false) || (strpos($value, " ") !== false)) {
+if ((mb_strpos($value, "'") !== false) || (mb_strpos($value, '"') !== false) || (mb_strpos($value, "|") !== false) || (mb_strpos($value, " ") !== false)) {
     die_in_template('Invalid parameter value error'); // @codeCoverageIgnore
 }
 $param = mb_strtolower($param);
