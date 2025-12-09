@@ -36,7 +36,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             $url &&
             !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
             $template->blank(DOI_BROKEN_ALIASES) &&
-            preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
+            preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && mb_strpos($doi, '10.1109') === 0) {
             report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
             $template->forget($url_kind);
         }
@@ -45,7 +45,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 $url &&
                 !$template->profoundly_incomplete() &&
                 !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-                (strpos($doi, '10.1093/') === false) &&
+                (mb_strpos($doi, '10.1093/') === false) &&
                 $template->blank(DOI_BROKEN_ALIASES)) {
                 set_time_limit(120);
             if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
@@ -76,7 +76,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
                 report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
                 $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup', '', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === false) {
+            } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup', '', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && mb_stripos($url, 'pdf') === false) {
                 report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
                 $template->forget($url_kind);
             } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
@@ -87,18 +87,18 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         $url_kind !== '' &&
                         (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) !== $template->get($url_kind)) &&
                         $template->has_good_free_copy() &&
-                        (stripos($template->get($url_kind), 'pdf') === false)) {
+                        (mb_stripos($template->get($url_kind), 'pdf') === false)) {
                 report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
                 $template->forget($url_kind);
-            } elseif (stripos($url, 'pdf') === false && $template->get('doi-access') === 'free' && $template->has('pmc')) {
+            } elseif (mb_stripos($url, 'pdf') === false && $template->get('doi-access') === 'free' && $template->has('pmc')) {
                 curl_setopt($ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
                 $ch_return = bot_curl_exec($ch_dx);
-                if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
+                if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
                     $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
-                    if (stripos($redirectedUrl_doi, 'cookie') !== false) {
+                    if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
                         break; // @codeCoverageIgnore
                     }
-                    if (stripos($redirectedUrl_doi, 'denied') !== false) {
+                    if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
                         break; // @codeCoverageIgnore
                     }
                     $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
@@ -106,8 +106,8 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                     if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
                         $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore
                     }
-                    if (stripos($url_short, $redirectedUrl_doi) !== false ||
-                        stripos($redirectedUrl_doi, $url_short) !== false) {
+                    if (mb_stripos($url_short, $redirectedUrl_doi) !== false ||
+                        mb_stripos($redirectedUrl_doi, $url_short) !== false) {
                         report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                         $template->forget($url_kind);
                     } else { // See if $url redirects
@@ -115,11 +115,11 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         $the_url = $url;
                         curl_setopt($ch_doi, CURLOPT_URL, $the_url);
                         $ch_return = bot_curl_exec($ch_doi);
-                        if (strlen($ch_return) > 60) {
+                        if (mb_strlen($ch_return) > 60) {
                             $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
                             $redirectedUrl_url =url_simplify($redirectedUrl_url);
-                            if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
-                                            stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
+                            if (mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
+                                            mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
                                 report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                                 $template->forget($url_kind);
                             }
@@ -150,7 +150,7 @@ function url_simplify(string $url): string {
     $url .= '/';
     $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
                                             ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
-    $url = substr($url, 0, -1); // Remove the ending slash we added
+    $url = mb_substr($url, 0, -1); // Remove the ending slash we added
     $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
     return str_ireplace('https', 'http', $url);
 }

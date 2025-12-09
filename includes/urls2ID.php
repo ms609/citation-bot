@@ -49,10 +49,10 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             $url_type = 'article-url';
         } elseif ($template->has('website')) { // No URL, but a website
             $url = mb_trim($template->get('website'));
-            if (mb_strtolower(substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+            if (mb_strtolower(mb_substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(mb_substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
                 $url = "h" . $url;
             }
-            if (mb_strtolower(substr( $url, 0, 4 )) !== "http" ) {
+            if (mb_strtolower(mb_substr( $url, 0, 4 )) !== "http" ) {
                 $url = "http://" . $url; // Try it with http
             }
             if (preg_match(REGEXP_IS_URL, $url) !== 1) {
@@ -78,21 +78,21 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         $url_type = 'An invalid value';
     }
 
-    if (mb_strtolower(substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+    if (mb_strtolower(mb_substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(mb_substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
         $url = "h" . $url;
         if (is_null($url_sent)) {
             $template->set($url_type, $url); // Save it
         }
     }
     // Common ones that do not help
-    if (strpos($url, 'books.google') !== false ||
-            strpos($url, 'researchgate.net') !== false||
-            strpos($url, 'academia.edu') !== false) {
+    if (mb_strpos($url, 'books.google') !== false ||
+            mb_strpos($url, 'researchgate.net') !== false||
+            mb_strpos($url, 'academia.edu') !== false) {
         return false;
     }
 
     // Abstract only websites
-    if (strpos($url, 'orbit.dtu.dk/en/publications') !== false) { // This file path only
+    if (mb_strpos($url, 'orbit.dtu.dk/en/publications') !== false) { // This file path only
         if (is_null($url_sent)) {
             if ($template->has('pmc')) {
                 $template->forget($url_type); // Remove it to make room for free-link
@@ -103,7 +103,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             return false;
     }
     // IEEE
-    if (strpos($url, 'ieeexplore') !== false) {
+    if (mb_strpos($url, 'ieeexplore') !== false) {
         if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
             if (is_null($url_sent)) {
@@ -131,7 +131,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     }
 
     // semanticscholar
-    if (stripos($url, 'semanticscholar.org') !== false) {
+    if (mb_stripos($url, 'semanticscholar.org') !== false) {
         $s2cid = getS2CID($url);
         if ($s2cid === '') {
             return false;
@@ -150,7 +150,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 $template->forget($url_type);
                 return true;  // Time to clean up
             }
-            if (is_null($url_sent) && stripos($url, 'pdf') === false) {
+            if (is_null($url_sent) && mb_stripos($url, 'pdf') === false) {
                 $template->forget($url_type);
                 return true;
             }
@@ -170,7 +170,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         }
     }
 
-    if (stripos($url, 'jstor') !== false) {
+    if (mb_stripos($url, 'jstor') !== false) {
         // remove ?seq=1#page_scan_tab_contents off of jstor urls
         // We do this since not all jstor urls are recognized below
         if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
@@ -186,7 +186,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             }
         }
         if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
-            if (stripos($url, "accept") !== false) {
+            if (mb_stripos($url, "accept") !== false) {
                 bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url); // @codeCoverageIgnore
             } else {
                 $url = $matches[1];
@@ -195,7 +195,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 }
             }
         }
-        if (stripos($url, 'plants.jstor.org') !== false) {
+        if (mb_stripos($url, 'plants.jstor.org') !== false) {
             return false; # Plants database, not journal
         }
         // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
@@ -238,10 +238,10 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 curl_setopt($ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
                 $dat = bot_curl_exec($ch_jstor);
                 if ($dat &&
-                        stripos($dat, 'No RIS data found for') === false &&
-                        stripos($dat, 'Block Reference') === false &&
-                        stripos($dat, 'A problem occurred trying to deliver RIS data') === false &&
-                        substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
+                        mb_stripos($dat, 'No RIS data found for') === false &&
+                        mb_stripos($dat, 'Block Reference') === false &&
+                        mb_stripos($dat, 'A problem occurred trying to deliver RIS data') === false &&
+                        mb_substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
                     if (is_null($url_sent) && $template->has_good_free_copy()) {
                         $template->forget($url_type);
                     }
@@ -342,7 +342,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             return false; // "bad" doi?
         }
     }
-    if (stripos($url, 'oxforddnb.com') !== false) {
+    if (mb_stripos($url, 'oxforddnb.com') !== false) {
         return false; // generally bad
     }
     $doi = extract_doi($url)[1];
@@ -351,17 +351,17 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             return false;
         }
         $old_jstor = $template->get('jstor');
-        if (stripos($url, 'jstor')) {
+        if (mb_stripos($url, 'jstor')) {
             check_doi_for_jstor($doi, $template);
         }
-        if (is_null($url_sent) && $old_jstor !== $template->get('jstor') && stripos($url, 'pdf') === false) {
+        if (is_null($url_sent) && $old_jstor !== $template->get('jstor') && mb_stripos($url, 'pdf') === false) {
             if ($template->has_good_free_copy()) {
                 $template->forget($url_type);
             }
         }
         $template->tidy_parameter('doi'); // Sanitize DOI before comparing
-        if ($template->has('doi') && stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
-            if (doi_works($doi) && is_null($url_sent) && strpos(mb_strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && strpos(mb_strtolower($url), "supplemental") === false && strpos(mb_strtolower($url), "figure") === false) {
+        if ($template->has('doi') && mb_stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
+            if (doi_works($doi) && is_null($url_sent) && mb_strpos(mb_strtolower($url), ".pdf") === false && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && mb_strpos(mb_strtolower($url), "supplemental") === false && mb_strpos(mb_strtolower($url), "figure") === false) {
                 if ($template->has_good_free_copy()) {
                     report_forget("Recognized existing DOI in URL; dropping URL");
                     $template->forget($url_type);
@@ -391,8 +391,8 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     } elseif ($template->has('doi')) { // Did not find a doi, perhaps we were wrong
         $template->tidy_parameter('doi'); // Sanitize DOI before comparing
         $doi = $template->get('doi');
-        if (stripos($url, $doi) !== false) { // DOIs are case-insensitive
-            if (doi_works($doi) && is_null($url_sent) && strpos(mb_strtolower($url), ".pdf") === false && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+        if (mb_stripos($url, $doi) !== false) { // DOIs are case-insensitive
+            if (doi_works($doi) && is_null($url_sent) && mb_strpos(mb_strtolower($url), ".pdf") === false && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
                 if ($template->has_good_free_copy()) {
                     report_forget("Recognized the existing DOI in URL; dropping URL");
                     $template->forget($url_type);
@@ -404,13 +404,13 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
 
     // JSTOR
 
-    if (stripos($url, "jstor.org") !== false) {
-        $sici_pos = stripos($url, "sici");
+    if (mb_stripos($url, "jstor.org") !== false) {
+        $sici_pos = mb_stripos($url, "sici");
         if ($sici_pos) { // Outdated url style
             $template->use_sici(); // Grab what we can.  We do not want this URL incorrectly parsed below, or even waste time trying.
             return false;
         }
-        if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
+        if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", mb_substr($url, (int) mb_stripos($url, 'jstor.org') + 9), $match) ||
                             preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
             if (is_null($url_sent)) {
                 if ($template->has_good_free_copy()) {
@@ -445,7 +445,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                     $template->forget($url_type);
                 }
             }
-        } elseif (stripos($url, '.nih.gov') !== false) {
+        } elseif (mb_stripos($url, '.nih.gov') !== false) {
 
             if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
                                             . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})"
@@ -466,16 +466,16 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                     return false;
                 }
                 if (is_null($url_sent)) {
-                    if (stripos($url, ".pdf") !== false) {
+                    if (mb_stripos($url, ".pdf") !== false) {
                         $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
                         curl_setopt($ch_pmc, CURLOPT_URL, $test_url);
                         $the_pmc_body = bot_curl_exec($ch_pmc);
                         $httpCode = (int) curl_getinfo($ch_pmc, CURLINFO_HTTP_CODE);
-                        if ($httpCode > 399 || $httpCode === 0 || strpos($the_pmc_body, 'Administrative content — journal masthead, notices, indexes, etc - PMC') !== false) { // Some PMCs do NOT resolve. So leave URL
+                        if ($httpCode > 399 || $httpCode === 0 || mb_strpos($the_pmc_body, 'Administrative content — journal masthead, notices, indexes, etc - PMC') !== false) { // Some PMCs do NOT resolve. So leave URL
                             return $template->add_if_new('pmc', $new_pmc);
                         }
                     }
-                    if (stripos(str_replace("printable", "", $url), "table") === false) {
+                    if (mb_stripos(str_replace("printable", "", $url), "table") === false) {
                         $template->forget($url_type); // This is the same as PMC auto-link
                     }
                 }
@@ -548,7 +548,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return false;
             }
 
-        } elseif (stripos($url, 'europepmc.org') !== false) {
+        } elseif (mb_stripos($url, 'europepmc.org') !== false) {
             if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match) ||
                     preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
                 if ($template->wikiname() === 'cite web') {
@@ -557,7 +557,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 if ($template->blank('pmc')) {
                     quietly('report_modification', "Converting Europe URL to PMC parameter");
                 }
-                if (is_null($url_sent) && stripos($url, ".pdf") === false) {
+                if (is_null($url_sent) && mb_stripos($url, ".pdf") === false) {
                     $template->forget($url_type); // This is same as PMC-auto-link
                 }
                 return $template->add_if_new('pmc', $match[1]);
@@ -576,7 +576,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return $template->add_if_new('pmid', $match[1]);
             }
             return false;
-        } elseif (stripos($url, 'pubmedcentralcanada.ca') !== false) {
+        } elseif (mb_stripos($url, 'pubmedcentralcanada.ca') !== false) {
             if (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
                 if ($template->wikiname() === 'cite web') {
                     $template->change_name_to('cite journal');
@@ -590,7 +590,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return $template->add_if_new('pmc', $match[1]);
             }
             return false;
-        } elseif (stripos($url, 'citeseerx') !== false) {
+        } elseif (mb_stripos($url, 'citeseerx') !== false) {
             if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
                 if ($template->blank('citeseerx')) {
                     quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
@@ -607,7 +607,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             }
             return false;
 
-        } elseif (stripos($url, 'arxiv') !== false) {
+        } elseif (mb_stripos($url, 'arxiv') !== false) {
             if (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url, $match)) {
                 /* ARXIV
                 * See https://arxiv.org/help/arxiv_identifier for identifier formats
@@ -638,7 +638,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             if ($match['domain'] === ".com") {
                 if (is_null($url_sent)) {
                     $template->forget($url_type);
-                    if (stripos($template->get('publisher'), 'amazon') !== false) {
+                    if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
                     }
                 }
@@ -659,12 +659,12 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 }
                 if (is_null($url_sent)) {
                     $template->forget($url_type); // will forget accessdate too
-                    if (stripos($template->get('publisher'), 'amazon') !== false) {
+                    if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
                     }
                 }
             }
-        } elseif (stripos($url, 'handle') !== false || stripos($url, 'persistentId=hdl:') !== false) {
+        } elseif (mb_stripos($url, 'handle') !== false || mb_stripos($url, 'persistentId=hdl:') !== false) {
             // Special case of hdl.handle.net/123/456
             if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
                 $url = 'https://hdl.handle.net/handle/' . $matches[1];
@@ -726,16 +726,16 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 $handle = $matches[1];
             }
             // Safety check
-            if (strlen($handle) < 6 || strpos($handle, '/') === false) {
+            if (mb_strlen($handle) < 6 || mb_strpos($handle, '/') === false) {
                 return false;
             }
-            if (strpos($handle, '123456789') === 0) {
+            if (mb_strpos($handle, '123456789') === 0) {
                 return false;
             }
 
-            $the_question = strpos($handle, '?');
+            $the_question = mb_strpos($handle, '?');
             if ($the_question !== false) {
-                $handle = substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(substr($handle, $the_question+1)));
+                $handle = mb_substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(mb_substr($handle, $the_question+1)));
             }
 
             // Verify that it works as a hdl
@@ -752,12 +752,12 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 }
             }
             if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)  // Might be padded with stuff
-                && stripos($the_header_loc, $handle) === false
-                && stripos($the_header_loc, $matches[1]) !== false) {  // Too long ones almost never resolve, but we have seen at least one
+                && mb_stripos($the_header_loc, $handle) === false
+                && mb_stripos($the_header_loc, $matches[1]) !== false) {  // Too long ones almost never resolve, but we have seen at least one
                 $handle = $matches[1]; // @codeCoverageIgnore
             }
             return $template->add_if_new('hdl', $handle);
-        } elseif (stripos($url, 'zbmath.org') !== false) {
+        } elseif (mb_stripos($url, 'zbmath.org') !== false) {
             if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
                 if ($template->blank('zbl')) {
                     quietly('report_modification', "Converting URL to ZBL parameter");
@@ -808,7 +808,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 }
             }
             return $template->add_if_new('ssrn', $match[1]);
-        } elseif (stripos($url, 'osti.gov') !== false) {
+        } elseif (mb_stripos($url, 'osti.gov') !== false) {
             if (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
                 if ($template->blank('osti')) {
                     quietly('report_modification', "Converting URL to OSTI parameter");
@@ -838,14 +838,14 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return $template->add_if_new('osti', $match[1]);
             }
             return false;
-        } elseif (stripos($url, 'worldcat.org') !== false) {
+        } elseif (mb_stripos($url, 'worldcat.org') !== false) {
             if (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
-                if (strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
+                if (mb_strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
                     report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . echoable($match[1]));
                     return false;
                 }
                 $check_me = $template->get('work') . $template->get('website') . $template->get('publisher');
-                if (stripos($check_me, 'oclc') !== false || stripos($check_me, 'open library') !== false) {
+                if (mb_stripos($check_me, 'oclc') !== false || mb_stripos($check_me, 'open library') !== false) {
                     return $template->add_if_new('oclc', $match[1]);
                 }
                 if ($template->blank('oclc')) {
@@ -872,7 +872,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             }
             return false;
         } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
-                            (stripos($template->parsed_text(), 'library') === false)) { // Sometimes it is web cite to Library of Congress
+                            (mb_stripos($template->parsed_text(), 'library') === false)) { // Sometimes it is web cite to Library of Congress
             if ($template->wikiname() === 'cite web') {
                 $template->change_name_to('cite book');  // Better template choice
             }
