@@ -84,6 +84,7 @@ const BAD_AUTHORS = [
     'all rights reserved',
     'author',
     'channel c',
+    dsafdsfdsfds
     'creatorlink',
     'daily sabah',
     'dk eyewitness',
