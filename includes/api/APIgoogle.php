@@ -261,7 +261,7 @@ function google_book_details(Template $template, string $gid): void
     if ('101-01-01' === $google_date) {
         $google_date = '';
     }
-    if (substr_count($google_date, "-") === 1) {
+    if (mb_substr_count($google_date, "-") === 1) {
         $date = @date_create($google_date);
         if ($date !== false) {
             $date = @date_format($date, "F Y");
@@ -444,19 +444,19 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         $hash = str_replace($matcher[1], '', $hash);
         if (isset($book_array['q'])) {
             $removed_parts .= '&q=' . $book_array['q'];
-            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3))); // #q= wins over &q= before # sign
+            $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3))); // #q= wins over &q= before # sign
         } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
             $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
-            $dum_q = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
+            $dum_q = str_replace('+', ' ', urldecode(mb_substr($matcher[1], 3)));
             if ($dum_dq !== $dum_q) {
-                $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+                $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
                 unset($book_array['dq']);
             } else {
-                $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+                $book_array['dq'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
             }
         } else {
-            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+            $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
         }
     }
     if (preg_match('~(&dq=[^&]+)&~', $hash, $matcher)) {
@@ -464,7 +464,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         if (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
         }
-        $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3))); // #dq= wins over &dq= before # sign
+        $book_array['dq'] = urlencode(urldecode(mb_substr($matcher[1], 3))); // #dq= wins over &dq= before # sign
     }
     if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
         $book_array['q'] = $book_array['vq'];
