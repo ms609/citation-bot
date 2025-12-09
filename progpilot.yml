@@ -33,7 +33,7 @@ outputs:
 
 options:
     analyze_includes: true
-    debug_mode: true
+    debug_mode: false
     pretty_print: true
     max_file_analysis_duration: 30
     max_definitions: 500
