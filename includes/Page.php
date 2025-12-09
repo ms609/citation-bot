@@ -9,9 +9,9 @@ declare(strict_types=1);
  * handle collected page modifications, and save the edited page text.
  */
 
-require_once 'Comment.php';       // @codeCoverageIgnoreStart
-require_once 'Template.php';
-require_once 'constants.php';
+require_once 'includes/Comment.php';       // @codeCoverageIgnoreStart
+require_once 'includes/Template.php';
+require_once 'includes/constants.php';
 require_once 'includes/api/APIdoi.php';
 require_once 'includes/api/APIS2.php';
 require_once 'includes/api/APIBibCode.php';
@@ -21,8 +21,8 @@ require_once 'includes/api/APIunpaywall.php';
 require_once 'includes/api/APIjstor.php';
 require_once 'includes/api/APIarXiv.php';
 require_once 'includes/api/APIarchives.php';
-require_once 'expandFns.php';
-require_once 'user_messages.php';
+require_once 'includes/expandFns.php';
+require_once 'includes/user_messages.php';
 require_once 'includes/api/APIzotero.php';
 require_once 'includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
 

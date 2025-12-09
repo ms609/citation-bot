@@ -9,8 +9,8 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 use MediaWiki\OAuthClient\Token;
 
-require_once 'user_messages.php';  // @codeCoverageIgnore
-require_once 'constants.php';      // @codeCoverageIgnore
+require_once 'includes/user_messages.php';  // @codeCoverageIgnore
+require_once 'includes/constants.php';      // @codeCoverageIgnore
 
 final class WikipediaBot {
     private Consumer $bot_consumer;

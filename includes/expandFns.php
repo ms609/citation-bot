@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once 'constants.php';     // @codeCoverageIgnore
-require_once 'Template.php';      // @codeCoverageIgnore
-require_once 'big_jobs.php';      // @codeCoverageIgnore
+require_once 'includes/constants.php';     // @codeCoverageIgnore
+require_once 'includes/Template.php';      // @codeCoverageIgnore
+require_once 'includes/big_jobs.php';      // @codeCoverageIgnore
 
 const MONTH_SEASONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
 const DAYS_OF_WEEKS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];

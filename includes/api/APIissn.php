@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // @codeCoverageIgnoreStart
-require_once 'Template.php';
+require_once 'includes/Template.php';
 // @codeCoverageIgnoreEnd
 
 // TODO: find a good API to really use these - worldcat used to have one, but they took that away.
