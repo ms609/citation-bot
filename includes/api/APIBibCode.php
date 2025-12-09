@@ -44,7 +44,7 @@ final class AdsAbsControl {
             self::$bib2doi[$bib] = 'X';
         } elseif (doi_works($doi)) { // paranoid
             self::$bib2doi[$bib] = $doi;
-            if (CONFLICT stripos($bib, 'tmp') === false && stripos($bib, 'arxiv') === false) {
+            if (mb_stripos($bib, 'tmp') === false && mb_stripos($bib, 'arxiv') === false) {
                 self::$doi2bib[$doi] = $bib;
             }
         }
@@ -95,7 +95,7 @@ function expand_by_adsabs(Template $template): void {
             $template->add_if_new('doi', $doi);
         }
     }
-    if ($template->has('doi') && ($template->blank('bibcode') || stripos($template->get('bibcode'), 'tmp') !== false || stripos($template->get('bibcode'), 'arxiv') !== false)) {
+    if ($template->has('doi') && ($template->blank('bibcode') || mb_stripos($template->get('bibcode'), 'tmp') !== false || mb_stripos($template->get('bibcode'), 'arxiv') !== false)) {
         $doi = $template->get('doi');
         if (doi_works($doi)) {
             $bib = AdsAbsControl::get_doi2bib($doi);
@@ -109,8 +109,8 @@ function expand_by_adsabs(Template $template): void {
     if (
     $template->has('bibcode') &&
     !$template->incomplete() &&
-    stripos($template->get('bibcode'), 'tmp') === false &&
-    stripos($template->get('bibcode'), 'arxiv') === false &&
+    mb_stripos($template->get('bibcode'), 'tmp') === false &&
+    mb_stripos($template->get('bibcode'), 'arxiv') === false &&
     ($template->has('doi') || AdsAbsControl::get_bib2doi($template->get('bibcode')) === 'X')
     ) {
         // Don't waste a query, if it has a doi or will not find a doi
@@ -120,18 +120,18 @@ function expand_by_adsabs(Template $template): void {
     if (!SLOW_MODE && $template->blank('bibcode')) {
         return;
     } // Only look for new bibcodes in slow mode
-    if (stripos($template->get('bibcode'), 'CITATION') !== false) {
+    if (mb_stripos($template->get('bibcode'), 'CITATION') !== false) {
         return;
     }
     // Do not search if it is a book - might find book review
-    if (stripos($template->get('jstor'), 'document') !== false) {
+    if (mb_stripos($template->get('jstor'), 'document') !== false) {
         return;
     }
-    if (stripos($template->get('jstor'), '.ch.') !== false) {
+    if (mb_stripos($template->get('jstor'), '.ch.') !== false) {
         return;
     }
 
-    if (!$template->blank_other_than_comments('bibcode') && stripos($template->get('bibcode'), 'tmp') === false && stripos($template->get('bibcode'), 'arxiv') === false) {
+    if (!$template->blank_other_than_comments('bibcode') && mb_stripos($template->get('bibcode'), 'tmp') === false && mb_stripos($template->get('bibcode'), 'arxiv') === false) {
         return;
     }
 
@@ -142,7 +142,7 @@ function expand_by_adsabs(Template $template): void {
     if ($template->has('bibcode')) {
         $template->record_api_usage('adsabs', 'bibcode');
     }
-    if (strpos($template->get('doi'), '10.1093/') === 0) {
+    if (mb_strpos($template->get('doi'), '10.1093/') === 0) {
         return;
     }
     report_action("Checking AdsAbs database");
@@ -183,7 +183,7 @@ function expand_by_adsabs(Template $template): void {
         // Do assume failure to find arXiv means that it is not there
         $have_more = false;
         if (strlen($template->get_without_comments_and_placeholders("title")) < 15 ||
-         strpos($template->get_without_comments_and_placeholders("title"), ' ') === false) {
+         mb_strpos($template->get_without_comments_and_placeholders("title"), ' ') === false) {
             return;
         }
         $the_query = "title:" . urlencode('"' . mb_trim(remove_brackets(str_replace(['"', "\\", "^", "_", '   ', '  '], [' ', ' ', ' ', ' ', ' ', ' '], $template->get_without_comments_and_placeholders("title")))) . '"');
@@ -251,7 +251,7 @@ function expand_by_adsabs(Template $template): void {
         }
         $journal_string = explode(",", (string) $result->docs[0]->pub);
         $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
-        if (strlen($journal_string[0]) && strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)), mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))) === false) {
+        if (strlen($journal_string[0]) && mb_strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)), mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))) === false) {
             report_inline(   // @codeCoverageIgnoreStart
             "Partial match but database journal \"" .
             echoable($journal_string[0]) .
@@ -297,7 +297,7 @@ function expand_by_adsabs(Template $template): void {
             } // New DOI does not match
         }
 
-        if (strpos((string) $record->bibcode, '.......') !== false) {
+        if (mb_strpos((string) $record->bibcode, '.......') !== false) {
             return;  // Reject things like 2012PhDT.........1B
         }
         if (is_a_book_bibcode((string) $record->bibcode)) {
@@ -338,7 +338,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     }
 
     foreach ($ids as $key => $bibcode) {
-        if (stripos($bibcode, 'CITATION') !== false || strlen($bibcode) !== 19) {
+        if (mb_stripos($bibcode, 'CITATION') !== false || strlen($bibcode) !== 19) {
             unset($ids[$key]);  // @codeCoverageIgnore
         }
     }
@@ -359,7 +359,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
             $NONE_IS_INCOMPLETE = false;
             break;
         }
-        if (stripos($template->get('bibcode'), 'tmp') !== false || stripos($template->get('bibcode'), 'arxiv') !== false) {
+        if (mb_stripos($template->get('bibcode'), 'tmp') !== false || mb_stripos($template->get('bibcode'), 'arxiv') !== false) {
             $NONE_IS_INCOMPLETE = false;
             break;
         }
@@ -492,8 +492,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         if ($http_response_code === 0 || $header_length === 0) {
             throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
         }
-        $header = substr($return, 0, $header_length);
-        $body = substr($return, $header_length);
+        $header = mb_substr($return, 0, $header_length);
+        $body = mb_substr($return, $header_length);
         unset($return);
         $decoded = @json_decode($body);
 
@@ -575,7 +575,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         }
 
         if (!is_object($decoded)) {
-            if (stripos($body, 'down for maintenance') !== false) {
+            if (mb_stripos($body, 'down for maintenance') !== false) {
                 AdsAbsControl::big_give_up();  // @codeCoverageIgnore
                 AdsAbsControl::small_give_up();  // @codeCoverageIgnore
                 throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
@@ -597,13 +597,13 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
             AdsAbsControl::big_give_up();
             AdsAbsControl::small_give_up();
             report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
-        } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
+        } elseif (mb_strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
             report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-        } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
+        } elseif (mb_strpos($e->getMessage(), 'HTTP') === 0) {
             report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-        } elseif (strpos($e->getMessage(), 'Too many requests') !== false) {
+        } elseif (mb_strpos($e->getMessage(), 'Too many requests') !== false) {
             report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-            if (strpos($adsabs_url, 'bigquery') !== false) {
+            if (mb_strpos($adsabs_url, 'bigquery') !== false) {
                 AdsAbsControl::big_give_up();
             } else {
                 AdsAbsControl::small_give_up();
@@ -622,7 +622,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
         return;
     }
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
-    if (stripos((string) $record->title[0], 'book') !== false && stripos((string) $record->title[0], 'review') !== false) {
+    if (mb_stripos((string) $record->title[0], 'book') !== false && mb_stripos((string) $record->title[0], 'review') !== false) {
         unset($record->author); // often book author
     }
     $i = 0;
@@ -637,12 +637,12 @@ function process_bibcode_data(Template $this_template, object $record): void {
         $journal_start = mb_strtolower($journal_string[0]);
         if (preg_match("~\bthesis\b~ui", $journal_start)) {
             // Do nothing
-        } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
-            if (substr($journal_start, 0, 13) === 'eprint arxiv:') {          //@codeCoverageIgnore
+        } elseif (mb_substr($journal_start, 0, 6) === 'eprint') {  // No longer used
+            if (mb_substr($journal_start, 0, 13) === 'eprint arxiv:') {          //@codeCoverageIgnore
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
                 }
-                $this_template->add_if_new('arxiv', substr($journal_start, 13));    //@codeCoverageIgnore
+                $this_template->add_if_new('arxiv', mb_substr($journal_start, 13));    //@codeCoverageIgnore
             }
         } else {
             $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
@@ -650,7 +650,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
     }
     if (isset($record->page)) {
         $tmp = implode($record->page);
-        if ((stripos($tmp, 'arxiv') !== false) || (strpos($tmp, '/') !== false)) {  // Bad data
+        if ((mb_stripos($tmp, 'arxiv') !== false) || (mb_strpos($tmp, '/') !== false)) {  // Bad data
             unset($record->page);
             unset($record->volume);
             unset($record->issue);
@@ -679,11 +679,11 @@ function process_bibcode_data(Template $this_template, object $record): void {
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
             $recid = (string) $recid;
-            if(mb_strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+            if(mb_strtolower(mb_substr($recid, 0, 6)) === 'arxiv:') {
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
                 }
-                $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+                $this_template->add_if_new('arxiv', mb_substr($recid, 6), 'adsabs');
             }
         }
     }
@@ -756,7 +756,7 @@ function looksLikeBookReview(Template $template, object $record): bool
         if ($template->has('asin')) {
             $book_count += 2;
         }
-        if (stripos($template->get('url'), 'google') !== false && stripos($template->get('url'), 'book') !== false) {
+        if (mb_stripos($template->get('url'), 'google') !== false && mb_stripos($template->get('url'), 'book') !== false) {
             $book_count += 2;
         }
         if (isset($record->year) && $template->year() && (int) $record->year !== (int) $template->year()) {

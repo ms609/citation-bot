@@ -44,31 +44,31 @@ function get_unpaywall_url(Template $template, string $doi): string
                 return 'nothing';
             }
 
-            if (stripos($oa_url, 'semanticscholar.org') !== false) {
+            if (mb_stripos($oa_url, 'semanticscholar.org') !== false) {
                 return 'semanticscholar';
             } // use API call instead (avoid blacklisting)
-            if (stripos($oa_url, 'timetravel.mementoweb.org') !== false) {
+            if (mb_stripos($oa_url, 'timetravel.mementoweb.org') !== false) {
                 return 'mementoweb';
             } // Not good ones
-            if (stripos($oa_url, 'citeseerx') !== false) {
+            if (mb_stripos($oa_url, 'citeseerx') !== false) {
                 return 'citeseerx';
             } // blacklisted due to copyright concerns
-            if (stripos($oa_url, 'zenodo') !== false) {
+            if (mb_stripos($oa_url, 'zenodo') !== false) {
                 return 'zenodo';
             } // blacklisted due to copyright concerns
-            if (stripos($oa_url, 'palgraveconnect') !== false) {
+            if (mb_stripos($oa_url, 'palgraveconnect') !== false) {
                 return 'palgraveconnect';
             }
-            if (stripos($oa_url, 'muse.jhu.edu') !== false) {
+            if (mb_stripos($oa_url, 'muse.jhu.edu') !== false) {
                 return 'projectmuse';
             } // Same as DOI 99% of the time
-            if (stripos($oa_url, 'doaj.org') !== false) {
+            if (mb_stripos($oa_url, 'doaj.org') !== false) {
                 return 'doaj.org';
             }
-            if (stripos($oa_url, 'lib.myilibrary.com') !== false) {
+            if (mb_stripos($oa_url, 'lib.myilibrary.com') !== false) {
                 return 'proquest';
             } // Rubbish
-            if (stripos($oa_url, 'repository.upenn.edu') !== false) {
+            if (mb_stripos($oa_url, 'repository.upenn.edu') !== false) {
                 return 'epository.upenn.edu';
             } // All links broken right now
             if ($template->get('url')) {
@@ -84,13 +84,13 @@ function get_unpaywall_url(Template $template, string $doi): string
             if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) {
                 return 'publisher';
             }
-            if (stripos($oa_url, 'bioone.org/doi') !== false) {
+            if (mb_stripos($oa_url, 'bioone.org/doi') !== false) {
                 return 'publisher';
             }
-            if (stripos($oa_url, 'gateway.isiknowledge.com') !== false) {
+            if (mb_stripos($oa_url, 'gateway.isiknowledge.com') !== false) {
                 return 'nothing';
             }
-            if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== false) {
+            if (mb_stripos($oa_url, 'orbit.dtu.dk/en/publications') !== false) {
                 return 'nothing';
             } // Abstract only
             // Check if free location is already linked
@@ -117,7 +117,7 @@ function get_unpaywall_url(Template $template, string $doi): string
                 $oa_url = 'https://hdl.handle.net/handle/' . $matches[1];
             }
             if ($template->has('hdl')) {
-                if (stripos($oa_url, $template->get('hdl')) !== false) {
+                if (mb_stripos($oa_url, $template->get('hdl')) !== false) {
                       return 'have free';
                 }
                 foreach (HANDLES_HOSTS as $hosts) {
@@ -154,12 +154,12 @@ function get_unpaywall_url(Template $template, string $doi): string
             }
             $oa_hostname = $matches[1];
             if (
-            ($template->has('osti') && stripos($oa_hostname, 'osti.gov') !== false) ||
-            ($template->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== false) ||
-            ($template->has('jstor') && stripos($oa_hostname, 'jstor.org') !== false) ||
-            ($template->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== false) ||
-            ($template->has('jstor') && stripos($oa_hostname, 'jstor') !== false) ||
-            stripos($oa_hostname, 'doi.org') !== false
+            ($template->has('osti') && mb_stripos($oa_hostname, 'osti.gov') !== false) ||
+            ($template->has('ssrn') && mb_stripos($oa_hostname, 'ssrn.com') !== false) ||
+            ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor.org') !== false) ||
+            ($template->has('pmid') && mb_stripos($oa_hostname, 'nlm.nih.gov') !== false) ||
+            ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor') !== false) ||
+            mb_stripos($oa_hostname, 'doi.org') !== false
             ) {
                 return 'have free';
             }
@@ -176,7 +176,7 @@ function get_unpaywall_url(Template $template, string $doi): string
             }
             $url_type = 'url';
             if ($template->has('chapter')) {
-                if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) || strpos($oa_url, 'eprints') !== false || strpos($oa_url, 'chapter') !== false) {
+                if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) || mb_strpos($oa_url, 'eprints') !== false || mb_strpos($oa_url, 'chapter') !== false) {
                       $url_type = 'chapter-url';
                 }
             }
@@ -227,7 +227,7 @@ function get_open_access_url(Template $template): void
     if (!$doi) {
         return;
     }
-    if (strpos($doi, '10.1093/') === 0) {
+    if (mb_strpos($doi, '10.1093/') === 0) {
         return;
     }
     $return = get_unpaywall_url($template, $doi);
@@ -236,7 +236,3 @@ function get_open_access_url(Template $template): void
     } // Do continue on
     get_semanticscholar_url($template, $doi);
 }
-
-
-
-

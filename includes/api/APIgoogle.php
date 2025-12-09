@@ -11,10 +11,10 @@ function clean_google_books(Template $template): void
     foreach (ALL_URL_TYPES as $url_type) {
         if ($template->has($url_type)) {
             $url = $template->get($url_type);
-            if (strpos($url, '#about_author_anchor') !== false) {
+            if (mb_strpos($url, '#about_author_anchor') !== false) {
                 continue;
             }
-            if (strpos($url, 'vid=') !== false) {
+            if (mb_strpos($url, 'vid=') !== false) {
                 continue; // must be done by hand
             }
             if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $url, $matches)) {
@@ -98,10 +98,10 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
         if (!$url) {
             return false;
         }
-        if (strpos($url, '#about_author_anchor') !== false) {
+        if (mb_strpos($url, '#about_author_anchor') !== false) {
             return false;
         }
-        if (strpos($url, 'vid=') !== false) {
+        if (mb_strpos($url, 'vid=') !== false) {
             return false; // Must be done by hand
         }
         if (
@@ -146,7 +146,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
             if (preg_match("~[^0-9Xx]~", $isbn) === 1) {
                 $isbn = '';
             }
-            if (strlen($isbn) !== 13 && strlen($isbn) !== 10) {
+            if (mb_strlen($isbn) !== 13 && mb_strlen($isbn) !== 10) {
                 $isbn = '';
             }
         }
@@ -173,7 +173,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
         $removed_redundant = 0;
         $removed_parts = '';
         normalize_google_books($url, $removed_redundant, $removed_parts, $gid);
-        if ($url !== $orig_book_url && $url_type && strpos($url_type, 'url') !== false) {
+        if ($url !== $orig_book_url && $url_type && mb_strpos($url_type, 'url') !== false) {
             if ($removed_redundant > 1) {
                 // http:// is counted as 1 parameter
                 report_forget(echoable($removed_parts));
@@ -261,7 +261,7 @@ function google_book_details(Template $template, string $gid): void
     if ('101-01-01' === $google_date) {
         $google_date = '';
     }
-    if (substr_count($google_date, "-") === 1) {
+    if (mb_substr_count($google_date, "-") === 1) {
         $date = @date_create($google_date);
         if ($date !== false) {
             $date = @date_format($date, "F Y");
@@ -276,7 +276,7 @@ function google_book_details(Template $template, string $gid): void
     // Some publishers give next year always for OLD stuff
     for ($i = 1; $i <= 30; $i++) {
         $next_year = (string) ($now + $i);
-        if (strpos($google_date, $next_year) !== false) {
+        if (mb_strpos($google_date, $next_year) !== false) {
             return;
         }
     }
@@ -310,12 +310,12 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
     $removed_redundant = 0;
     $hash = '';
     $removed_parts ='';
-    if (strpos($url, "vid=")) {
+    if (mb_strpos($url, "vid=")) {
         return;  // These must be fixed by hand
     }
     $url = str_replace('&quot;', '"', $url);
 
-    if (strpos($url, "#")) {
+    if (mb_strpos($url, "#")) {
         $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = $url_parts[1];

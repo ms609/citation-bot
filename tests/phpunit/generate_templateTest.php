@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class GenTemplateTest extends testBaseClass {
+final class generate_templateTest extends testBaseClass {
 
     public function testGenTemplate(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging

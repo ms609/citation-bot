@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class gadgetTest extends testBaseClass {
+final class gadgetapiTest extends testBaseClass {
 
     public function testGadget(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
