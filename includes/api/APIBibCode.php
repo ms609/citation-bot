@@ -99,7 +99,7 @@ function expand_by_adsabs(Template $template): void {
         $doi = $template->get('doi');
         if (doi_works($doi)) {
             $bib = AdsAbsControl::get_doi2bib($doi);
-            if (strlen($bib) > 12) {
+            if (mb_strlen($bib) > 12) {
                 $template->add_if_new('bibcode_nosearch', $bib);
             }
         }
@@ -182,7 +182,7 @@ function expand_by_adsabs(Template $template): void {
     if ($result->numFound !== 1 && $template->has('title')) {
         // Do assume failure to find arXiv means that it is not there
         $have_more = false;
-        if (strlen($template->get_without_comments_and_placeholders("title")) < 15 ||
+        if (mb_strlen($template->get_without_comments_and_placeholders("title")) < 15 ||
          mb_strpos($template->get_without_comments_and_placeholders("title"), ' ') === false) {
             return;
         }
@@ -251,7 +251,7 @@ function expand_by_adsabs(Template $template): void {
         }
         $journal_string = explode(",", (string) $result->docs[0]->pub);
         $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
-        if (strlen($journal_string[0]) && mb_strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)), mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))) === false) {
+        if (mb_strlen($journal_string[0]) && mb_strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)), mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))) === false) {
             report_inline(   // @codeCoverageIgnoreStart
             "Partial match but database journal \"" .
             echoable($journal_string[0]) .
@@ -338,7 +338,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     }
 
     foreach ($ids as $key => $bibcode) {
-        if (mb_stripos($bibcode, 'CITATION') !== false || strlen($bibcode) !== 19) {
+        if (mb_stripos($bibcode, 'CITATION') !== false || mb_strlen($bibcode) !== 19) {
             unset($ids[$key]);  // @codeCoverageIgnore
         }
     }
