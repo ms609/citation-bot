@@ -45,13 +45,13 @@ final class Template
     private bool $held_work_done = false;
     /** @var array<array<string>> $used_by_api */
     private array $used_by_api = [
-    'adsabs' => [],
-    'arxiv' => [],
-    'crossref' => [],
-    'dx' => [],
-    'entrez' => [],
-    'jstor' => [],
-    'zotero' => [],
+        'adsabs' => [],
+        'arxiv' => [],
+        'crossref' => [],
+        'dx' => [],
+        'entrez' => [],
+        'jstor' => [],
+        'zotero' => [],
     ];
     /** @var array<Template> $this_array */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder

@@ -293,10 +293,10 @@ function do_pumbed_query(Template $template, array $terms): array
     * return the results as array (first result, # of results)
     */
     $key_index = [
-    'issue' => 'Issue',
-    'journal' => 'Journal',
-    'pmid' => 'PMID',
-    'volume' => 'Volume',
+        'issue' => 'Issue',
+        'journal' => 'Journal',
+        'pmid' => 'PMID',
+        'volume' => 'Volume',
     ];
     $query = '';
     foreach ($terms as $term) {
