@@ -3,6 +3,34 @@
 
 FROM php:8.4-apache
 
+# Install PHP XDebug, for step debugging.
+# You can leave port 9007 for all your Docker containers. It doesn't conflict across containers like the localhost port does.
+# Add this .vscode/launch.json file to your repo, then go to Run and Debug -> press play:
+# {
+# 	// Use IntelliSense to learn about possible attributes.
+# 	// Hover to view descriptions of existing attributes.
+# 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+# 	"version": "0.2.0",
+# 	"configurations": [
+# 		{
+# 			"name": "Listen for Xdebug",
+# 			"type": "php",
+# 			"request": "launch",
+# 			"port": 9007,
+# 			"pathMappings": {
+#				"/var/www/html/": "${workspaceRoot}"
+# 			}
+# 		}
+# 	]
+# }
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_port=9007" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # Install composer. Once the container is built and running, you can do `composer update` with the following shell command: `docker exec -it citation-bot-php-1 composer update`
 RUN apt-get update && apt-get install --no-install-recommends -y git zip unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
