@@ -470,6 +470,7 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = '';
+        $author = [];
         $author[0] = [0 => 'This is not a human author by any stretch of the imagination correspondent corporation', 1 => 'correspondent'];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'author' => $author];
@@ -513,7 +514,7 @@ final class zoteroTest extends testBaseClass {
         $url = '';
         $creators = [];
         $creators[0] = (object) ['creatorType' => 'translator', 'firstName' => "Joe", "lastName" => ""];
-        $zotero_data;
+        $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
@@ -604,6 +605,7 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = '';
+        $creators = [];
         $creators[0] = (object) ['creatorType' => 'author', 'firstName' => "Joe", "lastName" => ""];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Central Authentication Service', 'itemType' => 'report', 'creators' => $creators];
@@ -778,6 +780,7 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = '';
+        $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'This', 'itemType' => 'webpage', 'extra' => 'ADS Bibcode: 1234asdfghjklqwerty'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
