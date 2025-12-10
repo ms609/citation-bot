@@ -589,12 +589,23 @@ final class expandFnsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $changes = "";
         $this->assertSame("", $changes);
+        $eventName = getenv('GITHUB_EVENT_NAME');
+        if ($eventName === 'schedule') {
+            $do_it = 100;
+        } elseif ($eventName === 'push') {
+            $do_it = 33;
+        } elseif ($eventName === 'pull_request') {
+            $do_it = 1;
+        } else {
+            $do_int = 100;
+            report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
+        }
         $null_list = array_keys(NULL_DOI_LIST);
         shuffle($null_list); // Avoid doing similar ones next to each other
         foreach ($null_list as $doi) {
             if (isset(NULL_DOI_ANNOYING[$doi])) {
                 $works = false;
-            } elseif (random_int(0, 99) < 90) { // TODO - we only check 10% of them
+            } elseif (random_int(0, 99) < $do_it) {
                 $works = false;
             } else {
                 $works = doi_works($doi);
