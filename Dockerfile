@@ -32,7 +32,7 @@ RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Install composer. Once the container is built and running, you can do `composer update` with the following shell command: `docker exec -it citation-bot-php-1 composer update`
-RUN apt-get update && apt-get install -y git zip unzip \
+RUN apt-get update && apt-get install --no-install-recommends -y git zip unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
