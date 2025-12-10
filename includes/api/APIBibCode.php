@@ -107,11 +107,11 @@ function expand_by_adsabs(Template $template): void {
 
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (
-    $template->has('bibcode') &&
-    !$template->incomplete() &&
-    mb_stripos($template->get('bibcode'), 'tmp') === false &&
-    mb_stripos($template->get('bibcode'), 'arxiv') === false &&
-    ($template->has('doi') || AdsAbsControl::get_bib2doi($template->get('bibcode')) === 'X')
+        $template->has('bibcode') &&
+        !$template->incomplete() &&
+        mb_stripos($template->get('bibcode'), 'tmp') === false &&
+        mb_stripos($template->get('bibcode'), 'arxiv') === false &&
+        ($template->has('doi') || AdsAbsControl::get_bib2doi($template->get('bibcode')) === 'X')
     ) {
         // Don't waste a query, if it has a doi or will not find a doi
         return; // @codeCoverageIgnore
@@ -164,14 +164,14 @@ function expand_by_adsabs(Template $template): void {
     if ($result->numFound === 0) {
         // Avoid blowing through our quota
         if (
-        !in_array($template->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv'], true) || // Unlikely to find anything
-        // If the book has someway to find it, or it is just a chapter and not the full book, or it has a location and publisher so it can be googled
-        // This also greatly reduces the book review false positives
-        (($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') && ($template->has('isbn') || $template->has('oclc') || $template->has('chapter') || ($template->has('location') && $template->has('publisher')))) ||
-        $template->has_good_free_copy() || // Alreadly links out to something free
-        $template->has('s2cid') || // good enough, usually includes abstract and link to copy
-        ($template->has('doi') && doi_works($template->get('doi'))) || // good enough, usually includes abstract
-        $template->has('bibcode')
+            !in_array($template->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv'], true) || // Unlikely to find anything
+            // If the book has someway to find it, or it is just a chapter and not the full book, or it has a location and publisher so it can be googled
+            // This also greatly reduces the book review false positives
+            (($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') && ($template->has('isbn') || $template->has('oclc') || $template->has('chapter') || ($template->has('location') && $template->has('publisher')))) ||
+            $template->has_good_free_copy() || // Alreadly links out to something free
+            $template->has('s2cid') || // good enough, usually includes abstract and link to copy
+            ($template->has('doi') && doi_works($template->get('doi'))) || // good enough, usually includes abstract
+            $template->has('bibcode')
         ) {
             // Must be GIGO
             report_inline('no record retrieved.'); // @codeCoverageIgnore
@@ -219,9 +219,9 @@ function expand_by_adsabs(Template $template): void {
         }
         // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
         if (
-        !$template->blank(array_merge(['doi', 'pmc', 'pmid', 'eprint', 'arxiv'], ALL_URL_TYPES)) &&
-        $template->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
-        mb_strtolower($record->title[0]) !== mb_strtolower($template->get_without_comments_and_placeholders('title'))
+            !$template->blank(array_merge(['doi', 'pmc', 'pmid', 'eprint', 'arxiv'], ALL_URL_TYPES)) &&
+            $template->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
+            mb_strtolower($record->title[0]) !== mb_strtolower($template->get_without_comments_and_placeholders('title'))
         ) {
             // Probably not a journal, trust zotero more
             report_inline("Exact title match not found in database."); // @codeCoverageIgnore
