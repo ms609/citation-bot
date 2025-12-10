@@ -965,8 +965,6 @@ final class Template
             if ($no_start_journal && $this->blank('journal')) {
                 $this->forget('journal');
             }
-            unset($initial_author_params_save, $the_title, $the_journal, $the_chapter, $the_volume, $the_issue, $the_page, $the_pages, $bad_data);
-            unset($no_start_chapter, $no_start_journal);
         }
     }
 
