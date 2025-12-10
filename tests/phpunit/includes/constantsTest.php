@@ -123,6 +123,7 @@ final class constantsTest extends testBaseClass {
 
     public function testAtoZ(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $leader_bits = [];
         $leader = true;
         $start_alpha = '/* The following will be automatically updated to alphabetical order */';
         $end_alpha = '/* The above will be automatically updated to alphabetical order */';
@@ -144,7 +145,7 @@ final class constantsTest extends testBaseClass {
             } else {
                 $this->assertSame(count($leader_bits), count($alpha_bits));
                 array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
-                $leader_bits = null;
+                $leader_bits = [];
                 $leader = true;
             }
             $bits_length = array_map('strlen', $alpha_bits);
@@ -565,8 +566,8 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
         for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
-            $this->assertSame(0, mb_substr_count("'''", ITALICS_HARDCODE_IN[$i]));
-            $this->assertSame(0, mb_substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
+            $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_IN[$i],  "'''"));
+            $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_OUT[$i], "'''"));
             $in  = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_IN[$i]);
             $out = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_OUT[$i]);
             $this->assertSame($in, $out); // Same once spaces and single quotes are removed
