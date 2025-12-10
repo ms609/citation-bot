@@ -25,6 +25,10 @@ Always write a clear log message for your commits. One-line messages are fine fo
     > 
     > A paragraph describing what changed and its impact."
 
+## API keys
+
+The test suite detects missing keys and skips test.  A developer should consider getting their own set up keys for development.
+
 ## Coding conventions
 
   * We indent using four spaces (soft tabs - note that many files do not currently match this). No files should have tabs in them
