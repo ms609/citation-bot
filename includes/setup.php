@@ -43,6 +43,7 @@ if (isset($_REQUEST["wiki_base"])){
 } else {
     $wiki_base = 'en';
 }
+dfadsfdsafa
 if ($wiki_base === 'mdwiki') {
     define('WIKI_ROOT', 'https://mdwiki.org/w/index.php');
     define('API_ROOT', 'https://mdwiki.org/w/api.php');
