@@ -594,8 +594,11 @@ final class expandFnsTest extends testBaseClass {
             $do_it = 100;
         } elseif ($eventName === 'push') {
             $do_it = 33;
-        } else {
+        } elseif ($eventName === 'pull_request') {
             $do_it = 1;
+        } else {
+            $do_int = 100;
+            report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
         }
         $null_list = array_keys(NULL_DOI_LIST);
         shuffle($null_list); // Avoid doing similar ones next to each other
