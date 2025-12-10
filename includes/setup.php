@@ -46,6 +46,7 @@ if (isset($_REQUEST["wiki_base"])){
 if ($wiki_base === 'mdwiki') {
     define('WIKI_ROOT', 'https://mdwiki.org/w/index.php');
     define('API_ROOT', 'https://mdwiki.org/w/api.php');
+    /** The wiki language code. For example, en, simple, or mdwiki. */
     define('WIKI_BASE', 'mdwiki');
     define('EDIT_AS_USER', true); // TODO - does this work?
 } else {
