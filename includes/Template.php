@@ -3394,7 +3394,7 @@ final class Template
                     case "url": // Untrustable: used by bozos
                         break;
                     default:
-                           report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
+                        report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
                 }
             }
         }
