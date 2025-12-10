@@ -577,7 +577,7 @@ final class Template
                     $the_issue = '';
                     $bad_data = true;
                 }
-                if (strlen($the_title) > 15 && mb_strpos($the_title, ' ') !== false && mb_strtoupper($the_title) === $the_title && mb_strpos($the_title, 'CITATION') === false && mb_check_encoding($the_title, 'ASCII')) {
+                if (mb_strlen($the_title) > 15 && mb_strpos($the_title, ' ') !== false && mb_strtoupper($the_title) === $the_title && mb_strpos($the_title, 'CITATION') === false && mb_check_encoding($the_title, 'ASCII')) {
                     $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
                     $the_title = '';
                     $bad_data = true;
@@ -610,12 +610,12 @@ final class Template
                     $the_title = '';
                     $bad_data = true;
                 }
-                if (strlen($the_journal) > 15 && mb_strpos($the_journal, ' ') !== false && mb_strtoupper($the_journal) === $the_journal && mb_strpos($the_journal, 'CITATION') === false && mb_check_encoding($the_journal, 'ASCII')) {
+                if (mb_strlen($the_journal) > 15 && mb_strpos($the_journal, ' ') !== false && mb_strtoupper($the_journal) === $the_journal && mb_strpos($the_journal, 'CITATION') === false && mb_check_encoding($the_journal, 'ASCII')) {
                     $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                     $the_journal = '';
                     $bad_data = true;
                 }
-                if (strlen($the_chapter) > 15 && mb_strpos($the_chapter, ' ') !== false && mb_strtoupper($the_chapter) === $the_chapter && mb_strpos($the_chapter, 'CITATION') === false && mb_check_encoding($the_chapter, 'ASCII')) {
+                if (mb_strlen($the_chapter) > 15 && mb_strpos($the_chapter, ' ') !== false && mb_strtoupper($the_chapter) === $the_chapter && mb_strpos($the_chapter, 'CITATION') === false && mb_check_encoding($the_chapter, 'ASCII')) {
                     $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                     $the_chapter = '';
                     $bad_data = true;
@@ -2013,7 +2013,7 @@ final class Template
                     if (intval($value) > 1820 && mb_stripos($this->get('doi'), '10.1515/crll') === 0) {
                         return false;
                     }
-                    if (strlen($value) > 20) {
+                    if (mb_strlen($value) > 20) {
                         return false;
                     }
                     $temp_string = mb_strtolower($this->get('journal'));
@@ -2412,11 +2412,11 @@ final class Template
 
             case 'bibcode_nosearch': // Avoid recursive loop
             case 'bibcode':
-                if (mb_stripos($value, 'arxiv') === false && mb_stripos($value, 'tmp') === false && (mb_stripos($this->get('bibcode'), 'arxiv') !== false || mb_stripos($this->get('bibcode'), 'tmp') !== false) && strlen(mb_trim($value)) > 16) {
+                if (mb_stripos($value, 'arxiv') === false && mb_stripos($value, 'tmp') === false && (mb_stripos($this->get('bibcode'), 'arxiv') !== false || mb_stripos($this->get('bibcode'), 'tmp') !== false) && mb_strlen(mb_trim($value)) > 16) {
                     $this->quietly_forget('bibcode'); // Upgrade bad bibcode
                 }
                 if ($this->blank('bibcode')) {
-                    $bibcode_pad = 19 - strlen($value);
+                    $bibcode_pad = 19 - mb_strlen($value);
                     if ($bibcode_pad > 0) {
                         // Paranoid, don't want a negative value, if bibcodes get longer
                         $value .= str_repeat(".", $bibcode_pad); // Add back on trailing periods
@@ -2457,11 +2457,11 @@ final class Template
                 }
                 if ($this->blank($param_name)) {
                     $value = $this->isbn10Toisbn13($value);
-                    if (strlen($value) === 13 && mb_substr($value, 0, 6) === '978019') {
+                    if (mb_strlen($value) === 13 && mb_substr($value, 0, 6) === '978019') {
                         // Oxford
                         $value = '978-0-19-' . mb_substr($value, 6, 6) . '-' . mb_substr($value, 12, 1);
                     }
-                    if (strlen($value) > 19) {
+                    if (mb_strlen($value) > 19) {
                         return false;
                     } // Two ISBNs
                     $value = addISBNdashes($value);
@@ -2495,7 +2495,7 @@ final class Template
                 if ($this->had_initial_publisher) {
                     return false;
                 }
-                if (strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) {
+                if (mb_strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) {
                     return false;
                 } // too few characters
                 if (mb_stripos($value, 'Springer') === 0) {
@@ -2546,7 +2546,7 @@ final class Template
                 if (
                 $this->blank($param_name) &&
                 !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
-                strlen($value) === mb_strlen($value) &&
+                mb_strlen($value) === mb_strlen($value) &&
                 mb_strpos($value, 'purl.org') === false &&
                 mb_strpos($value, 'dcmitype') === false &&
                 mb_strpos($value, 'http') === false
@@ -2800,7 +2800,7 @@ final class Template
         }
         $keys = array_keys($this->param);
         foreach ($keys as $the_key) {
-            if (mb_stripos($this->param[$the_key]->param, 'http') === false && strlen($this->param[$the_key]->param) < 30) {
+            if (mb_stripos($this->param[$the_key]->param, 'http') === false && mb_strlen($this->param[$the_key]->param) < 30) {
                 $this->param[$the_key]->param = str_replace('duplicate_', 'DUPLICATE_', mb_strtolower($this->param[$the_key]->param));
             }
         }
@@ -3011,7 +3011,7 @@ final class Template
                         break;
                     }
                 }
-                $para_len = strlen($parameter);
+                $para_len = mb_strlen($parameter);
                 if ($para_len < 3) {
                     continue;
                 } // minimum length to avoid false positives
@@ -3050,16 +3050,16 @@ final class Template
             }
             if (
             $shortest < 3 &&
-            strlen($test_dat) > 0 &&
-            (float) similar_text($closest, $test_dat) / (float) strlen($test_dat) > 0.4 &&
+            mb_strlen($test_dat) > 0 &&
+            (float) similar_text($closest, $test_dat) / (float) mb_strlen($test_dat) > 0.4 &&
             ((float) $shortest + 1.0 < $shortish || // No close competitor
-            strlen($closest) > strlen($comp))
+            mb_strlen($closest) > mb_strlen($comp))
             ) {
                 // remove leading spaces or hyphens (which may have been typoed for an equals)
-                if (preg_match("~^[ -+]*(.+)~", (string) mb_substr($dat, strlen($closest)), $match)) {
+                if (preg_match("~^[ -+]*(.+)~", (string) mb_substr($dat, mb_strlen($closest)), $match)) {
                     // Cast false to string
                     $this->add_if_new($closest, $match[1] /* . " [$shortest / $comp = $shortish]"*/);
-                    $replace_pos = strrpos($dat, $match[1]) + strlen($match[1]);
+                    $replace_pos = strrpos($dat, $match[1]) + mb_strlen($match[1]);
                     $dat = mb_trim(mb_substr($dat, $replace_pos));
                 }
             } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace([" ", "-"], "", $dat), $match)) {
@@ -3419,7 +3419,7 @@ final class Template
         $mistake_keys = array_keys(COMMON_MISTAKES);
 
         foreach ($this->param as $p) {
-            if (strlen($p->param) > 0) {
+            if (mb_strlen($p->param) > 0) {
                 $mistake_id = array_search($p->param, $mistake_keys);
                 if ($mistake_id) {
                     $new = $mistake_corrections[$mistake_id];
@@ -3471,7 +3471,7 @@ final class Template
 
         foreach ($this->param as $p) {
             if (
-            strlen($p->param) > 0 &&
+            mb_strlen($p->param) > 0 &&
             !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
             mb_stripos($p->param, 'CITATION_BOT') === false
             ) {
@@ -3535,7 +3535,7 @@ final class Template
                         $comp = $parameter;
                     }
                 }
-                $str_len = strlen($p->param);
+                $str_len = mb_strlen($p->param);
 
                 // Account for short words...
                 if ($str_len < 4) {
@@ -3550,7 +3550,7 @@ final class Template
                     $p->param = $closest;
                     report_inline("replaced with {$closest} (likelihood " . (string) round(24.0 - $shortest, 1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
                 } else {
-                    $similarity = (float) similar_text($p->param, $closest) / (float) strlen($p->param);
+                    $similarity = (float) similar_text($p->param, $closest) / (float) mb_strlen($p->param);
                     if ($similarity > 0.6) {
                         bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
                         $p->param = $closest;
@@ -3618,7 +3618,7 @@ final class Template
                                $tfk = $arr[$fk];
                                unset($arr[$fk]);
                                /** @phpstan-ignore function.alreadyNarrowedType */
-                            if (is_string($tfk) && strlen($tfk) > 0) {
+                            if (is_string($tfk) && mb_strlen($tfk) > 0) {
                                 $fv = $tfk;
                             }
                                unset($tfk);
@@ -3627,7 +3627,7 @@ final class Template
                                $tlk = $arr[$lk];
                                unset($arr[$lk]);
                                /** @phpstan-ignore function.alreadyNarrowedType */
-                            if (is_string($tlk) && strlen($tlk) > 0) {
+                            if (is_string($tlk) && mb_strlen($tlk) > 0) {
                                 $lv = $tlk;
                             }
                             unset($tlk);
@@ -3877,7 +3877,7 @@ final class Template
             mb_stripos($param, 'link') === false && // inter-wiki links
             mb_stripos($param, 'mask') === false && // sometimes used for asian names is a very odd way
             $param !== 'script-title' && // these can be very weird
-            (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
+            (($param !== 'chapter' && $param !== 'title') || mb_strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
             ) {
                 $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
                 $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
@@ -4174,7 +4174,7 @@ final class Template
                         return;
                     } // bad bibcodes would not have four characters, use ==, since it might be "" or false depending upon error/PHP version
                     foreach (NON_JOURNAL_BIBCODES as $exception) {
-                        if (mb_substr($bibcode_journal, 0, strlen($exception)) === $exception) {
+                        if (mb_substr($bibcode_journal, 0, mb_strlen($exception)) === $exception) {
                             return;
                         }
                     }
@@ -4787,7 +4787,7 @@ final class Template
                     }
                     $periodical = mb_trim($this->get($param));
                     if (mb_substr($periodical, 0, 1) !== "[" && mb_substr($periodical, -1) !== "]") {
-                        if (strlen($periodical) - mb_strlen($periodical) < 9) {
+                        if (mb_strlen($periodical) - mb_strlen($periodical) < 9) {
                             // eight or fewer UTF-8 stuff
                             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' && strip_diacritics($periodical) === $periodical) {
                                 $periodical = mb_ucwords($periodical); // Found NO foreign words/phrase
@@ -5562,7 +5562,7 @@ final class Template
                     } elseif (mb_strpos($title, '{{!}}') === false) {
                         // Convert a single link to a title-link
                         if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-                            if (strlen($matches[1]) > 0.7 * (float) strlen($title) && $title !== '[[' . $matches[1] . ']]') {
+                            if (mb_strlen($matches[1]) > 0.7 * (float) mb_strlen($title) && $title !== '[[' . $matches[1] . ']]') {
                                 // Only add as title-link if a large part of title text
                                 $matches[2] = str_replace(["[[", "]]"], "", $title);
                                 if ($matches[2] === "''" . $matches[1] . "''") {
@@ -6783,7 +6783,7 @@ final class Template
                                 $this->set('issue', $possible_issue);
                                 report_action('Citation had volume and issue the same. Changing issue.');
                             } else {
-                                if (strlen($doi_crossref) < 2) {
+                                if (mb_strlen($doi_crossref) < 2) {
                                     $doi_crossref = $doi_template;
                                 }
                                 report_inaction(
@@ -7476,7 +7476,7 @@ final class Template
 
     public function has(string $par): bool
     {
-        return (bool) strlen($this->get($par));
+        return (bool) mb_strlen($this->get($par));
     }
 
     public function add(string $par, string $val): bool
@@ -7766,7 +7766,7 @@ final class Template
     {
         $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
         $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
-        if (strlen($test) < 10 || strlen($test) > 13) {
+        if (mb_strlen($test) < 10 || mb_strlen($test) > 13) {
             return $isbn10;
         }
         $isbn10 = str_replace('x', 'X', $isbn10);
@@ -7785,7 +7785,7 @@ final class Template
             return $isbn10;
         } // Older books does not have ISBN-13, see [[WP:ISBN]]
         $isbn13 = str_replace('-', '', $isbn10); // Remove dashes to do math
-        if (strlen($isbn13) !== 10) {
+        if (mb_strlen($isbn13) !== 10) {
             return $isbn10;
         } // Might be an ISBN 13 already, or rubbish
         $isbn13 = '978' . mb_substr($isbn13, 0, -1); // Convert without check digit - do not need and might be X
