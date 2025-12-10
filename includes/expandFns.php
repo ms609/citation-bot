@@ -218,10 +218,10 @@ function throttle_dx (): void {
 function is_doi_works(string $doi): ?bool {
     $doi = mb_trim($doi);
     // And now some obvious fails
-    if (strpos($doi, '/') === false){
+    if (mb_strpos($doi, '/') === false){
         return false;
     }
-    if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) {
+    if (mb_strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) {
         return false;
     }
     if (preg_match('~^10\.1007/springerreference~', $doi)) {
@@ -237,9 +237,9 @@ function is_doi_works(string $doi): ?bool {
         return false;  // TODO: old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page
     }
     if (isset(NULL_DOI_BUT_GOOD[$doi])) {
-        if (strpos($doi, '10.1353/') === 0) {
+        if (mb_strpos($doi, '10.1353/') === 0) {
             return true; // TODO - muse is annoying
-        } elseif (strpos($doi, '10.1175/') === 0) {
+        } elseif (mb_strpos($doi, '10.1175/') === 0) {
             return true; // TODO - American Meteorological Society is annoying
         }
     }
@@ -247,7 +247,7 @@ function is_doi_works(string $doi): ?bool {
     $registrant = $matches[1];
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 17 August 2024 version is last check
-    if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
+    if (mb_strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
         $registrant = mb_substr($registrant, 3);
         if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
                 preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||       // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
@@ -315,7 +315,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
     /** @psalm-suppress InvalidArrayOffset */
     $resp2 = (string) @$headers_test['2'];
 
-    if (strpos($resp0, '302') !== false && strpos($resp1, '301') !== false && strpos($resp2, '404') !== false) {
+    if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '301') !== false && mb_strpos($resp2, '404') !== false) {
         if (isset(NULL_DOI_LIST[$doi])) {
             return false;
         }
@@ -325,7 +325,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
         return null;
     }
-    if (strpos($resp0, '302') !== false && strpos($resp1, '503') !== false && $resp2 === '') {
+    if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '503') !== false && $resp2 === '') {
         if (isset(NULL_DOI_LIST[$doi])) {
             return false;
         }
@@ -393,28 +393,28 @@ function sanitize_doi(string $doi): string {
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
     $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
     $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
-    $pos = (int) strrpos($doi, '.');
+    $pos = (int) mb_strrpos($doi, '.');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
         if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
             $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
-    $pos = (int) strrpos($doi, '#');
+    $pos = (int) mb_strrpos($doi, '#');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
-        if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
+        if (mb_strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
             $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
-    $pos = (int) strrpos($doi, ';');
+    $pos = (int) mb_strrpos($doi, ';');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
-        if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
+        if (mb_strpos(mb_strtolower($extension), ';jsessionid') === 0) {
             $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
-    $pos = (int) strrpos($doi, '/');
+    $pos = (int) mb_strrpos($doi, '/');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
         if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
@@ -430,7 +430,7 @@ function sanitize_doi(string $doi): string {
     // And now for 10.1093 URLs
     // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
     // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
-    if (strpos($doi, '10.1093') === 0 && doi_works($doi) === false) {
+    if (mb_strpos($doi, '10.1093') === 0 && doi_works($doi) === false) {
         if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match) ||
                 preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
                 preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
@@ -473,7 +473,7 @@ function extract_doi(string $text): array {
         while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
             $last_delimiter = 0;
             foreach (['/', '.', '#', '?'] as $delimiter) {
-                $delimiter_position = (int) strrpos($doi_candidate, $delimiter);
+                $delimiter_position = (int) mb_strrpos($doi_candidate, $delimiter);
                 $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
             }
             $doi_candidate = mb_substr($doi_candidate, 0, $last_delimiter);
@@ -625,7 +625,7 @@ function wikify_external_text(string $title): string {
     }
 
     foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
-        if (strpos($title, $mathy) !== false) {
+        if (mb_strpos($title, $mathy) !== false) {
             return '<nowiki>' . $title . '</nowiki>';
         }
     }
@@ -1052,7 +1052,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
         }
     }
@@ -1066,7 +1066,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
         }
     }
@@ -1265,10 +1265,10 @@ function tidy_date_inside(string $string): string {
     if (mb_stripos($string, 'Invalid') !== false) {
         return '';
     }
-    if (strpos($string, '1/1/0001') !== false) {
+    if (mb_strpos($string, '1/1/0001') !== false) {
         return '';
     }
-    if (strpos($string, '0001-01-01') !== false) {
+    if (mb_strpos($string, '0001-01-01') !== false) {
         return '';
     }
     if (!preg_match('~\d{2}~', $string)) {
@@ -1307,10 +1307,10 @@ function tidy_date_inside(string $string): string {
     $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
     $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
     // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
-    if (strpos($string, '0001-11-30') !== false) {
+    if (mb_strpos($string, '0001-11-30') !== false) {
         return '';
     }
-    if (strpos($string, '1969-12-31') !== false) {
+    if (mb_strpos($string, '1969-12-31') !== false) {
         return '';
     }
     if (str_i_same('19xx', $string)) {
@@ -1578,10 +1578,10 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     if (preg_match('~^\d+$~', $doi)) {
         return; // Just numbers - this WILL match a JSTOR, but who knows what it really is!
     }
-    if (strpos($doi, '10.2307') === 0) { // special case
+    if (mb_strpos($doi, '10.2307') === 0) { // special case
         $doi = mb_substr($doi, 8);
     }
-    $pos = strpos($doi, '?');
+    $pos = mb_strpos($doi, '?');
     if ($pos) {
             $doi = mb_substr($doi, 0, $pos);
     }
@@ -1590,7 +1590,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($httpCode === 200 &&
             mb_stripos($ris, $doi) !== false &&
-            strpos($ris, 'Provider') !== false &&
+            mb_strpos($ris, 'Provider') !== false &&
             mb_stripos($ris, 'No RIS data found for') === false &&
             mb_stripos($ris, 'Block Reference') === false &&
             mb_stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
@@ -1601,10 +1601,10 @@ function check_doi_for_jstor(string $doi, Template $template): void {
 
 function can_safely_modify_dashes(string $value): bool {
     return (mb_stripos($value, "http") === false)
-            && (strpos($value, "[//") === false)
+            && (mb_strpos($value, "[//") === false)
             && (mb_substr_count($value, "<") === 0) // <span></span> stuff
             && (mb_stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
-            && (strpos($value, "(") === false)
+            && (mb_strpos($value, "(") === false)
             && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', mb_trim($value)) !== 1) // Spaces and letters
             && ((mb_substr_count($value, '-') + mb_substr_count($value, '–') + mb_substr_count($value, ',') + mb_substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
             && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u', $value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
@@ -1670,7 +1670,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
         $done++;
-        if (strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
+        if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
             if (SAVETOFILES_MODE) {
                 // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                 // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
@@ -1788,13 +1788,13 @@ function hdl_works(string $hdl): string|null|false {
     $hdl = mb_trim($hdl);
     $hdl = str_replace('%2F', '/', $hdl);
     // And now some obvious fails
-    if (strpos($hdl, '/') === false) {
+    if (mb_strpos($hdl, '/') === false) {
         return false;
     }
-    if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== false) {
+    if (mb_strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== false) {
         return false;
     }
-    if (strpos($hdl, '123456789') === 0) {
+    if (mb_strpos($hdl, '123456789') === 0) {
         return false;
     }
     if (mb_strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
@@ -1809,7 +1809,7 @@ function hdl_works(string $hdl): string|null|false {
     if (isset(HandleCache::$cache_hdl_null[$hdl])) {
         return null; // @codeCoverageIgnore
     }
-    if (strpos($hdl, '10.') === 0 && doi_works($hdl) === false) {
+    if (mb_strpos($hdl, '10.') === 0 && doi_works($hdl) === false) {
         return false;
     }
     $works = is_hdl_works($hdl);
@@ -1932,18 +1932,18 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
         $doi === '10.3905/jpm' ||       // over-truncated
-        (strpos($doi, '10.0000/') === 0 && !TRAVIS) || // just urls that look like DOIs - TODO: Fix test suite
-        strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
-        strpos($doi, '10.5555/') === 0 || // Test DOI prefix
-        strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
-        strpos($doi, '10.1093/law:epil') === 0 || // Those do not work
-        strpos($doi, '10.1093/oi/authority') === 0 || // Those do not work
-        (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) || // Has doi in the URL, but is not a doi
-        (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) || // Retired DOIs
-        (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) || // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
-        (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
-        (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
-        strpos($doi, '10.48550/arxiv') === 0 ||  // ignore
+        (mb_strpos($doi, '10.0000/') === 0 && !TRAVIS) || // just urls that look like DOIs - TODO: Fix test suite
+        mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
+        mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
+        mb_strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
+        mb_strpos($doi, '10.1093/law:epil') === 0 || // Those do not work
+        mb_strpos($doi, '10.1093/oi/authority') === 0 || // Those do not work
+        (mb_strpos($doi, '10.10520/') === 0 && !doi_works($doi)) || // Has doi in the URL, but is not a doi
+        (mb_strpos($doi, '10.1967/') === 0 && !doi_works($doi)) || // Retired DOIs
+        (mb_strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) || // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        (mb_strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        (mb_strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
+        mb_strpos($doi, '10.48550/arxiv') === 0 ||  // ignore
         preg_match(REGEXP_DOI_ISSN_ONLY, $doi) // Journal landing page
        ) {
         return true;
@@ -1984,7 +1984,7 @@ function get_possible_dois(string $doi): array {
         $trial[] = $match[1];
         $trial[] = $match[2];
     }
-    if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== true) {
+    if (mb_strpos($doi, '10.1093') === 0 && doi_works($doi) !== true) {
         if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
             $trial[] = '10.1093/ref:odnb/' . $matches[1];
             $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
@@ -2101,7 +2101,7 @@ function get_possible_dois(string $doi): array {
     $try = $doi;
     while ($changed) {
         $changed = false;
-        $pos = strrpos($try, '.');
+        $pos = mb_strrpos($try, '.');
         if ($pos) {
             $extension = mb_substr($try, $pos);
             if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
@@ -2110,25 +2110,25 @@ function get_possible_dois(string $doi): array {
                 $changed = true;
             }
         }
-        $pos = strrpos($try, '#');
+        $pos = mb_strrpos($try, '#');
         if ($pos) {
             $extension = mb_substr($try, $pos);
-            if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
+            if (mb_strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
                 $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
         }
-        $pos = strrpos($try, ';');
+        $pos = mb_strrpos($try, ';');
         if ($pos) {
             $extension = mb_substr($try, $pos);
-            if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
+            if (mb_strpos(mb_strtolower($extension), ';jsessionid') === 0) {
                 $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
         }
-        $pos = strrpos($try, '/');
+        $pos = mb_strrpos($try, '/');
         if ($pos) {
             $extension = mb_substr($try, $pos);
             if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
@@ -2618,15 +2618,15 @@ function conference_doi(string $doi): bool {
     if (mb_stripos($doi, '10.1007/978-3-662-44777') === 0) {
         return false; // Manual override of stuff
     }
-    if (strpos($doi, '10.1109/') === 0 ||
-        strpos($doi, '10.1145/') === 0 ||
-        strpos($doi, '10.1117/') === 0 ||
-        strpos($doi, '10.2991/') === 0 ||
+    if (mb_strpos($doi, '10.1109/') === 0 ||
+        mb_strpos($doi, '10.1145/') === 0 ||
+        mb_strpos($doi, '10.1117/') === 0 ||
+        mb_strpos($doi, '10.2991/') === 0 ||
         mb_stripos($doi, '10.21437/Eurospeech') === 0 ||
         mb_stripos($doi, '10.21437/interspeech') === 0 ||
         mb_stripos($doi, '10.21437/SLTU') === 0 ||
         mb_stripos($doi, '10.21437/TAL') === 0 ||
-        (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== false) ||
+        (mb_strpos($doi, '10.1007/978-') === 0 && mb_strpos($doi, '_') !== false) ||
         mb_stripos($doi, '10.2991/erss') === 0 ||
         mb_stripos($doi, '10.2991/jahp') === 0) {
         return true;
@@ -2727,9 +2727,9 @@ function get_headers_array(string $url): false|array {
         sleep(5);
     }
     $last_url = $url;
-    if (strpos($url, 'https://doi.org') === 0) {
+    if (mb_strpos($url, 'https://doi.org') === 0) {
         return @get_headers($url, true, $context_insecure_doi);
-    } elseif (strpos($url, 'https://hdl.handle.net') === 0) {
+    } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
         return @get_headers($url, true, $context_insecure_hdl);
     } else {
         report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
@@ -2744,7 +2744,7 @@ function simplify_google_search(string $url): string {
         return $url; // Not a search if the slash is there
     }
     $hash = '';
-    if (strpos($url, "#")) {
+    if (mb_strpos($url, "#")) {
         $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = "#" . $url_parts[1];
@@ -3005,7 +3005,7 @@ function echoable_doi(string $doi): string {
 
 
 function clean_volume(string $volume): string {
-    if (strpos($volume, "(") !== false) {
+    if (mb_strpos($volume, "(") !== false) {
         return '';
     }
     if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
