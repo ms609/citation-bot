@@ -1530,7 +1530,7 @@ final class TemplateTest extends testBaseClass {
     public function testSemanticScholar(): void {
         $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
-        $return = get_unpaywall_url($template, $template->get2('doi'));
+        $return = get_unpaywall_url($template, $template->get('doi'));
         $this->assertSame('nothing', $return);
         $this->assertNull($template->get2('url'));
     }
@@ -1540,7 +1540,7 @@ final class TemplateTest extends testBaseClass {
     public function testUnPaywall1(): void {
         $text = "{{cite journal|doi=10.1206/0003-0082(2006)3508[1:EEALSF]2.0.CO;2}}";
         $template = $this->make_citation($text);
-        get_unpaywall_url($template, $template->get2('doi'));
+        get_unpaywall_url($template, $template->get('doi'));
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -1548,14 +1548,14 @@ final class TemplateTest extends testBaseClass {
     public function testUnPaywall2(): void {
         $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
         $template = $this->make_citation($text);
-        get_unpaywall_url($template, $template->get2('doi'));
+        get_unpaywall_url($template, $template->get('doi'));
         $this->assertNull($template->get2('url'));
     }
 
     public function testUnPaywall3(): void { // This DOI is free and resolves to doi.org
         $text = "{{cite journal|doi=10.1016/j.ifacol.2017.08.010}}";
         $template = $this->make_citation($text);
-        get_unpaywall_url($template, $template->get2('doi'));
+        get_unpaywall_url($template, $template->get('doi'));
         $this->assertNull($template->get2('url'));
     }
 
@@ -1645,7 +1645,7 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('1234', $expanded->get2('oclc'));
         $this->assertSame('12345', $expanded->get2('ol'));
         $this->assertNotNull($expanded->get2('doi-broken-date'));
-        $this->assertSame(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get2('id')));
+        $this->assertSame(0, preg_match('~' . sprintf(Template::PLACEHOLDER_TEXT, '\d+') . '~i', $expanded->get('id')));
     }
 
     public function testId2Param2(): void {
