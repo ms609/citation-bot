@@ -48,6 +48,7 @@
                 <element key="substr_count" value="mb_substr_count"/>
                 <element key="strstr" value="mb_strstr"/>
                 <element key="substr_replace" value="mb_substr_replace"/>
+                <element key="strcut" value="mb_strcut"/>
             </property>
         </properties>
     </rule>
