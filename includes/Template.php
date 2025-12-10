@@ -420,7 +420,7 @@ final class Template
         }
     }
 
-    private function handleConferencePretendingToBeAJournal() {
+    private function handleConferencePretendingToBeAJournal(): void {
         if (
             mb_stripos($this->rawtext, 'citation_bot_placeholder_comment') === false &&
             mb_stripos($this->rawtext, 'graph drawing') === false &&
