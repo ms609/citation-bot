@@ -19,8 +19,8 @@
       <directory>./tests</directory>
       <directory>./vendor</directory>
       <file>./process_page.php</file>
-      <file>./gitpull.php</file>
-      <file>./category.php</file>
+      <file>./gitpull.php</file>adsf
+      <file>./category.php</file>asdfdsfadsafdfsd
       <file>./linked_pages.php</file>
       <file>./authenticate.php</file>
       <file>./setup.php</file>
