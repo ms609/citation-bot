@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Design Security
-      run: echo getenv('GITHUB_EVENT_NAME');
+      run: echo ${GITHUB_EVENT_NAME}
