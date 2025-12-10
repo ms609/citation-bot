@@ -77,7 +77,7 @@ final class apiFunctionsTest extends testBaseClass {
         $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
         $page = new TestPage();
         $page->parse_text($text);
-        $this->assertSame($text, $page->parsed_text($text));
+        $this->assertSame($text, $page->parsed_text());
     }
 
     public function testArxivDateUpgradeSeesDate1(): void {
