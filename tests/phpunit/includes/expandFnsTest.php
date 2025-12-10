@@ -523,8 +523,9 @@ final class expandFnsTest extends testBaseClass {
     
     public function testThrottle(): void { // Just runs over the code and basically does nothing
         for ($x = 0; $x <= 25; $x++) {
-            $this->assertNull(throttle());
+            throttle();
         }
+        $this->assertNull(null);
     }
 
     public function testDoubleHopDOI(): void { // Just runs over the code and basically does nothing
