@@ -591,13 +591,13 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame("", $changes);
         $eventName = getenv('GITHUB_EVENT_NAME');
         if ($eventName === 'schedule') {
-            $do_it = 100;
+            $do_it = -1;
         } elseif ($eventName === 'push') {
-            $do_it = 33;
+            $do_it = 67;
         } elseif ($eventName === 'pull_request') {
-            $do_it = 1;
+            $do_it = 98;
         } else {
-            $do_int = 100;
+            $do_int = -1;
             report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
         }
         $null_list = array_keys(NULL_DOI_LIST);
