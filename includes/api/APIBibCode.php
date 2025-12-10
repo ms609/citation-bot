@@ -492,8 +492,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         if ($http_response_code === 0 || $header_length === 0) {
             throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
         }
-        $header = mb_substr($return, 0, $header_length);
-        $body = mb_substr($return, $header_length);
+        $header = substr($return, 0, $header_length);
+        $body = substr($return, $header_length);
         unset($return);
         $decoded = @json_decode($body);
 
