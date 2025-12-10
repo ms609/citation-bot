@@ -307,7 +307,7 @@ final class Template
                     }
                 }
             }
-            if (strtolower ($this->get('last')) === 'archive' || strtolower ($this->get('last1')) === 'archive') {
+            if (mb_strtolower ($this->get('last')) === 'archive' || mb_strtolower ($this->get('last1')) === 'archive') {
                 if ($this->get('first2') === 'Get author RSS' || $this->get('first3') === 'Get author RSS' || $this->get('first4') === 'Get author RSS' || ($this->get('first2') === 'Email the' && $this->get('last2') === 'Author' || $this->get('first1') === 'From our online')) {
                     foreach (FLATTENED_AUTHOR_PARAMETERS as $author) {
                         $this->forget($author);
@@ -3059,11 +3059,11 @@ final class Template
                 if (preg_match("~^[ -+]*(.+)~", (string) mb_substr($dat, mb_strlen($closest)), $match)) {
                     // Cast false to string
                     $this->add_if_new($closest, $match[1] /* . " [$shortest / $comp = $shortish]"*/);
-                    $replace_pos = strrpos($dat, $match[1]) + mb_strlen($match[1]);
+                    $replace_pos = mb_strrpos($dat, $match[1]) + mb_strlen($match[1]);
                     $dat = mb_trim(mb_substr($dat, $replace_pos));
                 }
             } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace([" ", "-"], "", $dat), $match)) {
-                $the_isbn = str_split($match[1]);
+                $the_isbn = mb_str_split($match[1]);
                 preg_match(
                 '~' .
                 $the_isbn[0] .
@@ -3092,7 +3092,7 @@ final class Template
                 $this->add_if_new('isbn', $match[0]);
                 $dat = mb_trim(str_replace($match[0], '', $dat));
             } elseif (preg_match("~(?<!\d)(\d{13})(?!\d)~", str_replace([" ", "-"], "", $dat), $match)) {
-                $the_isbn = str_split($match[1]);
+                $the_isbn = mb_str_split($match[1]);
                 preg_match(
                 '~' .
                 $the_isbn[0] .
@@ -5646,7 +5646,7 @@ final class Template
                         // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
                         if ($this->blank(['archive-date', 'archivedate'])) {
                             $base62 = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-                            $num62 = str_split($matches[2]);
+                            $num62 = mb_str_split($matches[2]);
                             $time = 0;
                             for ($i = 0; $i < 9; $i++) {
                                 $time = 62 * $time + (int) mb_strpos($base62, $num62[$i]);
