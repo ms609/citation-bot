@@ -45,13 +45,13 @@ final class Template
     private bool $held_work_done = false;
     /** @var array<array<string>> $used_by_api */
     private array $used_by_api = [
-    'adsabs' => [],
-    'arxiv' => [],
-    'crossref' => [],
-    'dx' => [],
-    'entrez' => [],
-    'jstor' => [],
-    'zotero' => [],
+        'adsabs' => [],
+        'arxiv' => [],
+        'crossref' => [],
+        'dx' => [],
+        'entrez' => [],
+        'jstor' => [],
+        'zotero' => [],
     ];
     /** @var array<Template> $this_array */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
@@ -209,11 +209,11 @@ final class Template
             $add_pipe = false;
             $wikiname = $this->wikiname();
             if (
-            in_array($wikiname, TEMPLATES_WE_PROCESS, true) ||
-            in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS, true) ||
-            in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS, true) ||
-            in_array($wikiname, TEMPLATES_WE_RENAME, true) ||
-            mb_strpos($wikiname, 'cite ') === 0
+                in_array($wikiname, TEMPLATES_WE_PROCESS, true) ||
+                in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS, true) ||
+                in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS, true) ||
+                in_array($wikiname, TEMPLATES_WE_RENAME, true) ||
+                mb_strpos($wikiname, 'cite ') === 0
             ) {
                 $add_pipe = true;
             }
@@ -368,12 +368,12 @@ final class Template
             }
             unset($the_title, $the_website);
             if (
-            mb_stripos($this->rawtext, 'citation_bot_placeholder_comment') === false &&
-            mb_stripos($this->rawtext, 'graph drawing') === false &&
-            mb_stripos($this->rawtext, 'Lecture Notes in Computer Science') === false &&
-            mb_stripos($this->rawtext, 'LNCS ') === false &&
-            mb_stripos($this->rawtext, ' LNCS') === false &&
-            (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) || (mb_stripos($this->get('journal') . $this->get('title'), 'arxiv') !== false && !$this->blank(ARXIV_ALIASES)))
+                mb_stripos($this->rawtext, 'citation_bot_placeholder_comment') === false &&
+                mb_stripos($this->rawtext, 'graph drawing') === false &&
+                mb_stripos($this->rawtext, 'Lecture Notes in Computer Science') === false &&
+                mb_stripos($this->rawtext, 'LNCS ') === false &&
+                mb_stripos($this->rawtext, ' LNCS') === false &&
+                (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) || (mb_stripos($this->get('journal') . $this->get('title'), 'arxiv') !== false && !$this->blank(ARXIV_ALIASES)))
             ) {
                 // Have some good data
                 $the_title = $this->get('title');
@@ -402,16 +402,16 @@ final class Template
                 }
                 $ieee_insanity = false;
                 if (
-                conference_doi($this->get('doi')) &&
-                in_array($this->wikiname(), ['cite journal', 'cite web'], true) &&
-                ($this->has('isbn') ||
-                (mb_stripos($the_title, 'proceedings') !== false && mb_stripos($the_journal, 'proceedings') !== false) ||
-                (mb_stripos($the_title, 'proc. ') !== false && mb_stripos($the_journal, 'proc. ') !== false) ||
-                (mb_stripos($the_title, 'Conference') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-                (mb_stripos($the_title, 'Colloquium') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
-                (mb_stripos($the_title, 'Symposium') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
-                (mb_stripos($the_title, 'Extended Abstracts') !== false && mb_stripos($the_journal, 'Extended Abstracts') !== false) ||
-                (mb_stripos($the_title, 'Meeting on ') !== false && mb_stripos($the_journal, 'Meeting on ') !== false))
+                    conference_doi($this->get('doi')) &&
+                    in_array($this->wikiname(), ['cite journal', 'cite web'], true) &&
+                    ($this->has('isbn') ||
+                    (mb_stripos($the_title, 'proceedings') !== false && mb_stripos($the_journal, 'proceedings') !== false) ||
+                    (mb_stripos($the_title, 'proc. ') !== false && mb_stripos($the_journal, 'proc. ') !== false) ||
+                    (mb_stripos($the_title, 'Conference') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+                    (mb_stripos($the_title, 'Colloquium') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
+                    (mb_stripos($the_title, 'Symposium') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
+                    (mb_stripos($the_title, 'Extended Abstracts') !== false && mb_stripos($the_journal, 'Extended Abstracts') !== false) ||
+                    (mb_stripos($the_title, 'Meeting on ') !== false && mb_stripos($the_journal, 'Meeting on ') !== false))
                 ) {
                     // IEEE/ACM/etc "book"
                     $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
@@ -421,17 +421,17 @@ final class Template
                         // Actual journal with ISBN
                         // Do nothing
                     } elseif (
-                    mb_stripos($data_to_check, 'Symposium') === false &&
-                    mb_stripos($data_to_check, 'Conference') === false &&
-                    mb_stripos($data_to_check, 'Proceedings') === false &&
-                    mb_stripos($data_to_check, 'Proc. ') === false &&
-                    mb_stripos($data_to_check, 'Workshop') === false &&
-                    mb_stripos($data_to_check, 'Symp. On ') === false &&
-                    mb_stripos($data_to_check, 'Meeting on ') === false &&
-                    mb_stripos($data_to_check, 'Colloquium') === false &&
-                    mb_stripos($data_to_check, 'Extended Abstracts') === false &&
-                    mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') === false &&
-                    mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === false
+                        mb_stripos($data_to_check, 'Symposium') === false &&
+                        mb_stripos($data_to_check, 'Conference') === false &&
+                        mb_stripos($data_to_check, 'Proceedings') === false &&
+                        mb_stripos($data_to_check, 'Proc. ') === false &&
+                        mb_stripos($data_to_check, 'Workshop') === false &&
+                        mb_stripos($data_to_check, 'Symp. On ') === false &&
+                        mb_stripos($data_to_check, 'Meeting on ') === false &&
+                        mb_stripos($data_to_check, 'Colloquium') === false &&
+                        mb_stripos($data_to_check, 'Extended Abstracts') === false &&
+                        mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') === false &&
+                        mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === false
                     ) {
                         // Looks like conference done, but does not claim so
                         if ($the_journal !== '') {
@@ -448,17 +448,17 @@ final class Template
                         }
                         $bad_data = true;
                     } elseif (
-                    mb_stripos($the_journal, 'Symposium') !== false ||
-                    mb_stripos($the_journal, 'Conference') !== false ||
-                    mb_stripos($the_journal, 'Proceedings') !== false ||
-                    mb_stripos($the_journal, 'Proc. ') !== false ||
-                    mb_stripos($the_journal, 'Workshop') !== false ||
-                    mb_stripos($the_journal, 'Symp. On ') !== false ||
-                    mb_stripos($the_journal, 'Meeting on ') !== false ||
-                    mb_stripos($the_journal, 'Colloquium') !== false ||
-                    mb_stripos($the_journal, 'Extended Abstracts') !== false ||
-                    mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== false ||
-                    mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== false
+                        mb_stripos($the_journal, 'Symposium') !== false ||
+                        mb_stripos($the_journal, 'Conference') !== false ||
+                        mb_stripos($the_journal, 'Proceedings') !== false ||
+                        mb_stripos($the_journal, 'Proc. ') !== false ||
+                        mb_stripos($the_journal, 'Workshop') !== false ||
+                        mb_stripos($the_journal, 'Symp. On ') !== false ||
+                        mb_stripos($the_journal, 'Meeting on ') !== false ||
+                        mb_stripos($the_journal, 'Colloquium') !== false ||
+                        mb_stripos($the_journal, 'Extended Abstracts') !== false ||
+                        mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== false ||
+                        mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== false
                     ) {
                         $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                         $ieee_insanity = true;
@@ -475,30 +475,30 @@ final class Template
                     }
                 }
                 if (
-                mb_stripos($the_journal, 'Advances in Cryptology') === 0 ||
-                mb_stripos($the_journal, 'IEEE Symposium') !== false ||
-                mb_stripos($the_journal, 'IEEE Conference') !== false ||
-                mb_stripos($the_journal, 'IEEE International Conference') !== false ||
-                mb_stripos($the_journal, 'ACM International Symposium') !== false ||
-                mb_stripos($the_journal, 'ACM Symposium') !== false ||
-                mb_stripos($the_journal, 'Extended Abstracts') !== false ||
-                mb_stripos($the_journal, 'IEEE International Symposium') !== false ||
-                mb_stripos($the_journal, 'Symposium on Theoretical Aspects') !== false ||
-                mb_stripos($the_journal, 'Lecture Notes in Computer Science') !== false ||
-                mb_stripos($the_journal, 'International Conference on ') !== false ||
-                mb_stripos($the_journal, 'ACM International Conference') !== false ||
-                mb_stripos($the_journal, 'Proceedings of SPIE') !== false ||
-                mb_stripos($the_journal, 'Proceedings of the SPIE') !== false ||
-                mb_stripos($the_journal, 'SPIE Proc') !== false ||
-                mb_stripos($the_journal, 'Proceedings of the Society of ') !== false ||
-                (mb_stripos($the_journal, 'Proceedings of ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-                (mb_stripos($the_journal, 'Proc. ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-                (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-                (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Meeting') !== false) ||
-                (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
-                (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
-                mb_stripos($the_journal, 'SIGGRAPH') !== false ||
-                mb_stripos($the_journal, 'Design Automation Conference') !== false
+                    mb_stripos($the_journal, 'Advances in Cryptology') === 0 ||
+                    mb_stripos($the_journal, 'IEEE Symposium') !== false ||
+                    mb_stripos($the_journal, 'IEEE Conference') !== false ||
+                    mb_stripos($the_journal, 'IEEE International Conference') !== false ||
+                    mb_stripos($the_journal, 'ACM International Symposium') !== false ||
+                    mb_stripos($the_journal, 'ACM Symposium') !== false ||
+                    mb_stripos($the_journal, 'Extended Abstracts') !== false ||
+                    mb_stripos($the_journal, 'IEEE International Symposium') !== false ||
+                    mb_stripos($the_journal, 'Symposium on Theoretical Aspects') !== false ||
+                    mb_stripos($the_journal, 'Lecture Notes in Computer Science') !== false ||
+                    mb_stripos($the_journal, 'International Conference on ') !== false ||
+                    mb_stripos($the_journal, 'ACM International Conference') !== false ||
+                    mb_stripos($the_journal, 'Proceedings of SPIE') !== false ||
+                    mb_stripos($the_journal, 'Proceedings of the SPIE') !== false ||
+                    mb_stripos($the_journal, 'SPIE Proc') !== false ||
+                    mb_stripos($the_journal, 'Proceedings of the Society of ') !== false ||
+                    (mb_stripos($the_journal, 'Proceedings of ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+                    (mb_stripos($the_journal, 'Proc. ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+                    (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+                    (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Meeting') !== false) ||
+                    (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
+                    (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
+                    mb_stripos($the_journal, 'SIGGRAPH') !== false ||
+                    mb_stripos($the_journal, 'Design Automation Conference') !== false
                 ) {
                     $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                     $the_journal = '';
@@ -541,37 +541,37 @@ final class Template
                     $bad_data = true;
                 }
                 if (
-                $the_volume === '_' ||
-                $the_volume === '0' ||
-                $the_volume === 'null' ||
-                $the_volume === 'n/a' ||
-                $the_volume === 'Online edition' ||
-                $the_volume === 'online' ||
-                $the_volume === 'Online' ||
-                $the_volume === 'in press' ||
-                $the_volume === 'In press' ||
-                $the_volume === 'ahead-of-print' ||
-                $the_volume === 'Forthcoming' ||
-                $the_volume === 'forthcoming'
+                    $the_volume === '_' ||
+                    $the_volume === '0' ||
+                    $the_volume === 'null' ||
+                    $the_volume === 'n/a' ||
+                    $the_volume === 'Online edition' ||
+                    $the_volume === 'online' ||
+                    $the_volume === 'Online' ||
+                    $the_volume === 'in press' ||
+                    $the_volume === 'In press' ||
+                    $the_volume === 'ahead-of-print' ||
+                    $the_volume === 'Forthcoming' ||
+                    $the_volume === 'forthcoming'
                 ) {
                     $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
                     $the_volume = '';
                     $bad_data = true;
                 }
                 if (
-                $the_issue === '_' ||
-                $the_issue === '0' ||
-                $the_issue === 'null' ||
-                $the_issue === 'ja' ||
-                $the_issue === 'n/a' ||
-                $the_issue === 'Online edition' ||
-                $the_issue === 'online' ||
-                $the_issue === 'Online' ||
-                $the_issue === 'in press' ||
-                $the_issue === 'In press' ||
-                $the_issue === 'ahead-of-print' ||
-                $the_issue === 'Forthcoming' ||
-                $the_issue === 'forthcoming'
+                    $the_issue === '_' ||
+                    $the_issue === '0' ||
+                    $the_issue === 'null' ||
+                    $the_issue === 'ja' ||
+                    $the_issue === 'n/a' ||
+                    $the_issue === 'Online edition' ||
+                    $the_issue === 'online' ||
+                    $the_issue === 'Online' ||
+                    $the_issue === 'in press' ||
+                    $the_issue === 'In press' ||
+                    $the_issue === 'ahead-of-print' ||
+                    $the_issue === 'Forthcoming' ||
+                    $the_issue === 'forthcoming'
                 ) {
                     $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
                     $the_issue = '';
@@ -588,22 +588,22 @@ final class Template
                     $bad_data = true;
                 }
                 if (
-                $the_title === '_' ||
-                $the_title === 'null' ||
-                $the_title === '[No title found]' ||
-                $the_title === 'Archived copy' ||
-                $the_title === 'JSTOR' ||
-                $the_title === 'ShieldSquare Captcha' ||
-                $the_title === 'Shibboleth Authentication Request' ||
-                $the_title === 'Pubmed' ||
-                $the_title === 'usurped title' ||
-                $the_title === 'Pubmed Central' ||
-                $the_title === 'Optica Publishing Group' ||
-                $the_title === 'BioOne' ||
-                $the_title === 'IEEE Xplore' ||
-                $the_title === 'ScienceDirect' ||
-                $the_title === 'Science Direct' ||
-                $the_title === 'Validate User'
+                    $the_title === '_' ||
+                    $the_title === 'null' ||
+                    $the_title === '[No title found]' ||
+                    $the_title === 'Archived copy' ||
+                    $the_title === 'JSTOR' ||
+                    $the_title === 'ShieldSquare Captcha' ||
+                    $the_title === 'Shibboleth Authentication Request' ||
+                    $the_title === 'Pubmed' ||
+                    $the_title === 'usurped title' ||
+                    $the_title === 'Pubmed Central' ||
+                    $the_title === 'Optica Publishing Group' ||
+                    $the_title === 'BioOne' ||
+                    $the_title === 'IEEE Xplore' ||
+                    $the_title === 'ScienceDirect' ||
+                    $the_title === 'Science Direct' ||
+                    $the_title === 'Validate User'
                 ) {
                     // title=none is often because title is "reviewed work....
                     $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
@@ -627,14 +627,14 @@ final class Template
                     $bad_data = true;
                 }
                 if (
-                str_i_same($the_journal, 'JSTOR') ||
-                $the_journal === '_' ||
-                str_i_same($the_journal, 'BioOne') ||
-                str_i_same($the_journal, 'IEEE Xplore') ||
-                str_i_same($the_journal, 'PubMed') ||
-                str_i_same($the_journal, 'PubMed Central') ||
-                str_i_same($the_journal, 'ScienceDirect') ||
-                str_i_same($the_journal, 'Science Direct')
+                    str_i_same($the_journal, 'JSTOR') ||
+                    $the_journal === '_' ||
+                    str_i_same($the_journal, 'BioOne') ||
+                    str_i_same($the_journal, 'IEEE Xplore') ||
+                    str_i_same($the_journal, 'PubMed') ||
+                    str_i_same($the_journal, 'PubMed Central') ||
+                    str_i_same($the_journal, 'ScienceDirect') ||
+                    str_i_same($the_journal, 'Science Direct')
                 ) {
                     $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                     $the_journal = '';
@@ -917,9 +917,9 @@ final class Template
                 if ($this->has($possible)) {
                     $url = $this->get($possible);
                     if (
-                    mb_stripos($url, 'CITATION_BOT') === false &&
-                    !preg_match('~^https?://[^/]+/?$~', $url) && // Ignore just a hostname
-                    preg_match(REGEXP_IS_URL, $url) === 1
+                        mb_stripos($url, 'CITATION_BOT') === false &&
+                        !preg_match('~^https?://[^/]+/?$~', $url) && // Ignore just a hostname
+                        preg_match(REGEXP_IS_URL, $url) === 1
                     ) {
                         $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
                         $this->get_identifiers_from_url($url);
@@ -999,15 +999,15 @@ final class Template
         // FYI: some references will never be considered complete
         $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
         if (
-        mb_strpos($possible_extra_authors, ' and ') !== false ||
-        mb_strpos($possible_extra_authors, '; ') !== false ||
-        mb_strpos($possible_extra_authors, 'et al ') !== false ||
-        mb_strpos($possible_extra_authors, 'et al.') !== false ||
-        mb_strpos($possible_extra_authors, ' et al') !== false ||
-        mb_substr_count($possible_extra_authors, ',') > 3 ||
-        $this->has('author2') ||
-        $this->has('last2') ||
-        $this->has('surname2')
+            mb_strpos($possible_extra_authors, ' and ') !== false ||
+            mb_strpos($possible_extra_authors, '; ') !== false ||
+            mb_strpos($possible_extra_authors, 'et al ') !== false ||
+            mb_strpos($possible_extra_authors, 'et al.') !== false ||
+            mb_strpos($possible_extra_authors, ' et al') !== false ||
+            mb_substr_count($possible_extra_authors, ',') > 3 ||
+            $this->has('author2') ||
+            $this->has('last2') ||
+            $this->has('surname2')
         ) {
             $two_authors = true;
         } else {
@@ -1028,9 +1028,9 @@ final class Template
         }
         // And now everything else
         if (
-        $this->blank(['pages', 'page', 'at', 'article-number']) ||
-        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
-        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // It claims to be on page one
+            $this->blank(['pages', 'page', 'at', 'article-number']) ||
+            preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
+            (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // It claims to be on page one
         ) {
             return true;
         }
@@ -1521,10 +1521,10 @@ final class Template
             case "author89":
             case "author99":
                 if (
-                $this->blank(array_merge(COAUTHOR_ALIASES, ["last{$auNo}", "author{$auNo}"])) &&
-                mb_strpos($this->get('author') . $this->get('authors'), ' and ') === false &&
-                mb_strpos($this->get('author') . $this->get('authors'), '; ') === false &&
-                mb_strpos($this->get('author') . $this->get('authors'), ' et al') === false
+                    $this->blank(array_merge(COAUTHOR_ALIASES, ["last{$auNo}", "author{$auNo}"])) &&
+                    mb_strpos($this->get('author') . $this->get('authors'), ' and ') === false &&
+                    mb_strpos($this->get('author') . $this->get('authors'), '; ') === false &&
+                    mb_strpos($this->get('author') . $this->get('authors'), ' et al') === false
                 ) {
                     $value = clean_up_full_names($value);
                     $au = split_author($value);
@@ -1719,8 +1719,8 @@ final class Template
                     return false;
                 }
                 if (
-                ($this->blank('date') || in_array(mb_trim(mb_strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES, true)) &&
-                ($this->blank('year') || in_array(mb_trim(mb_strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES, true))
+                    ($this->blank('date') || in_array(mb_trim(mb_strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES, true)) &&
+                    ($this->blank('year') || in_array(mb_trim(mb_strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES, true))
                 ) {
                     // Delete any "in press" dates.
                     $this->forget('year'); // "year" is discouraged
@@ -1953,9 +1953,9 @@ final class Template
                     return false;
                 }
                 if (
-                $this->blank($param_name) ||
-                in_array($this->get($param_name), GOOFY_TITLES, true) ||
-                (mb_stripos($this->get($param_name), 'EZProxy') !== false && mb_stripos($value, 'EZProxy') === false)
+                    $this->blank($param_name) ||
+                    in_array($this->get($param_name), GOOFY_TITLES, true) ||
+                    (mb_stripos($this->get($param_name), 'EZProxy') !== false && mb_stripos($value, 'EZProxy') === false)
                 ) {
                     foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
                         if (str_equivalent($this->get($worky), sanitize_string($value))) {
@@ -2102,39 +2102,39 @@ final class Template
                 $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
                 $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
                 if (
-                mb_stripos($all_page_values, 'see ') !== false || // Someone is pointing to a specific part
-                mb_stripos($all_page_values, 'table') !== false ||
-                mb_stripos($all_page_values, 'footnote') !== false ||
-                mb_stripos($all_page_values, 'endnote') !== false ||
-                mb_stripos($all_page_values, 'article') !== false ||
-                mb_stripos($all_page_values, '[') !== false ||
-                mb_stripos($all_page_values, ',') !== false ||
-                mb_stripos($all_page_values, '(') !== false ||
-                mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== false
+                    mb_stripos($all_page_values, 'see ') !== false || // Someone is pointing to a specific part
+                    mb_stripos($all_page_values, 'table') !== false ||
+                    mb_stripos($all_page_values, 'footnote') !== false ||
+                    mb_stripos($all_page_values, 'endnote') !== false ||
+                    mb_stripos($all_page_values, 'article') !== false ||
+                    mb_stripos($all_page_values, '[') !== false ||
+                    mb_stripos($all_page_values, ',') !== false ||
+                    mb_stripos($all_page_values, '(') !== false ||
+                    mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== false
                 ) {
                     // A comment or template will block the bot
                     return false;
                 }
                 if (
-                $this->blank(PAGE_ALIASES) || // no page yet set
-                $all_page_values === "" ||
-                (str_i_same($all_page_values, 'no') || str_i_same($all_page_values, 'none')) || // Is exactly "no" or "none"
-                (mb_strpos(mb_strtolower($all_page_values), 'no') !== false && $this->blank('at')) || // "None" or "no" contained within something other than "at"
-                (str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
-                str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value) || // No dash already // Document with bogus pre-print page ranges
-                ($value !== '1' &&
-                mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
-                ($all_page_values === '1' || mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') && // Old is 1-
-                ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // Less than two years old
+                    $this->blank(PAGE_ALIASES) || // no page yet set
+                    $all_page_values === "" ||
+                    (str_i_same($all_page_values, 'no') || str_i_same($all_page_values, 'none')) || // Is exactly "no" or "none"
+                    (mb_strpos(mb_strtolower($all_page_values), 'no') !== false && $this->blank('at')) || // "None" or "no" contained within something other than "at"
+                    (str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
+                    str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value) || // No dash already // Document with bogus pre-print page ranges
+                    ($value !== '1' &&
+                    mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
+                    ($all_page_values === '1' || mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') && // Old is 1-
+                    ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // Less than two years old
                 ) {
                     if ($param_name === "pages" && preg_match('~^\d{1,}$~', $value)) {
                         $param_name = 'page';
                     } // No dashes, just numbers
                     // One last check to see if old template had a specific page listed
                     if (
-                    $all_page_values !== '' &&
-                    preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
-                    preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?~u", $all_page_values, $oldpagenos)
+                        $all_page_values !== '' &&
+                        preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
+                        preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?~u", $all_page_values, $oldpagenos)
                     ) {
                         // Just had a single number before
                         $first_page = (int) $newpagenos[1];
@@ -2544,12 +2544,12 @@ final class Template
 
             case 'type':
                 if (
-                $this->blank($param_name) &&
-                !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
-                mb_strlen($value) === mb_strlen($value) &&
-                mb_strpos($value, 'purl.org') === false &&
-                mb_strpos($value, 'dcmitype') === false &&
-                mb_strpos($value, 'http') === false
+                    $this->blank($param_name) &&
+                    !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
+                    mb_strlen($value) === mb_strlen($value) &&
+                    mb_strpos($value, 'purl.org') === false &&
+                    mb_strpos($value, 'dcmitype') === false &&
+                    mb_strpos($value, 'http') === false
                 ) {
                     return $this->add($param_name, sanitize_string($value));
                 }
@@ -2673,11 +2673,11 @@ final class Template
             return;
         } // Zotero does not know difference between editors and authors often
         if (
-        in_array(mb_strtolower($author), BAD_AUTHORS, true) === false &&
-        in_array(mb_strtolower($forename), BAD_AUTHORS, true) === false &&
-        in_array(mb_strtolower($forename . ' ' . $author), BAD_AUTHORS, true) === false &&
-        author_is_human($author) &&
-        author_is_human($forename)
+            in_array(mb_strtolower($author), BAD_AUTHORS, true) === false &&
+            in_array(mb_strtolower($forename), BAD_AUTHORS, true) === false &&
+            in_array(mb_strtolower($forename . ' ' . $author), BAD_AUTHORS, true) === false &&
+            author_is_human($author) &&
+            author_is_human($forename)
         ) {
             while (
             preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails
@@ -3049,11 +3049,11 @@ final class Template
                 $comp = str_replace('#', "", $comp);
             }
             if (
-            $shortest < 3 &&
-            mb_strlen($test_dat) > 0 &&
-            (float) similar_text($closest, $test_dat) / (float) mb_strlen($test_dat) > 0.4 &&
-            ((float) $shortest + 1.0 < $shortish || // No close competitor
-            mb_strlen($closest) > mb_strlen($comp))
+                $shortest < 3 &&
+                mb_strlen($test_dat) > 0 &&
+                (float) similar_text($closest, $test_dat) / (float) mb_strlen($test_dat) > 0.4 &&
+                ((float) $shortest + 1.0 < $shortish || // No close competitor
+                mb_strlen($closest) > mb_strlen($comp))
             ) {
                 // remove leading spaces or hyphens (which may have been typoed for an equals)
                 if (preg_match("~^[ -+]*(.+)~", (string) mb_substr($dat, mb_strlen($closest)), $match)) {
@@ -3394,7 +3394,7 @@ final class Template
                     case "url": // Untrustable: used by bozos
                         break;
                     default:
-                           report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
+                        report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
                 }
             }
         }
@@ -3471,9 +3471,9 @@ final class Template
 
         foreach ($this->param as $p) {
             if (
-            mb_strlen($p->param) > 0 &&
-            !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
-            mb_stripos($p->param, 'CITATION_BOT') === false
+                mb_strlen($p->param) > 0 &&
+                !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
+                mb_stripos($p->param, 'CITATION_BOT') === false
             ) {
                 if (mb_trim($p->val) === '') {
                     if (mb_stripos($p->param, 'DUPLICATE_') === 0) {
@@ -3698,41 +3698,41 @@ final class Template
             return;
         } // Need to lose conference first
         if (
-        (in_array($this->wikiname(), TEMPLATES_WE_RENAME, true) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
-        ($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
-        ($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME, true)) // In rare cases when we are positive that cite news is really cite journal
+            (in_array($this->wikiname(), TEMPLATES_WE_RENAME, true) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
+            ($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
+            ($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME, true)) // In rare cases when we are positive that cite news is really cite journal
         ) {
             if ($new_name === 'cite arxiv') {
                 if (
-                !$this->blank(
-                array_merge(
-                [
-                 'website',
-                 'displayauthors',
-                 'display-authors',
-                 'access-date',
-                 'accessdate',
-                 'translator',
-                 'translator1',
-                 'translator1-first',
-                 'translator1-given',
-                 'translator1-last',
-                 'translator1-surname',
-                 'translator-first',
-                 'translator-first1',
-                 'translator-given',
-                 'translator-given1',
-                 'translator-last',
-                 'translator-last1',
-                 'translator-surname',
-                 'translator-surname1',
-                 'display-editors',
-                 'displayeditors',
-                 'url',
-                ],
-                FIRST_EDITOR_ALIASES
-                )
-                )
+                    !$this->blank(
+                        array_merge(
+                            [
+                                'website',
+                                'displayauthors',
+                                'display-authors',
+                                'access-date',
+                                'accessdate',
+                                'translator',
+                                'translator1',
+                                'translator1-first',
+                                'translator1-given',
+                                'translator1-last',
+                                'translator1-surname',
+                                'translator-first',
+                                'translator-first1',
+                                'translator-given',
+                                'translator-given1',
+                                'translator-last',
+                                'translator-last1',
+                                'translator-surname',
+                                'translator-surname1',
+                                'display-editors',
+                                'displayeditors',
+                                'url',
+                            ],
+                            FIRST_EDITOR_ALIASES
+                        )
+                    )
                 ) {
                     return;
                 } // Unsupported parameters
@@ -3870,14 +3870,14 @@ final class Template
         }
         if ($this->has($param)) {
             if (
-            mb_stripos($param, 'separator') === false && // lone punctuation valid
-            mb_stripos($param, 'postscript') === false && // periods valid
-            mb_stripos($param, 'url') === false && // all characters are valid
-            mb_stripos($param, 'quot') === false && // someone might have formatted the quote
-            mb_stripos($param, 'link') === false && // inter-wiki links
-            mb_stripos($param, 'mask') === false && // sometimes used for asian names is a very odd way
-            $param !== 'script-title' && // these can be very weird
-            (($param !== 'chapter' && $param !== 'title') || mb_strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
+                mb_stripos($param, 'separator') === false && // lone punctuation valid
+                mb_stripos($param, 'postscript') === false && // periods valid
+                mb_stripos($param, 'url') === false && // all characters are valid
+                mb_stripos($param, 'quot') === false && // someone might have formatted the quote
+                mb_stripos($param, 'link') === false && // inter-wiki links
+                mb_stripos($param, 'mask') === false && // sometimes used for asian names is a very odd way
+                $param !== 'script-title' && // these can be very weird
+                (($param !== 'chapter' && $param !== 'title') || mb_strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
             ) {
                 $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
                 $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
@@ -3921,10 +3921,10 @@ final class Template
                 $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
             }
             if (
-            mb_stripos($param, 'separator') === false && // punctuation valid
-            mb_stripos($param, 'url') === false && // everything is valid
-            mb_stripos($param, 'link') === false && // inter-wiki links
-            $param !== 'trans-title' // these can be very weird
+                mb_stripos($param, 'separator') === false && // punctuation valid
+                mb_stripos($param, 'url') === false && // everything is valid
+                mb_stripos($param, 'link') === false && // inter-wiki links
+                $param !== 'trans-title' // these can be very weird
             ) {
                 // Non-breaking spaces at ends
                 $this->set($param, mb_trim($this->get($param), " \t\n\r\0\x0B"));
@@ -3943,14 +3943,14 @@ final class Template
             $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
         }
         if (
-        in_array(
-        str_replace(['-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], '', mb_strtolower($param)),
-        LINK_LIST,
-        true
-        ) &&
-        $this->has($param) &&
-        mb_stripos($this->get($param), 'http') === false &&
-        mb_stripos($this->get($param), 'PLACEHOLDER') === false
+            in_array(
+                str_replace(['-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'], '', mb_strtolower($param)),
+                LINK_LIST,
+                true
+            ) &&
+            $this->has($param) &&
+            mb_stripos($this->get($param), 'http') === false &&
+            mb_stripos($this->get($param), 'PLACEHOLDER') === false
         ) {
             $this->set($param, safe_preg_replace('~_~u', ' ', $this->get($param)));
         }
@@ -3982,8 +3982,8 @@ final class Template
 
                 case 'agency':
                     if (
-                    in_array($this->get('agency'), BAD_AGENT, true) &&
-                    in_array($this->get('publisher'), BAD_AGENT_PUBS, true)
+                        in_array($this->get('agency'), BAD_AGENT, true) &&
+                        in_array($this->get('publisher'), BAD_AGENT_PUBS, true)
                     ) {
                         $this->forget('publisher');
                         $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
@@ -4102,12 +4102,12 @@ final class Template
                     if ($pmatch[2] && $pmatch[1] === 'last') {
                         $the_author = $this->get($param);
                         if (
-                        mb_substr($the_author, 0, 2) === '[[' &&
-                        mb_substr($the_author, -2) === ']]' &&
-                        mb_substr_count($the_author, '[[') === 1 &&
-                        mb_substr_count($the_author, ']]') === 1 &&
-                        mb_strpos($the_author, 'CITATION_BOT') === false &&
-                        mb_strpos($the_author, '{{!}}') === false
+                            mb_substr($the_author, 0, 2) === '[[' &&
+                            mb_substr($the_author, -2) === ']]' &&
+                            mb_substr_count($the_author, '[[') === 1 &&
+                            mb_substr_count($the_author, ']]') === 1 &&
+                            mb_strpos($the_author, 'CITATION_BOT') === false &&
+                            mb_strpos($the_author, '{{!}}') === false
                         ) {
                             // Has a normal wikilink
                             $did_something = false;
@@ -4416,12 +4416,12 @@ final class Template
                         // @codeCoverageIgnoreStart
                         if ($this->has('pmc') || $this->has('pmid')) {
                             if (
-                            mb_stripos($doi, '10.1210/me.') === 0 ||
-                            mb_stripos($doi, '10.1210/jc.') === 0 ||
-                            mb_stripos($doi, '10.1210/er.') === 0 ||
-                            mb_stripos($doi, '10.1210/en.') === 0 ||
-                            mb_stripos($doi, '10.1128/.61') === 0 ||
-                            mb_stripos($doi, '10.1379/1466-1268') === 0
+                                mb_stripos($doi, '10.1210/me.') === 0 ||
+                                mb_stripos($doi, '10.1210/jc.') === 0 ||
+                                mb_stripos($doi, '10.1210/er.') === 0 ||
+                                mb_stripos($doi, '10.1210/en.') === 0 ||
+                                mb_stripos($doi, '10.1128/.61') === 0 ||
+                                mb_stripos($doi, '10.1379/1466-1268') === 0
                             ) {
                                 $this->forget('doi'); // Need updated and replaced
                                 return;
@@ -4775,12 +4775,12 @@ final class Template
                     }
 
                     if (
-                    (mb_substr($periodical, 0, 2) !== "[[" || // Only remove partial wikilinks
-                    mb_substr($periodical, -2) !== "]]" ||
-                    mb_substr_count($periodical, '[[') !== 1 ||
-                    mb_substr_count($periodical, ']]') !== 1) &&
-                    !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical) &&
-                    !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
+                        (mb_substr($periodical, 0, 2) !== "[[" || // Only remove partial wikilinks
+                        mb_substr($periodical, -2) !== "]]" ||
+                        mb_substr_count($periodical, '[[') !== 1 ||
+                        mb_substr_count($periodical, ']]') !== 1) &&
+                        !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical) &&
+                        !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
                     ) {
                         $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
                         $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
@@ -5033,11 +5033,11 @@ final class Template
                     }
                     $publisher = mb_strtolower($this->get($param));
                     if (
-                    $this->wikiname() === 'cite journal' &&
-                    $this->has('journal') &&
-                    $this->has('title') &&
-                    !$this->blank(['pmc', 'pmid']) &&
-                    (mb_strpos($publisher, 'national center for biotechnology information') !== false || mb_strpos($publisher, 'u.s. national library of medicine') !== false)
+                        $this->wikiname() === 'cite journal' &&
+                        $this->has('journal') &&
+                        $this->has('title') &&
+                        !$this->blank(['pmc', 'pmid']) &&
+                        (mb_strpos($publisher, 'national center for biotechnology information') !== false || mb_strpos($publisher, 'u.s. national library of medicine') !== false)
                     ) {
                         $this->forget($param);
                         return;
@@ -5178,12 +5178,12 @@ final class Template
                         $this->set('via', 'Legacy.com');
                     }
                     if (
-                    $publisher === 'the washington post' ||
-                    $publisher === 'washington post' ||
-                    $publisher === 'the washington post company' ||
-                    $publisher === 'the washington post websites' ||
-                    $publisher === 'washington post websites' ||
-                    $publisher === 'the washington post (subscription required)'
+                        $publisher === 'the washington post' ||
+                        $publisher === 'washington post' ||
+                        $publisher === 'the washington post company' ||
+                        $publisher === 'the washington post websites' ||
+                        $publisher === 'washington post websites' ||
+                        $publisher === 'the washington post (subscription required)'
                     ) {
                         foreach (WORK_ALIASES as $work) {
                             if (mb_stripos($this->get($work), 'washington post') !== false || mb_stripos($this->get($work), 'washingtonpost.com') !== false) {
@@ -5195,57 +5195,57 @@ final class Template
                             }
                         }
                         if (
-                        in_array(
-                        mb_strtolower($this->get('work')),
-                        [
-                        'local',
-                        'editorial',
-                        'international',
-                        'national',
-                        'communication',
-                        'letter to the editor',
-                        'review',
-                        'coronavirus',
-                        'race & reckoning',
-                        'politics',
-                        'opinion',
-                        'opinions',
-                        'investigations',
-                        'tech',
-                        'technology',
-                        'world',
-                        'sports',
-                        'world',
-                        'arts & entertainment',
-                        'arts',
-                        'entertainment',
-                        'u.s.',
-                        'n.y.',
-                        'business',
-                        'science',
-                        'health',
-                        'books',
-                        'style',
-                        'food',
-                        'travel',
-                        'real estate',
-                        'magazine',
-                        'economy',
-                        'markets',
-                        'life & arts',
-                        'uk news',
-                        'world news',
-                        'health news',
-                        'lifestyle',
-                        'photos',
-                        'education',
-                        'arts',
-                        'life',
-                        'puzzles',
-                        ],
-                        true
-                        ) &&
-                        $this->blank('department')
+                            in_array(
+                                mb_strtolower($this->get('work')),
+                                [
+                                    'local',
+                                    'editorial',
+                                    'international',
+                                    'national',
+                                    'communication',
+                                    'letter to the editor',
+                                    'review',
+                                    'coronavirus',
+                                    'race & reckoning',
+                                    'politics',
+                                    'opinion',
+                                    'opinions',
+                                    'investigations',
+                                    'tech',
+                                    'technology',
+                                    'world',
+                                    'sports',
+                                    'world',
+                                    'arts & entertainment',
+                                    'arts',
+                                    'entertainment',
+                                    'u.s.',
+                                    'n.y.',
+                                    'business',
+                                    'science',
+                                    'health',
+                                    'books',
+                                    'style',
+                                    'food',
+                                    'travel',
+                                    'real estate',
+                                    'magazine',
+                                    'economy',
+                                    'markets',
+                                    'life & arts',
+                                    'uk news',
+                                    'world news',
+                                    'health news',
+                                    'lifestyle',
+                                    'photos',
+                                    'education',
+                                    'arts',
+                                    'life',
+                                    'puzzles',
+                                ],
+                                true
+                            ) &&
+                            $this->blank('department')
                         ) {
                             $this->rename('work', 'department');
                             $this->rename($param, 'work');
@@ -5327,8 +5327,8 @@ final class Template
                             }
                         }
                         if (
-                        in_array(mb_strtolower($this->get('work')), DEPARTMENTS, true) &&
-                        $this->blank('department')
+                            in_array(mb_strtolower($this->get('work')), DEPARTMENTS, true) &&
+                            $this->blank('department')
                         ) {
                             $this->rename('work', 'department');
                             $this->rename($param, 'work');
@@ -5550,8 +5550,8 @@ final class Template
                         $this->add_if_new('edition', mb_trim($matches[2]));
                     }
                     if (
-                    mb_substr_count($title, '[[') !== 1 || // Completely remove multiple wikilinks
-                    mb_substr_count($title, ']]') !== 1
+                        mb_substr_count($title, '[[') !== 1 || // Completely remove multiple wikilinks
+                        mb_substr_count($title, ']]') !== 1
                     ) {
                         if (mb_stripos($title, 'reviewed work') === false) {
                             $title = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $title); // Convert [[X]] wikilinks into X
@@ -5623,18 +5623,18 @@ final class Template
                         $this->set($param, 'http://' . $matches[0]);
                     }
                     if (
-                    preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param)) ||
-                    preg_match('~https://www\.bloomberg\.com/tosv2\.html~', $this->get($param)) ||
-                    preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param)) ||
-                    preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
-                    preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
-                    preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
-                    preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
-                    preg_match('~ancestryinstitution~', $this->get($param)) ||
-                    preg_match('~ancestry\.com/cs/offers~', $this->get($param)) ||
-                    preg_match('~myprivacy\.dpgmedia\.nl~', $this->get($param)) ||
-                    preg_match('~^https://web\.archive\.org/web/\d+/https://wikipedialibrary\.wmflabs\.org/\?next_url=/ezproxy/~', $this->get($param)) ||
-                    preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))
+                        preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param)) ||
+                        preg_match('~https://www\.bloomberg\.com/tosv2\.html~', $this->get($param)) ||
+                        preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param)) ||
+                        preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
+                        preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
+                        preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
+                        preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
+                        preg_match('~ancestryinstitution~', $this->get($param)) ||
+                        preg_match('~ancestry\.com/cs/offers~', $this->get($param)) ||
+                        preg_match('~myprivacy\.dpgmedia\.nl~', $this->get($param)) ||
+                        preg_match('~^https://web\.archive\.org/web/\d+/https://wikipedialibrary\.wmflabs\.org/\?next_url=/ezproxy/~', $this->get($param)) ||
+                        preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))
                     ) {
                         $this->forget($param);
                         if ($this->get('title') === 'Validate User') {
@@ -5663,13 +5663,13 @@ final class Template
                     }
                     // Clean up a bunch on non-archive URLs
                     if (
-                    mb_stripos($this->get($param), 'archive') === false &&
-                    mb_stripos($this->get($param), 'webcitation') === false &&
-                    mb_stripos($this->get($param), 'perma.') === false &&
-                    mb_stripos($this->get($param), 'wayback') === false &&
-                    mb_stripos($this->get($param), 'webharvest') === false &&
-                    mb_stripos($this->get($param), 'freezepage') === false &&
-                    mb_stripos($this->get($param), 'petabox.bibalex.org') === false
+                        mb_stripos($this->get($param), 'archive') === false &&
+                        mb_stripos($this->get($param), 'webcitation') === false &&
+                        mb_stripos($this->get($param), 'perma.') === false &&
+                        mb_stripos($this->get($param), 'wayback') === false &&
+                        mb_stripos($this->get($param), 'webharvest') === false &&
+                        mb_stripos($this->get($param), 'freezepage') === false &&
+                        mb_stripos($this->get($param), 'petabox.bibalex.org') === false
                     ) {
                         if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
                             $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
@@ -5687,9 +5687,9 @@ final class Template
                         } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
                             $this->set($param, $matches[1]);
                         } elseif (
-                        preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param)) ||
-                        preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param)) ||
-                        preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))
+                            preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param)) ||
+                            preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param)) ||
+                            preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))
                         ) {
                             $this->forget($param);
                             return;
@@ -5755,9 +5755,9 @@ final class Template
                     } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     } elseif (
-                    preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param)) ||
-                    preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param)) ||
-                    preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))
+                        preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param)) ||
+                        preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param)) ||
+                        preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))
                     ) {
                         if ($this->blank(['archive-url', 'archiveurl'])) {
                             // Sometimes people grabbed a snap of it
@@ -6102,11 +6102,11 @@ final class Template
 
                 case 'work':
                     if (
-                    $this->has('work') &&
-                    (str_equivalent($this->get('work'), $this->get('series')) ||
-                    str_equivalent($this->get('work'), $this->get('title')) ||
-                    str_equivalent($this->get('work'), $this->get('journal')) ||
-                    str_equivalent($this->get('work'), $this->get('website')))
+                        $this->has('work') &&
+                        (str_equivalent($this->get('work'), $this->get('series')) ||
+                        str_equivalent($this->get('work'), $this->get('title')) ||
+                        str_equivalent($this->get('work'), $this->get('journal')) ||
+                        str_equivalent($this->get('work'), $this->get('website')))
                     ) {
                         $this->forget('work');
                         return;
@@ -6210,21 +6210,19 @@ final class Template
                         } elseif (in_array($this->wikiname(), ['cite arxiv', 'cite biorxiv', 'cite citeseerx', 'cite ssrn'], true)) {
                             $this->forget('via');
                         } elseif (
-                        $this->has('pmc') ||
-                        $this->has('pmid') ||
-                        ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES)) ||
-                        $this->has('jstor') ||
-                        $this->has('arxiv') ||
-                        $this->has('isbn') ||
-                        ($this->has('issn') && $this->has('title')) ||
-                        $this->has('oclc') ||
-                        $this->has('lccn') ||
-                        $this->has('bibcode')
+                            $this->has('pmc') ||
+                            $this->has('pmid') ||
+                            ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES)) ||
+                            $this->has('jstor') ||
+                            $this->has('arxiv') ||
+                            $this->has('isbn') ||
+                            ($this->has('issn') && $this->has('title')) ||
+                            $this->has('oclc') ||
+                            $this->has('lccn') ||
+                            $this->has('bibcode')
                         ) {
                             $via = mb_trim(str_replace(['[', ']'], '', mb_strtolower($this->get('via'))));
-                            if (
-                            in_array($via, BAD_VIA, true)
-                            ) {
+                            if (in_array($via, BAD_VIA, true)) {
                                 $this->forget('via');
                                 return;
                             }
@@ -6445,8 +6443,8 @@ final class Template
                         $this->set($param, $value);
                     }
                     if (
-                    mb_substr_count($value, "–") === 1 && // Exactly one EN_DASH.
-                    can_safely_modify_dashes($value)
+                        mb_substr_count($value, "–") === 1 && // Exactly one EN_DASH.
+                        can_safely_modify_dashes($value)
                     ) {
                         if ($pmatch[1] === 'page') {
                             $bad = true;
@@ -6718,11 +6716,11 @@ final class Template
             }
             // Double check these troublesome "journals"
             if (
-            $this->is_book_series('journal') ||
-            $this->is_book_series('series') ||
-            $this->is_book_series('chapter') ||
-            $this->is_book_series('title') ||
-            ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))
+                $this->is_book_series('journal') ||
+                $this->is_book_series('series') ||
+                $this->is_book_series('chapter') ||
+                $this->is_book_series('title') ||
+                ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))
             ) {
                 // Do it twice - since things change
                 $this->tidy_parameter('series');
@@ -6757,11 +6755,11 @@ final class Template
                 $this->forget('volume');
             }
             if (
-            $this->has('doi') &&
-            $this->has('issue') &&
-            $this->get('issue') === $this->get('volume') && // Issue = Volume and not null
-            $this->get('issue') === $this->get_without_comments_and_placeholders('issue') &&
-            $this->get('volume') === $this->get_without_comments_and_placeholders('volume')
+                $this->has('doi') &&
+                $this->has('issue') &&
+                $this->get('issue') === $this->get('volume') && // Issue = Volume and not null
+                $this->get('issue') === $this->get_without_comments_and_placeholders('issue') &&
+                $this->get('volume') === $this->get_without_comments_and_placeholders('volume')
             ) {
                 // No comments to flag problems
                 $doi_template = $this->get_without_comments_and_placeholders('doi');
@@ -6821,8 +6819,8 @@ final class Template
                 }
             }
             if (
-            ($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
-            (mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0 || mb_strpos($this->get('isbn'), '978-019') === 0)
+                ($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
+                (mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0 || mb_strpos($this->get('isbn'), '978-019') === 0)
             ) {
                 $this->change_name_to('cite book', true, true);
             }
@@ -6854,9 +6852,9 @@ final class Template
                 }
             }
             if (
-            !$this->blank(DOI_BROKEN_ALIASES) &&
-            $this->has('jstor') &&
-            (mb_strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') || mb_substr($this->get('doi'), 0, -2) === $this->get('jstor') || mb_substr($this->get('doi'), 0, -3) === $this->get('jstor'))
+                !$this->blank(DOI_BROKEN_ALIASES) &&
+                $this->has('jstor') &&
+                (mb_strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') || mb_substr($this->get('doi'), 0, -2) === $this->get('jstor') || mb_substr($this->get('doi'), 0, -3) === $this->get('jstor'))
             ) {
                 $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
                 foreach (DOI_BROKEN_ALIASES as $alias) {
@@ -7026,18 +7024,18 @@ final class Template
                 $this->change_name_to('cite book', true, true);
             }
             if (
-            ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
-            $this->blank(WORK_ALIASES) &&
-            $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
-            $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
-            $this->has('url')
+                ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
+                $this->blank(WORK_ALIASES) &&
+                $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+                $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
+                $this->has('url')
             ) {
                 $url = $this->get('url');
                 if (
-                mb_stripos($url, 'CITATION_BOT') === false &&
-                !preg_match('~^https?://[^/]+/*?$~', $url) && // Ignore just a hostname
-                preg_match(REGEXP_IS_URL, $url) === 1 &&
-                preg_match('~^https?://([^/]+)/~', $url, $matches)
+                    mb_stripos($url, 'CITATION_BOT') === false &&
+                    !preg_match('~^https?://[^/]+/*?$~', $url) && // Ignore just a hostname
+                    preg_match(REGEXP_IS_URL, $url) === 1 &&
+                    preg_match('~^https?://([^/]+)/~', $url, $matches)
                 ) {
                     $hostname = mb_strtolower($matches[1]);
                     $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
@@ -7050,10 +7048,10 @@ final class Template
                     $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
                     $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
                     if (
-                    str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
-                    str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
-                    str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
-                    str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
+                        str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
+                        str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
+                        str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
+                        str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
                     ) {
                         foreach (HOSTNAME_MAP as $i_key => $i_value) {
                             // Scan longer url first
@@ -7350,12 +7348,12 @@ final class Template
                     $p->val = $new_value;
                 }
                 if (
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === false &&
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === false &&
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === false &&
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_volume') === false &&
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_issue') === false &&
-                mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === false
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === false &&
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === false &&
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === false &&
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_volume') === false &&
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_issue') === false &&
+                    mb_strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === false
                 ) {
                     report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) . "\"");
                     $this->mod_names = true;
@@ -7559,18 +7557,21 @@ final class Template
     {
         $this->forgetter($par, false);
     }
+
     public function forget(string $par): void
     {
         $this->forgetter($par, true);
     }
+
     private function forgetter(string $par, bool $echo_forgetting): void
     {
         if ($par === 'doi-broken-date' &&
-         $this->has('doi-broken-date') &&
-         !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) &&
-         !isset(NULL_DOI_ANNOYING[$this->get('doi')]) && // Dropped for evilness
-         $this->has('doi')) {
-            bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
+            $this->has('doi-broken-date') &&
+            !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) &&
+            !isset(NULL_DOI_ANNOYING[$this->get('doi')]) && // Dropped for evilness
+            $this->has('doi')
+        ) {
+                bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
         }
         // Do not call this function directly
         if (!$this->blank($par)) {
@@ -7859,18 +7860,18 @@ final class Template
         $data = mb_trim($data);
         $data = str_replace('--', '-', $data);
         if (
-        preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-        preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
-        preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
-        preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
-        preg_match("~^(\d+) \((\d+ Suppl\.* \d+)\)$~i", $data, $matches) ||
-        preg_match("~^(\d+) \((Suppl\.* \d+)\)$~i", $data, $matches) ||
-        preg_match("~^(\d+) (Suppl\.* \d+)\)$~i", $data, $matches) ||
-        preg_match("~^(\d+) *\((S\d+)\)$~i", $data, $matches) ||
-        preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
-        preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
-        preg_match("~^(\d+):(\d+)$~", $data, $matches) ||
-        preg_match("~^(\d+) +\(Iss(?:\.|\. | )(\d+)\)$~i", $data, $matches)
+            preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
+            preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+            preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
+            preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
+            preg_match("~^(\d+) \((\d+ Suppl\.* \d+)\)$~i", $data, $matches) ||
+            preg_match("~^(\d+) \((Suppl\.* \d+)\)$~i", $data, $matches) ||
+            preg_match("~^(\d+) (Suppl\.* \d+)\)$~i", $data, $matches) ||
+            preg_match("~^(\d+) *\((S\d+)\)$~i", $data, $matches) ||
+            preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
+            preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
+            preg_match("~^(\d+):(\d+)$~", $data, $matches) ||
+            preg_match("~^(\d+) +\(Iss(?:\.|\. | )(\d+)\)$~i", $data, $matches)
         ) {
             $possible_volume = $matches[1];
             $possible_issue = $matches[2];
@@ -7921,11 +7922,11 @@ final class Template
         }
         // Might not be a journal
         if (
-        !in_array($this->wikiname(), ['citation', 'cite journal', 'cite web', 'cite magazine'], true) &&
-        $this->get_without_comments_and_placeholders('issue') === '' &&
-        $this->get_without_comments_and_placeholders('number') === '' &&
-        $this->get_without_comments_and_placeholders('journal') === '' &&
-        $this->get_without_comments_and_placeholders('magazine') === ''
+            !in_array($this->wikiname(), ['citation', 'cite journal', 'cite web', 'cite magazine'], true) &&
+            $this->get_without_comments_and_placeholders('issue') === '' &&
+            $this->get_without_comments_and_placeholders('number') === '' &&
+            $this->get_without_comments_and_placeholders('journal') === '' &&
+            $this->get_without_comments_and_placeholders('magazine') === ''
         ) {
             return;
         }

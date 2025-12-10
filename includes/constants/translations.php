@@ -63,26 +63,26 @@ https://vi.wikipedia.org/wiki/Template:Cite_conference
 
 // WARNING: mb_strtolower versions - code also assumes that only the first character could be uppercase
 const MK_TEMPLATES_MAP = [
-  'наведено списание' => 'cite journal',
-  'наведена книга' => 'cite book',
-  'наведена мрежна страница' => 'cite web',
-  'наведен нестручен часопис' => 'cite magazine',
-  'наведување' => 'citation',
-  'наведен arxiv' => 'cite arxiv',
-  'наведени вести' => 'cite news',
-  'Hаведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this.  Use capital H so that it is not a duplicate key
-  'наведен научен собир' => 'cite conference',
+    'наведено списание' => 'cite journal',
+    'наведена книга' => 'cite book',
+    'наведена мрежна страница' => 'cite web',
+    'наведен нестручен часопис' => 'cite magazine',
+    'наведување' => 'citation',
+    'наведен arxiv' => 'cite arxiv',
+    'наведени вести' => 'cite news',
+    'Hаведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this.  Use capital H so that it is not a duplicate key
+    'наведен научен собир' => 'cite conference',
 ];
 const VI_TEMPLATES_MAP = [
-  'chú thích tập san học thuật' => 'cite journal',
-  'chú thích sách' => 'cite book',
-  'chú thích web' => 'cite web',
-  'chú thích tạp chí' => 'cite magazine',
-  'chú thích' => 'citation',
-  'chú thích arxiv' => 'cite arxiv',
-  'chú thích báo' => 'cite news',
-  'chú thích tài liệu' => 'cite document',
-  'chú thích hội thảo' => 'cite conference',
+    'chú thích tập san học thuật' => 'cite journal',
+    'chú thích sách' => 'cite book',
+    'chú thích web' => 'cite web',
+    'chú thích tạp chí' => 'cite magazine',
+    'chú thích' => 'citation',
+    'chú thích arxiv' => 'cite arxiv',
+    'chú thích báo' => 'cite news',
+    'chú thích tài liệu' => 'cite document',
+    'chú thích hội thảo' => 'cite conference',
 ];
 const ALL_TEMPLATES_MAP = [MK_TEMPLATES_MAP, VI_TEMPLATES_MAP];
 

@@ -95,10 +95,10 @@ function get_unpaywall_url(Template $template, string $doi): string
             } // Abstract only
             // Check if free location is already linked
             if (
-            ($template->has('pmc') && preg_match("~^https?://europepmc\.org/articles/pmc\d" . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d" . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d~", $oa_url)) ||
-            ($template->has('arxiv') && preg_match("~arxiv\.org/~", $oa_url)) ||
-            ($template->has('eprint') && preg_match("~arxiv\.org/~", $oa_url)) ||
-            ($template->has('citeseerx') && preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))
+                ($template->has('pmc') && preg_match("~^https?://europepmc\.org/articles/pmc\d" . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d" . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d~", $oa_url)) ||
+                ($template->has('arxiv') && preg_match("~arxiv\.org/~", $oa_url)) ||
+                ($template->has('eprint') && preg_match("~arxiv\.org/~", $oa_url)) ||
+                ($template->has('citeseerx') && preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))
             ) {
                 return 'have free';
             }
@@ -133,17 +133,17 @@ function get_unpaywall_url(Template $template, string $doi): string
             }
 
             if (
-            $template->has('arxiv') ||
-            $template->has('eprint') ||
-            $template->has('biorxiv') ||
-            $template->has('citeseerx') ||
-            $template->has('pmc') ||
-            $template->has('rfc') ||
-            ($template->has('doi') && $template->get('doi-access') === 'free') ||
-            ($template->has('jstor') && $template->get('jstor-access') === 'free') ||
-            ($template->has('osti') && $template->get('osti-access') === 'free') ||
-            ($template->has('hdl') && $template->get('hdl-access') === 'free') ||
-            ($template->has('ol') && $template->get('ol-access') === 'free')
+                $template->has('arxiv') ||
+                $template->has('eprint') ||
+                $template->has('biorxiv') ||
+                $template->has('citeseerx') ||
+                $template->has('pmc') ||
+                $template->has('rfc') ||
+                ($template->has('doi') && $template->get('doi-access') === 'free') ||
+                ($template->has('jstor') && $template->get('jstor-access') === 'free') ||
+                ($template->has('osti') && $template->get('osti-access') === 'free') ||
+                ($template->has('hdl') && $template->get('hdl-access') === 'free') ||
+                ($template->has('ol') && $template->get('ol-access') === 'free')
             ) {
                 return 'have free'; // do not add url if have OA already
             }
@@ -154,12 +154,12 @@ function get_unpaywall_url(Template $template, string $doi): string
             }
             $oa_hostname = $matches[1];
             if (
-            ($template->has('osti') && mb_stripos($oa_hostname, 'osti.gov') !== false) ||
-            ($template->has('ssrn') && mb_stripos($oa_hostname, 'ssrn.com') !== false) ||
-            ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor.org') !== false) ||
-            ($template->has('pmid') && mb_stripos($oa_hostname, 'nlm.nih.gov') !== false) ||
-            ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor') !== false) ||
-            mb_stripos($oa_hostname, 'doi.org') !== false
+                ($template->has('osti') && mb_stripos($oa_hostname, 'osti.gov') !== false) ||
+                ($template->has('ssrn') && mb_stripos($oa_hostname, 'ssrn.com') !== false) ||
+                ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor.org') !== false) ||
+                ($template->has('pmid') && mb_stripos($oa_hostname, 'nlm.nih.gov') !== false) ||
+                ($template->has('jstor') && mb_stripos($oa_hostname, 'jstor') !== false) ||
+                mb_stripos($oa_hostname, 'doi.org') !== false
             ) {
                 return 'have free';
             }

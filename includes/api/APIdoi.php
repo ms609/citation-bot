@@ -527,14 +527,14 @@ function get_doi_from_crossref(Template $template): void {
     report_action("Checking CrossRef database for doi. ");
     $page_range = $template->page_range();
     $data = [
-    'title' => de_wikify($template->get('title')),
-    'journal' => de_wikify($template->get('journal')),
-    'author' => $template->first_surname(),
-    'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $template->year()),
-    'volume' => $template->get('volume'),
-    'start_page' => (string) @$page_range[1],
-    'end_page' => (string) @$page_range[2],
-    'issn' => $template->get('issn'),
+        'title' => de_wikify($template->get('title')),
+        'journal' => de_wikify($template->get('journal')),
+        'author' => $template->first_surname(),
+        'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $template->year()),
+        'volume' => $template->get('volume'),
+        'start_page' => (string) @$page_range[1],
+        'end_page' => (string) @$page_range[2],
+        'issn' => $template->get('issn'),
     ];
 
     if ($data['year'] < 1900 || $data['year'] > (int) date("Y") + 3) {
