@@ -32,6 +32,7 @@ on:
       - '.trivyignore'
       - '.phpcs.xml'
       - '.phplint.yml'
+      - 'tests/phpunit/README.md'
 
   schedule:
     - cron: '25 17 * * 1'
