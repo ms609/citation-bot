@@ -43,6 +43,7 @@ if (isset($_REQUEST["wiki_base"])){
 } else {
     $wiki_base = 'en';
 }
+/** The wiki language code. For example, en, simple, or mdwiki. Note that mdwiki is non-standard */
 if ($wiki_base === 'mdwiki') {
     define('WIKI_ROOT', 'https://mdwiki.org/w/index.php');
     define('API_ROOT', 'https://mdwiki.org/w/api.php');
