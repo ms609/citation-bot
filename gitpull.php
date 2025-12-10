@@ -5,7 +5,7 @@ declare(strict_types=1);
 header("Access-Control-Allow-Origin: null");
 
 /** @psalm-suppress MissingFile */
-require_once 'env.php';
+require_once 'env.php';    /** @phpstan-ignore includeOnce.fileNotFound */
 
 const LOCK_DIR = 'git_pull.lock';
 
