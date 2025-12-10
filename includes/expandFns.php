@@ -116,12 +116,12 @@ function doi_works(string $doi): ?bool {
     }
     if (!TRAVIS) {
         foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
-            if (stripos($doi, $bad_start) === 0) {
+            if (mb_stripos($doi, $bad_start) === 0) {
                 return false; // all gone
             }
         }                                             // @codeCoverageIgnoreEnd
     }
-    if (strlen($doi) > HandleCache::MAX_HDL_SIZE) {
+    if (mb_strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
     }
     if (isset(HandleCache::$cache_good[$doi])) {
@@ -248,7 +248,7 @@ function is_doi_works(string $doi): ?bool {
     // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
     // 17 August 2024 version is last check
     if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-        $registrant = substr($registrant, 3);
+        $registrant = mb_substr($registrant, 3);
         if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
                 preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||       // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
                 preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||  // 4 digits with subcode (0xxx); accepts: 1000–9999
@@ -270,7 +270,7 @@ function is_doi_works(string $doi): ?bool {
             return false;
         }
         foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-            if (stripos($doi, $bad_start) === 0) {
+            if (mb_stripos($doi, $bad_start) === 0) {
                 return false; // all gone
             }
         }
@@ -286,7 +286,7 @@ function is_doi_works(string $doi): ?bool {
     if ($headers_test === false) {  // most likely bad - note that null means do not add or remove doi-broken-date from pages
         return null;     // @codeCoverageIgnore
     }
-    if (stripos($doi, '10.1126/scidip.') === 0) {
+    if (mb_stripos($doi, '10.1126/scidip.') === 0) {
         if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {  // https://doi.org/10.1126/scidip.ado5059
             unset($headers_test['1']); // @codeCoverageIgnore
         }
@@ -335,20 +335,20 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         bot_debug_log('Got two bad hops for HDL: ' . echoable_doi($doi));
         return null;
     }
-    if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
+    if (mb_stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || mb_stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
         return false; // Bad
     }
-    if (stripos($resp0, '302 Found') !== false || stripos($resp0, 'HTTP/1.1 302') !== false) {
+    if (mb_stripos($resp0, '302 Found') !== false || mb_stripos($resp0, 'HTTP/1.1 302') !== false) {
         return true;    // Good
     }
-    if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) { // grumpy
+    if (mb_stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) { // grumpy
         return true;  // @codeCoverageIgnore
     }
-    if (stripos($resp0, '301 Moved Permanently') !== false || stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
-        if (stripos($resp1, '302 Found') !== false || stripos($resp1, 'HTTP/1.1 302') !== false) {
+    if (mb_stripos($resp0, '301 Moved Permanently') !== false || mb_stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
+        if (mb_stripos($resp1, '302 Found') !== false || mb_stripos($resp1, 'HTTP/1.1 302') !== false) {
             return true;    // Good
-        } elseif (stripos($resp1, '301 Moved Permanently') !== false || stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
-            if (stripos($resp2, '200 OK') !== false || stripos($resp2, 'HTTP/1.1 200') !== false) {
+        } elseif (mb_stripos($resp1, '301 Moved Permanently') !== false || mb_stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
+            if (mb_stripos($resp2, '200 OK') !== false || mb_stripos($resp2, 'HTTP/1.1 200') !== false) {
                 return true;
             } else {
                 return false;
@@ -378,8 +378,8 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
 }
 
 function sanitize_doi(string $doi): string {
-    if (substr($doi, -1) === '.') {
-        $try_doi = substr($doi, 0, -1);
+    if (mb_substr($doi, -1) === '.') {
+        $try_doi = mb_substr($doi, 0, -1);
         if (doi_works($try_doi)) { // If it works without dot, then remove it
             $doi = $try_doi;
         } elseif (doi_works($try_doi . '.x')) { // Missing the very common ending .x
@@ -395,30 +395,30 @@ function sanitize_doi(string $doi): string {
     $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
     $pos = (int) strrpos($doi, '.');
     if ($pos) {
-        $extension = (string) substr($doi, $pos);
+        $extension = (string) mb_substr($doi, $pos);
         if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
-            $doi = (string) substr($doi, 0, $pos);
+            $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, '#');
     if ($pos) {
-        $extension = (string) substr($doi, $pos);
+        $extension = (string) mb_substr($doi, $pos);
         if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
-            $doi = (string) substr($doi, 0, $pos);
+            $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, ';');
     if ($pos) {
-        $extension = (string) substr($doi, $pos);
+        $extension = (string) mb_substr($doi, $pos);
         if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
-            $doi = (string) substr($doi, 0, $pos);
+            $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
     $pos = (int) strrpos($doi, '/');
     if ($pos) {
-        $extension = (string) substr($doi, $pos);
+        $extension = (string) mb_substr($doi, $pos);
         if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
-            $doi = (string) substr($doi, 0, $pos);
+            $doi = (string) mb_substr($doi, 0, $pos);
         }
     }
     $new_doi = str_replace('//', '/', $doi);
@@ -476,7 +476,7 @@ function extract_doi(string $text): array {
                 $delimiter_position = (int) strrpos($doi_candidate, $delimiter);
                 $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
             }
-            $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
+            $doi_candidate = mb_substr($doi_candidate, 0, $last_delimiter);
         }
         if (doi_works($doi_candidate)) {
             $doi = $doi_candidate;
@@ -613,7 +613,7 @@ function wikify_external_text(string $title): string {
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
-    if (mb_strlen($title) === strlen($title)) {
+    if (mb_strlen($title) === mb_strlen($title)) {
         $title = mb_trim($title, " \t\n\r\0\x0B\xc2\xa0");
     } else {
         $title = mb_trim($title, " \t\n\r\0");
@@ -767,7 +767,7 @@ function de_wikify(string $string): string {
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
         // Blow away junk from OLD stuff
-    if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
+    if (mb_stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== false) {
         $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ', $inTitle);
         if ($possible !== null) {
                 $inTitle = $possible;
@@ -800,14 +800,14 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
     // This will convert &delta into delta
-    return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-                ? (strlen($inTitle) !== strlen($dbTitle)
-            || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
+    return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
+                ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
+            || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle) < 0.98)
                 : (levenshtein($inTitle, $dbTitle) > 3))
     &&
-    ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
-                ? (strlen($inTitle2) !== strlen($dbTitle)
-            || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
+    ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
+                ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
+            || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2) < 0.98)
                 : (levenshtein($inTitle2, $dbTitle) > 3));
 }
 
@@ -883,8 +883,8 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str, $match1) &&
                 preg_match('~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str, $match2)
             ) {
-                $count1 = substr_count($str, $match1[0]);
-                $count2 = substr_count($str, $match2[0]);
+                $count1 = mb_substr_count($str, $match1[0]);
+                $count2 = mb_substr_count($str, $match2[0]);
                 if ($match1[0] === $match2[0]) { // Avoid double counting
                     $count1 -= 1;
                     $count2 -= 1;
@@ -903,7 +903,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 // ============================================= Capitalization functions ======================================
 
 function title_case(string $text): string {
-    if (stripos($text, 'www.') !== false || stripos($text, 'www-') !== false || stripos($text, 'http://') !== false) {
+    if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
         return $text; // Who knows - duplicate code below
     }
     return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
@@ -922,7 +922,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                                              // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
     }
 
-    if (stripos($new_case, 'www.') !== false || stripos($new_case, 'www-') !== false || stripos($new_case, 'http://') !== false) {
+    if (mb_stripos($new_case, 'www.') !== false || mb_stripos($new_case, 'www-') !== false || mb_stripos($new_case, 'http://') !== false) {
         return $new_case; // Who knows - duplicate code above
     }
 
@@ -956,7 +956,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         }
     }
 
-    if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
+    if ($caps_after_punctuation || (mb_substr_count($in, '.') / mb_strlen($in)) > .07) {
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
         $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
@@ -1248,10 +1248,10 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
         return $string;
     }
     $new = date('Y', $time);
-    if (strlen($new) === 4) {
+    if (mb_strlen($new) === 4) {
         return mb_ltrim($new, "0"); // Also cleans up 0000
     }
-    if (strlen($new) === 5 && substr($new, 0, 1) === '-') {
+    if (mb_strlen($new) === 5 && mb_substr($new, 0, 1) === '-') {
         $new = mb_ltrim($new, "-");
         $new = mb_ltrim($new, "0");
         $new = $new . ' BC';
@@ -1262,7 +1262,7 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
 
 function tidy_date_inside(string $string): string {
     $string = mb_trim($string);
-    if (stripos($string, 'Invalid') !== false) {
+    if (mb_stripos($string, 'Invalid') !== false) {
         return '';
     }
     if (strpos($string, '1/1/0001') !== false) {
@@ -1286,12 +1286,12 @@ function tidy_date_inside(string $string): string {
         }
     }
     // Huge amount of character cleaning
-    if (strlen($string) !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
+    if (mb_strlen($string) !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
         $cleaned = '';
         $the_str_length = mb_strlen($string);
         for ($i = 0; $i < $the_str_length; $i++) {
             $char = mb_substr($string, $i, 1);
-            if (mb_strlen($char) === strlen($char)) {
+            if (mb_strlen($char) === mb_strlen($char)) {
                 $cleaned .= $char;
             } else {
                 $cleaned .= '-';
@@ -1321,19 +1321,19 @@ function tidy_date_inside(string $string): string {
     }
     if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
         if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
-            if (strlen($matches[1]) === 1) {
+            if (mb_strlen($matches[1]) === 1) {
                 $matches[1] = '0' . $matches[1];
             }
             return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
         } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
-            if (strlen($matches[2]) === 1) {
+            if (mb_strlen($matches[2]) === 1) {
                 $matches[2] = '0' . $matches[2];
             }
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
             return '';
         } elseif ($matches[1] === $matches[2]) {
-            if (strlen($matches[2]) === 1) {
+            if (mb_strlen($matches[2]) === 1) {
                 $matches[2] = '0' . $matches[2];
             }
             return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
@@ -1373,7 +1373,7 @@ function tidy_date_inside(string $string): string {
         } else {
             $string = date('Y-m-d', $time);
         }
-        if (stripos($string, 'Invalid') !== false) {
+        if (mb_stripos($string, 'Invalid') !== false) {
             return '';
         }
         return $string;
@@ -1446,7 +1446,7 @@ function prior_parameters(string $par, array $list=[]): array {
         $par = $list['0'];
     }
     array_unshift($list, $par);
-    if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === false) {
+    if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
         switch ($match[1]) {
             case 'first':
@@ -1579,34 +1579,34 @@ function check_doi_for_jstor(string $doi, Template $template): void {
         return; // Just numbers - this WILL match a JSTOR, but who knows what it really is!
     }
     if (strpos($doi, '10.2307') === 0) { // special case
-        $doi = substr($doi, 8);
+        $doi = mb_substr($doi, 8);
     }
     $pos = strpos($doi, '?');
     if ($pos) {
-            $doi = substr($doi, 0, $pos);
+            $doi = mb_substr($doi, 0, $pos);
     }
     curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
     $ris = bot_curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($httpCode === 200 &&
-            stripos($ris, $doi) !== false &&
+            mb_stripos($ris, $doi) !== false &&
             strpos($ris, 'Provider') !== false &&
-            stripos($ris, 'No RIS data found for') === false &&
-            stripos($ris, 'Block Reference') === false &&
-            stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
-            substr_count($ris, '-') > 3) { // It is actually a working JSTOR
+            mb_stripos($ris, 'No RIS data found for') === false &&
+            mb_stripos($ris, 'Block Reference') === false &&
+            mb_stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
+            mb_substr_count($ris, '-') > 3) { // It is actually a working JSTOR
         $template->add_if_new('jstor', $doi);
     }
 }
 
 function can_safely_modify_dashes(string $value): bool {
-    return (stripos($value, "http") === false)
+    return (mb_stripos($value, "http") === false)
             && (strpos($value, "[//") === false)
-            && (substr_count($value, "<") === 0) // <span></span> stuff
-            && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
+            && (mb_substr_count($value, "<") === 0) // <span></span> stuff
+            && (mb_stripos($value, 'CITATION_BOT_PLACEHOLDER') === false)
             && (strpos($value, "(") === false)
             && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u', mb_trim($value)) !== 1) // Spaces and letters
-            && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
+            && ((mb_substr_count($value, '-') + mb_substr_count($value, '–') + mb_substr_count($value, ',') + mb_substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
             && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u', $value) !== 1) // A-3, A3-5 etc.   Use "." for generic dash
             && (preg_match('~^\d{4}\-[a-zA-Z]+$~u', $value) !== 1); // 2005-A used in {{sfn}} junk
 }
@@ -1677,7 +1677,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
                 report_phase("Saving to file " . echoable($filename));
                 $body = $page->parsed_text();
-                $bodylen = strlen($body);
+                $bodylen = mb_strlen($body);
                 if (file_put_contents($filename, $body)===$bodylen) {
                     report_phase("Saved to file " . echoable($filename));
                 } else {
@@ -1797,7 +1797,7 @@ function hdl_works(string $hdl): string|null|false {
     if (strpos($hdl, '123456789') === 0) {
         return false;
     }
-    if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
+    if (mb_strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
         return null;
     }
     if (isset(HandleCache::$cache_hdl_loc[$hdl])) {
@@ -1819,7 +1819,7 @@ function hdl_works(string $hdl): string|null|false {
             return false;
         }
         foreach (NULL_DOI_STARTS_BAD as $bad_start) {
-            if (stripos($hdl, $bad_start) === 0) {
+            if (mb_stripos($hdl, $bad_start) === 0) {
                 HandleCache::$cache_hdl_bad[$hdl] = true;  // all bad
                 return false;
             }
@@ -1956,25 +1956,25 @@ function get_possible_dois(string $doi): array {
     $trial = [];
     $trial[] = $doi;
     // DOI not correctly formatted
-    switch (substr($doi, -1)) {
+    switch (mb_substr($doi, -1)) {
         case ".":
             // Missing a terminal 'x'?
             $trial[] = $doi . "x";
-            $trial[] = substr($doi, 0, -1);
+            $trial[] = mb_substr($doi, 0, -1);
             break;
         case ",":
         case ";":
         case "\"":
             // Or is this extra punctuation copied in?
-            $trial[] = substr($doi, 0, -1);
+            $trial[] = mb_substr($doi, 0, -1);
     }
-    if (substr($doi, -4) === '</a>' || substr($doi, -4) === '</A>') {
-        $trial[] = substr($doi, 0, -4);
+    if (mb_substr($doi, -4) === '</a>' || mb_substr($doi, -4) === '</A>') {
+        $trial[] = mb_substr($doi, 0, -4);
     }
-    if (substr($doi, 0, 3) !== "10.") {
-        if (substr($doi, 0, 2) === "0.") {
+    if (mb_substr($doi, 0, 3) !== "10.") {
+        if (mb_substr($doi, 0, 2) === "0.") {
             $trial[] = "1" . $doi;
-        } elseif (substr($doi, 0, 1) === ".") {
+        } elseif (mb_substr($doi, 0, 1) === ".") {
             $trial[] = "10" . $doi;
         } else {
             $trial[] = "10." . $doi;
@@ -2103,36 +2103,36 @@ function get_possible_dois(string $doi): array {
         $changed = false;
         $pos = strrpos($try, '.');
         if ($pos) {
-            $extension = substr($try, $pos);
+            $extension = mb_substr($try, $pos);
             if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
-                $try = substr($try, 0, $pos);
+                $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
         }
         $pos = strrpos($try, '#');
         if ($pos) {
-            $extension = substr($try, $pos);
+            $extension = mb_substr($try, $pos);
             if (strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
-                $try = substr($try, 0, $pos);
+                $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
         }
         $pos = strrpos($try, ';');
         if ($pos) {
-            $extension = substr($try, $pos);
+            $extension = mb_substr($try, $pos);
             if (strpos(mb_strtolower($extension), ';jsessionid') === 0) {
-                $try = substr($try, 0, $pos);
+                $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
         }
         $pos = strrpos($try, '/');
         if ($pos) {
-            $extension = substr($try, $pos);
+            $extension = mb_substr($try, $pos);
             if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
-                $try = substr($try, 0, $pos);
+                $try = mb_substr($try, 0, $pos);
                 $trial[] = $try;
                 $changed = true;
             }
@@ -2615,20 +2615,20 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
 }
 
 function conference_doi(string $doi): bool {
-    if (stripos($doi, '10.1007/978-3-662-44777') === 0) {
+    if (mb_stripos($doi, '10.1007/978-3-662-44777') === 0) {
         return false; // Manual override of stuff
     }
     if (strpos($doi, '10.1109/') === 0 ||
         strpos($doi, '10.1145/') === 0 ||
         strpos($doi, '10.1117/') === 0 ||
         strpos($doi, '10.2991/') === 0 ||
-        stripos($doi, '10.21437/Eurospeech') === 0 ||
-        stripos($doi, '10.21437/interspeech') === 0 ||
-        stripos($doi, '10.21437/SLTU') === 0 ||
-        stripos($doi, '10.21437/TAL') === 0 ||
+        mb_stripos($doi, '10.21437/Eurospeech') === 0 ||
+        mb_stripos($doi, '10.21437/interspeech') === 0 ||
+        mb_stripos($doi, '10.21437/SLTU') === 0 ||
+        mb_stripos($doi, '10.21437/TAL') === 0 ||
         (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== false) ||
-        stripos($doi, '10.2991/erss') === 0 ||
-        stripos($doi, '10.2991/jahp') === 0) {
+        mb_stripos($doi, '10.2991/erss') === 0 ||
+        mb_stripos($doi, '10.2991/jahp') === 0) {
         return true;
     }
     return false;
@@ -2737,7 +2737,7 @@ function get_headers_array(string $url): false|array {
 }
 
 function simplify_google_search(string $url): string {
-    if (stripos($url, 'q=') === false) {
+    if (mb_stripos($url, 'q=') === false) {
         return $url;     // Not a search
     }
     if (preg_match('~^https?://.*google.com/search/~', $url)) {
@@ -2948,19 +2948,19 @@ function simplify_google_search(string $url): string {
         }
     }
 
-    if (substr($url, -1) === "&") {
-        $url = substr($url, 0, -1); //remove trailing &
+    if (mb_substr($url, -1) === "&") {
+        $url = mb_substr($url, 0, -1); //remove trailing &
     }
     $url .= $hash;
     return $url;
 }
 
 function addISBNdashes(string $isbn): string {
-    if (substr_count($isbn, '-') > 1) {
+    if (mb_substr_count($isbn, '-') > 1) {
         return $isbn;
     }
     $new = str_replace('-', '', $isbn);
-    if (strlen($new) === 10) {
+    if (mb_strlen($new) === 10) {
         $num = 9780000000000 + (int) str_ireplace('x', '9', $new);
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
@@ -2972,9 +2972,9 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
+        return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0]+$v[1], $v[2]) . '-' . mb_substr($new, $v[0]+$v[1]+$v[2], 1) ;
         // split = SKIP3, $v[0], $v[1], $v[2], 1
-    } elseif (strlen($new) === 13) {
+    } elseif (mb_strlen($new) === 13) {
         $num = (int) $new;
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
@@ -2986,7 +2986,7 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+        return mb_substr($new, 0, 3) . '-' . mb_substr($new, 3, $v[0]) . '-' . mb_substr($new, 3+$v[0], $v[1]) . '-' . mb_substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . mb_substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
         // split = 3, $v[0], $v[1], $v[2], 1
     } else {
         return $isbn;
@@ -3011,10 +3011,10 @@ function clean_volume(string $volume): string {
     if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
         return ''; // Do not add date
     }
-    if (stripos($volume, "november") !== false) {
+    if (mb_stripos($volume, "november") !== false) {
         return '';
     }
-    if (stripos($volume, "nostradamus") !== false) {
+    if (mb_stripos($volume, "nostradamus") !== false) {
         return '';
     }
     return mb_trim(str_ireplace(['volumes', 'volume', 'vol.', 'vols.', 'vols',
