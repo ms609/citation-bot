@@ -22,8 +22,6 @@ inputs:
         - "tests"
         - ".git"
         - ".github"
-        - ".phan"
-        - "gitpull.php"
     resolved_includes_file: ~
     false_positives: progpilot.json
 
