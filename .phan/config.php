@@ -13,7 +13,7 @@ return [
     // information should be included.
     //
     'exclude_analysis_directory_list' => [
-        './vendor/', './tests/', './tests/phpunit/', './tests/phpunit/includes/'
+        './vendor/'
     ],
     'directory_list' => [
         './', './includes/constants/', './vendor/', './tests/', './tests/phpunit/', './includes/', './includes/api/', './tests/phpunit/includes/'
