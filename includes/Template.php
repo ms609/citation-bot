@@ -7557,18 +7557,21 @@ final class Template
     {
         $this->forgetter($par, false);
     }
+
     public function forget(string $par): void
     {
         $this->forgetter($par, true);
     }
+
     private function forgetter(string $par, bool $echo_forgetting): void
     {
         if ($par === 'doi-broken-date' &&
-         $this->has('doi-broken-date') &&
-         !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) &&
-         !isset(NULL_DOI_ANNOYING[$this->get('doi')]) && // Dropped for evilness
-         $this->has('doi')) {
-            bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
+            $this->has('doi-broken-date') &&
+            !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) &&
+            !isset(NULL_DOI_ANNOYING[$this->get('doi')]) && // Dropped for evilness
+            $this->has('doi')
+        ) {
+                bot_debug_log('Thinks it fixed HDL: ' . $this->get('doi'));
         }
         // Do not call this function directly
         if (!$this->blank($par)) {
