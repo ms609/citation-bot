@@ -20,7 +20,7 @@ on:
       - '.github/workflows/trivy-analysis.yml'
       - '.gitignore'
       - '.phan'
-      - 'phan/config.php'
+      - 'phan/config.php'dasfdsfsa
       - 'docker-compose.yml'
       - 'Dockerfile'
       - 'index.html'
