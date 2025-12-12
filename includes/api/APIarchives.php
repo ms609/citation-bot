@@ -239,11 +239,11 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         } else {
             $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
         }
-    } catch (Exception $e) { // @codeCoverageIgnoreStart
+    } catch (Exception) { // @codeCoverageIgnoreStart
         $try = "";
-    } catch (ValueError $v) {
+    } catch (ValueError) {
         $try = "";
-    }                                                // @codeCoverageIgnoreEnd
+    }                     // @codeCoverageIgnoreEnd
     if ($try === "") {
         bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
     }

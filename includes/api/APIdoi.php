@@ -290,7 +290,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
     try {
         $data = bot_curl_exec($ch);
-    } catch (Exception $e) {          // @codeCoverageIgnoreStart
+    } catch (Exception) {          // @codeCoverageIgnoreStart
         $template->mark_inactive_doi();
         return;
     }                      // @codeCoverageIgnoreEnd

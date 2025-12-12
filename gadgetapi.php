@@ -57,7 +57,7 @@ try {
     ob_end_clean();
 
     echo (string) @json_encode($result);
-} catch (Throwable $e) { // @codeCoverageIgnore
+} catch (Throwable) { // @codeCoverageIgnore
     @ob_end_clean(); // @codeCoverageIgnore
     @ob_end_clean(); // @codeCoverageIgnore
     @ob_end_clean(); // @codeCoverageIgnore
