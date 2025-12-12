@@ -540,7 +540,7 @@ final class WikipediaBot {
                 session_write_close(); // Done with the session
                 return;
             }
-            catch (Throwable $e) {
+            catch (Throwable) {
                 /** fall through */
             }
         }
