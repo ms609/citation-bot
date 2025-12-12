@@ -63,6 +63,10 @@ final class HandleCache {
     /** @var array<bool> $cache_hdl_null */
     public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
 
+    private function __construct() {
+        // This is a static class
+    }
+
     public static function check_memory_use(): void {
         $usage = count(self::$cache_inactive) +
                         count(self::$cache_active) +
