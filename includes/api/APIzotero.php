@@ -31,6 +31,10 @@ final class Zotero {
     private static CurlHandle $zotero_ch;
     private static int $zotero_failures_count = 0;
 
+    private function __construct() {
+        // This is a static class
+    }
+
     public static function create_ch_zotero(): void {
         static $is_setup = false;
         if ($is_setup) {
