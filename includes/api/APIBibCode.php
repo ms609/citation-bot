@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 final class AdsAbsControl {
     private const MAX_CACHE_SIZE = 50000;
     private static int $big_counter = 0;
@@ -11,6 +10,10 @@ final class AdsAbsControl {
     private static array $doi2bib = [];
     /** @var array<string> $bib2doi */
     private static array $bib2doi = [];
+
+    private function __construct() {
+        // This is a static class
+    }
 
     public static function big_gave_up_yet(): bool {
         self::$big_counter = max(self::$big_counter - 1, 0);
