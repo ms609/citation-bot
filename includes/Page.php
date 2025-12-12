@@ -826,7 +826,7 @@ class Page {
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $this->page_error = true;
                     $this->text = $text;
                     return $objects;
@@ -849,7 +849,7 @@ class Page {
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);
-                } catch (Exception $e) {
+                } catch (Exception) {
                     $this->page_error = true;
                     $this->text = $text;
                     return $objects;
