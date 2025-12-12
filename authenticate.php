@@ -42,7 +42,7 @@ if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
 try {
     $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
 }
-catch (Throwable $e) {
+catch (Throwable) {
     death_time("Citation Bot Could not contact meta.wikimedia.org");
 }
 
@@ -52,7 +52,7 @@ try {
     $client = new Client($conf);
     unset($conf);
 }
-catch (Throwable $e) {
+catch (Throwable) {
     death_time("Citation Bot's internal authorization tokens did not work");
 }
 
@@ -64,7 +64,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $client->makeOAuthCall($token, $auth_url);
         return_to_sender();
     }
-    catch (Throwable $e) {
+    catch (Throwable) {
         /** fall through */
     }
     death_time("Existing authorization tokens did not work - try again please");
@@ -93,7 +93,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         }
         return_to_sender();
     }
-    catch (Throwable $e) {
+    catch (Throwable) {
         /** fall through */
     }
     death_time("Incoming authorization tokens did not work - try again please");
@@ -116,7 +116,7 @@ try {
     }
     return_to_sender($authUrl);
 }
-catch (Throwable $e) {
+catch (Throwable) {
     /** fall through */
 }
 death_time("Unable to initiate OAuth.");
