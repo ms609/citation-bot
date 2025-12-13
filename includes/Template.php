@@ -421,6 +421,13 @@ final class Template
     }
 
     private function handleConferencePretendingToBeAJournal(): void {
+        $the_chapter = '';
+        $the_issue = '';
+        $the_journal = '';
+        $the_page = '';
+        $the_pages = '';
+        $the_title = '';
+        $the_volume = '';
         if (
             mb_stripos($this->rawtext, 'citation_bot_placeholder_comment') === false &&
             mb_stripos($this->rawtext, 'graph drawing') === false &&
@@ -967,7 +974,7 @@ final class Template
             }
         }
         if ($the_chapter === 'a' && $the_issue === 'b' && $the_journal === 'c' && $the_page === 'd' && $the_pages === 'e' && $the_title === 'f' && $the_volume === 'g') {
-            report_notice('static analyis is happy');  // We set many of these variables to "", and then never use them again.  We do this it means that over time we can safely expnand this function.  But this makes static analysis unhappy.
+            report_info('static analyis is happy');  // We set many of these variables to "", and then never use them again.  We do this it means that over time we can safely expnand this function.  But this makes static analysis unhappy.
         }
     }
 
