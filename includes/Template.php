@@ -13,6 +13,7 @@ require_once 'includes/expandFns.php';
 require_once 'includes/user_messages.php';
 require_once 'includes/constants.php';
 require_once 'includes/NameTools.php';
+require_once 'includes/api/apiSICI.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
@@ -344,7 +345,7 @@ final class Template
                     }
                     break;
                 case "cite journal":
-                    $this->use_sici();
+                    use_sici($this);
             }
 
             // APA PsycNet
@@ -2796,21 +2797,6 @@ final class Template
             query_pmc_api([$pmc], $this->this_array);
         }
         $this->this_array = [];
-    }
-
-    public function use_sici(): void
-    {
-        if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
-            quietly('report_action', "Extracting information from SICI");
-            $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-            $this->add_if_new('year', (string) (int) $sici[2]);
-            $this->add_if_new('volume', (string) (int) $sici[5]);
-            if ($sici[6]) {
-                $this->add_if_new('issue', (string) (int) $sici[6]);
-            }
-            $this->add_if_new('pages', (string) (int) $sici[7]);
-            report_action("Found and used SICI");
-        }
     }
 
     // parameter processing
