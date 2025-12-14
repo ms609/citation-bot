@@ -13,6 +13,7 @@ require_once 'includes/expandFns.php';
 require_once 'includes/user_messages.php';
 require_once 'includes/constants.php';
 require_once 'includes/NameTools.php';
+require_once 'includes/IsThisChapter.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
@@ -3798,7 +3799,7 @@ final class Template
             // all open-access versions of conference papers point to the paper itself
             // not to the whole proceedings
             // so we use chapter-url so that the template is well rendered afterwards
-            if ($this->should_url2chapter(true)) {
+            if (should_url2chapter($this, true)) {
                 $this->rename('url', 'chapter-url');
             } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
                 $this->forget('url');
@@ -6105,7 +6106,7 @@ final class Template
                             report_info("Normalized ProQuest URL");
                         }
                     }
-                    if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(false)) {
+                    if ($param === 'url' && $this->wikiname() === 'cite book' && should_url2chapter($this, false)) {
                         $this->rename('url', 'chapter-url');
                         // Comment out because "never used" $param = 'chapter-url';
                         return;
@@ -7997,110 +7998,6 @@ final class Template
     private function is_book_series(string $param): bool
     {
         return string_is_book_series($this->get($param));
-    }
-
-    private function should_url2chapter(bool $force): bool
-    {
-        if ($this->has('chapterurl')) {
-            return false;
-        }
-        if ($this->has('chapter-url')) {
-            return false;
-        }
-        if ($this->has('trans-chapter')) {
-            return false;
-        }
-        if ($this->blank('chapter')) {
-            return false;
-        }
-        if (mb_strpos($this->get('chapter'), '[') !== false) {
-            return false;
-        }
-        $url = $this->get('url');
-        $url = str_ireplace('%2F', '/', $url);
-        if (mb_stripos($url, 'google') && !mb_strpos($this->get('url'), 'pg=')) {
-            return false;
-        } // Do not move books without page numbers
-        if (mb_stripos($url, 'archive.org/details/isbn')) {
-            return false;
-        }
-        if (mb_stripos($url, 'page_id=0')) {
-            return false;
-        }
-        if (mb_stripos($url, 'page=0')) {
-            return false;
-        }
-        if (mb_substr($url, -2) === '_0') {
-            return false;
-        }
-        if (preg_match('~archive\.org/details/[^/]+$~', $url)) {
-            return false;
-        }
-        if (preg_match('~archive\.org/details/.+/page/n(\d+)~', $url, $matches)) {
-            if ((int) $matches[1] < 16) {
-                return false;
-            } // Assume early in the book - title page, etc
-        }
-        if (mb_stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) {
-            return false;
-        }
-        if (mb_stripos($url, 'PA0')) {
-            return false;
-        }
-        if (mb_stripos($url, 'PP1') && !preg_match('~PP1[0-9]~i', $url)) {
-            return false;
-        }
-        if (mb_stripos($url, 'PP0')) {
-            return false;
-        }
-        if ($this->get_without_comments_and_placeholders('chapter') === '') {
-            return false;
-        }
-        if (mb_stripos($url, 'archive.org')) {
-            if (mb_strpos($url, 'chapter')) {
-                return true;
-            }
-            if (mb_strpos($url, 'page')) {
-                if (preg_match('~page/?[01]?$~i', $url)) {
-                    return false;
-                }
-                return true;
-            }
-            return false;
-        }
-        if (mb_stripos($url, 'wp-content')) {
-            // Private websites are hard to judge
-            if (mb_stripos($url, 'chapter') || mb_stripos($url, 'section')) {
-                return true;
-            }
-            if (mb_stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) {
-                return true;
-            }
-            return false;
-        }
-        if (mb_strpos($url, 'link.springer.com/chapter/10.')) {
-            return true;
-        }
-        if (preg_match('~10\.1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
-            return true;
-        }
-        if (preg_match('~10\.1057\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
-            return true;
-        }
-        if ($force) {
-            return true;
-        }
-        // Only do a few select website unless we just converted to cite book from cite journal
-        if (mb_strpos($url, 'archive.org')) {
-            return true;
-        }
-        if (mb_strpos($url, 'google.com')) {
-            return true;
-        }
-        if (mb_strpos($url, 'www.sciencedirect.com/science/article')) {
-            return true;
-        }
-        return false;
     }
 
     public function clean_cite_odnb(): void
