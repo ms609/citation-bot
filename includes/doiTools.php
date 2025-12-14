@@ -1,0 +1,455 @@
+<?php
+
+declare(strict_types=1);
+
+final class HandleCache {
+    // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+    private const MAX_CACHE_SIZE = 100000;
+    public const MAX_HDL_SIZE = 1024;
+
+    /** @var array<bool> $cache_active */
+    public static array $cache_active = [];             // DOI is in CrossRef, no claims if it still works.
+    /** @var array<bool> $cache_inactive */
+    public static array $cache_inactive = BAD_DOI_ARRAY;// DOI is not in CrossRef
+    /** @var array<bool> $cache_good */
+    public static array $cache_good = [];               // DOI works
+    /** @var array<string> $cache_hdl_loc */
+    public static array $cache_hdl_loc = [];            // Final HDL location URL
+    /** @var array<bool> $cache_hdl_bad */
+    public static array $cache_hdl_bad = BAD_DOI_ARRAY; // HDL/DOI does not resolve to anything
+    /** @var array<bool> $cache_hdl_null */
+    public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
+
+    private function __construct() {
+        // This is a static class
+    }
+
+    public static function check_memory_use(): void {
+        $usage = count(self::$cache_inactive) +
+                        count(self::$cache_active) +
+                        count(self::$cache_good) +
+                        count(self::$cache_hdl_bad) +
+                        10*count(self::$cache_hdl_loc) + // These include a path too
+                        count(self::$cache_hdl_null);
+        if ($usage > self::MAX_CACHE_SIZE) {
+            self::free_memory();    // @codeCoverageIgnore
+        }
+    }
+    public static function free_memory(): void {
+        self::$cache_active = [];
+        self::$cache_inactive = BAD_DOI_ARRAY;
+        self::$cache_good = [];
+        self::$cache_hdl_loc = [];
+        self::$cache_hdl_bad = BAD_DOI_ARRAY;
+        self::$cache_hdl_null = [];
+        gc_collect_cycles();
+    }
+}
+
+// ============================================= DOI functions ======================================
+function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
+    $doi = mb_trim($doi);
+    if (isset(HandleCache::$cache_active[$doi])) {
+        return true;
+    }
+    if (isset(HandleCache::$cache_inactive[$doi])) {
+        return false;
+    }
+    $works = is_doi_active($doi);
+    if ($works === null) { // Temporary problem - do not cache
+        return null; // @codeCoverageIgnore
+    }
+    if ($works === false) {
+        HandleCache::$cache_inactive[$doi] = true;
+        return false;
+    }
+    HandleCache::$cache_active[$doi] = true;
+    return true;
+}
+
+function doi_works(string $doi): ?bool {
+    $doi = mb_trim($doi);
+    if (TRUST_DOI_GOOD && isset(NULL_DOI_BUT_GOOD[$doi])) {
+        return true;
+    }
+    if (isset(NULL_DOI_ANNOYING[$doi])) {
+        return false;
+    }
+    if (!TRAVIS) {
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
+            if (mb_stripos($doi, $bad_start) === 0) {
+                return false; // all gone
+            }
+        }                                             // @codeCoverageIgnoreEnd
+    }
+    if (mb_strlen($doi) > HandleCache::MAX_HDL_SIZE) {
+        return null;   // @codeCoverageIgnore
+    }
+    if (isset(HandleCache::$cache_good[$doi])) {
+        return true;
+    }
+    if (isset(HandleCache::$cache_hdl_bad[$doi])) {
+        return false;
+    }
+    if (isset(HandleCache::$cache_hdl_null[$doi])) {
+        return null;   // @codeCoverageIgnore
+    }
+    HandleCache::check_memory_use();
+
+    $works = is_doi_works($doi);
+    if ($works === null) {  // These are unexpected nulls
+        HandleCache::$cache_hdl_null[$doi] = true;   // @codeCoverageIgnore
+        return null;   // @codeCoverageIgnore
+    }
+    if ($works === false) {
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
+            return true; // We log these and see if they have changed
+        }
+        HandleCache::$cache_hdl_bad[$doi] = true;
+        return false;
+    }
+    HandleCache::$cache_good[$doi] = true;
+    if (isset(NULL_DOI_LIST[$doi])) {
+        bot_debug_log('Got good for bad HDL: ' . echoable_doi($doi));
+    }
+    return true;
+}
+
+function is_doi_active(string $doi): ?bool {
+    static $ch = null;
+    if ($ch === null) {
+        $ch = bot_curl_init(1.0, [
+            CURLOPT_HEADER => "1",
+            CURLOPT_NOBODY => "0",
+            CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
+        ]);
+    }
+    $doi = mb_trim($doi);
+    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $return = bot_curl_exec($ch);
+    $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE); // Byte count, not characters
+    $header = substr($return, 0, $header_length);    // phpcs:ignore
+    $body = substr($return, $header_length);         // phpcs:ignore
+    $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
+        sleep(4);                                                             // @codeCoverageIgnoreStart
+        if ($response_code === 429) {
+            sleep(4);  // WE are getting blocked
+        }
+        $return = bot_curl_exec($ch);
+        $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE); // Byte count, not characters
+        $header = substr($return, 0, $header_length);  // phpcs:ignore
+        $body = substr($return, $header_length);       // phpcs:ignore
+    }                                                                       // @codeCoverageIgnoreEnd
+    if ($response_code === 429) {  // WE are still getting blocked
+        sleep(10);   // @codeCoverageIgnore
+    }
+    if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
+        return null;  // @codeCoverageIgnore
+    }
+    if ($body === 'Resource not found.'){
+        return false;
+    }
+    if ($response_code === 200) {
+        return true;
+    }
+    if ($response_code === 404) { // @codeCoverageIgnoreStart
+        return false;
+    }
+    $err = "CrossRef server error loading headers for DOI " . echoable_doi($doi) . " : " . echoable((string) $response_code);
+    bot_debug_log($err);
+    report_warning($err);
+    return null;                  // @codeCoverageIgnoreEnd
+}
+
+function throttle_dx (): void {
+    static $last = 0.0;
+    $min_time = 40000.0;
+    $now = microtime(true);
+    $left = (int) ($min_time - ($now - $last));
+    if ($left > 0 && $left < $min_time) {
+        usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+    }
+    $last = $now;
+}
+
+function is_doi_works(string $doi): ?bool {
+    $doi = mb_trim($doi);
+    // And now some obvious fails
+    if (mb_strpos($doi, '/') === false){
+        return false;
+    }
+    if (mb_strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) {
+        return false;
+    }
+    if (preg_match('~^10\.1007/springerreference~', $doi)) {
+        return false;
+    }
+    if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) {
+        return false;
+    }
+    if (isset(NULL_DOI_ANNOYING[$doi])) {
+        return false;
+    }
+    if (preg_match('~^10\.4435\/BSPI\.~i', $doi)) {
+        return false;  // TODO: old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page
+    }
+    if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+        if (mb_strpos($doi, '10.1353/') === 0) {
+            return true; // TODO - muse is annoying
+        } elseif (mb_strpos($doi, '10.1175/') === 0) {
+            return true; // TODO - American Meteorological Society is annoying
+        }
+    }
+
+    $registrant = $matches[1];
+    // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
+    // 17 August 2024 version is last check
+    if (mb_strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
+        $registrant = mb_substr($registrant, 3);
+        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||       // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
+                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||  // 4 digits with subcode (0xxx); accepts: 1000–9999
+                preg_match('~^[^1-9]\d\d\d$~', $registrant) ||         // 4 digits without subcode (0xxx); accepts: 1000–9999
+                preg_match('~^\d\d\d\d\d\d+~', $registrant) ||         // 6 or more digits
+                preg_match('~^\d\d?\d?$~', $registrant) ||             // less than 4 digits without subcode (3 digits with subcode is legitimate)
+                preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||        // 1 or 2 digits with subcode
+                $registrant === '5555' ||                              // test registrant will never resolve
+                preg_match('~[^\d\.]~', $registrant)) {                // any character that isn't a digit or a dot
+            return false;
+        }
+    }
+    throttle_dx();
+
+    $url = "https://doi.org/" . doi_encode($doi);
+    $headers_test = get_headers_array($url);
+    if ($headers_test === false) {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+            if (mb_stripos($doi, $bad_start) === 0) {
+                return false; // all gone
+            }
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;     // @codeCoverageIgnoreStart
+        }
+        $headers_test = get_headers_array($url);
+        bot_debug_log('Got null for HDL: ' . echoable_doi($doi));     // @codeCoverageIgnoreEnd
+    }
+    if ($headers_test === false) {
+        $headers_test = get_headers_array($url);     // @codeCoverageIgnore
+    }
+    if ($headers_test === false) {  // most likely bad - note that null means do not add or remove doi-broken-date from pages
+        return null;     // @codeCoverageIgnore
+    }
+    if (mb_stripos($doi, '10.1126/scidip.') === 0) {
+        if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {  // https://doi.org/10.1126/scidip.ado5059
+            unset($headers_test['1']); // @codeCoverageIgnore
+        }
+    }
+    if (interpret_doi_header($headers_test, $doi) !== false) {
+        return interpret_doi_header($headers_test, $doi);
+    }
+    // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
+    $headers_test = get_headers_array($url);
+    /** We trust previous failure, so fail and null are both false */
+    if ($headers_test === false) {
+        return false;
+    }
+    return (bool) interpret_doi_header($headers_test, $doi);
+}
+
+/** @param array<string|array<string>> $headers_test */
+function interpret_doi_header(array $headers_test, string $doi): ?bool {
+    if (empty($headers_test['Location']) && empty($headers_test['location'])) {
+        return false; // leads nowhere
+    }
+    /** @psalm-suppress InvalidArrayOffset */
+    $resp0 = (string) @$headers_test['0'];
+    /** @psalm-suppress InvalidArrayOffset */
+    $resp1 = (string) @$headers_test['1'];
+    /** @psalm-suppress InvalidArrayOffset */
+    $resp2 = (string) @$headers_test['2'];
+
+    if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '301') !== false && mb_strpos($resp2, '404') !== false) {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;
+        }
+        bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
+        return null;
+    }
+    if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '503') !== false && $resp2 === '') {
+        if (isset(NULL_DOI_LIST[$doi])) {
+            return false;
+        }
+        if (isset(NULL_DOI_BUT_GOOD[$doi])) {
+            return true;
+        }
+        bot_debug_log('Got two bad hops for HDL: ' . echoable_doi($doi));
+        return null;
+    }
+    if (mb_stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || mb_stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
+        return false; // Bad
+    }
+    if (mb_stripos($resp0, '302 Found') !== false || mb_stripos($resp0, 'HTTP/1.1 302') !== false) {
+        return true;    // Good
+    }
+    if (mb_stripos((string) @json_encode($headers_test), 'dtic.mil') !== false) { // grumpy
+        return true;  // @codeCoverageIgnore
+    }
+    if (mb_stripos($resp0, '301 Moved Permanently') !== false || mb_stripos($resp0, 'HTTP/1.1 301') !== false) { // Could be DOI change or bad prefix
+        if (mb_stripos($resp1, '302 Found') !== false || mb_stripos($resp1, 'HTTP/1.1 302') !== false) {
+            return true;    // Good
+        } elseif (mb_stripos($resp1, '301 Moved Permanently') !== false || mb_stripos($resp1, 'HTTP/1.1 301') !== false) {        // @codeCoverageIgnoreStart
+            if (mb_stripos($resp2, '200 OK') !== false || mb_stripos($resp2, 'HTTP/1.1 200') !== false) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    report_minor_error("Unexpected response in is_doi_works " . echoable($resp0));
+    return null; // @codeCoverageIgnoreEnd
+}
+
+/** @param array<string|array<string>> $headers_test */
+function get_loc_from_hdl_header(array $headers_test): ?string {
+    if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
+        return (string) $headers_test['Location'][0];    // @codeCoverageIgnore
+    } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
+        return (string) $headers_test['location'][0];    // @codeCoverageIgnore
+    } elseif (isset($headers_test['location'])) {
+        return (string) $headers_test['location'];
+    } elseif (isset($headers_test['Location'])) {        // @codeCoverageIgnore
+        return (string) $headers_test['Location'];       // @codeCoverageIgnore
+    } else { // @codeCoverageIgnoreStart
+        bot_debug_log("Got weird header from a handle");    // Have NEVER seen this - do not log/print since probably crazy text
+        return null;
+    }                // @codeCoverageIgnoreEnd
+}
+
+function sanitize_doi(string $doi): string {
+    if (mb_substr($doi, -1) === '.') {
+        $try_doi = mb_substr($doi, 0, -1);
+        if (doi_works($try_doi)) { // If it works without dot, then remove it
+            $doi = $try_doi;
+        } elseif (doi_works($try_doi . '.x')) { // Missing the very common ending .x
+            $doi = $try_doi . '.x';
+        } elseif (!doi_works($doi)) { // It does not work, so just remove it to remove wikipedia error.  It's messed up
+            $doi = $try_doi;
+        }
+    }
+    $doi = safe_preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
+    $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
+    $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
+    $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
+    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
+    $pos = (int) mb_strrpos($doi, '.');
+    if ($pos) {
+        $extension = (string) mb_substr($doi, $pos);
+        if (in_array(mb_strtolower($extension), DOI_BAD_ENDS, true)) {
+            $doi = (string) mb_substr($doi, 0, $pos);
+        }
+    }
+    $pos = (int) mb_strrpos($doi, '#');
+    if ($pos) {
+        $extension = (string) mb_substr($doi, $pos);
+        if (mb_strpos(mb_strtolower($extension), '#page_scan_tab_contents') === 0) {
+            $doi = (string) mb_substr($doi, 0, $pos);
+        }
+    }
+    $pos = (int) mb_strrpos($doi, ';');
+    if ($pos) {
+        $extension = (string) mb_substr($doi, $pos);
+        if (mb_strpos(mb_strtolower($extension), ';jsessionid') === 0) {
+            $doi = (string) mb_substr($doi, 0, $pos);
+        }
+    }
+    $pos = (int) mb_strrpos($doi, '/');
+    if ($pos) {
+        $extension = (string) mb_substr($doi, $pos);
+        if (in_array(mb_strtolower($extension), DOI_BAD_ENDS2, true)) {
+            $doi = (string) mb_substr($doi, 0, $pos);
+        }
+    }
+    $new_doi = str_replace('//', '/', $doi);
+    if ($new_doi !== $doi) {
+        if (doi_works($new_doi) || !doi_works($doi)) {
+            $doi = $new_doi; // Double slash DOIs do exist
+        }
+    }
+    // And now for 10.1093 URLs
+    // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
+    // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
+    if (mb_strpos($doi, '10.1093') === 0 && doi_works($doi) === false) {
+        if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match) ||
+                preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
+                preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
+                preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
+                preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
+                preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+            $new_doi = $match[1];
+            if (doi_works($new_doi)) {
+                $doi = $new_doi;
+            }
+        }
+    }
+    // Clean up book DOIs
+    if (!doi_works($doi) && preg_match('~^(10\.\d+\/9\d{12})(\-\d{1,3})(\/.+)$~', $doi, $matches)) {
+        if (doi_works($matches[1] . $matches[2]) || doi_works($matches[1])) {
+            $doi = $matches[1] . $matches[2];
+        }
+    }
+
+    return $doi;
+}
+
+/* extract_doi
+ * Returns an array containing:
+ * 0 => text containing a DOI, possibly encoded, possibly with additional text
+ * 1 => the decoded DOI
+ */
+/** @return array<string> */
+function extract_doi(string $text): array {
+    if (preg_match(
+                "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
+                $text, $match)) {
+        $doi = $match[1];
+        if (preg_match(
+                    "~^(.*?)(/abstract|/e?pdf|/full|/figure|/default|</span>|[\s\|\"\?]|</).*+$~",
+                    $doi, $new_match)) {
+            $doi = $new_match[1];
+        }
+        $doi_candidate = sanitize_doi($doi);
+        while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
+            $last_delimiter = 0;
+            foreach (['/', '.', '#', '?'] as $delimiter) {
+                $delimiter_position = (int) mb_strrpos($doi_candidate, $delimiter);
+                $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
+            }
+            $doi_candidate = mb_substr($doi_candidate, 0, $last_delimiter);
+        }
+        if (doi_works($doi_candidate)) {
+            $doi = $doi_candidate;
+        }
+        if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
+            if (preg_match('~^10\.([12]\d{3})~', $doi, $new_match)) {
+                if (preg_match("~[0-3][0-9]\.10\." . $new_match[1] . "~", $text)) {
+                    return ['', ''];
+                }
+            }
+        }
+        return [$match[0], sanitize_doi($doi)];
+    }
+    return ['', ''];
+}

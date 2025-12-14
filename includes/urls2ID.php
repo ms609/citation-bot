@@ -407,7 +407,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     if (mb_stripos($url, "jstor.org") !== false) {
         $sici_pos = mb_stripos($url, "sici");
         if ($sici_pos) { // Outdated url style
-            $template->use_sici(); // Grab what we can.  We do not want this URL incorrectly parsed below, or even waste time trying.
+            use_sici($template); // Grab what we can.  We do not want this URL incorrectly parsed below, or even waste time trying.
             return false;
         }
         if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", mb_substr($url, (int) mb_stripos($url, 'jstor.org') + 9), $match) ||
