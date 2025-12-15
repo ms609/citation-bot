@@ -16,6 +16,7 @@ require_once 'includes/NameTools.php';
 require_once 'includes/IsThisChapter.php';
 require_once 'includes/api/APIsici.php';
 require_once 'includes/isConference.php';
+require_once 'includes/isbn13.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
