@@ -24,6 +24,7 @@ require_once 'includes/api/APIarchives.php';
 require_once 'includes/expandFns.php';
 require_once 'includes/user_messages.php';
 require_once 'includes/api/APIzotero.php';
+require_once 'includes/citeodnb.php';
 require_once 'includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
