@@ -11,6 +11,18 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     $the_title = '';
     $the_volume = '';
     $this_array = [$template];
+	$move_and_forget = function (string $para): void
+	{
+   		// Try to keep parameters in the same order
+    	$para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
+    	if ($template->has($para2)) {
+        	$template->set($para, $template->get($para2));
+        	$template->rename($para, $para2);
+    	} else {
+        	$template->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
+    	}
+	};
+
     if (
         mb_stripos($rawtext, 'citation_bot_placeholder_comment') === false &&
         mb_stripos($rawtext, 'graph drawing') === false &&
@@ -435,7 +447,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_journal')) {
                 if ($template->has('journal') && $template->get('journal') !== $template->get('CITATION_BOT_PLACEHOLDER_journal') && '[[' . $template->get('journal') . ']]' !== $template->get('CITATION_BOT_PLACEHOLDER_journal')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
                 }
@@ -451,7 +463,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                     } elseif ($template->get('title') === $template->get('CITATION_BOT_PLACEHOLDER_title')) {
                         $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
                     } else {
-                        $template->move_and_forget('CITATION_BOT_PLACEHOLDER_title');
+                        $move_and_forget('CITATION_BOT_PLACEHOLDER_title');
                     }
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
@@ -468,7 +480,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                     } elseif ($template->get('chapter') === $template->get('CITATION_BOT_PLACEHOLDER_chapter')) {
                         $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
                     } else {
-                        $template->move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
+                        $move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
                     }
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
@@ -476,37 +488,37 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_issue')) {
                 if ($template->has('issue') && $template->get('issue') !== $template->get('CITATION_BOT_PLACEHOLDER_issue')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
                 }
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_volume')) {
                 if ($template->has('volume') && $template->get('volume') !== $template->get('CITATION_BOT_PLACEHOLDER_volume')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
                 }
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_page')) {
                 if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_page')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_page');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_page');
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
                 }
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_pages')) {
                 if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_pages')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
                 } else {
                     $template->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
                 }
             }
             if ($template->has('CITATION_BOT_PLACEHOLDER_year')) {
                 if ($template->has('year') && $template->get('year') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
                 } elseif ($template->has('date') && $template->get('date') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
-                    $template->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
                 } elseif ($template->has('date') && $template->get('date') === $template->get('CITATION_BOT_PLACEHOLDER_year')) {
                     $template->forget('date');
                     $template->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
