@@ -10,6 +10,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     $the_pages = '';
     $the_title = '';
     $the_volume = '';
+    $this_array = [$template];
     if (
         mb_stripos($rawtext, 'citation_bot_placeholder_comment') === false &&
         mb_stripos($rawtext, 'graph drawing') === false &&
@@ -417,20 +418,18 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             if ($template->has('doi')) {
                 expand_by_doi($template);
             }
-            $template->this_array = [$template];
             if ($template->has('pmid')) {
-                query_pmid_api([$template->get('pmid')], $template->this_array);
+                query_pmid_api([$template->get('pmid')], $this_array);
             }
             if ($template->has('pmc')) {
-                query_pmc_api([$template->get('pmc')], $template->this_array);
+                query_pmc_api([$template->get('pmc')], $this_array);
             }
             if ($template->has('jstor')) {
                 expand_by_jstor($template);
             }
             if ($template->blank(['pmid', 'pmc', 'jstor']) && ($template->has('eprint') || $template->has('arxiv'))) {
-                expand_arxiv_templates($template->this_array);
+                expand_arxiv_templates($this_array);
             }
-            $template->this_array = [];
             if ($ieee_insanity && $template->has('chapter') && $template->has('title')) {
                 $template->forget('CITATION_BOT_PLACEHOLDER_journal');
             }
@@ -556,6 +555,9 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
         }
     }
     if ($the_chapter === 'a' && $the_issue === 'b' && $the_journal === 'c' && $the_page === 'd' && $the_pages === 'e' && $the_title === 'f' && $the_volume === 'g') {
-        report_info('static analyis is happy');  // We set many of these variables to "", and then never use them again.  We do this it means that over time we can safely expnand this function.  But this makes static analysis unhappy.
+        report_info('static analyis is happy');
+        // We set many of these variables to "", and then never use them again.
+        // We do this it means that over time we can safely expnand this function.
+        // But this makes static analysis unhappy.
     }
 }
