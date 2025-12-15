@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-function id_to_param(Templat $template): void
+function id_to_param(Template $template): void
 {
     set_time_limit(120);
     $id = $template->get('id');
