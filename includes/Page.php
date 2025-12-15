@@ -24,6 +24,7 @@ require_once 'includes/api/APIarchives.php';
 require_once 'includes/expandFns.php';
 require_once 'includes/user_messages.php';
 require_once 'includes/api/APIzotero.php';
+require_once 'includes/citeodnb.php';
 require_once 'includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
@@ -398,7 +399,7 @@ class Page {
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
             } elseif ($this_template->wikiname() === 'cite odnb') {
-                $this_template->clean_cite_odnb();
+                clean_cite_odnb($this_template);
                 clean_google_books($this_template);
                 $this_template->tidy_parameter('title');
             } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {

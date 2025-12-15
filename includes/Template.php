@@ -7986,56 +7986,6 @@ final class Template
         return string_is_book_series($this->get($param));
     }
 
-    public function clean_cite_odnb(): void
-    {
-        if ($this->has('url')) {
-            while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $this->get('url'), $matches)) {
-                $this->set('url', $matches[1]);
-            }
-        }
-        if ($this->has('doi')) {
-            $doi = $this->get('doi');
-            if (doi_works($doi) === false) {
-                if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
-                    $try1 = '10.1093/ref:odnb/' . $matches[1];
-                    $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
-                    if (doi_works($try1)) {
-                        $this->set('doi', $try1);
-                    } elseif (doi_works($try3)) {
-                        $this->set('doi', $try3);
-                    }
-                }
-            }
-        }
-        if ($this->has('id')) {
-            $doi = $this->get('doi');
-            $try1 = '10.1093/ref:odnb/' . $this->get('id');
-            $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
-            if (doi_works($try1) !== false) {
-                // Template does this
-            } elseif (doi_works($try3)) {
-                if ($doi === '') {
-                    $this->rename('id', 'doi', $try3);
-                } elseif ($doi === $try3) {
-                    $this->forget('id');
-                } elseif (doi_works($doi)) {
-                    $this->forget('id');
-                } else {
-                    $this->forget('doi');
-                    $this->rename('id', 'doi', $try3);
-                }
-            }
-        }
-        if ($this->has('doi')) {
-            $works = doi_works($this->get('doi'));
-            if ($works === false) {
-                $this->add_if_new('doi-broken-date', date('Y-m-d'));
-            } elseif ($works === true) {
-                $this->forget('doi-broken-date');
-            }
-        }
-    }
-
     public function has_good_free_copy(): bool
     {
         // Must link title - TODO add more if jstor-access or hdl-access link
