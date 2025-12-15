@@ -3020,6 +3020,11 @@ final class Template
     {
         return $this->initial_author_params;
     }
+     /** @param array<string> $auths */
+    public function initial_author_params_set(array $auths): void
+    {
+        $this->initial_author_params = $auths;
+    }
     public function had_initial_author(): bool
     {
         return count($this->initial_author_params) > 0;
