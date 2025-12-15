@@ -1922,7 +1922,7 @@ final class Template
                     }
                 }
                 if ($this->blank($param_name)) {
-                    $value = $this->isbn10Toisbn13($value);
+                    $value = $this->isbn10Toisbn13($value, false);
                     if (mb_strlen($value) === 13 && mb_substr($value, 0, 6) === '978019') {
                         // Oxford
                         $value = '978-0-19-' . mb_substr($value, 6, 6) . '-' . mb_substr($value, 12, 1);
@@ -1948,7 +1948,7 @@ final class Template
                         if ($possible_isbn === $possible_isbn13) {
                             return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
                         } else {
-                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn));
+                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn), false);
                         }
                     } else {
                         // NOT ISBN
@@ -4147,7 +4147,7 @@ final class Template
                         return;
                     }
                     $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
-                    $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
+                    $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn'), false));
                     if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
                         $this->change_name_to('cite book');
                     }
@@ -4184,7 +4184,7 @@ final class Template
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn !== $possible_isbn13) {
                             // It is an ISBN
-                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn));
+                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn), false);
                         }
                     }
                     return;
@@ -7222,7 +7222,7 @@ final class Template
         return $ret;
     }
 
-    private function isbn10Toisbn13(string $isbn10, bool $ignore_year = false): string
+    private function isbn10Toisbn13(string $isbn10, bool $ignore_year): string
     {
         $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
         $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
