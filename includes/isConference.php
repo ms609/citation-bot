@@ -52,7 +52,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
         } else {
             $no_start_journal = false;
         }
-        $initial_author_params_save = $template->initial_author_params;
+        $initial_author_params_save = $template->initial_author_params();
         $bad_data = false;
         if (mb_stripos($the_journal, 'Advances in Cryptology') === 0 && mb_stripos($the_title, 'Advances in Cryptology') === 0) {
             $the_journal = '';
@@ -398,7 +398,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             }
             $template->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
             if ($template->blank(FLATTENED_AUTHOR_PARAMETERS)) {
-                $template->initial_author_params = [];
+                $template->initial_author_params_set([]);
                 $bad_data = true;
             } else {
                 if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
@@ -536,7 +536,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
                     $template->forget('CITATION_BOT_PLACEHOLDER_author');
                     $template->forget('CITATION_BOT_PLACEHOLDER_coauthors');
                 } else {
-                    $template->initial_author_params = $initial_author_params_save;
+                    $template->initial_author_params_set($initial_author_params_save);
                     if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
                         $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
                     }
