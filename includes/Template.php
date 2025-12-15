@@ -13,6 +13,7 @@ require_once 'includes/expandFns.php';
 require_once 'includes/user_messages.php';
 require_once 'includes/constants.php';
 require_once 'includes/NameTools.php';
+require_once 'includes/id2param.php';
 require_once 'includes/IsThisChapter.php';
 require_once 'includes/api/apiSICI.php';
 // @codeCoverageIgnoreEnd
