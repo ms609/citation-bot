@@ -11,17 +11,17 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     $the_title = '';
     $the_volume = '';
     $this_array = [$template];
-	$move_and_forget = function (string $para): void
-	{
-   		// Try to keep parameters in the same order
-    	$para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
-    	if ($template->has($para2)) {
-        	$template->set($para, $template->get($para2));
-        	$template->rename($para, $para2);
-    	} else {
-        	$template->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
-    	}
-	};
+    $move_and_forget = function (string $para) use($template): void
+    {
+        // Try to keep parameters in the same order
+        $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
+        if ($template->has($para2)) {
+            $template->set($para, $template->get($para2));
+            $template->rename($para, $para2);
+        } else {
+            $template->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
+        }
+    };
 
     if (
         mb_stripos($rawtext, 'citation_bot_placeholder_comment') === false &&
