@@ -7456,18 +7456,6 @@ final class Template
         $this->parse_text($tmp);
     }
 
-    private function move_and_forget(string $para): void
-    {
-        // Try to keep parameters in the same order
-        $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
-        if ($this->has($para2)) {
-            $this->set($para, $this->get($para2));
-            $this->rename($para, $para2);
-        } else {
-            $this->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
-        }
-    }
-
     private static function localize_dates(int $time): string {
         if (self::$date_style === DateStyle::DATES_MDY) {
             $value = date('F j, Y', $time);
