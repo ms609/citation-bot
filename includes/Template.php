@@ -4184,7 +4184,7 @@ final class Template
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn !== $possible_isbn13) {
                             // It is an ISBN
-                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn), false);
+                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn, false));
                         }
                     }
                     return;
