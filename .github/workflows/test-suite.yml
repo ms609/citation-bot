@@ -80,7 +80,7 @@ jobs:
       if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      uses: codecov/codecov-action@v5.5.1
+      uses: codecov/codecov-action@v5.5.2
 
     - name: Look for weird stuff
       if: always()
