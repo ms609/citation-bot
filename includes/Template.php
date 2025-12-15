@@ -7424,7 +7424,7 @@ final class Template
         }
     }
 
-    private function is_book_series(string $param): bool
+    public function is_book_series(string $param): bool
     {
         return string_is_book_series($this->get($param));
     }
