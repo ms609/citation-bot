@@ -6759,7 +6759,7 @@ final class Template
         return '';
     }
 
-    private function year_int(): integer {
+    private function year_int(): int {
         return intval($this->year());
     }
 
