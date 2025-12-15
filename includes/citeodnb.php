@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-public function clean_cite_odnb(Template $template): void
+function clean_cite_odnb(Template $template): void
 {
     if ($template->has('url')) {
         while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $template->get('url'), $matches)) {
