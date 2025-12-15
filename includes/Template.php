@@ -1948,7 +1948,7 @@ final class Template
                         if ($possible_isbn === $possible_isbn13) {
                             return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
                         } else {
-                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn, falsse));
+                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn, false));
                         }
                     } else {
                         // NOT ISBN
