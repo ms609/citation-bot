@@ -1196,7 +1196,7 @@ final class Template
                     }
                 }
                 // Update Year with CrossRef data in a few limited cases
-                if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && (int) $this->year() < $value && (int) date('Y') - 3 < $value) {
+                if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && $this->year_int() < $value && (int) date('Y') - 3 < $value) {
                     if ($this->blank('year')) {
                         $this->forget('year');
                         $this->set('date', $value);
@@ -1502,7 +1502,7 @@ final class Template
                 if ($value === '0') {
                     return false;
                 }
-                if ($value === '1' && $this->year() !== '' && intval($this->year()) < 1960) {
+                if ($value === '1' && $this->year() !== '' && $this->year_int() < 1960) {
                     return false;
                 }
                 if ($value === 'Online First') {
@@ -1913,10 +1913,9 @@ final class Template
                 if (in_array($value, BAD_ISBN, true)) {
                     return false;
                 }
-                $year = $this->year();
+                $year = $this->year_int();
                 $today = intval(date("Y")) + 2; // padding
-                if ($year !== '') {
-                    $year = intval($year);
+                if ($year !== 0) {
                     if ($year < 1965 || $year > $today) {
                         return false; // Avoid bogus ISBN from pre-preprints and google
                     }
@@ -4006,7 +4005,7 @@ final class Template
                         }
                     }
                     // Weird ones that are time dependent
-                    $year = intval($this->year()); // Will be zero if not set
+                    $year = $this->year_int(); // Will be zero if not set
                     if (mb_strpos($doi, '10.1155/') === 0 && $year > 2006) {
                         $this->add_if_new('doi-access', 'free');
                     }
@@ -6760,6 +6759,10 @@ final class Template
         return '';
     }
 
+    private function year_int(): int {
+        return intval($this->year());
+    }
+
     /** @return array<string> */
     public function page_range(): array
     {
@@ -7241,7 +7244,7 @@ final class Template
         if (mb_substr($isbn10, -1) === "-" || mb_substr($isbn10, 0, 1) === "-") {
             return $isbn10;
         } // Ends or starts with a dash
-        if (intval($this->year()) < 2007 && !$ignore_year) {
+        if ($this->year_int() < 2007 && !$ignore_year) {
             return $isbn10;
         } // Older books does not have ISBN-13, see [[WP:ISBN]]
         $isbn13 = str_replace('-', '', $isbn10); // Remove dashes to do math
