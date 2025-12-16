@@ -59,7 +59,7 @@ unset($wiki_base);
 require_once 'src/includes/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
-include_once './../vendor/autoload.php';
+include_once 'vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
