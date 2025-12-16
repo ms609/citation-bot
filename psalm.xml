@@ -15,9 +15,6 @@
 >
     <projectFiles>
         <directory name="src" />
-        <directory name="includes" />
-        <directory name="includes/constants" />
-        <directory name="includes/api" /> 
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>

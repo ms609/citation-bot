@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <ruleset name="CustomIndentationStandard">
     <file>./src</file>
-    <file>./src/includes</file>
-    <file>./src/tests</file>
+    <file>./tests</file>
     <rule ref="PSR2.Files.ClosingTag"/>
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>

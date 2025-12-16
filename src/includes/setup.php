@@ -56,7 +56,7 @@ if ($wiki_base === 'mdwiki') {
 }
 unset($wiki_base);
 
-require_once 'includes/constants.php';
+require_once 'src/includes/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './../vendor/autoload.php';
