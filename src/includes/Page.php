@@ -25,6 +25,8 @@ require_once __DIR__ . '/TextTools.php';
 require_once __DIR__ . '/miscTools.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/api/APIzotero.php';
+require_once __DIR__ . '/api/APIpii.php';
+require_once __DIR__ . '/api/APIieee.php';
 require_once __DIR__ . '/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
