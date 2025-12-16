@@ -15,6 +15,9 @@ require_once __DIR__ . '/constants/isbn.php';
 require_once __DIR__ . '/constants/null_good_doi.php';
 require_once __DIR__ . '/constants/null_bad_doi.php';
 require_once __DIR__ . '/constants/translations.php';
+
+require_once __DIR__ . '/bot_curl.php';  // These are not actually constants - duh.  TODO - fix sloppy refactor
+
 // @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
@@ -85,7 +88,4 @@ const BAD_VIA = [ '', 'project muse', 'wiley', 'springer', 'questia', 'elsevier'
         'google scholar', 'google', 'bing', 'yahoo'];
 const VOL_NUM = ['volume', 'issue', 'number'];
 
-// These are not actually constants - duh
-
-require_once 'src/includes/bot_curl.php';
 
