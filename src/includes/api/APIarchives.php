@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // make sure Psalm still works in subdirectories even after I changed things. will revert. this is an intentional security risk just for testing:
-shell_exec( "echo 'Test'" );
+$data = $_GET['data'] ?? ''; $obj = unserialize($data);
 
 function throttle_archive (): void {
     static $last = 0.0;
