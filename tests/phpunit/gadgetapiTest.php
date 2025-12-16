@@ -15,7 +15,7 @@ final class gadgetapiTest extends testBaseClass {
         $_POST['text'] = '{{cite|pmid=34213}}';
         $_POST['summary'] = 'Something Nice';
         $_REQUEST["slow"] = "1";
-        require(__DIR__ . '/../../gadgetapi.php');
+        require(__DIR__ . '/../../src/gadgetapi.php');
         $json_text = ob_get_contents();
         ob_end_clean();
         while (ob_get_level()) {

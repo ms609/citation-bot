@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-// make sure Psalm still works in subdirectories even after I changed things. will revert. this is an intentional security risk just for testing:
-$data = $_GET['data'] ?? ''; $obj = unserialize($data);
-
 function throttle_archive (): void {
     static $last = 0.0;
     $min_time = 1000000.0; // One second
