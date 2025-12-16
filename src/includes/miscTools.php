@@ -469,3 +469,191 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
         }
     }
 }
+
+function check_memory_usage(string $where): void {
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if ($mem_used > 24) {
+        bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+    }
+    $mem_used = (int) (memory_get_peak_usage() / 1048576);
+    if ($mem_used > 128) {
+        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where); // @codeCoverageIgnore
+    }
+}
+
+
+
+function string_is_book_series(string $str): bool {
+    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], mb_strtolower($str)));
+    $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
+}
+
+/** @param array<string> $list
+    @return array<string> */
+function prior_parameters(string $par, array $list=[]): array {
+    if ($par === '') {
+        $par = $list['0'];
+    }
+    array_unshift($list, $par);
+    if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
+        $before = (string) ((int) $match[2] - 1);
+        switch ($match[1]) {
+            case 'first':
+            case 'initials':
+            case 'forename':
+            case 'contributor-first':
+            case 'contributor-given':
+                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
+            case 'last':
+            case 'surname':
+            case 'author':
+            case 'contributor-last':
+            case 'contributor-surname':
+            case 'contributor':
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
+            default:
+                $base = $match[1];
+                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
+                                   $base . $before,
+                                   $base . $before . '-last', $base . $before . '-first',
+                                   $base . '-last' . $before, $base . '-first' . $before,
+                                   $base . $before . '-surname', $base . $before . '-given',
+                                   $base . '-surname' . $before, $base . '-given' . $before,
+                                   ]);
+        }
+    }
+    switch ($par) {
+        case in_array($par, GROUP1, true):
+            return $list;
+        case in_array($par, GROUP2, true):
+            return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+        case in_array($par, GROUP3, true):
+            return prior_parameters('', array_merge(GROUP2, $list));
+        case in_array($par, GROUP4, true):
+            return prior_parameters('', array_merge(GROUP3, $list));
+        case in_array($par, GROUP5);
+            return prior_parameters('', array_merge(GROUP4, $list));
+        case in_array($par, GROUP6);
+            return prior_parameters('', array_merge(GROUP5, $list));
+        case in_array($par, GROUP7);
+            return prior_parameters('', array_merge(GROUP6, $list));
+        case in_array($par, GROUP8);
+            return prior_parameters('', array_merge(GROUP7, $list));
+        case in_array($par, GROUP9);
+            return prior_parameters('', array_merge(GROUP8, $list));
+        case in_array($par, GROUP10);
+            return prior_parameters('', array_merge(GROUP9, $list));
+        case in_array($par, GROUP11);
+            return prior_parameters('', array_merge(GROUP10, $list));
+        case in_array($par, GROUP12);
+            return prior_parameters('', array_merge(GROUP11, $list));
+        case in_array($par, GROUP13);
+            return prior_parameters('', array_merge(GROUP12, $list));
+        case in_array($par, GROUP14);
+            return prior_parameters('', array_merge(GROUP13, $list));
+        case in_array($par, GROUP15);
+            return prior_parameters('', array_merge(GROUP14, $list));
+        case in_array($par, GROUP16);
+            return prior_parameters('', array_merge(GROUP15, $list));
+        case in_array($par, GROUP17);
+            return prior_parameters('', array_merge(GROUP16, $list));
+        case in_array($par, GROUP18);
+            return prior_parameters('', array_merge(GROUP17, $list));
+        case in_array($par, GROUP19);
+            return prior_parameters('', array_merge(GROUP18, $list));
+        case in_array($par, GROUP20);
+            return prior_parameters('', array_merge(GROUP19, $list));
+        case in_array($par, GROUP21);
+            return prior_parameters('', array_merge(GROUP20, $list));
+        case in_array($par, GROUP22);
+            return prior_parameters('', array_merge(GROUP21, $list));
+        case in_array($par, GROUP23);
+            return prior_parameters('', array_merge(GROUP22, $list));
+        case in_array($par, GROUP24);
+            return prior_parameters('', array_merge(GROUP23, $list));
+        case in_array($par, GROUP25);
+            return prior_parameters('', array_merge(GROUP24, $list));
+        case in_array($par, GROUP26);
+            return prior_parameters('', array_merge(GROUP25, $list));
+        case in_array($par, GROUP27);
+            return prior_parameters('', array_merge(GROUP26, $list));
+        case in_array($par, GROUP28);
+            return prior_parameters('', array_merge(GROUP27, $list));
+        case in_array($par, GROUP29);
+            return prior_parameters('', array_merge(GROUP28, $list));
+        case in_array($par, GROUP30);
+            return prior_parameters('', array_merge(GROUP29, $list));
+        default:
+            bot_debug_log("prior_parameters missed: " . $par);
+            return $list;
+    }
+}
+
+
+/** @return array<string> */
+function equivalent_parameters(string $par): array {
+    switch ($par) {
+        case 'author':
+        case 'authors':
+        case 'author1':
+        case 'last1':
+            return FLATTENED_AUTHOR_PARAMETERS;
+        case 'pmid':
+        case 'pmc':
+            return ['pmc', 'pmid'];
+        case 'page_range':
+        case 'start_page':
+        case 'end_page': // From doi_crossref
+        case 'pages':
+        case 'page':
+            return ['page_range', 'pages', 'page', 'end_page', 'start_page'];
+        default:
+            return [$par];
+    }
+}
+
+
+function throttle(): void {
+    static $last_write_time = 0;
+    static $phase = 0;
+    $cycles = 20;    // Check every this many writes
+    $min_interval = 2 * $cycles;    // How many seconds we want per-write on average
+    if ($last_write_time === 0) {
+        $last_write_time = time();
+    }
+
+    $mem_max = (string) @ini_get('memory_limit');
+    if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
+        $mem_max = (int) (0.3 * @intval($matches[1])); // Memory limit is set super high just to avoid crash
+        unset($matches);
+        $mem_used = (int) (memory_get_usage() / 1048576);
+        if (($mem_max !== 0) && ($mem_used > $mem_max)) {    // Clear every buffer we have
+                HandleCache::free_memory();                                                 // @codeCoverageIgnoreStart
+                $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
+                AdsAbsControl::free_memory();
+                $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
+                $mem_used0 = (string) $mem_used;
+            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
+        }                                                                                                                // @codeCoverageIgnoreEnd
+    } else {
+        bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
+    }
+    $phase += 1;
+    if ($phase < $cycles) {
+        return;
+    } else {
+        $phase = 0;
+    }
+
+    $time_since_last_write = time() - $last_write_time;
+    if ($time_since_last_write < 0) {
+        $time_since_last_write = 0; // Super paranoid, this would be a freeze point
+    }
+    if ($time_since_last_write < $min_interval) {
+        $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @codeCoverageIgnore
+        report_info("Throttling: waiting " . $time_to_pause . " seconds..."); // @codeCoverageIgnore
+        sleep($time_to_pause);                                                // @codeCoverageIgnore
+    }
+    $last_write_time = time();
+}
