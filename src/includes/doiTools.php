@@ -516,6 +516,56 @@ function conference_doi(string $doi): bool {
     return false;
 }
 
-
+/** null/false/String of location */
+function hdl_works(string $hdl): string|null|false {
+    $hdl = mb_trim($hdl);
+    $hdl = str_replace('%2F', '/', $hdl);
+    // And now some obvious fails
+    if (mb_strpos($hdl, '/') === false) {
+        return false;
+    }
+    if (mb_strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== false) {
+        return false;
+    }
+    if (mb_strpos($hdl, '123456789') === 0) {
+        return false;
+    }
+    if (mb_strlen($hdl) > HandleCache::MAX_HDL_SIZE) {
+        return null;
+    }
+    if (isset(HandleCache::$cache_hdl_loc[$hdl])) {
+        return HandleCache::$cache_hdl_loc[$hdl];
+    }
+    if (isset(HandleCache::$cache_hdl_bad[$hdl])) {
+        return false;
+    }
+    if (isset(HandleCache::$cache_hdl_null[$hdl])) {
+        return null; // @codeCoverageIgnore
+    }
+    if (mb_strpos($hdl, '10.') === 0 && doi_works($hdl) === false) {
+        return false;
+    }
+    $works = is_hdl_works($hdl);
+    if ($works === null) {
+        if (isset(NULL_DOI_LIST[$hdl])) {                // @codeCoverageIgnoreStart
+            HandleCache::$cache_hdl_bad[$hdl] = true;    // These are know to be bad, so only check one time during run
+            return false;
+        }
+        foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+            if (mb_stripos($hdl, $bad_start) === 0) {
+                HandleCache::$cache_hdl_bad[$hdl] = true;  // all bad
+                return false;
+            }
+        }
+        HandleCache::$cache_hdl_null[$hdl] = true;
+        return null;                                     // @codeCoverageIgnoreEnd
+    }
+    if ($works === false) {
+        HandleCache::$cache_hdl_bad[$hdl] = true;
+        return false;
+    }
+    HandleCache::$cache_hdl_loc[$hdl] = $works;
+    return $works;
+}
 
 
