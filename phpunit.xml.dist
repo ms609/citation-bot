@@ -12,11 +12,9 @@
 >
   <source>
     <include>
-      <directory suffix=".php">.</directory>
+      <directory suffix=".php">./src</directory>
     </include>
     <exclude>
-      <directory>./tests</directory>
-      <directory>./vendor</directory>
       <directory>./src/includes/constants</directory>
       <file>./src/includes/constants.php</file>
     </exclude>
