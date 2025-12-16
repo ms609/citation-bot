@@ -56,7 +56,7 @@ if ($wiki_base === 'mdwiki') {
 }
 unset($wiki_base);
 
-require_once __DIR__ . '/includes/constants.php';
+require_once __DIR__ . '/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
 include_once 'vendor/autoload.php';
@@ -169,25 +169,25 @@ function check_blocked(): void {
 }
 
 define("MAX_TRIES", 2);
-require_once __DIR__ . '/includes/constants.php';
-require_once __DIR__ . '/includes/Comment.php';
-require_once __DIR__ . '/includes/user_messages.php';
-require_once __DIR__ . '/includes/NameTools.php';
-require_once __DIR__ . '/includes/WikipediaBot.php';
-require_once __DIR__ . '/includes/Parameter.php';
-require_once __DIR__ . '/includes/expandFns.php';
-require_once __DIR__ . '/includes/Template.php';
-require_once __DIR__ . '/includes/api/APIzotero.php';
-require_once __DIR__ . '/includes/api/APIdoi.php';
-require_once __DIR__ . '/includes/api/APIS2.php';
-require_once __DIR__ . '/includes/api/APIBibCode.php';
-require_once __DIR__ . '/includes/api/APIPubMed.php';
-require_once __DIR__ . '/includes/api/APIgoogle.php';
-require_once __DIR__ . '/includes/api/APIunpaywall.php';
-require_once __DIR__ . '/includes/api/APIjstor.php';
-require_once __DIR__ . '/includes/api/APIarXiv.php';
-require_once __DIR__ . '/includes/api/APIarchives.php';
-require_once __DIR__ . '/includes/Page.php';
+require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/Comment.php';
+require_once __DIR__ . '/user_messages.php';
+require_once __DIR__ . '/NameTools.php';
+require_once __DIR__ . '/WikipediaBot.php';
+require_once __DIR__ . '/Parameter.php';
+require_once __DIR__ . '/expandFns.php';
+require_once __DIR__ . '/Template.php';
+require_once __DIR__ . '/api/APIzotero.php';
+require_once __DIR__ . '/api/APIdoi.php';
+require_once __DIR__ . '/api/APIS2.php';
+require_once __DIR__ . '/api/APIBibCode.php';
+require_once __DIR__ . '/api/APIPubMed.php';
+require_once __DIR__ . '/api/APIgoogle.php';
+require_once __DIR__ . '/api/APIunpaywall.php';
+require_once __DIR__ . '/api/APIjstor.php';
+require_once __DIR__ . '/api/APIarXiv.php';
+require_once __DIR__ . '/api/APIarchives.php';
+require_once __DIR__ . '/Page.php';
 
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);
