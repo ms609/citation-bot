@@ -17,6 +17,8 @@
     <exclude>
       <directory>./tests</directory>
       <directory>./vendor</directory>
+      <directory>./src/includes/constants</directory>
+      <file>./src/includes/constants.php</file>
     </exclude>
   </source>
   <testsuites>
