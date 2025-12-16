@@ -836,3 +836,54 @@ function get_headers_array(string $url): false|array {
     }
 }
 
+function doi_is_bad (string $doi): bool {
+    $doi = mb_strtolower($doi);
+    if ($doi === '10.5284/1000184' || // DOI for the entire database
+        $doi === '10.1267/science.040579197' || //  PMID test doi
+        $doi === '10.2307/3511692' ||   // common review
+        $doi === '10.1377/forefront' || // over-truncated
+        $doi === '10.1126/science' ||   // over-truncated
+        $doi === '10.1111/j' ||         // over-truncated
+        $doi === '10.3138/j' ||         // over-truncated
+        $doi === '10.7556/jaoa' ||      // over-truncated
+        $doi === '10.7591/j' ||         // over-truncated
+        $doi === '10.7722/j' ||         // over-truncated
+        $doi === '10.1002/bies' ||      // over-truncated
+        $doi === '10.1002/job' ||       // over-truncated
+        $doi === '10.5465/ame' ||       // over-truncated
+        $doi === '10.5465/amp' ||       // over-truncated
+        $doi === '10.3316/ielapa' ||    // over-truncated
+        $doi === '10.3316/informit' ||  // over-truncated
+        $doi === '10.1023/b:boli' ||    // over-truncated
+        $doi === '10.1023/b:cyto' ||    // over-truncated
+        $doi === '10.1023/b:land' ||    // over-truncated
+        $doi === '10.1093/acrefore' ||  // over-truncated
+        $doi === '10.1093/acref' ||     // over-truncated
+        $doi === '10.1093/gao' ||       // over-truncated
+        $doi === '10.1093/gmo' ||       // over-truncated
+        $doi === '10.1093/nsr' ||       // over-truncated
+        $doi === '10.1093/oi' ||        // over-truncated
+        $doi === '10.1093/logcom' ||    // over-truncated
+        $doi === '10.1111/bjep' ||      // over-truncated
+        $doi === '10.1146/annurev' ||   // over-truncated
+        $doi === '10.1093/oi/authority' || // over-truncated
+        $doi === '10.1377/forefront' || // over-truncated
+        $doi === '10.3905/jpm' ||       // over-truncated
+        (mb_strpos($doi, '10.0000/') === 0 && !TRAVIS) || // just urls that look like DOIs - TODO: Fix test suite
+        mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
+        mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
+        mb_strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review
+        mb_strpos($doi, '10.1093/law:epil') === 0 || // Those do not work
+        mb_strpos($doi, '10.1093/oi/authority') === 0 || // Those do not work
+        (mb_strpos($doi, '10.10520/') === 0 && !doi_works($doi)) || // Has doi in the URL, but is not a doi
+        (mb_strpos($doi, '10.1967/') === 0 && !doi_works($doi)) || // Retired DOIs
+        (mb_strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) || // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        (mb_strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        (mb_strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
+        mb_strpos($doi, '10.48550/arxiv') === 0 ||  // ignore
+        preg_match(REGEXP_DOI_ISSN_ONLY, $doi) // Journal landing page
+       ) {
+        return true;
+    }
+    return false;
+}
