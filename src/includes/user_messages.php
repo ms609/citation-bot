@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 const BORING_STUFF = ["boring", "removed", "added", "changed", "subsubitem", "subitem"];
 
-require_once 'src/includes/constants.php';   // @codeCoverageIgnore
+require_once __DIR__ . '/includes/constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text=''): void {
     if (!TRAVIS) {
