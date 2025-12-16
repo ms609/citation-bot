@@ -9,7 +9,7 @@ declare(strict_types=1);
  * handle collected page modifications, and save the edited page text.
  */
 
-require_once __DIR__ . '/Comment.php';       // @codeCoverageIgnoreStart
+require_once __DIR__ . '/WikiThings.php';       // @codeCoverageIgnoreStart
 require_once __DIR__ . '/Template.php';
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/api/APIdoi.php';
