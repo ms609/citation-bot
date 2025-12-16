@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/constants.php';     // @codeCoverageIgnore
 require_once __DIR__ . '/Template.php';      // @codeCoverageIgnore
 require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
+require_once __DIR__ . '/doiTools.php';      // TODO - clean up sloppy refactor
 
 const MONTH_SEASONS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
 const DAYS_OF_WEEKS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
@@ -44,8 +45,6 @@ const GROUP27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', '
 const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date'];
 const GROUP29 = ['archive-date', 'archivedate'];
 const GROUP30 = ['id', 'type', 'via'];
-
-require_once 'src/includes/doiTools.php';
 
 // ============================================= String/Text functions ======================================
 function wikify_external_text(string $title): string {
