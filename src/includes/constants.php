@@ -15,9 +15,6 @@ require_once __DIR__ . '/constants/isbn.php';
 require_once __DIR__ . '/constants/null_good_doi.php';
 require_once __DIR__ . '/constants/null_bad_doi.php';
 require_once __DIR__ . '/constants/translations.php';
-
-require_once __DIR__ . '/bot_curl.php';  // These are not actually constants - duh.  TODO - fix sloppy refactor
-
 // @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
