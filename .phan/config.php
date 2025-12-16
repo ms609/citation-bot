@@ -16,7 +16,7 @@ return [
         './vendor/'
     ],
     'directory_list' => [
-        './', './includes/constants/', './vendor/', './tests/', './tests/phpunit/', './includes/', './includes/api/', './tests/phpunit/includes/'
+        './src', './src/includes/constants/', './vendor/', './tests/', './tests/phpunit/', './src/includes/', './src/includes/api/', './tests/phpunit/includes/'
     ],
 ];
 
