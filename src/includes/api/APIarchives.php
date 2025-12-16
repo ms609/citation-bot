@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 // make sure Psalm still works in subdirectories even after I changed things. will revert. this is an intentional security risk just for testing:
-include( $_GET['test'] ?? '' );
+shell_exec( "echo 'Test'" );
 
 function throttle_archive (): void {
-// make sure phpcs still works in subdirectories
-static $last = 0.0;
+    static $last = 0.0;
     $min_time = 1000000.0; // One second
     $now = microtime(true);
     $left = (int) ($min_time - ($now - $last));
