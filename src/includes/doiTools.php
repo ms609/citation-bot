@@ -801,4 +801,38 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     }
 }
 
+/** @return false|array<string|array<string>> */
+function get_headers_array(string $url): false|array {
+    static $last_url = "none yet";
+    // Allow cheap journals to work
+    static $context_insecure_doi;
+    static $context_insecure_hdl;
+    if (!isset($context_insecure_doi)) {
+        $timeout = BOT_HTTP_TIMEOUT * 1.0;
+        if (TRAVIS) {
+            $timeout = 5.0; // Give up fast
+        }
+        $context_insecure_doi = stream_context_create([
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
+        ]);
+        $timeout = BOT_HTTP_TIMEOUT * 2.5; // Handles suck
+        $context_insecure_hdl = stream_context_create([
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
+            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
+        ]);
+    }
+    set_time_limit(120);
+    if ($last_url === $url) {
+        sleep(5);
+    }
+    $last_url = $url;
+    if (mb_strpos($url, 'https://doi.org') === 0) {
+        return @get_headers($url, true, $context_insecure_doi);
+    } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
+        return @get_headers($url, true, $context_insecure_hdl);
+    } else {
+        report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
+    }
+}
 
