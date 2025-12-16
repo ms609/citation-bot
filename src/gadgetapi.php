@@ -10,7 +10,7 @@ try {
     @header('Content-Type: text/json');
 
     //Set up tool requirements
-    require_once 'src/includes/setup.php';
+    require_once __DIR__ . '/includes/setup.php';
 
     if (!is_string(@$_POST['text']) || !is_string(@$_POST['summary'])) {
         throw new Exception('not a string');    // @codeCoverageIgnore
