@@ -5,9 +5,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../constants.php'; // @codeCoverageStart
 require_once __DIR__ . '/../Template.php';
 require_once __DIR__ . '/APIieee.php';
-require_once __DIR__ . '/../urls2ID.php';
 require_once __DIR__ . '/APIpii.php';
-require_once __DIR__ . '/../RemoveDupURL.php'; // @codeCoverageEnd
+require_once __DIR__ . '/../miscTools.php'; // @codeCoverageEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
