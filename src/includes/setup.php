@@ -59,7 +59,7 @@ unset($wiki_base);
 require_once __DIR__ . '/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
-include_once 'vendor/autoload.php'; // Not the __DIR__ path, since in root of CI or webserver, which is not the same.
+include_once __DIR__ . '/../../vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 

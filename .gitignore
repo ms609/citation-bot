@@ -2,7 +2,6 @@ src/cookie*.txt
 clover.xml
 **/private*
 *.lock
-src/vendor/*
 vendor/*
 tmp/*
 src/env.php
