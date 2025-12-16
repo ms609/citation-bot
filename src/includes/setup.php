@@ -182,6 +182,8 @@ require_once __DIR__ . '/doiTools.php';
 require_once __DIR__ . '/miscTools.php';
 require_once __DIR__ . '/Template.php';
 require_once __DIR__ . '/api/APIzotero.php';
+require_once __DIR__ . '/api/APIieee.php';
+require_once __DIR__ . '/api/APIpii.php';
 require_once __DIR__ . '/api/APIdoi.php';
 require_once __DIR__ . '/api/APIS2.php';
 require_once __DIR__ . '/api/APIBibCode.php';
