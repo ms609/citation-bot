@@ -93,7 +93,7 @@ Or for testing in the shell:
 
     webservice --backend=kubernetes php8.4 shell
 
-Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).  You will have to manually move the composer generated vendor directory from the main directory to the src directory.
+Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
 ## Running on the command line
 In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
