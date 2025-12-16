@@ -56,10 +56,10 @@ if ($wiki_base === 'mdwiki') {
 }
 unset($wiki_base);
 
-require_once 'includes/constants.php';
+require_once 'src/includes/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
-include_once './vendor/autoload.php';
+include_once 'vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
@@ -169,25 +169,25 @@ function check_blocked(): void {
 }
 
 define("MAX_TRIES", 2);
-require_once 'includes/constants.php';
-require_once 'includes/Comment.php';
-require_once 'includes/user_messages.php';
-require_once 'includes/NameTools.php';
-require_once 'includes/WikipediaBot.php';
-require_once 'includes/Parameter.php';
-require_once 'includes/expandFns.php';
-require_once 'includes/Template.php';
-require_once 'includes/api/APIzotero.php';
-require_once 'includes/api/APIdoi.php';
-require_once 'includes/api/APIS2.php';
-require_once 'includes/api/APIBibCode.php';
-require_once 'includes/api/APIPubMed.php';
-require_once 'includes/api/APIgoogle.php';
-require_once 'includes/api/APIunpaywall.php';
-require_once 'includes/api/APIjstor.php';
-require_once 'includes/api/APIarXiv.php';
-require_once 'includes/api/APIarchives.php';
-require_once 'includes/Page.php';
+require_once 'src/includes/constants.php';
+require_once 'src/includes/Comment.php';
+require_once 'src/includes/user_messages.php';
+require_once 'src/includes/NameTools.php';
+require_once 'src/includes/WikipediaBot.php';
+require_once 'src/includes/Parameter.php';
+require_once 'src/includes/expandFns.php';
+require_once 'src/includes/Template.php';
+require_once 'src/includes/api/APIzotero.php';
+require_once 'src/includes/api/APIdoi.php';
+require_once 'src/includes/api/APIS2.php';
+require_once 'src/includes/api/APIBibCode.php';
+require_once 'src/includes/api/APIPubMed.php';
+require_once 'src/includes/api/APIgoogle.php';
+require_once 'src/includes/api/APIunpaywall.php';
+require_once 'src/includes/api/APIjstor.php';
+require_once 'src/includes/api/APIarXiv.php';
+require_once 'src/includes/api/APIarchives.php';
+require_once 'src/includes/Page.php';
 
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);

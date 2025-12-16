@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require_once 'includes/constants.php'; // @codeCoverageStart
-require_once 'includes/Template.php';
-require_once 'includes/api/APIieee.php';
-require_once 'includes/urls2ID.php';
-require_once 'includes/api/APIpii.php';
-require_once 'includes/RemoveDupURL.php'; // @codeCoverageEnd
+require_once 'src/includes/constants.php'; // @codeCoverageStart
+require_once 'src/includes/Template.php';
+require_once 'src/includes/api/APIieee.php';
+require_once 'src/includes/urls2ID.php';
+require_once 'src/includes/api/APIpii.php';
+require_once 'src/includes/RemoveDupURL.php'; // @codeCoverageEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";

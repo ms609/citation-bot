@@ -9,23 +9,23 @@ declare(strict_types=1);
  * handle collected page modifications, and save the edited page text.
  */
 
-require_once 'includes/Comment.php';       // @codeCoverageIgnoreStart
-require_once 'includes/Template.php';
-require_once 'includes/constants.php';
-require_once 'includes/api/APIdoi.php';
-require_once 'includes/api/APIS2.php';
-require_once 'includes/api/APIBibCode.php';
-require_once 'includes/api/APIPubMed.php';
-require_once 'includes/api/APIgoogle.php';
-require_once 'includes/api/APIunpaywall.php';
-require_once 'includes/api/APIjstor.php';
-require_once 'includes/api/APIarXiv.php';
-require_once 'includes/api/APIarchives.php';
-require_once 'includes/expandFns.php';
-require_once 'includes/user_messages.php';
-require_once 'includes/api/APIzotero.php';
-require_once 'includes/citeodnb.php';
-require_once 'includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
+require_once 'src/includes/Comment.php';       // @codeCoverageIgnoreStart
+require_once 'src/includes/Template.php';
+require_once 'src/includes/constants.php';
+require_once 'src/includes/api/APIdoi.php';
+require_once 'src/includes/api/APIS2.php';
+require_once 'src/includes/api/APIBibCode.php';
+require_once 'src/includes/api/APIPubMed.php';
+require_once 'src/includes/api/APIgoogle.php';
+require_once 'src/includes/api/APIunpaywall.php';
+require_once 'src/includes/api/APIjstor.php';
+require_once 'src/includes/api/APIarXiv.php';
+require_once 'src/includes/api/APIarchives.php';
+require_once 'src/includes/expandFns.php';
+require_once 'src/includes/user_messages.php';
+require_once 'src/includes/api/APIzotero.php';
+require_once 'src/includes/citeodnb.php';
+require_once 'src/includes/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
 const PROTECTED_PAGE = ["sysop", "templateeditor"];
