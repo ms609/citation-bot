@@ -453,3 +453,69 @@ function extract_doi(string $text): array {
     }
     return ['', ''];
 }
+
+
+function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unless on good list
+    if ($url === '') {
+        return true;
+    }
+    if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
+        return true;
+    }
+    $test = mb_strtolower($match[1]);
+    // March 2019 Good list
+    if (in_array($test, GOOD_10_1093_DOIS, true)) {
+        return true;
+    }
+    return false;
+}
+
+function bad_10_1093_doi(string $url): bool {
+    return !not_bad_10_1093_doi($url);
+}
+
+    /** Returns null/false/String of location */
+function is_hdl_works(string $hdl): string|null|false {
+    $hdl = mb_trim($hdl);
+    usleep(100000);
+    $url = "https://hdl.handle.net/" . $hdl;
+    $headers_test = get_headers_array($url);
+    if ($headers_test === false) {
+        $headers_test = get_headers_array($url); // @codeCoverageIgnore
+    }
+    if ($headers_test === false) { // most likely bad
+        return null; // @codeCoverageIgnore
+    }
+    if (interpret_doi_header($headers_test, $hdl) === null) {
+        return null; // @codeCoverageIgnore
+    }
+    if (interpret_doi_header($headers_test, $hdl) === false) {
+        return false;
+    }
+    return get_loc_from_hdl_header($headers_test);
+}
+
+
+function conference_doi(string $doi): bool {
+    if (mb_stripos($doi, '10.1007/978-3-662-44777') === 0) {
+        return false; // Manual override of stuff
+    }
+    if (mb_strpos($doi, '10.1109/') === 0 ||
+        mb_strpos($doi, '10.1145/') === 0 ||
+        mb_strpos($doi, '10.1117/') === 0 ||
+        mb_strpos($doi, '10.2991/') === 0 ||
+        mb_stripos($doi, '10.21437/Eurospeech') === 0 ||
+        mb_stripos($doi, '10.21437/interspeech') === 0 ||
+        mb_stripos($doi, '10.21437/SLTU') === 0 ||
+        mb_stripos($doi, '10.21437/TAL') === 0 ||
+        (mb_strpos($doi, '10.1007/978-') === 0 && mb_strpos($doi, '_') !== false) ||
+        mb_stripos($doi, '10.2991/erss') === 0 ||
+        mb_stripos($doi, '10.2991/jahp') === 0) {
+        return true;
+    }
+    return false;
+}
+
+
+
+
