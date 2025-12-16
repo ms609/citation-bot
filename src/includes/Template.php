@@ -9,14 +9,13 @@ declare(strict_types=1);
 
 // @codeCoverageIgnoreStart
 require_once __DIR__ . '/Parameter.php';
-require_once __DIR__ . '/expandFns.php';
+require_once __DIR__ . '/TextTools.php';
+require_once __DIR__ . '/miscTools.php';
+require_once __DIR__ . '/doiTools.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/NameTools.php';
-require_once __DIR__ . '/IsThisChapter.php';
 require_once __DIR__ . '/api/APIsici.php';
-require_once __DIR__ . '/isConference.php';
-require_once __DIR__ . '/isbn13.php';
 // @codeCoverageIgnoreEnd
 
 final class Template

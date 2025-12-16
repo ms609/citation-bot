@@ -170,14 +170,20 @@ function check_blocked(): void {
 
 define("MAX_TRIES", 2);
 require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/bot_curl.php'; 
 require_once __DIR__ . '/WikiThings.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/NameTools.php';
 require_once __DIR__ . '/WikipediaBot.php';
 require_once __DIR__ . '/Parameter.php';
-require_once __DIR__ . '/expandFns.php';
+require_once __DIR__ . '/TextTools.php';
+require_once __DIR__ . '/WebTools.php';
+require_once __DIR__ . '/doiTools.php';
+require_once __DIR__ . '/miscTools.php';
 require_once __DIR__ . '/Template.php';
 require_once __DIR__ . '/api/APIzotero.php';
+require_once __DIR__ . '/api/APIieee.php';
+require_once __DIR__ . '/api/APIpii.php';
 require_once __DIR__ . '/api/APIdoi.php';
 require_once __DIR__ . '/api/APIS2.php';
 require_once __DIR__ . '/api/APIBibCode.php';
