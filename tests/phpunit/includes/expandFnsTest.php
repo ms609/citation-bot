@@ -591,9 +591,9 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame("", $changes);
         $eventName = getenv('GITHUB_EVENT_NAME');
         if ($eventName === 'schedule') {
-            $do_it = -1;
+            $do_it = 50;
         } elseif ($eventName === 'push') {
-            $do_it = 67;
+            $do_it = 85;
         } elseif ($eventName === 'pull_request') {
             $do_it = 98;
         } else {
