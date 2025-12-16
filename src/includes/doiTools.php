@@ -762,3 +762,43 @@ function get_possible_dois(string $doi): array {
     }
     return $trial;
 }
+
+
+function check_doi_for_jstor(string $doi, Template $template): void {
+    static $ch = null;
+    if ($ch === null) {
+        $ch = bot_curl_init(1.0, []);
+    }
+    if ($template->has('jstor')) {
+        return;
+    }
+    /** @psalm-taint-escape ssrf */
+    $doi = mb_trim($doi);
+    if ($doi === '') {
+        return;
+    }
+    if (preg_match('~^\d+$~', $doi)) {
+        return; // Just numbers - this WILL match a JSTOR, but who knows what it really is!
+    }
+    if (mb_strpos($doi, '10.2307') === 0) { // special case
+        $doi = mb_substr($doi, 8);
+    }
+    $pos = mb_strpos($doi, '?');
+    if ($pos) {
+            $doi = mb_substr($doi, 0, $pos);
+    }
+    curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
+    $ris = bot_curl_exec($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($httpCode === 200 &&
+            mb_stripos($ris, $doi) !== false &&
+            mb_strpos($ris, 'Provider') !== false &&
+            mb_stripos($ris, 'No RIS data found for') === false &&
+            mb_stripos($ris, 'Block Reference') === false &&
+            mb_stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
+            mb_substr_count($ris, '-') > 3) { // It is actually a working JSTOR
+        $template->add_if_new('jstor', $doi);
+    }
+}
+
+
