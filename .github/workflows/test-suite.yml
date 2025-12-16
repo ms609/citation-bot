@@ -76,12 +76,12 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
       run: ./vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2
 
+    - name: Manually look for weird stuff
+      if: always()
+      run: /bin/cat ./CodeCoverage
+
     - name: Code Coverage
       if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v5.5.2
-
-    - name: Look for weird stuff
-      if: always()
-      run: /bin/cat ./CodeCoverage
