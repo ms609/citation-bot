@@ -81,7 +81,7 @@ The bot requires PHP >= 8.4.
 
 To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
-    chmod o-rwx env.php
+    chmod go-rwx env.php
 
  To run the bot as a webservice from WM Toolforge:
 
@@ -93,7 +93,7 @@ Or for testing in the shell:
 
     webservice --backend=kubernetes php8.4 shell
 
-Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
+Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).  You will have to manually move the composer generated vendor directory from the main directory to the src directory.
 
 ## Running on the command line
 In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
