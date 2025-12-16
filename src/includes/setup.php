@@ -59,7 +59,7 @@ unset($wiki_base);
 require_once __DIR__ . '/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
-include_once 'vendor/autoload.php';
+include_once 'vendor/autoload.php'; // Not the __DIR__ path, since in root of CI or webserver, which is not the same.
 
 define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
@@ -94,11 +94,11 @@ if (isset($argv) && in_array('--savetofiles', $argv, true)) {
     define("SAVETOFILES_MODE", false);
 }
 
-if (file_exists('env.php')) {
+if (file_exists(__DIR__ . '/../env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
     /** @psalm-suppress MissingFile */
-    include_once 'env.php';   /** @phpstan-ignore includeOnce.fileNotFound */
+    include_once __DIR__ . '/../env.php';   /** @phpstan-ignore includeOnce.fileNotFound */
     $env_output = mb_trim(ob_get_contents());
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
