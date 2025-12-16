@@ -8,15 +8,15 @@ declare(strict_types=1);
  */
 
 // @codeCoverageIgnoreStart
-require_once__DIR__ . '/Parameter.php';
-require_once__DIR__ . '/expandFns.php';
-require_once__DIR__ . '/user_messages.php';
-require_once__DIR__ . '/constants.php';
-require_once__DIR__ . '/NameTools.php';
-require_once__DIR__ . '/IsThisChapter.php';
-require_once__DIR__ . '/api/APIsici.php';
-require_once__DIR__ . '/isConference.php';
-require_once__DIR__ . '/isbn13.php';
+require_once __DIR__ . '/Parameter.php';
+require_once __DIR__ . '/expandFns.php';
+require_once __DIR__ . '/user_messages.php';
+require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/NameTools.php';
+require_once __DIR__ . '/IsThisChapter.php';
+require_once __DIR__ . '/api/APIsici.php';
+require_once __DIR__ . '/isConference.php';
+require_once __DIR__ . '/isbn13.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
