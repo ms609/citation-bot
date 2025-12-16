@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 // @codeCoverageIgnoreStart
 // all new constant files needed listed here
-require_once 'src/includes/constants/bad_data.php';
-require_once 'src/includes/constants/capitalization.php';
-require_once 'src/includes/constants/math.php';
-require_once 'src/includes/constants/mistakes.php';
-require_once 'src/includes/constants/parameters.php';
-require_once 'src/includes/constants/regular_expressions.php';
-require_once 'src/includes/constants/italics.php';
-require_once 'src/includes/constants/isbn.php';
-require_once 'src/includes/constants/null_good_doi.php';
-require_once 'src/includes/constants/null_bad_doi.php';
-require_once 'src/includes/constants/translations.php';
+require_once __DIR__ . '/constants/bad_data.php';
+require_once __DIR__ . '/constants/capitalization.php';
+require_once __DIR__ . '/constants/math.php';
+require_once __DIR__ . '/constants/mistakes.php';
+require_once __DIR__ . '/constants/parameters.php';
+require_once __DIR__ . '/constants/regular_expressions.php';
+require_once __DIR__ . '/constants/italics.php';
+require_once __DIR__ . '/constants/isbn.php';
+require_once __DIR__ . '/constants/null_good_doi.php';
+require_once __DIR__ . '/constants/null_bad_doi.php';
+require_once __DIR__ . '/constants/translations.php';
 // @codeCoverageIgnoreEnd
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
