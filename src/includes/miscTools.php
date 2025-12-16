@@ -877,10 +877,6 @@ function simplify_google_search(string $url): string {
     return $url;
 }
 
-<?php
-
-declare(strict_types=1);
-
 function should_url2chapter(Template $template, bool $force): bool
 {
     if ($template->has('chapterurl')) {
