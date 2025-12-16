@@ -1,10 +1,10 @@
-cookie*.txt
+src/cookie*.txt
 clover.xml
 **/private*
 *.lock
 vendor/*
 tmp/*
-env.php
+src/env.php
 core
 coverage.xml
 .phplint.cache/*
