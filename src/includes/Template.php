@@ -16,7 +16,6 @@ require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/NameTools.php';
 require_once __DIR__ . '/api/APIsici.php';
-require_once __DIR__ . '/isbn13.php';
 // @codeCoverageIgnoreEnd
 
 final class Template
