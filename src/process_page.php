@@ -12,7 +12,7 @@ if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
     exit;
 }
 
-require_once 'includes/setup.php';
+require_once 'src/includes/setup.php';
 
 if (isset($argv[1])) {
     $pages = $argv[1];

@@ -6,7 +6,7 @@ set_time_limit(120);
 
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 
-require_once 'includes/setup.php';
+require_once 'src/includes/setup.php';
 
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];

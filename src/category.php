@@ -7,7 +7,7 @@ set_time_limit(120);
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 @header('Access-Control-Allow-Origin: null');
 
-require_once 'includes/setup.php';
+require_once 'src/includes/setup.php';
 
 const GET_IS_OKAY = [
     'CS1 errors: archive-url',
