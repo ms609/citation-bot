@@ -62,9 +62,12 @@ function report_inline(string $text): void {
         echo " ", $text;   // @codeCoverageIgnore
     }
 }
+
 // call report_warning to give users a message before we die
+/**
+ * @codeCoverageIgnore
+ */
 function report_error(string $text): never {
-    // @codeCoverageIgnoreStart
     if (TRAVIS) {
         trigger_error($text);  // Stop this test now
     } elseif (function_exists('bot_debug_log')) {
@@ -74,18 +77,19 @@ function report_error(string $text): never {
         report_warning($text); // To the user
         trigger_error($text);  // System Logfile
     }
-    exit;  // @codeCoverageIgnoreEnd
+    exit;
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function report_minor_error(string $text): void {  // For things we want to error in tests, but continue on Wikipedia
-    // @codeCoverageIgnoreStart
     if (!HTML_OUTPUT) { // command line and TRAVIS
         report_error($text);
     } else {
         bot_debug_log($text);
         report_warning($text);
     }
-    // @codeCoverageIgnoreEnd
 }
 
 function quietly(callable $function, string $text): void { // Stuff suppressed when running on the command line
