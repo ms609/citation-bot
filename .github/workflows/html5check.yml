@@ -20,5 +20,5 @@ jobs:
       uses: Cyb3r-Jak3/html5validator-action@v8.0.0
       with:
         root: src/
-        blacklist: invalid
         css: true
+        log_level: INFO
