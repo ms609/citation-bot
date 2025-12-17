@@ -1,0 +1,22 @@
+name: HTML5 Validator
+
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        branches: [ master ]
+    schedule:
+        - cron: '25 17 * * 1'
+
+jobs:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v6.0.1
+    
+    - name: 
+      uses: Cyb3r-Jak3/html5validator-action
+      with:
+        root: src/
+        blacklist: invalid
