@@ -19,6 +19,7 @@ on:
       - '.github/workflows/ThePHPChecker.yml'
       - '.github/workflows/trivy-analysis.yml'
       - '.github/workflows/YamlJson.yml'
+      - '.github/workflows/html5check.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
