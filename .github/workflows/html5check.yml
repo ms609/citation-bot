@@ -1,4 +1,4 @@
-name: HTML5 Validator
+name: HTML5 and CSS Validator
 
 on:
     push:
