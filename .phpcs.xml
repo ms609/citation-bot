@@ -87,37 +87,37 @@
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
-                <element key="eval" value="null"/>
-                <element key="strtok" value="null"/>
-                <element key="exec" value="null"/>
-                <element key="shell_exec" value="null"/>
-                <element key="passthru" value="null"/>
-                <element key="system" value="null"/>
-                <element key="popen" value="null"/>
-                <element key="proc_open" value="null"/>
-                <element key="create_function" value="null"/>
                 <element key="assert" value="null"/>
-                <element key="ltrim" value="mb_ltrim"/>
-                <element key="rtrim" value="mb_rtrim"/>
-                <element key="str_pad" value="mb_str_pad"/>
-                <element key="strrev" value="mb_strrev"/>
-                <element key="trim" value="mb_trim"/>
+                <element key="create_function" value="null"/>
                 <element key="die" value="exit"/>
+                <element key="eval" value="null"/>
+                <element key="exec" value="null"/>
+                <element key="ltrim" value="mb_ltrim"/>
+                <element key="passthru" value="null"/>
+                <element key="popen" value="null"/>
                 <element key="print" value="echo"/>
-                <element key="ucfirst" value="mb_ucfirst"/>
-                <element key="ucwords" value="mb_ucwords"/>
+                <element key="proc_open" value="null"/>
+                <element key="rtrim" value="mb_rtrim"/>
+                <element key="shell_exec" value="null"/>
+                <element key="str_pad" value="mb_str_pad"/>
                 <element key="str_split" value="mb_str_split"/>
+                <element key="strcut" value="mb_strcut"/>
                 <element key="stripos" value="mb_stripos"/>
                 <element key="strlen" value="mb_strlen"/>
                 <element key="strpos" value="mb_strpos"/>
+                <element key="strrev" value="mb_strrev"/>
                 <element key="strrpos" value="mb_strrpos"/>
+                <element key="strstr" value="mb_strstr"/>
+                <element key="strtok" value="null"/>
                 <element key="strtolower" value="mb_strtolower"/>
                 <element key="strtoupper" value="mb_strtoupper"/>
-                <element key="substr" value="mb_substr"/>
                 <element key="substr_count" value="mb_substr_count"/>
-                <element key="strstr" value="mb_strstr"/>
                 <element key="substr_replace" value="mb_substr_replace"/>
-                <element key="strcut" value="mb_strcut"/>
+                <element key="substr" value="mb_substr"/>
+                <element key="system" value="null"/>
+                <element key="trim" value="mb_trim"/>
+                <element key="ucfirst" value="mb_ucfirst"/>
+                <element key="ucwords" value="mb_ucwords"/>
             </property>
         </properties>
     </rule>
