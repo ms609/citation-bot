@@ -870,10 +870,9 @@ class Page {
         }
 
         if ($preg_ok === false) { // Something went wrong.  Often from bad wiki-text.
-            gc_collect_cycles();
+            gc_collect_cycles(); // @codeCoverageIgnoreStart
             $this->page_error = true;
             report_minor_error('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
-            // @codeCoverageIgnoreStart
             if ($class === "Template") {
                 switch (WIKI_BASE) {
                     case 'en':
