@@ -6,8 +6,9 @@ declare(strict_types=1);
  * Only on webpage
  */
 
-// @codeCoverageIgnoreStart
-
+/**
+ * @codeCoverageIgnore
+ */
 /** @param array<string> $pages_in_category */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
     $final_edit_overview = "";
@@ -127,11 +128,12 @@ function bot_html_header(): void {
     }
 }
 
-// @codeCoverageIgnoreStart
+/**
+ * @codeCoverageIgnore
+ */
 function bot_html_footer(): void {
     if (HTML_OUTPUT) {
         echo '</pre><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>?</footer></body></html>'; // @codeCoverageIgnore
     }
     echo "\n";
 }
-// @codeCoverageIgnoreEnd
