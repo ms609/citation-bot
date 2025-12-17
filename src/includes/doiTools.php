@@ -20,6 +20,9 @@ final class HandleCache {
     /** @var array<bool> $cache_hdl_null */
     public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct() {
         // This is a static class
     }
