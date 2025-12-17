@@ -51,8 +51,7 @@
         "vuln_id": "45247331845c94fc13b63578a2176107b67565f52b5edeec6220b9e1c5296d5b",
         "vuln_type": "taint-style"
     }
-],
-[
+,
     {
         "vuln_rule": "MUST_NOT_VERIFY_DEFINITION",
         "vuln_name": "security misconfiguration",
