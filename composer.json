@@ -2,20 +2,6 @@
     "name": "ms609/citation-bot",
     "license": "GPL-3.0-or-later",
     "description": "Expands CS1/CS2 citation templates on Wikipedia",
-    "require": {
-        "mediawiki/oauthclient": "2.3.0",
-        "php": ">=8.4"
-    },
-    "require-dev": {
-        "designsecurity/progpilot": "^1",
-        "overtrue/phplint": "^9",
-        "phan/phan": "^5",
-        "phpstan/phpstan": "^2.1.32",
-        "phpunit/php-invoker": "^6",
-        "phpunit/phpunit": "^12",
-        "squizlabs/php_codesniffer": "^4.0",
-        "vimeo/psalm": "^6"
-    },
     "config": {
         "allow-plugins": {
             "third-party/required-plugin": true
@@ -23,5 +9,23 @@
         "prefer-stable": true,
         "minimum-stability": "dev",
         "preferred-install": "dist"
+    },
+    "require": {
+        "mediawiki/oauthclient": "2.3.0",
+        "php": ">=8.4"
+    },
+    "require-dev": {
+        "designsecurity/progpilot": "^1",
+        "mediawiki/mediawiki-codesniffer": "^40.0.1",
+        "overtrue/phplint": "^9",
+        "phan/phan": "^5",
+        "phpstan/phpstan": "^2.1.32",
+        "phpunit/php-invoker": "^6",
+        "phpunit/phpunit": "^12",
+        "vimeo/psalm": "^6"
+    },
+    "scripts": {
+        "phpcbf": "phpcbf",
+        "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0"
     }
 }

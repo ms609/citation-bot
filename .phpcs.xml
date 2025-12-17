@@ -1,46 +1,128 @@
 <?xml version="1.0"?>
-<ruleset name="CustomIndentationStandard">
+<ruleset>
+	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
+        <!-- Almost every line violates these rules -->
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
+        <!-- Not violated as frequently -->
+        <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
+        <exclude name="Generic.ControlStructures.DisallowYodaConditions.Found"/>
+        <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
+        <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
+        <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
+        <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
+        <exclude name="Generic.Formatting.SpaceAfterNot.Incorrect"/>
+        <exclude name="Generic.Functions.FunctionCallArgumentSpacing.NoSpaceAfterComma"/>
+        <exclude name="Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma"/>
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.SpaceBeforeBrace"/>
+        <exclude name="Generic.PHP.LowerCaseConstant.Found"/>
+        <exclude name="Generic.WhiteSpace.LanguageConstructSpacing.IncorrectSingle"/>
+        <exclude name="MediaWiki.Commenting.DocComment.CloseTagOwnLine"/>
+        <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
+        <exclude name="MediaWiki.Commenting.DocComment.SpacingDocTag"/>
+        <exclude name="MediaWiki.Commenting.DocComment.SpacingSingleLineCloseTag"/>
+        <exclude name="MediaWiki.Commenting.DocComment.SyntaxAlignedDocClose"/>
+        <exclude name="MediaWiki.Commenting.DocComment.SyntaxAlignedDocStar"/>
+        <exclude name="MediaWiki.Commenting.DocComment.SyntaxCloseTag"/>
+        <exclude name="MediaWiki.Commenting.FunctionAnnotations.UnrecognizedAnnotation"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.ParamNameNoMatch"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.ParamPassByReference"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.SpacingAfter"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
+        <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
+        <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
+        <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
+        <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic"/>
+        <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar"/>
+        <exclude name="MediaWiki.Commenting.RedundantVarName.Found"/>
+        <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
+        <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
+        <exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
+        <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
+        <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
+        <exclude name="MediaWiki.Usage.IsNull.IsNull"/>
+        <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
+        <exclude name="MediaWiki.WhiteSpace.DisallowEmptyLineFunctions.NoEmptyLine"/>
+        <exclude name="MediaWiki.WhiteSpace.MultipleEmptyLines.MultipleEmptyLines"/>
+        <exclude name="MediaWiki.WhiteSpace.OpeningKeywordParenthesis.WrongWhitespaceBeforeParenthesis"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceAfterClosure.NoWhitespaceAfterClosure"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceBeforeControlStructureBrace.BraceOnNewLine"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
+        <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase"/>
+        <exclude name="PSR2.Files.EndFileNewline.NoneFound"/>
+        <exclude name="PSR2.Files.EndFileNewline.TooMany"/>
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceBeforeEquals"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
+        <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
+        <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
+        <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.NoSpaceBefore"/>
+        <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.TooMuchSpaceAfter"/>
+        <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.TooMuchSpaceBefore"/>
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter"/>
+        <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingBefore"/>
+        <exclude name="Squiz.WhiteSpace.SemicolonSpacing.Incorrect"/>
+        <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
+    </rule>
     <file>./src</file>
     <file>./tests</file>
-    <rule ref="PSR2.Files.ClosingTag"/>
-    <rule ref="Generic.WhiteSpace.ScopeIndent"/>
+	<arg name="bootstrap" value="./vendor/mediawiki/mediawiki-codesniffer/utils/bootstrap-ci.php"/>
+	<arg name="extensions" value="php"/>
+	<arg name="encoding" value="UTF-8"/>
+    <rule ref="Generic.ControlStructures.InlineControlStructure.NotAllowed"/>
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
-    <rule ref="Generic.ControlStructures.InlineControlStructure.NotAllowed"/>
+    <!-- Forbidden functions, for security and UTF-8 reasons -->
     <rule ref="Generic.PHP.ForbiddenFunctions">
         <properties>
             <property name="forbiddenFunctions" type="array">
-                <element key="eval" value="null"/>
-                <element key="strtok" value="null"/>
-                <element key="exec" value="null"/>
-                <element key="shell_exec" value="null"/>
-                <element key="passthru" value="null"/>
-                <element key="system" value="null"/>
-                <element key="popen" value="null"/>
-                <element key="proc_open" value="null"/>
-                <element key="create_function" value="null"/>
                 <element key="assert" value="null"/>
-                <element key="ltrim" value="mb_ltrim"/>
-                <element key="rtrim" value="mb_rtrim"/>
-                <element key="str_pad" value="mb_str_pad"/>
-                <element key="strrev" value="mb_strrev"/>
-                <element key="trim" value="mb_trim"/>
+                <element key="create_function" value="null"/>
                 <element key="die" value="exit"/>
+                <element key="eval" value="null"/>
+                <element key="exec" value="null"/>
+                <element key="ltrim" value="mb_ltrim"/>
+                <element key="passthru" value="null"/>
+                <element key="popen" value="null"/>
                 <element key="print" value="echo"/>
-                <element key="ucfirst" value="mb_ucfirst"/>
-                <element key="ucwords" value="mb_ucwords"/>
+                <element key="proc_open" value="null"/>
+                <element key="rtrim" value="mb_rtrim"/>
+                <element key="shell_exec" value="null"/>
+                <element key="str_pad" value="mb_str_pad"/>
                 <element key="str_split" value="mb_str_split"/>
+                <element key="strcut" value="mb_strcut"/>
                 <element key="stripos" value="mb_stripos"/>
                 <element key="strlen" value="mb_strlen"/>
                 <element key="strpos" value="mb_strpos"/>
+                <element key="strrev" value="mb_strrev"/>
                 <element key="strrpos" value="mb_strrpos"/>
+                <element key="strstr" value="mb_strstr"/>
+                <element key="strtok" value="null"/>
                 <element key="strtolower" value="mb_strtolower"/>
                 <element key="strtoupper" value="mb_strtoupper"/>
-                <element key="substr" value="mb_substr"/>
                 <element key="substr_count" value="mb_substr_count"/>
-                <element key="strstr" value="mb_strstr"/>
                 <element key="substr_replace" value="mb_substr_replace"/>
-                <element key="strcut" value="mb_strcut"/>
+                <element key="substr" value="mb_substr"/>
+                <element key="system" value="null"/>
+                <element key="trim" value="mb_trim"/>
+                <element key="ucfirst" value="mb_ucfirst"/>
+                <element key="ucwords" value="mb_ucwords"/>
             </property>
         </properties>
     </rule>
