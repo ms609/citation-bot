@@ -18,6 +18,7 @@ on:
       - '.github/workflows/size-limit.yml'
       - '.github/workflows/ThePHPChecker.yml'
       - '.github/workflows/trivy-analysis.yml'
+      - '.github/workflows/YamlJson.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
