@@ -6244,7 +6244,7 @@ final class Template
                                 }
                                 report_inaction(
                                 'Citation for doi:' . echoable($doi_crossref) . ' has volume and issue set to ' . echoable($orig_data) . ' which disagrees with CrossRef (volume ' . echoable($possible_volume) . ', issue ' . echoable($possible_issue) . ')'
-                                ); // @codeCoverageIgnore
+                                );
                             }
                         }
                     }

@@ -11,6 +11,9 @@ final class AdsAbsControl {
     /** @var array<string> $bib2doi */
     private static array $bib2doi = [];
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct() {
         // This is a static class
     }
