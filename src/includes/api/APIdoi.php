@@ -306,8 +306,10 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     process_doi_json($template, $doi, $json);
 }
 /**
-   @param array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>> $json
-   */
+ * @param Template $template
+ * @param string $doi
+ * @param array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>> $json
+ */
 function process_doi_json(Template $template, string $doi, array $json): void {
     /** @param array|string|int|null $data */
     $try_to_add_it = static function(string $name, $data) use($template): void {

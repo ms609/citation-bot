@@ -490,6 +490,7 @@ function string_is_book_series(string $str): bool {
 }
 
 /**
+ * @param string $par
  * @param array<string> $list
  * @return array<string>
  */

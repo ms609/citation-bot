@@ -11,7 +11,10 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
     }
     return 0;
 }
-/** @param array<int, int|string|bool|array<int, string>> $ops */
+/**
+ * @param float $time
+ * @param array<int, int|string|bool|array<int, string>> $ops
+ */
 function bot_curl_init(float $time, array $ops): CurlHandle {
     $ch = curl_init();
     if ($ch === false) {
