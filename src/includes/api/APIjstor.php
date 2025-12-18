@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-/** @param array<string> $_ids
-    @param array<Template> $templates */
+/**
+ * @param array<string> $_ids
+ * @param array<Template> $templates 
+ */
 function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_jstor($template);
@@ -51,7 +53,7 @@ function expand_by_jstor(Template $template): void {
         report_info("JSTOR API blocked bot for ".    jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                           // @codeCoverageIgnore
     }
-    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data')  !== false) {
+    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
         report_info("JSTOR API had a problem for ".    jstor_link($jstor));
         return;
     }
@@ -322,4 +324,3 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
         }
     }
 }
-

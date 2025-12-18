@@ -164,7 +164,7 @@ final class constantsTest extends testBaseClass {
             }
             $section = $alphaed . mb_substr($section, $alpha_end);
         }
-        unset ($section); // Destroy pointer to be safe
+        unset($section); // Destroy pointer to be safe
 
         $new_contents = implode($start_alpha, $sections);
 

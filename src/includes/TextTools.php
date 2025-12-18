@@ -418,14 +418,14 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-    if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;')    !== false) ||
+    if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;') !== false) ||
             (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
             (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);  // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
     if(in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
-            (mb_strpos($str, '&raquo;')  !== false && mb_strpos($str, '&laquo;')  !== false) ||
+            (mb_strpos($str, '&raquo;') !== false && mb_strpos($str, '&laquo;') !== false) ||
             /** @phpstan-ignore notIdentical.alwaysTrue */
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
@@ -602,7 +602,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $matches_in = $matches_in[0];
         $matches_out = $matches_out[0];
         foreach ($matches_in as $key => $_value) {
-            if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
+            if ($matches_in[$key][0] !== $matches_out[$key][0] &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
                 $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
@@ -616,7 +616,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $matches_in = $matches_in[0];
         $matches_out = $matches_out[0];
         foreach ($matches_in as $key => $_value) {
-            if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
+            if ($matches_in[$key][0] !== $matches_out[$key][0] &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
                 $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
             }
@@ -949,9 +949,11 @@ function str_i_same(string $str1, string $str2): bool {
 }
 
 function doi_encode (string $doi): string {
-    /** @psalm-taint-escape html
-        @psalm-taint-escape has_quotes
-        @psalm-taint-escape ssrf */
+    /**
+     * @psalm-taint-escape html
+     * @psalm-taint-escape has_quotes
+     * @psalm-taint-escape ssrf 
+     */
     $doi = urlencode($doi);
     return str_replace('%2F', '/', $doi);
 }
@@ -1171,4 +1173,3 @@ function clean_volume(string $volume): string {
      'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
      'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
 }
-

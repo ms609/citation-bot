@@ -166,4 +166,3 @@ final class ParameterTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 }
-

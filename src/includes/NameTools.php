@@ -193,7 +193,6 @@ function author_is_human(string $author): bool {
 
 // Returns the author's name formatted as Surname, F.I.
 function format_author(string $author): string {
-
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     // Google and Zotero sometimes have these (sir) and just sir
@@ -362,11 +361,11 @@ function under_two_authors(string $text): bool {
             || mb_substr_count($text, ',') < mb_substr_count(mb_trim($text), ' '));  //if the number of commas is less than the number of spaces in the shrunk string
 }
 
-/* split_authors
+/**
  * Assumes that there is more than one author to start with;
  * check this using under_two_authors()
+ * @return array<string>
  */
-/** @return array<string> */
 function split_authors(string $str): array {
     if (mb_strpos($str, ';')) {
         return explode(';', $str);

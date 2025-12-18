@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 function clean_google_books(Template $template): void
  {
     if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // TODO - support other countries
@@ -302,10 +301,12 @@ function google_book_details(Template $template, string $gid): void
     return;
 }
 
-
-
-
-/** @param array<string> $gid */
+/**
+ * @param string &$url
+ * @param int &$removed_redundant
+ * @param string &$removed_parts
+ * @param array<string> &$gid
+ */
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid): void { // PASS BY REFERENCE!!!!!!
     $removed_redundant = 0;
     $hash = '';

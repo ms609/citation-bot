@@ -117,9 +117,10 @@ final class WikipediaBot {
         return true;
     }
 
-    /** @phpstan-impure
-
-        @param array<string> $params */
+    /**
+     * @phpstan-impure
+     * @param array<string> $params
+     */
     private function fetch(array $params, int $depth = 1): ?object {
         set_time_limit(120);
         if ($depth > 1) {
@@ -147,8 +148,7 @@ final class WikipediaBot {
             ]);
 
             $data = @curl_exec(self::$ch_write);
-            if ($data === false)
-            {     // @codeCoverageIgnoreStart
+            if ($data === false) {     // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_write);
                 $errorStr = curl_error(self::$ch_write);
                 report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
@@ -470,11 +470,11 @@ final class WikipediaBot {
             "ususers" => $user,
         ];
         $response = self::QueryAPI($query);
-        if (mb_strpos($response, '"userid"')  === false) { // try again if weird
+        if (mb_strpos($response, '"userid"') === false) { // try again if weird
             sleep(5);
             $response = self::QueryAPI($query);
         }
-        if (mb_strpos($response, '"userid"')  === false) { // try yet again if weird
+        if (mb_strpos($response, '"userid"') === false) { // try yet again if weird
             sleep(10);
             $response = self::QueryAPI($query);
         }
@@ -485,7 +485,7 @@ final class WikipediaBot {
         if (mb_strpos($response, '"invalid"') !== false || // IP Address and similar stuff
             (mb_strpos($response, '"blockid"') !== false && mb_strpos($response, '"blockpartial"') === false) || // Valid but blocked
             mb_strpos($response, '"missing"') !== false || // No such account
-            mb_strpos($response, '"userid"')  === false) { // should actually never return false here
+            mb_strpos($response, '"userid"') === false) { // should actually never return false here
             return false;
         }
         return true;

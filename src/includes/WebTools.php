@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 /**
  * @codeCoverageIgnore
+ * @param array<string> $pages_in_category
  */
-/** @param array<string> $pages_in_category */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
     $final_edit_overview = "";
     // Remove pages with blank as the name, if present
@@ -103,7 +103,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    if (! HTML_OUTPUT) {
+    if (!HTML_OUTPUT) {
         echo "\n";
         return;
     }

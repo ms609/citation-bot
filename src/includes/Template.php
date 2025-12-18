@@ -197,7 +197,7 @@ final class Template
         }
     }
 
-    // Re-assemble parsed template into string
+    /** Re-assemble parsed template into string */
     public function parsed_text(): string
     {
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
@@ -450,7 +450,10 @@ final class Template
         }
     }
 
-    /** @param array<string> $param */
+    /**
+     * @param string $api
+     * @param array<string> $param
+     */
     public function api_has_used(string $api, array $param): bool
     {
         if (!isset($this->used_by_api[$api])) {

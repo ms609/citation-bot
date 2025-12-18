@@ -489,9 +489,12 @@ function string_is_book_series(string $str): bool {
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
 
-/** @param array<string> $list
-    @return array<string> */
-function prior_parameters(string $par, array $list=[]): array {
+/**
+ * @param string $par
+ * @param array<string> $list
+ * @return array<string>
+ */
+function prior_parameters(string $par, array $list = []): array {
     if ($par === '') {
         $par = $list['0'];
     }
@@ -1065,7 +1068,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     }
     // Common ones that do not help
     if (mb_strpos($url, 'books.google') !== false ||
-            mb_strpos($url, 'researchgate.net') !== false||
+            mb_strpos($url, 'researchgate.net') !== false ||
             mb_strpos($url, 'academia.edu') !== false) {
         return false;
     }
@@ -1480,7 +1483,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
             . "entrez/query\.fcgi\S+db=pubmed\S+?|"
             . "pmc/articles/pmid/)"
-            . ".*?=?(\d{4,})~i", $url, $match)||
+            . ".*?=?(\d{4,})~i", $url, $match) ||
                     preg_match("~^https?://(?:pubmed|www)\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed(?:|\&tool=sumsearch.org/cite)\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
                 ) {
                 if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
@@ -1850,7 +1853,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return $template->add_if_new('issn_force', $match[1] . '-' . $match[2]);
             }
             return false;
-        } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
+        } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match) &&
                             (mb_stripos($template->parsed_text(), 'library') === false)) { // Sometimes it is web cite to Library of Congress
             if ($template->wikiname() === 'cite web') {
                 $template->change_name_to('cite book');  // Better template choice

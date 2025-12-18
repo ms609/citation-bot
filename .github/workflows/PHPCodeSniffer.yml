@@ -27,4 +27,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP CodeSniffer
-      run: composer run-script phpcs
+      run: composer run phpcs

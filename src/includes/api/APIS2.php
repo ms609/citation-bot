@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
@@ -146,4 +145,3 @@ function get_semanticscholar_url(Template $template, string $doi): void
         }
     }
 }
-

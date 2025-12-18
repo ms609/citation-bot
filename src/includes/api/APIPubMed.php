@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-
-
-/** @param array<string> $pmids
-    @param array<Template> $templates */
+/**
+ * @param array<string> $pmids
+ * @param array<Template> $templates
+ */
 function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to save memory
     entrez_api($pmids, $templates, 'pubmed');
 }
-/** @param array<string> $pmcs
-    @param array<Template> $templates */
+/**
+ * @param array<string> $pmcs
+ * @param array<Template> $templates
+ */
 function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to save memory
     entrez_api($pmcs, $templates, 'pmc');
 }
 
-
-
 /**
-  @param array<string> $ids
-  @param array<Template> $templates
-*/
+ * @param array<string> $ids
+ * @param array<Template> $templates
+ */
 function entrez_api(array $ids, array &$templates, string $db): void {    // Pointer to save memory
     set_time_limit(120);
     if (!count($ids) ||
@@ -172,7 +172,9 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
 }
 
 
-// Must use post in order to get DOIs with <, >, [, and ] in them and other problems
+/**
+ * Must use post in order to get DOIs with <, >, [, and ] in them and other problems
+ */
 function xml_post(string $url, string $post): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
@@ -193,9 +195,6 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     }
     return $xml;
 }
-
-
-
 
 function find_pmid(Template $template): void
  {
@@ -237,9 +236,7 @@ function find_pmid(Template $template): void
     }
 }
 
-
-
- /** @return array{0: string, 1: int, 2: array<string>} */
+/** @return array{0: string, 1: int, 2: array<string>} */
 function query_pubmed(Template $template): array
  {
     /*
@@ -281,8 +278,11 @@ function query_pubmed(Template $template): array
     return ['', 0, []];
 }
 
- /** @param array<string> $terms
-     @return array{0: string, 1: int, 2: array<string>} */
+/**
+ * @param Template $template
+ * @param array<string> $terms
+ * @return array{0: string, 1: int, 2: array<string>}
+ */
 function do_pumbed_query(Template $template, array $terms): array
 {
     set_time_limit(120);
@@ -378,5 +378,3 @@ function do_pumbed_query(Template $template, array $terms): array
         return ['', 0, []];
     }
 }
-
-

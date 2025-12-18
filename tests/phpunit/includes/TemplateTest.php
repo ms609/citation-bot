@@ -1495,11 +1495,11 @@ final class TemplateTest extends testBaseClass {
 
     public function testOpenAccessLookup1(): void {
         $this->assertNull(null);
-        /** TODO - find an example of a DOI that is free on PMC, but not DOI
+        /* TODO - find an example of a DOI that is free on PMC, but not DOI
         $text = '{{cite journal|doi=10.1136/bmj.327.7429.1459}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('300808', $expanded->get2('pmc'));
-        **/
+        */
     }
 
     public function testOpenAccessLookup3(): void {
@@ -2671,7 +2671,7 @@ EP - 999 }}';
             $this->assertSame('33', $expanded->get2('issue'));
     }
 
-    public function testTitleItalics(){
+    public function testTitleItalics() {
         $text = '{{cite journal|doi=10.1111/pala.12168}}';
         $expanded = $this->process_citation($text);
         $title = $expanded->get('title');
@@ -3550,7 +3550,7 @@ EP - 999 }}';
         $this->assertSame('Time-resolved studies of metalloproteins using X-ray free electron laser radiation at SACLA', $template->get2('title'));
     }
 
-    public function testISSN(){
+    public function testISSN() {
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn', '1111-2222');

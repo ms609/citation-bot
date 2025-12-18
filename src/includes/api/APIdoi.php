@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-
-/** @param array<string> $_ids
-    @param array<Template> $templates */
+/**
+ * @param array<string> $_ids
+ * @param array<Template> $templates
+ */
 function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_doi($template);
@@ -306,8 +307,10 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     process_doi_json($template, $doi, $json);
 }
 /**
-   @param array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>> $json
-   */
+ * @param Template $template
+ * @param string $doi
+ * @param array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>> $json
+ */
 function process_doi_json(Template $template, string $doi, array $json): void {
     /** @param array|string|int|null $data */
     $try_to_add_it = static function(string $name, $data) use($template): void {
@@ -607,5 +610,3 @@ function get_doi_from_crossref(Template $template): void {
     }
     return;
 }
- 
- 
