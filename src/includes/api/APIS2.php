@@ -146,4 +146,3 @@ function get_semanticscholar_url(Template $template, string $doi): void
         }
     }
 }
-

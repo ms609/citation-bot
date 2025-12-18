@@ -322,4 +322,3 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void
         }
     }
 }
-

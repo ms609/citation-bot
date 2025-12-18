@@ -609,5 +609,3 @@ function get_doi_from_crossref(Template $template): void {
     }
     return;
 }
- 
- 

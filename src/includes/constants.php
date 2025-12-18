@@ -84,5 +84,3 @@ const BAD_VIA = [ '', 'project muse', 'wiley', 'springer', 'questia', 'elsevier'
         'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost', 'proquest',
         'google scholar', 'google', 'bing', 'yahoo'];
 const VOL_NUM = ['volume', 'issue', 'number'];
-
-

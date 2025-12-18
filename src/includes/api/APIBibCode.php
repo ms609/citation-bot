@@ -777,4 +777,3 @@ function looksLikeBookReview(Template $template, object $record): bool
     }
     return false;
 }
- 

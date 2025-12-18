@@ -1171,4 +1171,3 @@ function clean_volume(string $volume): string {
      'vol', 'issues', 'issue', 'iss.', 'iss', 'numbers', 'number',
      'num.', 'num', 'nos.', 'nos', 'nr.', 'nr', '°', '№'], '', $volume));
 }
-

@@ -381,5 +381,3 @@ function do_pumbed_query(Template $template, array $terms): array
         return ['', 0, []];
     }
 }
-
-
