@@ -25,7 +25,7 @@
         "vimeo/psalm": "^6"
     },
     "scripts": {
-        "phpcbf": "phpcbf memory_limit=1000M",
+        "phpcbf": "phpcbf -d memory_limit=1000M",
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0"
     }
 }
