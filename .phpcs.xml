@@ -13,14 +13,12 @@
         <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
-        <exclude name="Generic.Formatting.SpaceAfterNot.Incorrect"/>
         <exclude name="Generic.Functions.FunctionCallArgumentSpacing.NoSpaceAfterComma"/>
         <exclude name="Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.SpaceBeforeBrace"/>
         <exclude name="Generic.PHP.LowerCaseConstant.Found"/>
-        <exclude name="Generic.WhiteSpace.LanguageConstructSpacing.IncorrectSingle"/>
         <exclude name="MediaWiki.Commenting.DocComment.CloseTagOwnLine"/>
         <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
         <exclude name="MediaWiki.Commenting.DocComment.SpacingDocTag"/>
@@ -54,13 +52,10 @@
         <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
         <exclude name="MediaWiki.WhiteSpace.DisallowEmptyLineFunctions.NoEmptyLine"/>
         <exclude name="MediaWiki.WhiteSpace.MultipleEmptyLines.MultipleEmptyLines"/>
-        <exclude name="MediaWiki.WhiteSpace.OpeningKeywordParenthesis.WrongWhitespaceBeforeParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceAfterClosure.NoWhitespaceAfterClosure"/>
-        <exclude name="MediaWiki.WhiteSpace.SpaceBeforeControlStructureBrace.BraceOnNewLine"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
         <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase"/>
-        <exclude name="PSR2.Files.EndFileNewline.NoneFound"/>
         <exclude name="PSR2.Files.EndFileNewline.TooMany"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpaceAfterEquals"/>
@@ -70,7 +65,6 @@
         <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.Before"/>
-        <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.NoSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.TooMuchSpaceAfter"/>
         <exclude name="Squiz.WhiteSpace.LogicalOperatorSpacing.TooMuchSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>

@@ -1065,7 +1065,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     }
     // Common ones that do not help
     if (mb_strpos($url, 'books.google') !== false ||
-            mb_strpos($url, 'researchgate.net') !== false||
+            mb_strpos($url, 'researchgate.net') !== false ||
             mb_strpos($url, 'academia.edu') !== false) {
         return false;
     }
@@ -1480,7 +1480,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
             . "entrez/query\.fcgi\S+db=pubmed\S+?|"
             . "pmc/articles/pmid/)"
-            . ".*?=?(\d{4,})~i", $url, $match)||
+            . ".*?=?(\d{4,})~i", $url, $match) ||
                     preg_match("~^https?://(?:pubmed|www)\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed(?:|\&tool=sumsearch.org/cite)\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
                 ) {
                 if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {

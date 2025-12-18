@@ -103,7 +103,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
  * @codeCoverageIgnore
  */
 function bot_html_header(): void {
-    if (! HTML_OUTPUT) {
+    if (!HTML_OUTPUT) {
         echo "\n";
         return;
     }
