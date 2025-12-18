@@ -197,7 +197,7 @@ final class Template
         }
     }
 
-    // Re-assemble parsed template into string
+    /** Re-assemble parsed template into string */
     public function parsed_text(): string
     {
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
