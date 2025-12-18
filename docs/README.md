@@ -33,10 +33,10 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-* DOIBot, found in `index.html` (web frontend) and `process_page.php` (information is
+* Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
-  All activity takes place on Tool Labs.
+  All activity takes place on Tool Labs.  Single pages can be GETed.
 * Citation expander (https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js) + `gadgetapi.php`. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 * `generate_template.php` creates the wiki reference given an identifier (for example: https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183)
