@@ -100,7 +100,7 @@ final class Zotero {
                 if ($template->has('citeseerx')) {
                     self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
                 }
-                // Has a CAPCHA -- if ($template->has('jfm'))
+                //  Has a CAPCHA -- if ($template->has('jfm'))
                 //  Has a CAPCHA -- if ($template->has('zbl'))
                 //  Do NOT do MR -- it is a review not the article itself. Note that html does have doi, but do not use it.
                 if ($template->has('hdl')) {
@@ -388,7 +388,7 @@ final class Zotero {
 
         if (mb_stripos($url, 'flickr.') !== false) {
             $result->itemType = 'webpage';
-            unset($result->publicationTitle); // Flickr is not a work
+            unset($result->publicationTitle); //Flickr is not a work
         }
 
         if (mb_stripos($url, 'pressbooks.online.ucf.edu') !== false) {
@@ -750,7 +750,7 @@ final class Zotero {
                 $template->add_if_new('publisher', (string) $result->publisher);
             }
         } else {
-            if (isset($result->title)) {
+            if (isset($result->title)){
                 $template->add_if_new('title', (string) $result->title);
             }
             if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {

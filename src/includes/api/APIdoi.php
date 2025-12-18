@@ -186,7 +186,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if ($template->blank("page")) {
                 if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
                     if (mb_strpos((string) $crossRef->first_page . (string) $crossRef->last_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
-                        $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); // replaced by an endash later in script
+                        $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
                     }
                 } else {
                     if (mb_strpos((string) $crossRef->first_page, '-') === false) { // Very rarely get stuff like volume/issue/year added to pages
@@ -300,7 +300,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     $json = @json_decode($data, true);
     unset($data);
-    if ($json === false || $json === null) {
+    if($json === false || $json === null) {
         return;
     }
     process_doi_json($template, $doi, $json);
