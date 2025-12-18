@@ -14,6 +14,8 @@
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
+        <!-- breaks PHPStan to turn this off -->
+        <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
         <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
         <exclude name="Generic.ControlStructures.DisallowYodaConditions.Found"/>
