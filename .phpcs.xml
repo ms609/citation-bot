@@ -25,7 +25,6 @@
         <exclude name="Generic.Functions.FunctionCallArgumentSpacing.SpaceBeforeComma"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
-        <exclude name="MediaWiki.Commenting.DocComment.CloseTagOwnLine"/>
         <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
         <exclude name="MediaWiki.Commenting.DocComment.SpacingDocTag"/>
         <exclude name="MediaWiki.Commenting.DocComment.SyntaxAlignedDocClose"/>
