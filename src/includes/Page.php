@@ -156,11 +156,10 @@ class Page {
     public function parsed_text(): string {
         return $this->text;
     }
-    // $identifier: parameter to send to api_function, e.g. "pmid"
-    // $templates: array of pointers to the templates
+
     /**
-     * @param string $identifier
-     * @param array<Template> &$templates
+     * @param string $identifier parameter to send to api_function, e.g. "pmid"
+     * @param array<Template> &$templates array of pointers to the templates
      */
     public function expand_templates_from_identifier(string $identifier, array &$templates): void { // Pointer to save memory
         $ids = [];

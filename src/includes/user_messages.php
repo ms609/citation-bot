@@ -63,8 +63,8 @@ function report_inline(string $text): void {
     }
 }
 
-// call report_warning to give users a message before we die
 /**
+ * call report_warning to give users a message before we die
  * @codeCoverageIgnore
  */
 function report_error(string $text): never {

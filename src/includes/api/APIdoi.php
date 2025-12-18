@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-
-/** @param array<string> $_ids
-    @param array<Template> $templates */
+/**
+ * @param array<string> $_ids
+ * @param array<Template> $templates
+ */
 function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
     foreach ($templates as $template) {
         expand_by_doi($template);

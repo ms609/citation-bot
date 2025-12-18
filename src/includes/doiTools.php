@@ -417,12 +417,11 @@ function sanitize_doi(string $doi): string {
     return $doi;
 }
 
-/* extract_doi
- * Returns an array containing:
- * 0 => text containing a DOI, possibly encoded, possibly with additional text
+/**
+ * @return array<string> Returns an array containing:
+ * 0 => text containing a DOI, possibly encoded, possibly with additional text.
  * 1 => the decoded DOI
  */
-/** @return array<string> */
 function extract_doi(string $text): array {
     if (preg_match(
                 "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",

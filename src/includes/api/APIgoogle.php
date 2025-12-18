@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 function clean_google_books(Template $template): void
  {
     if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // TODO - support other countries

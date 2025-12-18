@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 /**
  * @param array<Template> $templates
  */

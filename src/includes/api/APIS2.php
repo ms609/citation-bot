@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
