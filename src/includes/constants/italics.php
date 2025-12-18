@@ -418,8 +418,8 @@ const ITALICS_LIST =
     'Santacruzodon|' .
     'Escherichia|' .
     'END_OF_CITE_list_junk';
-//  All real ones need pipe on end
-//  YOU MUST ESCAPE (.|) and other FUNNY Characters
+// All real ones need pipe on end
+// YOU MUST ESCAPE (.|) and other FUNNY Characters
 
 const CAMEL_CASE = [
     'DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn',

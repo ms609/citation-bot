@@ -656,7 +656,7 @@ const BAD_ZOTERO_TITLES = [
     '页面不存在',
 ];
 
-//  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
+// Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
 const CANONICAL_PUBLISHER_URLS = [
     '-ezproxy.',
     '.acm.org',

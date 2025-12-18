@@ -9,7 +9,7 @@ try {
     @header('Access-Control-Allow-Origin: *'); // Needed for gadget to work right
     @header('Content-Type: text/json');
 
-    //Set up tool requirements
+    // Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
 
     if (!is_string(@$_POST['text']) || !is_string(@$_POST['summary'])) {
@@ -27,7 +27,7 @@ try {
         throw new Exception('bogus summary');  // @codeCoverageIgnore
     }
 
-    //Expand text from postvars
+    // Expand text from postvars
     $page = new Page();
     ob_start(); // For some reason this is needed sometimes
     $page->parse_text($originalText);
@@ -38,7 +38,7 @@ try {
         throw new Exception('text lost');    // @codeCoverageIgnore
     }
 
-    //Modify edit summary to identify bot-assisted edits
+    // Modify edit summary to identify bot-assisted edits
     if ($newText !== $originalText) {
         if ($editSummary) {
             $editSummary .= ' | '; // Add pipe if already something there.

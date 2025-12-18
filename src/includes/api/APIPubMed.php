@@ -43,9 +43,9 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
 
     // A few PMC do not have any data, just pictures of stuff
     if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) {
-        foreach($xml->DocSum as $document) {
+        foreach ($xml->DocSum as $document) {
             report_info("Found match for {$db} identifier " . echoable((string) $document->Id));
-            foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+            foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
                 $an_id = (string) $an_id;
                 if (!array_key_exists($template_key, $templates)) {
                     bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id); // @codeCoverageIgnore
