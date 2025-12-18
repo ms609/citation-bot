@@ -281,7 +281,7 @@ function query_pubmed(Template $template): array
 /**
  * @param Template $template
  * @param array<string> $terms
- * @return array {0: string, 1: int, 2: array<string>}
+ * @return array{0: string, 1: int, 2: array<string>}
  */
 function do_pumbed_query(Template $template, array $terms): array
 {
