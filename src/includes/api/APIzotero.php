@@ -12,10 +12,9 @@ const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DD
 const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
 
 /**
-    @param array<string> $_ids
-    @param array<Template> $templates
-*/
-
+ * @param array<string> $_ids
+ * @param array<Template> $templates
+ */
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
     Zotero::query_url_api_class($templates);
 }
@@ -908,7 +907,7 @@ final class Zotero {
                     }
                     break;
                 case 'newspaperArticle':  // Many things get called "news" in error
-                    /** if ($template->wikiname() === 'cite web') {
+                    /* if ($template->wikiname() === 'cite web') {
                         $test_data = $template->get('work') . $template->get('website') .
                             $template->get('url') . $template->get('chapter-url') .
                             $template->get('title') . $template->get('encyclopedia') .
@@ -916,7 +915,7 @@ final class Zotero {
                         if (str_ireplace(['.gov', 'encyclopedia', 'encyclopædia'], '', $test_data) === $test_data) {
                             $template->change_name_to('cite news');
                         }
-                    } **/
+                    } */
                     break;
                 case 'thesis':
                     $template->change_name_to('cite thesis');

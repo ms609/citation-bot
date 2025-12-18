@@ -193,7 +193,6 @@ function author_is_human(string $author): bool {
 
 // Returns the author's name formatted as Surname, F.I.
 function format_author(string $author): string {
-
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     // Google and Zotero sometimes have these (sir) and just sir

@@ -51,7 +51,7 @@ function expand_by_jstor(Template $template): void {
         report_info("JSTOR API blocked bot for ".    jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                           // @codeCoverageIgnore
     }
-    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data')  !== false) {
+    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
         report_info("JSTOR API had a problem for ".    jstor_link($jstor));
         return;
     }

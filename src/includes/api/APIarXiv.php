@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 
 /**
-  @param array<Template> $templates
-*/
+ * @param array<Template> $templates
+ */
 function expand_arxiv_templates (array &$templates): void {    // Pointer to save memory
     $ids = [];
     $arxiv_templates = [];
@@ -82,14 +82,14 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         if (isset($entry_map[$id])) {
             $sorted_arxiv_data[] = $entry_map[$id];
         } else {
-            $sorted_arxiv_data[] = FALSE;
+            $sorted_arxiv_data[] = false;
         }
     }
     unset($entry_map);
 
     $this_template = current($templates); // advance at end of foreach loop
     foreach ($sorted_arxiv_data as $entry) {
-        if ($entry === FALSE) {
+        if ($entry === false) {
             $this_template = next($templates);
             continue;
         }

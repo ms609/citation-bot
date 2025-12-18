@@ -489,9 +489,11 @@ function string_is_book_series(string $str): bool {
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
 
-/** @param array<string> $list
-    @return array<string> */
-function prior_parameters(string $par, array $list=[]): array {
+/**
+ * @param array<string> $list
+ * @return array<string>
+ */
+function prior_parameters(string $par, array $list = []): array {
     if ($par === '') {
         $par = $list['0'];
     }
@@ -1850,7 +1852,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 return $template->add_if_new('issn_force', $match[1] . '-' . $match[2]);
             }
             return false;
-        } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
+        } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match) &&
                             (mb_stripos($template->parsed_text(), 'library') === false)) { // Sometimes it is web cite to Library of Congress
             if ($template->wikiname() === 'cite web') {
                 $template->change_name_to('cite book');  // Better template choice

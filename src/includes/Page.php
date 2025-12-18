@@ -211,15 +211,15 @@ class Page {
         }
 
         // COMMENTS AND NOWIKI ETC. //
-        /** @var array<Comment>         $comments        */
+        /** @var array<Comment> $comments */
         $comments    = $this->extract_object('Comment');
-        /** @var array<Nowiki>          $nowiki          */
+        /** @var array<Nowiki> $nowiki */
         $nowiki      = $this->extract_object('Nowiki');
-        /** @var array<Chemistry>       $chemistry   */
+        /** @var array<Chemistry> $chemistry */
         $chemistry   = $this->extract_object('Chemistry');
         /** @var array<Mathematics> $mathematics */
         $mathematics = $this->extract_object('Mathematics');
-        /** @var array<Musicscores> $musicality  */
+        /** @var array<Musicscores> $musicality */
         $musicality  = $this->extract_object('Musicscores');
         /** @var array<Preformated> $preformated */
         $preformated = $this->extract_object('Preformated');
@@ -951,7 +951,6 @@ class Page {
     }
 
     private function set_name_list_style(): void {
-
         // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
         $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;

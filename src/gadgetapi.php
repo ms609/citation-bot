@@ -48,9 +48,9 @@ try {
     unset($originalText, $page);
 
     /**
-      * @psalm-taint-escape html
-      * @psalm-taint-escape has_quotes
-      */
+     * @psalm-taint-escape html
+     * @psalm-taint-escape has_quotes
+     */
     $result = ['expandedtext' => $newText, 'editsummary' => $editSummary];
 
     unset($newText, $editSummary);

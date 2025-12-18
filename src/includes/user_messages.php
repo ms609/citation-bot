@@ -6,7 +6,7 @@ const BORING_STUFF = ["boring", "removed", "added", "changed", "subsubitem", "su
 
 require_once __DIR__ . '/constants.php';   // @codeCoverageIgnore
 
-function html_echo(string $text, string $alternate_text=''): void {
+function html_echo(string $text, string $alternate_text = ''): void {
     if (!TRAVIS) {
         echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
     }
@@ -101,9 +101,9 @@ function quietly(callable $function, string $text): void { // Stuff suppressed w
 // special flags to mark this function as making all untrustworthy input magically safe to output
 function echoable(?string $string): string {
     /**
-      * @psalm-taint-escape html
-      * @psalm-taint-escape has_quotes
-      */
+     * @psalm-taint-escape html
+     * @psalm-taint-escape has_quotes
+     */
     $string = (string) $string;
      return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $string;
 }

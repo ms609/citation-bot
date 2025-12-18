@@ -239,7 +239,7 @@ function find_pmid(Template $template): void
 
 
 
- /** @return array{0: string, 1: int, 2: array<string>} */
+/** @return array {0: string, 1: int, 2: array<string>} */
 function query_pubmed(Template $template): array
  {
     /*
@@ -281,8 +281,11 @@ function query_pubmed(Template $template): array
     return ['', 0, []];
 }
 
- /** @param array<string> $terms
-     @return array{0: string, 1: int, 2: array<string>} */
+/**
+ * @param Template $template
+ * @param array<string> $terms
+ * @return array {0: string, 1: int, 2: array<string>}
+ */
 function do_pumbed_query(Template $template, array $terms): array
 {
     set_time_limit(120);

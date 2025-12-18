@@ -37,7 +37,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     private bool $testing_skip_wiki;
 
     protected function setUp(): void {
-
         Zotero::create_ch_zotero();
         $wb = new WikipediaBot();
         unset($wb);

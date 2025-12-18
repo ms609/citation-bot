@@ -19,7 +19,7 @@ const ENG_ERR2 = 'If that is not the problem, then run the single page with &prc
 const VI_ERR1 = 'Đoạn văn bản sau có thể giúp bạn xác định lỗi trên trang (Tìm các ký tự { hoặc } đơn lẻ, hoặc comment chưa đóng)';
 const VI_ERR2 = 'Nếu đó không phải là vấn đề, hãy chạy trên một trang riêng lẻ với &prce=1 thêm vào URL để thay đổi trình phân tích cú pháp';
 
-/** links to verify
+/* links to verify
 https://mk.wikipedia.org/wiki/Template:Cite_journal
 https://mk.wikipedia.org/wiki/Template:Cite_book
 https://mk.wikipedia.org/wiki/Template:Cite_web
@@ -59,7 +59,7 @@ https://vi.wikipedia.org/wiki/Template:Cite_arxiv
 https://vi.wikipedia.org/wiki/Template:Cite_news
 https://vi.wikipedia.org/wiki/Template:Cite_document
 https://vi.wikipedia.org/wiki/Template:Cite_conference
-**/
+*/
 
 // WARNING: mb_strtolower versions - code also assumes that only the first character could be uppercase
 const MK_TEMPLATES_MAP = [
