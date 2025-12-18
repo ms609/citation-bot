@@ -59,7 +59,6 @@
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter"/>
-        <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingBefore"/>
         <exclude name="Squiz.WhiteSpace.SemicolonSpacing.Incorrect"/>
         <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
     </rule>
