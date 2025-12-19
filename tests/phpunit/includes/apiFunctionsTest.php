@@ -4,9 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 /**
-    Some of these are unit tests that poke specific functions that do not require actually connecting to adsabs
-*/
-
+ * Some of these are unit tests that poke specific functions that do not require actually connecting to adsabs
+ */
 final class apiFunctionsTest extends testBaseClass {
 
     public function testS2CIDlicenseFalse(): void {

@@ -4374,7 +4374,7 @@ final class Template
                         }
                     }
                     if ($this->wikiname() === 'cite book' && $this->blank('chapter')) {
-                        /**
+                        /*
                         if (in_array($this->get($param), [], true)) {
                          $this->rename('title', 'chapter');
                          $this->rename($param, 'title');
@@ -6444,20 +6444,19 @@ final class Template
                         $this->forget($worky);
                     }
                 }
+                /*
                 // If one and only one work alias is set, the move it to publisher
-                /**
                 if ($this->blank('publisher')) {
-                 $counting = 0;
-                 foreach (WORK_ALIASES as $worky) {
-                 if ($this->has($worky)) $counting = $counting + 1;
+                    $counting = 0;
+                    foreach (WORK_ALIASES as $worky) {
+                    if ($this->has($worky)) $counting = $counting + 1;
                 }
                 if ($counting === 1) {
-                 foreach (WORK_ALIASES as $worky) {
-                 //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
+                    foreach (WORK_ALIASES as $worky) {
+                        //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
+                    }
                 }
-               }
-              }
-              */
+                */
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
                     if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
