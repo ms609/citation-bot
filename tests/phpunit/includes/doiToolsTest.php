@@ -232,7 +232,4 @@ final class apiFunctionsTest extends testBaseClass {
         $this->assertFalse(doi_works('10.1002/was.00020423'));
     }
 
-
-
 }
-
