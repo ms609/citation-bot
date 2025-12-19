@@ -31,11 +31,11 @@ final class BigFileTest extends testBaseClass {
         touch(big_jobs_name());
         $lock_file = fopen($name, 'x+');
         big_jobs_we_died($lock_file);
-        unlink($lock_file);
+        unlink($name);
         $this->assertTrue(true);
     }
 
-    public function testWeKill():void {
+    public function testWeKill(): void {
         $this->assertFalse(big_jobs_kill());
         touch(big_jobs_name());    
         $this->assertTrue(big_jobs_kill());
