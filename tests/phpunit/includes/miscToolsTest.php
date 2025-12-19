@@ -124,4 +124,10 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('chapter-url'));
         $this->assertSame('exists', $expanded->get2('isbn'));
     }
+
+    public function testSimpleIEEE(): void {
+        $url = "http://ieeexplore.ieee.org/arnumber=123456789";
+        $url = url_simplify($url);
+        $this->assertSame('http:/ieeexplore.ieee.org/123456789', $url);
+    }
 }
