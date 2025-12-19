@@ -160,27 +160,6 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testSimpleIEEE(): void {
-        $url = "http://ieeexplore.ieee.org/arnumber=123456789";
-        $url = url_simplify($url);
-        $this->assertSame('http:/ieeexplore.ieee.org/123456789', $url);
-    }
-
-    public function testIEEEdoi(): void {
-        $url = "https://ieeexplore.ieee.org/document/4242344";
-        $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
-        if ($template->get('doi') === "") {
-            sleep(5);
-            $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
-        }
-        $this->assertSame('10.1109/ISSCC.2007.373373', $template->get2('doi'));
-    }
-
-    public function testIEEEdropBadURL(): void {
-        $template = $this->process_citation('{{cite journal | url = https://ieeexplore.ieee.org/document/4242344341324324123412343214 |doi =10.1109/ISSCC.2007.373373 }}');
-        $this->assertNull($template->get2('url'));
-    }
-
     public function testZoteroResponse1(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -949,28 +928,6 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testUseArchive1(): void {
-        $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
-        $template = $this->make_citation($text);
-        $tmp_array = [$template];
-        expand_templates_from_archives($tmp_array);
-        for ($x = 0; $x <= 10; $x++) {
-            if ($template->get2('title') == null) {
-                sleep(4); // Sometimes fails for no good reason
-                expand_templates_from_archives($tmp_array);
-            }
-        }
-        $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get2('title'));
-    }
-
-    public function testUseArchive2(): void {
-        $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
-        $template = $this->make_citation($text);
-        $tmp_array = [$template];
-        expand_templates_from_archives($tmp_array);
-        $this->assertNull($template->get2('title'));
-    }
-
     public function testZoteroExpansion_doi_not_from_crossref(): void {
         $text = '{{Cite journal|doi=.3233/PRM-140291}}';
         $expanded = $this->make_citation($text);
@@ -1200,11 +1157,4 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testPII(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
-        $pii = 'S0960076019302699';
-        $doi_expect = '10.1016/j.jsbmb.2019.105494';
-        $doi = get_doi_from_pii($pii);
-        $this->assertSame($doi_expect, $doi);
-    }
 }

@@ -214,5 +214,72 @@ final class doiTest extends testBaseClass {
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
+    public function testPoundDOI(): void {
+        $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1007/978-3-642-75924-6_15', $expanded->get2('doi'));
+    }
 
+    public function testPlusDOI(): void {
+        $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U#page_scan_tab_contents=342342"; // Also check #page_scan_tab_contents stuff too
+        $text = "{{cite journal|doi = $doi }}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame("10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U", $expanded->get2('doi'));
+    }
+
+    public function testNewsdDOI(): void {
+        $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024;jsessionid=222}}"; // Also check jsesssion removal
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1021/cen-v076n048.p024', $expanded->get2('doi'));
+    }
+
+    public function testDoiExpansion1(): void {
+        $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite journal', $prepared->wikiname());
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $prepared->get2('doi'));
+    }
+
+    public function testDoiExpansion2(): void {
+        $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+        $expanded = $this->prepare_citation($text);
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+        $this->assertNotNull($expanded->get2('url'));
+    }
+
+    public function testDoiExpansion3(): void {
+        // Recognize official DOI targets in URL with extra fragments - fall back to S2
+        $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNotNull($expanded->get2('url'));
+    }
+
+    public function testDoiExpansion4(): void {
+        // Replace this test with a real URL (if one exists)
+        $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
+        $expanded= $this->prepare_citation($text);
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+        // Do not drop PDF files, in case they are open access and the DOI points to a paywall
+        $this->assertSame('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get2('url'));
+    }
+
+    public function testDOI1093(): void {
+        $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+
+        $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+    }
+
+    public function testDOI1093WW(): void {
+        $text = '{{cite web |doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-221850}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
+    }
 }

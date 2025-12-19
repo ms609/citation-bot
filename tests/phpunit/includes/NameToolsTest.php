@@ -242,5 +242,10 @@ final class NameToolsTest extends testBaseClass {
         $this->assertSame('Joe,Bob', $out[0]);
         $this->assertSame('Jim,Slim', $out[1]);
     }
-    
+
+    public function testTidyLastFirts(): void {
+        $text = '{{cite document |last=Howlett |first=Felicity|last2=Fred}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('{{cite document |last1=Howlett |first1=Felicity|last2=Fred}}', $template->parsed_text());
+    }
 }
