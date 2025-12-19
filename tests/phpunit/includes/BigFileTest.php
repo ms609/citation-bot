@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
-require_once __DIR__ . '/../../../src/includes/big_jobs.php'
+require_once __DIR__ . '/../../../src/includes/big_jobs.php';
 
 final class BigFileTest extends testBaseClass {
 
