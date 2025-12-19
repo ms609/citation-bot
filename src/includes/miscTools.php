@@ -2,6 +2,39 @@
 
 declare(strict_types=1);
 
+const GROUP_F1  = ['first', 'initials', 'forename', 'contributor-first', 'contributor-given'];
+const GROUP_L1  = ['last', 'surname', 'author', 'contributor-last', 'contributor-surname', 'contributor'];
+const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname'];
+const GROUP2  = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors'];
+const GROUP3  = ['title', 'title-link', 'titlelink'];
+const GROUP4  = ['chapter'];
+const GROUP5  = ['journal', 'work', 'newspaper', 'website', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia', 'book-title'];
+const GROUP6  = ['series'];
+const GROUP7  = ['year', 'date'];
+const GROUP8  = ['volume'];
+const GROUP9  = ['issue', 'number'];
+const GROUP10 = ['page', 'pages', 'at'];
+const GROUP11 = ['article-number'];
+const GROUP12 = ['location', 'publisher', 'edition', 'agency'];
+const GROUP13 = ['doi'];
+const GROUP14 = ['doi-broken-date'];
+const GROUP15 = ['doi-access'];
+const GROUP16 = ['doi-broken-date'];
+const GROUP17 = ['jstor'];
+const GROUP18 = ['pmid'];
+const GROUP19 = ['pmc'];
+const GROUP20 = ['pmc-embargo-date'];
+const GROUP21 = ['arxiv', 'eprint', 'class'];
+const GROUP22 = ['bibcode'];
+const GROUP23 = ['hdl'];
+const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'];
+const GROUP25 = ['lccn', 'issn', 'ol', 'oclc', 'asin', 's2cid'];
+const GROUP26 = ['url'];
+const GROUP27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl', 'URL'];
+const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date'];
+const GROUP29 = ['archive-date', 'archivedate'];
+const GROUP30 = ['id', 'type', 'via'];
+
 function clean_up_oxford_stuff(Template $template, string $param): void {
     if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
         $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
@@ -490,7 +523,7 @@ function string_is_book_series(string $str): bool {
 }
 
 /*
- * This code is recusive as is goes through a long list of parameters to find its place in the list.
+ * This code is recursive as is goes through a long list of parameters to find its place in the list.
  * TODO: think about better ways to do this.
  */
 
@@ -507,18 +540,9 @@ function prior_parameters(string $par, array $list = []): array {
     if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
         switch ($match[1]) {
-            case 'first':
-            case 'initials':
-            case 'forename':
-            case 'contributor-first':
-            case 'contributor-given':
+            case in_array($match[1], GROUP_F1, true):
                 return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
-            case 'last':
-            case 'surname':
-            case 'author':
-            case 'contributor-last':
-            case 'contributor-surname':
-            case 'contributor':
+            case in_array($match[1], GROUP_L1, true):
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
                 $base = $match[1];
