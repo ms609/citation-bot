@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '../../testBaseClass.php';
+require_once __DIR__ . '/../../testBaseClass.php';
 
 final class miscTools extends testBaseClass {
     public function testcheck_memory_usage(): void {
