@@ -15,4 +15,12 @@ final class miscTools extends testBaseClass {
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
         $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
     }
+ 
+    public function testThrottle(): void { // Just runs over the code and basically does nothing
+        for ($x = 0; $x <= 25; $x++) {
+            throttle();
+        }
+        $this->assertNull(null);
+    }
+
 }
