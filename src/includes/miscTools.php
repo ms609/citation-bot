@@ -490,7 +490,7 @@ function string_is_book_series(string $str): bool {
 }
 
 /*
- * This code is recusive as is goes through a long list of parameters to find its place in the list.
+ * This code is recursive as is goes through a long list of parameters to find its place in the list.
  * TODO: think about better ways to do this.
  */
 
@@ -507,18 +507,9 @@ function prior_parameters(string $par, array $list = []): array {
     if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
         switch ($match[1]) {
-            case 'first':
-            case 'initials':
-            case 'forename':
-            case 'contributor-first':
-            case 'contributor-given':
+            case in_array($par, GROUP_F1, true):
                 return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
-            case 'last':
-            case 'surname':
-            case 'author':
-            case 'contributor-last':
-            case 'contributor-surname':
-            case 'contributor':
+            case in_array($par, GROUP_L1, true):
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
                 $base = $match[1];
