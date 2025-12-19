@@ -34,10 +34,10 @@ function expand_by_jstor(Template $template): void {
     /** @psalm-taint-escape ssrf */
     $jstor = mb_trim($jstor);
     if (mb_strpos($jstor, ' ') !== false) {
-        return ; // Comment/template found
+        return; // Comment/template found
     }
     if (mb_substr($jstor, 0, 1) === 'i') {
-        return ; // We do not want i12342 kind
+        return; // We do not want i12342 kind
     }
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
     $dat = bot_curl_exec($ch);

@@ -34,7 +34,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
-                return ;
+                return;
             }
             if ($template->has('title') && mb_trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
                 $bad_data = true;

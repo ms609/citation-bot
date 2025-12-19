@@ -693,8 +693,8 @@ final class TemplateTest extends testBaseClass {
         $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
                     . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
                     . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
-                    . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
-                    ;
+                    . '{{cite arXiv|eprint=hep-th/0303241}}'; // tests line feeds
+
         $expanded = $this->process_page($text);
         $templates = $expanded->extract_object('Template');
         $this->assertSame('cite journal', $templates[0]->wikiname());
@@ -2983,7 +2983,7 @@ EP - 999 }}';
     }
 
     public function testPageRange(): void {
-        $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
+        $text = '{{Citation|doi=10.3406/befeo.1954.5607}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('405–554', $expanded->get2('pages'));
     }

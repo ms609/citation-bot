@@ -116,7 +116,7 @@ class Page {
 
         $this->title = (string) $details->title;
         self::$last_title = $this->title;
-        $this->lastrevid = (int) $details->lastrevid ;
+        $this->lastrevid = (int) $details->lastrevid;
 
         $this->text = WikipediaBot::GetAPage($title);
 
@@ -266,7 +266,7 @@ class Page {
                                             "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                                             static function(array $matches): string {
                                                 if ($matches[4] === $matches[6]) {
-                                                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8] ;
+                                                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8];
                                                 }
                                                 return $matches[0];
                                             },

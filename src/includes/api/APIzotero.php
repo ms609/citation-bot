@@ -297,7 +297,7 @@ final class Zotero {
         } else {
             $result = $zotero_data[0];
         }
-        $result = (object) $result ;
+        $result = (object) $result;
 
         if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
             if (!empty($result->subject)) {

@@ -465,7 +465,7 @@ final class constantsTest extends testBaseClass {
             echo "\n Correct values for italics.php\n";
             echo "\n";
             echo "const ITALICS_LIST =\n";
-            for ($i = $max_spaces; $i > -1 ; $i--) {
+            for ($i = $max_spaces; $i > -1; $i--) {
                 foreach ($italics as $item) {
                     if (mb_substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
                          echo ' "' . $item . '|" .' . "\n";
