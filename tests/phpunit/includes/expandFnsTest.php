@@ -38,57 +38,57 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', true)); // Do not touch links
     }
     public function testCapitalization4(): void {
-        $this->assertSame('This is robert WWW', title_capitalization('This is robert www' , true));
+        $this->assertSame('This is robert WWW', title_capitalization('This is robert www', true));
     }
     public function testCapitalization5(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
     }
     public function testCapitalization6(): void {
-        $this->assertSame('This is robert www.', title_capitalization('This is robert www.' , true));
+        $this->assertSame('This is robert www.', title_capitalization('This is robert www.', true));
     }
     public function testCapitalization7(): void {
-        $this->assertSame('This is robert www-', title_capitalization('This is robert www-' , true));
+        $this->assertSame('This is robert www-', title_capitalization('This is robert www-', true));
     }
     public function testCapitalization8a(): void {
-        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.' , true));
+        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.', true));
     }
     public function testCapitalization8b(): void {
-        $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.' , true));
+        $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.', true));
     }
     public function testCapitalization8c(): void {
-        $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.' , true));
+        $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.', true));
     }
     public function testCapitalization8d(): void {
-        $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.' , true));
+        $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.', true));
     }
     public function testCapitalization8e(): void {
-        $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.' , true));
+        $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.', true));
     }
     public function testCapitalization9(): void {
-        $this->assertSame('SAGE Open', title_capitalization('Sage Open' , true));
+        $this->assertSame('SAGE Open', title_capitalization('Sage Open', true));
     }
     public function testCapitalization10(): void {
-        $this->assertSame('CA', title_capitalization('Ca' , true));
+        $this->assertSame('CA', title_capitalization('Ca', true));
     }
 
     public function testCapitalization11(): void {
-        $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu' , true));
+        $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu', true));
     }
 
     public function testCapitalization12(): void {
-        $this->assertSame('PEN International', title_capitalization('Pen International' , true));
+        $this->assertSame('PEN International', title_capitalization('Pen International', true));
     }
 
     public function testCapitalization13(): void {
-        $this->assertSame('Time Off', title_capitalization('Time off' , true));
+        $this->assertSame('Time Off', title_capitalization('Time off', true));
     }
 
     public function testCapitalization14(): void {
-        $this->assertSame('IT Professional', title_capitalization('It Professional' , true));
+        $this->assertSame('IT Professional', title_capitalization('It Professional', true));
     }
 
     public function testCapitalization15(): void {
-        $this->assertSame('JOM', title_capitalization('Jom' , true));
+        $this->assertSame('JOM', title_capitalization('Jom', true));
     }
 
     public function testFrenchCapitalization1(): void {
@@ -146,7 +146,7 @@ final class expandFnsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
-        $this->assertSame('2011'      , tidy_date('05/11/2011 12:52:08'));
+        $this->assertSame('2011', tidy_date('05/11/2011 12:52:08'));
         $this->assertSame('2011-11-11', tidy_date('11/11/2011 12:52:08'));
         $this->assertSame('2018-10-21', tidy_date('Date published (2018-10-21'));
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
@@ -186,23 +186,23 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
     public function testTidyDate8(): void {
-        $this->assertSame('2000-03-27' , tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
+        $this->assertSame('2000-03-27', tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
     }
     public function testTidyDate8b(): void {
-        $this->assertSame('2000-03-27' , tidy_date('dafdsafsd3/27/2000'));
+        $this->assertSame('2000-03-27', tidy_date('dafdsafsd3/27/2000'));
     }
     public function testTidyDate8c(): void {
-        $this->assertSame('' , tidy_date('23--'));
+        $this->assertSame('', tidy_date('23--'));
     }
 
     public function testTidyDate55(): void {
-        $this->assertSame('1800' , tidy_date('3 Feb 1800'));
+        $this->assertSame('1800', tidy_date('3 Feb 1800'));
     }
     public function testTidyDate56(): void {
-        $this->assertSame('542' , tidy_date('3 Feb 0542'));
+        $this->assertSame('542', tidy_date('3 Feb 0542'));
     }
     public function testTidyDate57(): void {
-        $this->assertSame('' , tidy_date('-0003-10-22'));
+        $this->assertSame('', tidy_date('-0003-10-22'));
     }
     
     public function testRemoveComments(): void {
@@ -234,10 +234,10 @@ final class expandFnsTest extends testBaseClass {
     public function test_titles_are_dissimilar_LONG(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
-        $big1 = $big1 . $big1 .$big1 .$big1 .$big1 ;
+        $big1 = $big1 . $big1 .$big1 .$big1 .$big1;
         $big2 = $big1 . "X"; // stuff...X
         $big1 = $big1 . "Y"; // stuff...Y
-        $big3 = $big1 . $big1 ; // stuff...Xstuff...X
+        $big3 = $big1 . $big1; // stuff...Xstuff...X
         $this->assertTrue(titles_are_similar($big1, $big2));
         $this->assertTrue(titles_are_dissimilar($big1, $big3));
     }
@@ -269,64 +269,64 @@ final class expandFnsTest extends testBaseClass {
 
     public function testArrowAreQuotes1(): void {
         $text = "This » That";
-        $this->assertSame($text,straighten_quotes($text, true));
+        $this->assertSame($text, straighten_quotes($text, true));
     }
     public function testArrowAreQuotes2(): void {
         $text = "X«Y»Z";
-        $this->assertSame('X"Y"Z',straighten_quotes($text, true));
+        $this->assertSame('X"Y"Z', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes3(): void {
         $text = "This › That";
-        $this->assertSame($text,straighten_quotes($text, true));
+        $this->assertSame($text, straighten_quotes($text, true));
     }
     public function testArrowAreQuotes4(): void {
         $text = "X‹Y›Z";
-        $this->assertSame("X'Y'Z",straighten_quotes($text, true));
+        $this->assertSame("X'Y'Z", straighten_quotes($text, true));
     }
     public function testArrowAreQuotes5(): void {
         $text = "This » That";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes6(): void {
         $text = "X«Y»Z";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes7(): void {
         $text = "This › That";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes8(): void {
         $text = "X‹Y›Z";
-        $this->assertSame("X'Y'Z",straighten_quotes($text, false));
+        $this->assertSame("X'Y'Z", straighten_quotes($text, false));
     }
     public function testArrowAreQuotes9(): void {
         $text = "«XY»Z";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes10(): void {
         $text = "«XY»Z";
-        $this->assertSame('"XY"Z',straighten_quotes($text, true));
+        $this->assertSame('"XY"Z', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes11(): void {
         $text = "«Y»";
-        $this->assertSame('"Y"',straighten_quotes($text, true));
+        $this->assertSame('"Y"', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes12(): void {
         $text = "‹Y›";
-        $this->assertSame("'Y'",straighten_quotes($text, true));
+        $this->assertSame("'Y'", straighten_quotes($text, true));
     }
     public function testArrowAreQuotes13(): void {
         $text = "«Y»";
-        $this->assertSame('"Y"',straighten_quotes($text, false));
+        $this->assertSame('"Y"', straighten_quotes($text, false));
     }
     public function testArrowAreQuotes14(): void {
         $text = "‹Y›";
-        $this->assertSame("'Y'",straighten_quotes($text, false));
+        $this->assertSame("'Y'", straighten_quotes($text, false));
     }
     public function testArrowAreQuotes15(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes16(): void {
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
@@ -345,7 +345,7 @@ final class expandFnsTest extends testBaseClass {
     public function testMathInTitle3(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $text_mml    = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>ß</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si38.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>s</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
-        $this->assertSame('<nowiki>' . $text_math . '</nowiki>',wikify_external_text($text_mml));
+        $this->assertSame('<nowiki>' . $text_math . '</nowiki>', wikify_external_text($text_mml));
     }
 
     public function testURLInTitle(): void {
@@ -405,7 +405,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testBrackets(): void {
-        $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
+        $this->assertSame("ABC", remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
     }
 
     public function testStrong(): void {
@@ -665,13 +665,13 @@ final class expandFnsTest extends testBaseClass {
 
     public function testVariousEncodes2(): void {
         $test="ショッピング";
-        $decoded = smart_decode($test, 'UTF-8','');
+        $decoded = smart_decode($test, 'UTF-8', '');
         $this->assertSame($test, $decoded);
     }
 
     public function testVariousEncodes3(): void {
         $test="ショッピング";
-        $decoded=smart_decode($test, "iso-8859-11",'');
+        $decoded=smart_decode($test, "iso-8859-11", '');
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
     }
 

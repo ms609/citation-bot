@@ -976,7 +976,7 @@ final class zoteroTest extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->verify_doi();
         $this->assertSame('10.3233/PRM-140291', $expanded->get2('doi'));
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
             $expanded = $this->process_citation($text);
             $this->assertNotNull($expanded->get2('journal'));
@@ -985,7 +985,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testCitationTemplateWithoutJournalZotero(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
             $expanded = $this->process_citation($text);
             $this->assertNull($expanded->get2('isbn')); // This citation used to crash code in ISBN search
@@ -993,7 +993,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionAccessDates(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24663/|access-date=1978-12-12}}';     // Access date is too far in past, will not expand
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame($text, $expanded->parsed_text());
@@ -1001,7 +1001,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionCiteseerxSkipped(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.604.9335}}';
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame($text, $expanded->parsed_text());
@@ -1009,7 +1009,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionBibcodeSkipped(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url=https://ui.adsabs.harvard.edu/abs/2015ConPh..56...35D/abstract}}';
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame($text, $expanded->parsed_text());
@@ -1017,7 +1017,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionSumSearchSkipped(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?X=tool=sumsearch.org&id=342141323}}';
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame($text, $expanded->parsed_text());
@@ -1025,7 +1025,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionNRM(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
             $expanded = $this->process_page($text);
             $this->assertTrue(true); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
@@ -1033,7 +1033,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testNoneAdditionOfAuthor(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             // Rubbish author listed in page metadata; do not add.
             $text = "{{cite web |url=http://www.westminster-abbey.org/our-history/people/sir-isaac-newton}}";
             $expanded = $this->process_citation($text);
@@ -1042,7 +1042,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testDateTidiness(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
             $expanded = $this->expand_via_zotero($text);
             $date = $expanded->get('date');
@@ -1052,7 +1052,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroBadVolumes(): void { // has ( and such in it
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{cite journal|chapterurl=https://biodiversitylibrary.org/page/32550604}}';
             $expanded = $this->expand_via_zotero($text);
             $this->assertTrue($expanded->get2('volume') === null || $expanded->get2('volume') === '4');
@@ -1060,7 +1060,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroKoreanLanguage(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{cite journal|chapter-url=http://www.newsen.com/news_view.php?uid=201606131737570410}}';
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('title') === '큐브 측 "포미닛 사실상 해체, 팀 존속 어려워"') {
@@ -1072,7 +1072,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansion_osti(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal| osti=1406676 }}';
             $expanded = $this->process_citation($text);
             $this->assertSame('10.1016/j.ifacol.2017.08.010', $expanded->get2('doi'));
@@ -1083,7 +1083,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansion_rfc(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal| rfc=6679 }}';
             $expanded = $this->process_citation($text);
             $this->assertTrue($expanded->get('title') != ''); // Zotero gives different titles from time to time
@@ -1091,7 +1091,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroRespectDates(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Use mdy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/ |pmid=<!-- -->|pmc=<!-- -->|doi=<!-- -->|bibcode=<!-- --> |arxiv=<!-- -->|s2cid=<!-- -->}}';
             $page = $this->process_page($text);
             $this->assertTrue((bool) mb_strpos($page->parsed_text(), 'August 26, 2010'));
@@ -1102,7 +1102,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionPII(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get2('doi'));
@@ -1110,7 +1110,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansionNBK(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';     // Date is before access-date so will expand
             $expanded = $this->expand_via_zotero($text);
             $this->assertSame('Science, Medicine, and Animals', $expanded->get2('title'));
@@ -1120,7 +1120,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansion_hdl(): void {
-        $this->requires_zotero(function(): void {
+        $this->requires_zotero(function (): void {
             $text = '{{Cite journal| hdl=2027/mdp.39015064245429 }}';
             $expanded = $this->process_citation($text);
             $this->assertSame('The Jewish encyclopedia: A descriptive record of the history, religion, literature, and customs of the Jewish people from the earliest times to the present day', $expanded->get2('title'));

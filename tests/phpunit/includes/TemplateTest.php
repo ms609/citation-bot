@@ -287,7 +287,7 @@ final class TemplateTest extends testBaseClass {
         $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite journal', $prepared->wikiname());
-        $this->assertSame('1701972'     , $prepared->get2('jstor'));
+        $this->assertSame('1701972', $prepared->get2('jstor'));
         $this->assertNotNull($prepared->get2('website'));
     }
 
@@ -693,8 +693,8 @@ final class TemplateTest extends testBaseClass {
         $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
                     . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
                     . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
-                    . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
-                    ;
+                    . '{{cite arXiv|eprint=hep-th/0303241}}'; // tests line feeds
+
         $expanded = $this->process_page($text);
         $templates = $expanded->extract_object('Template');
         $this->assertSame('cite journal', $templates[0]->wikiname());
@@ -1435,7 +1435,7 @@ final class TemplateTest extends testBaseClass {
     public function testUnknownJournal(): void {
         $text = '{{cite journal }}';
         $expanded = $this->process_citation($text);
-        $expanded->add_if_new('journal','Unknown');
+        $expanded->add_if_new('journal', 'Unknown');
         $this->assertTrue($expanded->blank('journal'));
     }
 
@@ -2030,9 +2030,9 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
         $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
         $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')    );
-        $this->assertSame('Gould'         , $expanded->get2('last1'));
-        $this->assertSame('Stephen Jay'   , $expanded->get2('first1') );
-        $this->assertSame('1989'          , $expanded->get2('date'));
+        $this->assertSame('Gould', $expanded->get2('last1'));
+        $this->assertSame('Stephen Jay', $expanded->get2('first1') );
+        $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
 
         $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
@@ -2094,11 +2094,11 @@ final class TemplateTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
-        $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get2('title'));
+        $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
         $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')    );
-        $this->assertSame('Gould'         , $expanded->get2('last1'));
-        $this->assertSame('Stephen Jay'   , $expanded->get2('first1') );
-        $this->assertSame('1989'          , $expanded->get2('date'));
+        $this->assertSame('Gould', $expanded->get2('last1'));
+        $this->assertSame('Stephen Jay', $expanded->get2('first1') );
+        $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
     }
 
@@ -2983,7 +2983,7 @@ EP - 999 }}';
     }
 
     public function testPageRange(): void {
-        $text = '{{Citation|doi=10.3406/befeo.1954.5607}}' ;
+        $text = '{{Citation|doi=10.3406/befeo.1954.5607}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('405–554', $expanded->get2('pages'));
     }
@@ -3463,11 +3463,11 @@ EP - 999 }}';
     public function testHandles2(): void {
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
-        if ('10125/20269' !== $template->get2('hdl')) {
+        if ($template->get2('hdl') !==  '10125/20269') {
             sleep(15);
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
-        if ('10125/20269' !== $template->get2('hdl')) {
+        if ($template->get2('hdl') !=='10125/20269') {
             sleep(15);
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }

@@ -792,56 +792,56 @@ function simplify_google_search(string $url): string {
                 if ($it_is_blank || str_i_same($part_start1, 'any')) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "cf":
                 if ($it_is_blank || str_i_same($part_start1, 'all')) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "cs":
                 if ($it_is_blank || str_i_same($part_start1, '0')) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "btnK":
                 if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "as_epq":
                 if ($it_is_blank) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "btnG":
                 if ($it_is_blank || str_i_same($part_start1, 'Search')) {
                     break;
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "rct":
                 if ($it_is_blank || str_i_same($part_start1, 'j')) {
                     break; // default
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "resnum":
                 if ($it_is_blank || str_i_same($part_start1, '11')) {
                     break; // default
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "ie":
             case "oe":
                 if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
                     break; // UTF-8 is the default
                 }
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             case "hl":
             case "safe":
@@ -862,12 +862,12 @@ function simplify_google_search(string $url): string {
             case "lpsid":
             case "as_q":
             case "kponly":
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             // @codeCoverageIgnoreStart
             default:
                 report_minor_error("Unexpected Google URL component:    " . echoable($part));
-                $url .=  $part . "&" ;
+                $url .=  $part . "&";
                 break;
             // @codeCoverageIgnoreEnd
         }
@@ -987,7 +987,7 @@ function should_url2chapter(Template $template, bool $force): bool
 function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
     static $ch_jstor;
     static $ch_pmc;
-    if (null === $ch_jstor) {
+    if ($ch_jstor === null) {
         if (TRAVIS) {
             $time = 3.0;
         } else {
@@ -1184,7 +1184,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         // Optional 0- at front.
         // DO NOT change www.jstor.org to www\.jstor\.org -- Many proxies use www-jstor-org
         if (preg_match('~^(https?://(?:0-www.|www.|)jstor.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
-            $url = $matches[1] . '/stable/' . $matches[2] ; // that is default. This also means we get jstor not doi
+            $url = $matches[1] . '/stable/' . $matches[2]; // that is default. This also means we get jstor not doi
             if (is_null($url_sent)) {
                 $template->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
             }
@@ -1194,14 +1194,14 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         // DO NOT change www.jstor.org to www\.jstor\.org -- Many proxies use www-jstor-org
         // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
         if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
-            $url = 'https://www.jstor.org/stable/' . $matches[1] ;
+            $url = 'https://www.jstor.org/stable/' . $matches[1];
             if (is_null($url_sent)) {
                 $template->set($url_type, $url); // Update URL with cleaner one
             }
         }
         // Remove junk from URLs
         while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1#|\?seq=1#|#metadata_info_tab_contents|;uid=|\?uid=|;sid=|\?sid=)~i', $url, $matches)) {
-            $url = 'https://www.jstor.org/stable/' . $matches[1] ;
+            $url = 'https://www.jstor.org/stable/' . $matches[1];
             if (is_null($url_sent)) {
                 $template->set($url_type, $url); // Update URL with cleaner one
             }
@@ -1901,7 +1901,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         }
         /// THIS MUST BE LAST
     }
-    return false ;
+    return false;
 }
 
 
@@ -2530,12 +2530,12 @@ function clean_cite_odnb(Template $template): void
 }
 
 /**
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;
     static $ch_doi;
-    if (null === $ch_dx) {
+    if ($ch_dx === null) {
         if (TRAVIS) {
             $time = 3.0;
         } else {
@@ -2560,7 +2560,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             $url = '';
             $url_kind = '';
         }
-        if ($doi &&  // IEEE code does not require "not incomplete"
+        if ($doi && // IEEE code does not require "not incomplete"
             $url &&
             !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
             $template->blank(DOI_BROKEN_ALIASES) &&
@@ -2632,7 +2632,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                     $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
                     $url_short = url_simplify($url);
                     if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
-                        $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore
+                        $redirectedUrl_doi = $matches[1];  // @codeCoverageIgnore
                     }
                     if (mb_stripos($url_short, $redirectedUrl_doi) !== false ||
                         mb_stripos($redirectedUrl_doi, $url_short) !== false) {

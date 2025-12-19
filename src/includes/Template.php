@@ -23,7 +23,7 @@ final class Template
     public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
     public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su']; // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
     public const TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
-    /** @var array<Template> $all_templates */
+    /** @var array<Template> */
     public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
     public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
     public static VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
@@ -32,11 +32,11 @@ final class Template
     public string $last_searched_doi = '';
     private string $example_param = '';
     private string $name = '';
-    /** @var array<Parameter> $param */
+    /** @var array<Parameter> */
     private array $param = [];
-    /** @var array<string> $initial_param */
+    /** @var array<string> */
     private array $initial_param = [];
-    /** @var array<string> $initial_author_params */
+    /** @var array<string> */
     private array $initial_author_params = [];
     private string $initial_name = '';
     private bool $doi_valid = false;
@@ -46,7 +46,7 @@ final class Template
     private bool $mod_names = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
-    /** @var array<array<string>> $used_by_api */
+    /** @var array<array<string>> */
     private array $used_by_api = [
         'adsabs' => [],
         'arxiv' => [],
@@ -56,7 +56,7 @@ final class Template
         'jstor' => [],
         'zotero' => [],
     ];
-    /** @var array<Template> $this_array */
+    /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
 
     public function __construct()
@@ -499,7 +499,13 @@ final class Template
         if (
             $this->blank(['pages', 'page', 'at', 'article-number']) ||
             preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
-            (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // It claims to be on page one
+            (
+                preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') &&
+                (
+                    $this->blank('year') ||
+                    (int) date("Y") - (int) $this->get('year') < 2
+                )
+            ) // It claims to be on page one
         ) {
             return true;
         }
@@ -1587,14 +1593,30 @@ final class Template
                 if (
                     $this->blank(PAGE_ALIASES) || // no page yet set
                     $all_page_values === "" ||
-                    (str_i_same($all_page_values, 'no') || str_i_same($all_page_values, 'none')) || // Is exactly "no" or "none"
-                    (mb_strpos(mb_strtolower($all_page_values), 'no') !== false && $this->blank('at')) || // "None" or "no" contained within something other than "at"
-                    (str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
-                    str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value) || // No dash already // Document with bogus pre-print page ranges
-                    ($value !== '1' &&
-                    mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
-                    ($all_page_values === '1' || mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') && // Old is 1-
-                    ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // Less than two years old
+                    (
+                        str_i_same($all_page_values, 'no') ||
+                        str_i_same($all_page_values, 'none')
+                    ) || // Is exactly "no" or "none"
+                    (
+                        mb_strpos(mb_strtolower($all_page_values), 'no') !== false &&
+                        $this->blank('at')
+                    ) || // "None" or "no" contained within something other than "at"
+                    (
+                        str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
+                        str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value
+                    ) || // No dash already // Document with bogus pre-print page ranges
+                    (
+                         $value !== '1' &&
+                        mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
+                        (
+                            $all_page_values === '1' ||
+                            mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X'
+                        ) && // Old is 1-
+                        (
+                            $this->blank('year') ||
+                            (int) date("Y") - (int) $this->get('year') < 2
+                        )
+                    ) // Less than two years old
                 ) {
                     if ($param_name === "pages" && preg_match('~^\d{1,}$~', $value)) {
                         $param_name = 'page';
@@ -1979,7 +2001,7 @@ final class Template
                     $value = $match[1];
                 } // remove years from zotero
 
-                if (mb_strpos(mb_strtolower($value), 'london') !== false ||   // Common junk from archive.org
+                if (mb_strpos(mb_strtolower($value), 'london') !== false || // Common junk from archive.org
                 mb_strpos(mb_strtolower($value), 'edinburg') !== false ||
                 mb_strpos(mb_strtolower($value), 'privately printed') !== false ||
                 str_equivalent($this->get('location'), $value) ||
@@ -3342,7 +3364,7 @@ final class Template
             ) {
                 $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
                 $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
-                $bom = pack('H*','EFBBBF');
+                $bom = pack('H*', 'EFBBBF');
                 $this->set($param, safe_preg_replace('~' . $bom . '~', ' ', $this->get($param)));
                 $this->set($param, safe_preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
                 $this->set($param, safe_preg_replace('~(?<!:)[:,]$~u', '', $this->get($param))); // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
@@ -4352,7 +4374,7 @@ final class Template
                         }
                     }
                     if ($this->wikiname() === 'cite book' && $this->blank('chapter')) {
-                        /**
+                        /*
                         if (in_array($this->get($param), [], true)) {
                          $this->rename('title', 'chapter');
                          $this->rename($param, 'title');
@@ -6422,20 +6444,19 @@ final class Template
                         $this->forget($worky);
                     }
                 }
+                /*
                 // If one and only one work alias is set, the move it to publisher
-                /**
                 if ($this->blank('publisher')) {
-                 $counting = 0;
-                 foreach (WORK_ALIASES as $worky) {
-                 if ($this->has($worky)) $counting = $counting + 1;
+                    $counting = 0;
+                    foreach (WORK_ALIASES as $worky) {
+                    if ($this->has($worky)) $counting = $counting + 1;
                 }
                 if ($counting === 1) {
-                 foreach (WORK_ALIASES as $worky) {
-                 //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
+                    foreach (WORK_ALIASES as $worky) {
+                        //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
+                    }
                 }
-               }
-              }
-              */
+                */
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
                     if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
@@ -6996,7 +7017,7 @@ final class Template
                 $this->param[$last]->post = $p->post;
             }
         }
-        if (0 === mb_stripos(mb_trim($this->name), '#invoke:') && $prior_pos < 2) {
+        if (mb_stripos(mb_trim($this->name), '#invoke:') === 0 && $prior_pos < 2) {
             $prior_pos = 2;
         }
         $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));

@@ -201,7 +201,7 @@ final class PageTest extends testBaseClass {
     }
 
     public function testBotExpandWrite(): void {
-        $this->requires_secrets(function(): void {
+        $this->requires_secrets(function (): void {
             $api = new WikipediaBot();
             $page = new TestPage();
             $writeTestPage = 'User:Blocked Testing Account/writetest';

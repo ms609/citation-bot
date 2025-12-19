@@ -4,9 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 /**
-    Some of these are unit tests that poke specific functions that do not require actually connecting to adsabs
-*/
-
+ * Some of these are unit tests that poke specific functions that do not require actually connecting to adsabs
+ */
 final class apiFunctionsTest extends testBaseClass {
 
     public function testS2CIDlicenseFalse(): void {
@@ -15,7 +14,7 @@ final class apiFunctionsTest extends testBaseClass {
     }
 
     public function testAdsabsApi(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $bibcodes = [
                 '2017NatCo...814879F', // 0
                 '1974JPal...48..524M', // 1
@@ -190,7 +189,7 @@ final class apiFunctionsTest extends testBaseClass {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
         if ($expanded->parsed_text() === '{{Cite journal}}') {
-            $this->assertSame('{{Cite journal}}',$expanded->parsed_text()) ;
+            $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
         } else {
             $this->assertSame('{{Cite journal| author1=Jun Aoyama | author2=Sam Wouthuyzen | author3=Michael J. Miller | author4=Hagi Y. Sugeha | author5=Mari Kuroki | author6=Shun Watanabe | author7=Augy Syahailatua | author8=Fadly Y. Tantu | author9=Seishi Hagihara | author10=Triyanto | author11=Tsuguo Otake | author12=Katsumi Tsukamoto | title=Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia | journal=Zoological Studies | date=2018 | volume=無 | issue=57 }}', $expanded->parsed_text());
         }

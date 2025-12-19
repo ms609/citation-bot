@@ -1092,7 +1092,7 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0]+$v[1], $v[2]) . '-' . mb_substr($new, $v[0]+$v[1]+$v[2], 1) ;
+        return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0]+$v[1], $v[2]) . '-' . mb_substr($new, $v[0]+$v[1]+$v[2], 1);
         // split = SKIP3, $v[0], $v[1], $v[2], 1
     } elseif (mb_strlen($new) === 13) {
         $num = (int) $new;
@@ -1106,7 +1106,7 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return mb_substr($new, 0, 3) . '-' . mb_substr($new, 3, $v[0]) . '-' . mb_substr($new, 3+$v[0], $v[1]) . '-' . mb_substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . mb_substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+        return mb_substr($new, 0, 3) . '-' . mb_substr($new, 3, $v[0]) . '-' . mb_substr($new, 3+$v[0], $v[1]) . '-' . mb_substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . mb_substr($new, 3+$v[0]+$v[1]+$v[2], 1);
         // split = 3, $v[0], $v[1], $v[2], 1
     } else {
         return $isbn;

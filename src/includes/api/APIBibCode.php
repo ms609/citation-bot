@@ -6,9 +6,9 @@ final class AdsAbsControl {
     private const MAX_CACHE_SIZE = 50000;
     private static int $big_counter = 0;
     private static int $small_counter = 0;
-    /** @var array<string> $doi2bib */
+    /** @var array<string> */
     private static array $doi2bib = [];
-    /** @var array<string> $bib2doi */
+    /** @var array<string> */
     private static array $bib2doi = [];
 
     /**
@@ -77,9 +77,9 @@ final class AdsAbsControl {
 }
 
 /**
-  @param array<string> $bibcodes
-  @param array<Template> $templates
-*/
+ * @param array<string> $bibcodes
+ * @param array<Template> &$templates
+ */
 function query_bibcode_api(array $bibcodes, array &$templates): void {  // Pointer to save memory
     adsabs_api($bibcodes, $templates, 'bibcode');
 }
@@ -334,9 +334,9 @@ function expand_by_adsabs(Template $template): void {
 }
  
 /**
-  @param array<string> $ids
-  @param array<Template> $templates
-*/
+ * @param array<string> $ids
+ * @param array<Template> &$templates
+ */
 function adsabs_api(array $ids, array &$templates, string $identifier): void {  // Pointer to save memory
     set_time_limit(120);
     if (count($ids) === 0) {

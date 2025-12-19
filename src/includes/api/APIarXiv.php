@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function expand_arxiv_templates (array &$templates): void {    // Pointer to save memory
     $ids = [];
@@ -24,9 +24,9 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
 }
 
 /**
-  @param array<string> $ids
-  @param array<Template> $templates
-*/
+ * @param array<string> $ids
+ * @param array<Template> &$templates
+ */
 function arxiv_api(array $ids, array &$templates): void {  // Pointer to save memory
     static $ch = null;
     if ($ch === null) {

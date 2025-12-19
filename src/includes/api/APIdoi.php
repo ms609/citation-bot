@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @param array<string> $_ids
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function query_doi_api(array $_ids, array &$templates): void { // $id not used yet  // Pointer to save memory
     foreach ($templates as $template) {
@@ -34,7 +34,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
         $crossRef = query_crossref($doi);
         if ($crossRef) {
             if (in_array(mb_strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true)) {
-                return ;
+                return;
             }
             if ($template->has('title') && mb_trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
                 $bad_data = true;
@@ -313,7 +313,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
  */
 function process_doi_json(Template $template, string $doi, array $json): void {
     /** @param array|string|int|null $data */
-    $try_to_add_it = static function(string $name, $data) use($template): void {
+    $try_to_add_it = static function (string $name, $data) use($template): void {
         if ($template->has($name)) {
             return; // Not worth updating based upon DX
         }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 /**
  * @param array<string> $pmids
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to save memory
     entrez_api($pmids, $templates, 'pubmed');
 }
 /**
  * @param array<string> $pmcs
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to save memory
     entrez_api($pmcs, $templates, 'pmc');
@@ -19,7 +19,7 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
 
 /**
  * @param array<string> $ids
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function entrez_api(array $ids, array &$templates, string $db): void {    // Pointer to save memory
     set_time_limit(120);

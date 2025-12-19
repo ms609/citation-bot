@@ -7,17 +7,17 @@ final class HandleCache {
     private const MAX_CACHE_SIZE = 100000;
     public const MAX_HDL_SIZE = 1024;
 
-    /** @var array<bool> $cache_active */
+    /** @var array<bool> */
     public static array $cache_active = [];             // DOI is in CrossRef, no claims if it still works.
-    /** @var array<bool> $cache_inactive */
+    /** @var array<bool> */
     public static array $cache_inactive = BAD_DOI_ARRAY;// DOI is not in CrossRef
-    /** @var array<bool> $cache_good */
+    /** @var array<bool> */
     public static array $cache_good = [];               // DOI works
-    /** @var array<string> $cache_hdl_loc */
+    /** @var array<string> */
     public static array $cache_hdl_loc = [];            // Final HDL location URL
-    /** @var array<bool> $cache_hdl_bad */
+    /** @var array<bool> */
     public static array $cache_hdl_bad = BAD_DOI_ARRAY; // HDL/DOI does not resolve to anything
-    /** @var array<bool> $cache_hdl_null */
+    /** @var array<bool> */
     public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
 
     /**
@@ -213,14 +213,14 @@ function is_doi_works(string $doi): ?bool {
     // 17 August 2024 version is last check
     if (mb_strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
         $registrant = mb_substr($registrant, 3);
-        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) ||    // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) ||       // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
-                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) ||  // 4 digits with subcode (0xxx); accepts: 1000–9999
-                preg_match('~^[^1-9]\d\d\d$~', $registrant) ||         // 4 digits without subcode (0xxx); accepts: 1000–9999
-                preg_match('~^\d\d\d\d\d\d+~', $registrant) ||         // 6 or more digits
-                preg_match('~^\d\d?\d?$~', $registrant) ||             // less than 4 digits without subcode (3 digits with subcode is legitimate)
-                preg_match('~^\d\d?\.[\d\.]+~', $registrant) ||        // 1 or 2 digits with subcode
-                $registrant === '5555' ||                              // test registrant will never resolve
+        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) || // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
+                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) || // 4 digits with subcode (0xxx); accepts: 1000–9999
+                preg_match('~^[^1-9]\d\d\d$~', $registrant) || // 4 digits without subcode (0xxx); accepts: 1000–9999
+                preg_match('~^\d\d\d\d\d\d+~', $registrant) || // 6 or more digits
+                preg_match('~^\d\d?\d?$~', $registrant) || // less than 4 digits without subcode (3 digits with subcode is legitimate)
+                preg_match('~^\d\d?\.[\d\.]+~', $registrant) || // 1 or 2 digits with subcode
+                $registrant === '5555' || // test registrant will never resolve
                 preg_match('~[^\d\.]~', $registrant)) {                // any character that isn't a digit or a dot
             return false;
         }
@@ -842,35 +842,35 @@ function doi_is_bad (string $doi): bool {
     $doi = mb_strtolower($doi);
     if ($doi === '10.5284/1000184' || // DOI for the entire database
         $doi === '10.1267/science.040579197' || //  PMID test doi
-        $doi === '10.2307/3511692' ||   // common review
+        $doi === '10.2307/3511692' || // common review
         $doi === '10.1377/forefront' || // over-truncated
-        $doi === '10.1126/science' ||   // over-truncated
-        $doi === '10.1111/j' ||         // over-truncated
-        $doi === '10.3138/j' ||         // over-truncated
-        $doi === '10.7556/jaoa' ||      // over-truncated
-        $doi === '10.7591/j' ||         // over-truncated
-        $doi === '10.7722/j' ||         // over-truncated
-        $doi === '10.1002/bies' ||      // over-truncated
-        $doi === '10.1002/job' ||       // over-truncated
-        $doi === '10.5465/ame' ||       // over-truncated
-        $doi === '10.5465/amp' ||       // over-truncated
-        $doi === '10.3316/ielapa' ||    // over-truncated
-        $doi === '10.3316/informit' ||  // over-truncated
-        $doi === '10.1023/b:boli' ||    // over-truncated
-        $doi === '10.1023/b:cyto' ||    // over-truncated
-        $doi === '10.1023/b:land' ||    // over-truncated
-        $doi === '10.1093/acrefore' ||  // over-truncated
-        $doi === '10.1093/acref' ||     // over-truncated
-        $doi === '10.1093/gao' ||       // over-truncated
-        $doi === '10.1093/gmo' ||       // over-truncated
-        $doi === '10.1093/nsr' ||       // over-truncated
-        $doi === '10.1093/oi' ||        // over-truncated
-        $doi === '10.1093/logcom' ||    // over-truncated
-        $doi === '10.1111/bjep' ||      // over-truncated
-        $doi === '10.1146/annurev' ||   // over-truncated
+        $doi === '10.1126/science' || // over-truncated
+        $doi === '10.1111/j' || // over-truncated
+        $doi === '10.3138/j' || // over-truncated
+        $doi === '10.7556/jaoa' || // over-truncated
+        $doi === '10.7591/j' || // over-truncated
+        $doi === '10.7722/j' || // over-truncated
+        $doi === '10.1002/bies' || // over-truncated
+        $doi === '10.1002/job' || // over-truncated
+        $doi === '10.5465/ame' || // over-truncated
+        $doi === '10.5465/amp' || // over-truncated
+        $doi === '10.3316/ielapa' || // over-truncated
+        $doi === '10.3316/informit' || // over-truncated
+        $doi === '10.1023/b:boli' || // over-truncated
+        $doi === '10.1023/b:cyto' || // over-truncated
+        $doi === '10.1023/b:land' || // over-truncated
+        $doi === '10.1093/acrefore' || // over-truncated
+        $doi === '10.1093/acref' || // over-truncated
+        $doi === '10.1093/gao' || // over-truncated
+        $doi === '10.1093/gmo' || // over-truncated
+        $doi === '10.1093/nsr' || // over-truncated
+        $doi === '10.1093/oi' || // over-truncated
+        $doi === '10.1093/logcom' || // over-truncated
+        $doi === '10.1111/bjep' || // over-truncated
+        $doi === '10.1146/annurev' || // over-truncated
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
-        $doi === '10.3905/jpm' ||       // over-truncated
+        $doi === '10.3905/jpm' || // over-truncated
         (mb_strpos($doi, '10.0000/') === 0 && !TRAVIS) || // just urls that look like DOIs - TODO: Fix test suite
         mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
@@ -882,7 +882,7 @@ function doi_is_bad (string $doi): bool {
         (mb_strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) || // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
         (mb_strpos($doi, '10.3316/') === 0 && !doi_works($doi)) || // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
         (mb_strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) || // do's not doi's
-        mb_strpos($doi, '10.48550/arxiv') === 0 ||  // ignore
+        mb_strpos($doi, '10.48550/arxiv') === 0 || // ignore
         preg_match(REGEXP_DOI_ISSN_ONLY, $doi) // Journal landing page
        ) {
         return true;

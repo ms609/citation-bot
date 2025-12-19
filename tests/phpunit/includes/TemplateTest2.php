@@ -2187,7 +2187,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testAddingEtAl2(): void {
         $text = "{{cite web}}";
         $template = $this->process_citation($text);
-        $template->set('author','et al');
+        $template->set('author', 'et al');
         $template->tidy_parameter('author');
         $this->assertNull($template->get2('author'));
         $this->assertNull($template->get2('authors'));
@@ -3620,7 +3620,7 @@ final class TemplateTest2 extends testBaseClass {
             $template = $this->make_citation($text);
             $this->assertTrue($template->incomplete());
 
-            $this->requires_bibcode(function(): void {
+            $this->requires_bibcode(function (): void {
                 $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
                 $template = $this->make_citation($text);
                 $template_array = [$template];
@@ -3631,7 +3631,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testBibcodeRemap(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text='{{cite journal|bibcode=2018MNRAS.tmp.2192I}}';
             $expanded = $this->process_citation($text);
             $this->assertSame('2018MNRAS.481..703I', $expanded->get2('bibcode'));
@@ -3639,7 +3639,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testBibcodeDotEnding(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
             $expanded = $this->process_citation($text);
             $this->assertSame('1932Natur.129Q..18.', $expanded->get2('bibcode'));
@@ -3647,7 +3647,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testBibcodesBooks(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
             $expanded = $this->process_citation($text);
             $this->assertSame('1982', $expanded->get2('date'));
@@ -3663,7 +3663,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testBibcodesFindBooks(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{cite book|title=Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview|year=2020|last1=Gandu|first1=Bharath|last2=Rozenfeld|first2=Shmuel|last3=Ouaknin Hirsch|first3=Lea|last4=Schechter|first4=Alex|last5=Cahan|first5=Rivka|bibcode= }}";
             $expanded = $this->process_citation($text);
             $this->assertSame('2020bisy.book..211G', $expanded->get2('bibcode'));
@@ -3671,7 +3671,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testBadBibcodeARXIVPages(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
             $expanded = $this->process_citation($text);
             $pages = (string) $expanded->get2('pages');
@@ -3681,7 +3681,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testNoBibcodesForArxiv(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{Cite arXiv|last1=Sussillo|first1=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
             $expanded = $this->process_citation($text);
             $this->assertNull($expanded->get2('bibcode'));  // If this eventually gets a journal, we will have to change the test
@@ -3689,7 +3689,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testNoBibcodesForBookReview(): void {
-        $this->requires_bibcode(function(): void {      // don't add isbn. It causes early exit
+        $this->requires_bibcode(function (): void {      // don't add isbn. It causes early exit
             $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded); // Won't expand because of bookish stuff
@@ -3698,7 +3698,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testFindBibcodeNoTitle(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999 |issn = 1463-9076}}";
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded);
@@ -3707,7 +3707,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testFindBibcodeForBook(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $text = "{{Cite journal | doi=10.2277/0521815363}}";
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded);

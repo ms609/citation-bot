@@ -13,7 +13,7 @@ const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
 
 /**
  * @param array<string> $_ids
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
     Zotero::query_url_api_class($templates);
@@ -60,8 +60,8 @@ final class Zotero {
     }
 
     /**
-        @param array<Template> $templates
-    */
+     * @param array<Template> &$templates
+     */
     public static function query_url_api_class(array &$templates): void { // Pointer to save memory
         foreach ($templates as $template) {
             if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
@@ -297,7 +297,7 @@ final class Zotero {
         } else {
             $result = $zotero_data[0];
         }
-        $result = (object) $result ;
+        $result = (object) $result;
 
         if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
             if (!empty($result->subject)) {

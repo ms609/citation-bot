@@ -168,7 +168,7 @@ final class constantsTest extends testBaseClass {
 
         $new_contents = implode($start_alpha, $sections);
 
-        if (preg_replace('~\s+~','', $new_contents) === preg_replace('~\s+~','', $old_contents)) {
+        if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
             $this->assertTrue(true);
         } else {
             $this->flush();
@@ -188,7 +188,7 @@ final class constantsTest extends testBaseClass {
         sort($our_whitelist_sorted);
 
         $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
-        preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
+        preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~", $wikipedia_response, $matches);
         $their_whitelist = $matches[1];
         $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
                             'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
@@ -465,7 +465,7 @@ final class constantsTest extends testBaseClass {
             echo "\n Correct values for italics.php\n";
             echo "\n";
             echo "const ITALICS_LIST =\n";
-            for ($i = $max_spaces; $i > -1 ; $i--) {
+            for ($i = $max_spaces; $i > -1; $i--) {
                 foreach ($italics as $item) {
                     if (mb_substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
                          echo ' "' . $item . '|" .' . "\n";
@@ -535,22 +535,22 @@ final class constantsTest extends testBaseClass {
     public function testItalicsEscaped1(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , mb_substr_count($italics, '('));
+        $this->assertSame(0, mb_substr_count($italics, '('));
     }
     public function testItalicsEscaped2(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , mb_substr_count($italics, ')'));
+        $this->assertSame(0, mb_substr_count($italics, ')'));
     }
     public function testItalicsEscaped3(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , mb_substr_count($italics, '\\'));
+        $this->assertSame(0, mb_substr_count($italics, '\\'));
     }
     public function testItalicsEscaped4(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
-        $this->assertSame(0 , mb_substr_count($italics, '.'));
+        $this->assertSame(0, mb_substr_count($italics, '.'));
     }
 
     public function testItalicsNoSpaces(): void {
