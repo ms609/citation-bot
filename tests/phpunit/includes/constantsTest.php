@@ -168,7 +168,7 @@ final class constantsTest extends testBaseClass {
 
         $new_contents = implode($start_alpha, $sections);
 
-        if (preg_replace('~\s+~','', $new_contents) === preg_replace('~\s+~','', $old_contents)) {
+        if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
             $this->assertTrue(true);
         } else {
             $this->flush();

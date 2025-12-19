@@ -1435,7 +1435,7 @@ final class TemplateTest extends testBaseClass {
     public function testUnknownJournal(): void {
         $text = '{{cite journal }}';
         $expanded = $this->process_citation($text);
-        $expanded->add_if_new('journal','Unknown');
+        $expanded->add_if_new('journal', 'Unknown');
         $this->assertTrue($expanded->blank('journal'));
     }
 
@@ -2094,7 +2094,7 @@ final class TemplateTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
-        $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get2('title'));
+        $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
         $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')    );
         $this->assertSame('Gould'         , $expanded->get2('last1'));
         $this->assertSame('Stephen Jay'   , $expanded->get2('first1') );

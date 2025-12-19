@@ -269,64 +269,64 @@ final class expandFnsTest extends testBaseClass {
 
     public function testArrowAreQuotes1(): void {
         $text = "This » That";
-        $this->assertSame($text,straighten_quotes($text, true));
+        $this->assertSame($text, straighten_quotes($text, true));
     }
     public function testArrowAreQuotes2(): void {
         $text = "X«Y»Z";
-        $this->assertSame('X"Y"Z',straighten_quotes($text, true));
+        $this->assertSame('X"Y"Z', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes3(): void {
         $text = "This › That";
-        $this->assertSame($text,straighten_quotes($text, true));
+        $this->assertSame($text, straighten_quotes($text, true));
     }
     public function testArrowAreQuotes4(): void {
         $text = "X‹Y›Z";
-        $this->assertSame("X'Y'Z",straighten_quotes($text, true));
+        $this->assertSame("X'Y'Z", straighten_quotes($text, true));
     }
     public function testArrowAreQuotes5(): void {
         $text = "This » That";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes6(): void {
         $text = "X«Y»Z";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes7(): void {
         $text = "This › That";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes8(): void {
         $text = "X‹Y›Z";
-        $this->assertSame("X'Y'Z",straighten_quotes($text, false));
+        $this->assertSame("X'Y'Z", straighten_quotes($text, false));
     }
     public function testArrowAreQuotes9(): void {
         $text = "«XY»Z";
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes10(): void {
         $text = "«XY»Z";
-        $this->assertSame('"XY"Z',straighten_quotes($text, true));
+        $this->assertSame('"XY"Z', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes11(): void {
         $text = "«Y»";
-        $this->assertSame('"Y"',straighten_quotes($text, true));
+        $this->assertSame('"Y"', straighten_quotes($text, true));
     }
     public function testArrowAreQuotes12(): void {
         $text = "‹Y›";
-        $this->assertSame("'Y'",straighten_quotes($text, true));
+        $this->assertSame("'Y'", straighten_quotes($text, true));
     }
     public function testArrowAreQuotes13(): void {
         $text = "«Y»";
-        $this->assertSame('"Y"',straighten_quotes($text, false));
+        $this->assertSame('"Y"', straighten_quotes($text, false));
     }
     public function testArrowAreQuotes14(): void {
         $text = "‹Y›";
-        $this->assertSame("'Y'",straighten_quotes($text, false));
+        $this->assertSame("'Y'", straighten_quotes($text, false));
     }
     public function testArrowAreQuotes15(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
-        $this->assertSame($text,straighten_quotes($text, false));
+        $this->assertSame($text, straighten_quotes($text, false));
     }
     public function testArrowAreQuotes16(): void {
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
@@ -345,7 +345,7 @@ final class expandFnsTest extends testBaseClass {
     public function testMathInTitle3(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $text_mml    = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>ß</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si38.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>s</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
-        $this->assertSame('<nowiki>' . $text_math . '</nowiki>',wikify_external_text($text_mml));
+        $this->assertSame('<nowiki>' . $text_math . '</nowiki>', wikify_external_text($text_mml));
     }
 
     public function testURLInTitle(): void {
@@ -405,7 +405,7 @@ final class expandFnsTest extends testBaseClass {
     }
 
     public function testBrackets(): void {
-        $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
+        $this->assertSame("ABC", remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
     }
 
     public function testStrong(): void {
@@ -665,13 +665,13 @@ final class expandFnsTest extends testBaseClass {
 
     public function testVariousEncodes2(): void {
         $test="ショッピング";
-        $decoded = smart_decode($test, 'UTF-8','');
+        $decoded = smart_decode($test, 'UTF-8', '');
         $this->assertSame($test, $decoded);
     }
 
     public function testVariousEncodes3(): void {
         $test="ショッピング";
-        $decoded=smart_decode($test, "iso-8859-11",'');
+        $decoded=smart_decode($test, "iso-8859-11", '');
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
     }
 

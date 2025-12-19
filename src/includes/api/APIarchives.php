@@ -156,7 +156,7 @@ function convert_to_utf8(string $value): string {
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
     }
     // Special cases
-    $value = str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"],[' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
+    $value = str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"], [' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
     return $value;
 }
 

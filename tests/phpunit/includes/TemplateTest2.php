@@ -2187,7 +2187,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testAddingEtAl2(): void {
         $text = "{{cite web}}";
         $template = $this->process_citation($text);
-        $template->set('author','et al');
+        $template->set('author', 'et al');
         $template->tidy_parameter('author');
         $this->assertNull($template->get2('author'));
         $this->assertNull($template->get2('authors'));
