@@ -539,13 +539,16 @@ function prior_parameters(string $par, array $list = []): array {
     array_unshift($list, $par);
     if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
-        switch ($match[1]) {
-            case in_array($match[1], GROUP_F1, true):
-                return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
-            case in_array($match[1], GROUP_L1, true):
+        $number = $match[2];
+        $base = $match[1];
+        unset($match);
+        switch ($base) {
+            case in_array($base, GROUP_F1, true):
+                return ['last' . $number, 'surname' . $number, 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
+            case in_array($base, GROUP_L1, true):
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
-                $base = $match[1];
+                // Always add new authors at the very end of existing ones, even ones with bigger numbers.
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
                                    $base . $before,
                                    $base . $before . '-last', $base . $before . '-first',
