@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '../../../testBaseClass.php';
+require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class doiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefRG(): void {
