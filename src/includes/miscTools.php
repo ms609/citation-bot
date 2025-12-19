@@ -489,6 +489,11 @@ function string_is_book_series(string $str): bool {
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
 
+/*
+ * This code is recusive as is goes through a long list of parameters to find its place in the list.
+ * TODO: think about better ways to do this.
+ */
+
 /**
  * @param string $par
  * @param array<string> $list
@@ -535,57 +540,57 @@ function prior_parameters(string $par, array $list = []): array {
             return prior_parameters('', array_merge(GROUP2, $list));
         case in_array($par, GROUP4, true):
             return prior_parameters('', array_merge(GROUP3, $list));
-        case in_array($par, GROUP5);
+        case in_array($par, GROUP5):
             return prior_parameters('', array_merge(GROUP4, $list));
-        case in_array($par, GROUP6);
+        case in_array($par, GROUP6):
             return prior_parameters('', array_merge(GROUP5, $list));
-        case in_array($par, GROUP7);
+        case in_array($par, GROUP7):
             return prior_parameters('', array_merge(GROUP6, $list));
-        case in_array($par, GROUP8);
+        case in_array($par, GROUP8):
             return prior_parameters('', array_merge(GROUP7, $list));
-        case in_array($par, GROUP9);
+        case in_array($par, GROUP9):
             return prior_parameters('', array_merge(GROUP8, $list));
-        case in_array($par, GROUP10);
+        case in_array($par, GROUP10):
             return prior_parameters('', array_merge(GROUP9, $list));
         case in_array($par, GROUP11);
             return prior_parameters('', array_merge(GROUP10, $list));
-        case in_array($par, GROUP12);
+        case in_array($par, GROUP12):
             return prior_parameters('', array_merge(GROUP11, $list));
-        case in_array($par, GROUP13);
+        case in_array($par, GROUP13):
             return prior_parameters('', array_merge(GROUP12, $list));
-        case in_array($par, GROUP14);
+        case in_array($par, GROUP14):
             return prior_parameters('', array_merge(GROUP13, $list));
-        case in_array($par, GROUP15);
+        case in_array($par, GROUP15):
             return prior_parameters('', array_merge(GROUP14, $list));
-        case in_array($par, GROUP16);
+        case in_array($par, GROUP16):
             return prior_parameters('', array_merge(GROUP15, $list));
-        case in_array($par, GROUP17);
+        case in_array($par, GROUP17):
             return prior_parameters('', array_merge(GROUP16, $list));
-        case in_array($par, GROUP18);
+        case in_array($par, GROUP18):
             return prior_parameters('', array_merge(GROUP17, $list));
-        case in_array($par, GROUP19);
+        case in_array($par, GROUP19):
             return prior_parameters('', array_merge(GROUP18, $list));
-        case in_array($par, GROUP20);
+        case in_array($par, GROUP20):
             return prior_parameters('', array_merge(GROUP19, $list));
-        case in_array($par, GROUP21);
+        case in_array($par, GROUP21):
             return prior_parameters('', array_merge(GROUP20, $list));
-        case in_array($par, GROUP22);
+        case in_array($par, GROUP22):
             return prior_parameters('', array_merge(GROUP21, $list));
-        case in_array($par, GROUP23);
+        case in_array($par, GROUP23):
             return prior_parameters('', array_merge(GROUP22, $list));
-        case in_array($par, GROUP24);
+        case in_array($par, GROUP24):
             return prior_parameters('', array_merge(GROUP23, $list));
-        case in_array($par, GROUP25);
+        case in_array($par, GROUP25):
             return prior_parameters('', array_merge(GROUP24, $list));
-        case in_array($par, GROUP26);
+        case in_array($par, GROUP26):
             return prior_parameters('', array_merge(GROUP25, $list));
-        case in_array($par, GROUP27);
+        case in_array($par, GROUP27):
             return prior_parameters('', array_merge(GROUP26, $list));
-        case in_array($par, GROUP28);
+        case in_array($par, GROUP28):
             return prior_parameters('', array_merge(GROUP27, $list));
-        case in_array($par, GROUP29);
+        case in_array($par, GROUP29):
             return prior_parameters('', array_merge(GROUP28, $list));
-        case in_array($par, GROUP30);
+        case in_array($par, GROUP30):
             return prior_parameters('', array_merge(GROUP29, $list));
         default:
             bot_debug_log("prior_parameters missed: " . $par);
