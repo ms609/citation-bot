@@ -2625,50 +2625,50 @@ EP - 999 }}';
     }
 
     public function testZooKeysDoiTidy1(): void {
-            $text = '{{Cite journal|doi=10.3897//zookeys.123.322222}}'; // Note extra slash for fun
-            $expanded = $this->make_citation($text);
-            $expanded->tidy_parameter('doi');
-            $this->assertNull($expanded->get2('journal'));
-            $this->assertSame('123', $expanded->get2('issue'));
+        $text = '{{Cite journal|doi=10.3897//zookeys.123.322222}}'; // Note extra slash for fun
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('doi');
+        $this->assertNull($expanded->get2('journal'));
+        $this->assertSame('123', $expanded->get2('issue'));
     }
 
     public function testZooKeysDoiTidy2(): void {
-            $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|issue=2323323}}';
-            $expanded = $this->make_citation($text);
-            $expanded->tidy_parameter('doi');
-            $this->assertNull($expanded->get2('journal'));
-            $this->assertSame('123', $expanded->get2('issue'));
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|issue=2323323}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('doi');
+        $this->assertNull($expanded->get2('journal'));
+        $this->assertSame('123', $expanded->get2('issue'));
     }
 
     public function testZooKeysDoiTidy3(): void {
-            $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|number=2323323}}';
-            $expanded = $this->make_citation($text);
-            $expanded->tidy_parameter('doi');
-            $this->assertNull($expanded->get2('journal'));
-            $this->assertSame('123', $expanded->get2('issue'));
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|number=2323323}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('doi');
+        $this->assertNull($expanded->get2('journal'));
+        $this->assertSame('123', $expanded->get2('issue'));
     }
 
     public function testZooKeysDoiTidy4(): void {
-            $text = '{{Cite journal|doi=10.3897/zookeys.123.322222X}}';
-            $expanded = $this->make_citation($text);
-            $expanded->tidy_parameter('doi');
-            $this->assertNull($expanded->get2('journal'));
-            $this->assertNull($expanded->get2('issue'));
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222X}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('doi');
+        $this->assertNull($expanded->get2('journal'));
+        $this->assertNull($expanded->get2('issue'));
     }
 
     public function testOrthodontist(): void {
-            $text = '{{Cite journal|doi=10.1043/0003-3219(BADBADBAD}}'; // These will never work
-            $expanded = $this->make_citation($text);
-            $expanded->tidy_parameter('doi');
-            $this->assertNull($expanded->get2('doi'));
+        $text = '{{Cite journal|doi=10.1043/0003-3219(BADBADBAD}}'; // These will never work
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('doi');
+        $this->assertNull($expanded->get2('doi'));
     }
 
     public function testZooKeysAddIssue(): void {
-            $text = '{{Cite journal|journal=[[ZooKeys]]}}';
-            $expanded = $this->make_citation($text);
-            $this->assertTrue($expanded->add_if_new('volume', '33'));
-            $this->assertNull($expanded->get2('volume'));
-            $this->assertSame('33', $expanded->get2('issue'));
+        $text = '{{Cite journal|journal=[[ZooKeys]]}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('volume', '33'));
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertSame('33', $expanded->get2('issue'));
     }
 
     public function testTitleItalics() {
@@ -3536,9 +3536,9 @@ EP - 999 }}';
                         "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
         $page = $this->process_page($text);
         if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
-                sleep(3);
-                $text = $page->parsed_text();
-                $page = $this->process_page($text);
+            sleep(3);
+            $text = $page->parsed_text();
+            $page = $this->process_page($text);
         }
         $this->assertSame(0, mb_substr_count($page->parsed_text(), 'JSTOR'));
     }
@@ -3911,11 +3911,11 @@ EP - 999 }}';
         $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
         $array = $template->modifications();
         $expected =       [ 'modifications' =>  [0 => 'title',  ],
-                                      'additions' =>  [0 => 'title',  ],
-                                      'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
-                                      'changeonly' => [],
-                                      'dashes' => false,
-                                      'names' => false];
+                            'additions' =>  [0 => 'title',  ],
+                            'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
+                            'changeonly' => [],
+                            'dashes' => false,
+                            'names' => false];
         $this->assertEqualsCanonicalizing($expected, $array);
         $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
     }
