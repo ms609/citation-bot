@@ -90,4 +90,9 @@ final class jstorTest extends testBaseClass {
         $this->assertNull($expanded->get2('url'));
     }
 
+    public function testDrop10_2307(): void {
+        $text = "{{Cite journal | jstor=10.2307/40237667}}";  // This should get cleaned up in tidy
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('40237667', $prepared->get2('jstor'));
+    }
 }
