@@ -8,12 +8,12 @@ final class BigFileTest extends testBaseClass {
 
     public function testName(): void {
         $job = big_jobs_name();
-	    $this->assertSame('/dev/shm/_1', $job);
+        $this->assertSame('/dev/shm/_1', $job);
     }
 
     public function testFuncsExists(): void {
         big_jobs_check_overused(33);
-	    big_jobs_check_killed();
+        big_jobs_check_killed();
         $this->assertTrue(true);
     }
 
