@@ -216,4 +216,3 @@ final class doiTest extends testBaseClass {
     }
 
 }
-
