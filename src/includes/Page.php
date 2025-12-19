@@ -911,7 +911,7 @@ class Page {
         return $objects;
     }
 
-    /** @param array<WikiThings|Template> $objects */
+    /** @param array<WikiThings|Template> &$objects */
     private function replace_object(array &$objects): void {  // Pointer to save memory
         set_time_limit(120);
         if ($objects) {

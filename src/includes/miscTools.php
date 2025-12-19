@@ -2530,7 +2530,7 @@ function clean_cite_odnb(Template $template): void
 }
 
 /**
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;

@@ -31,7 +31,6 @@
         <exclude name="MediaWiki.Commenting.DocComment.SyntaxAlignedDocClose"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
-        <exclude name="MediaWiki.Commenting.FunctionComment.ParamPassByReference"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>

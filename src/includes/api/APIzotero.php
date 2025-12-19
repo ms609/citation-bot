@@ -13,7 +13,7 @@ const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
 
 /**
  * @param array<string> $_ids
- * @param array<Template> $templates
+ * @param array<Template> &$templates
  */
 function query_url_api(array $_ids, array &$templates): void { // Pointer to save memory
     Zotero::query_url_api_class($templates);
@@ -60,7 +60,7 @@ final class Zotero {
     }
 
     /**
-        @param array<Template> $templates
+        @param array<Template> &$templates
     */
     public static function query_url_api_class(array &$templates): void { // Pointer to save memory
         foreach ($templates as $template) {
