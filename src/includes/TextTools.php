@@ -14,37 +14,6 @@ const SANE_ENCODE = ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii
 const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'];
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
-const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname'];
-const GROUP2  = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors'];
-const GROUP3  = ['title', 'title-link', 'titlelink'];
-const GROUP4  = ['chapter'];
-const GROUP5  = ['journal', 'work', 'newspaper', 'website', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia', 'book-title'];
-const GROUP6  = ['series'];
-const GROUP7  = ['year', 'date'];
-const GROUP8  = ['volume'];
-const GROUP9  = ['issue', 'number'];
-const GROUP10 = ['page', 'pages', 'at'];
-const GROUP11 = ['article-number'];
-const GROUP12 = ['location', 'publisher', 'edition', 'agency'];
-const GROUP13 = ['doi'];
-const GROUP14 = ['doi-broken-date'];
-const GROUP15 = ['doi-access'];
-const GROUP16 = ['doi-broken-date'];
-const GROUP17 = ['jstor'];
-const GROUP18 = ['pmid'];
-const GROUP19 = ['pmc'];
-const GROUP20 = ['pmc-embargo-date'];
-const GROUP21 = ['arxiv', 'eprint', 'class'];
-const GROUP22 = ['bibcode'];
-const GROUP23 = ['hdl'];
-const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'];
-const GROUP25 = ['lccn', 'issn', 'ol', 'oclc', 'asin', 's2cid'];
-const GROUP26 = ['url'];
-const GROUP27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl', 'URL'];
-const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date'];
-const GROUP29 = ['archive-date', 'archivedate'];
-const GROUP30 = ['id', 'type', 'via'];
-
 // ============================================= String/Text functions ======================================
 function wikify_external_text(string $title): string {
     $replacement = [];
