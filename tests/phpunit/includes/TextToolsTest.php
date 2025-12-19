@@ -607,5 +607,9 @@ final class TextToolsTest extends testBaseClass {
         $s2 = 'adv anat embryol cell biol';
         $this->assertTrue(str_equivalent($s1, $s2));
     }
-    
+
+    public function testRubbishISBN(): void {
+        $junk = "12342";
+        $this->assertSame($junk, addISBNdashes($junk));
+    }
 }
