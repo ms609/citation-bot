@@ -72,4 +72,3 @@ final class GoogleBooksTest extends testBaseClass {
         $this->assertSame($url_out, $url_in);
     }
 }
-    
