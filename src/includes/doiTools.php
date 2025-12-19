@@ -7,17 +7,17 @@ final class HandleCache {
     private const MAX_CACHE_SIZE = 100000;
     public const MAX_HDL_SIZE = 1024;
 
-    /** @var array<bool> $cache_active */
+    /** @var array<bool> */
     public static array $cache_active = [];             // DOI is in CrossRef, no claims if it still works.
-    /** @var array<bool> $cache_inactive */
+    /** @var array<bool> */
     public static array $cache_inactive = BAD_DOI_ARRAY;// DOI is not in CrossRef
-    /** @var array<bool> $cache_good */
+    /** @var array<bool> */
     public static array $cache_good = [];               // DOI works
-    /** @var array<string> $cache_hdl_loc */
+    /** @var array<string> */
     public static array $cache_hdl_loc = [];            // Final HDL location URL
-    /** @var array<bool> $cache_hdl_bad */
+    /** @var array<bool> */
     public static array $cache_hdl_bad = BAD_DOI_ARRAY; // HDL/DOI does not resolve to anything
-    /** @var array<bool> $cache_hdl_null */
+    /** @var array<bool> */
     public static array $cache_hdl_null = [];           // HDL/DOI resolves to null
 
     /**

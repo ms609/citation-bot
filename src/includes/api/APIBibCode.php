@@ -6,9 +6,9 @@ final class AdsAbsControl {
     private const MAX_CACHE_SIZE = 50000;
     private static int $big_counter = 0;
     private static int $small_counter = 0;
-    /** @var array<string> $doi2bib */
+    /** @var array<string> */
     private static array $doi2bib = [];
-    /** @var array<string> $bib2doi */
+    /** @var array<string> */
     private static array $bib2doi = [];
 
     /**

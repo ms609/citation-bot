@@ -35,7 +35,7 @@ const PROTECTED_PAGE = ["sysop", "templateeditor"];
 class Page {
     protected string $text = '';
     protected string $title = '';
-    /** @var array<bool|array<string>> $modifications */
+    /** @var array<bool|array<string>> */
     private array $modifications = [];
     private DateStyle $date_style = DateStyle::DATES_WHATEVER;
     private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;

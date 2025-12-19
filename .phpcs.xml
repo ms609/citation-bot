@@ -34,7 +34,6 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.ParamPassByReference"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
-        <exclude name="MediaWiki.Commenting.RedundantVarName.Found"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
         <exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
