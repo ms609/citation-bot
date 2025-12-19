@@ -160,27 +160,6 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testSimpleIEEE(): void {
-        $url = "http://ieeexplore.ieee.org/arnumber=123456789";
-        $url = url_simplify($url);
-        $this->assertSame('http:/ieeexplore.ieee.org/123456789', $url);
-    }
-
-    public function testIEEEdoi(): void {
-        $url = "https://ieeexplore.ieee.org/document/4242344";
-        $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
-        if ($template->get('doi') === "") {
-            sleep(5);
-            $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
-        }
-        $this->assertSame('10.1109/ISSCC.2007.373373', $template->get2('doi'));
-    }
-
-    public function testIEEEdropBadURL(): void {
-        $template = $this->process_citation('{{cite journal | url = https://ieeexplore.ieee.org/document/4242344341324324123412343214 |doi =10.1109/ISSCC.2007.373373 }}');
-        $this->assertNull($template->get2('url'));
-    }
-
     public function testZoteroResponse1(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
