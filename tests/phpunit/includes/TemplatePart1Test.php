@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class TemplateTest extends testBaseClass {
+final class TemplatePart1Test extends testBaseClass {
 
     public function testLotsOfFloaters2(): void {
         $text_in = '{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}';

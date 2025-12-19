@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class TemplateTest2 extends testBaseClass {
+final class TemplatePart2Test extends testBaseClass {
 
     public function testTidy1(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> }}';
@@ -3527,8 +3527,20 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertNull($template->get2('id'));
     }
 
+    public function testS2CIDlicenseFalse(): void {
+        sleep(2);
+        $this->assertFalse(get_semanticscholar_license('94502986'));
+    }
+
+    public function testS2CIDlicenseTrue(): void {
+        sleep(2);
+        $this->assertFalse(get_semanticscholar_license('52813129'));
+        sleep(2);
+        $this->assertTrue(get_semanticscholar_license('73436496'));
+    }
+
     public function testSemanticscholar2(): void {
-        sleep(4);
+        sleep(2);
         $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1046/j.1365-2699.1999.00329.x', mb_strtolower($template->get('doi')));
@@ -4741,4 +4753,11 @@ final class TemplateTest2 extends testBaseClass {
         $this->assertNull($expanded->get2('page'));
     }
 
+    public function testCleanUpArchives(): void {
+        $text = "{{cite book| title=Archived Copy| script-title=Kornbluh}}";
+        $prepared = $this->process_citation($text);
+        $this->assertSame('Kornbluh', $prepared->get2('script-title'));
+        $this->assertNull($prepared->get2('title'));
+    }
+    
 }
