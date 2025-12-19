@@ -38,57 +38,57 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', true)); // Do not touch links
     }
     public function testCapitalization4(): void {
-        $this->assertSame('This is robert WWW', title_capitalization('This is robert www' , true));
+        $this->assertSame('This is robert WWW', title_capitalization('This is robert www', true));
     }
     public function testCapitalization5(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
     }
     public function testCapitalization6(): void {
-        $this->assertSame('This is robert www.', title_capitalization('This is robert www.' , true));
+        $this->assertSame('This is robert www.', title_capitalization('This is robert www.', true));
     }
     public function testCapitalization7(): void {
-        $this->assertSame('This is robert www-', title_capitalization('This is robert www-' , true));
+        $this->assertSame('This is robert www-', title_capitalization('This is robert www-', true));
     }
     public function testCapitalization8a(): void {
-        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.' , true));
+        $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.', true));
     }
     public function testCapitalization8b(): void {
-        $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.' , true));
+        $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.', true));
     }
     public function testCapitalization8c(): void {
-        $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.' , true));
+        $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.', true));
     }
     public function testCapitalization8d(): void {
-        $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.' , true));
+        $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.', true));
     }
     public function testCapitalization8e(): void {
-        $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.' , true));
+        $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.', true));
     }
     public function testCapitalization9(): void {
-        $this->assertSame('SAGE Open', title_capitalization('Sage Open' , true));
+        $this->assertSame('SAGE Open', title_capitalization('Sage Open', true));
     }
     public function testCapitalization10(): void {
-        $this->assertSame('CA', title_capitalization('Ca' , true));
+        $this->assertSame('CA', title_capitalization('Ca', true));
     }
 
     public function testCapitalization11(): void {
-        $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu' , true));
+        $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu', true));
     }
 
     public function testCapitalization12(): void {
-        $this->assertSame('PEN International', title_capitalization('Pen International' , true));
+        $this->assertSame('PEN International', title_capitalization('Pen International', true));
     }
 
     public function testCapitalization13(): void {
-        $this->assertSame('Time Off', title_capitalization('Time off' , true));
+        $this->assertSame('Time Off', title_capitalization('Time off', true));
     }
 
     public function testCapitalization14(): void {
-        $this->assertSame('IT Professional', title_capitalization('It Professional' , true));
+        $this->assertSame('IT Professional', title_capitalization('It Professional', true));
     }
 
     public function testCapitalization15(): void {
-        $this->assertSame('JOM', title_capitalization('Jom' , true));
+        $this->assertSame('JOM', title_capitalization('Jom', true));
     }
 
     public function testFrenchCapitalization1(): void {
@@ -146,7 +146,7 @@ final class expandFnsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
-        $this->assertSame('2011'      , tidy_date('05/11/2011 12:52:08'));
+        $this->assertSame('2011', tidy_date('05/11/2011 12:52:08'));
         $this->assertSame('2011-11-11', tidy_date('11/11/2011 12:52:08'));
         $this->assertSame('2018-10-21', tidy_date('Date published (2018-10-21'));
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
@@ -186,23 +186,23 @@ final class expandFnsTest extends testBaseClass {
         $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
     public function testTidyDate8(): void {
-        $this->assertSame('2000-03-27' , tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
+        $this->assertSame('2000-03-27', tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
     }
     public function testTidyDate8b(): void {
-        $this->assertSame('2000-03-27' , tidy_date('dafdsafsd3/27/2000'));
+        $this->assertSame('2000-03-27', tidy_date('dafdsafsd3/27/2000'));
     }
     public function testTidyDate8c(): void {
-        $this->assertSame('' , tidy_date('23--'));
+        $this->assertSame('', tidy_date('23--'));
     }
 
     public function testTidyDate55(): void {
-        $this->assertSame('1800' , tidy_date('3 Feb 1800'));
+        $this->assertSame('1800', tidy_date('3 Feb 1800'));
     }
     public function testTidyDate56(): void {
-        $this->assertSame('542' , tidy_date('3 Feb 0542'));
+        $this->assertSame('542', tidy_date('3 Feb 0542'));
     }
     public function testTidyDate57(): void {
-        $this->assertSame('' , tidy_date('-0003-10-22'));
+        $this->assertSame('', tidy_date('-0003-10-22'));
     }
     
     public function testRemoveComments(): void {

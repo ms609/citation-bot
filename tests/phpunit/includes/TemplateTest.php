@@ -287,7 +287,7 @@ final class TemplateTest extends testBaseClass {
         $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite journal', $prepared->wikiname());
-        $this->assertSame('1701972'     , $prepared->get2('jstor'));
+        $this->assertSame('1701972', $prepared->get2('jstor'));
         $this->assertNotNull($prepared->get2('website'));
     }
 
@@ -2030,9 +2030,9 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
         $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
         $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')    );
-        $this->assertSame('Gould'         , $expanded->get2('last1'));
-        $this->assertSame('Stephen Jay'   , $expanded->get2('first1') );
-        $this->assertSame('1989'          , $expanded->get2('date'));
+        $this->assertSame('Gould', $expanded->get2('last1'));
+        $this->assertSame('Stephen Jay', $expanded->get2('first1') );
+        $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
 
         $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
@@ -2096,9 +2096,9 @@ final class TemplateTest extends testBaseClass {
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
         $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
         $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')    );
-        $this->assertSame('Gould'         , $expanded->get2('last1'));
-        $this->assertSame('Stephen Jay'   , $expanded->get2('first1') );
-        $this->assertSame('1989'          , $expanded->get2('date'));
+        $this->assertSame('Gould', $expanded->get2('last1'));
+        $this->assertSame('Stephen Jay', $expanded->get2('first1') );
+        $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
     }
 
