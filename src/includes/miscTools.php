@@ -522,7 +522,7 @@ function prior_parameters(string $par, array $list = []): array {
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
                 $base = $match[1];
-                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
+                return array_merge([], [
                                    $base . $before,
                                    $base . $before . '-last', $base . $before . '-first',
                                    $base . '-last' . $before, $base . '-first' . $before,
