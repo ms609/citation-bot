@@ -516,7 +516,7 @@ function prior_parameters(string $par, array $list = []): array {
             case 'last':
             case 'surname':
             case 'author':
-            case 'contributor-last':
+            case 'contributor-last':s
             case 'contributor-surname':
             case 'contributor':
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
