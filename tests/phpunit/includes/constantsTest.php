@@ -680,7 +680,7 @@ final class constantsTest extends testBaseClass {
 
     public function testForNumbers(): void {
         foreach (PARAMETER_LIST as $param) {
-            $param = mb_str_replace('#', '', $param);
+            $param = str_replace('#', '', $param);
             if (preg_match('~\d+~', $param) && 's2cid' !== $param) {
                 $this->assertNull('Code assumes this does not exist: ' . $param); // There are a few places in the code where parameters are assumed to not have numbers - look for s2cid
             }
