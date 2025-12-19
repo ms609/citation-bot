@@ -2001,7 +2001,7 @@ final class Template
                     $value = $match[1];
                 } // remove years from zotero
 
-                if (mb_strpos(mb_strtolower($value), 'london') !== false ||   // Common junk from archive.org
+                if (mb_strpos(mb_strtolower($value), 'london') !== false || // Common junk from archive.org
                 mb_strpos(mb_strtolower($value), 'edinburg') !== false ||
                 mb_strpos(mb_strtolower($value), 'privately printed') !== false ||
                 str_equivalent($this->get('location'), $value) ||

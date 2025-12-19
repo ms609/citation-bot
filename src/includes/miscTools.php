@@ -2560,7 +2560,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             $url = '';
             $url_kind = '';
         }
-        if ($doi &&  // IEEE code does not require "not incomplete"
+        if ($doi && // IEEE code does not require "not incomplete"
             $url &&
             !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
             $template->blank(DOI_BROKEN_ALIASES) &&
