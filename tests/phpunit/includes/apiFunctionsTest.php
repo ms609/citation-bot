@@ -14,7 +14,7 @@ final class apiFunctionsTest extends testBaseClass {
     }
 
     public function testAdsabsApi(): void {
-        $this->requires_bibcode(function(): void {
+        $this->requires_bibcode(function (): void {
             $bibcodes = [
                 '2017NatCo...814879F', // 0
                 '1974JPal...48..524M', // 1
