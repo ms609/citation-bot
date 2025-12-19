@@ -264,4 +264,22 @@ final class doiTest extends testBaseClass {
         // Do not drop PDF files, in case they are open access and the DOI points to a paywall
         $this->assertSame('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get2('url'));
     }
+
+    public function testDOI1093(): void {
+        $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+
+        $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+    }
+
+    public function testDOI1093WW(): void {
+        $text = '{{cite web |doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-221850}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
+    }
 }
