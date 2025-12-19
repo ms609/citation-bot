@@ -23,9 +23,8 @@
 # Citation bot
 
 ## GitHub repository details
-There are one to two main branches of the bot: 
 - The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
-- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://citations-dev.toolforge.org/ .  
+- When needed, the **development** branch is intended for major restructuring and testing.  
 
 ## Overview
 
