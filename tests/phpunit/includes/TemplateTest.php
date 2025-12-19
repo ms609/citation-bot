@@ -3463,11 +3463,11 @@ EP - 999 }}';
     public function testHandles2(): void {
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
-        if ('10125/20269' !== $template->get2('hdl')) {
+        if ($template->get2('hdl') !==  '10125/20269') {
             sleep(15);
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
-        if ('10125/20269' !== $template->get2('hdl')) {
+        if ($template->get2('hdl') !=='10125/20269') {
             sleep(15);
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }

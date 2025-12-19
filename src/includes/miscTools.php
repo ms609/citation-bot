@@ -987,7 +987,7 @@ function should_url2chapter(Template $template, bool $force): bool
 function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
     static $ch_jstor;
     static $ch_pmc;
-    if (null === $ch_jstor) {
+    if ($ch_jstor === null) {
         if (TRAVIS) {
             $time = 3.0;
         } else {
@@ -2535,7 +2535,7 @@ function clean_cite_odnb(Template $template): void
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;
     static $ch_doi;
-    if (null === $ch_dx) {
+    if ($ch_dx === null) {
         if (TRAVIS) {
             $time = 3.0;
         } else {

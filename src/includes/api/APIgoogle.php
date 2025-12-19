@@ -257,7 +257,7 @@ function google_book_details(Template $template, string $gid): void
     }
 
     $google_date = sanitize_string(mb_trim((string) $xml->dc___date)); // Google often sends us YYYY-MM
-    if ('101-01-01' === $google_date) {
+    if ($google_date === '101-01-01') {
         $google_date = '';
     }
     if (mb_substr_count($google_date, "-") === 1) {

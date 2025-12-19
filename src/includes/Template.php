@@ -499,7 +499,13 @@ final class Template
         if (
             $this->blank(['pages', 'page', 'at', 'article-number']) ||
             preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
-            (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // It claims to be on page one
+            (
+                preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') &&
+                (
+                    $this->blank('year') ||
+                    (int) date("Y") - (int) $this->get('year') < 2
+                )
+            ) // It claims to be on page one
         ) {
             return true;
         }
@@ -1587,14 +1593,30 @@ final class Template
                 if (
                     $this->blank(PAGE_ALIASES) || // no page yet set
                     $all_page_values === "" ||
-                    (str_i_same($all_page_values, 'no') || str_i_same($all_page_values, 'none')) || // Is exactly "no" or "none"
-                    (mb_strpos(mb_strtolower($all_page_values), 'no') !== false && $this->blank('at')) || // "None" or "no" contained within something other than "at"
-                    (str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
-                    str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value) || // No dash already // Document with bogus pre-print page ranges
-                    ($value !== '1' &&
-                    mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
-                    ($all_page_values === '1' || mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') && // Old is 1-
-                    ($this->blank('year') || 2 > (int) date("Y") - (int) $this->get('year'))) // Less than two years old
+                    (
+                        str_i_same($all_page_values, 'no') ||
+                        str_i_same($all_page_values, 'none')
+                    ) || // Is exactly "no" or "none"
+                    (
+                        mb_strpos(mb_strtolower($all_page_values), 'no') !== false &&
+                        $this->blank('at')
+                    ) || // "None" or "no" contained within something other than "at"
+                    (
+                        str_replace($en_dash, $en_dash_X, $value) !== $value && // dash in new `pages`
+                        str_replace($en_dash, $en_dash_X, $pages_value) === $pages_value
+                    ) || // No dash already // Document with bogus pre-print page ranges
+                    (
+                         $value !== '1' &&
+                        mb_substr(str_replace($en_dash, $en_dash_X, $value), 0, 2) !== '1X' && // New is not 1-
+                        (
+                            $all_page_values === '1' ||
+                            mb_substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X'
+                        ) && // Old is 1-
+                        (
+                            $this->blank('year') ||
+                            (int) date("Y") - (int) $this->get('year') < 2
+                        )
+                    ) // Less than two years old
                 ) {
                     if ($param_name === "pages" && preg_match('~^\d{1,}$~', $value)) {
                         $param_name = 'page';
@@ -6996,7 +7018,7 @@ final class Template
                 $this->param[$last]->post = $p->post;
             }
         }
-        if (0 === mb_stripos(mb_trim($this->name), '#invoke:') && $prior_pos < 2) {
+        if (mb_stripos(mb_trim($this->name), '#invoke:') === 0 && $prior_pos < 2) {
             $prior_pos = 2;
         }
         $this->param = array_merge(array_slice($this->param, 0, $prior_pos + 1), [$p], array_slice($this->param, $prior_pos + 1));
