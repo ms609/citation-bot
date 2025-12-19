@@ -548,7 +548,8 @@ function prior_parameters(string $par, array $list = []): array {
             case in_array($base, GROUP_L1, true):
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
-                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [ // Always add new authors at the very end of existing ones, even ones with bigger numbers.
+                 // Always add new authors at the very end of existing ones, even ones with bigger numbers.
+                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
                                    $base . $before,
                                    $base . $before . '-last', $base . $before . '-first',
                                    $base . '-last' . $before, $base . '-first' . $before,
