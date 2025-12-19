@@ -540,9 +540,9 @@ function prior_parameters(string $par, array $list = []): array {
     if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
         switch ($match[1]) {
-            case in_array($par, GROUP_F1, true):
+            case in_array($match[1], GROUP_F1, true):
                 return ['last' . $match[2], 'surname' . $match[2], 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
-            case in_array($par, GROUP_L1, true):
+            case in_array($match[1], GROUP_L1, true):
                 return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
             default:
                 $base = $match[1];
