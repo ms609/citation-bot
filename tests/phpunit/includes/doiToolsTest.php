@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '../../doiToolsTest.php';
+require_once __DIR__ . '/../../doiToolsTest.php';
 
 final class apiFunctionsTest extends testBaseClass {
 
