@@ -60,8 +60,8 @@ final class Zotero {
     }
 
     /**
-        @param array<Template> &$templates
-    */
+     * @param array<Template> &$templates
+     */
     public static function query_url_api_class(array &$templates): void { // Pointer to save memory
         foreach ($templates as $template) {
             if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII

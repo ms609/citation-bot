@@ -8,6 +8,7 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic"/>
@@ -27,10 +28,8 @@
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
-        <exclude name="MediaWiki.Commenting.DocComment.SpacingDocTag"/>
         <exclude name="MediaWiki.Commenting.DocComment.SyntaxAlignedDocClose"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
-        <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
