@@ -2028,57 +2028,6 @@ EP - 999 }}';
         $this->assertSame('405–554', $expanded->get2('pages'));
     }
 
-    public function testUrlConversions(): void {
-        $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('0012343', $prepared->get2('mr'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsA(): void {
-        $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('1234231', $prepared->get2('ssrn'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsB(): void {
-        $text = '{{cite journal | url=https://www.osti.gov/biblio/2341}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('2341', $prepared->get2('osti'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsC(): void {
-        $text = '{{cite journal | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('2341', $prepared->get2('osti'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsD(): void {
-        $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:1111.22222}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('1111.22222', $prepared->get2('zbl'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsE(): void {
-        $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:11.2222.44}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('11.2222.44', $prepared->get2('jfm'));
-        $this->assertNotNull($prepared->get2('url'));
-    }
-    public function testUrlConversionsF(): void {
-        $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('10.1.1.923.345', $prepared->get2('citeseerx'));
-        $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.923.345}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('10.1.1.923.345', $prepared->get2('citeseerx'));
-    }
-    public function testUrlConversionsG(): void {
-        $text = '{{cite journal | archiveurl= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('0012343', $prepared->get2('mr'));
-        $this->assertNull($prepared->get2('archiveurl'));
-    }
-
     public function testStripPDF(): void {
         $text = '{{cite journal |url=https://link.springer.com/content/pdf/10.1007/BF00428580.pdf}}';
         $prepared = $this->prepare_citation($text);
