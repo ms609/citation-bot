@@ -130,4 +130,195 @@ final class miscToolsTest extends testBaseClass {
         $url = url_simplify($url);
         $this->assertSame('http:/ieeexplore.ieee.org/123456789', $url);
     }
+
+    public function testURLCleanUp1(): void {
+        $text = "{{cite book|url=ttps://junk}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('https://junk', $template->get2('url'));
+    }
+
+    public function testURLCleanUp2(): void {
+        $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+
+        $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|pmc=312432}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNull($template->get2('url'));
+
+        $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|doi-access=free}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp3(): void {
+        $text = "{{cite book|url=https://ieeexplore.ieee.org/arnumber=1}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('https://ieeexplore.ieee.org/document/1', $template->get2('url'));
+    }
+
+    public function testURLCleanUp4(): void {
+        $text = "{{cite book|url=https://ieeexplore.ieee.org/document/01}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('https://ieeexplore.ieee.org/document/1', $template->get2('url'));
+    }
+
+    public function testURLCleanUp5(): void {
+        $text = "{{cite book|url=https://jstor.org/stuffy-Stuff/?refreqid=124}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('https://jstor.org/stuffy-Stuff/', $template->get2('url'));
+    }
+
+    public function testURLCleanUp6(): void {
+        $text = "{{cite book|url=https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get2('jstor'));
+        $this->assertNotNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp7(): void {
+        $text = "{{cite book|url=https://www.jstor.org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get2('jstor'));
+        $this->assertNotNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp8(): void {
+        $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf|jstor=12345}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('12345', $template->get2('jstor'));
+    }
+
+    public function testURLCleanUp9(): void {
+        $text = "{{cite book|url=https://jstor.org/discover/12345.pdf|jstor=12345}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('12345', $template->get2('jstor'));
+    }
+
+    public function testURLCleanUp10(): void {
+        $text = "{{cite book|url=https://archive.org/detail/jstor-12345}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('12345', $template->get2('jstor'));
+    }
+
+    public function testURLCleanUp11(): void {
+        $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf}}";
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('12345', $template->get2('jstor'));
+    }
+
+    public function testURLCleanUp12(): void {
+        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test}}"; // Add bogus
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
+    }
+
+    public function testURLCleanUp13(): void {
+        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test2|doi=10.0000/Rubbish_bot_failure_test}}"; // Fail to add bogus
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertSame('https://dx.doi.org/10.0000/Rubbish_bot_failure_test2', $template->get2('url'));
+        $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
+    }
+
+    public function testURLCleanUp14(): void {
+        $text = "{{cite journal|url=https://dx.doi.org/10.1093/oi/authority.x}}"; // A particularly semi-valid DOI
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertNull($template->get2('doi'));
+        $this->assertSame('https://dx.doi.org/10.1093/oi/authority.x', $template->get2('url'));
+    }
+
+    public function testURLCleanUp15(): void {
+        $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('10.5284/1000184', $template->get2('doi'));
+    }
+
+    public function testURLCleanUp16(): void {
+        $text = "{{cite journal|doi= 10.1093/oi/authority.x|url=https://dx.doi.org/10.1093/oi/authority.xXXXXXXXXXX.pdf}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertSame('https://dx.doi.org/10.1093/oi/authority.xXXXXXXXXXX.pdf', $template->get2('url'));
+        $this->assertSame('10.1093/oi/authority.x', $template->get2('doi'));
+    }
+
+    public function testURLCleanUp17(): void {
+        $text = "{{cite journal|url=https://SomeRandomWeb.com/10.5284/1000184}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertSame('https://SomeRandomWeb.com/10.5284/1000184', $template->get2('url'));
+        $this->assertNull($template->get2('doi'));
+    }
+
+    public function testURLCleanUp18(): void {
+        $text = "{{cite journal|url=https://www.jstor.org/stable/1986280?origin=324124324}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('https://www.jstor.org/stable/1986280', $template->get2('url'));
+    }
+
+    public function testURLCleanUp19(): void {
+        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp20(): void {
+        $text = "{{cite journal|url=https://doi.library.ubc.ca/10.7717/peerj.3486|pmc=5483034}}"; // Has good free copy
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp21(): void {
+        $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|doi=10.7717/peerj.3486|doi-access=free}}"; // Has good free copy
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp22(): void {
+        $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp23(): void {
+        $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|pmc=342342|doi-access=free}}"; // Has good free copy
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testURLCleanUp24(): void {
+        $text = "{{cite journal|url=https://BlahBlah.com/25.10.2015/2137303/default.htm#/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy, and DOI is after first 10. in url
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+        $this->assertNull($template->get2('url'));
+    }
+    
 }
