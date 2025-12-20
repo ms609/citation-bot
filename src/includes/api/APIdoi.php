@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+const BAD_DOIS_FROM_CROSSREF = ['10.1355/9789812306319'];
+
 /**
  * @param array<string> $_ids
  * @param array<Template> &$templates
@@ -600,11 +602,12 @@ function get_doi_from_crossref(Template $template): void {
             if (!isset($result->doi)) {
                 return;
             }
-            if ((string) $result->doi === '10.1355/9789812306319') { // todo make common errors into an array
+            $doi = (string) $result->doi;
+            if (in_array($doi, BAD_DOIS_FROM_CROSSREF, true)) {
                 return;
             }
             report_inline(" Successful!");
-            $template->add_if_new('doi', (string) $result->doi);
+            $template->add_if_new('doi', $doi);
             return;
         }
     }
