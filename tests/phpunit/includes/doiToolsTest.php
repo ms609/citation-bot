@@ -449,4 +449,45 @@ final class doiToolsTest extends testBaseClass {
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     }
+
+
+    public function testBrokenDoiDetection1(): void {
+        $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+    }
+
+    public function testBrokenDoiDetection2(): void {
+        $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNotNull($expanded->get2('doi-broken-date'));
+    }
+
+    public function testBrokenDoiDetection3(): void {
+        $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('<!-- MC Hammer says to not touch this -->', $expanded->get2('doi'));
+    }
+
+    public function testBrokenDoiDetection4(): void {
+        $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('{{MC Hammer says to not touch this}}', $expanded->get2('doi'));
+    }
+
+    public function testBrokenDoiDetection5(): void {
+        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+    }
+
+    public function testCrossRefEvilDoi(): void {
+        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('39', $expanded->get2('volume'));
+    }
+
 }
