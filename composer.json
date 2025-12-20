@@ -26,6 +26,7 @@
     },
     "scripts": {
         "phpcbf": "phpcbf -p -d memory_limit=1000M --warning-severity=0",
-        "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0"
+        "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",
+        "progpilot": "progpilot --configuration progpilot.yml *.php includes/*.php includes/*/*.php"
     }
 }
