@@ -5154,36 +5154,7 @@ final class Template
                         mb_stripos($this->get($param), 'freezepage') === false &&
                         mb_stripos($this->get($param), 'petabox.bibalex.org') === false
                     ) {
-                        if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
-                            $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
-                            if (preg_match('~^\(PDF\)(.+)$~i', mb_trim($this->get('title')), $match)) {
-                                $this->set('title', mb_trim($match[1]));
-                            }
-                        } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $this->get($param), $matches)) {
-                            $this->set($param, 'https://www.academia.edu/' . $matches[1]);
-                        } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $this->get($param), $matches)) {
-                            $this->set($param, 'https://zenodo.org/record/' . $matches[1]);
-                        } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $this->get($param))) {
-                            $this->set($param, simplify_google_search($this->get($param)));
-                        } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $this->get($param), $matches)) {
-                            $this->set($param, $matches[1]);
-                        } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $this->get($param), $matches)) {
-                            $this->set($param, $matches[1]);
-                        } elseif (
-                            preg_match("~^https?://watermark\.silverchair\.com/~", $this->get($param)) ||
-                            preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $this->get($param)) ||
-                            preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))
-                        ) {
-                            $this->forget($param);
-                            return;
-                        }
-                        if ($this->get_identifiers_from_url($this->get($param))) {
-                            if (extract_doi($this->get($param))[1] === '') {
-                                // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
-                                $this->forget($param);
-                                return;
-                            }
-                        }
+                        not_an_archive_url_clean($this, $param);
                     }
                     if ($this->blank(ALL_URL_TYPES)) {
                         if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $this->get($param), $match)) {
