@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/URLtools.php'; // TODO move to required files and split the tests up too
+
 const GROUP_F1  = ['first', 'initials', 'forename', 'contributor-first', 'contributor-given'];
 const GROUP_L1  = ['last', 'surname', 'author', 'contributor-last', 'contributor-surname', 'contributor'];
 const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname'];
