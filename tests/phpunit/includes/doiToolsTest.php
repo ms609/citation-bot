@@ -449,4 +449,152 @@ final class doiToolsTest extends testBaseClass {
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     }
+
+
+    public function testBrokenDoiDetection1(): void {
+        $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+    }
+
+    public function testBrokenDoiDetection2(): void {
+        $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNotNull($expanded->get2('doi-broken-date'));
+    }
+
+    public function testBrokenDoiDetection3(): void {
+        $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('<!-- MC Hammer says to not touch this -->', $expanded->get2('doi'));
+    }
+
+    public function testBrokenDoiDetection4(): void {
+        $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('{{MC Hammer says to not touch this}}', $expanded->get2('doi'));
+    }
+
+    public function testBrokenDoiDetection5(): void {
+        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+    }
+
+    public function testCrossRefEvilDoi(): void {
+        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('doi-broken-date'));
+        $this->assertSame('39', $expanded->get2('volume'));
+    }
+
+    public function testDoiExpansionBook(): void {
+        $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-981-10-3179-3', $expanded->get2('isbn'));
+    }
+
+    public function testDoiEndings1(): void {
+        $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+    }
+
+    public function testDoiEndings2(): void {
+        $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+    }
+
+    public function test1093DoiStuff1(): void {
+        $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('hose', $template->get2('work'));
+    }
+
+    public function test1093DoiStuff2(): void {
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('hose', $template->get2('work'));
+    }
+
+    public function test1093DoiStuff3(): void {
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('hose', $template->get2('work'));
+    }
+
+    public function test1093DoiStuff4(): void {
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('kittens via doggies', $template->get2('work'));
+    }
+
+    public function test1093DoiStuff5(): void {
+        $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('Hose', $template->get2('journal'));
+    }
+
+    public function test1093DoiStuff6(): void {
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('Hose', $template->get2('journal'));
+    }
+
+    public function test1093DoiStuff7(): void {
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('Hose', $template->get2('journal'));
+    }
+
+    public function test1093DoiStuff8(): void {
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('cite document', $template->wikiname());
+        $this->assertSame('Kittens Via Doggies', $template->get2('journal'));
+    }
+
 }

@@ -95,4 +95,11 @@ final class jstorTest extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $this->assertSame('40237667', $prepared->get2('jstor'));
     }
+
+    public function testExpansionJstorBook(): void {
+        $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('Verstraete', $expanded->get2('last1'));
+    }
+    
 }
