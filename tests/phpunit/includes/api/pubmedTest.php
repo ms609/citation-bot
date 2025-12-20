@@ -51,4 +51,11 @@ final class pubmedTest extends testBaseClass {
         }
         $this->assertSame('11573006', $expanded->get2('pmid'));
     }
+
+    public function testDoi2PMID(): void {
+        $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame('11573006', $expanded->get2('pmid'));
+        $this->assertSame('58796', $expanded->get2('pmc'));
+    }
 }
