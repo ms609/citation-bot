@@ -902,4 +902,57 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame('http://worldcat.org/title/edition/oclc/1234', $template->get2('url'));
         $this->assertSame('cite web', $template->wikiname());
     }
+
+
+
+
+    public function testCiteODNB1(): void {
+        $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876;jsession=XYZ|doi=10.1093/ref:odnb/wrong_stuff|id=74876}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/ref:odnb/wrong_stuff', $template->get2('doi'));
+        $this->assertSame('74876', $template->get2('id'));
+        $this->assertSame('https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876', $template->get2('url'));
+    }
+
+    public function testCiteODNB2(): void {
+        $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876|doi=10.1093/odnb/74876|id=74876}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/ref:odnb/74876', $template->get2('doi'));
+        $this->assertSame('74876', $template->get2('id'));
+    }
+
+    public function testCiteODNB3(): void {
+        $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+    }
+
+    public function testCiteODNB4(): void {
+        $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+        $this->assertNull($template->get2('id'));
+    }
+
+    public function testCiteODNB5(): void {
+        $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316|doi=10.0000/Rubbish_bot_failure_test}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+        $this->assertNull($template->get2('id'));
+    }
+
+    public function testCiteODNB6(): void {
+        $text = '{{Cite ODNB|id=107316|doi=10.1093/odnb/9780198614128.013.107316}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+        $this->assertNull($template->get2('id'));
+    }
+
+    public function testCiteODNB7(): void { // Prefer given doi over ID, This is a contrived test
+        $text = '{{Cite ODNB|id=107316|doi=10.1038/ncomms14879}}';
+        $template = $this->process_citation($text);
+        $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
+        $this->assertNull($template->get2('id'));
+    }
+
 }
