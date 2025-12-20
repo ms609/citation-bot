@@ -35,6 +35,1280 @@ const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date'];
 const GROUP29 = ['archive-date', 'archivedate'];
 const GROUP30 = ['id', 'type', 'via'];
 
+function check_memory_usage(string $where): void {
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if ($mem_used > 24) {
+        bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+    }
+    $mem_used = (int) (memory_get_peak_usage() / 1048576);
+    if ($mem_used > 128) {
+        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where); // @codeCoverageIgnore
+    }
+}
+
+function string_is_book_series(string $str): bool {
+    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], mb_strtolower($str)));
+    $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
+    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
+}
+
+/*
+ * This code is recursive as is goes through a long list of parameters to find its place in the list.
+ * TODO: think about better ways to do this.
+ */
+
+/**
+ * @param string $par
+ * @param array<string> $list
+ * @return array<string>
+ */
+function prior_parameters(string $par, array $list = []): array {
+    if ($par === '') {
+        $par = $list['0'];
+    }
+    array_unshift($list, $par);
+    if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
+        $before = (string) ((int) $match[2] - 1);
+        $number = $match[2];
+        $base = $match[1];
+        unset($match);
+        switch ($base) {
+            case in_array($base, GROUP_F1, true):
+                return ['last' . $number, 'surname' . $number, 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
+            case in_array($base, GROUP_L1, true):
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
+            default:
+                // Always add new authors at the very end of existing ones, even ones with bigger numbers.
+                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
+                                   $base . $before,
+                                   $base . $before . '-last', $base . $before . '-first',
+                                   $base . '-last' . $before, $base . '-first' . $before,
+                                   $base . $before . '-surname', $base . $before . '-given',
+                                   $base . '-surname' . $before, $base . '-given' . $before,
+                                   ]);
+        }
+    }
+    switch ($par) {
+        case in_array($par, GROUP1, true):
+            return $list;
+        case in_array($par, GROUP2, true):
+            return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+        case in_array($par, GROUP3, true):
+            return prior_parameters('', array_merge(GROUP2, $list));
+        case in_array($par, GROUP4, true):
+            return prior_parameters('', array_merge(GROUP3, $list));
+        case in_array($par, GROUP5):
+            return prior_parameters('', array_merge(GROUP4, $list));
+        case in_array($par, GROUP6):
+            return prior_parameters('', array_merge(GROUP5, $list));
+        case in_array($par, GROUP7):
+            return prior_parameters('', array_merge(GROUP6, $list));
+        case in_array($par, GROUP8):
+            return prior_parameters('', array_merge(GROUP7, $list));
+        case in_array($par, GROUP9):
+            return prior_parameters('', array_merge(GROUP8, $list));
+        case in_array($par, GROUP10):
+            return prior_parameters('', array_merge(GROUP9, $list));
+        case in_array($par, GROUP11);
+            return prior_parameters('', array_merge(GROUP10, $list));
+        case in_array($par, GROUP12):
+            return prior_parameters('', array_merge(GROUP11, $list));
+        case in_array($par, GROUP13):
+            return prior_parameters('', array_merge(GROUP12, $list));
+        case in_array($par, GROUP14):
+            return prior_parameters('', array_merge(GROUP13, $list));
+        case in_array($par, GROUP15):
+            return prior_parameters('', array_merge(GROUP14, $list));
+        case in_array($par, GROUP16):
+            return prior_parameters('', array_merge(GROUP15, $list));
+        case in_array($par, GROUP17):
+            return prior_parameters('', array_merge(GROUP16, $list));
+        case in_array($par, GROUP18):
+            return prior_parameters('', array_merge(GROUP17, $list));
+        case in_array($par, GROUP19):
+            return prior_parameters('', array_merge(GROUP18, $list));
+        case in_array($par, GROUP20):
+            return prior_parameters('', array_merge(GROUP19, $list));
+        case in_array($par, GROUP21):
+            return prior_parameters('', array_merge(GROUP20, $list));
+        case in_array($par, GROUP22):
+            return prior_parameters('', array_merge(GROUP21, $list));
+        case in_array($par, GROUP23):
+            return prior_parameters('', array_merge(GROUP22, $list));
+        case in_array($par, GROUP24):
+            return prior_parameters('', array_merge(GROUP23, $list));
+        case in_array($par, GROUP25):
+            return prior_parameters('', array_merge(GROUP24, $list));
+        case in_array($par, GROUP26):
+            return prior_parameters('', array_merge(GROUP25, $list));
+        case in_array($par, GROUP27):
+            return prior_parameters('', array_merge(GROUP26, $list));
+        case in_array($par, GROUP28):
+            return prior_parameters('', array_merge(GROUP27, $list));
+        case in_array($par, GROUP29):
+            return prior_parameters('', array_merge(GROUP28, $list));
+        case in_array($par, GROUP30):
+            return prior_parameters('', array_merge(GROUP29, $list));
+        default:
+            bot_debug_log("prior_parameters missed: " . $par);
+            return $list;
+    }
+}
+
+
+/** @return array<string> */
+function equivalent_parameters(string $par): array {
+    switch ($par) {
+        case 'author':
+        case 'authors':
+        case 'author1':
+        case 'last1':
+            return FLATTENED_AUTHOR_PARAMETERS;
+        case 'pmid':
+        case 'pmc':
+            return ['pmc', 'pmid'];
+        case 'page_range':
+        case 'start_page':
+        case 'end_page': // From doi_crossref
+        case 'pages':
+        case 'page':
+            return ['page_range', 'pages', 'page', 'end_page', 'start_page'];
+        default:
+            return [$par];
+    }
+}
+
+function throttle(): void {
+    static $last_write_time = 0;
+    static $phase = 0;
+    $cycles = 20;    // Check every this many writes
+    $min_interval = 2 * $cycles;    // How many seconds we want per-write on average
+    if ($last_write_time === 0) {
+        $last_write_time = time();
+    }
+
+    $mem_max = (string) @ini_get('memory_limit');
+    if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
+        $mem_max = (int) (0.3 * @intval($matches[1])); // Memory limit is set super high just to avoid crash
+        unset($matches);
+        $mem_used = (int) (memory_get_usage() / 1048576);
+        if (($mem_max !== 0) && ($mem_used > $mem_max)) {    // Clear every buffer we have
+                HandleCache::free_memory();                                                 // @codeCoverageIgnoreStart
+                $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
+                AdsAbsControl::free_memory();
+                $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
+                $mem_used0 = (string) $mem_used;
+            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
+        }                                                                                                                // @codeCoverageIgnoreEnd
+    } else {
+        bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
+    }
+    $phase += 1;
+    if ($phase < $cycles) {
+        return;
+    } else {
+        $phase = 0;
+    }
+
+    $time_since_last_write = time() - $last_write_time;
+    if ($time_since_last_write < 0) {
+        $time_since_last_write = 0; // Super paranoid, this would be a freeze point
+    }
+    if ($time_since_last_write < $min_interval) {
+        $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @codeCoverageIgnore
+        report_info("Throttling: waiting " . $time_to_pause . " seconds..."); // @codeCoverageIgnore
+        sleep($time_to_pause);                                                // @codeCoverageIgnore
+    }
+    $last_write_time = time();
+}
+
+function should_url2chapter(Template $template, bool $force): bool
+{
+    if ($template->has('chapterurl')) {
+        return false;
+    }
+    if ($template->has('chapter-url')) {
+        return false;
+    }
+    if ($template->has('trans-chapter')) {
+        return false;
+    }
+    if ($template->blank('chapter')) {
+        return false;
+    }
+    if (mb_strpos($template->get('chapter'), '[') !== false) {
+        return false;
+    }
+    $url = $template->get('url');
+    $url = str_ireplace('%2F', '/', $url);
+    if (mb_stripos($url, 'google') && !mb_strpos($template->get('url'), 'pg=')) {
+        return false;
+    } // Do not move books without page numbers
+    if (mb_stripos($url, 'archive.org/details/isbn')) {
+        return false;
+    }
+    if (mb_stripos($url, 'page_id=0')) {
+        return false;
+    }
+    if (mb_stripos($url, 'page=0')) {
+        return false;
+    }
+    if (mb_substr($url, -2) === '_0') {
+        return false;
+    }
+    if (preg_match('~archive\.org/details/[^/]+$~', $url)) {
+        return false;
+    }
+    if (preg_match('~archive\.org/details/.+/page/n(\d+)~', $url, $matches)) {
+        if ((int) $matches[1] < 16) {
+            return false;
+        } // Assume early in the book - title page, etc
+    }
+    if (mb_stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) {
+        return false;
+    }
+    if (mb_stripos($url, 'PA0')) {
+        return false;
+    }
+    if (mb_stripos($url, 'PP1') && !preg_match('~PP1[0-9]~i', $url)) {
+        return false;
+    }
+    if (mb_stripos($url, 'PP0')) {
+        return false;
+    }
+    if ($template->get_without_comments_and_placeholders('chapter') === '') {
+        return false;
+    }
+    if (mb_stripos($url, 'archive.org')) {
+        if (mb_strpos($url, 'chapter')) {
+            return true;
+        }
+        if (mb_strpos($url, 'page')) {
+            if (preg_match('~page/?[01]?$~i', $url)) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    if (mb_stripos($url, 'wp-content')) {
+        // Private websites are hard to judge
+        if (mb_stripos($url, 'chapter') || mb_stripos($url, 'section')) {
+            return true;
+        }
+        if (mb_stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) {
+            return true;
+        }
+        return false;
+    }
+    if (mb_strpos($url, 'link.springer.com/chapter/10.')) {
+        return true;
+    }
+    if (preg_match('~10\.1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
+        return true;
+    }
+    if (preg_match('~10\.1057\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
+        return true;
+    }
+    if ($force) {
+        return true;
+    }
+    // Only do a few select website unless we just converted to cite book from cite journal
+    if (mb_strpos($url, 'archive.org')) {
+        return true;
+    }
+    if (mb_strpos($url, 'google.com')) {
+        return true;
+    }
+    if (mb_strpos($url, 'www.sciencedirect.com/science/article')) {
+        return true;
+    }
+    return false;
+}
+
+
+
+function handleConferencePretendingToBeAJournal(Template $template, string $rawtext): void {
+    $the_chapter = '';
+    $the_issue = '';
+    $the_journal = '';
+    $the_page = '';
+    $the_pages = '';
+    $the_title = '';
+    $the_volume = '';
+    $this_array = [$template];
+    $move_and_forget = function (string $para) use($template): void
+    {
+        // Try to keep parameters in the same order
+        $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
+        if ($template->has($para2)) {
+            $template->set($para, $template->get($para2));
+            $template->rename($para, $para2);
+        } else {
+            $template->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
+        }
+    };
+
+    if (
+        mb_stripos($rawtext, 'citation_bot_placeholder_comment') === false &&
+        mb_stripos($rawtext, 'graph drawing') === false &&
+        mb_stripos($rawtext, 'Lecture Notes in Computer Science') === false &&
+        mb_stripos($rawtext, 'LNCS ') === false &&
+        mb_stripos($rawtext, ' LNCS') === false && (
+            !$template->blank(['pmc', 'pmid', 'doi', 'jstor']) || (
+                mb_stripos($template->get('journal') . $template->get('title'), 'arxiv') !== false && !$template->blank(ARXIV_ALIASES)
+            )
+        )
+    ) {
+        // Have some good data
+        $the_title = $template->get('title');
+        $the_journal = str_replace(['[', ']'], '', $template->get('journal'));
+        $the_chapter = $template->get('chapter');
+        $the_volume = $template->get('volume');
+        $the_issue = $template->get('issue');
+        $the_page = $template->get('page');
+        $the_pages = $template->get('pages');
+        if ($template->get2('chapter') === null) {
+            $no_start_chapter = true;
+        } else {
+            $no_start_chapter = false;
+        }
+        if ($template->get2('journal') === null) {
+            $no_start_journal = true;
+        } else {
+            $no_start_journal = false;
+        }
+        $initial_author_params_save = $template->initial_author_params();
+        $bad_data = false;
+        if (mb_stripos($the_journal, 'Advances in Cryptology') === 0 && mb_stripos($the_title, 'Advances in Cryptology') === 0) {
+            $the_journal = '';
+            $template->forget('journal');
+            $bad_data = true;
+        }
+        $ieee_insanity = false;
+        if (
+            conference_doi($template->get('doi')) &&
+            in_array($template->wikiname(), ['cite journal', 'cite web'], true) &&
+            ($template->has('isbn') ||
+            (mb_stripos($the_title, 'proceedings') !== false && mb_stripos($the_journal, 'proceedings') !== false) ||
+            (mb_stripos($the_title, 'proc. ') !== false && mb_stripos($the_journal, 'proc. ') !== false) ||
+            (mb_stripos($the_title, 'Conference') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+            (mb_stripos($the_title, 'Colloquium') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
+            (mb_stripos($the_title, 'Symposium') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
+            (mb_stripos($the_title, 'Extended Abstracts') !== false && mb_stripos($the_journal, 'Extended Abstracts') !== false) ||
+            (mb_stripos($the_title, 'Meeting on ') !== false && mb_stripos($the_journal, 'Meeting on ') !== false))
+        ) {
+            // IEEE/ACM/etc "book"
+            $data_to_check = $the_title . $the_journal . $the_chapter . $template->get('series');
+            if (mb_stripos($data_to_check, 'IEEE Standard for') !== false && $template->blank('journal')) {
+                // Do nothing
+            } elseif (mb_stripos($data_to_check, 'SIGCOMM Computer Communication Review') !== false) {
+                // Actual journal with ISBN
+                // Do nothing
+            } elseif (
+                mb_stripos($data_to_check, 'Symposium') === false &&
+                mb_stripos($data_to_check, 'Conference') === false &&
+                mb_stripos($data_to_check, 'Proceedings') === false &&
+                mb_stripos($data_to_check, 'Proc. ') === false &&
+                mb_stripos($data_to_check, 'Workshop') === false &&
+                mb_stripos($data_to_check, 'Symp. On ') === false &&
+                mb_stripos($data_to_check, 'Meeting on ') === false &&
+                mb_stripos($data_to_check, 'Colloquium') === false &&
+                mb_stripos($data_to_check, 'Extended Abstracts') === false &&
+                mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') === false &&
+                mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === false
+            ) {
+                // Looks like conference done, but does not claim so
+                if ($the_journal !== '') {
+                    $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                    $the_journal = '';
+                }
+                if ($the_title !== '') {
+                    $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                    $the_title = '';
+                }
+                if ($the_chapter !== '') {
+                    $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                    $the_chapter = '';
+                }
+                $bad_data = true;
+            } elseif (
+                mb_stripos($the_journal, 'Symposium') !== false ||
+                mb_stripos($the_journal, 'Conference') !== false ||
+                mb_stripos($the_journal, 'Proceedings') !== false ||
+                mb_stripos($the_journal, 'Proc. ') !== false ||
+                mb_stripos($the_journal, 'Workshop') !== false ||
+                mb_stripos($the_journal, 'Symp. On ') !== false ||
+                mb_stripos($the_journal, 'Meeting on ') !== false ||
+                mb_stripos($the_journal, 'Colloquium') !== false ||
+                mb_stripos($the_journal, 'Extended Abstracts') !== false ||
+                mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== false ||
+                mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== false
+            ) {
+                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                $ieee_insanity = true;
+                $the_journal = '';
+                $bad_data = true;
+                if ($the_title !== '') {
+                    $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                    $the_title = '';
+                }
+                if ($the_chapter !== '') {
+                    $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                    $the_chapter = '';
+                }
+            }
+        }
+        if (
+            mb_stripos($the_journal, 'Advances in Cryptology') === 0 ||
+            mb_stripos($the_journal, 'IEEE Symposium') !== false ||
+            mb_stripos($the_journal, 'IEEE Conference') !== false ||
+            mb_stripos($the_journal, 'IEEE International Conference') !== false ||
+            mb_stripos($the_journal, 'ACM International Symposium') !== false ||
+            mb_stripos($the_journal, 'ACM Symposium') !== false ||
+            mb_stripos($the_journal, 'Extended Abstracts') !== false ||
+            mb_stripos($the_journal, 'IEEE International Symposium') !== false ||
+            mb_stripos($the_journal, 'Symposium on Theoretical Aspects') !== false ||
+            mb_stripos($the_journal, 'Lecture Notes in Computer Science') !== false ||
+            mb_stripos($the_journal, 'International Conference on ') !== false ||
+            mb_stripos($the_journal, 'ACM International Conference') !== false ||
+            mb_stripos($the_journal, 'Proceedings of SPIE') !== false ||
+            mb_stripos($the_journal, 'Proceedings of the SPIE') !== false ||
+            mb_stripos($the_journal, 'SPIE Proc') !== false ||
+            mb_stripos($the_journal, 'Proceedings of the Society of ') !== false ||
+            (mb_stripos($the_journal, 'Proceedings of ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+            (mb_stripos($the_journal, 'Proc. ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
+            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Meeting') !== false) ||
+            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
+            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
+            mb_stripos($the_journal, 'SIGGRAPH') !== false ||
+            mb_stripos($the_journal, 'Design Automation Conference') !== false
+        ) {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+            if ($the_title !== '') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+            }
+            if ($the_chapter !== '') {
+                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                $the_chapter = '';
+            }
+        }
+        if ($template->is_book_series('series') && $the_journal !== "") {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+            if ($the_title !== '') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+            }
+            if ($the_chapter !== '') {
+                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                $the_chapter = '';
+            }
+        } elseif ($template->is_book_series('series') && $the_chapter === '' && $the_title !== '' && $template->has('doi')) {
+            $bad_data = true;
+            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+            $the_title = '';
+        }
+
+        if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
+            $template->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
+            $the_pages = '';
+            $bad_data = true;
+        }
+        if ($the_page === '_' || $the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
+            $template->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
+            $the_page = '';
+            $bad_data = true;
+        }
+        if (
+            $the_volume === '_' ||
+            $the_volume === '0' ||
+            $the_volume === 'null' ||
+            $the_volume === 'n/a' ||
+            $the_volume === 'Online edition' ||
+            $the_volume === 'online' ||
+            $the_volume === 'Online' ||
+            $the_volume === 'in press' ||
+            $the_volume === 'In press' ||
+            $the_volume === 'ahead-of-print' ||
+            $the_volume === 'Forthcoming' ||
+            $the_volume === 'forthcoming'
+        ) {
+            $template->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
+            $the_volume = '';
+            $bad_data = true;
+        }
+        if (
+            $the_issue === '_' ||
+            $the_issue === '0' ||
+            $the_issue === 'null' ||
+            $the_issue === 'ja' ||
+            $the_issue === 'n/a' ||
+            $the_issue === 'Online edition' ||
+            $the_issue === 'online' ||
+            $the_issue === 'Online' ||
+            $the_issue === 'in press' ||
+            $the_issue === 'In press' ||
+            $the_issue === 'ahead-of-print' ||
+            $the_issue === 'Forthcoming' ||
+            $the_issue === 'forthcoming'
+        ) {
+            $template->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
+            $the_issue = '';
+            $bad_data = true;
+        }
+        if (mb_strlen($the_title) > 15 && mb_strpos($the_title, ' ') !== false && mb_strtoupper($the_title) === $the_title && mb_strpos($the_title, 'CITATION') === false && mb_check_encoding($the_title, 'ASCII')) {
+            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+            $the_title = '';
+            $bad_data = true;
+        }
+        if (mb_stripos($the_title, 'SpringerLink') !== false) {
+            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+            $the_title = '';
+            $bad_data = true;
+        }
+        if (
+            $the_title === '_' ||
+            $the_title === 'null' ||
+            $the_title === '[No title found]' ||
+            $the_title === 'Archived copy' ||
+            $the_title === 'JSTOR' ||
+            $the_title === 'ShieldSquare Captcha' ||
+            $the_title === 'Shibboleth Authentication Request' ||
+            $the_title === 'Pubmed' ||
+            $the_title === 'usurped title' ||
+            $the_title === 'Pubmed Central' ||
+            $the_title === 'Optica Publishing Group' ||
+            $the_title === 'BioOne' ||
+            $the_title === 'IEEE Xplore' ||
+            $the_title === 'ScienceDirect' ||
+            $the_title === 'Science Direct' ||
+            $the_title === 'Validate User'
+        ) {
+            // title=none is often because title is "reviewed work....
+            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+            $the_title = '';
+            $bad_data = true;
+        }
+        if (mb_strlen($the_journal) > 15 && mb_strpos($the_journal, ' ') !== false && mb_strtoupper($the_journal) === $the_journal && mb_strpos($the_journal, 'CITATION') === false && mb_check_encoding($the_journal, 'ASCII')) {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+        }
+        if (mb_strlen($the_chapter) > 15 && mb_strpos($the_chapter, ' ') !== false && mb_strtoupper($the_chapter) === $the_chapter && mb_strpos($the_chapter, 'CITATION') === false && mb_check_encoding($the_chapter, 'ASCII')) {
+            $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+            $the_chapter = '';
+            $bad_data = true;
+        }
+        if (str_i_same($the_journal, 'Biochimica et Biophysica Acta') || str_i_same($the_journal, '[[Biochimica et Biophysica Acta]]')) {
+            // Only part of the journal name
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+        }
+        if (
+            str_i_same($the_journal, 'JSTOR') ||
+            $the_journal === '_' ||
+            str_i_same($the_journal, 'BioOne') ||
+            str_i_same($the_journal, 'IEEE Xplore') ||
+            str_i_same($the_journal, 'PubMed') ||
+            str_i_same($the_journal, 'PubMed Central') ||
+            str_i_same($the_journal, 'ScienceDirect') ||
+            str_i_same($the_journal, 'Science Direct')
+        ) {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+        }
+        if ((mb_stripos($the_journal, 'arXiv:') === 0 || $the_journal === 'arXiv') && !$template->blank(ARXIV_ALIASES)) {
+            $template->forget('journal');
+            $the_journal = '';
+            $bad_data = true;
+            if ($template->wikiname() === 'cite journal') {
+                $template->change_name_to('cite arxiv');
+            }
+        }
+        if (mb_stripos($the_journal, 'arXiv') !== false) {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+        }
+        if (mb_stripos($the_journal, 'ScienceDirect') !== false) {
+            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+            $the_journal = '';
+            $bad_data = true;
+        }
+        if ($the_chapter === '_') {
+            $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+            $the_chapter = '';
+            $bad_data = true;
+        }
+        if ($the_title !== '' && mb_stripos(str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title), 'CITATION') === false) {
+            // Templates are generally {{!}} and such
+            if (str_i_same($the_title, $the_journal) && str_i_same($the_title, $the_chapter)) {
+                // Journal === Title === Chapter INSANE!  Never actually seen
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                $the_title = '';
+                $the_journal = '';
+                $the_chapter = '';
+                $bad_data = true;
+            } elseif (str_i_same($the_title, $the_journal)) {
+                // Journal === Title
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                $the_title = '';
+                $the_journal = '';
+                $bad_data = true;
+            } elseif (str_i_same($the_title, $the_chapter)) {
+                // Chapter === Title
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                $the_title = '';
+                $the_chapter = '';
+                $bad_data = true;
+            } elseif (mb_substr($the_title, -9, 9) === ' on JSTOR') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+                $the_title = '';
+                $bad_data = true;
+            } elseif (mb_substr($the_title, -20, 20) === 'IEEE Xplore Document') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            } elseif (mb_substr($the_title, 0, 12) === 'IEEE Xplore ') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            } elseif (mb_substr($the_title, -12) === ' IEEE Xplore') {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            } elseif (mb_stripos($the_title, 'arXiv') !== false) {
+                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                $the_title = '';
+                $bad_data = true;
+            }
+        }
+        if ($template->has('coauthors')) {
+            if ($template->has('first')) {
+                $template->rename('first', 'CITATION_BOT_PLACEHOLDER_first');
+            }
+            if ($template->has('last')) {
+                $template->rename('last', 'CITATION_BOT_PLACEHOLDER_last');
+            }
+            if ($template->has('first1')) {
+                $template->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
+            }
+            if ($template->has('last1')) {
+                $template->rename('last1', 'CITATION_BOT_PLACEHOLDER_last1');
+            }
+            if ($template->has('author1')) {
+                $template->rename('author1', 'CITATION_BOT_PLACEHOLDER_author1');
+            }
+            if ($template->has('author')) {
+                $template->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
+            }
+            $template->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
+            if ($template->blank(FLATTENED_AUTHOR_PARAMETERS)) {
+                $template->initial_author_params_set([]);
+                $bad_data = true;
+            } else {
+                if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
+                }
+                if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
+                }
+                if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                }
+                if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
+                }
+                if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
+                }
+                if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                }
+                $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+            }
+        }
+        if ($bad_data) {
+            if ($template->has('year') && $template->blank(['isbn', 'lccn', 'oclc'])) {
+                // Often the pre-print year
+                $template->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+            }
+            if ($template->has('doi')) {
+                expand_by_doi($template);
+            }
+            if ($template->has('pmid')) {
+                query_pmid_api([$template->get('pmid')], $this_array);
+            }
+            if ($template->has('pmc')) {
+                query_pmc_api([$template->get('pmc')], $this_array);
+            }
+            if ($template->has('jstor')) {
+                expand_by_jstor($template);
+            }
+            if ($template->blank(['pmid', 'pmc', 'jstor']) && ($template->has('eprint') || $template->has('arxiv'))) {
+                expand_arxiv_templates($this_array);
+            }
+            if ($ieee_insanity && $template->has('chapter') && $template->has('title')) {
+                $template->forget('CITATION_BOT_PLACEHOLDER_journal');
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_journal')) {
+                if ($template->has('journal') && $template->get('journal') !== $template->get('CITATION_BOT_PLACEHOLDER_journal') && '[[' . $template->get('journal') . ']]' !== $template->get('CITATION_BOT_PLACEHOLDER_journal')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_title')) {
+                if ($template->has('title')) {
+                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('title')));
+                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_title')));
+                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
+                    } elseif (str_replace(" ", '', $template->get('title')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_title'))) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
+                    } elseif ($template->get('title') === $template->get('CITATION_BOT_PLACEHOLDER_title')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+                    } else {
+                        $move_and_forget('CITATION_BOT_PLACEHOLDER_title');
+                    }
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_chapter')) {
+                if ($template->has('chapter')) {
+                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('chapter')));
+                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_chapter')));
+                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
+                    } elseif (str_replace(" ", '', $template->get('chapter')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
+                    } elseif ($template->get('chapter') === $template->get('CITATION_BOT_PLACEHOLDER_chapter')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+                    } else {
+                        $move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
+                    }
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_issue')) {
+                if ($template->has('issue') && $template->get('issue') !== $template->get('CITATION_BOT_PLACEHOLDER_issue')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_volume')) {
+                if ($template->has('volume') && $template->get('volume') !== $template->get('CITATION_BOT_PLACEHOLDER_volume')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_page')) {
+                if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_page')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_page');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_pages')) {
+                if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_pages')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_year')) {
+                if ($template->has('year') && $template->get('year') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
+                } elseif ($template->has('date') && $template->get('date') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
+                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
+                } elseif ($template->has('date') && $template->get('date') === $template->get('CITATION_BOT_PLACEHOLDER_year')) {
+                    $template->forget('date');
+                    $template->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+                } else {
+                    $template->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
+                }
+            }
+            if ($template->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
+                if ($template->has('last1') || $template->has('author1')) {
+                    $template->forget('CITATION_BOT_PLACEHOLDER_first');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_last');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_first1');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_last1');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_author1');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_author');
+                    $template->forget('CITATION_BOT_PLACEHOLDER_coauthors');
+                } else {
+                    $template->initial_author_params_set($initial_author_params_save);
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
+                    }
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
+                    }
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                    }
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
+                    }
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
+                    }
+                    if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
+                        $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                    }
+                    $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+                }
+            }
+        }
+        if ($no_start_chapter && $template->blank('chapter')) {
+            $template->forget('chapter');
+        }
+        if ($no_start_journal && $template->blank('journal')) {
+            $template->forget('journal');
+        }
+    }
+    if ($the_chapter === 'a' && $the_issue === 'b' && $the_journal === 'c' && $the_page === 'd' && $the_pages === 'e' && $the_title === 'f' && $the_volume === 'g') {
+        report_info('static analyis is happy');
+        // We set many of these variables to "", and then never use them again.
+        // We do this it means that over time we can safely expnand this function.
+        // But this makes static analysis unhappy.
+    }
+}
+
+function clean_cite_odnb(Template $template): void
+{
+    if ($template->has('url')) {
+        while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $template->get('url'), $matches)) {
+            $template->set('url', $matches[1]);
+        }
+    }
+    if ($template->has('doi')) {
+        $doi = $template->get('doi');
+        if (doi_works($doi) === false) {
+            if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
+                $try1 = '10.1093/ref:odnb/' . $matches[1];
+                $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
+                if (doi_works($try1)) {
+                    $template->set('doi', $try1);
+                } elseif (doi_works($try3)) {
+                    $template->set('doi', $try3);
+                }
+            }
+        }
+    }
+    if ($template->has('id')) {
+        $doi = $template->get('doi');
+        $try1 = '10.1093/ref:odnb/' . $template->get('id');
+        $try3 = '10.1093/odnb/9780198614128.013.' . $template->get('id');
+        if (doi_works($try1) !== false) {
+            // Template does this
+        } elseif (doi_works($try3)) {
+            if ($doi === '') {
+                $template->rename('id', 'doi', $try3);
+            } elseif ($doi === $try3) {
+                $template->forget('id');
+            } elseif (doi_works($doi)) {
+                $template->forget('id');
+            } else {
+                $template->forget('doi');
+                $template->rename('id', 'doi', $try3);
+            }
+        }
+    }
+    if ($template->has('doi')) {
+        $works = doi_works($template->get('doi'));
+        if ($works === false) {
+            $template->add_if_new('doi-broken-date', date('Y-m-d'));
+        } elseif ($works === true) {
+            $template->forget('doi-broken-date');
+        }
+    }
+}
+
+/**
+ * @param array<Template> &$templates
+ */
+function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
+    static $ch_dx;
+    static $ch_doi;
+    if ($ch_dx === null) {
+        if (TRAVIS) {
+            $time = 3.0;
+        } else {
+            $time = 1.0; // @codeCoverageIgnore
+        }
+        $ch_dx = bot_curl_init($time, []);
+        $ch_doi = bot_curl_init($time, []);
+    }
+    // Now that we have expanded URLs, try to lose them
+    foreach ($templates as $template) {
+        $doi = $template->get_without_comments_and_placeholders('doi');
+        if ($template->has('url')) {
+            $url = $template->get('url');
+            $url_kind = 'url';
+        } elseif ($template->has('chapter-url')) {
+            $url = $template->get('chapter-url');
+            $url_kind = 'chapter-url';
+        } elseif ($template->has('chapterurl')) {
+            $url = $template->get('chapterurl'); // @codeCoverageIgnore
+            $url_kind = 'chapterurl';      // @codeCoverageIgnore
+        } else {
+            $url = '';
+            $url_kind = '';
+        }
+        if ($doi && // IEEE code does not require "not incomplete"
+            $url &&
+            !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+            $template->blank(DOI_BROKEN_ALIASES) &&
+            preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && mb_strpos($doi, '10.1109') === 0) {
+            report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
+            $template->forget($url_kind);
+        }
+
+        if ($doi &&
+                $url &&
+                !$template->profoundly_incomplete() &&
+                !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+                (mb_strpos($doi, '10.1093/') === false) &&
+                $template->blank(DOI_BROKEN_ALIASES)) {
+                set_time_limit(120);
+            if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
+                report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
+                $template->forget($url_kind);
+            } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
+                report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
+                $template->forget($url_kind);
+            } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
+                report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
+                report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
+                report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
+                report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && $template->has('pmid')) {
+                report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
+                $template->forget($url_kind);
+            } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
+                report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
+                $template->forget($url_kind);;
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
+                report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
+                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+            } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup', '', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && mb_stripos($url, 'pdf') === false) {
+                report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
+                $template->forget($url_kind);
+            } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
+                report_forget("Existing free DOI; dropping dead URL");
+                $template->forget($url_kind);
+            } elseif (doi_works($template->get('doi')) &&
+                        !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
+                        $url_kind !== '' &&
+                        (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) !== $template->get($url_kind)) &&
+                        $template->has_good_free_copy() &&
+                        (mb_stripos($template->get($url_kind), 'pdf') === false)) {
+                report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
+                $template->forget($url_kind);
+            } elseif (mb_stripos($url, 'pdf') === false && $template->get('doi-access') === 'free' && $template->has('pmc')) {
+                curl_setopt($ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
+                $ch_return = bot_curl_exec($ch_dx);
+                if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
+                    $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
+                    if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
+                        break; // @codeCoverageIgnore
+                    }
+                    if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
+                        break; // @codeCoverageIgnore
+                    }
+                    $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
+                    $url_short = url_simplify($url);
+                    if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
+                        $redirectedUrl_doi = $matches[1];  // @codeCoverageIgnore
+                    }
+                    if (mb_stripos($url_short, $redirectedUrl_doi) !== false ||
+                        mb_stripos($redirectedUrl_doi, $url_short) !== false) {
+                        report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
+                        $template->forget($url_kind);
+                    } else { // See if $url redirects
+                        /** @psalm-taint-escape ssrf */
+                        $the_url = $url;
+                        curl_setopt($ch_doi, CURLOPT_URL, $the_url);
+                        $ch_return = bot_curl_exec($ch_doi);
+                        if (mb_strlen($ch_return) > 60) {
+                            $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
+                            $redirectedUrl_url =url_simplify($redirectedUrl_url);
+                            if (mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
+                                            mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
+                                report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
+                                $template->forget($url_kind);
+                            }
+                        }
+                    }
+                }
+                unset($ch_return);
+            }
+        }
+        $url = $template->get($url_kind);
+        if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url) {
+            if (!$template->blank_other_than_comments('pmc')) {
+                report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
+                $template->forget($url_kind);
+            }
+        }
+    }
+}
+
+// TODO - think about what all these things exist and possibly merging the two main ones
+
+function simplify_google_search(string $url): string {
+    if (mb_stripos($url, 'q=') === false) {
+        return $url;     // Not a search
+    }
+    if (preg_match('~^https?://.*google.com/search/~', $url)) {
+        return $url; // Not a search if the slash is there
+    }
+    $hash = '';
+    if (mb_strpos($url, "#")) {
+        $url_parts = explode("#", $url, 2);
+        $url = $url_parts[0];
+        $hash = "#" . $url_parts[1];
+    }
+
+    $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
+    array_shift($url_parts);
+    $url = "https://www.google.com/search?";
+
+    foreach ($url_parts as $part) {
+        $part_start = explode("=", $part, 2);
+        $part_start0 = $part_start[0];
+        if (isset($part_start[1]) && $part_start[1] === '') {
+            $part_start0 = "donotaddmeback"; // Do not add blank ones
+            $part_start1 = '';
+            $it_is_blank = true;
+        } elseif (empty($part_start[1])) {
+            $part_start1 = '';
+            $it_is_blank = true;
+        } else {
+            $part_start1 = $part_start[1];
+            $it_is_blank = false;
+        }
+        switch ($part_start0) {
+            // Stuff that gets dropped
+            case "aq":
+            case "aqi":
+            case "bih":
+            case "biw":
+            case "client":
+            case "as":
+            case "useragent":
+            case "as_brr":
+            case "ei":
+            case "ots":
+            case "sig":
+            case "source":
+            case "lr":
+            case "sa":
+            case "oi":
+            case "ct":
+            case "id":
+            case "cd":
+            case "oq":
+            case "rls":
+            case "sourceid":
+            case "ved":
+            case "aqs":
+            case "gs_l":
+            case "uact":
+            case "tbo":
+            case "tbs":
+            case "num":
+            case "redir_esc":
+            case "gs_lcp":
+            case "sxsrf":
+            case "gfe_rd":
+            case "gws_rd":
+            case "rlz":
+            case "sclient":
+            case "prmd":
+            case "dpr":
+            case "newwindow":
+            case "gs_ssp":
+            case "spell":
+            case "shndl":
+            case "sugexp":
+            case "donotaddmeback":
+            case "usg":
+            case "fir":
+            case "entrypoint":
+            case "as_qdr":
+            case "as_drrb":
+            case "as_minm":
+            case "as_mind":
+            case "as_maxm":
+            case "as_maxd":
+            case "kgs":
+            case "ictx":
+            case "shem":
+            case "vet":
+            case "iflsig":
+            case "tab":
+            case "sqi":
+            case "noj":
+            case "hs":
+            case "es_sm":
+            case "site":
+            case "btnmeta_news_search":
+            case "channel":
+            case "espv":
+            case "cad":
+            case "gs_sm":
+            case "imgil":
+            case "ins":
+            case "npsic=":
+            case "rflfq":
+            case "lei":
+            case "rlha":
+            case "rldoc":
+            case "rldimm":
+            case "npsic":
+            case "phdesc":
+            case "prmdo":
+            case "ssui":
+            case "lqi":
+            case "rlst":
+            case "pf":
+            case "authuser":
+            case "gsas":
+            case "ned":
+            case "pz":
+            case "e":
+            case "surl":
+            case "aql":
+            case "gs_lcrp":
+            case "sca_esv":
+                break;
+            case "as_occt":
+                if ($it_is_blank || str_i_same($part_start1, 'any')) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "cf":
+                if ($it_is_blank || str_i_same($part_start1, 'all')) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "cs":
+                if ($it_is_blank || str_i_same($part_start1, '0')) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "btnK":
+                if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "as_epq":
+                if ($it_is_blank) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "btnG":
+                if ($it_is_blank || str_i_same($part_start1, 'Search')) {
+                    break;
+                }
+                $url .=  $part . "&";
+                break;
+            case "rct":
+                if ($it_is_blank || str_i_same($part_start1, 'j')) {
+                    break; // default
+                }
+                $url .=  $part . "&";
+                break;
+            case "resnum":
+                if ($it_is_blank || str_i_same($part_start1, '11')) {
+                    break; // default
+                }
+                $url .=  $part . "&";
+                break;
+            case "ie":
+            case "oe":
+                if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
+                    break; // UTF-8 is the default
+                }
+                $url .=  $part . "&";
+                break;
+            case "hl":
+            case "safe":
+            case "q":
+            case "tbm":
+            case "start":
+            case "ludocid":
+            case "cshid":
+            case "stick":
+            case "as_eq":
+            case "kgmid":
+            case "as_drrb":
+            case "gbv":
+            case "as_scoring":
+            case "gl":
+            case "rllag":
+            case "lsig":
+            case "lpsid":
+            case "as_q":
+            case "kponly":
+                $url .=  $part . "&";
+                break;
+            // @codeCoverageIgnoreStart
+            default:
+                report_minor_error("Unexpected Google URL component:    " . echoable($part));
+                $url .=  $part . "&";
+                break;
+            // @codeCoverageIgnoreEnd
+        }
+    }
+
+    if (mb_substr($url, -1) === "&") {
+        $url = mb_substr($url, 0, -1); //remove trailing &
+    }
+    $url .= $hash;
+    return $url;
+}
+
 function clean_up_oxford_stuff(Template $template, string $param): void {
     if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
         $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
@@ -503,518 +1777,6 @@ function clean_up_oxford_stuff(Template $template, string $param): void {
     }
 }
 
-function check_memory_usage(string $where): void {
-    $mem_used = (int) (memory_get_usage() / 1048576);
-    if ($mem_used > 24) {
-        bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
-    }
-    $mem_used = (int) (memory_get_peak_usage() / 1048576);
-    if ($mem_used > 128) {
-        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where); // @codeCoverageIgnore
-    }
-}
-
-
-
-function string_is_book_series(string $str): bool {
-    $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], mb_strtolower($str)));
-    $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
-    return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
-}
-
-/*
- * This code is recursive as is goes through a long list of parameters to find its place in the list.
- * TODO: think about better ways to do this.
- */
-
-/**
- * @param string $par
- * @param array<string> $list
- * @return array<string>
- */
-function prior_parameters(string $par, array $list = []): array {
-    if ($par === '') {
-        $par = $list['0'];
-    }
-    array_unshift($list, $par);
-    if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
-        $before = (string) ((int) $match[2] - 1);
-        $number = $match[2];
-        $base = $match[1];
-        unset($match);
-        switch ($base) {
-            case in_array($base, GROUP_F1, true):
-                return ['last' . $number, 'surname' . $number, 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
-            case in_array($base, GROUP_L1, true):
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
-            default:
-                // Always add new authors at the very end of existing ones, even ones with bigger numbers.
-                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
-                                   $base . $before,
-                                   $base . $before . '-last', $base . $before . '-first',
-                                   $base . '-last' . $before, $base . '-first' . $before,
-                                   $base . $before . '-surname', $base . $before . '-given',
-                                   $base . '-surname' . $before, $base . '-given' . $before,
-                                   ]);
-        }
-    }
-    switch ($par) {
-        case in_array($par, GROUP1, true):
-            return $list;
-        case in_array($par, GROUP2, true):
-            return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-        case in_array($par, GROUP3, true):
-            return prior_parameters('', array_merge(GROUP2, $list));
-        case in_array($par, GROUP4, true):
-            return prior_parameters('', array_merge(GROUP3, $list));
-        case in_array($par, GROUP5):
-            return prior_parameters('', array_merge(GROUP4, $list));
-        case in_array($par, GROUP6):
-            return prior_parameters('', array_merge(GROUP5, $list));
-        case in_array($par, GROUP7):
-            return prior_parameters('', array_merge(GROUP6, $list));
-        case in_array($par, GROUP8):
-            return prior_parameters('', array_merge(GROUP7, $list));
-        case in_array($par, GROUP9):
-            return prior_parameters('', array_merge(GROUP8, $list));
-        case in_array($par, GROUP10):
-            return prior_parameters('', array_merge(GROUP9, $list));
-        case in_array($par, GROUP11);
-            return prior_parameters('', array_merge(GROUP10, $list));
-        case in_array($par, GROUP12):
-            return prior_parameters('', array_merge(GROUP11, $list));
-        case in_array($par, GROUP13):
-            return prior_parameters('', array_merge(GROUP12, $list));
-        case in_array($par, GROUP14):
-            return prior_parameters('', array_merge(GROUP13, $list));
-        case in_array($par, GROUP15):
-            return prior_parameters('', array_merge(GROUP14, $list));
-        case in_array($par, GROUP16):
-            return prior_parameters('', array_merge(GROUP15, $list));
-        case in_array($par, GROUP17):
-            return prior_parameters('', array_merge(GROUP16, $list));
-        case in_array($par, GROUP18):
-            return prior_parameters('', array_merge(GROUP17, $list));
-        case in_array($par, GROUP19):
-            return prior_parameters('', array_merge(GROUP18, $list));
-        case in_array($par, GROUP20):
-            return prior_parameters('', array_merge(GROUP19, $list));
-        case in_array($par, GROUP21):
-            return prior_parameters('', array_merge(GROUP20, $list));
-        case in_array($par, GROUP22):
-            return prior_parameters('', array_merge(GROUP21, $list));
-        case in_array($par, GROUP23):
-            return prior_parameters('', array_merge(GROUP22, $list));
-        case in_array($par, GROUP24):
-            return prior_parameters('', array_merge(GROUP23, $list));
-        case in_array($par, GROUP25):
-            return prior_parameters('', array_merge(GROUP24, $list));
-        case in_array($par, GROUP26):
-            return prior_parameters('', array_merge(GROUP25, $list));
-        case in_array($par, GROUP27):
-            return prior_parameters('', array_merge(GROUP26, $list));
-        case in_array($par, GROUP28):
-            return prior_parameters('', array_merge(GROUP27, $list));
-        case in_array($par, GROUP29):
-            return prior_parameters('', array_merge(GROUP28, $list));
-        case in_array($par, GROUP30):
-            return prior_parameters('', array_merge(GROUP29, $list));
-        default:
-            bot_debug_log("prior_parameters missed: " . $par);
-            return $list;
-    }
-}
-
-
-/** @return array<string> */
-function equivalent_parameters(string $par): array {
-    switch ($par) {
-        case 'author':
-        case 'authors':
-        case 'author1':
-        case 'last1':
-            return FLATTENED_AUTHOR_PARAMETERS;
-        case 'pmid':
-        case 'pmc':
-            return ['pmc', 'pmid'];
-        case 'page_range':
-        case 'start_page':
-        case 'end_page': // From doi_crossref
-        case 'pages':
-        case 'page':
-            return ['page_range', 'pages', 'page', 'end_page', 'start_page'];
-        default:
-            return [$par];
-    }
-}
-
-
-function throttle(): void {
-    static $last_write_time = 0;
-    static $phase = 0;
-    $cycles = 20;    // Check every this many writes
-    $min_interval = 2 * $cycles;    // How many seconds we want per-write on average
-    if ($last_write_time === 0) {
-        $last_write_time = time();
-    }
-
-    $mem_max = (string) @ini_get('memory_limit');
-    if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
-        $mem_max = (int) (0.3 * @intval($matches[1])); // Memory limit is set super high just to avoid crash
-        unset($matches);
-        $mem_used = (int) (memory_get_usage() / 1048576);
-        if (($mem_max !== 0) && ($mem_used > $mem_max)) {    // Clear every buffer we have
-                HandleCache::free_memory();                                                 // @codeCoverageIgnoreStart
-                $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
-                AdsAbsControl::free_memory();
-                $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
-                $mem_used0 = (string) $mem_used;
-            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
-        }                                                                                                                // @codeCoverageIgnoreEnd
-    } else {
-        bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
-    }
-    $phase += 1;
-    if ($phase < $cycles) {
-        return;
-    } else {
-        $phase = 0;
-    }
-
-    $time_since_last_write = time() - $last_write_time;
-    if ($time_since_last_write < 0) {
-        $time_since_last_write = 0; // Super paranoid, this would be a freeze point
-    }
-    if ($time_since_last_write < $min_interval) {
-        $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @codeCoverageIgnore
-        report_info("Throttling: waiting " . $time_to_pause . " seconds..."); // @codeCoverageIgnore
-        sleep($time_to_pause);                                                // @codeCoverageIgnore
-    }
-    $last_write_time = time();
-}
-
-function simplify_google_search(string $url): string {
-    if (mb_stripos($url, 'q=') === false) {
-        return $url;     // Not a search
-    }
-    if (preg_match('~^https?://.*google.com/search/~', $url)) {
-        return $url; // Not a search if the slash is there
-    }
-    $hash = '';
-    if (mb_strpos($url, "#")) {
-        $url_parts = explode("#", $url, 2);
-        $url = $url_parts[0];
-        $hash = "#" . $url_parts[1];
-    }
-
-    $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
-    array_shift($url_parts);
-    $url = "https://www.google.com/search?";
-
-    foreach ($url_parts as $part) {
-        $part_start = explode("=", $part, 2);
-        $part_start0 = $part_start[0];
-        if (isset($part_start[1]) && $part_start[1] === '') {
-            $part_start0 = "donotaddmeback"; // Do not add blank ones
-            $part_start1 = '';
-            $it_is_blank = true;
-        } elseif (empty($part_start[1])) {
-            $part_start1 = '';
-            $it_is_blank = true;
-        } else {
-            $part_start1 = $part_start[1];
-            $it_is_blank = false;
-        }
-        switch ($part_start0) {
-            // Stuff that gets dropped
-            case "aq":
-            case "aqi":
-            case "bih":
-            case "biw":
-            case "client":
-            case "as":
-            case "useragent":
-            case "as_brr":
-            case "ei":
-            case "ots":
-            case "sig":
-            case "source":
-            case "lr":
-            case "sa":
-            case "oi":
-            case "ct":
-            case "id":
-            case "cd":
-            case "oq":
-            case "rls":
-            case "sourceid":
-            case "ved":
-            case "aqs":
-            case "gs_l":
-            case "uact":
-            case "tbo":
-            case "tbs":
-            case "num":
-            case "redir_esc":
-            case "gs_lcp":
-            case "sxsrf":
-            case "gfe_rd":
-            case "gws_rd":
-            case "rlz":
-            case "sclient":
-            case "prmd":
-            case "dpr":
-            case "newwindow":
-            case "gs_ssp":
-            case "spell":
-            case "shndl":
-            case "sugexp":
-            case "donotaddmeback":
-            case "usg":
-            case "fir":
-            case "entrypoint":
-            case "as_qdr":
-            case "as_drrb":
-            case "as_minm":
-            case "as_mind":
-            case "as_maxm":
-            case "as_maxd":
-            case "kgs":
-            case "ictx":
-            case "shem":
-            case "vet":
-            case "iflsig":
-            case "tab":
-            case "sqi":
-            case "noj":
-            case "hs":
-            case "es_sm":
-            case "site":
-            case "btnmeta_news_search":
-            case "channel":
-            case "espv":
-            case "cad":
-            case "gs_sm":
-            case "imgil":
-            case "ins":
-            case "npsic=":
-            case "rflfq":
-            case "lei":
-            case "rlha":
-            case "rldoc":
-            case "rldimm":
-            case "npsic":
-            case "phdesc":
-            case "prmdo":
-            case "ssui":
-            case "lqi":
-            case "rlst":
-            case "pf":
-            case "authuser":
-            case "gsas":
-            case "ned":
-            case "pz":
-            case "e":
-            case "surl":
-            case "aql":
-            case "gs_lcrp":
-            case "sca_esv":
-                break;
-            case "as_occt":
-                if ($it_is_blank || str_i_same($part_start1, 'any')) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "cf":
-                if ($it_is_blank || str_i_same($part_start1, 'all')) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "cs":
-                if ($it_is_blank || str_i_same($part_start1, '0')) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "btnK":
-                if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "as_epq":
-                if ($it_is_blank) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "btnG":
-                if ($it_is_blank || str_i_same($part_start1, 'Search')) {
-                    break;
-                }
-                $url .=  $part . "&";
-                break;
-            case "rct":
-                if ($it_is_blank || str_i_same($part_start1, 'j')) {
-                    break; // default
-                }
-                $url .=  $part . "&";
-                break;
-            case "resnum":
-                if ($it_is_blank || str_i_same($part_start1, '11')) {
-                    break; // default
-                }
-                $url .=  $part . "&";
-                break;
-            case "ie":
-            case "oe":
-                if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
-                    break; // UTF-8 is the default
-                }
-                $url .=  $part . "&";
-                break;
-            case "hl":
-            case "safe":
-            case "q":
-            case "tbm":
-            case "start":
-            case "ludocid":
-            case "cshid":
-            case "stick":
-            case "as_eq":
-            case "kgmid":
-            case "as_drrb":
-            case "gbv":
-            case "as_scoring":
-            case "gl":
-            case "rllag":
-            case "lsig":
-            case "lpsid":
-            case "as_q":
-            case "kponly":
-                $url .=  $part . "&";
-                break;
-            // @codeCoverageIgnoreStart
-            default:
-                report_minor_error("Unexpected Google URL component:    " . echoable($part));
-                $url .=  $part . "&";
-                break;
-            // @codeCoverageIgnoreEnd
-        }
-    }
-
-    if (mb_substr($url, -1) === "&") {
-        $url = mb_substr($url, 0, -1); //remove trailing &
-    }
-    $url .= $hash;
-    return $url;
-}
-
-function should_url2chapter(Template $template, bool $force): bool
-{
-    if ($template->has('chapterurl')) {
-        return false;
-    }
-    if ($template->has('chapter-url')) {
-        return false;
-    }
-    if ($template->has('trans-chapter')) {
-        return false;
-    }
-    if ($template->blank('chapter')) {
-        return false;
-    }
-    if (mb_strpos($template->get('chapter'), '[') !== false) {
-        return false;
-    }
-    $url = $template->get('url');
-    $url = str_ireplace('%2F', '/', $url);
-    if (mb_stripos($url, 'google') && !mb_strpos($template->get('url'), 'pg=')) {
-        return false;
-    } // Do not move books without page numbers
-    if (mb_stripos($url, 'archive.org/details/isbn')) {
-        return false;
-    }
-    if (mb_stripos($url, 'page_id=0')) {
-        return false;
-    }
-    if (mb_stripos($url, 'page=0')) {
-        return false;
-    }
-    if (mb_substr($url, -2) === '_0') {
-        return false;
-    }
-    if (preg_match('~archive\.org/details/[^/]+$~', $url)) {
-        return false;
-    }
-    if (preg_match('~archive\.org/details/.+/page/n(\d+)~', $url, $matches)) {
-        if ((int) $matches[1] < 16) {
-            return false;
-        } // Assume early in the book - title page, etc
-    }
-    if (mb_stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) {
-        return false;
-    }
-    if (mb_stripos($url, 'PA0')) {
-        return false;
-    }
-    if (mb_stripos($url, 'PP1') && !preg_match('~PP1[0-9]~i', $url)) {
-        return false;
-    }
-    if (mb_stripos($url, 'PP0')) {
-        return false;
-    }
-    if ($template->get_without_comments_and_placeholders('chapter') === '') {
-        return false;
-    }
-    if (mb_stripos($url, 'archive.org')) {
-        if (mb_strpos($url, 'chapter')) {
-            return true;
-        }
-        if (mb_strpos($url, 'page')) {
-            if (preg_match('~page/?[01]?$~i', $url)) {
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
-    if (mb_stripos($url, 'wp-content')) {
-        // Private websites are hard to judge
-        if (mb_stripos($url, 'chapter') || mb_stripos($url, 'section')) {
-            return true;
-        }
-        if (mb_stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) {
-            return true;
-        }
-        return false;
-    }
-    if (mb_strpos($url, 'link.springer.com/chapter/10.')) {
-        return true;
-    }
-    if (preg_match('~10\.1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
-        return true;
-    }
-    if (preg_match('~10\.1057\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) {
-        return true;
-    }
-    if ($force) {
-        return true;
-    }
-    // Only do a few select website unless we just converted to cite book from cite journal
-    if (mb_strpos($url, 'archive.org')) {
-        return true;
-    }
-    if (mb_strpos($url, 'google.com')) {
-        return true;
-    }
-    if (mb_strpos($url, 'www.sciencedirect.com/science/article')) {
-        return true;
-    }
-    return false;
-}
 
 function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
     static $ch_jstor;
@@ -1934,769 +2696,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         /// THIS MUST BE LAST
     }
     return false;
-}
-
-
-function handleConferencePretendingToBeAJournal(Template $template, string $rawtext): void {
-    $the_chapter = '';
-    $the_issue = '';
-    $the_journal = '';
-    $the_page = '';
-    $the_pages = '';
-    $the_title = '';
-    $the_volume = '';
-    $this_array = [$template];
-    $move_and_forget = function (string $para) use($template): void
-    {
-        // Try to keep parameters in the same order
-        $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
-        if ($template->has($para2)) {
-            $template->set($para, $template->get($para2));
-            $template->rename($para, $para2);
-        } else {
-            $template->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
-        }
-    };
-
-    if (
-        mb_stripos($rawtext, 'citation_bot_placeholder_comment') === false &&
-        mb_stripos($rawtext, 'graph drawing') === false &&
-        mb_stripos($rawtext, 'Lecture Notes in Computer Science') === false &&
-        mb_stripos($rawtext, 'LNCS ') === false &&
-        mb_stripos($rawtext, ' LNCS') === false && (
-            !$template->blank(['pmc', 'pmid', 'doi', 'jstor']) || (
-                mb_stripos($template->get('journal') . $template->get('title'), 'arxiv') !== false && !$template->blank(ARXIV_ALIASES)
-            )
-        )
-    ) {
-        // Have some good data
-        $the_title = $template->get('title');
-        $the_journal = str_replace(['[', ']'], '', $template->get('journal'));
-        $the_chapter = $template->get('chapter');
-        $the_volume = $template->get('volume');
-        $the_issue = $template->get('issue');
-        $the_page = $template->get('page');
-        $the_pages = $template->get('pages');
-        if ($template->get2('chapter') === null) {
-            $no_start_chapter = true;
-        } else {
-            $no_start_chapter = false;
-        }
-        if ($template->get2('journal') === null) {
-            $no_start_journal = true;
-        } else {
-            $no_start_journal = false;
-        }
-        $initial_author_params_save = $template->initial_author_params();
-        $bad_data = false;
-        if (mb_stripos($the_journal, 'Advances in Cryptology') === 0 && mb_stripos($the_title, 'Advances in Cryptology') === 0) {
-            $the_journal = '';
-            $template->forget('journal');
-            $bad_data = true;
-        }
-        $ieee_insanity = false;
-        if (
-            conference_doi($template->get('doi')) &&
-            in_array($template->wikiname(), ['cite journal', 'cite web'], true) &&
-            ($template->has('isbn') ||
-            (mb_stripos($the_title, 'proceedings') !== false && mb_stripos($the_journal, 'proceedings') !== false) ||
-            (mb_stripos($the_title, 'proc. ') !== false && mb_stripos($the_journal, 'proc. ') !== false) ||
-            (mb_stripos($the_title, 'Conference') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-            (mb_stripos($the_title, 'Colloquium') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
-            (mb_stripos($the_title, 'Symposium') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
-            (mb_stripos($the_title, 'Extended Abstracts') !== false && mb_stripos($the_journal, 'Extended Abstracts') !== false) ||
-            (mb_stripos($the_title, 'Meeting on ') !== false && mb_stripos($the_journal, 'Meeting on ') !== false))
-        ) {
-            // IEEE/ACM/etc "book"
-            $data_to_check = $the_title . $the_journal . $the_chapter . $template->get('series');
-            if (mb_stripos($data_to_check, 'IEEE Standard for') !== false && $template->blank('journal')) {
-                // Do nothing
-            } elseif (mb_stripos($data_to_check, 'SIGCOMM Computer Communication Review') !== false) {
-                // Actual journal with ISBN
-                // Do nothing
-            } elseif (
-                mb_stripos($data_to_check, 'Symposium') === false &&
-                mb_stripos($data_to_check, 'Conference') === false &&
-                mb_stripos($data_to_check, 'Proceedings') === false &&
-                mb_stripos($data_to_check, 'Proc. ') === false &&
-                mb_stripos($data_to_check, 'Workshop') === false &&
-                mb_stripos($data_to_check, 'Symp. On ') === false &&
-                mb_stripos($data_to_check, 'Meeting on ') === false &&
-                mb_stripos($data_to_check, 'Colloquium') === false &&
-                mb_stripos($data_to_check, 'Extended Abstracts') === false &&
-                mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') === false &&
-                mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === false
-            ) {
-                // Looks like conference done, but does not claim so
-                if ($the_journal !== '') {
-                    $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-                    $the_journal = '';
-                }
-                if ($the_title !== '') {
-                    $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                    $the_title = '';
-                }
-                if ($the_chapter !== '') {
-                    $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                    $the_chapter = '';
-                }
-                $bad_data = true;
-            } elseif (
-                mb_stripos($the_journal, 'Symposium') !== false ||
-                mb_stripos($the_journal, 'Conference') !== false ||
-                mb_stripos($the_journal, 'Proceedings') !== false ||
-                mb_stripos($the_journal, 'Proc. ') !== false ||
-                mb_stripos($the_journal, 'Workshop') !== false ||
-                mb_stripos($the_journal, 'Symp. On ') !== false ||
-                mb_stripos($the_journal, 'Meeting on ') !== false ||
-                mb_stripos($the_journal, 'Colloquium') !== false ||
-                mb_stripos($the_journal, 'Extended Abstracts') !== false ||
-                mb_stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== false ||
-                mb_stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== false
-            ) {
-                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-                $ieee_insanity = true;
-                $the_journal = '';
-                $bad_data = true;
-                if ($the_title !== '') {
-                    $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                    $the_title = '';
-                }
-                if ($the_chapter !== '') {
-                    $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                    $the_chapter = '';
-                }
-            }
-        }
-        if (
-            mb_stripos($the_journal, 'Advances in Cryptology') === 0 ||
-            mb_stripos($the_journal, 'IEEE Symposium') !== false ||
-            mb_stripos($the_journal, 'IEEE Conference') !== false ||
-            mb_stripos($the_journal, 'IEEE International Conference') !== false ||
-            mb_stripos($the_journal, 'ACM International Symposium') !== false ||
-            mb_stripos($the_journal, 'ACM Symposium') !== false ||
-            mb_stripos($the_journal, 'Extended Abstracts') !== false ||
-            mb_stripos($the_journal, 'IEEE International Symposium') !== false ||
-            mb_stripos($the_journal, 'Symposium on Theoretical Aspects') !== false ||
-            mb_stripos($the_journal, 'Lecture Notes in Computer Science') !== false ||
-            mb_stripos($the_journal, 'International Conference on ') !== false ||
-            mb_stripos($the_journal, 'ACM International Conference') !== false ||
-            mb_stripos($the_journal, 'Proceedings of SPIE') !== false ||
-            mb_stripos($the_journal, 'Proceedings of the SPIE') !== false ||
-            mb_stripos($the_journal, 'SPIE Proc') !== false ||
-            mb_stripos($the_journal, 'Proceedings of the Society of ') !== false ||
-            (mb_stripos($the_journal, 'Proceedings of ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-            (mb_stripos($the_journal, 'Proc. ') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Conference') !== false) ||
-            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Meeting') !== false) ||
-            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Colloquium') !== false) ||
-            (mb_stripos($the_journal, 'International') !== false && mb_stripos($the_journal, 'Symposium') !== false) ||
-            mb_stripos($the_journal, 'SIGGRAPH') !== false ||
-            mb_stripos($the_journal, 'Design Automation Conference') !== false
-        ) {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-            if ($the_title !== '') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-            }
-            if ($the_chapter !== '') {
-                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                $the_chapter = '';
-            }
-        }
-        if ($template->is_book_series('series') && $the_journal !== "") {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-            if ($the_title !== '') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-            }
-            if ($the_chapter !== '') {
-                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                $the_chapter = '';
-            }
-        } elseif ($template->is_book_series('series') && $the_chapter === '' && $the_title !== '' && $template->has('doi')) {
-            $bad_data = true;
-            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-            $the_title = '';
-        }
-
-        if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
-            $template->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
-            $the_pages = '';
-            $bad_data = true;
-        }
-        if ($the_page === '_' || $the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
-            $template->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
-            $the_page = '';
-            $bad_data = true;
-        }
-        if (
-            $the_volume === '_' ||
-            $the_volume === '0' ||
-            $the_volume === 'null' ||
-            $the_volume === 'n/a' ||
-            $the_volume === 'Online edition' ||
-            $the_volume === 'online' ||
-            $the_volume === 'Online' ||
-            $the_volume === 'in press' ||
-            $the_volume === 'In press' ||
-            $the_volume === 'ahead-of-print' ||
-            $the_volume === 'Forthcoming' ||
-            $the_volume === 'forthcoming'
-        ) {
-            $template->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
-            $the_volume = '';
-            $bad_data = true;
-        }
-        if (
-            $the_issue === '_' ||
-            $the_issue === '0' ||
-            $the_issue === 'null' ||
-            $the_issue === 'ja' ||
-            $the_issue === 'n/a' ||
-            $the_issue === 'Online edition' ||
-            $the_issue === 'online' ||
-            $the_issue === 'Online' ||
-            $the_issue === 'in press' ||
-            $the_issue === 'In press' ||
-            $the_issue === 'ahead-of-print' ||
-            $the_issue === 'Forthcoming' ||
-            $the_issue === 'forthcoming'
-        ) {
-            $template->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
-            $the_issue = '';
-            $bad_data = true;
-        }
-        if (mb_strlen($the_title) > 15 && mb_strpos($the_title, ' ') !== false && mb_strtoupper($the_title) === $the_title && mb_strpos($the_title, 'CITATION') === false && mb_check_encoding($the_title, 'ASCII')) {
-            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-            $the_title = '';
-            $bad_data = true;
-        }
-        if (mb_stripos($the_title, 'SpringerLink') !== false) {
-            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-            $the_title = '';
-            $bad_data = true;
-        }
-        if (
-            $the_title === '_' ||
-            $the_title === 'null' ||
-            $the_title === '[No title found]' ||
-            $the_title === 'Archived copy' ||
-            $the_title === 'JSTOR' ||
-            $the_title === 'ShieldSquare Captcha' ||
-            $the_title === 'Shibboleth Authentication Request' ||
-            $the_title === 'Pubmed' ||
-            $the_title === 'usurped title' ||
-            $the_title === 'Pubmed Central' ||
-            $the_title === 'Optica Publishing Group' ||
-            $the_title === 'BioOne' ||
-            $the_title === 'IEEE Xplore' ||
-            $the_title === 'ScienceDirect' ||
-            $the_title === 'Science Direct' ||
-            $the_title === 'Validate User'
-        ) {
-            // title=none is often because title is "reviewed work....
-            $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-            $the_title = '';
-            $bad_data = true;
-        }
-        if (mb_strlen($the_journal) > 15 && mb_strpos($the_journal, ' ') !== false && mb_strtoupper($the_journal) === $the_journal && mb_strpos($the_journal, 'CITATION') === false && mb_check_encoding($the_journal, 'ASCII')) {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-        }
-        if (mb_strlen($the_chapter) > 15 && mb_strpos($the_chapter, ' ') !== false && mb_strtoupper($the_chapter) === $the_chapter && mb_strpos($the_chapter, 'CITATION') === false && mb_check_encoding($the_chapter, 'ASCII')) {
-            $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-            $the_chapter = '';
-            $bad_data = true;
-        }
-        if (str_i_same($the_journal, 'Biochimica et Biophysica Acta') || str_i_same($the_journal, '[[Biochimica et Biophysica Acta]]')) {
-            // Only part of the journal name
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-        }
-        if (
-            str_i_same($the_journal, 'JSTOR') ||
-            $the_journal === '_' ||
-            str_i_same($the_journal, 'BioOne') ||
-            str_i_same($the_journal, 'IEEE Xplore') ||
-            str_i_same($the_journal, 'PubMed') ||
-            str_i_same($the_journal, 'PubMed Central') ||
-            str_i_same($the_journal, 'ScienceDirect') ||
-            str_i_same($the_journal, 'Science Direct')
-        ) {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-        }
-        if ((mb_stripos($the_journal, 'arXiv:') === 0 || $the_journal === 'arXiv') && !$template->blank(ARXIV_ALIASES)) {
-            $template->forget('journal');
-            $the_journal = '';
-            $bad_data = true;
-            if ($template->wikiname() === 'cite journal') {
-                $template->change_name_to('cite arxiv');
-            }
-        }
-        if (mb_stripos($the_journal, 'arXiv') !== false) {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-        }
-        if (mb_stripos($the_journal, 'ScienceDirect') !== false) {
-            $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-            $the_journal = '';
-            $bad_data = true;
-        }
-        if ($the_chapter === '_') {
-            $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-            $the_chapter = '';
-            $bad_data = true;
-        }
-        if ($the_title !== '' && mb_stripos(str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title), 'CITATION') === false) {
-            // Templates are generally {{!}} and such
-            if (str_i_same($the_title, $the_journal) && str_i_same($the_title, $the_chapter)) {
-                // Journal === Title === Chapter INSANE!  Never actually seen
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                $the_title = '';
-                $the_journal = '';
-                $the_chapter = '';
-                $bad_data = true;
-            } elseif (str_i_same($the_title, $the_journal)) {
-                // Journal === Title
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $template->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-                $the_title = '';
-                $the_journal = '';
-                $bad_data = true;
-            } elseif (str_i_same($the_title, $the_chapter)) {
-                // Chapter === Title
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $template->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                $the_title = '';
-                $the_chapter = '';
-                $bad_data = true;
-            } elseif (mb_substr($the_title, -9, 9) === ' on JSTOR') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
-                $the_title = '';
-                $bad_data = true;
-            } elseif (mb_substr($the_title, -20, 20) === 'IEEE Xplore Document') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            } elseif (mb_substr($the_title, 0, 12) === 'IEEE Xplore ') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            } elseif (mb_substr($the_title, -12) === ' IEEE Xplore') {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            } elseif (mb_stripos($the_title, 'arXiv') !== false) {
-                $template->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                $the_title = '';
-                $bad_data = true;
-            }
-        }
-        if ($template->has('coauthors')) {
-            if ($template->has('first')) {
-                $template->rename('first', 'CITATION_BOT_PLACEHOLDER_first');
-            }
-            if ($template->has('last')) {
-                $template->rename('last', 'CITATION_BOT_PLACEHOLDER_last');
-            }
-            if ($template->has('first1')) {
-                $template->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
-            }
-            if ($template->has('last1')) {
-                $template->rename('last1', 'CITATION_BOT_PLACEHOLDER_last1');
-            }
-            if ($template->has('author1')) {
-                $template->rename('author1', 'CITATION_BOT_PLACEHOLDER_author1');
-            }
-            if ($template->has('author')) {
-                $template->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
-            }
-            $template->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
-            if ($template->blank(FLATTENED_AUTHOR_PARAMETERS)) {
-                $template->initial_author_params_set([]);
-                $bad_data = true;
-            } else {
-                if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
-                }
-                if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
-                }
-                $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
-            }
-        }
-        if ($bad_data) {
-            if ($template->has('year') && $template->blank(['isbn', 'lccn', 'oclc'])) {
-                // Often the pre-print year
-                $template->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
-            }
-            if ($template->has('doi')) {
-                expand_by_doi($template);
-            }
-            if ($template->has('pmid')) {
-                query_pmid_api([$template->get('pmid')], $this_array);
-            }
-            if ($template->has('pmc')) {
-                query_pmc_api([$template->get('pmc')], $this_array);
-            }
-            if ($template->has('jstor')) {
-                expand_by_jstor($template);
-            }
-            if ($template->blank(['pmid', 'pmc', 'jstor']) && ($template->has('eprint') || $template->has('arxiv'))) {
-                expand_arxiv_templates($this_array);
-            }
-            if ($ieee_insanity && $template->has('chapter') && $template->has('title')) {
-                $template->forget('CITATION_BOT_PLACEHOLDER_journal');
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_journal')) {
-                if ($template->has('journal') && $template->get('journal') !== $template->get('CITATION_BOT_PLACEHOLDER_journal') && '[[' . $template->get('journal') . ']]' !== $template->get('CITATION_BOT_PLACEHOLDER_journal')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_title')) {
-                if ($template->has('title')) {
-                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('title')));
-                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_title')));
-                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
-                    } elseif (str_replace(" ", '', $template->get('title')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_title'))) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
-                    } elseif ($template->get('title') === $template->get('CITATION_BOT_PLACEHOLDER_title')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
-                    } else {
-                        $move_and_forget('CITATION_BOT_PLACEHOLDER_title');
-                    }
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_chapter')) {
-                if ($template->has('chapter')) {
-                    $newer = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('chapter')));
-                    $older = str_replace([".", ",", ":", ";", "?", "!", " ", "-", "'", '"'], '', mb_strtolower($template->get('CITATION_BOT_PLACEHOLDER_chapter')));
-                    if ($newer !== $older && mb_strpos($older, $newer) === 0) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
-                    } elseif (str_replace(" ", '', $template->get('chapter')) === str_replace([" ", "'"], '', $template->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
-                    } elseif ($template->get('chapter') === $template->get('CITATION_BOT_PLACEHOLDER_chapter')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
-                    } else {
-                        $move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
-                    }
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_issue')) {
-                if ($template->has('issue') && $template->get('issue') !== $template->get('CITATION_BOT_PLACEHOLDER_issue')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_volume')) {
-                if ($template->has('volume') && $template->get('volume') !== $template->get('CITATION_BOT_PLACEHOLDER_volume')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_page')) {
-                if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_page')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_page');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_pages')) {
-                if (($template->has('page') || $template->has('pages')) && $template->get('page') . $template->get('pages') !== $template->get('CITATION_BOT_PLACEHOLDER_pages')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_year')) {
-                if ($template->has('year') && $template->get('year') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
-                } elseif ($template->has('date') && $template->get('date') !== $template->get('CITATION_BOT_PLACEHOLDER_year')) {
-                    $move_and_forget('CITATION_BOT_PLACEHOLDER_year');
-                } elseif ($template->has('date') && $template->get('date') === $template->get('CITATION_BOT_PLACEHOLDER_year')) {
-                    $template->forget('date');
-                    $template->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
-                } else {
-                    $template->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
-                }
-            }
-            if ($template->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
-                if ($template->has('last1') || $template->has('author1')) {
-                    $template->forget('CITATION_BOT_PLACEHOLDER_first');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_last');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_first1');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_last1');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_author1');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_author');
-                    $template->forget('CITATION_BOT_PLACEHOLDER_coauthors');
-                } else {
-                    $template->initial_author_params_set($initial_author_params_save);
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_first')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_first', 'first');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_last')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_last', 'last');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_first1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_last1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_last1', 'last1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_author1')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_author1', 'author1');
-                    }
-                    if ($template->has('CITATION_BOT_PLACEHOLDER_author')) {
-                        $template->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
-                    }
-                    $template->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
-                }
-            }
-        }
-        if ($no_start_chapter && $template->blank('chapter')) {
-            $template->forget('chapter');
-        }
-        if ($no_start_journal && $template->blank('journal')) {
-            $template->forget('journal');
-        }
-    }
-    if ($the_chapter === 'a' && $the_issue === 'b' && $the_journal === 'c' && $the_page === 'd' && $the_pages === 'e' && $the_title === 'f' && $the_volume === 'g') {
-        report_info('static analyis is happy');
-        // We set many of these variables to "", and then never use them again.
-        // We do this it means that over time we can safely expnand this function.
-        // But this makes static analysis unhappy.
-    }
-}
-
-function clean_cite_odnb(Template $template): void
-{
-    if ($template->has('url')) {
-        while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $template->get('url'), $matches)) {
-            $template->set('url', $matches[1]);
-        }
-    }
-    if ($template->has('doi')) {
-        $doi = $template->get('doi');
-        if (doi_works($doi) === false) {
-            if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
-                $try1 = '10.1093/ref:odnb/' . $matches[1];
-                $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
-                if (doi_works($try1)) {
-                    $template->set('doi', $try1);
-                } elseif (doi_works($try3)) {
-                    $template->set('doi', $try3);
-                }
-            }
-        }
-    }
-    if ($template->has('id')) {
-        $doi = $template->get('doi');
-        $try1 = '10.1093/ref:odnb/' . $template->get('id');
-        $try3 = '10.1093/odnb/9780198614128.013.' . $template->get('id');
-        if (doi_works($try1) !== false) {
-            // Template does this
-        } elseif (doi_works($try3)) {
-            if ($doi === '') {
-                $template->rename('id', 'doi', $try3);
-            } elseif ($doi === $try3) {
-                $template->forget('id');
-            } elseif (doi_works($doi)) {
-                $template->forget('id');
-            } else {
-                $template->forget('doi');
-                $template->rename('id', 'doi', $try3);
-            }
-        }
-    }
-    if ($template->has('doi')) {
-        $works = doi_works($template->get('doi'));
-        if ($works === false) {
-            $template->add_if_new('doi-broken-date', date('Y-m-d'));
-        } elseif ($works === true) {
-            $template->forget('doi-broken-date');
-        }
-    }
-}
-
-/**
- * @param array<Template> &$templates
- */
-function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
-    static $ch_dx;
-    static $ch_doi;
-    if ($ch_dx === null) {
-        if (TRAVIS) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
-        $ch_dx = bot_curl_init($time, []);
-        $ch_doi = bot_curl_init($time, []);
-    }
-    // Now that we have expanded URLs, try to lose them
-    foreach ($templates as $template) {
-        $doi = $template->get_without_comments_and_placeholders('doi');
-        if ($template->has('url')) {
-            $url = $template->get('url');
-            $url_kind = 'url';
-        } elseif ($template->has('chapter-url')) {
-            $url = $template->get('chapter-url');
-            $url_kind = 'chapter-url';
-        } elseif ($template->has('chapterurl')) {
-            $url = $template->get('chapterurl'); // @codeCoverageIgnore
-            $url_kind = 'chapterurl';      // @codeCoverageIgnore
-        } else {
-            $url = '';
-            $url_kind = '';
-        }
-        if ($doi && // IEEE code does not require "not incomplete"
-            $url &&
-            !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-            $template->blank(DOI_BROKEN_ALIASES) &&
-            preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && mb_strpos($doi, '10.1109') === 0) {
-            report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
-            $template->forget($url_kind);
-        }
-
-        if ($doi &&
-                $url &&
-                !$template->profoundly_incomplete() &&
-                !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-                (mb_strpos($doi, '10.1093/') === false) &&
-                $template->blank(DOI_BROKEN_ALIASES)) {
-                set_time_limit(120);
-            if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
-                report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
-                $template->forget($url_kind);
-            } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
-                report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
-                $template->forget($url_kind);
-            } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
-                report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
-                report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
-                report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
-                report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (str_ireplace('insights.ovid.com/pubmed', '', $url) !== $url && $template->has('pmid')) {
-                report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
-                $template->forget($url_kind);
-            } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
-                report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-                $template->forget($url_kind);;
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
-                report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
-                $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
-            } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup', '', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && mb_stripos($url, 'pdf') === false) {
-                report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
-                $template->forget($url_kind);
-            } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
-                report_forget("Existing free DOI; dropping dead URL");
-                $template->forget($url_kind);
-            } elseif (doi_works($template->get('doi')) &&
-                        !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
-                        $url_kind !== '' &&
-                        (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) !== $template->get($url_kind)) &&
-                        $template->has_good_free_copy() &&
-                        (mb_stripos($template->get($url_kind), 'pdf') === false)) {
-                report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
-                $template->forget($url_kind);
-            } elseif (mb_stripos($url, 'pdf') === false && $template->get('doi-access') === 'free' && $template->has('pmc')) {
-                curl_setopt($ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
-                $ch_return = bot_curl_exec($ch_dx);
-                if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
-                    $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
-                    if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
-                        break; // @codeCoverageIgnore
-                    }
-                    if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
-                        break; // @codeCoverageIgnore
-                    }
-                    $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
-                    $url_short = url_simplify($url);
-                    if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
-                        $redirectedUrl_doi = $matches[1];  // @codeCoverageIgnore
-                    }
-                    if (mb_stripos($url_short, $redirectedUrl_doi) !== false ||
-                        mb_stripos($redirectedUrl_doi, $url_short) !== false) {
-                        report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
-                        $template->forget($url_kind);
-                    } else { // See if $url redirects
-                        /** @psalm-taint-escape ssrf */
-                        $the_url = $url;
-                        curl_setopt($ch_doi, CURLOPT_URL, $the_url);
-                        $ch_return = bot_curl_exec($ch_doi);
-                        if (mb_strlen($ch_return) > 60) {
-                            $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
-                            $redirectedUrl_url =url_simplify($redirectedUrl_url);
-                            if (mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
-                                            mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
-                                report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
-                                $template->forget($url_kind);
-                            }
-                        }
-                    }
-                }
-                unset($ch_return);
-            }
-        }
-        $url = $template->get($url_kind);
-        if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $url) !== $url) {
-            if (!$template->blank_other_than_comments('pmc')) {
-                report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
-                $template->forget($url_kind);
-            }
-        }
-    }
-}
-    
+} 
     
 function url_simplify(string $url): string {
     $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
