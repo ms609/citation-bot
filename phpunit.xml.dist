@@ -9,6 +9,7 @@
   failOnRisky="true"
   failOnWarning="true"
   cacheResult="false"
+  failOnDeprecation="true"
 >
   <source>
     <include>
