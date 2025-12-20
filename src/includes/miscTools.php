@@ -3084,7 +3084,7 @@ function clean_existing_urls(Template $template, string $param): void {
     }
 }
 
-function not_an_archive_url_clean($this, $param): void {
+function not_an_archive_url_clean(Template $template, string $param): void {
     if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $template->get($param), $matches)) {
         $template->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
         if (preg_match('~^\(PDF\)(.+)$~i', mb_trim($template->get('title')), $match)) {
