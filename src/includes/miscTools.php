@@ -2712,3 +2712,374 @@ function url_simplify(string $url): string {
     $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
     return str_ireplace('https', 'http', $url);
 }
+
+function clean_existing_urls(Template $template, string $param): void {
+    if ($template->blank($param)) {
+        return;
+    }
+    if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
+        $template->set($param, 'http://' . $matches[0]);
+    }
+    $the_original_url = $template->get($param);
+    if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $template->get($param), $matches)) {
+        $template->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
+        if (preg_match('~^\(PDF\)(.+)$~i', mb_trim($template->get('title')), $match)) {
+            $template->set('title', mb_trim($match[1]));
+        }
+    } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $template->get($param), $matches)) {
+        $template->set($param, 'https://www.academia.edu/' . $matches[1]);
+    } elseif (preg_match("~^https?://(?:www\.|)essopenarchive\.org/users/([0-9]+)/articles/([0-9]+)~i", $template->get($param), $matches)) {
+        $template->set($param, 'https://essopenarchive.org/users/' . $matches[1] . '/articles/' . $matches[2]);
+    } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $template->get($param), $matches)) {
+        $template->set($param, 'https://zenodo.org/record/' . $matches[1]);
+    } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $template->get($param))) {
+        $template->set($param, simplify_google_search($template->get($param)));
+    } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    } elseif (
+        preg_match("~^https?://watermark\.silverchair\.com/~", $template->get($param)) ||
+        preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $template->get($param)) ||
+        preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $template->get($param))
+    ) {
+        if ($template->blank(['archive-url', 'archiveurl'])) {
+            // Sometimes people grabbed a snap of it
+            $template->forget($param);
+        }
+        return;
+    } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9/\+]+=*)$~", $template->get($param), $matches)) {
+        if (base64_decode($matches[1])) {
+            quietly('report_modification', "Decoding Bloomberg URL.");
+            $template->set($param, 'https://www.bloomberg.com' . base64_decode($matches[1]));
+        }
+    } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $template->get($param), $matches)) {
+        $the_match = $matches[1];
+        $the_match = urldecode(urldecode($the_match));
+        if (preg_match("~^(https.+)/privacy\-?(?:gate|wall|comfirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches)) {
+            $template->set($param, $matches[1] . $matches[2]);
+        }
+    } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
+        quietly('report_modification', "Decoding OUP URL.");
+        $template->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode($matches[1])));
+        if ($template->get('title') === 'Validate User') {
+            $template->set('title', '');
+        }
+        if ($template->get('website') === 'academic.oup.com') {
+            $template->forget('website');
+        }
+    } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $template->get($param), $matches)) {
+        if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' || $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
+            $matches[2] = '';
+        }
+        if (mb_substr($matches[2], -1) === '#' || mb_substr($matches[2], -1) === '.') {
+            $matches[2] = mb_substr($matches[2], 0, -1);
+        } // Sometime just a trailing # after & part
+        quietly('report_modification', "Unmasking Proquest eBook URL.");
+        $template->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
+    } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $template->get($param), $matches)) {
+        $template->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
+    }
+
+    if (preg_match("~ebscohost.com.*AN=(\d+)$~", $template->get($param), $matches)) {
+        $template->set($param, 'http://connection.ebscohost.com/c/articles/' . $matches[1]);
+    }
+    if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)\%252f(\d+)\%252f(\d+)\%252f(\d+)(?:\&|\%253f)~", $template->get($param), $matches)) {
+        $template->set($param, 'https://www.britishnewspaperarchive.co.uk/viewer/bl/' . $matches[1] . '/' . $matches[2] . '/' . $matches[3] . '/' . $matches[4]);
+    }
+    if (preg_match("~^https?(://pubs\.rsc\.org.+)#!divAbstract$~", $template->get($param), $matches)) {
+        $template->set($param, 'https' . $matches[1]);
+    }
+    if (preg_match("~^https?(://pubs\.rsc\.org.+)\/unauth$~", $template->get($param), $matches)) {
+        $template->set($param, 'https' . $matches[1]);
+    }
+    if (preg_match("~^https?://www.healthaffairs.org/do/10.1377/hblog(\d+\.\d+)/full/$~", $template->get($param), $matches)) {
+        $template->set($param, 'https://www.healthaffairs.org/do/10.1377/forefront.' . $matches[1] . '/full/');
+        $template->forget('access-date');
+        $template->forget('accessdate');
+        $template->add_if_new('doi', '10.1377/forefront.' . $matches[1]);
+        if (mb_strpos($template->get('doi'), 'forefront') !== false) {
+            if (mb_strpos($template->get('archiveurl') . $template->get('archive-url'), 'healthaffairs') !== false) {
+                $template->forget('archiveurl');
+                $template->forget('archive-url');
+            }
+        }
+    }
+
+    if (mb_stripos($template->get($param), 'youtube') !== false) {
+        if (preg_match("~^(https?://(?:|www\.|m\.)youtube\.com/watch)(%3F.+)$~", $template->get($param), $matches)) {
+            report_info("Decoded YouTube URL");
+            $template->set($param, $matches[1] . urldecode($matches[2]));
+        }
+    }
+
+    if (preg_match("~^https?://(.+\.springer\.com/.+)#citeas$~", $template->get($param), $matches)) {
+        $template->set($param, 'https://' . $matches[1]);
+    }
+
+    // Proxy stuff
+    if (mb_stripos($template->get($param), 'proxy') !== false) {
+        // Look for proxy first for speed, this list will grow and grow
+        // Use dots, not \. since it might match dot or dash
+        if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $template->get($param), $matches)) {
+            report_info("Remove proxy from IEEE URL");
+            $template->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
+            report_info("Remove proxy from Oxford Handbooks URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
+            report_info("Remove proxy from Oxford Art URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^https?://(?:www.|)sciencedirect.com[^/]+/(\S+)$~i", $template->get($param), $matches)) {
+            report_info("Remove proxy from ScienceDirect URL");
+            $template->set($param, 'https://www.sciencedirect.com/' . $matches[1]);
+            if ($template->has('via')) {
+                if (mb_stripos($template->get('via'), 'library') !== false || mb_stripos($template->get('via'), 'direct') === false) {
+                       $template->forget('via');
+                }
+            }
+        } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?://)(.+)$~", $template->get($param), $matches)) {
+            if (mb_strpos($matches[2], '/') === false) {
+                $template->set($param, $matches[1] . urldecode($matches[2]));
+            } else {
+                $template->set($param, $matches[1] . $matches[2]);
+            }
+            report_info("Remove proxy from URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?%3A%2F%2F.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, urldecode($matches[1]));
+            report_info("Remove proxy from URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+        }
+    }
+    if (preg_match("~^https://wikipedialibrary\.idm\.oclc\.org/login\?auth=production&url=(https?://.+)$~i", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    if (preg_match("~ancestry\.com/cs/offers/join.*url=(http.*)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    if (preg_match("~ancestry\.com/account/create.*returnurl=(http.*)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $template->get($param), $matches)) {
+        $template->set($param, str_replace(' ', '+', urldecode($matches[1])));
+    }
+    // idm.oclc.org Proxy
+    if (mb_stripos($template->get($param), 'idm.oclc.org') !== false && mb_stripos($template->get($param), 'ancestryinstitution') === false) {
+        $oclc_found = false;
+        if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
+            $oclc_found = true;
+        } elseif (preg_match("~^https://([^\.\-\/]+)\.([^\.\-\/]+)\.com.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.com/' . $matches[3]);
+            $oclc_found = true;
+        } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '/' . $matches[3]);
+            $oclc_found = true;
+        } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $template->get($param), $matches)) {
+            $template->set($param, $matches[1]);
+            $oclc_found = true;
+        } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/\%]+\.[^\.\-\/\%]+\.[^\.\-\/\%]+)(\%2f.*)$~i", $template->get($param), $matches)) {
+            $template->set($param, $matches[1] . urldecode($matches[2]));
+            $oclc_found = true;
+        }
+        if ($oclc_found) {
+            report_info("Remove OCLC proxy from URL");
+            if (mb_stripos($template->get('via'), 'wiki') !== false || mb_stripos($template->get('via'), 'oclc') !== false) {
+                $template->forget('via');
+            }
+        }
+    }
+    if (mb_stripos($template->get($param), 'https://access.newspaperarchive.com/') === 0) {
+        $template->set($param, str_ireplace('https://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $template->get($param)));
+    }
+    if (mb_stripos($template->get($param), 'http://access.newspaperarchive.com/') === 0) {
+        $template->set($param, str_ireplace('http://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $template->get($param)));
+    }
+    clean_up_oxford_stuff($template, $param);
+
+    if (preg_match('~^https?://([^/]+)/~', $template->get($param), $matches)) {
+        $the_host = $matches[1];
+    } else {
+        $the_host = '';
+    }
+    if (mb_stripos($the_host, 'proxy') !== false || mb_stripos($the_host, 'lib') !== false || mb_stripos($the_host, 'mutex') !== false) {
+        // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
+        if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $template->get($param), $matches)) {
+            report_info("Remove proxy from " . echoable($matches[1]) . " URL");
+            $template->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+            if ($template->has('via')) {
+                $template->forget('via');
+            }
+            // Generic proxy code www-host-com.proxy-stuff/dsfasfdsfasdfds
+        } elseif (preg_match("~^https?://www\-([^\./\-]+)\-com[\.\-][^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $template->get($param), $matches)) {
+            $matches[1] = 'www.' . $matches[1] . '.com';
+            report_info("Remove proxy from " . echoable($matches[1]) . " URL");
+            $template->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
+            if ($template->has('via')) {
+                $template->forget('via');
+            }
+        }
+    }
+    if (mb_stripos($template->get($param), 'galegroup') !== false) {
+        if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
+            report_info("Remove proxy from Gale URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://go.galegroup.com/' . $matches[1]);
+            report_info("Remove proxy from Gale URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
+            report_info("Remove proxy from Gale URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://link.galegroup.com/' . $matches[1]);
+            report_info("Remove proxy from Gale URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                $template->forget('via');
+            }
+        }
+    }
+    if (mb_stripos($template->get($param), 'proquest') !== false) {
+        if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:search|www).proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+            report_info("Remove proxy from ProQuest URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:www|search).proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+            report_info("Remove proxy from ProQuest URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
+                $template->forget('via');
+            }
+        } elseif (preg_match("~^http.+/login/?\?url=https://www\.proquest\.com/docview/(.+)$~", $template->get($param), $matches)) {
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+            report_info("Remove proxy from ProQuest URL");
+            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                $template->forget('via');
+            }
+            if ($template->has('via') && mb_stripos($template->get('via'), 'proquest') === false) {
+                $template->forget('via');
+            }
+        }
+        $changed = false;
+        if (preg_match("~^https?://(?:|search|www).proquest.com/(.+)/docview/(.+)$~", $template->get($param), $matches)) {
+            if ($matches[1] !== 'dissertations') {
+                $changed = true;
+                $template->set($param, 'https://www.proquest.com/docview/' . $matches[2]); // Remove specific search engine
+            }
+        }
+        if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)/(?:abstract|record|fulltext|preview|page).*$~i", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // You have to login to get that
+        }
+        if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)\?.+$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+        }
+        if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/([0-9]+)/$~i", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+        }
+        if (preg_match("~^https?://(?:www|search)\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/?\??$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+        }
+        if (preg_match("~^https?://(?:www|search)\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+        }
+        if (preg_match("~^https?://search\.proquest\.com/docview/(.+)$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+        }
+        if (preg_match("~^https?://search\.proquest\.com/dissertations/docview/(.+)$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/dissertations/docview/' . $matches[1]);
+        }
+        if (preg_match("~^https?://search\.proquest\.com/openview/(.+)$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, 'https://www.proquest.com/openview/' . $matches[1]);
+        }
+        if (preg_match("~^(https://www\.proquest\.com/docview/.+)\?$~", $template->get($param), $matches)) {
+            $changed = true;
+            $template->set($param, $matches[1]);
+        }
+        if (preg_match("~^(.+)/se-[^\/]+/?$~", $template->get($param), $matches)) {
+            $template->set($param, $matches[1]);
+            $changed = true;
+        }
+        if ($changed) {
+            report_info("Normalized ProQuest URL");
+        }
+    }
+    if ($param === 'url' && $template->wikiname() === 'cite book' && should_url2chapter($template, false)) {
+        $template->rename('url', 'chapter-url');
+        // Comment out because "never used" $param = 'chapter-url';
+        return;
+    }
+    $the_new_url = $template->get('url');
+    if ($the_original_url !== $the_new_url) {
+        $template->get_identifiers_from_url();
+    }
+    if (mb_stripos($template->get('url'), 'cinemaexpress.com') !== false) {
+        foreach (WORK_ALIASES as $worky) {
+            $lower = mb_strtolower($template->get($worky));
+            if ($lower === 'the new indian express' || $lower === '[[the new indian express]]' || $lower === 'm.cinemaexpress.com' || $lower === 'cinemaexpress.com' || $lower === 'www.cinemaexpress.com') {
+                $template->set($worky, '[[Cinema Express]]');
+            }
+        }
+    }
+}
