@@ -2509,8 +2509,6 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     }
 }
 
-
-
 function clean_cite_odnb(Template $template): void
 {
     if ($template->has('url')) {
