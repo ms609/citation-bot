@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP phpstan
-      run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G src/*.php src/includes/*.php src/includes/*/*.php
+      run: composer run phpstan

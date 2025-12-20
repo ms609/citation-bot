@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Design Security
-      run: ./vendor/bin/progpilot --configuration progpilot.yml *.php includes/*.php includes/*/*.php
+      run: composer run progpilot
