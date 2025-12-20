@@ -180,6 +180,7 @@ require_once __DIR__ . '/TextTools.php';
 require_once __DIR__ . '/WebTools.php';
 require_once __DIR__ . '/doiTools.php';
 require_once __DIR__ . '/miscTools.php';
+require_once __DIR__ . '/URLtools.php';
 require_once __DIR__ . '/Template.php';
 require_once __DIR__ . '/api/APIzotero.php';
 require_once __DIR__ . '/api/APIieee.php';

@@ -11,6 +11,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/Parameter.php';
 require_once __DIR__ . '/TextTools.php';
 require_once __DIR__ . '/miscTools.php';
+require_once __DIR__ . '/URLtools.php';
 require_once __DIR__ . '/doiTools.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/constants.php';

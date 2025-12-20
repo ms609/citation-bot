@@ -23,6 +23,7 @@ require_once __DIR__ . '/api/APIarXiv.php';
 require_once __DIR__ . '/api/APIarchives.php';
 require_once __DIR__ . '/TextTools.php';
 require_once __DIR__ . '/miscTools.php';
+require_once __DIR__ . '/URLtools.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/api/APIzotero.php';
 require_once __DIR__ . '/api/APIpii.php';
