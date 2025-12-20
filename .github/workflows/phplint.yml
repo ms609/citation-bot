@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Lint test
-      run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
+      run: composer run phplint

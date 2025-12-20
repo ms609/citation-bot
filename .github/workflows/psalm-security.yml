@@ -30,4 +30,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G
+      run: composer run psalm-taint
