@@ -3636,9 +3636,9 @@ final class Template
                 case 'first':
                     if (!$pmatch[2] && !$this->blank(['last1', 'first2', 'last2'])) {
                         if ($this->blank('last1')) {
-                               $this->rename('last', 'last1');
-                               $this->rename('author-link', 'author-link1');
-                               $this->rename('author-mask', 'author-mask1');
+                            $this->rename('last', 'last1');
+                            $this->rename('author-link', 'author-link1');
+                            $this->rename('author-mask', 'author-mask1');
                         }
                         if ($this->blank('first1')) {
                             $this->rename('first', 'first1');
@@ -3671,7 +3671,7 @@ final class Template
                 case 'chapter':
                     if ($this->has('chapter')) {
                         if (str_equivalent($this->get($param), $this->get('work'))) {
-                               $this->forget('work');
+                            $this->forget('work');
                         }
                         if (str_equivalent($this->get('chapter'), $this->get('title'))) {
                             $this->forget('chapter');
@@ -3690,7 +3690,7 @@ final class Template
                 case 'contribution':
                     if ($this->has('contribution') && $this->has('url') && $this->blank('contribution-url')) {
                         if (preg_match('~^https?://portal\.acm\.org/citation\.cfm\?id=\d+$~', $this->get('url'))) {
-                               $this->rename('url', 'contribution-url');
+                            $this->rename('url', 'contribution-url');
                         }
                     }
                     return;
@@ -3698,7 +3698,7 @@ final class Template
                 case 'class':
                     if ($this->blank('class')) {
                         if ($this->wikiname() !== 'cite arxiv' && !$this->blank(['doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'])) {
-                               $this->forget('class');
+                            $this->forget('class');
                         }
                     }
                     return;
@@ -4964,7 +4964,7 @@ final class Template
                         case 'no':
                         case 'n':
                         case 'false':
-                               $this->forget($param);
+                            $this->forget($param);
                     }
                     return;
 
@@ -4994,7 +4994,7 @@ final class Template
                 case 'book-title':
                     if ($this->wikiname() === 'cite book') {
                         if ($this->blank('title')) {
-                               $this->rename('book-title', 'title');
+                            $this->rename('book-title', 'title');
                         } elseif ($this->blank(CHAPTER_ALIASES)) {
                             $this->rename('title', 'chapter');
                             $this->rename('book-title', 'title');
@@ -5779,7 +5779,7 @@ final class Template
                 case 'year':
                     if ($this->blank('year')) {
                         if ($this->has('date')) {
-                               $this->forget('year');
+                            $this->forget('year');
                         }
                         return;
                     }
