@@ -490,4 +490,23 @@ final class doiToolsTest extends testBaseClass {
         $this->assertSame('39', $expanded->get2('volume'));
     }
 
+    public function testDoiExpansionBook(): void {
+        $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
+        $expanded = $this->process_citation($text);
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-981-10-3179-3', $expanded->get2('isbn'));
+    }
+
+    public function testDoiEndings1(): void {
+        $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+    }
+
+    public function testDoiEndings2(): void {
+        $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
+    }
+
 }
