@@ -782,4 +782,19 @@ final class TextToolsTest extends testBaseClass {
         $page = $this->process_page($text);
         $this->assertSame('Altered isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
+
+    public function testJournalCapitalization2(): void {
+        $expanded = $this->process_citation("{{Cite journal|journal=eJournal}}");
+        $this->assertSame('eJournal', $expanded->get2('journal'));
+    }
+
+    public function testJournalCapitalization3(): void {
+        $expanded = $this->process_citation("{{Cite journal|journal=EJournal}}");
+        $this->assertSame('eJournal', $expanded->get2('journal'));
+    }
+
+    public function testJournalCapitalization4(): void {
+        $expanded = $this->process_citation("{{Cite journal|journal=ejournal}}");
+        $this->assertSame('eJournal', $expanded->get2('journal'));
+    }
 }
