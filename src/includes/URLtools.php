@@ -2141,22 +2141,7 @@ function clean_existing_urls(Template $template, string $param): void {
 }
 
 function not_an_archive_url_clean(Template $template, string $param): void {
-    if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $template->get($param), $matches)) {
-        $template->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
-        if (preg_match('~^\(PDF\)(.+)$~i', mb_trim($template->get('title')), $match)) {
-            $template->set('title', mb_trim($match[1]));
-        }dfasfdsfsdf
-    } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $template->get($param), $matches)) {
-        $template->set($param, 'https://www.academia.edu/' . $matches[1]);
-    } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $template->get($param), $matches)) {
-        $template->set($param, 'https://zenodo.org/record/' . $matches[1]);
-    } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $template->get($param))) {
-        $template->set($param, simplify_google_search($template->get($param)));
-    } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $template->get($param), $matches)) {
-        $template->set($param, $matches[1]);
-    } elseif (preg_match("~^(https?://(?:www\.|)bloomberg\.com/\S+)\?(?:utm_|cmpId=)\S*$~i", $template->get($param), $matches)) {
-        $template->set($param, $matches[1]);
-    } elseif (
+    if (
         preg_match("~^https?://watermark\.silverchair\.com/~", $template->get($param)) ||
         preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $template->get($param)) ||
         preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $template->get($param))
@@ -2164,9 +2149,9 @@ function not_an_archive_url_clean(Template $template, string $param): void {
         $template->forget($param);
         return;
     }
+    clean_existing_urls($template, $param);
     if ($template->get_identifiers_from_url($template->get($param))) {
         if (extract_doi($template->get($param))[1] === '') {
-            // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
             $template->forget($param);
             return;
         }
