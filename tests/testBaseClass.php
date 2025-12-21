@@ -6,8 +6,10 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../src/includes/setup.php';
 
 // Map all total errors to execptions to avoid errors leading to a green checkmark on the tests
-function exception_error_handler($severity, $message, $filename, $lineno) {
-    throw new ErrorException($message, $message, $severity, $filename, $lineno);
+
+function exception_error_handler(string $severity, string $message, string $filename, int $lineno) {
+    int $errno, string $errstr, string $errfile, int $errline
+    throw new ErrorException($message, 0, $severity, $filename, $lineno);
 }
 set_error_handler('exception_error_handler');
 
