@@ -928,7 +928,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
                 $template->forget($url_type); // Remove it to make room for free-link
             }
         }
-            return false;
+        return false;
     }
     // IEEE
     if (mb_strpos($url, 'ieeexplore') !== false) {
@@ -1239,7 +1239,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             return false;
         }
         if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", mb_substr($url, (int) mb_stripos($url, 'jstor.org') + 9), $match) ||
-                            preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
+                    preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
             if (is_null($url_sent)) {
                 if ($template->has_good_free_copy()) {
                     $template->forget($url_type);
@@ -1276,8 +1276,8 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         } elseif (mb_stripos($url, '.nih.gov') !== false) {
 
             if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
-                                            . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})"
-                                            . "|^https?://pmc\.ncbi\.nlm\.nih\.gov/(?:m/|labs/|)articles/(?:PMC)?(\d{4,})~i", $url, $match)) {
+                            . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})"
+                            . "|^https?://pmc\.ncbi\.nlm\.nih\.gov/(?:m/|labs/|)articles/(?:PMC)?(\d{4,})~i", $url, $match)) {
                 if (preg_match("~\?term~i", $url)) {  // ALWAYS ADD new @$mathch[] below
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
