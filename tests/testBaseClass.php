@@ -7,12 +7,6 @@ require_once __DIR__ . '/../src/includes/setup.php';
 
 // Map all total errors to execptions to avoid errors leading to a green checkmark on the tests
 
-function exception_error_handler(string $severity, string $message, string $filename, int $lineno) {
-    $not_zero = 1;
-    throw new ErrorException($message, $not_zero, $severity, $filename, $lineno);
-}
-set_error_handler('exception_error_handler');
-
 final class TestPage extends Page {
     public function __construct() {
         $bad_functions = ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',

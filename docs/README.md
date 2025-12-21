@@ -57,7 +57,10 @@ A quick tour of the main files:
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `NameTools.php`: defines name functions
 * `setup.php`: sets up needed functions, requires most of the other files listed here
-* `expandFns.php`: a variety of functions
+* `miscFns.php`: a variety of functions
+* `URLtools.php`: normalize urls and extract information from urls
+* `TextTools.php`: string manipulation functions including converting to wiki
+* `WebTools.php`: things unique to the web interface
 * `API*.php`: sets up needed functions for expanding pmid/doi/url/etc
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
   `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
