@@ -5,6 +5,13 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../src/includes/setup.php';
 
+// Map all total errors to execptions to avoid errors leading to a green checkmark on the tests
+
+function exception_error_handler(string $severity, string $message, string $filename, int $lineno) {
+    throw new ErrorException($message, 0, $severity, $filename, $lineno);
+}
+set_error_handler('exception_error_handler');
+
 final class TestPage extends Page {
     public function __construct() {
         $bad_functions = ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
@@ -31,11 +38,6 @@ final class TestPage extends Page {
         $this->title = $save_title;
         self::$last_title = $save_title;
     }
-}
-
-function exception_error_handler($severity, $message, $filename, $lineno) {
-    // Throw a new ErrorException with the error details
-    throw new ErrorException($message, 0, $severity, $filename, $lineno);
 }
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
@@ -66,9 +68,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
         gc_collect_cycles();
         $this->flush();
-
-        // Set the custom function as the new error handler, so that we do not call exit() in tests
-        set_error_handler('exception_error_handler'dsfadfdsaffd);
     }
 
     protected function requires_secrets(callable $function): void {
