@@ -894,7 +894,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         $url = $url_sent;
         $url_type = 'An invalid value';
     }
-    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, is_null($url_sent));
+    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, !is_null($url_sent));
 }
 
 function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
