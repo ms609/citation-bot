@@ -17,8 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript', 'actions', 'xml', 'yaml', 'html' ]
-        # Learn more, lock at log files and see:
+        language: [ 'javascript', 'actions' ]
+        # Learn more, lokk at log files and see:
         # https://codeql.github.com/docs/codeql-overview/supported-languages-and-frameworks/
 
     steps:
