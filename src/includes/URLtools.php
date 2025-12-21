@@ -1318,11 +1318,15 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         $ch_pmc = bot_curl_init($time, []);        
     }
 
+    $update_url = function (string $url_type, string $url) use ($url_sent, $template) {
+        if (!$url_sent) {
+            $template->set($url_type, $url);
+        }
+    };
+
     if (mb_strtolower(mb_substr( $url, 0, 6 )) === "ttp://" || mb_strtolower(mb_substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
         $url = "h" . $url;
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Save it
-        }
+        $update_url($url_type, $url);
     }
     // Common ones that do not help
     if (mb_strpos($url, 'books.google') !== false ||
@@ -1346,27 +1350,19 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     if (mb_strpos($url, 'ieeexplore') !== false) {
         if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one
-            }
+            $update_url($url_type, $url);
         }
         if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
-            }
+            $update_url($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
         }
         if (preg_match('~^https?://ieeexplore\.ieee\.org.*/iel5/\d+/\d+/(\d+).pdf(?:|\?.*)$~', $url, $matches)) {
             $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Normalize
-            }
+            $update_url($url_type, $url);
         }
         if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
-            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // remove leading zeroes
-            }
+            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1]; // Remove leading zeros
+            $update_url($url_type, $url);
         }
     }
 
@@ -1405,9 +1401,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
 
     if (preg_match("~^(https?://.+\/.+)\?casa_token=.+$~", $url, $matches)) {
         $url = $matches[1];
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Update URL with cleaner one
-        }
+        $update_url($url_type, $url);
     }
 
     if (mb_stripos($url, 'jstor') !== false) {
@@ -1415,24 +1409,18 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         // We do this since not all jstor urls are recognized below
         if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
             $url = $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one
-            }
+            $update_url($url_type, $url);
         }
         if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
             $url = $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one
-            }
+            $update_url($url_type, $url);
         }
         if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
             if (mb_stripos($url, "accept") !== false) {
                 bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url); // @codeCoverageIgnore
             } else {
                 $url = $matches[1];
-                if (!$url_sent) {
-                    $template->set($url_type, $url); // Update URL with cleaner one
-                }
+                $update_url($url_type, $url);
             }
         }
         if (mb_stripos($url, 'plants.jstor.org') !== false) {
@@ -1443,9 +1431,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         // DO NOT change www.jstor.org to www\.jstor\.org -- Many proxies use www-jstor-org
         if (preg_match('~^(https?://(?:0-www.|www.|)jstor.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
             $url = $matches[1] . '/stable/' . $matches[2]; // that is default. This also means we get jstor not doi
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
-            }
+            $update_url($url_type, $url); // Will probably call forget below
         }
         // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
         // Optional 0- at front.
@@ -1453,16 +1439,12 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
         if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
             $url = 'https://www.jstor.org/stable/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one
-            }
+            $update_url($url_type, $url);
         }
         // Remove junk from URLs
         while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1#|\?seq=1#|#metadata_info_tab_contents|;uid=|\?uid=|;sid=|\?sid=)~i', $url, $matches)) {
             $url = 'https://www.jstor.org/stable/' . $matches[1];
-            if (!$url_sent) {
-                $template->set($url_type, $url); // Update URL with cleaner one
-            }
+            $update_url($url_type, $url);
         }
 
         if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
@@ -1511,29 +1493,21 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
 
     if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.|)worldcat(?:libraries|)\.org.+)(?:\&referer=brief_results|\?referer=di&ht=edition|\?referer=brief_results|%26referer%3Dbrief_results|\?ht=edition&referer=di|\?referer=br&ht=edition|\/viewport)$~i', $url, $matches)) {
         $url = 'https' . $matches[1];
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Update URL with cleaner one
-        }
+        $update_url($url_type, $url);
     }
     if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.)worldcat(?:libraries|)\.org.+)/oclc/(\d+)$~i', $url, $matches)) {
         $url = 'https://www.worldcat.org/oclc/' . $matches[2];
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Update URL with cleaner one
-        }
+        $update_url($url_type, $url);
     }
 
     if (preg_match('~^https?://onlinelibrary\.wiley\.com/doi/(.+)/abstract\?(?:deniedAccessCustomise|userIsAuthenticated)~i', $url, $matches)) {
         $url = 'https://onlinelibrary.wiley.com/doi/' . $matches[1] . '/abstract';
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Update URL with cleaner one
-        }
+        $update_url($url_type, $url);
     }
 
     if (preg_match('~^https?://(?:dx\.|)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
         $url = 'http://www.springerreference.com/index/doi/10.1007/springerreference_' . $matches[1];
-        if (!$url_sent) {
-            $template->set($url_type, $url); // Update URL with cleaner one
-        }
+        $update_url($url_type, $url);
     }
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
