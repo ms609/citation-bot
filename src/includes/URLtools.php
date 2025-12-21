@@ -897,7 +897,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, is_null($url_sent));
 }
 
-function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, boolean $url_sent): bool {
+function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
