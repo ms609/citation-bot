@@ -1,5 +1,7 @@
 <?php
 
+// TODO - merge these two _INSIDE functions - perhaps with a "expand or not to expand" flag
+
 declare(strict_types=1);
 
 /**
@@ -943,8 +945,6 @@ function clean_existing_urls(Template $template, string $param): void {
     }
     clean_existing_urls_INSIDE($template, $param);
 }
-
-// TODO - merge these two - perhaps with a "expand or not to expand" flag                                         
 /**
  * @internal
  */
