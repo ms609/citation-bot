@@ -142,9 +142,6 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     }
 }
 
-/**
- * @internal
- */
 function simplify_google_search(string $url): string {
     if (mb_stripos($url, 'q=') === false) {
         return $url;     // Not a search
@@ -364,9 +361,6 @@ function simplify_google_search(string $url): string {
     return $url;
 }
 
-/**
- * @internal
- */
 function clean_and_expand_up_oxford_stuff(Template $template, string $param): void {
     if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
         $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
@@ -903,9 +897,6 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, !is_null($url_sent));
 }
 
-/**
- * @internal
- */
 function url_simplify(string $url): string {
     $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
     $url = urldecode($url);
@@ -946,9 +937,6 @@ function clean_existing_urls(Template $template, string $param): void {
     clean_existing_urls_INSIDE($template, $param);
 }
 
-/**
- * @internal
- */
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
     if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
         $template->set($param, 'http://' . $matches[0]);
@@ -1317,9 +1305,6 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
     }
 }
                                                              
-/**
- * @internal
- */
 function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
     static $ch_jstor;
     static $ch_pmc;
