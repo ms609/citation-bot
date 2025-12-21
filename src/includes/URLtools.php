@@ -140,8 +140,6 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     }
 }
 
-// TODO - think about what all these things exist and possibly merging the two main ones
-
 function simplify_google_search(string $url): string {
     if (mb_stripos($url, 'q=') === false) {
         return $url;     // Not a search
@@ -361,7 +359,7 @@ function simplify_google_search(string $url): string {
     return $url;
 }
 
-function clean_up_oxford_stuff(Template $template, string $param): void {
+function clean_and_expand_up_oxford_stuff(Template $template, string $param): void {
     if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
         $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
     }
@@ -896,6 +894,41 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     }
     return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, !is_null($url_sent));
 }
+
+function url_simplify(string $url): string {
+    $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
+    $url = urldecode($url);
+    // IEEE is annoying
+    if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
+        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+    }
+    $url .= '/';
+    $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
+                                            ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
+    $url = mb_substr($url, 0, -1); // Remove the ending slash we added
+    $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
+    return str_ireplace('https', 'http', $url);
+}
+
+function not_an_archive_url_clean(Template $template, string $param): void {
+    if (
+        preg_match("~^https?://watermark\.silverchair\.com/~", $template->get($param)) ||
+        preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $template->get($param)) ||
+        preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $template->get($param))
+    ) {
+        $template->forget($param);
+        return;
+    }
+    clean_existing_urls($template, $param);
+    if ($template->get_identifiers_from_url($template->get($param))) {
+        if (extract_doi($template->get($param))[1] === '') {
+            $template->forget($param);
+            return;
+        }
+    }
+}    
+
+// TODO - merge these two - perhaps with a "expand or not to expand" flag
 
 function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
     static $ch_jstor;
@@ -1752,21 +1785,6 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         /// THIS MUST BE LAST
     }
     return false;
-} 
-
-function url_simplify(string $url): string {
-    $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
-    $url = urldecode($url);
-    // IEEE is annoying
-    if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
-        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-    }
-    $url .= '/';
-    $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
-                                            ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
-    $url = mb_substr($url, 0, -1); // Remove the ending slash we added
-    $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
-    return str_ireplace('https', 'http', $url);
 }
 
 function clean_existing_urls(Template $template, string $param): void {
@@ -1977,7 +1995,7 @@ function clean_existing_urls(Template $template, string $param): void {
     if (mb_stripos($template->get($param), 'http://access.newspaperarchive.com/') === 0) {
         $template->set($param, str_ireplace('http://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $template->get($param)));
     }
-    clean_up_oxford_stuff($template, $param);
+    clean_and_expand_up_oxford_stuff($template, $param);
 
     if (preg_match('~^https?://([^/]+)/~', $template->get($param), $matches)) {
         $the_host = $matches[1];
@@ -2139,21 +2157,3 @@ function clean_existing_urls(Template $template, string $param): void {
         }
     }
 }
-
-function not_an_archive_url_clean(Template $template, string $param): void {
-    if (
-        preg_match("~^https?://watermark\.silverchair\.com/~", $template->get($param)) ||
-        preg_match("~^https?://s3\.amazonaws\.com/academia\.edu~", $template->get($param)) ||
-        preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $template->get($param))
-    ) {
-        $template->forget($param);
-        return;
-    }
-    clean_existing_urls($template, $param);
-    if ($template->get_identifiers_from_url($template->get($param))) {
-        if (extract_doi($template->get($param))[1] === '') {
-            $template->forget($param);
-            return;
-        }
-    }
-}    
