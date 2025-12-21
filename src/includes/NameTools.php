@@ -34,6 +34,9 @@ function split_author(string $value): array {
     return explode(',', $value, 2);
 }
 
+/**
+ * @internal
+ */
 function clean_up_full_names(string $value): string {
     $value = mb_trim($value);
     $value = str_replace([",;", " and;", " and ", " ;", "  ", "+", "*"], [";", ";", " and ", ";", " ", "", ""], $value);
