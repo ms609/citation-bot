@@ -892,9 +892,9 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         $url   = $template->get($matches[1]);
     } else {
         $url = $url_sent;
-        $url_type = 'An invalid value';
+        $url_type = '';
     }
-    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, !is_null($url_sent));
+    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type);
 }
 
 function url_simplify(string $url): string {
@@ -1305,7 +1305,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
     }
 }
                                                              
-function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
+function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type): bool {
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
@@ -1317,6 +1317,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         $ch_jstor = bot_curl_init($time, []);
         $ch_pmc = bot_curl_init($time, []);        
     }
+    $url_sent = ($url_type !== '');
 
     $update_url = function (string $url_type, string $url) use ($url_sent, $template) {
         if (!$url_sent) {
