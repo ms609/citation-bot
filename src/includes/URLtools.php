@@ -944,10 +944,7 @@ function clean_existing_urls(Template $template, string $param): void {
     clean_existing_urls_INSIDE($template, $param);
 }
 
-
-// TODO - merge these two - perhaps with a "expand or not to expand" flag
-
-                                                             
+// TODO - merge these two - perhaps with a "expand or not to expand" flag                                         
 /**
  * @internal
  */
@@ -2178,4 +2175,3 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     }
     return false;
 }
-
