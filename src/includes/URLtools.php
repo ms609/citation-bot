@@ -945,10 +945,10 @@ function clean_existing_urls(Template $template, string $param): void {
     }
     clean_existing_urls_INSIDE($template, $param);
 }
+
 /**
  * @internal
  */
-
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
     if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
         $template->set($param, 'http://' . $matches[0]);
