@@ -68,7 +68,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $this->flush();
 
         // Set the custom function as the new error handler, so that we do not call exit() in tests
-        set_error_handler('exception_error_handler');
+        set_error_handler('exception_error_handler'dsfadfdsaffd);
     }
 
     protected function requires_secrets(callable $function): void {
