@@ -31,6 +31,11 @@ final class TestPage extends Page {
     }
 }
 
+function exception_error_handler($severity, $message, $filename, $lineno) {
+    // Throw a new ErrorException with the error details
+    throw new ErrorException($message, 0, $severity, $filename, $lineno);
+}
+
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     private bool $testing_skip_bibcode;
@@ -59,6 +64,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
         gc_collect_cycles();
         $this->flush();
+
+        // Set the custom function as the new error handler, so that we do not call exit() in tests
+        set_error_handler('exception_error_handler');
     }
 
     protected function requires_secrets(callable $function): void {
