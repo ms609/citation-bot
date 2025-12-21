@@ -894,7 +894,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
         $url = $url_sent;
         $url_type = 'An invalid value';
     }
-    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, is_null($url_sent)):
+    return find_indentifiers_in_urls_INSIDE($template, $url, $url_type, is_null($url_sent));
 }
 
 function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, boolean $url_sent): bool {
@@ -2145,7 +2145,7 @@ function not_an_archive_url_clean(Template $template, string $param): void {
         $template->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
         if (preg_match('~^\(PDF\)(.+)$~i', mb_trim($template->get('title')), $match)) {
             $template->set('title', mb_trim($match[1]));
-        }
+        }dfasfdsfsdf
     } elseif (preg_match("~^https?://(?:www\.|)academia\.edu/(?:documents/|)([0-9]+)/*~i", $template->get($param), $matches)) {
         $template->set($param, 'https://www.academia.edu/' . $matches[1]);
     } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $template->get($param), $matches)) {
