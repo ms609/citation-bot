@@ -5,12 +5,11 @@
   colors="true"
   requireCoverageMetadata="false"
   beStrictAboutCoverageMetadata="false"
-  processIsolation="false"
+  processIsolation="true"
   failOnRisky="true"
   failOnWarning="true"
   cacheResult="false"
   failOnDeprecation="true"
-  processIsolation="true"
 >
   <source>
     <include>
