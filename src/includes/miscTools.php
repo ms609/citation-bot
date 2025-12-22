@@ -95,17 +95,20 @@ function prior_parameters(string $parameter, array $list = []): array {
                 ];
             default:
                 // Always add new authors at the very end of existing ones, even ones with bigger numbers.
-                return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
-                    $base . $before,
-                    $base . $before . '-last',
-                    $base . $before . '-first',
-                    $base . '-last' . $before,
-                    $base . '-first' . $before,
-                    $base . $before . '-surname',
-                    $base . $before . '-given',
-                    $base . '-surname' . $before,
-                    $base . '-given' . $before,
-                ]);
+                return array_merge(
+                    FLATTENED_AUTHOR_PARAMETERS,
+                    [
+                        $base . $before,
+                        $base . $before . '-last',
+                        $base . $before . '-first',
+                        $base . '-last' . $before,
+                        $base . '-first' . $before,
+                        $base . $before . '-surname',
+                        $base . $before . '-given',
+                        $base . '-surname' . $before,
+                        $base . '-given' . $before,
+                    ]
+                );
         }
     }
     switch ($parameter) {
