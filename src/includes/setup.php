@@ -170,7 +170,7 @@ function check_blocked(): void {
 
 define("MAX_TRIES", 2);
 require_once __DIR__ . '/constants.php';
-require_once __DIR__ . '/bot_curl.php'; 
+require_once __DIR__ . '/bot_curl.php';
 require_once __DIR__ . '/WikiThings.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/NameTools.php';

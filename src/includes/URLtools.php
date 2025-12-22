@@ -928,7 +928,7 @@ function not_an_archive_url_clean(Template $template, string $param): void {
             return;
         }
     }
-}    
+}
 
 function clean_existing_urls(Template $template, string $param): void {
     if ($template->blank($param)) {
@@ -1304,7 +1304,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         }
     }
 }
-                                                             
+
 function find_indentifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
     static $ch_jstor;
     static $ch_pmc;
@@ -1315,7 +1315,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             $time = 1.0; // @codeCoverageIgnore
         }
         $ch_jstor = bot_curl_init($time, []);
-        $ch_pmc = bot_curl_init($time, []);        
+        $ch_pmc = bot_curl_init($time, []);
     }
 
     $update_url = function (string $url_type, string $url) use ($url_sent, $template) {

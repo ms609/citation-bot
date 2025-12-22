@@ -45,7 +45,6 @@
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter"/>
-        <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
     </rule>
     <file>./src</file>
     <file>./tests</file>

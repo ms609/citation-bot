@@ -142,6 +142,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('19xx'));
     }
+
     public function testTidyDate6(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('2000 1999-1998'));
@@ -149,18 +150,23 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('0011-10-07'));
         $this->assertSame('', tidy_date('4444-10-07'));
     }
+
     public function testTidyDate7(): void {
         $this->assertSame('1999-09-09', tidy_date('1999-09-09T22:10:11+08:00'));
     }
+
     public function testTidyDate7b(): void {
         $this->assertSame('2001-11-11', tidy_date('dafdsafsd    2001-11-11'));
     }
+
     public function testTidyDate8(): void {
         $this->assertSame('2000-03-27', tidy_date('3/27/2000 dafdsafsd dafdsafsd'));
     }
+
     public function testTidyDate8b(): void {
         $this->assertSame('2000-03-27', tidy_date('dafdsafsd3/27/2000'));
     }
+
     public function testTidyDate8c(): void {
         $this->assertSame('', tidy_date('23--'));
     }
@@ -168,13 +174,15 @@ final class TextToolsTest extends testBaseClass {
     public function testTidyDate55(): void {
         $this->assertSame('1800', tidy_date('3 Feb 1800'));
     }
+
     public function testTidyDate56(): void {
         $this->assertSame('542', tidy_date('3 Feb 0542'));
     }
+
     public function testTidyDate57(): void {
         $this->assertSame('', tidy_date('-0003-10-22'));
     }
-    
+
     public function testRemoveComments(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
@@ -535,7 +543,7 @@ final class TextToolsTest extends testBaseClass {
 
     public function testCleanDates4(): void {
         $this->assertSame('8 December 2022', clean_dates('8 December 2022.'));
-    } 
+    }
 
     public function testCleanDates5(): void {
         $this->assertSame('8 December 2022', clean_dates('08 December 2022'));
@@ -550,7 +558,7 @@ final class TextToolsTest extends testBaseClass {
         $out = "ショッXング";
         $this->assertSame($out, mb_substr_replace($in, 'X', 3, 1));
     }
-  
+
     public function testTitles10(): void {
         $junk = "(ab)(cd) (ef)";
         $this->assertSame('(ab)(cd) (Ef)', title_capitalization($junk, true));

@@ -621,21 +621,21 @@ final class zoteroTest extends testBaseClass {
         $zotero_response = json_encode($zotero_data);
         $access_date = 0;
         $text = '{{cite web|id=}}';
-        
+
         $template = $this->make_citation($text);
         $url = 'zaguan.unizar.es';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('X', $template->get2('journal'));
-        
+
         $template = $this->make_citation($text);
         $url = 'bmj.com/cgi/pmidlookup';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Billy', $template->get2('title'));
         $this->assertSame('X', $template->get2('journal'));
-        
+
         $template = $this->make_citation($text);
         $url = 'www.nsw.gov.au/sss';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);

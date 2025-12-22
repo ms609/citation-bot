@@ -329,7 +329,7 @@ function expand_by_adsabs(Template $template): void {
         return; // @codeCoverageIgnoreEnd
     }
 }
- 
+
 /**
  * @param array<string> $ids
  * @param array<Template> &$templates

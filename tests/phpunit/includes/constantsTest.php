@@ -686,5 +686,5 @@ final class constantsTest extends testBaseClass {
         }
         $this->assertNull(null);
     }
-  
+
 }

@@ -926,7 +926,7 @@ function doi_encode (string $doi): string {
     /**
      * @psalm-taint-escape html
      * @psalm-taint-escape has_quotes
-     * @psalm-taint-escape ssrf 
+     * @psalm-taint-escape ssrf
      */
     $doi = urlencode($doi);
     return str_replace('%2F', '/', $doi);

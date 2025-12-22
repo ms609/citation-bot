@@ -1259,7 +1259,7 @@ final class Template
                 mb_stripos($value, 'Theses and Projects') !== false ||
                 mb_stripos($value, 'Electronic Thesis') !== false ||
                 mb_stripos($value, ' and Capstones') !== false ||
-                mb_stripos($value, ' and Problem Reports') !== false || 
+                mb_stripos($value, ' and Problem Reports') !== false ||
                 mb_stripos($value, 'Doctoral ') !== false ||
                 mb_stripos($value, 'IETF Datatracker') !== false ||
                 mb_stripos($value, 'Springerlink') !== false ||

@@ -55,17 +55,17 @@ final class NameToolsTest extends testBaseClass {
         $result=format_multiple_authors($authors);
         $this->assertSame('A.', $result);
     }
-    public function testFormatMultipleAuthors10(): void { 
+    public function testFormatMultipleAuthors10(): void {
         $authors = 'a';
         $result=format_multiple_authors($authors);
         $this->assertSame('A.', $result);
     }
-    public function testFormatMultipleAuthors11(): void { 
+    public function testFormatMultipleAuthors11(): void {
         $authors = ',a';
         $result=format_multiple_authors($authors);
         $this->assertSame('A.', $result);
     }
-    public function testFormatMultipleAuthors12(): void { 
+    public function testFormatMultipleAuthors12(): void {
         $authors = 'a,';
         $result=format_multiple_authors($authors);
         $this->assertSame('A.', $result);
@@ -235,7 +235,7 @@ final class NameToolsTest extends testBaseClass {
         $this->assertSame('', format_forename('-'));
         $this->assertSame('', format_forename(''));
         $this->assertSame('', format_initials('    '));
-        $this->assertFalse(is_initials('    ')); 
+        $this->assertFalse(is_initials('    '));
     }
 
     public function testMiscNameTests2(): void {

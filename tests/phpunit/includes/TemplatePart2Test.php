@@ -687,7 +687,7 @@ final class TemplatePart2Test extends testBaseClass {
         $template->tidy_parameter('publisher');
         $this->assertSame('Google Inc.', $template->get2('publisher'));
     }
-    
+
     public function testTidy75b(): void {
         $text = "{{cite web|url=support.google.com|publisher=the Google hive mind}}";
         $template = $this->make_citation($text);
@@ -803,7 +803,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
-    
+
     public function testIncomplete1b(): void {
         $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|issue=hh|volume=rrfff|title=xxx}}";
         $template = $this->make_citation($text);
@@ -811,28 +811,28 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertTrue($template->profoundly_incomplete('http://a_perfectly_acceptable_website/pqd1234'));
         $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
-    
+
     public function testIncomplete2(): void {
         $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x|author1=Yes}}"; // Non-date website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
     }
-    
+
     public function testIncomplete3(): void {
         $text = "{{cite web|url=http://foxnews.com/x|website=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
     }
-    
+
     public function testIncomplete4(): void {
         $text = "{{cite web|url=http://foxnews.com/x|contribution=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
     }
-    
+
     public function testIncomplete5(): void {
         $text = "{{cite web|url=http://foxnews.com/x|encyclopedia=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
         $template = $this->make_citation($text);
@@ -2935,7 +2935,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
         $this->assertNull($template->get2('publisher'));
     }
-    
+
     /** Now with caps in wikiname */
     public function testOxfordTemplate2(): void {
         $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
@@ -3797,5 +3797,5 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Kornbluh', $prepared->get2('script-title'));
         $this->assertNull($prepared->get2('title'));
     }
-    
+
 }

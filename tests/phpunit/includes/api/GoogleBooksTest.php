@@ -37,7 +37,7 @@ final class GoogleBooksTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
- 
+
     public function testGoogleBookNormalize3(): void {
         $removed_redundant = 0;
         $removed_parts = '';
@@ -48,7 +48,7 @@ final class GoogleBooksTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
- 
+
     public function testGoogleBookNormalize4(): void {
         $removed_redundant = 0;
         $removed_parts = '';

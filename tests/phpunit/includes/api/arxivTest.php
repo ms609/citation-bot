@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class arxivTest extends testBaseClass {
-    
+
     public function testArxivDateUpgradeSeesDate1(): void {
         $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
         $expanded = $this->process_citation($text);

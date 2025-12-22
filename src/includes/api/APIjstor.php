@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * @param array<string> $_ids
- * @param array<Template> &$templates 
+ * @param array<Template> &$templates
  */
 function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to save memory
     foreach ($templates as $template) {

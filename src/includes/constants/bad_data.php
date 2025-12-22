@@ -109,7 +109,7 @@ const BAD_AUTHORS = [
     'rundfunk',
     'super user',
     'the editor',
-    'tfpc content', 
+    'tfpc content',
     'top gear',
     'user',
     'united states',
