@@ -52,22 +52,20 @@ function string_is_book_series(string $str): bool {
     return in_array($simple, JOURNAL_IS_BOOK_SERIES, true);
 }
 
-/*
- * This code is recursive as is goes through a long list of parameters to find its place in the list.
- * TODO: think about better ways to do this.
- */
-
 /**
- * @param string $par
+ * This code is recursive as is goes through a long list of parameters to find its place in the list.
+ *
+ * @todo think about better ways to do this
+ * @param string $parameter
  * @param array<string> $list
- * @return array<string>
+ * @return array<string> A big list of parameters. This can return over a thousand parameters.
  */
-function prior_parameters(string $par, array $list = []): array {
-    if ($par === '') {
-        $par = $list['0'];
+function prior_parameters(string $parameter, array $list = []): array {
+    if ($parameter === '') {
+        $parameter = $list['0'];
     }
-    array_unshift($list, $par);
-    if (preg_match('~(\D+)(\d+)~', $par, $match) && mb_stripos($par, 's2cid') === false) {
+    array_unshift($list, $parameter);
+    if (preg_match('~(\D+)(\d+)~', $parameter, $match) && mb_stripos($parameter, 's2cid') === false) {
         $before = (string) ((int) $match[2] - 1);
         $number = $match[2];
         $base = $match[1];
@@ -80,77 +78,77 @@ function prior_parameters(string $par, array $list = []): array {
             default:
                 // Always add new authors at the very end of existing ones, even ones with bigger numbers.
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
-                                   $base . $before,
-                                   $base . $before . '-last', $base . $before . '-first',
-                                   $base . '-last' . $before, $base . '-first' . $before,
-                                   $base . $before . '-surname', $base . $before . '-given',
-                                   $base . '-surname' . $before, $base . '-given' . $before,
-                                   ]);
+                    $base . $before,
+                    $base . $before . '-last', $base . $before . '-first',
+                    $base . '-last' . $before, $base . '-first' . $before,
+                    $base . $before . '-surname', $base . $before . '-given',
+                    $base . '-surname' . $before, $base . '-given' . $before,
+                ]);
         }
     }
-    switch ($par) {
-        case in_array($par, GROUP1, true):
+    switch ($parameter) {
+        case in_array($parameter, GROUP1, true):
             return $list;
-        case in_array($par, GROUP2, true):
+        case in_array($parameter, GROUP2, true):
             return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-        case in_array($par, GROUP3, true):
+        case in_array($parameter, GROUP3, true):
             return prior_parameters('', array_merge(GROUP2, $list));
-        case in_array($par, GROUP4, true):
+        case in_array($parameter, GROUP4, true):
             return prior_parameters('', array_merge(GROUP3, $list));
-        case in_array($par, GROUP5):
+        case in_array($parameter, GROUP5):
             return prior_parameters('', array_merge(GROUP4, $list));
-        case in_array($par, GROUP6):
+        case in_array($parameter, GROUP6):
             return prior_parameters('', array_merge(GROUP5, $list));
-        case in_array($par, GROUP7):
+        case in_array($parameter, GROUP7):
             return prior_parameters('', array_merge(GROUP6, $list));
-        case in_array($par, GROUP8):
+        case in_array($parameter, GROUP8):
             return prior_parameters('', array_merge(GROUP7, $list));
-        case in_array($par, GROUP9):
+        case in_array($parameter, GROUP9):
             return prior_parameters('', array_merge(GROUP8, $list));
-        case in_array($par, GROUP10):
+        case in_array($parameter, GROUP10):
             return prior_parameters('', array_merge(GROUP9, $list));
-        case in_array($par, GROUP11):
+        case in_array($parameter, GROUP11):
             return prior_parameters('', array_merge(GROUP10, $list));
-        case in_array($par, GROUP12):
+        case in_array($parameter, GROUP12):
             return prior_parameters('', array_merge(GROUP11, $list));
-        case in_array($par, GROUP13):
+        case in_array($parameter, GROUP13):
             return prior_parameters('', array_merge(GROUP12, $list));
-        case in_array($par, GROUP14):
+        case in_array($parameter, GROUP14):
             return prior_parameters('', array_merge(GROUP13, $list));
-        case in_array($par, GROUP15):
+        case in_array($parameter, GROUP15):
             return prior_parameters('', array_merge(GROUP14, $list));
-        case in_array($par, GROUP16):
+        case in_array($parameter, GROUP16):
             return prior_parameters('', array_merge(GROUP15, $list));
-        case in_array($par, GROUP17):
+        case in_array($parameter, GROUP17):
             return prior_parameters('', array_merge(GROUP16, $list));
-        case in_array($par, GROUP18):
+        case in_array($parameter, GROUP18):
             return prior_parameters('', array_merge(GROUP17, $list));
-        case in_array($par, GROUP19):
+        case in_array($parameter, GROUP19):
             return prior_parameters('', array_merge(GROUP18, $list));
-        case in_array($par, GROUP20):
+        case in_array($parameter, GROUP20):
             return prior_parameters('', array_merge(GROUP19, $list));
-        case in_array($par, GROUP21):
+        case in_array($parameter, GROUP21):
             return prior_parameters('', array_merge(GROUP20, $list));
-        case in_array($par, GROUP22):
+        case in_array($parameter, GROUP22):
             return prior_parameters('', array_merge(GROUP21, $list));
-        case in_array($par, GROUP23):
+        case in_array($parameter, GROUP23):
             return prior_parameters('', array_merge(GROUP22, $list));
-        case in_array($par, GROUP24):
+        case in_array($parameter, GROUP24):
             return prior_parameters('', array_merge(GROUP23, $list));
-        case in_array($par, GROUP25):
+        case in_array($parameter, GROUP25):
             return prior_parameters('', array_merge(GROUP24, $list));
-        case in_array($par, GROUP26):
+        case in_array($parameter, GROUP26):
             return prior_parameters('', array_merge(GROUP25, $list));
-        case in_array($par, GROUP27):
+        case in_array($parameter, GROUP27):
             return prior_parameters('', array_merge(GROUP26, $list));
-        case in_array($par, GROUP28):
+        case in_array($parameter, GROUP28):
             return prior_parameters('', array_merge(GROUP27, $list));
-        case in_array($par, GROUP29):
+        case in_array($parameter, GROUP29):
             return prior_parameters('', array_merge(GROUP28, $list));
-        case in_array($par, GROUP30):
+        case in_array($parameter, GROUP30):
             return prior_parameters('', array_merge(GROUP29, $list));
         default:
-            bot_debug_log("prior_parameters missed: " . $par);
+            bot_debug_log("prior_parameters missed: " . $parameter);
             return $list;
     }
 }
