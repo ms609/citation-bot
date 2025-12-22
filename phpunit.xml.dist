@@ -5,7 +5,7 @@
   colors="true"
   requireCoverageMetadata="false"
   beStrictAboutCoverageMetadata="false"
-  processIsolation="true"
+  processIsolation="false"
   failOnRisky="true"
   failOnWarning="true"
   cacheResult="false"
