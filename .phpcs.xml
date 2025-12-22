@@ -25,9 +25,7 @@
         <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
-        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
-        <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>

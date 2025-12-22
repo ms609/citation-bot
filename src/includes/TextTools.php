@@ -683,14 +683,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     return $new_case;
 }
 
-function mb_strrev(string $string, string $encode = ''): string
-{
+function mb_strrev(string $string, string $encode = ''): string {
     $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
     return implode('', array_reverse($chars));
 }
 
-function mb_ucwords(string $string): string
-{
+function mb_ucwords(string $string): string {
     if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
         $output = '';
         while ($match = mb_ereg_search_regs()) {

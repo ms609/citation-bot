@@ -221,8 +221,7 @@ function throttle(): void {
     $last_write_time = time();
 }
 
-function should_url2chapter(Template $template, bool $force): bool
-{
+function should_url2chapter(Template $template, bool $force): bool {
     if ($template->has('chapterurl')) {
         return false;
     }
@@ -897,8 +896,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     }
 }
 
-function clean_cite_odnb(Template $template): void
-{
+function clean_cite_odnb(Template $template): void {
     if ($template->has('url')) {
         while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $template->get('url'), $matches)) {
             $template->set('url', $matches[1]);

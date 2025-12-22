@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-function get_unpaywall_url(Template $template, string $doi): string
- {
+function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
         $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
@@ -217,8 +216,7 @@ function get_unpaywall_url(Template $template, string $doi): string
     return 'nothing';
 }
 
-function get_open_access_url(Template $template): void
-{
+function get_open_access_url(Template $template): void {
     if (!$template->blank(DOI_BROKEN_ALIASES)) {
         return;
     }

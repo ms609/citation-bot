@@ -192,8 +192,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     return $xml;
 }
 
-function find_pmid(Template $template): void
- {
+function find_pmid(Template $template): void {
     set_time_limit(120);
     if (!$template->blank('pmid')) {
         return;
@@ -233,8 +232,7 @@ function find_pmid(Template $template): void
 }
 
 /** @return array{0: string, 1: int, 2: array<string>} */
-function query_pubmed(Template $template): array
- {
+function query_pubmed(Template $template): array {
     /*
     * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
     * Returns an array:
@@ -279,8 +277,7 @@ function query_pubmed(Template $template): array
  * @param array<string> $terms
  * @return array{0: string, 1: int, 2: array<string>}
  */
-function do_pumbed_query(Template $template, array $terms): array
-{
+function do_pumbed_query(Template $template, array $terms): array {
     set_time_limit(120);
     /* do_query
     *

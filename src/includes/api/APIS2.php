@@ -92,8 +92,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     return false;
 }
 
-function get_doi_from_semanticscholar(Template $template): void
- {
+function get_doi_from_semanticscholar(Template $template): void {
     set_time_limit(120);
     if ($template->has('doi')) {
         return;
@@ -113,8 +112,7 @@ function get_doi_from_semanticscholar(Template $template): void
     return;
 }
 
-function get_semanticscholar_url(Template $template, string $doi): void
- {
+function get_semanticscholar_url(Template $template, string $doi): void {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(0.5, HEADER_S2);
