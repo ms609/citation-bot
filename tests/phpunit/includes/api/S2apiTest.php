@@ -22,7 +22,7 @@ final class S2apiTest extends testBaseClass {
         $this->assertFalse(get_semanticscholar_license('52813129'));
     }
 
-    public function testS2CIDlicenseTrue2(): void {      
+    public function testS2CIDlicenseTrue2(): void {
         sleep(4);
         $this->assertTrue(get_semanticscholar_license('73436496'));
     }
