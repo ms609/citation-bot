@@ -109,7 +109,7 @@ function prior_parameters(string $par, array $list = []): array {
             return prior_parameters('', array_merge(GROUP8, $list));
         case in_array($par, GROUP10):
             return prior_parameters('', array_merge(GROUP9, $list));
-        case in_array($par, GROUP11);
+        case in_array($par, GROUP11):
             return prior_parameters('', array_merge(GROUP10, $list));
         case in_array($par, GROUP12):
             return prior_parameters('', array_merge(GROUP11, $list));
