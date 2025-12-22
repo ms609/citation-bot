@@ -150,9 +150,6 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     return;
 }
 
-
-
-
 function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
     $url =    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
     $request = NLM_LOGIN;
@@ -170,7 +167,6 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
     }
     return xml_post($url, $request);
 }
-
 
 /**
  * Must use post in order to get DOIs with <, >, [, and ] in them and other problems

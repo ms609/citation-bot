@@ -1260,7 +1260,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Y', $template->get2('chapter-url'));
     }
 
-
     public function testModificationsOdd(): void {
         $text = "{{cite web}}"; // param will be null to start
         $template = $this->make_citation($text);
@@ -1623,7 +1622,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[Los Angeles Times]]', $template->get2('publisher'));
     }
 
-
     public function testTidyLAandWorks1(): void {
         $text = "{{cite web|publisher=Los Angeles Times|website=los angeles times and stuff}}";
         $template = $this->make_citation($text);
@@ -1686,7 +1684,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
         $this->assertSame('[[The Economist]]', $template->get2('work'));
     }
-
 
     public function testTidySD1(): void {
         $text = "{{cite web|publisher=the san diego union tribune|work=This is a work that stays}}";
@@ -2094,7 +2091,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('I exist and submit', $template->get2('work'));
         $this->assertNull($template->get2('newspaper'));
     }
-
 
     public function testAddBogusBibcode(): void {
         $text = "{{cite web|bibcode=Exists}}";

@@ -84,13 +84,10 @@ function query_bibcode_api(array $bibcodes, array &$templates): void {  // Point
     adsabs_api($bibcodes, $templates, 'bibcode');
 }
 
-
 function is_a_book_bibcode(string $id): bool {
     $check = str_replace(['book', 'conf', 'PhD'], '', $id);
     return ($check !== $id);
 }
-
-
 
 function expand_by_adsabs(Template $template): void {
     static $needs_told = true;
@@ -453,8 +450,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     return;
 }
 
-
-
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
@@ -478,8 +473,6 @@ function query_adsabs(string $options): object {
     ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
-
-
 
 /** @param array<int|string|bool|array<string>> $curl_opts */
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): object {
@@ -725,8 +718,6 @@ function expand_book_adsabs(Template $template, object $record): void {
     }
     return;
 }
-
-
 
 function looksLikeBookReview(Template $template, object $record): bool
  {

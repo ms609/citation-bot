@@ -68,7 +68,6 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |via=The Dog Farm}}', $template->parsed_text());
     }
 
-
     public function testAmazonExpansion1(): void {
         $text = "{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
         $expanded = $this->prepare_citation($text);
@@ -310,9 +309,6 @@ final class urlToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-
-
-    
     public function testNormalizeOxford(): void {
         $text = "{{cite web|url=http://latinamericanhistory.oxfordre.com/XYZ}}";
         $template = $this->make_citation($text);
@@ -726,7 +722,6 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
     }
 
-
     public function testConversionOfURL6a(): void {
         $text = "{{cite web|url=http://search.proquest.com/docview/12341234|title=X}}";
         $template = $this->make_citation($text);
@@ -774,7 +769,6 @@ final class urlToolsTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-
     public function testConversionOfURL10B(): void {
         $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
@@ -816,7 +810,6 @@ final class urlToolsTest extends testBaseClass {
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
-
 
     public function testConversionOfURL2(): void {
         $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234}}";

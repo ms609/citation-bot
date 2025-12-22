@@ -456,7 +456,6 @@ function extract_doi(string $text): array {
     return ['', ''];
 }
 
-
 function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unless on good list
     if ($url === '') {
         return true;
@@ -496,7 +495,6 @@ function is_hdl_works(string $hdl): string|null|false {
     }
     return get_loc_from_hdl_header($headers_test);
 }
-
 
 function conference_doi(string $doi): bool {
     if (mb_stripos($doi, '10.1007/978-3-662-44777') === 0) {
@@ -764,7 +762,6 @@ function get_possible_dois(string $doi): array {
     }
     return $trial;
 }
-
 
 function check_doi_for_jstor(string $doi, Template $template): void {
     static $ch = null;

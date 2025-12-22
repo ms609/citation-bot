@@ -217,7 +217,6 @@ function get_unpaywall_url(Template $template, string $doi): string
     return 'nothing';
 }
 
-
 function get_open_access_url(Template $template): void
 {
     if (!$template->blank(DOI_BROKEN_ALIASES)) {

@@ -72,7 +72,6 @@ final class GoogleBooksTest extends testBaseClass {
         $this->assertSame($url_out, $url_in);
     }
 
-
     public function testGoogleBooksExpansion(): void {
         $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
         $expanded = $this->process_citation($text);
@@ -158,7 +157,6 @@ final class GoogleBooksTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('February 1935', $expanded->get2('date'));
     }
-
 
     public function testGoogleBooksCleanup1(): void {
         $text = "{{cite books|url=https://books.google.com/booksid=12345}}";

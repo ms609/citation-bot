@@ -93,8 +93,6 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     return false;
 }
 
-
-
 function get_doi_from_semanticscholar(Template $template): void
  {
     set_time_limit(120);
@@ -115,9 +113,6 @@ function get_doi_from_semanticscholar(Template $template): void
     }
     return;
 }
-
-
-
 
 function get_semanticscholar_url(Template $template, string $doi): void
  {

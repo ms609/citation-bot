@@ -159,7 +159,6 @@ final class doiTest extends testBaseClass {
         $this->assertSame('Lisa Anne', $template->get2('first1'));
     }
 
-
     public function testCrossRefAddSeries1(): void {
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
         $template = $this->process_citation($text);
@@ -177,7 +176,6 @@ final class doiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame("Kopera", $template->get2('editor-last1'));
     }
-
 
     public function testBlankTypeFromDX1(): void {
         $text = "{{cite book| doi=10.14989/doctor.k19250 }}";

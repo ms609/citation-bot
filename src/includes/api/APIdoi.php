@@ -481,7 +481,6 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     return;
 }
 
-
 // TODO: look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
 // This API can get article numbers in addittion to page numbers
 // Will need to use exist DX code, and add all the extra checks cross ref code has
@@ -516,9 +515,6 @@ function query_crossref_newapi(string $doi): object {
 
     return $result;
 }
-
-
-
 
 function get_doi_from_crossref(Template $template): void {
     static $ch = null;

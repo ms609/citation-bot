@@ -155,7 +155,6 @@ function prior_parameters(string $par, array $list = []): array {
     }
 }
 
-
 /** @return array<string> */
 function equivalent_parameters(string $par): array {
     switch ($par) {
@@ -325,8 +324,6 @@ function should_url2chapter(Template $template, bool $force): bool
     }
     return false;
 }
-
-
 
 function handleConferencePretendingToBeAJournal(Template $template, string $rawtext): void {
     $the_chapter = '';

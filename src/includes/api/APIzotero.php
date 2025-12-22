@@ -1059,5 +1059,4 @@ final class Zotero {
         return;
     }
 
-
 } // End of CLASS

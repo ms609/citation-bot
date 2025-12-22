@@ -98,7 +98,6 @@ final class doiToolsTest extends testBaseClass {
         $this->assertFalse(conference_doi('10.1007/978-3-662-44777_ch3'));
     }
 
-  
     public function testDoubleHopDOI(): void { // Just runs over the code and basically does nothing
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertTrue(doi_works('10.25300/MISQ/2014/38.2.08'));
@@ -231,7 +230,6 @@ final class doiToolsTest extends testBaseClass {
         // DO's, not DOIs
         $this->assertFalse(doi_works('10.1002/was.00020423'));
     }
-
 
     public function testFixLotsOfDOIs1(): void {
         $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463}}';
@@ -449,7 +447,6 @@ final class doiToolsTest extends testBaseClass {
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     }
-
 
     public function testBrokenDoiDetection1(): void {
         $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';

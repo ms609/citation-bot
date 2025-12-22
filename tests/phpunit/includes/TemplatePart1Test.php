@@ -290,7 +290,6 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('10.1017/s0022381613000030', $prepared->get2('jstor'));
     }
 
-
     public function testDropWeirdJunk(): void {
         $text = "{{cite web |title=Left Handed Incandescent Light Bulbs?|last=|first=|date=24 March 2011 |publisher=eLightBulbs |last1=Eisenbraun|first1=Blair|accessdate=27 July 2016}}";
         $expanded = $this->process_citation($text);
@@ -491,7 +490,6 @@ final class TemplatePart1Test extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('American Thoracic Society', $expanded->get2('author1'));
     }
-
 
     public function testRemoveASIN1(): void {
         $text = "{{Cite book | asin=B0002TV0K8 |isbn=}}";
@@ -1318,7 +1316,6 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('publisher'));
     }
 
-
     public function testLongAuthorLists(): void {
         $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf|doi=<!--Do not add-->}}';
         $expanded = $this->process_citation($text);
@@ -1487,7 +1484,6 @@ EP - 999 }}';
         $this->assertSame('58', $prepared->get2('volume'));
         $this->assertSame('332–373', $prepared->get2('pages'));
 
-
         $prepared = $this->process_citation($thesis);
         $this->assertSame('Cantucci, Elena', $prepared->first_author());
         $this->assertSame('Permian strata in South-East Asia', $prepared->get2('title'));
@@ -1646,7 +1642,6 @@ EP - 999 }}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get2('title'));
     }
-
 
     public function testZooKeys(): void {
         $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
@@ -2719,7 +2714,6 @@ EP - 999 }}';
         $this->assertNull($template->get2('first'));
         $this->assertNotNull($template->get2('title'));
     }
-
 
     public function testDoiHasNoLastFirstSplit(): void {
         $text = "{{cite journal|doi=10.11468/seikatsueisei1925.16.2_123}}";

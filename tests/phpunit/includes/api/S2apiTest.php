@@ -24,7 +24,6 @@ final class S2apiTest extends testBaseClass {
         $this->assertTrue(get_semanticscholar_license('73436496'));
     }
 
-    
     public function testSemanticscholar2(): void {
         sleep(2);
         $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
@@ -86,6 +85,5 @@ final class S2apiTest extends testBaseClass {
         $this->assertSame('1090322', $template->get2('s2cid'));
         $this->assertNull($template->get2('url'));
     }
-
 
 }

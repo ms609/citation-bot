@@ -531,7 +531,6 @@ final class constantsTest extends testBaseClass {
         $this->assertTrue($good);
     }
 
-
     public function testItalicsEscaped1(): void {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);

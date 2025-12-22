@@ -8,6 +8,7 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
@@ -26,7 +27,6 @@
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
-        <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
@@ -36,7 +36,6 @@
         <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
         <exclude name="MediaWiki.Usage.IsNull.IsNull"/>
         <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
-        <exclude name="MediaWiki.WhiteSpace.MultipleEmptyLines.MultipleEmptyLines"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>

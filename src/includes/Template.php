@@ -2249,7 +2249,6 @@ final class Template
         }
     }
 
-
     public function expand_by_pubmed(bool $force = false): void
     {
         if (!$force && !$this->incomplete()) {
