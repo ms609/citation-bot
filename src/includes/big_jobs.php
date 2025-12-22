@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // Paranoid - trying to be atomic without non-portable locks etc.
 
-// "hard" as in "try hard" and ignore errors
+/** "hard" as in "try hard" and ignore errors */
 function hard_touch(string $file): void {
     touch($file);
     @fclose(@fopen($file, 'a')); // Do something else to file

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../Template.php'; // @codeCoverageIgnore
 
-// TODO: find a good API to really use these - worldcat used to have one, but they took that away.
-
+/** @todo find a good API to really use these - worldcat used to have one, but they took that away. */
 function use_issn(Template $template): void {
     if ($template->blank('issn')) {
         return;

@@ -17,7 +17,6 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull(null);
     }
 
-
     public function testCovertUrl2Chapter1(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/}}';
         $expanded = $this->make_citation($text);
@@ -68,8 +67,6 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNull($expanded->get2('url'));
     }
-
-
 
     public function testCiteODNB1(): void {
         $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876;jsession=XYZ|doi=10.1093/ref:odnb/wrong_stuff|id=74876}}';

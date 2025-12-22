@@ -76,7 +76,7 @@ function prior_parameters(string $par, array $list = []): array {
             case in_array($base, GROUP_F1, true):
                 return ['last' . $number, 'surname' . $number, 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
             case in_array($base, GROUP_L1, true):
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before . '-given', 'contributor' . $before . '-first'];
             default:
                 // Always add new authors at the very end of existing ones, even ones with bigger numbers.
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
@@ -109,7 +109,7 @@ function prior_parameters(string $par, array $list = []): array {
             return prior_parameters('', array_merge(GROUP8, $list));
         case in_array($par, GROUP10):
             return prior_parameters('', array_merge(GROUP9, $list));
-        case in_array($par, GROUP11);
+        case in_array($par, GROUP11):
             return prior_parameters('', array_merge(GROUP10, $list));
         case in_array($par, GROUP12):
             return prior_parameters('', array_merge(GROUP11, $list));
@@ -155,7 +155,6 @@ function prior_parameters(string $par, array $list = []): array {
     }
 }
 
-
 /** @return array<string> */
 function equivalent_parameters(string $par): array {
     switch ($par) {
@@ -198,7 +197,7 @@ function throttle(): void {
                 AdsAbsControl::free_memory();
                 $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
                 $mem_used0 = (string) $mem_used;
-            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
+            bot_debug_log("Cleared memory: " . $mem_used2 . ' : ' . $mem_used1 . ' : ' . $mem_used0);
         }                                                                                                                // @codeCoverageIgnoreEnd
     } else {
         bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
@@ -222,8 +221,7 @@ function throttle(): void {
     $last_write_time = time();
 }
 
-function should_url2chapter(Template $template, bool $force): bool
-{
+function should_url2chapter(Template $template, bool $force): bool {
     if ($template->has('chapterurl')) {
         return false;
     }
@@ -325,8 +323,6 @@ function should_url2chapter(Template $template, bool $force): bool
     }
     return false;
 }
-
-
 
 function handleConferencePretendingToBeAJournal(Template $template, string $rawtext): void {
     $the_chapter = '';
@@ -900,8 +896,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
     }
 }
 
-function clean_cite_odnb(Template $template): void
-{
+function clean_cite_odnb(Template $template): void {
     if ($template->has('url')) {
         while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $template->get('url'), $matches)) {
             $template->set('url', $matches[1]);

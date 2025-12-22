@@ -233,97 +233,100 @@ class Page {
             return false;
         }
         $citation_count = mb_substr_count($this->text, '{{cite ') +
-                                            mb_substr_count($this->text, '{{Cite ') +
-                                            mb_substr_count($this->text, '{{citation') +
-                                            mb_substr_count($this->text, '{{Citation');
+            mb_substr_count($this->text, '{{Cite ') +
+            mb_substr_count($this->text, '{{citation') +
+            mb_substr_count($this->text, '{{Citation');
         $ref_count = mb_substr_count($this->text, '<ref') + mb_substr_count($this->text, '<Ref');
         // PLAIN URLS Converted to Templates
         // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
         $this->text = preg_replace_callback(
-                                            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-                                            },
-                                            $this->text
-                                            );
+            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string {
+                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            },
+            $this->text
+        );
         // Ones like <ref>http://www.../....{{Bare URL inline|date=April 2016}}</ref>
         $this->text = preg_replace_callback(
-                                            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-                                            },
-                                            $this->text
-                                            );
+            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string {
+                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            },
+            $this->text
+        );
         // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>     Also, allow a trailing period, space+period, or comma
         $this->text = preg_replace_callback(
-                                            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string {
-                                                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4];
-                                            },
-                                            $this->text
-                                            );
+            "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string {
+                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            },
+            $this->text
+        );
         // Ones like <ref>[http://www... http://www...]</ref>
         $this->text = preg_replace_callback(
-                                            "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string {
-                                                if ($matches[4] === $matches[6]) {
-                                                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8];
-                                                }
-                                                return $matches[0];
-                                            },
-                                            $this->text
-                                            );
+            "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string {
+                if ($matches[4] === $matches[6]) {
+                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[8];
+                }
+                return $matches[0];
+            },
+            $this->text
+        );
         // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
-        $this->text = preg_replace_callback(        // like <ref>{{doi|10.1244/abc}}</ref>
-                                            "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string  {
-                                                if (mb_stripos($matches[2], 'arxiv')) {
-                                                    $type = 'arxiv';
-                                                } elseif (mb_stripos($matches[2], 'isbn') || mb_stripos($matches[2], 'oclc')) {
-                                                    $type = 'book';
-                                                } else {
-                                                    $type = 'journal';
-                                                }
-                                                return $matches[1] . '{{cite ' . $type . ' | id=' . $matches[2] . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3];
-                                            },
-                                            $this->text
-                                            );
+        $this->text = preg_replace_callback(
+            // like <ref>{{doi|10.1244/abc}}</ref>
+            "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string  {
+                if (mb_stripos($matches[2], 'arxiv')) {
+                    $type = 'arxiv';
+                } elseif (mb_stripos($matches[2], 'isbn') || mb_stripos($matches[2], 'oclc')) {
+                    $type = 'book';
+                } else {
+                    $type = 'journal';
+                }
+                return $matches[1] . '{{cite ' . $type . ' | id=' . $matches[2] . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
+            },
+            $this->text
+        );
         // PLAIN DOIS Converted to templates
-        $this->text = preg_replace_callback(        // like <ref>10.1244/abc</ref>
-                                            "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                                            static function (array $matches): string {
-                                                return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3];
-                                            },
-                                            $this->text
-                                            );
+        $this->text = preg_replace_callback(
+            // like <ref>10.1244/abc</ref>
+            "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+            static function (array $matches): string {
+                return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
+            },
+            $this->text
+        );
         if (
             ($ref_count < 2) ||
             (($citation_count/$ref_count) >= 0.5)
         ) {
-            $this->text = preg_replace_callback( // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
-                                                 // also without titles on the urls
-                            "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                            static function (array $matches): string  {
-                                $UPPER = mb_strtoupper($matches[0]);
-                                if (mb_substr_count($UPPER, 'HTTP') !== 1 || // more than one url
-                                        mb_substr_count($UPPER, '10.') > 3 || // More than one doi probably
-                                        mb_substr_count($UPPER, '*') !== 0 || // A list!!!
-                                        mb_substr_count($UPPER, "\n") > 8 || // who knows
-                                        mb_substr_count($UPPER, 'SEE ALSO') !== 0 ||
-                                        mb_substr_count($UPPER, ', SEE ') !== 0 ||
-                                        mb_substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
-                                        mb_substr_count($UPPER, '{{CITE') !== 0 ||
-                                        mb_substr_count($UPPER, '{{CITATION') !== 0 ||
-                                        mb_substr_count($UPPER, '{{ CITE') !== 0 ||
-                                        mb_substr_count($UPPER, '{{ CITATION') !== 0 ||
-                                        mb_strpos($matches[1], 'note') !== false
-                                   ) {
-                                    return $matches[0];
-                                }
-                                return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6];
-                            },
-                            $this->text
-                            );
+            $this->text = preg_replace_callback(
+                // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
+                // also without titles on the urls
+                "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                static function (array $matches): string  {
+                    $UPPER = mb_strtoupper($matches[0]);
+                    if (mb_substr_count($UPPER, 'HTTP') !== 1 || // more than one url
+                            mb_substr_count($UPPER, '10.') > 3 || // More than one doi probably
+                            mb_substr_count($UPPER, '*') !== 0 || // A list!!!
+                            mb_substr_count($UPPER, "\n") > 8 || // who knows
+                            mb_substr_count($UPPER, 'SEE ALSO') !== 0 ||
+                            mb_substr_count($UPPER, ', SEE ') !== 0 ||
+                            mb_substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0 ||
+                            mb_substr_count($UPPER, '{{CITE') !== 0 ||
+                            mb_substr_count($UPPER, '{{CITATION') !== 0 ||
+                            mb_substr_count($UPPER, '{{ CITE') !== 0 ||
+                            mb_substr_count($UPPER, '{{ CITATION') !== 0 ||
+                            mb_strpos($matches[1], 'note') !== false
+                        ) {
+                        return $matches[0];
+                    }
+                    return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6];
+                },
+                $this->text
+            );
         }
         // TEMPLATES
         set_time_limit(120);
@@ -847,7 +850,7 @@ class Page {
                 $objects[] = $obj;
             }
         }
-        /** @phpstan-ignore function.alreadyNarrowedType */ 
+        /** @phpstan-ignore function.alreadyNarrowedType */
         if ($preg_ok === false && isset($regexp) && is_string($regexp)) {
             // @codeCoverageIgnoreStart
             $regexp = str_replace('~su', '~s', $regexp);
@@ -941,10 +944,10 @@ class Page {
     private function allow_bots(): bool {
         // see {{bots}} and {{nobots}}
         $bot_username = 'Citation[ _]bot';
-        if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
+        if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?' . $bot_username . '.*?)\}\}~iS', $this->text)) {
             return false;
         }
-        if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
+        if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?' . $bot_username . '.*?)\}\}~iS', $this->text)) {
             return true;
         }
         if (preg_match('~\{\{(bots\|allow=.*?)\}\}~iS', $this->text)) {

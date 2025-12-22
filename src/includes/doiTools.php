@@ -50,6 +50,8 @@ final class HandleCache {
 }
 
 // ============================================= DOI functions ======================================
+
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
     $doi = mb_trim($doi);
     if (isset(HandleCache::$cache_active[$doi])) {
@@ -129,7 +131,7 @@ function is_doi_active(string $doi): ?bool {
         ]);
     }
     $doi = mb_trim($doi);
-    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME; // do not encode crossref email
     curl_setopt($ch, CURLOPT_URL, $url);
     $return = bot_curl_exec($ch);
     $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE); // Byte count, not characters
@@ -456,7 +458,6 @@ function extract_doi(string $text): array {
     return ['', ''];
 }
 
-
 function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unless on good list
     if ($url === '') {
         return true;
@@ -496,7 +497,6 @@ function is_hdl_works(string $hdl): string|null|false {
     }
     return get_loc_from_hdl_header($headers_test);
 }
-
 
 function conference_doi(string $doi): bool {
     if (mb_stripos($doi, '10.1007/978-3-662-44777') === 0) {
@@ -705,9 +705,9 @@ function get_possible_dois(string $doi): array {
         }
         if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
             if ($matches[1] === $matches[2]) {
-                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
                 $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
-                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.'  . $matches[3];
+                $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.' . $matches[3];
                 $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.0' . $matches[3];
             }
         }
@@ -764,7 +764,6 @@ function get_possible_dois(string $doi): array {
     }
     return $trial;
 }
-
 
 function check_doi_for_jstor(string $doi, Template $template): void {
     static $ch = null;

@@ -142,7 +142,7 @@ final class ParameterTest extends testBaseClass {
         $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #', $parameter->val);
         $this->assertSame('', $parameter->post);
         $this->assertSame($text, $parameter->parsed_text());
-    }  
+    }
 
     public function testHasUnreplacedCommentInValue(): void {
         $text = "archivedate= 9 August 2006 <!--DASHBot-->";

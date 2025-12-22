@@ -50,8 +50,8 @@ const COMMONUSERNAME   = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
 
-const BOT_CROSSREF_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:".CROSSREFUSERNAME."; +https://citations.toolforge.org/)";
-const BOT_USER_AGENT          = "Mozilla/5.0 (compatible; Citation_bot; mailto:".COMMONUSERNAME  ."; +https://citations.toolforge.org/)";
+const BOT_CROSSREF_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . CROSSREFUSERNAME . "; +https://citations.toolforge.org/)";
+const BOT_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . COMMONUSERNAME . "; +https://citations.toolforge.org/)";
 
 const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;

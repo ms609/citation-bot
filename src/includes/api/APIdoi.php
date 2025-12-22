@@ -89,11 +89,11 @@ function expand_by_doi(Template $template, bool $force = false): void {
                         report_info("Possible new title: " . str_replace("\n", "", echoable((string) $crossRef->series_title)));
                     }
                     if (isset($crossRef->article_title)) {
-                        report_info("Possible new title: " .  echoable((string) $crossRef->article_title));
+                        report_info("Possible new title: " . echoable((string) $crossRef->article_title));
                     }
                     foreach (THINGS_THAT_ARE_TITLES as $possible) {
                         if ($template->has($possible)) {
-                            report_info("Existing old title: " .  echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
+                            report_info("Existing old title: " . echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
                         }
                     }
                     return;
@@ -201,7 +201,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 $template->add_if_new("article-number", (string) $crossRefNewAPI->{"article-number"});
             }
         } else {
-            report_info("No CrossRef record found for doi '" . echoable($doi) ."'");
+            report_info("No CrossRef record found for doi '" . echoable($doi) . "'");
             expand_doi_with_dx($template, $doi);
         }
     }
@@ -308,6 +308,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     process_doi_json($template, $doi, $json);
 }
+
 /**
  * @param Template $template
  * @param string $doi
@@ -481,18 +482,16 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     return;
 }
 
-
-// TODO: look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-// This API can get article numbers in addittion to page numbers
-// Will need to use exist DX code, and add all the extra checks cross ref code has
-
+/**
+ * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addittion to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
+ */
 function query_crossref_newapi(string $doi): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    $url = "https://api.crossref.org/v1/works/".doi_encode($doi)."?mailto=".CROSSREFUSERNAME;
+    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
@@ -516,9 +515,6 @@ function query_crossref_newapi(string $doi): object {
 
     return $result;
 }
-
-
-
 
 function get_doi_from_crossref(Template $template): void {
     static $ch = null;

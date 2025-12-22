@@ -151,7 +151,7 @@ final class WikipediaBot {
             if ($data === false) {     // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_write);
                 $errorStr = curl_error(self::$ch_write);
-                report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
+                report_warning('Curl error #' . $errnoInt . ' on a Wikipedia write query: ' . $errorStr);
             }     // @codeCoverageIgnoreEnd
             $data = (string) $data;
             $ret = @json_decode($data);
@@ -172,7 +172,7 @@ final class WikipediaBot {
             // @codeCoverageIgnoreStart
         } catch(Exception $E) {
             report_warning("Exception caught!\n");
-            report_info("Response: ". echoable($E->getMessage()));
+            report_info("Response: " . echoable($E->getMessage()));
         }
         return null;
         // @codeCoverageIgnoreEnd
@@ -303,7 +303,7 @@ final class WikipediaBot {
             sleep(5);
             return false;
         } elseif ($result->edit->result !== "Success") {
-            report_warning('Attempt to write page returned error: ' .  echoable($result->edit->result));
+            report_warning('Attempt to write page returned error: ' . echoable($result->edit->result));
             return false;
         }
         return true;
@@ -368,7 +368,7 @@ final class WikipediaBot {
         return isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '';
     }
 
-    // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+    /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
     public static function is_redirect(string $page): int {
         $res = self::QueryAPI([
             "action" => "query",
@@ -412,7 +412,7 @@ final class WikipediaBot {
                 // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_logout);
                 $errorStr = curl_error(self::$ch_logout);
-                report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
+                report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
             }   // @codeCoverageIgnoreEnd
             $data = (string) $data;
             if ($data === '') {
@@ -423,7 +423,7 @@ final class WikipediaBot {
             // @codeCoverageIgnoreStart
         } catch(Exception $E) {
             report_warning("Exception caught!!\n");
-            report_info("Response: ". echoable($E->getMessage()));
+            report_info("Response: " . echoable($E->getMessage()));
         }
         return '';
         // @codeCoverageIgnoreEnd
@@ -454,7 +454,7 @@ final class WikipediaBot {
             // @codeCoverageIgnoreStart
             $errnoInt = curl_errno(self::$ch_logout);
             $errorStr = curl_error(self::$ch_logout);
-            report_warning('Curl error #'.$errnoInt.' on getting Wikipedia page '.$title.': '.$errorStr);
+            report_warning('Curl error #' . $errnoInt . ' on getting Wikipedia page ' . $title . ': ' . $errorStr);
         }   // @codeCoverageIgnoreEnd
         return (string) $text;
     }

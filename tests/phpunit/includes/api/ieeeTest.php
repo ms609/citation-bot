@@ -18,5 +18,5 @@ final class ieeeTest extends testBaseClass {
     public function testIEEEdropBadURL(): void {
         $template = $this->process_citation('{{cite journal | url = https://ieeexplore.ieee.org/document/4242344341324324123412343214 |doi =10.1109/ISSCC.2007.373373 }}');
         $this->assertNull($template->get2('url'));
-    } 
+    }
 }

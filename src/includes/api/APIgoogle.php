@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-function clean_google_books(Template $template): void
- {
+function clean_google_books(Template $template): void {
     if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // TODO - support other countries
         return;
     }
@@ -70,8 +69,7 @@ function clean_google_books(Template $template): void
     }
 }
 
-function expand_by_google_books(Template $template): void
- {
+function expand_by_google_books(Template $template): void {
     clean_google_books($template);
     if ($template->has('doi') && doi_works($template->get('doi'))) {
         return;
@@ -85,8 +83,7 @@ function expand_by_google_books(Template $template): void
     return;
 }
 
-function expand_by_google_books_inner(Template $template, string $url_type, bool $use_it): bool
- {
+function expand_by_google_books_inner(Template $template, string $url_type, bool $use_it): bool {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
@@ -199,8 +196,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
     return false;
 }
 
-function google_book_details(Template $template, string $gid): void
- {
+function google_book_details(Template $template, string $gid): void {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);

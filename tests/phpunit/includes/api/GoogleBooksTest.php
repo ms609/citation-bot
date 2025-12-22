@@ -37,7 +37,7 @@ final class GoogleBooksTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
- 
+
     public function testGoogleBookNormalize3(): void {
         $removed_redundant = 0;
         $removed_parts = '';
@@ -48,7 +48,7 @@ final class GoogleBooksTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
- 
+
     public function testGoogleBookNormalize4(): void {
         $removed_redundant = 0;
         $removed_parts = '';
@@ -71,7 +71,6 @@ final class GoogleBooksTest extends testBaseClass {
         normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
         $this->assertSame($url_out, $url_in);
     }
-
 
     public function testGoogleBooksExpansion(): void {
         $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html?id=SjpSkzjIzfsC&redir_esc=y}}";
@@ -158,7 +157,6 @@ final class GoogleBooksTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('February 1935', $expanded->get2('date'));
     }
-
 
     public function testGoogleBooksCleanup1(): void {
         $text = "{{cite books|url=https://books.google.com/booksid=12345}}";

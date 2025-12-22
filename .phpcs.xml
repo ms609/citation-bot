@@ -8,11 +8,13 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
+        <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar"/>
+        <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
         <!-- breaks PHPStan to turn this off -->
@@ -23,11 +25,7 @@
         <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
-        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
-        <exclude name="MediaWiki.Commenting.DocComment.NoDocStar"/>
-        <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
-        <exclude name="MediaWiki.Commenting.FunctionComment.WrongStyle"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
@@ -35,20 +33,15 @@
         <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
         <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
         <exclude name="MediaWiki.Usage.IsNull.IsNull"/>
-        <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
-        <exclude name="MediaWiki.WhiteSpace.MultipleEmptyLines.MultipleEmptyLines"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
-        <exclude name="PSR2.ControlStructures.SwitchDeclaration.WrongOpenercase"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
-        <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter"/>
-        <exclude name="Squiz.WhiteSpace.SuperfluousWhitespace.EndLine"/>
     </rule>
     <file>./src</file>
     <file>./tests</file>
