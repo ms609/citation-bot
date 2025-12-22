@@ -191,7 +191,7 @@ final class TextToolsTest extends testBaseClass {
     public function test_titles_are_dissimilar_LONG(): void {
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
-        $big1 = $big1 . $big1 .$big1 .$big1 .$big1;
+        $big1 = $big1 . $big1 . $big1 . $big1 . $big1;
         $big2 = $big1 . "X"; // stuff...X
         $big1 = $big1 . "Y"; // stuff...Y
         $big3 = $big1 . $big1; // stuff...Xstuff...X

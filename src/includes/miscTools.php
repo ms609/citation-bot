@@ -76,7 +76,7 @@ function prior_parameters(string $par, array $list = []): array {
             case in_array($base, GROUP_F1, true):
                 return ['last' . $number, 'surname' . $number, 'author' . $before, 'contributor-last' . $before, 'contributor-surname' . $before, 'contributor' . $before, 'contributor' . $before . '-surname', 'contributor' . $before . '-last'];
             case in_array($base, GROUP_L1, true):
-                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before. '-given', 'contributor' . $before. '-first'];
+                return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before, 'contributor-given' . $before, 'contributor-first' . $before, 'contributor' . $before . '-given', 'contributor' . $before . '-first'];
             default:
                 // Always add new authors at the very end of existing ones, even ones with bigger numbers.
                 return array_merge(FLATTENED_AUTHOR_PARAMETERS, [
@@ -197,7 +197,7 @@ function throttle(): void {
                 AdsAbsControl::free_memory();
                 $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
                 $mem_used0 = (string) $mem_used;
-            bot_debug_log("Cleared memory: " . $mem_used2 . ' : '   . $mem_used1 . ' : ' . $mem_used0);
+            bot_debug_log("Cleared memory: " . $mem_used2 . ' : ' . $mem_used1 . ' : ' . $mem_used0);
         }                                                                                                                // @codeCoverageIgnoreEnd
     } else {
         bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore

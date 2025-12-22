@@ -270,7 +270,7 @@ final class Zotero {
         }
 
         if (mb_strpos($zotero_response, '502 Bad Gateway') !== false) {
-            report_warning("Bad Gateway error for URL ". echoable($url));
+            report_warning("Bad Gateway error for URL " . echoable($url));
             return;
         }
         if (mb_strpos($zotero_response, '503 Service Temporarily Unavailable') !== false) {
@@ -283,13 +283,13 @@ final class Zotero {
         }
         $zotero_data = @json_decode($zotero_response, false);
         if (!isset($zotero_data)) {
-            report_warning("Could not parse JSON for URL ". echoable($url) . ": " . $zotero_response);
+            report_warning("Could not parse JSON for URL " . echoable($url) . ": " . $zotero_response);
             return;
         } elseif (!is_array($zotero_data)) {
             if (is_object($zotero_data)) {
                 $zotero_data = (array) $zotero_data;
             } else {
-                report_warning("JSON did not parse correctly for URL ". echoable($url) . ": " . $zotero_response);
+                report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . $zotero_response);
                 return;
             }
         }
@@ -312,21 +312,21 @@ final class Zotero {
         if (!isset($result->title)) {
             $the_url = mb_substr(echoable(mb_substr($url, 0, 500)), 0, 600); // Limit length
             if (mb_strpos($zotero_response, 'unknown_error') !== false) { // @codeCoverageIgnoreStart
-                report_info("Did not get a title for unknown reason from URL ". $the_url);
+                report_info("Did not get a title for unknown reason from URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'The remote document is not in a supported format') !== false) {
-                report_info("Document type not supported (usually PDF) for URL ". $the_url);
+                report_info("Document type not supported (usually PDF) for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Unable to load URL') !== false) {
-                report_info("Zotero could not fetch anything for URL ". $the_url);
+                report_info("Zotero could not fetch anything for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Invalid host supplied') !== false) {
-                report_info("DNS lookup failed for URL ". $the_url);
+                report_info("DNS lookup failed for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Unknown error') !== false) {
-                report_info("Did not get a title for unknown reason from URL ". $the_url);
+                report_info("Did not get a title for unknown reason from URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Unable to get any metadata from url') !== false) {
-                report_info("Did not get a title for unknown meta-data reason from URL ". $the_url);
+                report_info("Did not get a title for unknown meta-data reason from URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Maximum number of allowed redirects reached') !== false) {
-                report_info("Too many redirects for URL ". $the_url);
+                report_info("Too many redirects for URL " . $the_url);
             } else {
-                report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL ". $the_url); // Odd Error
+                report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL " . $the_url); // Odd Error
             }
             return;  // @codeCoverageIgnoreEnd
         }
@@ -465,7 +465,7 @@ final class Zotero {
         if (isset($result->title)) {
             foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
                 if (str_i_same($result->title, $bad_title)) {
-                    report_info("Received invalid title data for URL ". echoable($url . ": " . $result->title));
+                    report_info("Received invalid title data for URL " . echoable($url . ": " . $result->title));
                     return;
                 }
             }
@@ -473,7 +473,7 @@ final class Zotero {
         if (isset($result->publicationTitle)) {
             foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
                 if (str_i_same($result->publicationTitle, $bad_title)) {
-                    report_info("Received invalid publication title data for URL ". echoable($url . ": " . $result->publicationTitle));
+                    report_info("Received invalid publication title data for URL " . echoable($url . ": " . $result->publicationTitle));
                     return;
                 }
             }

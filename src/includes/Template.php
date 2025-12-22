@@ -5019,7 +5019,7 @@ final class Template
                                     $title = $matches[1];
                                     $this->set('title-link', $matches[1]);
                                 } else {
-                                    $title = '[[' . $matches[1] . "|" . $matches[2]. ']]';
+                                    $title = '[[' . $matches[1] . "|" . $matches[2] . ']]';
                                 }
                             }
                         } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $title, $matches) && mb_strpos($title, ':') === false) {

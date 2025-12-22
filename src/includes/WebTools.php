@@ -68,7 +68,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                     "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
                     . $last_rev . ">diff</a>" .
                     " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>",
-                    "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=". $last_rev . "\n");
+                    "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=" . $last_rev . "\n");
                     $final_edit_overview .=
                         "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
                     . $last_rev . ">diff</a>" .

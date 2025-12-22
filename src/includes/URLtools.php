@@ -1373,11 +1373,11 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             return false;
         }
         if ($template->has('s2cid') && $s2cid !== $template->get('s2cid')) {
-            report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
+            report_warning('Existing URL does not match existing S2CID: ' . echoable($template->get('s2cid')));
             return false;
         }
         if ($template->has('S2CID') && $s2cid !== $template->get('S2CID')) {
-            report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('S2CID')));
+            report_warning('Existing URL does not match existing S2CID: ' . echoable($template->get('S2CID')));
             return false;
         }
         $template->add_if_new('s2cid', $s2cid);
@@ -1699,7 +1699,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 $pos_pmid = $match[1];
                 $old_pmid = $template->get('pmid');
                 if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
-                    $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
+                    $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
                     $template->add_if_new('pmid', $pos_pmid);
                     return true;
                 } else {

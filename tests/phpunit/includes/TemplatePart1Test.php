@@ -1916,7 +1916,7 @@ EP - 999 }}';
     }
 
     public function testBogusPageRanges(): void { // Fake year for code that updates page ranges that start with 1
-        $text = '{{Cite journal| year = ' . date("Y") .   '| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+        $text = '{{Cite journal| year = ' . date("Y") . '| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('955–971', $expanded->get2('pages')); // Converted should use long dashes
     }

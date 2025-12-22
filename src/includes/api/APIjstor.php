@@ -42,19 +42,19 @@ function expand_by_jstor(Template $template): void {
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
     $dat = bot_curl_exec($ch);
     if ($dat === '') {
-        report_info("JSTOR API returned nothing for ". jstor_link($jstor)); // @codeCoverageIgnore
+        report_info("JSTOR API returned nothing for " . jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                             // @codeCoverageIgnore
     }
     if (mb_stripos($dat, 'No RIS data found for') !== false) {
-        report_info("JSTOR API found nothing for ".    jstor_link($jstor)); // @codeCoverageIgnore
+        report_info("JSTOR API found nothing for " . jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                             // @codeCoverageIgnore
     }
     if (mb_stripos($dat, 'Block Reference') !== false) {
-        report_info("JSTOR API blocked bot for ".    jstor_link($jstor)); // @codeCoverageIgnore
+        report_info("JSTOR API blocked bot for " . jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                           // @codeCoverageIgnore
     }
     if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
-        report_info("JSTOR API had a problem for ".    jstor_link($jstor));
+        report_info("JSTOR API had a problem for " . jstor_link($jstor));
         return;
     }
     if ($template->has('title')) {
@@ -207,7 +207,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                 break;
             case "AU":
                 $ris_authors++;
-                $ris_parameter = "author". $ris_authors;
+                $ris_parameter = "author" . $ris_authors;
                 $ris_part[1] = format_author($ris_part[1]);
                 break;
             case "Y1":

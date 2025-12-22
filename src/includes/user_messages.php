@@ -23,7 +23,7 @@ function user_notice(string $symbol, string $class, string $text): void {
         echo "\n ", (HTML_OUTPUT ? "<span class='{$class}'>" : ""), $symbol;
         if (defined('BIG_JOB_MODE') && mb_strlen($text) > 900) { // No one looks at this anyway - long ones are often URLs in zotero errors
             echo "HUGE amount of text NOT printed";
-            bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " .  mb_substr($text, 0, 500));
+            bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " . mb_substr($text, 0, 500));
         } else {
             echo $text;
         }

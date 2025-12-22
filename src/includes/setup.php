@@ -50,8 +50,8 @@ if ($wiki_base === 'mdwiki') {
     define('WIKI_BASE', 'mdwiki');
     define('EDIT_AS_USER', true); // TODO - does this work?
 } else {
-    define('WIKI_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
-    define('API_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+    define('WIKI_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/index.php');
+    define('API_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/api.php');
     define('WIKI_BASE', $wiki_base);
 }
 unset($wiki_base);

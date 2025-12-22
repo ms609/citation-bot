@@ -171,7 +171,7 @@ function restore_italics (string $text): string {
         $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
     }
     $text = mb_trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
-    $padded = ' '. $text . ' ';
+    $padded = ' ' . $text . ' ';
     if (str_replace(CAMEL_CASE, '', $padded) !== $padded) {
         return $text; // Words with capitals in the middle, but not the first character
     }
@@ -550,11 +550,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // "des" at end is "Des" for Design not german "The"
     if (mb_substr($new_case, -4, 4) === ' des') {
-        $new_case = mb_substr($new_case, 0, -4)  . ' Des';
+        $new_case = mb_substr($new_case, 0, -4) . ' Des';
     }
 
     // Capitalization exceptions, e.g. Elife -> eLife
-    $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .    $new_case . " ");
+    $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " . $new_case . " ");
     $new_case = mb_trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
@@ -605,7 +605,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
         $replace = mb_strtolower($matches[0]);
-        $new_case = mb_trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+        $new_case = mb_trim(str_replace($replace_me, $replace, ' ' . $new_case . ' '));
     }
 
     // Part XII: Roman numerals
@@ -701,7 +701,7 @@ function mb_ucwords(string $string): string {
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
-    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
+    return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start+$length);
 }
 
 function remove_brackets(string $string): string {
@@ -757,9 +757,9 @@ function tidy_date_inside(string $string): string {
     // Google sends ranges
     if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
         if ($matches[1] === $matches[3]) {
-            return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+            return date('j F', strtotime($matches[1] . $matches[2])) . ' – ' . date('j F Y', strtotime($matches[3] . $matches[4]));
         } else {
-            return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+            return date('j F Y', strtotime($matches[1] . $matches[2])) . ' – ' . date('j F Y', strtotime($matches[3] . $matches[4]));
         }
     }
     // Huge amount of character cleaning

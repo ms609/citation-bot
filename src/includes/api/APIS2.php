@@ -7,7 +7,7 @@ function getS2CID(string $url): string {
     if ($ch === null) {
         $ch = bot_curl_init(0.5, HEADER_S2);
     }
-    $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' .  urlencode(urldecode($url)) . '?fields=corpusId';
+    $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if (!$response) {

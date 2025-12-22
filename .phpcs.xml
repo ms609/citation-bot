@@ -38,7 +38,6 @@
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
-        <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
