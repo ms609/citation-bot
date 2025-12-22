@@ -117,4 +117,84 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($template->get2('id'));
     }
 
+    public function testPriorParametersGroup1(): void {
+        $parameter = 'author';
+        $list = [];
+        $expected = ['author'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup2(): void {
+        $parameter = 'others';
+        $list = [];
+        // Doesn't merge GROUP 1 for some reason. Interesting.
+        $expected = array_merge(['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others']);
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroupF1(): void {
+        $parameter = 'surname2';
+        $list = [];
+        $expected = ['first1', 'forename1', 'initials1', 'author1', 'contributor-given1', 'contributor-first1', 'contributor1-given', 'contributor1-first'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroupL1(): void {
+        $parameter = 'first3';
+        $list = [];
+        $expected = ['last3', 'surname3', 'author2', 'contributor-last2', 'contributor-surname2', 'contributor2', 'contributor2-surname', 'contributor2-last'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup5(): void {
+        $parameter = 'journal';
+        $list = [];
+        // prior_parameters() outputs the first parameter twice for some reason. So for example, FLATTENED_AUTHOR_PARAMETERS is an array ['surname', 'forename', 'initials', etc. ]. And the output of prior_parameters() is ['surname, 'surname', 'forename', 'initials', etc. ]. The strings in the below list are these duplicates.
+        $expected = array_merge(
+            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersCustomList(): void {
+        $parameter = 'author';
+        $list = ['url', 'id'];
+        $expected = ['author', 'url', 'id'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup1(): void {
+        $parameter = 'not-a-param';
+        $list = [];
+        $expected = ['not-a-param'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup2(): void {
+        $parameter = 's2cid1';
+        $list = [];
+        $expected = ['s2cid1'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup23(): void {
+        $parameter = 'hdl';
+        $list = [];
+        // doi-broken-date is in two GROUPs for some reason. prior_parameters de-duplicates it though (by eliminating GROUPS 15 and 16?).
+        // hdl is the first parameter in GROUP 23.
+        $expected = array_merge(
+            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup30(): void {
+        $parameter = 'id';
+        $list = [];
+        // id is the first parameter in GROUP 30.
+        $expected = array_merge(
+            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl'], GROUP23, ['isbn'], GROUP24, ['lccn'], GROUP25, ['url'], GROUP26, ['chapter-url'], GROUP27, ['archive-url'], GROUP28, ['archive-date'], GROUP29, ['id']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
 }
