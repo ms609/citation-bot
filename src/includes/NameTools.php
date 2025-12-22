@@ -133,11 +133,10 @@ function format_forename(string $forename): string {
             $forename)));
 }
 
-/* format_initials
+/**
  * Returns a string of initials
  *
- * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
- *
+ * @param string $str A series of initials, in any format.  NOTE! Do not pass a forename here!
  */
 function format_initials(string $str): string {
     $str = mb_trim($str);
@@ -166,8 +165,7 @@ function is_initials(string $str): bool {
     return true;
 }
 
-/*
- * author_is_human
+/**
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
 function author_is_human(string $author): bool {
@@ -191,7 +189,7 @@ function author_is_human(string $author): bool {
     return true;
 }
 
-// Returns the author's name formatted as Surname, F.I.
+/** Returns the author's name formatted as Surname, F.I. */
 function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
@@ -373,7 +371,7 @@ function split_authors(string $str): array {
     return explode(',', $str);
 }
 
-    // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
+/** Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness */
 function is_bad_author(string $aut): bool {
     if ($aut === '|') {
         return true;

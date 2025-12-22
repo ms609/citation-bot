@@ -308,6 +308,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     process_doi_json($template, $doi, $json);
 }
+
 /**
  * @param Template $template
  * @param string $doi
@@ -481,10 +482,9 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     return;
 }
 
-// TODO: look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-// This API can get article numbers in addittion to page numbers
-// Will need to use exist DX code, and add all the extra checks cross ref code has
-
+/**
+ * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addittion to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
+ */
 function query_crossref_newapi(string $doi): object {
     static $ch = null;
     if ($ch === null) {

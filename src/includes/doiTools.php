@@ -50,6 +50,8 @@ final class HandleCache {
 }
 
 // ============================================= DOI functions ======================================
+
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function doi_active(string $doi): ?bool { // Does not reflect if DOI works, but if CrossRef has data
     $doi = mb_trim($doi);
     if (isset(HandleCache::$cache_active[$doi])) {

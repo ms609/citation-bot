@@ -282,7 +282,11 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
 
-    // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001  // TODO - should do more than just give up and wrap in nowiki
+    /**
+     * This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
+     *
+     * @todo - should do more than just give up and wrap in nowiki
+     */
     public function testMathInTitle1(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $this->assertSame($text_math, sanitize_string($text_math));
@@ -361,7 +365,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)', wikify_external_text('. <strong>A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)</strong>.'));
     }
 
-    // The X prevents first character caps
+    /** The X prevents first character caps */
     public function testCapitalization_lots_more(): void { // Double check that constants are in order when we sort - paranoid
         $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
         $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), true));

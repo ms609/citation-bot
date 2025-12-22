@@ -67,8 +67,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
     }
 }
 
-// https://api.semanticscholar.org/graph/v1/swagger.json
-
+/** https://api.semanticscholar.org/graph/v1/swagger.json */
 function get_semanticscholar_license(string $s2cid): ?bool {
     static $ch = null;
     if ($ch === null) {

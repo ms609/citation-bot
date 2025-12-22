@@ -235,9 +235,8 @@ final class Template
         return '{{' . $this->name . $this->join_params() . '}}';
     }
 
-    // Parts of each param: | [pre] [param] [eq] [value] [post]
-    private function split_params(string $text): void
-    {
+    /** Parts of each param: | [pre] [param] [eq] [value] [post] */
+    private function split_params(string $text): void {
         // Replace | characters that are inside template parameter/value pairs
         $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
         while (preg_match($PIPE_REGEX, $text)) {
@@ -2216,15 +2215,12 @@ final class Template
         }
     }
 
-    // This is also called when adding a URL with add_if_new, in which case
-    // it looks for a parameter before adding the url.
-    public function get_identifiers_from_url(?string $url_sent = null): bool
-    {
+    /** This is also called when adding a URL with add_if_new, in which case it looks for a parameter before adding the url. */
+    public function get_identifiers_from_url(?string $url_sent = null): bool {
         return find_indentifiers_in_urls($this, $url_sent);
     }
 
-    private function get_doi_from_text(): void
-    {
+    private function get_doi_from_text(): void {
         set_time_limit(120);
         if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
@@ -2267,9 +2263,8 @@ final class Template
         $this->this_array = [];
     }
 
-    // parameter processing
-    private function parameter_names_to_lowercase(): void
-    {
+    /** parameter processing */
+    private function parameter_names_to_lowercase(): void {
         if (empty($this->param)) {
             return;
         }
@@ -6256,13 +6251,10 @@ final class Template
         }
     }
 
-    /* function handle_et_al
-    * To preserve user-input data, this function will only be called
-    * if no author parameters were specified at the start of the
-    * expansion process.
-    */
-    public function handle_et_al(): void
-    {
+    /**
+     * To preserve user-input data, this function will only be called if no author parameters were specified at the start of the expansion process.
+     */
+    public function handle_et_al(): void {
         foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
             foreach ($group as $param) {
                 if (mb_strpos($this->get($param), 'et al') !== false) {
@@ -6328,9 +6320,8 @@ final class Template
         return $max;
     }
 
-    // Retrieve properties of template
-    public function first_author(): string
-    {
+    /** Retrieve properties of template */
+    public function first_author(): string {
         foreach (['author', 'author1', 'authors', 'vauthors'] as $auth_param) {
             $author = $this->get($auth_param);
             if ($author) {
@@ -6347,8 +6338,7 @@ final class Template
         return '';
     }
 
-    public function first_surname(): string
-    {
+    public function first_surname(): string {
         // Fetch the surname of the first author only
         if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
             return $first_author[0];
@@ -6398,9 +6388,8 @@ final class Template
         return $pagenos;
     }
 
-    // Amend parameters
-    public function rename(string $old_param, string $new_param, ?string $new_value = null): void
-    {
+    /** Amend parameters */
+    public function rename(string $old_param, string $new_param, ?string $new_value = null): void {
         if (empty($this->param)) {
             return;
         }
@@ -6492,7 +6481,8 @@ final class Template
         }
         return '';
     }
-    // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
+
+    /** This one is used in the test suite to distinguish there-but-blank vs not-there-at-all */
     public function get2(string $name): ?string
     {
         foreach ($this->param as $parameter_i) {
@@ -6507,8 +6497,7 @@ final class Template
         return null;
     }
 
-    public function get3(string $name): string
-    {
+    public function get3(string $name): string {
         // like get() only includes (( ))
         foreach ($this->param as $parameter_i) {
             if ($parameter_i->param === $name) {
@@ -6518,8 +6507,7 @@ final class Template
         return '';
     }
 
-    public function has_but_maybe_blank(string $name): bool
-    {
+    public function has_but_maybe_blank(string $name): bool {
         foreach ($this->param as $parameter_i) {
             if ($parameter_i->param === $name) {
                 return true;

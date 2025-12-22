@@ -15,6 +15,8 @@ const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', 
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
 // ============================================= String/Text functions ======================================
+
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function wikify_external_text(string $title): string {
     $replacement = [];
     $placeholder = [];
@@ -253,7 +255,7 @@ function str_remove_irrelevant_bits(string $str): string {
     return strip_diacritics($str);
 }
 
-// See also titles_are_similar()
+/** See also titles_are_similar() */
 function str_equivalent(string $str1, string $str2): bool {
     if (str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2))) {
         return true;
@@ -268,7 +270,7 @@ function str_equivalent(string $str1, string $str2): bool {
     return false;
 }
 
-// See also str_equivalent()
+/** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
@@ -423,6 +425,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 
 // ============================================= Capitalization functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
         return $text; // Who knows - duplicate code below
@@ -709,6 +712,7 @@ function remove_brackets(string $string): string {
 
 // ============================================= Data processing functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function tidy_date(string $string): string { // Wrapper to change all pre-1900 dates to just years
     $string = tidy_date_inside($string);
     if ($string === '') {
@@ -885,6 +889,7 @@ function tidy_date_inside(string $string): string {
 
 // ============================================= Other functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function remove_comments(string $string): string {
     // See Comment::PLACEHOLDER_TEXT for syntax
     $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
@@ -934,7 +939,7 @@ function hdl_decode(string $hdl): string {
     return str_replace(' ', '%20', $hdl);
 }
 
-// Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
+/** Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null */
 function safe_preg_replace(string $regex, string $replace, string $old): string {
     if ($old === "") {
         return "";

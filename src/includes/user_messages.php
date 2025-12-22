@@ -98,7 +98,7 @@ function quietly(callable $function, string $text): void { // Stuff suppressed w
     }
 }
 
-// special flags to mark this function as making all untrustworthy input magically safe to output
+/** special flags to mark this function as making all untrustworthy input magically safe to output */
 function echoable(?string $string): string {
     /**
      * @psalm-taint-escape html

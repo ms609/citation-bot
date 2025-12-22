@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * setup.php sets up the environment
+ * Most of the page expansion depends on everything else
+ */
+
 declare(strict_types=1);
 
 error_reporting(E_ALL);
@@ -11,11 +16,6 @@ if (file_exists('git_pull.lock')) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
     exit;
 }
-
-/*
- * setup.php sets up the environment
- * Most of the page expansion depends on everything else
- */
 
 function bot_debug_log(string $log_this): void {
     if (function_exists('echoable')) {

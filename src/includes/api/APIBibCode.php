@@ -450,9 +450,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     return;
 }
 
-  // $options should be a series of field names, colons (optionally urlencoded), and
-  // URL-ENCODED search strings, separated by (unencoded) ampersands.
-  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
+/**
+ * @param string $options should be a series of field names, colons (optionally urlencoded), and  URL-ENCODED search strings, separated by (unencoded) ampersands. Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
+ */
 function query_adsabs(string $options): object {
     set_time_limit(120);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb

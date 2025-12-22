@@ -22,7 +22,8 @@ final class doiTest extends testBaseClass {
         $this->assertSame('YUKAWA', $expanded->get2('last1'));
         $this->assertSame('Hideki', $expanded->get2('first1'));
     }
-    // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
+
+    /** See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME */
     public function testExpansion_doi_not_from_crossrefBook(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
@@ -101,8 +102,7 @@ final class doiTest extends testBaseClass {
         $this->assertSame('{{Cite journal| last1=Attanasio | first1=Piero | title=The use of Doi in eContent value chain | date=2004 | publisher=mEDRA }}', $expanded->parsed_text());
     }
 
-    // http://doi.airiti.com/
-    // They allow you to easily find the RA, but they seem to no longer do meta-data http://www.airitischolar.com/doi/WhichRA/index.jsp
+    /** http://doi.airiti.com/. They allow you to easily find the RA, but they seem to no longer do meta-data http://www.airitischolar.com/doi/WhichRA/index.jsp */
     public function testExpansion_doi_not_from_crossref_airiti_journal(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
@@ -113,21 +113,21 @@ final class doiTest extends testBaseClass {
         }
     }
 
-    // http://www.eidr.org/
+    /** http://www.eidr.org/ */
     public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
         $this->assertSame('{{Cite journal| last1=Coogler | first1=Ryan | title=Black Panther | date=2018 }}', $expanded->parsed_text());
     }
 
-    // http://www.kisti.re.kr/eng/
+    /** http://www.kisti.re.kr/eng/ */
     public function testExpansion_doi_not_from_crossref_kisti_journal(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
         $this->assertSame('{{Cite journal| last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management | date=2011 | volume=28 | issue=2 }}', $expanded->parsed_text());
     }
 
-    // https://publications.europa.eu/en/
+    /** https://publications.europa.eu/en/ */
     public function testExpansion_doi_not_from_crossref_europa_monograph(): void {
          $expanded = $this->make_citation('{{Cite journal}}');
          expand_doi_with_dx($expanded, '10.2788/14231');

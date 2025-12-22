@@ -368,7 +368,7 @@ final class WikipediaBot {
         return isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '';
     }
 
-    // @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+    /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
     public static function is_redirect(string $page): int {
         $res = self::QueryAPI([
             "action" => "query",

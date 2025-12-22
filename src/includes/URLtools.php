@@ -829,7 +829,7 @@ function clean_and_expand_up_oxford_stuff(Template $template, string $param): vo
     }
 }
 
-//  This function is recursive sometimes
+/** This function is recursive sometimes */
 function find_indentifiers_in_urls(Template $template, ?string $url_sent = null): bool {
     set_time_limit(120);
     if (is_null($url_sent)) {
