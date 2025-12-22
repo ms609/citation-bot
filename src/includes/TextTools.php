@@ -15,6 +15,8 @@ const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', 
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
 // ============================================= String/Text functions ======================================
+
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function wikify_external_text(string $title): string {
     $replacement = [];
     $placeholder = [];
@@ -169,7 +171,7 @@ function restore_italics (string $text): string {
         $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
     }
     $text = mb_trim(str_replace(['              ', '            ', '        ', '       ', '    '], [' ', ' ', ' ', ' ', ' '], $text));
-    $padded = ' '. $text . ' ';
+    $padded = ' ' . $text . ' ';
     if (str_replace(CAMEL_CASE, '', $padded) !== $padded) {
         return $text; // Words with capitals in the middle, but not the first character
     }
@@ -253,7 +255,7 @@ function str_remove_irrelevant_bits(string $str): string {
     return strip_diacritics($str);
 }
 
-// See also titles_are_similar()
+/** See also titles_are_similar() */
 function str_equivalent(string $str1, string $str2): bool {
     if (str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2))) {
         return true;
@@ -268,7 +270,7 @@ function str_equivalent(string $str1, string $str2): bool {
     return false;
 }
 
-// See also str_equivalent()
+/** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
@@ -423,6 +425,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 
 // ============================================= Capitalization functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
         return $text; // Who knows - duplicate code below
@@ -547,11 +550,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // "des" at end is "Des" for Design not german "The"
     if (mb_substr($new_case, -4, 4) === ' des') {
-        $new_case = mb_substr($new_case, 0, -4)  . ' Des';
+        $new_case = mb_substr($new_case, 0, -4) . ' Des';
     }
 
     // Capitalization exceptions, e.g. Elife -> eLife
-    $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .    $new_case . " ");
+    $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " . $new_case . " ");
     $new_case = mb_trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
@@ -602,7 +605,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
         $replace = mb_strtolower($matches[0]);
-        $new_case = mb_trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+        $new_case = mb_trim(str_replace($replace_me, $replace, ' ' . $new_case . ' '));
     }
 
     // Part XII: Roman numerals
@@ -680,14 +683,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     return $new_case;
 }
 
-function mb_strrev(string $string, string $encode = ''): string
-{
+function mb_strrev(string $string, string $encode = ''): string {
     $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
     return implode('', array_reverse($chars));
 }
 
-function mb_ucwords(string $string): string
-{
+function mb_ucwords(string $string): string {
     if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
         $output = '';
         while ($match = mb_ereg_search_regs()) {
@@ -700,7 +701,7 @@ function mb_ucwords(string $string): string
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
-    return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
+    return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start+$length);
 }
 
 function remove_brackets(string $string): string {
@@ -709,6 +710,7 @@ function remove_brackets(string $string): string {
 
 // ============================================= Data processing functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function tidy_date(string $string): string { // Wrapper to change all pre-1900 dates to just years
     $string = tidy_date_inside($string);
     if ($string === '') {
@@ -755,9 +757,9 @@ function tidy_date_inside(string $string): string {
     // Google sends ranges
     if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
         if ($matches[1] === $matches[3]) {
-            return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+            return date('j F', strtotime($matches[1] . $matches[2])) . ' – ' . date('j F Y', strtotime($matches[3] . $matches[4]));
         } else {
-            return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
+            return date('j F Y', strtotime($matches[1] . $matches[2])) . ' – ' . date('j F Y', strtotime($matches[3] . $matches[4]));
         }
     }
     // Huge amount of character cleaning
@@ -885,6 +887,7 @@ function tidy_date_inside(string $string): string {
 
 // ============================================= Other functions ======================================
 
+// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function remove_comments(string $string): string {
     // See Comment::PLACEHOLDER_TEXT for syntax
     $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
@@ -921,7 +924,7 @@ function doi_encode (string $doi): string {
     /**
      * @psalm-taint-escape html
      * @psalm-taint-escape has_quotes
-     * @psalm-taint-escape ssrf 
+     * @psalm-taint-escape ssrf
      */
     $doi = urlencode($doi);
     return str_replace('%2F', '/', $doi);
@@ -934,7 +937,7 @@ function hdl_decode(string $hdl): string {
     return str_replace(' ', '%20', $hdl);
 }
 
-// Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
+/** Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null */
 function safe_preg_replace(string $regex, string $replace, string $old): string {
     if ($old === "") {
         return "";

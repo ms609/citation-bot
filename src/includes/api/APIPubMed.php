@@ -150,9 +150,6 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     return;
 }
 
-
-
-
 function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
     $url =    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
     $request = NLM_LOGIN;
@@ -170,7 +167,6 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
     }
     return xml_post($url, $request);
 }
-
 
 /**
  * Must use post in order to get DOIs with <, >, [, and ] in them and other problems
@@ -196,8 +192,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     return $xml;
 }
 
-function find_pmid(Template $template): void
- {
+function find_pmid(Template $template): void {
     set_time_limit(120);
     if (!$template->blank('pmid')) {
         return;
@@ -237,8 +232,7 @@ function find_pmid(Template $template): void
 }
 
 /** @return array{0: string, 1: int, 2: array<string>} */
-function query_pubmed(Template $template): array
- {
+function query_pubmed(Template $template): array {
     /*
     * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
     * Returns an array:
@@ -283,8 +277,7 @@ function query_pubmed(Template $template): array
  * @param array<string> $terms
  * @return array{0: string, 1: int, 2: array<string>}
  */
-function do_pumbed_query(Template $template, array $terms): array
-{
+function do_pumbed_query(Template $template, array $terms): array {
     set_time_limit(120);
     /* do_query
     *

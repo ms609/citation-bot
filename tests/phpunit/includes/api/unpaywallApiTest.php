@@ -39,8 +39,7 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNull($expanded->get2('url'));
     }
 
-    // Test Unpaywall URL gets added
-    // DOI gets an URL on BHL
+    /** Test Unpaywall URL gets added. DOI gets an URL on BHL */
     public function testUnPaywall1(): void {
         $text = "{{cite journal|doi=10.1206/0003-0082(2006)3508[1:EEALSF]2.0.CO;2}}";
         $template = $this->make_citation($text);
@@ -48,7 +47,7 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
     }
 
-    // Test Unpaywall OA URL does not get added when doi-access=free
+    /** Test Unpaywall OA URL does not get added when doi-access=free */
     public function testUnPaywall2(): void {
         $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
         $template = $this->make_citation($text);

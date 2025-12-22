@@ -76,7 +76,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
-    // Only routines that absolutely need bibcode access since we are limited
+    /** Only routines that absolutely need bibcode access since we are limited */
     protected function requires_bibcode(callable $function): void {
         if ($this->testing_skip_bibcode) {
             $this->flush();
@@ -99,7 +99,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
-    // Speeds up non-zotero tests
+    /** Speeds up non-zotero tests */
     protected function requires_zotero(callable $function): void {
         try {
             usleep(300000); // Reduce failures
@@ -155,7 +155,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function getDateAndYear(Template $input): ?string {
         // Generates string that makes debugging easy and will throw error
-        if (is_null($input->get2('year'))) { 
+        if (is_null($input->get2('year'))) {
             return $input->get2('date'); // Might be null too
         }
         if (is_null($input->get2('date'))) {

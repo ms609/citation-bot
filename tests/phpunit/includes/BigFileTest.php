@@ -37,13 +37,13 @@ final class BigFileTest extends testBaseClass {
 
     public function testWeKill(): void {
         $this->assertFalse(big_jobs_kill());
-        touch(big_jobs_name());    
+        touch(big_jobs_name());
         $this->assertTrue(big_jobs_kill());
         $this->assertTrue(file_exists(big_jobs_name()));
-        $this->assertTrue(file_exists(big_jobs_name(). '_kill_job'));
+        $this->assertTrue(file_exists(big_jobs_name() . '_kill_job'));
         unlink(big_jobs_name());
-        unlink(big_jobs_name(). '_kill_job');
+        unlink(big_jobs_name() . '_kill_job');
         $this->assertFalse(file_exists(big_jobs_name()));
-        $this->assertFalse(file_exists(big_jobs_name(). '_kill_job'));
+        $this->assertFalse(file_exists(big_jobs_name() . '_kill_job'));
     }
 }

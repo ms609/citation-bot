@@ -101,5 +101,5 @@ final class jstorTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('Verstraete', $expanded->get2('last1'));
     }
-    
+
 }

@@ -135,9 +135,6 @@ function expand_templates_from_archives(array &$templates): void { // This is do
     }
 }
 
-
-
-
 function convert_to_utf8(string $value): string {
     $value = convert_to_utf8_inside($value);
     $test = preg_replace('~[\'a-zA-Z0-9 ]+~', '', $value);

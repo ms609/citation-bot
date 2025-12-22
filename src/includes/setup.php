@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * setup.php sets up the environment
+ * Most of the page expansion depends on everything else
+ */
+
 declare(strict_types=1);
 
 error_reporting(E_ALL);
@@ -11,11 +16,6 @@ if (file_exists('git_pull.lock')) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
     exit;
 }
-
-/*
- * setup.php sets up the environment
- * Most of the page expansion depends on everything else
- */
 
 function bot_debug_log(string $log_this): void {
     if (function_exists('echoable')) {
@@ -50,8 +50,8 @@ if ($wiki_base === 'mdwiki') {
     define('WIKI_BASE', 'mdwiki');
     define('EDIT_AS_USER', true); // TODO - does this work?
 } else {
-    define('WIKI_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
-    define('API_ROOT', 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+    define('WIKI_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/index.php');
+    define('API_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/api.php');
     define('WIKI_BASE', $wiki_base);
 }
 unset($wiki_base);
@@ -170,7 +170,7 @@ function check_blocked(): void {
 
 define("MAX_TRIES", 2);
 require_once __DIR__ . '/constants.php';
-require_once __DIR__ . '/bot_curl.php'; 
+require_once __DIR__ . '/bot_curl.php';
 require_once __DIR__ . '/WikiThings.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/NameTools.php';

@@ -60,13 +60,11 @@ final class Template
     /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
 
-    public function __construct()
-    {
+    public function __construct() {
         // Done in parse_text() and in variable initialization
     }
 
-    public function parse_text(string $text): void
-    {
+    public function parse_text(string $text): void {
         set_time_limit(120);
         /** @psalm-suppress RedundantPropertyInitializationCheck */
         if (isset($this->rawtext)) {
@@ -199,8 +197,7 @@ final class Template
     }
 
     /** Re-assemble parsed template into string */
-    public function parsed_text(): string
-    {
+    public function parsed_text(): string {
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
             if ($this->has('title') || $this->has('chapter') || ($this->has('journal') && $this->get('volume') . $this->get('issue') !== '' && $this->page() !== '' && $this->year() !== '')) {
                 report_action("Converted Bare reference to template: " . echoable(mb_trim(base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
@@ -235,9 +232,8 @@ final class Template
         return '{{' . $this->name . $this->join_params() . '}}';
     }
 
-    // Parts of each param: | [pre] [param] [eq] [value] [post]
-    private function split_params(string $text): void
-    {
+    /** Parts of each param: | [pre] [param] [eq] [value] [post] */
+    private function split_params(string $text): void {
         // Replace | characters that are inside template parameter/value pairs
         $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
         while (preg_match($PIPE_REGEX, $text)) {
@@ -256,8 +252,7 @@ final class Template
         }
     }
 
-    public function prepare(): void
-    {
+    public function prepare(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
@@ -424,8 +419,7 @@ final class Template
         }
     }
 
-    public function fix_rogue_etal(): void
-    {
+    public function fix_rogue_etal(): void {
         if ($this->blank(DISPLAY_AUTHORS)) {
             $i = 2;
             while (!$this->blank(['author' . (string) $i, 'last' . (string) $i])) {
@@ -441,8 +435,7 @@ final class Template
         }
     }
 
-    public function record_api_usage(string $api, string $param): void
-    {
+    public function record_api_usage(string $api, string $param): void {
         $param = [$param];
         foreach ($param as $p) {
             if (!in_array($p, $this->used_by_api[$api], true)) {
@@ -455,8 +448,7 @@ final class Template
      * @param string $api
      * @param array<string> $param
      */
-    public function api_has_used(string $api, array $param): bool
-    {
+    public function api_has_used(string $api, array $param): bool {
         if (!isset($this->used_by_api[$api])) {
             report_error("Invalid API: " . $api); // @codeCoverageIgnore
         }
@@ -464,8 +456,7 @@ final class Template
         return (bool) count(array_intersect($param, $this->used_by_api[$api]));
     }
 
-    public function incomplete(): bool
-    {
+    public function incomplete(): bool {
         // FYI: some references will never be considered complete
         $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
         if (
@@ -530,8 +521,7 @@ final class Template
         );
     }
 
-    public function profoundly_incomplete(string $url = ''): bool
-    {
+    public function profoundly_incomplete(string $url = ''): bool {
         // Zotero translation server often returns bad data, which is worth having if we have no data,
         // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
         $has_date = $this->has('date') || $this->has('year');
@@ -574,8 +564,7 @@ final class Template
     /**
      * @param array<string>|string $param
      */
-    public function blank(array|string $param): bool
-    {
+    public function blank(array|string $param): bool {
         // Accepts arrays of strings and string
         if (!$param) {
             report_error('null passed to blank()'); // @codeCoverageIgnore
@@ -596,8 +585,7 @@ final class Template
     /**
      * @param array<string>|string $param
      */
-    public function blank_other_than_comments(array|string $param): bool
-    {
+    public function blank_other_than_comments(array|string $param): bool {
         // Accepts arrays of strings and string
         if (!$param) {
             report_error('null passed to blank_other_than_comments()'); // @codeCoverageIgnore
@@ -632,8 +620,7 @@ final class Template
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
      */
-    public function add_if_new(string $param_name, string $value, string $api = ''): bool
-    {
+    public function add_if_new(string $param_name, string $value, string $api = ''): bool {
         // Clean up weird stuff from CrossRef etc.
         $value = safe_preg_replace('~[\x{2000}-\x{200B}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
         $value = safe_preg_replace("~^\xE2\x80\x8B~", " ", $value); // Zero-width at start
@@ -1260,7 +1247,7 @@ final class Template
                 mb_stripos($value, 'Theses and Projects') !== false ||
                 mb_stripos($value, 'Electronic Thesis') !== false ||
                 mb_stripos($value, ' and Capstones') !== false ||
-                mb_stripos($value, ' and Problem Reports') !== false || 
+                mb_stripos($value, ' and Problem Reports') !== false ||
                 mb_stripos($value, 'Doctoral ') !== false ||
                 mb_stripos($value, 'IETF Datatracker') !== false ||
                 mb_stripos($value, 'Springerlink') !== false ||
@@ -2158,8 +2145,7 @@ final class Template
         }
     }
 
-    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void
-    {
+    public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void {
         if (!$add_even_if_existing && ($this->had_initial_author() || $this->had_initial_editor())) {
             return;
         } // Zotero does not know difference between editors and authors often
@@ -2207,8 +2193,7 @@ final class Template
         }
     }
 
-    public function mark_inactive_doi(): void
-    {
+    public function mark_inactive_doi(): void {
         $doi = $this->get_without_comments_and_placeholders('doi');
         if (doi_works($doi) === false) {
             // null which would cast to false means we don't know, so use ===
@@ -2216,15 +2201,12 @@ final class Template
         }
     }
 
-    // This is also called when adding a URL with add_if_new, in which case
-    // it looks for a parameter before adding the url.
-    public function get_identifiers_from_url(?string $url_sent = null): bool
-    {
+    /** This is also called when adding a URL with add_if_new, in which case it looks for a parameter before adding the url. */
+    public function get_identifiers_from_url(?string $url_sent = null): bool {
         return find_indentifiers_in_urls($this, $url_sent);
     }
 
-    private function get_doi_from_text(): void
-    {
+    private function get_doi_from_text(): void {
         set_time_limit(120);
         if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
@@ -2249,9 +2231,7 @@ final class Template
         }
     }
 
-
-    public function expand_by_pubmed(bool $force = false): void
-    {
+    public function expand_by_pubmed(bool $force = false): void {
         if (!$force && !$this->incomplete()) {
             return;
         }
@@ -2268,9 +2248,8 @@ final class Template
         $this->this_array = [];
     }
 
-    // parameter processing
-    private function parameter_names_to_lowercase(): void
-    {
+    /** parameter processing */
+    private function parameter_names_to_lowercase(): void {
         if (empty($this->param)) {
             return;
         }
@@ -2282,8 +2261,7 @@ final class Template
         }
     }
 
-    private function use_unnamed_params(): void
-    {
+    private function use_unnamed_params(): void {
         if (empty($this->param)) {
             return;
         }
@@ -2624,8 +2602,7 @@ final class Template
         unset($p); // Destroy pointer to be safe
     }
 
-    private function id_to_param(): void
-    {
+    private function id_to_param(): void {
         set_time_limit(120);
         $id = $this->get('id');
         if (mb_trim($id)) {
@@ -2885,8 +2862,7 @@ final class Template
         }
     }
 
-    public function correct_param_mistakes(): void
-    {
+    public function correct_param_mistakes(): void {
         // It will correct any that appear to be mistyped in minor templates
         if (empty($this->param)) {
             return;
@@ -2925,8 +2901,7 @@ final class Template
         }
     }
 
-    private function correct_param_spelling(): void
-    {
+    private function correct_param_spelling(): void {
         // check each parameter name against the list of accepted names (loaded in expand.php).
         // It will correct any that appear to be mistyped.
         set_time_limit(120);
@@ -3041,26 +3016,21 @@ final class Template
     }
 
     /** @return array<string> */
-    public function initial_author_params(): array
-    {
+    public function initial_author_params(): array {
         return $this->initial_author_params;
     }
      /** @param array<string> $auths */
-    public function initial_author_params_set(array $auths): void
-    {
+    public function initial_author_params_set(array $auths): void {
         $this->initial_author_params = $auths;
     }
-    public function had_initial_author(): bool
-    {
+    public function had_initial_author(): bool {
         return count($this->initial_author_params) > 0;
     }
-    public function had_initial_editor(): bool
-    {
+    public function had_initial_editor(): bool {
         return $this->had_initial_eds;
     }
 
-    private function join_params(): string
-    {
+    private function join_params(): string {
         $this->convert_to_vanc();
         $ret = '';
         foreach ($this->param as $p) {
@@ -3145,8 +3115,7 @@ final class Template
         }
     }
 
-    public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void
-    {
+    public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void {
         if (mb_strpos($this->get('doi'), '10.1093') !== false && $this->wikiname() !== 'cite web') {
             return;
         }
@@ -3277,8 +3246,7 @@ final class Template
     /**
      * The name of the template, lowercased. For example, for {{Cite book |last=Jones |first=bob}}, will return "cite book". Will strip out #invoke, will follow some redirects, and changes its dictionary of templates depending on the language specified in WIKI_BASE.
      */
-    public function wikiname(): string
-    {
+    public function wikiname(): string {
         $name = mb_trim(mb_strtolower(str_replace('_', ' ', $this->name)));
         $name = mb_trim(mb_strtolower(str_replace('#invoke:', '', $name)));
         // Treat the same since alias
@@ -3321,13 +3289,11 @@ final class Template
         return $name;
     }
 
-    public function should_be_processed(): bool
-    {
+    public function should_be_processed(): bool {
         return in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true);
     }
 
-    public function tidy_parameter(string $param): void
-    {
+    public function tidy_parameter(string $param): void {
         set_time_limit(120);
         // Note: Parameters are treated in alphabetical order, except where one
         // case necessarily continues from the previous (without a return).
@@ -5053,7 +5019,7 @@ final class Template
                                     $title = $matches[1];
                                     $this->set('title-link', $matches[1]);
                                 } else {
-                                    $title = '[[' . $matches[1] . "|" . $matches[2]. ']]';
+                                    $title = '[[' . $matches[1] . "|" . $matches[2] . ']]';
                                 }
                             }
                         } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $title, $matches) && mb_strpos($title, ':') === false) {
@@ -5747,8 +5713,7 @@ final class Template
         }
     }
 
-    public function tidy(): void
-    {
+    public function tidy(): void {
         // Should only be run once (perhaps when template is first loaded)
         // Future tidying should occur when parameters are added using tidy_parameter.
         // Called in final_tidy when the template type is changed
@@ -5772,8 +5737,7 @@ final class Template
         } // Give up tidy after third time. Something is goofy.
     }
 
-    public function final_tidy(): void
-    {
+    public function final_tidy(): void {
         set_time_limit(120);
         if ($this->should_be_processed()) {
             if ($this->initial_name !== $this->name) {
@@ -6190,8 +6154,7 @@ final class Template
         }
     }
 
-    public function verify_doi(): bool
-    {
+    public function verify_doi(): bool {
         set_time_limit(120);
         static $last_doi = '';
         $doi = $this->get_without_comments_and_placeholders('doi');
@@ -6257,13 +6220,10 @@ final class Template
         }
     }
 
-    /* function handle_et_al
-    * To preserve user-input data, this function will only be called
-    * if no author parameters were specified at the start of the
-    * expansion process.
-    */
-    public function handle_et_al(): void
-    {
+    /**
+     * To preserve user-input data, this function will only be called if no author parameters were specified at the start of the expansion process.
+     */
+    public function handle_et_al(): void {
         foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
             foreach ($group as $param) {
                 if (mb_strpos($this->get($param), 'et al') !== false) {
@@ -6298,8 +6258,7 @@ final class Template
     /**
      * Functions to retrieve values that may be specified in various ways
      */
-    private function display_authors(): int
-    {
+    private function display_authors(): int {
         $da = $this->get('display-authors');
         if ($da === '') {
             $da = $this->get('displayauthors');
@@ -6307,8 +6266,7 @@ final class Template
         return ctype_digit($da) ? (int) $da : 0;
     }
 
-    private function number_of_authors(): int
-    {
+    private function number_of_authors(): int {
         $max = 0;
         foreach ($this->param as $p) {
             if (preg_match('~(?:author|last|first|forename|initials|surname|given)(\d+)~', $p->param, $matches)) {
@@ -6329,9 +6287,8 @@ final class Template
         return $max;
     }
 
-    // Retrieve properties of template
-    public function first_author(): string
-    {
+    /** Retrieve properties of template */
+    public function first_author(): string {
         foreach (['author', 'author1', 'authors', 'vauthors'] as $auth_param) {
             $author = $this->get($auth_param);
             if ($author) {
@@ -6348,8 +6305,7 @@ final class Template
         return '';
     }
 
-    public function first_surname(): string
-    {
+    public function first_surname(): string {
         // Fetch the surname of the first author only
         if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
             return $first_author[0];
@@ -6358,8 +6314,7 @@ final class Template
         }
     }
 
-    public function page(): string
-    {
+    public function page(): string {
         if ($this->has('pages')) {
             $page = $this->get('pages');
         } elseif ($this->has('page')) {
@@ -6370,8 +6325,7 @@ final class Template
         return str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-', '-', '-', '-', '-'], $page);
     }
 
-    public function year(): string
-    {
+    public function year(): string {
         if ($this->has('year')) {
             return $this->get('year');
         }
@@ -6393,15 +6347,13 @@ final class Template
     }
 
     /** @return array<string> */
-    public function page_range(): array
-    {
+    public function page_range(): array {
         preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
         return $pagenos;
     }
 
-    // Amend parameters
-    public function rename(string $old_param, string $new_param, ?string $new_value = null): void
-    {
+    /** Amend parameters */
+    public function rename(string $old_param, string $new_param, ?string $new_value = null): void {
         if (empty($this->param)) {
             return;
         }
@@ -6477,8 +6429,7 @@ final class Template
         }
     }
 
-    public function get(string $name): string
-    {
+    public function get(string $name): string {
         // NOTE $this->param and $p->param are different and refer to different types!
         // $this->param is an array of Parameter objects
         // $parameter_i->param is the parameter name within the Parameter object
@@ -6493,9 +6444,9 @@ final class Template
         }
         return '';
     }
-    // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
-    public function get2(string $name): ?string
-    {
+
+    /** This one is used in the test suite to distinguish there-but-blank vs not-there-at-all */
+    public function get2(string $name): ?string {
         foreach ($this->param as $parameter_i) {
             if ($parameter_i->param === $name) {
                 $the_val = $parameter_i->val;
@@ -6508,8 +6459,7 @@ final class Template
         return null;
     }
 
-    public function get3(string $name): string
-    {
+    public function get3(string $name): string {
         // like get() only includes (( ))
         foreach ($this->param as $parameter_i) {
             if ($parameter_i->param === $name) {
@@ -6519,8 +6469,7 @@ final class Template
         return '';
     }
 
-    public function has_but_maybe_blank(string $name): bool
-    {
+    public function has_but_maybe_blank(string $name): bool {
         foreach ($this->param as $parameter_i) {
             if ($parameter_i->param === $name) {
                 return true;
@@ -6533,16 +6482,14 @@ final class Template
         return isset($this->param[1]);
     }
 
-    private function param_value(int $i): string
-    {
+    private function param_value(int $i): string {
         if (isset($this->param[$i])) {
             return $this->param[$i]->val;
         }
         return '';
     }
 
-    public function get_without_comments_and_placeholders(string $name): string
-    {
+    public function get_without_comments_and_placeholders(string $name): string {
         $ret = $this->get($name);
         $ret = safe_preg_replace('~<!--.*?-->~su', '', $ret); // Comments
         $ret = safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped. Case insensitive
@@ -6550,8 +6497,7 @@ final class Template
         return mb_trim($ret);
     }
 
-    private function get_param_key(string $needle): ?int
-    {
+    private function get_param_key(string $needle): ?int {
         if (empty($this->param)) {
             return null;
         }
@@ -6563,21 +6509,18 @@ final class Template
         return null;
     }
 
-    public function has(string $par): bool
-    {
+    public function has(string $par): bool {
         return (bool) mb_strlen($this->get($par));
     }
 
-    public function add(string $par, string $val): bool
-    {
+    public function add(string $par, string $val): bool {
         report_add(echoable("Adding " . $par . ": " . $val));
         $could_set = $this->set($par, $val);
         $this->tidy_parameter($par);
         return $could_set;
     }
 
-    public function set(string $par, string $val): bool
-    {
+    public function set(string $par, string $val): bool {
         if ($par === '') {
             report_error('null parameter passed to set with value of ' . echoable($val));
         }
@@ -6629,8 +6572,7 @@ final class Template
         return true;
     }
 
-    public function append_to(string $par, string $val): void
-    {
+    public function append_to(string $par, string $val): void {
         if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
             return;
         }
@@ -6644,18 +6586,15 @@ final class Template
         return;
     }
 
-    public function quietly_forget(string $par): void
-    {
+    public function quietly_forget(string $par): void {
         $this->forgetter($par, false);
     }
 
-    public function forget(string $par): void
-    {
+    public function forget(string $par): void {
         $this->forgetter($par, true);
     }
 
-    private function forgetter(string $par, bool $echo_forgetting): void
-    {
+    private function forgetter(string $par, bool $echo_forgetting): void {
         if ($par === 'doi-broken-date' &&
             $this->has('doi-broken-date') &&
             !isset(NULL_DOI_BUT_GOOD[$this->get('doi')]) &&
@@ -6776,8 +6715,7 @@ final class Template
     }
 
     /** @return array<bool|array<string>> */
-    public function modifications(): array
-    {
+    public function modifications(): array {
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
             if ($this->has('title') || $this->has('chapter')) {
                 $this->forget(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
@@ -6854,8 +6792,7 @@ final class Template
         return $ret;
     }
 
-    private function isbn10Toisbn13(string $isbn10, bool $ignore_year): string
-    {
+    private function isbn10Toisbn13(string $isbn10, bool $ignore_year): string {
         $year = $this->year_int();
         if ($ignore_year) {
             $year = 3000;
@@ -6864,8 +6801,7 @@ final class Template
     }
 
     /** @return array<string> */
-    private function inline_doi_information(): array
-    {
+    private function inline_doi_information(): array {
         if ($this->name !== "doi-inline") {
             return [];
         }
@@ -6878,8 +6814,7 @@ final class Template
         return $vals;
     }
 
-    private function get_inline_doi_from_title(): void
-    {
+    private function get_inline_doi_from_title(): void {
         if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~i", $this->get('title'), $match)) {
             $inline_doi = self::$all_templates[$match[1]]->inline_doi_information();
             if ($inline_doi) {
@@ -6896,8 +6831,7 @@ final class Template
         }
     }
 
-    private function volume_issue_demix(string $data, string $param): void
-    {
+    private function volume_issue_demix(string $data, string $param): void {
         if ($param === 'year') {
             return;
         }
@@ -7030,13 +6964,11 @@ final class Template
         }
     }
 
-    public function is_book_series(string $param): bool
-    {
+    public function is_book_series(string $param): bool {
         return string_is_book_series($this->get($param));
     }
 
-    public function has_good_free_copy(): bool
-    {
+    public function has_good_free_copy(): bool {
         // Must link title - TODO add more if jstor-access or hdl-access link
         $this->tidy_parameter('pmc');
         $this->tidy_parameter('pmc-embargo-date');
@@ -7046,8 +6978,7 @@ final class Template
         return false;
     }
 
-    public function block_modifications(): void
-    {
+    public function block_modifications(): void {
         // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
         $tmp = $this->parsed_text();
         while (preg_match_all('~' . sprintf(self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {
