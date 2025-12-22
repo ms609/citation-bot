@@ -25,7 +25,7 @@
         "vimeo/psalm": "^6"
     },
     "scripts": {
-        "phan": "phan -analyze-twice --allow-polyfill-parser",
+        "phan": "phan --analyze-twice --allow-polyfill-parser",
         "phpcbf": "phpcbf -p -d memory_limit=1000M --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",
         "phplint": "phplint --exclude=vendor --no-interaction -vv ./",

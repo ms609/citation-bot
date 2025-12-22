@@ -80,7 +80,7 @@ jobs:
 
     - name: Manually look for weird stuff
       if: always()
-      run: /bin/cat ./CodeCoverage
+      run: /bin/cat ./src/includes/CodeCoverage
 
     - name: Code Coverage
       if:  ${{ !cancelled() && github.event_name != 'pull_request' }}

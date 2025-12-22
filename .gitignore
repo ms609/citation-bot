@@ -1,4 +1,4 @@
-cookie*.txt
+src/includes/cookie.txt
 clover.xml
 **/private*
 *.lock
@@ -8,4 +8,4 @@ src/env.php
 core
 coverage.xml
 .phplint.cache/*
-CodeCoverage
+src/includes/CodeCoverage
