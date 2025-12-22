@@ -230,7 +230,7 @@ final class constantsTest extends testBaseClass {
         if ($our_whitelist !== $our_whitelist_sorted) {
             $this->flush();
             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
-            foreach($our_whitelist_sorted as $value) {
+            foreach ($our_whitelist_sorted as $value) {
                 echo "    '" . $value . "',\n";
             }
             $this->flush();
@@ -244,7 +244,7 @@ final class constantsTest extends testBaseClass {
         $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
         $orig = '';
         $new = '';
-        foreach($whitelist as $value) {
+        foreach ($whitelist as $value) {
             $value = str_replace('#', '1', $value);
             if (mb_stripos($value, '_bot')) {
                 $value = 'title'; // basically skip it
