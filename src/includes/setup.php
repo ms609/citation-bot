@@ -27,7 +27,7 @@ function bot_debug_log(string $log_this): void {
         }
         @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
         // Do all at once to avoid spreading over lines in file
-        file_put_contents('CodeCoverage', $base . ' :: ' . echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: " . $log_this . "\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/CodeCoverage', $base . ' :: ' . echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: " . $log_this . "\n", FILE_APPEND);
     }
 }
 

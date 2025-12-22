@@ -3,7 +3,7 @@
 
 FROM php:8.4-apache
 
-# Install PHP XDebug, for step debugging.
+# Install PHP XDebug, for step debugging and for PHPUnit code coverage report.
 # You can leave port 9007 for all your Docker containers. It doesn't conflict across containers like the localhost port does.
 # Add this .vscode/launch.json file to your repo, then go to Run and Debug -> press play:
 # {
@@ -25,11 +25,14 @@ FROM php:8.4-apache
 # }
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
-RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_port=9007" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Needed for PHPUnit time limit options (e.g. --enforce-time-limit --default-time-limit 13000)
+RUN docker-php-ext-install pcntl
 
 # Install composer. Once the container is built and running, you can do `composer update` with the following shell command: `docker exec -it citation-bot-php-1 composer update`
 RUN apt-get update && apt-get install --no-install-recommends -y git zip unzip \
