@@ -82,7 +82,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
 
-    public function testHDLnotBroken() {
+    public function testHDLnotBroken(): void {
         $text = "{{cite document|doi=20.1000/100}}";
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
@@ -1706,7 +1706,7 @@ EP - 999 }}';
         $this->assertSame('33', $expanded->get2('issue'));
     }
 
-    public function testTitleItalics() {
+    public function testTitleItalics():void {
         $text = '{{cite journal|doi=10.1111/pala.12168}}';
         $expanded = $this->process_citation($text);
         $title = $expanded->get('title');
@@ -2534,7 +2534,7 @@ EP - 999 }}';
         $this->assertSame('Time-resolved studies of metalloproteins using X-ray free electron laser radiation at SACLA', $template->get2('title'));
     }
 
-    public function testISSN() {
+    public function testISSN():void {
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn', '1111-2222');
