@@ -498,30 +498,30 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             $book_array['pg'] = $book_array['lpg'];
             unset($book_array['lpg']);
     }
-    if (preg_match('~^&(.*)$~', $hash, $matcher)){
+    if (preg_match('~^&(.*)$~', $hash, $matcher)) {
         $hash = $matcher[1];
     }
-    if (preg_match('~^(.*)&$~', $hash, $matcher)){
+    if (preg_match('~^(.*)&$~', $hash, $matcher)) {
         $hash = $matcher[1];
     }
-    if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)){
+    if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)) {
         $book_array['pg'] = $matcher[1];
         $hash = '';
     }
-    if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)){
+    if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)) {
         $book_array['pg'] = $matcher[1];
         $hash = '';
     }
-    if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)){
+    if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)) {
         $book_array['pg'] = $matcher[1];
         $hash = '';
     }
-    if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)){
+    if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)) {
         $book_array['pg'] = $matcher[1];
         $hash = '';
     }
 
-    if (isset($book_array['q'])){
+    if (isset($book_array['q'])) {
         if (((mb_stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
                 mb_stripos($book_array['q'], 'subject:') === 0 ||
                 mb_stripos($book_array['q'], 'inauthor:') === 0 ||
@@ -529,7 +529,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             unset($book_array['q']);
         }
     }
-    if (isset($book_array['dq'])){
+    if (isset($book_array['dq'])) {
         if (((mb_stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
                 mb_stripos($book_array['dq'], 'subject:') === 0 ||
                 mb_stripos($book_array['dq'], 'inauthor:') === 0 ||
@@ -546,22 +546,22 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             unset($book_array['article_id']);
         }
     }
-    if (isset($book_array['q'])){
+    if (isset($book_array['q'])) {
         $url .= '&q=' . $book_array['q'];
     }
-    if (isset($book_array['dq'])){
+    if (isset($book_array['dq'])) {
         $url .= '&dq=' . $book_array['dq'];
     }
-    if (isset($book_array['pg'])){
+    if (isset($book_array['pg'])) {
         if (preg_match('~^[pra]+\d~i', $book_array['pg'])) {
             $book_array['pg'] = mb_strtoupper($book_array['pg']);
         }
         $url .= '&pg=' . $book_array['pg'];
     }
-    if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
+    if (isset($book_array['lpg'])) { // Currently NOT POSSIBLE - failsafe code for changes
         $url .= '&lpg=' . $book_array['lpg']; // @codeCoverageIgnore
     }
-    if (isset($book_array['article_id'])){
+    if (isset($book_array['article_id'])) {
         $url .= '&article_id=' . $book_array['article_id'];
         if (!isset($book_array['dq']) && isset($book_array['q'])) {
             $url .= '#v=onepage'; // Explicit onepage needed for these

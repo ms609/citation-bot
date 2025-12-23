@@ -686,7 +686,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
             }
         }
     }
-    if (isset($record->doi)){
+    if (isset($record->doi)) {
         $doi = (string) @$record->doi[0];
         if (doi_works($doi)) {
             $this_template->add_if_new('doi', $doi);

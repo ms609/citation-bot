@@ -180,7 +180,7 @@ final class WikipediaBot {
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
-        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
+        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
             return false;                                                                             // @codeCoverageIgnore
         }

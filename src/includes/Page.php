@@ -930,7 +930,7 @@ class Page {
 
     private function announce_page(): void {
         $url_encoded_title =    urlencode($this->title);
-        if ($url_encoded_title === ''){
+        if ($url_encoded_title === '') {
             return;
         }
         html_echo("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"

@@ -400,7 +400,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
             /** @phpstan-ignore notIdentical.alwaysTrue */
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
-        if ($do_more){
+        if ($do_more) {
             $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str, $match1) &&
@@ -873,7 +873,7 @@ function tidy_date_inside(string $string): string {
         if (intval($matches[3]) < ((int) date("y") + 2)) {
             $matches[3] = (int) $matches[3] + 2000;
         }
-        if (intval($matches[3]) < 100)  {
+        if (intval($matches[3]) < 100) {
             $matches[3] = (int) $matches[3] + 1900;
         }
         return tidy_date_inside((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
