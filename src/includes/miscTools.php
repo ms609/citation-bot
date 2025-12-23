@@ -53,128 +53,136 @@ function string_is_book_series(string $str): bool {
 }
 
 /**
- * This code is recursive as is goes through a long list of parameters to find its place in the list.
+ * This code is recursive. It goes through a long list of parameters to find its place in the list.
  *
- * @todo think about better ways to do this
  * @param string $parameter
  * @param array<string> $list
  * @return array<string> A big list of parameters. This can return over a thousand parameters.
  */
 function prior_parameters(string $parameter, array $list = []): array {
+    // If no parameter is provided, use the first one in the list provided.
     if ($parameter === '') {
-        $parameter = $list['0'];
+        $parameter = $list[0];
     }
+
+    // Add $parameter at the beginning of the $list.
     array_unshift($list, $parameter);
-    if (preg_match('~(\D+)(\d+)~', $parameter, $match) && mb_stripos($parameter, 's2cid') === false) {
+
+    // Handle parameters with numbers in them, e.g. author1
+    $parameterContainsANumber = preg_match('/(\D+)(\d+)/', $parameter, $match);
+    $parameterIsNotS2cid = mb_stripos($parameter, 's2cid') === false;
+    if ($parameterContainsANumber && $parameterIsNotS2cid) {
         $before = (string) ((int) $match[2] - 1);
         $number = $match[2];
         $base = $match[1];
         unset($match);
-        switch ($base) {
-            case in_array($base, GROUP_F1, true):
-                return [
-                    'last' . $number,
-                    'surname' . $number,
-                    'author' . $before,
-                    'contributor-last' . $before,
-                    'contributor-surname' . $before,
-                    'contributor' . $before,
-                    'contributor' . $before . '-surname',
-                    'contributor' . $before . '-last'
-                ];
-            case in_array($base, GROUP_L1, true):
-                return [
-                    'first' . $before,
-                    'forename' . $before,
-                    'initials' . $before,
-                    'author' . $before,
-                    'contributor-given' . $before,
-                    'contributor-first' . $before,
-                    'contributor' . $before . '-given',
-                    'contributor' . $before . '-first'
-                ];
-            default:
-                // Always add new authors at the very end of existing ones, even ones with bigger numbers.
-                return array_merge(
-                    FLATTENED_AUTHOR_PARAMETERS,
-                    [
-                        $base . $before,
-                        $base . $before . '-last',
-                        $base . $before . '-first',
-                        $base . '-last' . $before,
-                        $base . '-first' . $before,
-                        $base . $before . '-surname',
-                        $base . $before . '-given',
-                        $base . '-surname' . $before,
-                        $base . '-given' . $before,
-                    ]
-                );
+        if (in_array($base, GROUP_F1, true)) {
+            return [
+                'last' . $number,
+                'surname' . $number,
+                'author' . $before,
+                'contributor-last' . $before,
+                'contributor-surname' . $before,
+                'contributor' . $before,
+                'contributor' . $before . '-surname',
+                'contributor' . $before . '-last'
+            ];
+        } elseif (in_array($base, GROUP_L1, true)) {
+            return [
+                'first' . $before,
+                'forename' . $before,
+                'initials' . $before,
+                'author' . $before,
+                'contributor-given' . $before,
+                'contributor-first' . $before,
+                'contributor' . $before . '-given',
+                'contributor' . $before . '-first'
+            ];
+        } else {
+            // Always add new authors at the very end of existing ones, even ones with bigger numbers.
+            return array_merge(
+                FLATTENED_AUTHOR_PARAMETERS,
+                [
+                    $base . $before,
+                    $base . $before . '-last',
+                    $base . $before . '-first',
+                    $base . '-last' . $before,
+                    $base . '-first' . $before,
+                    $base . $before . '-surname',
+                    $base . $before . '-given',
+                    $base . '-surname' . $before,
+                    $base . '-given' . $before,
+                ]
+            );
         }
     }
-    switch ($parameter) {
-        case in_array($parameter, GROUP1, true):
-            return $list;
-        case in_array($parameter, GROUP2, true):
-            return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-        case in_array($parameter, GROUP3, true):
-            return prior_parameters('', array_merge(GROUP2, $list));
-        case in_array($parameter, GROUP4, true):
-            return prior_parameters('', array_merge(GROUP3, $list));
-        case in_array($parameter, GROUP5):
-            return prior_parameters('', array_merge(GROUP4, $list));
-        case in_array($parameter, GROUP6):
-            return prior_parameters('', array_merge(GROUP5, $list));
-        case in_array($parameter, GROUP7):
-            return prior_parameters('', array_merge(GROUP6, $list));
-        case in_array($parameter, GROUP8):
-            return prior_parameters('', array_merge(GROUP7, $list));
-        case in_array($parameter, GROUP9):
-            return prior_parameters('', array_merge(GROUP8, $list));
-        case in_array($parameter, GROUP10):
-            return prior_parameters('', array_merge(GROUP9, $list));
-        case in_array($parameter, GROUP11):
-            return prior_parameters('', array_merge(GROUP10, $list));
-        case in_array($parameter, GROUP12):
-            return prior_parameters('', array_merge(GROUP11, $list));
-        case in_array($parameter, GROUP13):
-            return prior_parameters('', array_merge(GROUP12, $list));
-        case in_array($parameter, GROUP14):
-            return prior_parameters('', array_merge(GROUP13, $list));
-        case in_array($parameter, GROUP15):
-            return prior_parameters('', array_merge(GROUP14, $list));
-        case in_array($parameter, GROUP16):
-            return prior_parameters('', array_merge(GROUP15, $list));
-        case in_array($parameter, GROUP17):
-            return prior_parameters('', array_merge(GROUP16, $list));
-        case in_array($parameter, GROUP18):
-            return prior_parameters('', array_merge(GROUP17, $list));
-        case in_array($parameter, GROUP19):
-            return prior_parameters('', array_merge(GROUP18, $list));
-        case in_array($parameter, GROUP20):
-            return prior_parameters('', array_merge(GROUP19, $list));
-        case in_array($parameter, GROUP21):
-            return prior_parameters('', array_merge(GROUP20, $list));
-        case in_array($parameter, GROUP22):
-            return prior_parameters('', array_merge(GROUP21, $list));
-        case in_array($parameter, GROUP23):
-            return prior_parameters('', array_merge(GROUP22, $list));
-        case in_array($parameter, GROUP24):
-            return prior_parameters('', array_merge(GROUP23, $list));
-        case in_array($parameter, GROUP25):
-            return prior_parameters('', array_merge(GROUP24, $list));
-        case in_array($parameter, GROUP26):
-            return prior_parameters('', array_merge(GROUP25, $list));
-        case in_array($parameter, GROUP27):
-            return prior_parameters('', array_merge(GROUP26, $list));
-        case in_array($parameter, GROUP28):
-            return prior_parameters('', array_merge(GROUP27, $list));
-        case in_array($parameter, GROUP29):
-            return prior_parameters('', array_merge(GROUP28, $list));
-        case in_array($parameter, GROUP30):
-            return prior_parameters('', array_merge(GROUP29, $list));
-        default:
-            bot_debug_log("prior_parameters missed: " . $parameter);
-            return $list;
+
+    // Handle parameters with no numbers in them, e.g. author. This section uses recursion.
+    if (in_array($parameter, GROUP1, true)) {
+        return $list;
+    } elseif (in_array($parameter, GROUP2, true)) {
+        return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+    } elseif (in_array($parameter, GROUP3, true)) {
+        return prior_parameters('', array_merge(GROUP2, $list));
+    } elseif (in_array($parameter, GROUP4, true)) {
+        return prior_parameters('', array_merge(GROUP3, $list));
+    } elseif (in_array($parameter, GROUP5, true)) {
+        return prior_parameters('', array_merge(GROUP4, $list));
+    } elseif (in_array($parameter, GROUP6, true)) {
+        return prior_parameters('', array_merge(GROUP5, $list));
+    } elseif (in_array($parameter, GROUP7, true)) {
+        return prior_parameters('', array_merge(GROUP6, $list));
+    } elseif (in_array($parameter, GROUP8, true)) {
+        return prior_parameters('', array_merge(GROUP7, $list));
+    } elseif (in_array($parameter, GROUP9, true)) {
+        return prior_parameters('', array_merge(GROUP8, $list));
+    } elseif (in_array($parameter, GROUP10, true)) {
+        return prior_parameters('', array_merge(GROUP9, $list));
+    } elseif (in_array($parameter, GROUP11, true)) {
+        return prior_parameters('', array_merge(GROUP10, $list));
+    } elseif (in_array($parameter, GROUP12, true)) {
+        return prior_parameters('', array_merge(GROUP11, $list));
+    } elseif (in_array($parameter, GROUP13, true)) {
+        return prior_parameters('', array_merge(GROUP12, $list));
+    } elseif (in_array($parameter, GROUP14, true)) {
+        return prior_parameters('', array_merge(GROUP13, $list));
+    } elseif (in_array($parameter, GROUP15, true)) {
+        // Often skipped because GROUP14 and GROUP16 are the same. This can only be reached if a GROUP15 parameter is the $parameter.
+        return prior_parameters('', array_merge(GROUP14, $list));
+    } elseif (in_array($parameter, GROUP16, true)) {
+        // Currently unreachable because GROUP14 and GROUP16 are the same.
+        return prior_parameters('', array_merge(GROUP15, $list));
+    } elseif (in_array($parameter, GROUP17, true)) {
+        return prior_parameters('', array_merge(GROUP16, $list));
+    } elseif (in_array($parameter, GROUP18, true)) {
+        return prior_parameters('', array_merge(GROUP17, $list));
+    } elseif (in_array($parameter, GROUP19, true)) {
+        return prior_parameters('', array_merge(GROUP18, $list));
+    } elseif (in_array($parameter, GROUP20, true)) {
+        return prior_parameters('', array_merge(GROUP19, $list));
+    } elseif (in_array($parameter, GROUP21, true)) {
+        return prior_parameters('', array_merge(GROUP20, $list));
+    } elseif (in_array($parameter, GROUP22, true)) {
+        return prior_parameters('', array_merge(GROUP21, $list));
+    } elseif (in_array($parameter, GROUP23, true)) {
+        return prior_parameters('', array_merge(GROUP22, $list));
+    } elseif (in_array($parameter, GROUP24, true)) {
+        return prior_parameters('', array_merge(GROUP23, $list));
+    } elseif (in_array($parameter, GROUP25, true)) {
+        return prior_parameters('', array_merge(GROUP24, $list));
+    } elseif (in_array($parameter, GROUP26, true)) {
+        return prior_parameters('', array_merge(GROUP25, $list));
+    } elseif (in_array($parameter, GROUP27, true)) {
+        return prior_parameters('', array_merge(GROUP26, $list));
+    } elseif (in_array($parameter, GROUP28, true)) {
+        return prior_parameters('', array_merge(GROUP27, $list));
+    } elseif (in_array($parameter, GROUP29, true)) {
+        return prior_parameters('', array_merge(GROUP28, $list));
+    } elseif (in_array($parameter, GROUP30, true)) {
+        return prior_parameters('', array_merge(GROUP29, $list));
+    } else {
+        bot_debug_log("prior_parameters missed: " . $parameter);
+        return $list;
     }
 }
 
