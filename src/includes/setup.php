@@ -202,7 +202,7 @@ if (isset($argv)) {
     define("MAX_PAGES", 2);
 }
 
-if (!TRAVIS) { // This is explicity "tested" in test suite
+if (!TRAVIS) { // This is explicitly "tested" in test suite
     Zotero::create_ch_zotero();
     WikipediaBot::make_ch();
 }

@@ -977,7 +977,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
     } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $template->get($param), $matches)) {
         $the_match = $matches[1];
         $the_match = urldecode(urldecode($the_match));
-        if (preg_match("~^(https.+)/privacy\-?(?:gate|wall|comfirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches)) {
+        if (preg_match("~^(https.+)/privacy\-?(?:gate|wall|confirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches)) {
             $template->set($param, $matches[1] . $matches[2]);
         }
     } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
@@ -1664,7 +1664,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
                             . "|^https?://(?:www\.|pmc\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})"
                             . "|^https?://pmc\.ncbi\.nlm\.nih\.gov/(?:m/|labs/|)articles/(?:PMC)?(\d{4,})~i", $url, $match)) {
-                if (preg_match("~\?term~i", $url)) {  // ALWAYS ADD new @$mathch[] below
+                if (preg_match("~\?term~i", $url)) {  // ALWAYS ADD new @$match[] below
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
                 if ($template->wikiname() === 'cite web') {

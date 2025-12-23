@@ -171,7 +171,7 @@ function expand_by_adsabs(Template $template): void {
             // If the book has someway to find it, or it is just a chapter and not the full book, or it has a location and publisher so it can be googled
             // This also greatly reduces the book review false positives
             (($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') && ($template->has('isbn') || $template->has('oclc') || $template->has('chapter') || ($template->has('location') && $template->has('publisher')))) ||
-            $template->has_good_free_copy() || // Alreadly links out to something free
+            $template->has_good_free_copy() || // Already links out to something free
             $template->has('s2cid') || // good enough, usually includes abstract and link to copy
             ($template->has('doi') && doi_works($template->get('doi'))) || // good enough, usually includes abstract
             $template->has('bibcode')
