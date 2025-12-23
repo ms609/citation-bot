@@ -229,7 +229,7 @@ final class miscToolsTest extends testBaseClass {
     public function testNoDuplicates(): void {
         $test = array_merge(GROUP_F1, GROUP_L1);
         $unique = array_unique($test);
-        $duplicates = array_diff_assoc($test, $unique)
+        $duplicates = array_diff_assoc($test, $unique);
         $this->assertEmpty($duplicates);
         $test = array_merge(GROUP1, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6,
                             GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12,
