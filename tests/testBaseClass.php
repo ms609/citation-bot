@@ -70,7 +70,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
             $this->flush();
             echo 'A'; // For API, since W is taken
             $this->flush();
-            $this->assertNull(null);
+            $this->assertFaker();
         } else {
             $function();
         }
@@ -86,7 +86,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
             AdsAbsControl::big_give_up();
             AdsAbsControl::small_back_on();
             AdsAbsControl::small_give_up();
-            $this->assertNull(null);
+            $this->assertFaker();
         } else {
             try {
                 AdsAbsControl::big_back_on();
@@ -212,7 +212,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function assertFaker(): void {
-        $this->assertTrue(true)l
+        $this->assertTrue(true);
     }
 
 }
