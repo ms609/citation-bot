@@ -1014,7 +1014,7 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' v Astronomicheskii Zhurna ',
     ' van het ',
     ' van het ',
-    ' VideoGIE',
+    ' VideoGIE ',
     ' VirusDisease ',
     ' Vjesnik historijskih arhiva u Rijeci i Pazinu ',
     ' Vjesnik historijskih arhiva u Rijeci i Pazinu ',
