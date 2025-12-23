@@ -1038,6 +1038,10 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         $template->set($param, 'https://' . $matches[1]);
     }
 
+    if (preg_match("~^(https?://academic\.oup\.com/.+)#no-access-message$~", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+
     // Proxy stuff
     if (mb_stripos($template->get($param), 'proxy') !== false) {
         // Look for proxy first for speed, this list will grow and grow
