@@ -3,37 +3,37 @@
 declare(strict_types=1);
 
 const GROUP_F1  = ['first', 'initials', 'forename', 'contributor-first', 'contributor-given', 'author-first', 'given', 'author-given'];
-const GROUP_L1  = ['last', 'surname', 'author', 'contributor-last', 'contributor-surname', 'contributor', 'author-last', 'author-surname'];
+const GROUP_L1  = ['last', 'surname', 'author', 'contributor-last', 'contributor-surname', 'contributor', 'author-last', 'author-surname', 'subject', 'subject-first', 'subject-given', 'subject-last', 'subject-link', 'subject-mask', 'subject-surname'];
 const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname', 'initials', 'given', 'host', 'people'];
 const GROUP2  = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors', 'coauthors', 'coauthor', 'author-mask', 'contributor-last', 'contributor-link', 'contributor-mask', 'contributor-surname', 'contributor', 'display-contributors', 'display-interviewers', 'display-subjects', 'display-translators', 'editor-first', 'editor-given', 'editor-last', 'editor-link', 'editor-mask', 'editor-surname', 'editor', 'interviewer-first', 'interviewer-given', 'interviewer-last', 'interviewer-link', 'interviewer-mask', 'interviewer-surname', 'interviewer', 'inventor-first', 'inventor-given', 'inventor-last', 'inventor-link', 'inventor-surname', 'inventor', 'inventorlink', 'translator-first', 'translator-given', 'translator-last', 'translator-link', 'translator-mask', 'translator-surname', 'translator', 'veditor', 'contributor-first', 'contributor-given', 'author-first', 'author-given', 'author-last', 'author-surname', 'authorlink'];
-const GROUP3  = ['title', 'title-link', 'titlelink', 'trans-title', 'entry', 'article', 'episode'];
-const GROUP4  = ['chapter', 'contribution'];
-const GROUP5  = ['journal', 'work', 'newspaper', 'website', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia', 'book-title', 'trans-newspaper', 'trans-periodical', 'trans-website', 'trans-work', 'conference', 'dictionary'];
+const GROUP3  = ['title', 'title-link', 'titlelink', 'trans-title', 'entry', 'article', 'episode', 'trans-article'];
+const GROUP4  = ['chapter', 'contribution', 'trans-chapter', 'trans-contribution', 'time-caption'];
+const GROUP5  = ['journal', 'work', 'newspaper', 'website', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia', 'book-title', 'trans-newspaper', 'trans-periodical', 'trans-website', 'trans-work', 'conference', 'dictionary', 'trans-journal', 'trans-magazine', 'trans-encyclopaedia', 'trans-encyclopedia'];
 const GROUP6  = ['series'];
-const GROUP7  = ['year', 'date'];
+const GROUP7  = ['year', 'date', 'orig-date', 'orig-year', 'origyear', 'gdate', 'fdate', 'issue-date', 'pridate', 'pubdate', 'publication-date', 'time', 'season'];
 const GROUP8  = ['volume'];
-const GROUP9  = ['issue', 'number'];
-const GROUP10 = ['page', 'pages', 'at', 'p', 'pp'];
-const GROUP11 = ['article-number'];
-const GROUP12 = ['location', 'publisher', 'edition', 'agency'];
+const GROUP9  = ['issue', 'number', 'series-number', 'series-no', 'sections', 'section'];
+const GROUP10 = ['page', 'pages', 'at', 'p', 'pp', 'no-pp', 'sheet', 'sheets'];
+const GROUP11 = ['article-number', 'publication-number'];
+const GROUP12 = ['location', 'publisher', 'edition', 'agency', 'publication-place', 'institution', 'place'];
 const GROUP13 = ['doi'];
 const GROUP14 = ['doi-broken-date'];
 const GROUP15 = ['doi-access'];
 // GROUP16 does not exist
-const GROUP17 = ['jstor'];
+const GROUP17 = ['jstor', 'jstor-access'];
 const GROUP18 = ['pmid'];
 const GROUP19 = ['pmc'];
 const GROUP20 = ['pmc-embargo-date'];
 const GROUP21 = ['arxiv', 'eprint', 'class'];
 const GROUP22 = ['bibcode', 'bibcode-access'];
 const GROUP23 = ['hdl', 'hdl-access'];
-const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'ssrn-access'];
+const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'ssrn-access', 'medrxiv', 'osti-access'];
 const GROUP25 = ['lccn', 'issn', 'ol', 'oclc', 'asin', 's2cid', 's2cid-access', 'eissn', 'docket'];
 const GROUP26 = ['url'];
 const GROUP27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl', 'URL'];
-const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date', 'chapter-url-access', 'entry-url-access', 'contribution-url-access', 'article-url-access', 'url-access', 'url-status', 'chapter-format', 'article-format', 'conference-format', 'contribution-format', 'entry-format', 'transcript-format'];
+const GROUP28 = ['archive-url', 'archiveurl', 'accessdate', 'access-date', 'chapter-url-access', 'entry-url-access', 'contribution-url-access', 'article-url-access', 'url-access', 'url-status', 'status', 'chapter-format', 'article-format', 'conference-format', 'contribution-format', 'entry-format', 'transcript-format', 'series-link', 'section-url-access', 'section-format'];
 const GROUP29 = ['archive-date', 'archivedate'];
-const GROUP30 = ['id', 'type', 'via', 'citation_bot_placeholder_bare_url', 'df', 'trans-quote', 'air-date', 'airdate', 'archive-format', 'asin-tld', 'assign', 'assignee', 'audio-visual', 'cartography', 'collaboration', 'country-code', 'country', 'credits', 'degree', 'department', 'description', 'transcript', 'version'];
+const GROUP30 = ['template-doc-demo', 'id', 'type', 'via', 'citation_bot_placeholder_bare_url', 'df', 'trans-quote', 'air-date', 'airdate', 'archive-format', 'asin-tld', 'assign', 'assignee', 'audio-visual', 'cartography', 'collaboration', 'country-code', 'country', 'credits', 'degree', 'department', 'description', 'transcript', 'version'];
 
 function check_memory_usage(string $where): void {
     $mem_used = (int) (memory_get_usage() / 1048576);
