@@ -204,10 +204,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function sleep_pubmed(): void {
-        if (empty(HEADER_S2)) { // More forgiving on pulls requests
-            sleep(2);
+        if (empty(HEADER_S2)) { // More forgiving on pull requests
+            sleep(3);
         } else {
-            usleep(1);
+            uleep(1);
         }
     }
 }
