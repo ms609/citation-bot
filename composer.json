@@ -32,7 +32,7 @@
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",
         "phplint": "phplint --exclude=vendor --no-interaction -vv ./",
         "phpstan": "phpstan --no-interaction analyse --memory-limit=2G src/*.php src/includes/*.php src/includes/*/*.php",
-        "progpilot": "progpilot --configuration progpilot.yml *.php includes/*.php includes/*/*.php",
+        "progpilot": "progpilot --configuration progpilot.yml src/*.php src/includes/*.php src/includes/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "psalm": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --memory-limit=4G",
         "psalm-taint": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G",
         "test": "phpunit --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2"

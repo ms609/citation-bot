@@ -9,46 +9,46 @@
             18
         ],
         "source_column": [
-            682
+            686
         ],
         "source_file": [
-            "authenticate.php"
+            "src\/authenticate.php"
         ],
         "tainted_flow": [
             [
                 {
                     "flow_name": "$where",
-                    "flow_line": 88,
-                    "flow_column": 3254,
-                    "flow_file": "authenticate.php"
+                    "flow_line": 85,
+                    "flow_column": 3256,
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
-                    "flow_line": 88,
-                    "flow_column": 3263,
-                    "flow_file": "authenticate.php"
+                    "flow_line": 85,
+                    "flow_column": 3265,
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
-                    "flow_name": "$mb_trim_param0_line88_column3263_progpilot",
-                    "flow_line": 88,
-                    "flow_column": 3263,
-                    "flow_file": "authenticate.php"
+                    "flow_name": "$mb_trim_param0_line85_column3265_progpilot",
+                    "flow_line": 85,
+                    "flow_column": 3265,
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
-                    "flow_line": 88,
-                    "flow_column": 3271,
-                    "flow_file": "authenticate.php"
+                    "flow_line": 85,
+                    "flow_column": 3273,
+                    "flow_file": "src\/authenticate.php"
                 }
             ]
         ],
         "sink_name": "header",
         "sink_line": 22,
-        "sink_column": 841,
-        "sink_file": "authenticate.php",
+        "sink_column": 845,
+        "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "45247331845c94fc13b63578a2176107b67565f52b5edeec6220b9e1c5296d5b",
+        "vuln_id": "59b8393898ab79cc658f8d7de25eb24f86a4f4540b06c7add3766eb8cc5cf944",
         "vuln_type": "taint-style"
     }
 ,
@@ -57,10 +57,10 @@
         "vuln_name": "security misconfiguration",
         "vuln_line": 9,
         "vuln_column": 129,
-        "vuln_file": "gadgetapi.php",
+        "vuln_file": "src\/gadgetapi.php",
         "vuln_description": "CORS should not be allowed on all origins",
         "vuln_cwe": "CWE_346",
-        "vuln_id": "46b07527b13d1d55e163638fe6f60568dcd5e5e4e69204fd88af731bd2e8f7c5",
+        "vuln_id": "fe08183038499157970fd6a1a65a3585ebfb15be51b29909133c74ece3dc77c1",
         "vuln_type": "custom"
     }
 ]
