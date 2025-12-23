@@ -4,7 +4,8 @@
     "description": "Expands CS1/CS2 citation templates on Wikipedia",
     "config": {
         "allow-plugins": {
-            "third-party/required-plugin": true
+            "third-party/required-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         },
         "prefer-stable": true,
         "minimum-stability": "dev",
@@ -25,6 +26,7 @@
         "vimeo/psalm": "^6"
     },
     "scripts": {
+        "coverage-report": "phpunit --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
         "phan": "phan --analyze-twice --allow-polyfill-parser",
         "phpcbf": "phpcbf -p -d memory_limit=1000M --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",

@@ -150,6 +150,7 @@ final class miscToolsTest extends testBaseClass {
         $parameter = 'journal';
         $list = [];
         // prior_parameters() outputs the first parameter twice for some reason. So for example, FLATTENED_AUTHOR_PARAMETERS is an array ['surname', 'forename', 'initials', etc. ]. And the output of prior_parameters() is ['surname, 'surname', 'forename', 'initials', etc. ]. The strings in the below list are these duplicates.
+        // TODO: don't output the first parameter twice? seems unnecessary.
         $expected = array_merge(
             ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal']
         );
@@ -177,11 +178,22 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
+    public function testPriorParametersGroup15(): void {
+        $parameter = 'doi-access';
+        $list = [];
+        // doi-broken-date is in two GROUPs for some reason.
+        // I tried writing a test for group 16 (one of the duplicate doi-broken-dates) and wasn't able to reach that code.
+        // TODO: delete GROUP 16? or replace it with ['']?
+        $expected = array_merge(
+            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['doi-access']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
     public function testPriorParametersGroup23(): void {
         $parameter = 'hdl';
         $list = [];
-        // doi-broken-date is in two GROUPs for some reason. prior_parameters de-duplicates it though (by eliminating GROUPS 15 and 16?).
-        // hdl is the first parameter in GROUP 23.
+        // GROUPS 15 and 16 get skipped because of the duplicate doi-broken-date parameter.
         $expected = array_merge(
             ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl']
         );
@@ -191,9 +203,29 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersGroup30(): void {
         $parameter = 'id';
         $list = [];
-        // id is the first parameter in GROUP 30.
+        // GROUPS 15 and 16 get skipped because of the duplicate doi-broken-date parameter.
         $expected = array_merge(
             ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl'], GROUP23, ['isbn'], GROUP24, ['lccn'], GROUP25, ['url'], GROUP26, ['chapter-url'], GROUP27, ['archive-url'], GROUP28, ['archive-date'], GROUP29, ['id']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersDefaultNumericBranch(): void {
+        $parameter = 'publisher2';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS,
+            [
+                'publisher1',
+                'publisher1-last',
+                'publisher1-first',
+                'publisher-last1',
+                'publisher-first1',
+                'publisher1-surname',
+                'publisher1-given',
+                'publisher-surname1',
+                'publisher-given1',
+            ]
         );
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
