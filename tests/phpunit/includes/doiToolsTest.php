@@ -141,7 +141,7 @@ final class doiToolsTest extends testBaseClass {
             $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         $changes = "";
-        unset($value)
+        unset($value);
         foreach (array_keys(NULL_DOI_LIST) as $doi) {
             if (isset(NULL_DOI_BUT_GOOD[$doi])) {
                 $changes = $changes . "In Both: " . $doi . "                ";
