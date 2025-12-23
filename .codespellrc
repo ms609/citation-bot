@@ -1,0 +1,6 @@
+[codespell]
+skip = .git,vendor,node_modules,*.lock,composer.json,docs/architecture.svg,src/includes/constants/null_bad_doi.php,src/includes/constants/null_good_doi.php
+exclude-file = src/includes/constants/bad_data.php
+# Foreign words in journal names, DOI abbreviations, intentional test data, Vietnamese/French translations, proper names, and regex patterns
+ignore-words-list = ist,nd,te,mot,als,serie,archiv,histori,jornal,studi,efort,mis,nast,aas,oficial,inthe,ofthe,ned,notin,ans,dum,duh,espace,isssue,tittle,auhtor,auther,indes,wapper,candidat,valide,fpr,fpt,ehr,haa,clen,tre,ihs,hel,ane,pres,aer,ths,fro,nin,sais,ser,stap,acn,memor,inted,boun,whe,fo,strat,seh,vas,jist,aci,ect,lien,thay,alls,stings,theses,independ,brough,doubleclick,2st,hepl
+quiet-level = 2
