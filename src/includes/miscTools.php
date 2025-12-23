@@ -19,7 +19,7 @@ const GROUP12 = ['location', 'publisher', 'edition', 'agency'];
 const GROUP13 = ['doi'];
 const GROUP14 = ['doi-broken-date'];
 const GROUP15 = ['doi-access'];
-const GROUP16 = ['doi-broken-date'];
+// GROUP16 does not exist
 const GROUP17 = ['jstor'];
 const GROUP18 = ['pmid'];
 const GROUP19 = ['pmc'];
@@ -147,13 +147,9 @@ function prior_parameters(string $parameter, array $list = []): array {
     } elseif (in_array($parameter, GROUP14, true)) {
         return prior_parameters('', array_merge(GROUP13, $list));
     } elseif (in_array($parameter, GROUP15, true)) {
-        // Often skipped because GROUP14 and GROUP16 are the same. This can only be reached if a GROUP15 parameter is the $parameter.
         return prior_parameters('', array_merge(GROUP14, $list));
-    } elseif (in_array($parameter, GROUP16, true)) {
-        // Currently unreachable because GROUP14 and GROUP16 are the same.
+    } elseif (in_array($parameter, GROUP17, true)) { // There is no GROUP 16
         return prior_parameters('', array_merge(GROUP15, $list));
-    } elseif (in_array($parameter, GROUP17, true)) {
-        return prior_parameters('', array_merge(GROUP16, $list));
     } elseif (in_array($parameter, GROUP18, true)) {
         return prior_parameters('', array_merge(GROUP17, $list));
     } elseif (in_array($parameter, GROUP19, true)) {
@@ -182,6 +178,9 @@ function prior_parameters(string $parameter, array $list = []): array {
         return prior_parameters('', array_merge(GROUP29, $list));
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
+        if (TRAVIS && $parameter !== 'not-a-param' && $parameter !== 's2cid1') {
+            return [];  // errors in test suite that were not expected
+        }
         return $list;
     }
 }
