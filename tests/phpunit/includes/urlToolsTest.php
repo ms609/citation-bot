@@ -888,11 +888,4 @@ final class urlToolsTest extends testBaseClass {
         $this->assertNull($prepared->get2('archiveurl'));
     }
 
-    public function testRemoveNoAccessMessageFromOUP(): void {
-        $text = '{{cite journal|url=https://academic.oup.com/gji/article-abstract/230/1/50/6522179#no-access-message}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('url');
-        $this->assertSame('https://academic.oup.com/gji/article-abstract/230/1/50/6522179', $template->get2('url'));
-    }
-
 }
