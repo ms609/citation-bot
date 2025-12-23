@@ -215,4 +215,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $this->assertTrue(true);
     }
 
+    protected function assertFailure(): void {
+        $this->assertTrue(false);
+    }
 }
