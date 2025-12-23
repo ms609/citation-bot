@@ -215,7 +215,7 @@ function format_author(string $author): string {
         $fore = $auth[1];
     } else { //Otherwise we've got no handy comma to separate; we'll have to use spaces and periods.
         $auth = explode(".", $author);
-        if (isset($auth[1])){
+        if (isset($auth[1])) {
             /* Possibilities are:
             M.A. Smith
             Smith M.A.
@@ -230,7 +230,7 @@ function format_author(string $author): string {
                 // it ends in a .
                 if (is_initials($auth[$countAuth-1])) {
                     // it's Conway Morris S.C.
-                    foreach (explode(" ", $auth[0]) as $bit){
+                    foreach (explode(" ", $auth[0]) as $bit) {
                         if (is_initials($bit)) {
                             $i[] = format_initials($bit);
                         } else {
@@ -238,7 +238,7 @@ function format_author(string $author): string {
                         }
                     }
                     unset($auth[0]);
-                    foreach ($auth as $bit){
+                    foreach ($auth as $bit) {
                         if (is_initials($bit)) {
                             $i[] = format_initials($bit) . '.';
                         } else {
@@ -265,7 +265,7 @@ function format_author(string $author): string {
             // We have no punctuation! Let's delimit with spaces.
             $chunks = array_reverse(explode(" ", $author));
             $i = [];
-            foreach ($chunks as $chunk){
+            foreach ($chunks as $chunk) {
                 if (!$surname && !is_initials($chunk)) {
                     $surname = $chunk;
                 } else {
@@ -311,7 +311,7 @@ function format_multiple_authors(string $authors): string {
     $savedChunk = '';
     $bits = [];
     if (isset($authors[1])) {
-        foreach ($authors as $A){
+        foreach ($authors as $A) {
             if (mb_trim($A) !== "") {
                 $return[] = format_author($A);
             }
@@ -319,14 +319,14 @@ function format_multiple_authors(string $authors): string {
     } else {
         //Use commas as delimiters
         $chunks = explode(",", $authors[0]);
-        foreach ($chunks as $chunk){
+        foreach ($chunks as $chunk) {
             $chunk = mb_trim($chunk);
             if ($chunk === '') {
                 continue; // Odd things with extra commas
             }
             $bits = explode(" ", $chunk);
             $bitts = [];
-            foreach ($bits as $bit){
+            foreach ($bits as $bit) {
                 if ($bit) {
                     $bitts[] = $bit;
                 }
@@ -347,7 +347,7 @@ function format_multiple_authors(string $authors): string {
     $return = implode("; ", $return);
     $frags = explode(" ", $return);
     $return = [];
-    foreach ($frags as $frag){
+    foreach ($frags as $frag) {
         $return[] = is_initials($frag) ? format_initials($frag) : $frag;
     }
     return safe_preg_replace("~;$~", "", mb_trim(implode(" ", $return)));
