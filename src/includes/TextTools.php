@@ -84,10 +84,10 @@ function wikify_external_text(string $title): string {
     $wikiTags = ['<sub>', '</sub>'];
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>'];
-    $wikiTags = ['. ','. ','. ','. ','. ','. ','. ','. ','. '];
+    $wikiTags = ['. ', '. ', '. ', '. ', '. ', '. ', '. ', '. ', '. '];
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>'];
-    $wikiTags = ['. ','. ','. ','. ','. ','. ', ' ',' ',' '];
+    $wikiTags = ['. ', '. ', '. ', '. ', '. ', '. ', ' ', ' ', ' '];
     $title = mb_trim(str_ireplace($originalTags, $wikiTags, $title));
     if (preg_match("~^\. (.+)$~", $title, $matches)) {
         $title = mb_trim($matches[1]);
@@ -960,7 +960,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url): string {
-    $in = [' ', '"', '\'', '<','>', '[', ']', '{', '|', '}'];
+    $in = [' ', '"', '\'', '<', '>', '[', ']', '{', '|', '}'];
     $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
     return str_replace($in, $out, $url);
 }
