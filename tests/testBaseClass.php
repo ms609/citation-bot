@@ -195,4 +195,19 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
+    protected function sleep_S2(): void {
+        if (empty(HEADER_S2)) {
+            sleep(6);
+        } else {
+            usleep(100000);
+        }
+    }
+
+    protected function sleep_pubmed(): void {
+        if (empty(HEADER_S2)) { // More forgiving on pull requests
+            sleep(3);
+        } else {
+            sleep(1);
+        }
+    }
 }
