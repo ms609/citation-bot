@@ -4,7 +4,8 @@
     "description": "Expands CS1/CS2 citation templates on Wikipedia",
     "config": {
         "allow-plugins": {
-            "third-party/required-plugin": true
+            "third-party/required-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         },
         "prefer-stable": true,
         "minimum-stability": "dev",
@@ -16,7 +17,7 @@
     },
     "require-dev": {
         "designsecurity/progpilot": "^1",
-        "mediawiki/mediawiki-codesniffer": "^40.0.1",
+        "mediawiki/mediawiki-codesniffer": "^48.0.0",
         "overtrue/phplint": "^9",
         "phan/phan": "^5",
         "phpstan/phpstan": "^2.1.32",

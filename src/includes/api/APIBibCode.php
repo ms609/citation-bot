@@ -407,7 +407,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     foreach ($response->docs as $record) {
         report_info("Found match for bibcode " . bibcode_link($record->bibcode));
         $matched_ids[] = $record->bibcode;
-        foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+        foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
             if (isset($record->bibcode) && mb_strtolower($an_id) === mb_strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
                 $this_template = $templates[$template_key];
                 if (isset($record->citation_bot_new_bibcode)) {
@@ -678,7 +678,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
             $recid = (string) $recid;
-            if(mb_strtolower(mb_substr($recid, 0, 6)) === 'arxiv:') {
+            if (mb_strtolower(mb_substr($recid, 0, 6)) === 'arxiv:') {
                 if (isset($record->arxivclass)) {
                     $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
                 }
@@ -686,7 +686,7 @@ function process_bibcode_data(Template $this_template, object $record): void {
             }
         }
     }
-    if (isset($record->doi)){
+    if (isset($record->doi)) {
         $doi = (string) @$record->doi[0];
         if (doi_works($doi)) {
             $this_template->add_if_new('doi', $doi);

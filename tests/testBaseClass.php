@@ -111,7 +111,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function make_citation(string $text): Template {
-        $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
+        $tp = new TestPage(); // Fill page name with test name for debugging
+        unset($tp);
         $this->flush();
         Template::$all_templates = [];
         Template::$date_style = DateStyle::DATES_WHATEVER;

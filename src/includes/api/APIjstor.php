@@ -23,7 +23,7 @@ function expand_by_jstor(Template $template): void {
     }
     if ($template->has('jstor')) {
         $jstor = mb_trim($template->get('jstor'));
-    } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
+    } elseif (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
         $jstor = $match[1];
     } else {
         return;
