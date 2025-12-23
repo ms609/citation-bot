@@ -254,7 +254,12 @@ final class miscToolsTest extends testBaseClass {
                 $bad[] = $param;
             }
         }
-        $this->assertEmpty($bad);
+        if (!empty($bad)) {
+            $this->flush();
+            print_r($bad);
+            $this->flush();
+        }
+        $this->assertNull($bad);
     }
 
 }
