@@ -64,7 +64,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         return;
     }
 
-    // Arxiv currently does not order the data recieved according to id_list. This is causing CitationBot to mix up
+    // Arxiv currently does not order the data received according to id_list. This is causing CitationBot to mix up
     // which Arxiv ID is associated with which citation. As a result, we first perform a sorting pass to make sure we
     // order the arxiv data based on our id_list so that we have a 1 to 1 ordering of both.
     // Include both with and without version numbered ones
