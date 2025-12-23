@@ -252,7 +252,7 @@ final class constantsTest extends testBaseClass {
             $text = '{{citation | ' . $value . ' = Z123Z }}';
             $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
             $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate',  'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ',    '| pp = Z123Z ',    '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '],  // Put spaces on end to not change chapter-url-access and such
-                                ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
+                                ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url ', '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
             $text = str_replace(['| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z ', '| arşivengelli = Z123Z '], '', $text);
             $text = str_replace(['displayeditors',  'editor1mask',  'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
                                 ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
@@ -260,7 +260,7 @@ final class constantsTest extends testBaseClass {
                                 ['editor1-link', 'editor1-link', 'subject-link1', 'orig-date'], $text);
             $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city',     'editorlink',  ' editors ='],
                                 ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link', ' editor ='], $text);
-            $text = str_replace(['episodelink',  'mailinglist',  'mapurl',  'serieslink' , 'coauthor '],
+            $text = str_replace(['episodelink',  'mailinglist',  'mapurl',  'serieslink', 'coauthor '],
                                 ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ], $text);
             $text = str_replace(['titlelink',  'nocat',       'nocat',       ' embargo',          'conferenceurl',  'contributionurl',  'laydate',  'laysource',  'layurl',  'sectionurl',  'seriesno',  'timecaption',  'titlelink'],
                                 ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);

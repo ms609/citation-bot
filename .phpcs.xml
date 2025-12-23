@@ -21,7 +21,6 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
         <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
-        <exclude name="Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence.MissingParentheses"/>
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
         <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>

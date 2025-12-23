@@ -122,7 +122,7 @@ class Page {
         $this->text = WikipediaBot::GetAPage($title);
 
         if ($this->text === '') {
-            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
+            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
             return false;                                                                                                                                    // @codeCoverageIgnore
         }
         $this->start_text = $this->text;
