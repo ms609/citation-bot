@@ -732,13 +732,20 @@ final class constantsTest extends testBaseClass {
     }
 
     public function testForNumbers(): void {
+        $found = [];
         foreach (PARAMETER_LIST as $param) {
             $param = str_replace('#', '', $param);
             if (preg_match('~\d+~', $param) && mb_stripos($param, 's2cid') === false) {
-                $this->assertNull('Code assumes this does not exist: ' . $param); // There are a few places in the code where parameters are assumed to not have numbers - look for s2cid
+                $found[] = $param; // There are a few places in the code where parameters are assumed to not have numbers - look for s2cid
             }
         }
         $this->assertFaker();
+        if (!empty($found)) {
+            $this->flush();
+            print_r($found);
+            $this->flush();
+            $this->assertFailure();
+        }
     }
 
 }
