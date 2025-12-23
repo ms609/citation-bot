@@ -1,5 +1,5 @@
 parameters:
-    level: 6
+    level: 8
     dynamicConstantNames:
         - HTML_OUTPUT
         - SLOW_MODE
