@@ -6,7 +6,8 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class TextToolsTest extends testBaseClass {
 
     public function testCapitalization1a(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), true));
     }
     public function testCapitalization1b(): void {
@@ -105,7 +106,8 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testTidyDate1(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
         $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
         $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
@@ -113,7 +115,8 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
     public function testTidyDate2(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
         $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
         $this->assertSame('2011', tidy_date('05/11/2011 12:52:08'));
@@ -122,20 +125,23 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
     }
     public function testTidyDate3(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('', tidy_date('-0001-11-30T00:00:00+00:00'));
         $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
         $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
         $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
     }
     public function testTidyDate4(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
         $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
     }
 
     public function testTidyDate5(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('', tidy_date('Invalid'));
         $this->assertSame('', tidy_date('1/1/0001'));
         $this->assertSame('', tidy_date('0001-01-01'));
@@ -144,7 +150,8 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testTidyDate6(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('', tidy_date('2000 1999-1998'));
         $this->assertSame('', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('0011-10-07'));
@@ -184,12 +191,14 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testRemoveComments(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
     }
 
     public function test_titles_are_dissimilar_LONG(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
         $big1 = $big1 . $big1 . $big1 . $big1 . $big1;
         $big2 = $big1 . "X"; // stuff...X
@@ -200,18 +209,21 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function test_titles_are_similar_ticks(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
         $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
     }
 
     public function test_titles_are_similar_series(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(titles_are_similar('ABC  (clifton, n j ) ', 'ABC  '));
     }
 
     public function test_titles_are_similar_junk(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(titles_are_similar('DSFrHdseyJhgdtyhTSFDhge5safdsfasdfa', '��D��S��F��r��H��d��s��e��y��J��h��g��d��t��y��h��T��S��F��D��h��g��e��5��s��a��f��d��s��f��a��s��d��f��a��'));
     }
 
@@ -281,7 +293,8 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame("'Y'", straighten_quotes($text, false));
     }
     public function testArrowAreQuotes15(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame($text, straighten_quotes($text, false));
     }
@@ -349,7 +362,8 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testEm(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame("'''A'''", wikify_external_text('<Emphasis Type="Bold">A</Emphasis>'));
     }
 
@@ -375,7 +389,8 @@ final class TextToolsTest extends testBaseClass {
 
     /** The X prevents first character caps */
     public function testCapitalization_lots_more(): void { // Double check that constants are in order when we sort - paranoid
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), true));
         $this->assertSame('X delle', title_capitalization(title_case('X delle'), true));
         $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), true));
@@ -529,7 +544,8 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testCleanDates1(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('', clean_dates(''));
     }
 

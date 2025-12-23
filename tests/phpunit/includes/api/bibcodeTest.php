@@ -103,7 +103,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Nature Communications', $template->get2('journal'));
-        $this->assertSame('10.1038/ncomms14879',  $template->get2('doi'));
+        $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
     }
 
     public function testBibcodeData2(): void {
@@ -187,7 +187,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Science', $template->get2('journal'));
-        $this->assertSame('10.1126/science.267.5194.77',  $template->get2('doi'));
+        $this->assertSame('10.1126/science.267.5194.77', $template->get2('doi'));
     }
 
     public function testBibcodeData5(): void {
@@ -218,7 +218,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Geology', $template->get2('journal'));
-        $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',  $template->get2('doi'));
+        $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2', $template->get2('doi'));
     }
 
     public function testBibcodeData6(): void {
@@ -238,7 +238,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Journal of Paleontology', $template->get2('journal'));
-        $this->assertSame('1974',  $template->get2('date'));
+        $this->assertSame('1974', $template->get2('date'));
     }
 
     public function testBibcodeData7(): void {
@@ -264,7 +264,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Nature', $template->get2('journal'));
-        $this->assertSame('10.1038/211116a0',  $template->get2('doi'));
+        $this->assertSame('10.1038/211116a0', $template->get2('doi'));
     }
 
     public function testBibcodeData8(): void {
@@ -292,7 +292,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('1995', $template->get2('date'));
-        $this->assertSame('astro-ph/9508159',  $template->get2('arxiv') . $template->get2('eprint'));
+        $this->assertSame('astro-ph/9508159', $template->get2('arxiv') . $template->get2('eprint'));
     }
 
     public function testBibcodeData9(): void {
@@ -317,7 +317,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('Nature', $template->get2('journal'));
-        $this->assertSame('10.1038/129018a0',  $template->get2('doi'));
+        $this->assertSame('10.1038/129018a0', $template->get2('doi'));
     }
 
     public function testBibcodeData10(): void {
@@ -349,7 +349,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         process_bibcode_data($template, $results);
         $this->assertSame('2019', $template->get2('date'));
-        $this->assertSame('1905.02552',  $template->get2('arxiv') . $template->get2('eprint'));
+        $this->assertSame('1905.02552', $template->get2('arxiv') . $template->get2('eprint'));
     }
 
     public function testBibcodeData11(): void {

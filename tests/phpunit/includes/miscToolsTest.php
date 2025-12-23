@@ -5,7 +5,8 @@ require_once __DIR__ . '/../../testBaseClass.php';
 
 final class miscToolsTest extends testBaseClass {
     public function testcheck_memory_usage(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         check_memory_usage('testcheck_memory_usage');
         $this->assertTrue(true);
     }

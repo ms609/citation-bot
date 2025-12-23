@@ -6,7 +6,8 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class urlToolsTest extends testBaseClass {
 
     public function testFixupGoogle(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
         $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
     }
@@ -107,7 +108,7 @@ final class urlToolsTest extends testBaseClass {
 
     public function testAmazonExpansion5(): void {
         $text = "{{Cite book | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 |isbn=exists}}";
-        $expanded = $this->prepare_citation($text);;
+        $expanded = $this->prepare_citation($text);
         $this->assertNull($expanded->get2('asin'));
         $this->assertNull($expanded->get2('chapter-url'));
         $this->assertSame('exists', $expanded->get2('isbn'));

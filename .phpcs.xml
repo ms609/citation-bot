@@ -3,6 +3,7 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
         <!-- Intentionally excluded -->
         <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
         <exclude name="MediaWiki.Commenting.FunctionAnnotations.UnrecognizedAnnotation"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPrivate"/>
@@ -10,10 +11,13 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
+        <exclude name="MediaWiki.Commenting.PropertyAnnotations.UnrecognizedAnnotation"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar"/>
+        <exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
+        <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
         <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
@@ -22,15 +26,11 @@
         <!-- To fix -->
         <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
-        <exclude name="Generic.Formatting.DisallowMultipleStatements.SameLine"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
-        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
-        <exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
-        <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
         <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
         <exclude name="MediaWiki.Usage.IsNull.IsNull"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>

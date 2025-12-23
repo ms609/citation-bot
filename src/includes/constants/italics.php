@@ -467,7 +467,7 @@ const CAMEL_CASE = [
     'TlInGe', 'RapidArc', 'SmartArc', 'TomoHD', 'ViralZone', 'HyPhy',
     'MrBayes', 'SunTag', 'InterPro', 'SmProt', 'ChikDenMaZika', 'LitCovid',
     'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps',
-    'DevOps', 'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress',
+    'DevOps', 'LeafCutter', 'CyBase', 'OxPhos', 'ArrayExpress',
     'BepiColombo', 'RuleMonkey', 'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest',
     'ActiTest', 'FloTrac', 'FibroScan', 'ColorBrewer', 'StagLab',
     'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ', 'Tg-AD', 'mHealth',

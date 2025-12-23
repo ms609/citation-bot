@@ -26,7 +26,7 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
     curl_setopt_array($ch, [
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
-        CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
+        CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
         CURLOPT_USERAGENT => BOT_USER_AGENT,
         CURLOPT_AUTOREFERER => "1",
         CURLOPT_REFERER => "https://en.wikipedia.org",

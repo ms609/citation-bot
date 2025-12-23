@@ -73,7 +73,7 @@ if ($total > intval(MAX_PAGES / 4)) {
     report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
-        echo echoable(str_replace(' ', '_', (string) $page_title)) , "\n";
+        echo echoable(str_replace(' ', '_', (string) $page_title)), "\n";
     }
     echo "\n\n";
     bot_html_footer();
