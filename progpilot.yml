@@ -19,7 +19,6 @@ inputs:
         - ~
     exclusions:
         - "vendor"
-        - "tests"
         - ".git"
         - ".github"
     resolved_includes_file: ~
