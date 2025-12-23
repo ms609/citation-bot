@@ -2000,7 +2000,7 @@ EP - 999 }}';
         if (in_array($title, [$title1, $title2, $title3], true)) {
             $this->assertFaker();
         } else {
-            $this->assertTrue($title); // What did we get
+            $this->assertSame('Should not have got this', $title); // What did we get
         }
     }
 
