@@ -1706,7 +1706,7 @@ EP - 999 }}';
         $this->assertSame('33', $expanded->get2('issue'));
     }
 
-    public function testTitleItalics():void {
+    public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168}}';
         $expanded = $this->process_citation($text);
         $title = $expanded->get('title');
