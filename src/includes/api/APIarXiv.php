@@ -33,7 +33,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         $ch = bot_curl_init(1.0, []);
     }
     set_time_limit(120);
-    if (count($ids) === 0) {
+    if (count($ids) === 0 || empty($templates)) {
         return;
     }
     report_action("Getting data from arXiv API");
