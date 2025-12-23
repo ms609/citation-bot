@@ -257,5 +257,4 @@ final class miscToolsTest extends testBaseClass {
         $this->assertEmpty($bad);
     }
 
-    
 }
