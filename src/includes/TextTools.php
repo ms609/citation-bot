@@ -239,11 +239,17 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_ireplace(["®", "&reg;", "(r)"], [' ', ' ', ' '], $str);
     $str = str_replace(['   ', '  '], [' ', ' '], $str);
     $str = mb_trim($str);
-    $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
-                        ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''], $str);
+    $str = str_ireplace(
+        ['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
+        ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''],
+        $str
+    );
     $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
-    $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
-                                            ['Springer',             'Springer',                                 'Springer',                'Springer'               ], $str);
+    $str = str_ireplace(
+        ['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
+        ['Springer', 'Springer', 'Springer', 'Springer'],
+        $str
+    );
     $str = straighten_quotes($str, true);
     $str = str_replace("′", "'", $str);
     $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)

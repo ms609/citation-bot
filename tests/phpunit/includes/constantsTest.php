@@ -16,13 +16,13 @@ final class constantsTest extends testBaseClass {
             $this->assertSame(mb_trim(JOURNAL_ACRONYMS[$i]), mb_trim(title_capitalization(mb_ucwords(mb_trim(UCFIRST_JOURNAL_ACRONYMS[$i])), true)));
             // Verify that they are padded with a space
             $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
-            $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  0, 1));
+            $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], 0, 1));
             $this->assertNotEquals(' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -2, 1));
-            $this->assertNotEquals(' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  1, 1));
+            $this->assertNotEquals(' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], 1, 1));
             $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i], -1, 1));
-            $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i],  0, 1));
+            $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i], 0, 1));
             $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i], -2, 1));
-            $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i],  1, 1));
+            $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i], 1, 1));
         }
         $this->assertSame(count(LC_SMALL_WORDS), count(UC_SMALL_WORDS));
         for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
@@ -34,9 +34,9 @@ final class constantsTest extends testBaseClass {
             }
             // Verify that they are padded with a space
             $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
-            $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i],  0, 1));
+            $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i], 0, 1));
             $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
-            $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1));
+            $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], 1, 1));
         }
         // Trailing dots and lots of dots....
         $text = "{{Cite journal|journal=Journal of the A.I.E.E.}}";
@@ -102,8 +102,8 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $big_array = JOURNAL_IS_BOOK_SERIES;
         foreach ($big_array as $actual) {
-            $simple = mb_trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
-            $simple = mb_trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple));
+            $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
+            $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
             $this->assertSame($simple, $actual);
         }
     }
@@ -252,8 +252,8 @@ final class constantsTest extends testBaseClass {
             $text = '{{citation | ' . $value . ' = Z123Z }}';
             $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
             $text = str_replace(
-                ['authors1', 'editors1', 'publication-date', 'publicationdate',  'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ', '| pp = Z123Z ', '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '], // Put spaces on end to not change chapter-url-access and such
-                ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ', 'url ', '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '],
+                ['authors1', 'editors1', 'publication-date', 'publicationdate', 'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ', '| pp = Z123Z ', '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '], // Put spaces on end to not change chapter-url-access and such
+                ['author1', 'editor1', 'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ', 'url ', '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '],
                 $text
             ); // Stuff that gets "fixed"
             $text = str_replace([
@@ -262,12 +262,12 @@ final class constantsTest extends testBaseClass {
                 $text
             );
             $text = str_replace(
-                ['displayeditors',  'editor1mask',  'editormask1', 'interviewerlink', 'interviewermask',  'no-cat', 'notracking', 'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
-                ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'],
+                ['displayeditors', 'editor1mask', 'editormask1', 'interviewerlink', 'interviewermask', 'no-cat', 'notracking', 'interviewermask', 'albumlink', 'ISBN13', 'isbn13'],
+                ['display-editors', 'editor-mask1', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat', 'no-tracking', 'interviewer-mask', 'titlelink', 'isbn', 'isbn'],
                 $text
             );
             $text = str_replace(
-                ['editor1link',  'editorlink1',  'subjectlink1', 'origyear'],
+                ['editor1link', 'editorlink1', 'subjectlink1', 'origyear'],
                 ['editor1-link', 'editor1-link', 'subject-link1', 'orig-date'],
                 $text
             );
@@ -277,12 +277,12 @@ final class constantsTest extends testBaseClass {
                 $text
             );
             $text = str_replace(
-                ['episodelink',  'mailinglist',  'mapurl',  'serieslink', 'coauthor '],
+                ['episodelink', 'mailinglist', 'mapurl', 'serieslink', 'coauthor '],
                 ['episode-link', 'mailing-list', 'map-url', 'series-link', 'coauthors ' ],
                 $text
             );
             $text = str_replace(
-                ['titlelink', 'nocat', 'nocat', ' embargo', 'conferenceurl', 'contributionurl', 'laydate', 'laysource', 'layurl',  'sectionurl', 'seriesno', 'timecaption', 'titlelink'],
+                ['titlelink', 'nocat', 'nocat', ' embargo', 'conferenceurl', 'contributionurl', 'laydate', 'laysource', 'layurl', 'sectionurl', 'seriesno', 'timecaption', 'titlelink'],
                 ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'],
                 $text
             );
@@ -590,7 +590,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
         $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
         for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
-            $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_IN[$i],  "'''"));
+            $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_IN[$i], "'''"));
             $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_OUT[$i], "'''"));
             $in  = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_IN[$i]);
             $out = str_replace(["'", " ", ':', ',', '.'], ['', '', '', '', ''], ITALICS_HARDCODE_OUT[$i]);

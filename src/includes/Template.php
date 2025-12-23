@@ -3843,7 +3843,7 @@ final class Template
                         }
                     }
                     if (preg_match('~^(10\.2173\/bow\..+)species_shared\.bow\.project_name$~', $doi, $matched)) {
-                        $this->set('doi',  $matched[1]);
+                        $this->set('doi', $matched[1]);
                         $doi = $matched[1];
                     }
                     if (mb_substr($doi, 0, 8) === '10.5555/') {
