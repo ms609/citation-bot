@@ -183,7 +183,7 @@ final class constantsTest extends testBaseClass {
             echo "\n\n", $filename, " needs alphabetized as follows\n";
             echo $new_contents, "\n\n\n";
             $this->flush();
-            $this->assertTrue(false);
+            $this->assertFailure();
         }
     }
 
