@@ -26,6 +26,7 @@ final class bibcodeTest extends testBaseClass {
             $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
             $page = new TestPage();
             $page->parse_text($text);
+            /** @var array<Template> $templates */
             $templates = $page->extract_object('Template');
             $page->expand_templates_from_identifier('bibcode', $templates);
             $this->assertSame('14879', $templates[0]->get2('pages') . $templates[0]->get2('page'));
