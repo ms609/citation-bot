@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 const GROUP_F1  = ['first', 'initials', 'forename', 'contributor-first', 'contributor-given', 'author-first', 'given', 'author-given'];
 const GROUP_L1  = ['last', 'surname', 'author', 'contributor-last', 'contributor-surname', 'contributor', 'author-last', 'author-surname'];
-const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname'];
+const GROUP1  = ['author', 'authors', 'last', 'first', 'vauthors', 'surname', 'initials', 'given', 'host', 'people'];
 const GROUP2  = ['others', 'display-editors', 'displayeditors', 'display-authors', 'displayauthors', 'author-link', 'veditors', 'coauthors', 'coauthor', 'author-mask', 'contributor-last', 'contributor-link', 'contributor-mask', 'contributor-surname', 'contributor', 'display-contributors', 'display-interviewers', 'display-subjects', 'display-translators', 'editor-first', 'editor-given', 'editor-last', 'editor-link', 'editor-mask', 'editor-surname', 'editor', 'interviewer-first', 'interviewer-given', 'interviewer-last', 'interviewer-link', 'interviewer-mask', 'interviewer-surname', 'interviewer', 'inventor-first', 'inventor-given', 'inventor-last', 'inventor-link', 'inventor-surname', 'inventor', 'inventorlink', 'translator-first', 'translator-given', 'translator-last', 'translator-link', 'translator-mask', 'translator-surname', 'translator', 'veditor', 'contributor-first', 'contributor-given', 'author-first', 'author-given', 'author-last', 'author-surname', 'authorlink'];
 const GROUP3  = ['title', 'title-link', 'titlelink', 'trans-title', 'entry', 'article', 'episode'];
 const GROUP4  = ['chapter', 'contribution'];
@@ -27,7 +27,7 @@ const GROUP20 = ['pmc-embargo-date'];
 const GROUP21 = ['arxiv', 'eprint', 'class'];
 const GROUP22 = ['bibcode', 'bibcode-access'];
 const GROUP23 = ['hdl', 'hdl-access'];
-const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'];
+const GROUP24 = ['isbn', 'biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'ssrn-access'];
 const GROUP25 = ['lccn', 'issn', 'ol', 'oclc', 'asin', 's2cid', 's2cid-access', 'eissn', 'docket'];
 const GROUP26 = ['url'];
 const GROUP27 = ['chapter-url', 'article-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl', 'URL'];
