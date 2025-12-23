@@ -2990,9 +2990,7 @@ final class Template
                         $closest = $parameter;
                         $shortish = $shortest;
                         $shortest = $lev;
-                    }
-                    // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-                    elseif ($lev < $shortish) {
+                    } elseif ($lev < $shortish) { // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
                         $shortish = $lev;
                         $comp = $parameter;
                     }
