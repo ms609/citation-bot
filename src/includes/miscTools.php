@@ -178,6 +178,9 @@ function prior_parameters(string $parameter, array $list = []): array {
         return prior_parameters('', array_merge(GROUP29, $list));
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
+        if (TRAVIS) {
+            return [];  // errors in test suite
+        }
         return $list;
     }
 }
