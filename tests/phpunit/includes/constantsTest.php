@@ -177,7 +177,7 @@ final class constantsTest extends testBaseClass {
         $new_contents = implode($start_alpha, $sections);
 
         if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             $this->flush();
             echo "\n\n", $filename, " needs alphabetized as follows\n";
@@ -317,7 +317,7 @@ final class constantsTest extends testBaseClass {
         unset($pg);
         $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
         if (empty($overlap)) {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             $this->flush();
             print_r($overlap);
@@ -331,7 +331,7 @@ final class constantsTest extends testBaseClass {
         unset($pg);
         $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
         if (empty($overlap)) {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             $this->flush();
             print_r($overlap);
@@ -340,7 +340,7 @@ final class constantsTest extends testBaseClass {
         }
         $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
         if (empty($overlap)) {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             $this->flush();
             print_r($overlap);
@@ -349,7 +349,7 @@ final class constantsTest extends testBaseClass {
         }
         $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
         if (empty($overlap)) {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             $this->flush();
             print_r($overlap);
@@ -738,7 +738,7 @@ final class constantsTest extends testBaseClass {
                 $this->assertNull('Code assumes this does not exist: ' . $param); // There are a few places in the code where parameters are assumed to not have numbers - look for s2cid
             }
         }
-        $this->assertNull(null);
+        $this->assertFaker();
     }
 
 }
