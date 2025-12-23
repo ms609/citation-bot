@@ -257,7 +257,12 @@ final class miscToolsTest extends testBaseClass {
         }
         sort($bad);
         $bad = array_unique($bad);
-        $this->assertNull($bad);
+        if (!empty($bad)) {
+            $this->flush();
+            print_r($bad);
+            $this->flush();
+        }
+        $this->assertEmpty($bad);
     }
 
 }
