@@ -358,7 +358,7 @@ final class constantsTest extends testBaseClass {
         }
     }
 
-    public function testAuthorsFlat() {
+    public function testAuthorsFlat(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $failed = false;
@@ -405,7 +405,7 @@ final class constantsTest extends testBaseClass {
         $this->assertFalse($failed);
     }
 
-    public function testNonJournalList() {
+    public function testNonJournalList(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $flat = NON_JOURNAL_WEBSITES;
@@ -442,7 +442,7 @@ final class constantsTest extends testBaseClass {
         $this->assertFalse($failed);
     }
 
-    public function testNonJournalListIsNotBad() {
+    public function testNonJournalListIsNotBad(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $failed = false;
