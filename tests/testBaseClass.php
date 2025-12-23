@@ -210,4 +210,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
             sleep(1);
         }
     }
+
+    protected function assertFaker(): void {
+        $this->assertTrue(true)l
+    }
+
 }
