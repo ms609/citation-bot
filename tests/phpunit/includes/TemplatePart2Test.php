@@ -3187,7 +3187,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('1111-222X', $expanded->get2('issn'));
     }
 
-    public function testTidyBadPeriodical() {
+    public function testTidyBadPeriodical(): void {
         $text = "{{Cite web|periodical=Undefined}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('periodical');
