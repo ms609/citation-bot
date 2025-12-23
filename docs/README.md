@@ -37,7 +37,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.  Single pages can be GETed.
 * Citation expander (https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js) + `gadgetapi.php`. This
-  is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+  comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 * `generate_template.php` creates the wiki reference given an identifier (for example: https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
@@ -105,7 +105,7 @@ In order to run on the command line one needs OAuth tokens as documented in `env
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
     
-The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
 
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls

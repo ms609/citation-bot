@@ -1,4 +1,4 @@
-##Tests for Citation Bot classes
+## Tests for Citation Bot classes
 
 To run the tests for Parameter.php (for example), first check that PHP is installed and that the
 php directory is added to your system `PATH` environment variable.
