@@ -17,6 +17,7 @@
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPublic"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingVar"/>
         <exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName"/>
+        <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
         <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
@@ -30,7 +31,6 @@
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
-        <exclude name="MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix"/>
         <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
         <exclude name="MediaWiki.Usage.IsNull.IsNull"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
