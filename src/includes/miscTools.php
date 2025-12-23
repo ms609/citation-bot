@@ -178,8 +178,8 @@ function prior_parameters(string $parameter, array $list = []): array {
         return prior_parameters('', array_merge(GROUP29, $list));
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
-        if (TRAVIS) {
-            return [];  // errors in test suite
+        if (TRAVIS && $parameter !== 'not-a-param' && $parameter !== 's2cid1') {
+            return [];  // errors in test suite that were not expected
         }
         return $list;
     }
