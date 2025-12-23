@@ -462,7 +462,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
     if ($url === '') {
         return true;
     }
-    if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
+    if (!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
         return true;
     }
     $test = mb_strtolower($match[1]);

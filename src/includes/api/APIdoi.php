@@ -303,7 +303,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     $json = @json_decode($data, true);
     unset($data);
-    if($json === false || $json === null) {
+    if ($json === false || $json === null) {
         return;
     }
     process_doi_json($template, $doi, $json);

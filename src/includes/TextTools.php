@@ -389,13 +389,13 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-    if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;') !== false) ||
+    if ((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;') !== false) ||
             (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
             (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);  // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-    if(in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
+    if (in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
             (mb_strpos($str, '&raquo;') !== false && mb_strpos($str, '&laquo;') !== false) ||
             /** @phpstan-ignore notIdentical.alwaysTrue */
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
@@ -472,7 +472,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = mb_trim($new_case); // Remove added spaces
 
     $new_case = mb_trim(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "));
-    foreach(UC_SMALL_WORDS as $key=>$_value) {
+    foreach (UC_SMALL_WORDS as $key=>$_value) {
         $upper = UC_SMALL_WORDS[$key];
         $lower = LC_SMALL_WORDS[$key];
         foreach ([': ', ', ', '. ', '; '] as $char) {
@@ -602,7 +602,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     // 42th, 33rd, 1st, ...
-    if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
+    if (preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
         $replace = mb_strtolower($matches[0]);
         $new_case = mb_trim(str_replace($replace_me, $replace, ' ' . $new_case . ' '));
@@ -970,7 +970,7 @@ function numberToRomanRepresentation(int $number): string { // https://stackover
     $returnValue = '';
     while ($number > 0) {
         foreach ($map as $roman => $int) {
-            if($number >= $int) {
+            if ($number >= $int) {
                 $number -= $int;
                 $returnValue .= $roman;
                 break;

@@ -170,7 +170,7 @@ final class WikipediaBot {
             }         // @codeCoverageIgnoreEnd
             return self::ret_okay($ret) ? $ret : null;
             // @codeCoverageIgnoreStart
-        } catch(Exception $E) {
+        } catch (Exception $E) {
             report_warning("Exception caught!\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
@@ -421,7 +421,7 @@ final class WikipediaBot {
             }
             return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
-        } catch(Exception $E) {
+        } catch (Exception $E) {
             report_warning("Exception caught!!\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
@@ -499,7 +499,7 @@ final class WikipediaBot {
         return $this->the_user;
     }
     public static function GetLastUser(): string {
-        if(isset(self::$last_WikipediaBot)) {
+        if (isset(self::$last_WikipediaBot)) {
             return self::$last_WikipediaBot->get_the_user_internal();
         }
         return '';  // @codeCoverageIgnore
