@@ -483,12 +483,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if ($caps_after_punctuation || (mb_substr_count($in, '.') / mb_strlen($in)) > .07) {
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
-        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
+        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-        $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
+        $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u", // Capitalize after slash unless part of ending html tag
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
@@ -498,7 +498,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     $new_case = safe_preg_replace_callback(
-        "~ \([a-z]~u" /* uppercase after parenthesis */,
+        "~ \([a-z]~u", // uppercase after parenthesis
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
@@ -506,7 +506,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
 
     $new_case = safe_preg_replace_callback(
-        "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */,
+        "~\w{2}'[A-Z]\b~u", // Lowercase after apostrophes
         static function (array $matches): string {
             return mb_strtolower($matches[0]);
         },
@@ -542,7 +542,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Catch some specific epithets, which should be lowercase
     $new_case = safe_preg_replace_callback(
-        "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
+        "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", // Species names to lowercase
         static function (array $matches): string {
             return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);
         },
