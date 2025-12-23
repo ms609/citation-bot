@@ -254,6 +254,8 @@ final class miscToolsTest extends testBaseClass {
                 $bad[] = $param;
             }
         }
+        sort($bad);
+        $bad = array_unique($bad);
         $this->assertNull($bad);
     }
 
