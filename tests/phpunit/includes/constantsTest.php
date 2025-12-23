@@ -160,7 +160,7 @@ final class constantsTest extends testBaseClass {
             $new_line = "\n    ";
             $alphaed = '';
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
-            foreach ($bits_length) {
+            foreach ($bits_length as $_bit_length) {
                 $bit = next($alpha_bits);
                 $alphaed .= $bit ? ($bit . ",") : '';
                 $alphaed .= $new_line;
