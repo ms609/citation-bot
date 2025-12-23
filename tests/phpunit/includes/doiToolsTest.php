@@ -141,26 +141,27 @@ final class doiToolsTest extends testBaseClass {
             $this->assertSame(safe_preg_replace('~\s~u', '', $doi), $doi);
         }
         $changes = "";
-        foreach (NULL_DOI_LIST as $doi => $value) {
+        unset($value)
+        foreach (array_keys(NULL_DOI_LIST) as $doi) {
             if (isset(NULL_DOI_BUT_GOOD[$doi])) {
                 $changes = $changes . "In Both: " . $doi . "                ";
             }
         }
-        foreach (NULL_DOI_LIST as $doi => $value) {
+        foreach (array_keys(NULL_DOI_LIST) as $doi) {
             foreach (NULL_DOI_STARTS_BAD as $bad_start) {
                 if (mb_stripos($doi, $bad_start) === 0) {
                     $changes = $changes . "Both in bad and bad start: " . $doi . "                ";
                 }
             }
         }
-        foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
+        foreach (array_keys(NULL_DOI_BUT_GOOD) as $doi) {
             foreach (NULL_DOI_STARTS_BAD as $bad_start) {
                 if (mb_stripos($doi, $bad_start) === 0) {
                     $changes = $changes . "Both in good and bad start: " . $doi . "                ";
                 }
             }
         }
-        foreach (NULL_DOI_ANNOYING as $doi => $value) {
+        foreach (array_keys(NULL_DOI_ANNOYING) as $doi) {
             if (!isset(NULL_DOI_LIST[$doi])) {
                 $changes = $changes . "Needs to also be in main null list: " . $doi . "           ";
             }
@@ -181,7 +182,7 @@ final class doiToolsTest extends testBaseClass {
         } elseif ($eventName === 'pull_request') {
             $do_it = 98;
         } else {
-            $do_int = -1;
+            $do_it = -1;
             report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
         }
         $null_list = array_keys(NULL_DOI_LIST);
