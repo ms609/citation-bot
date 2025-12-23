@@ -1617,7 +1617,7 @@ EP - 999 }}';
         $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
     }
 
-    public function testInternalCaps(): void { // checks for title formating in tidy() not breaking things
+    public function testInternalCaps(): void { // checks for title formatting in tidy() not breaking things
         $text = '{{cite journal|journal=ZooTimeKids}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('ZooTimeKids', $prepared->get2('journal'));
@@ -1630,7 +1630,7 @@ EP - 999 }}';
                                       $prepared->get2('journal'));
     }
 
-    public function testExistingWikiText(): void { // checks for formating in tidy() not breaking things
+    public function testExistingWikiText(): void { // checks for formatting in tidy() not breaking things
         $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Zootimeboys and Girls', $prepared->get2('journal'));
@@ -2010,7 +2010,7 @@ EP - 999 }}';
         $this->assertNull($expanded->get2('website'));
     }
 
-    public function testHornorificInTitle(): void { // compaints about this
+    public function testHornorificInTitle(): void { // complaints about this
         $text = "{{cite book|title=Letter from Sir Frederick Trench to the Viscount Duncannon on his proposal for a quay on the north bank of the Thames|url=https://books.google.com/books?id=oNBbAAAAQAAJ|year=1841}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('Trench', $expanded->get2('last1'));

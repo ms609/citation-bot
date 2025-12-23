@@ -652,7 +652,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~(Serie )([a-z])( )~u",
+        "~(Series )([a-z])( )~u",
         static function (array $matches): string {
             return $matches[1] . mb_strtoupper($matches[2]) . $matches[3];
         },

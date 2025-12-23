@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../src/includes/setup.php';
 
-// Map all total errors to execptions to avoid errors leading to a green checkmark on the tests
+// Map all total errors to exceptions to avoid errors leading to a green checkmark on the tests
 
 final class TestPage extends Page {
     public function __construct() {
@@ -179,7 +179,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
             $template->parse_text($matches[1]);
             return $template;
         } else {
-            report_error('Non-reference passsed to reference_to_template: ' . echoable($text));
+            report_error('Non-reference passed to reference_to_template: ' . echoable($text));
         }
     }
 

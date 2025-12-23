@@ -64,7 +64,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                         }
                         if (titles_are_similar($old, $new)) {
                             if ($old_roman && $new_roman) {
-                                if ($old_roman === $new_roman) { // If they got roman numeral truncted, then must match
+                                if ($old_roman === $new_roman) { // If they got roman numeral truncated, then must match
                                     $bad_data = false;
                                     break;
                                 }
@@ -483,7 +483,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
 }
 
 /**
- * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addittion to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
+ * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addition to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
  */
 function query_crossref_newapi(string $doi): object {
     static $ch = null;

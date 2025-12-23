@@ -195,7 +195,7 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = '';
-        $zotero_response = 'this will not be found to be valide JSON dude';
+        $zotero_response = 'this will not be found to be valid JSON dude';
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
     }

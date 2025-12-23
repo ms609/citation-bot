@@ -24,7 +24,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('Altered template type. Add: doi, pages, issue, volume, date, journal, title, authors 1-2. Changed bare reference to CS1/2. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));
     }
 
-    public function testPageChangeSummary32(): void { // Mixture of droping chapter-url and moving URL to chapter-url. Bogus template content
+    public function testPageChangeSummary32(): void { // Mixture of dropping chapter-url and moving URL to chapter-url. Bogus template content
         $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
         $this->assertSame('Add: mr, publisher, date. Removed parameters. Some additions/deletions were parameter name changes. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
