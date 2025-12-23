@@ -201,10 +201,10 @@ final class doiToolsTest extends testBaseClass {
             }
         }
         if ($changes === '') {
-            $this->assertTrue(true);
+            $this->assertFaker();
         } else {
             bot_debug_log($changes);
-            $this->assertTrue(true); // We just have to manually look at this EVERY time
+            $this->assertFaker(); // We just have to manually look at this EVERY time
         }
     }
 
@@ -223,10 +223,10 @@ final class doiToolsTest extends testBaseClass {
             }
         }
         if ($changes === '') {
-            $this->assertTrue(true);
+            $this->aassertFaker();
         } else {
             bot_debug_log($changes);
-            $this->assertTrue(true); // We just have to manually look at this EVERY time
+            $this->assertFaker(); // We just have to manually look at this EVERY time
         }
     }
 
