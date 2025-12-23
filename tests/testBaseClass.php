@@ -207,7 +207,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         if (empty(HEADER_S2)) { // More forgiving on pull requests
             sleep(3);
         } else {
-            uleep(1);
+            sleep(1);
         }
     }
 }
