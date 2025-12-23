@@ -2292,7 +2292,7 @@ EP - 999 }}';
         $text_out = '{{cite book|title=X X X X X X X X X X X X}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text_out, $expanded->parsed_text());
-        $this->assertTrue($text != $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
+        $this->assertTrue($text !== $text_out); // Verify test is valid -- We want to make sure that the spaces in $text are not normal spaces
     }
 
     public function testMultipleYears(): void {
