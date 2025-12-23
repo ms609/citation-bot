@@ -112,7 +112,7 @@ final class PageTest extends testBaseClass {
         $page = $this->process_page($text);
         $text = '{{mdy}}{{dmy}}{{cite web}}';
         $page = $this->process_page($text);
-        $this->assertNull(null);
+        $this->assertFaker();
     }
 
     public function testDontCrashOnVanNames(): void { // Goofy ones too
@@ -128,7 +128,7 @@ final class PageTest extends testBaseClass {
         $page = $this->process_page($text);
         $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
         $page = $this->process_page($text);
-        $this->assertNull(null);
+        $this->assertFaker();
     }
 
     public function testVancNames1(): void {

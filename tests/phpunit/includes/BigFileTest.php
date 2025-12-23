@@ -14,7 +14,7 @@ final class BigFileTest extends testBaseClass {
     public function testFuncsExists(): void {
         big_jobs_check_overused(33);
         big_jobs_check_killed();
-        $this->assertTrue(true);
+        $this->assertFaker();
     }
 
     public function testFiles(): void {
@@ -32,7 +32,7 @@ final class BigFileTest extends testBaseClass {
         $lock_file = fopen($name, 'x+');
         big_jobs_we_died($lock_file);
         unlink($name);
-        $this->assertTrue(true);
+        $this->assertFaker();
     }
 
     public function testWeKill(): void {

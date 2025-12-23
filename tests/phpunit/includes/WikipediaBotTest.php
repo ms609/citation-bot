@@ -10,8 +10,8 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class WikipediaBotTest extends testBaseClass {
 
     public function testCoverageFixer(): void {
-            WikipediaBot::make_ch();
-            $this->assertTrue(true);
+        WikipediaBot::make_ch();
+        $this->assertFaker();
     }
 
     public function testCategoryMembers(): void {

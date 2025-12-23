@@ -14,6 +14,6 @@ final class ZZZLastTest extends testBaseClass {
         unset($pg);
         HandleCache::free_memory();
         AdsAbsControl::free_memory();
-        $this->assertTrue(true);
+        $this->assertFaker();
     }
 }

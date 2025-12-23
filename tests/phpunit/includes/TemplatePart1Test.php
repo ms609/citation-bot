@@ -1998,9 +1998,9 @@ EP - 999 }}';
         $title2 = "RELICS: A Candidate ''z'' ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
         $title3 = "RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
         if (in_array($title, [$title1, $title2, $title3], true)) {
-                $this->assertTrue(true);
+            $this->assertFaker();
         } else {
-                $this->assertTrue($title); // What did we get
+            $this->assertSame('Should not have got this', $title); // What did we get
         }
     }
 

@@ -8,14 +8,14 @@ final class miscToolsTest extends testBaseClass {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         check_memory_usage('testcheck_memory_usage');
-        $this->assertTrue(true);
+        $this->assertFaker();
     }
 
     public function testThrottle(): void { // Just runs over the code and basically does nothing
         for ($x = 0; $x <= 25; $x++) {
             throttle();
         }
-        $this->assertNull(null);
+        $this->assertFaker();
     }
 
     public function testCovertUrl2Chapter1(): void {
