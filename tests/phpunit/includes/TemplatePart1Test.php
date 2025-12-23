@@ -2534,7 +2534,7 @@ EP - 999 }}';
         $this->assertSame('Time-resolved studies of metalloproteins using X-ray free electron laser radiation at SACLA', $template->get2('title'));
     }
 
-    public function testISSN():void {
+    public function testISSN(): void {
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn', '1111-2222');
