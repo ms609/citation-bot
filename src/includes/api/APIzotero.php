@@ -750,7 +750,7 @@ final class Zotero {
                 $template->add_if_new('publisher', (string) $result->publisher);
             }
         } else {
-            if (isset($result->title)){
+            if (isset($result->title)) {
                 $template->add_if_new('title', (string) $result->title);
             }
             if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {

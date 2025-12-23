@@ -6,7 +6,8 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class doiToolsTest extends testBaseClass {
 
     public function testExtractDoi(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
         $this->assertSame('10.1016/j.physletb.2010.03.064', extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
@@ -18,13 +19,15 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testSanitizeDoi1(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
     }
     public function testSanitizeDoi2(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test#page_scan_tab_contents'));
         $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test;jsessionid'));
@@ -53,7 +56,8 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testDOIWorks(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertFalse(doi_works(''));
         $this->assertFalse(doi_active(''));
         $this->assertFalse(doi_works('   '));
@@ -61,23 +65,27 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testDOIWorks2(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(doi_works('10.1594/PANGAEA.667386'));
         $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));
     }
 
     public function testDOIWorks3a(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(doi_works('10.1107/S2056989021000116'));
     }
 
     public function testDOIWorks3b(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
     public function testDOIWorks4(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
         $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
@@ -87,30 +95,35 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testHDLworks(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertFalse(hdl_works('10.1126fwerw4w4r2342314'));
         $this->assertFalse(hdl_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
         $this->assertFalse(hdl_works('10.112/springerreference.ado5059'));
     }
 
     public function testConference(): void {
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertFalse(conference_doi('10.1007/978-3-662-44777_ch3'));
     }
 
     public function testDoubleHopDOI(): void { // Just runs over the code and basically does nothing
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(doi_works('10.25300/MISQ/2014/38.2.08'));
         $this->assertTrue(doi_works('10.5479/si.00963801.5-301.449'));
     }
 
     public function testHeaderProblemDOI(): void { // Just runs over the code and basically does nothing
-        $pg = new TestPage(); unset($pg);    // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $this->assertTrue(doi_works('10.3403/bsiso10294')); // this one seems to be fussy
     }
 
     public function testHostIsGoneDOIbasic(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         foreach (NULL_DOI_LIST as $doi => $value) {
             $this->assertSame(mb_trim($doi), $doi);
             $this->assertTrue($value);
@@ -156,7 +169,8 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testHostIsGoneDOILoop(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $changes = "";
         $this->assertSame("", $changes);
         $eventName = getenv('GITHUB_EVENT_NAME');
@@ -195,7 +209,8 @@ final class doiToolsTest extends testBaseClass {
     }
 
     public function testHostIsGoneDOIHosts(): void {
-        $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
+        $pg = new TestPage(); // Fill page name with test name for debugging
+        unset($pg);
         $changes = "";
         // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAD
         $this->assertSame("", $changes);

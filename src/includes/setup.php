@@ -34,7 +34,7 @@ function bot_debug_log(string $log_this): void {
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
 // Should add all these to index.html web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
-if (isset($_REQUEST["wiki_base"])){
+if (isset($_REQUEST["wiki_base"])) {
     $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
         echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';

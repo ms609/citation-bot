@@ -155,7 +155,7 @@ function is_doi_active(string $doi): ?bool {
     if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         return null;  // @codeCoverageIgnore
     }
-    if ($body === 'Resource not found.'){
+    if ($body === 'Resource not found.') {
         return false;
     }
     if ($response_code === 200) {
@@ -184,7 +184,7 @@ function throttle_dx (): void {
 function is_doi_works(string $doi): ?bool {
     $doi = mb_trim($doi);
     // And now some obvious fails
-    if (mb_strpos($doi, '/') === false){
+    if (mb_strpos($doi, '/') === false) {
         return false;
     }
     if (mb_strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== false) {
@@ -462,7 +462,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
     if ($url === '') {
         return true;
     }
-    if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
+    if (!preg_match('~10.1093/([^/]+)/~u', $url, $match)) {
         return true;
     }
     $test = mb_strtolower($match[1]);

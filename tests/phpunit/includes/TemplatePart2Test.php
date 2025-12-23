@@ -2131,7 +2131,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testvalidate_and_add5(): void {
         $text = "{{cite web}}";
         $template = $this->make_citation($text);
-        $template->validate_and_add('author1', '',  'George @Hashtags', '', false);
+        $template->validate_and_add('author1', '', 'George @Hashtags', '', false);
         $this->assertSame("{{cite web| author1=George }}", $template->parsed_text());
     }
 
@@ -3040,21 +3040,21 @@ final class TemplatePart2Test extends testBaseClass {
     public function testAddExitingThings1(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('publisher',    'Springer Zone'));
+        $this->assertTrue($expanded->add_if_new('publisher', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('publisher', 'Goodbye dead'));
     }
 
     public function testAddExitingThings2(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('location',     'Springer Zone'));
+        $this->assertTrue($expanded->add_if_new('location', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('location', 'Goodbye dead'));
     }
 
     public function testAddExitingThings3(): void {
         $text = "{{Cite web}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('website',  'Springer Zone'));
+        $this->assertTrue($expanded->add_if_new('website', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('website', 'Goodbye dead'));
     }
 

@@ -84,10 +84,10 @@ function wikify_external_text(string $title): string {
     $wikiTags = ['<sub>', '</sub>'];
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>'];
-    $wikiTags = ['. ','. ','. ','. ','. ','. ','. ','. ','. '];
+    $wikiTags = ['. ', '. ', '. ', '. ', '. ', '. ', '. ', '. ', '. '];
     $title = str_ireplace($originalTags, $wikiTags, $title);
     $originalTags = ['<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>'];
-    $wikiTags = ['. ','. ','. ','. ','. ','. ', ' ',' ',' '];
+    $wikiTags = ['. ', '. ', '. ', '. ', '. ', '. ', ' ', ' ', ' '];
     $title = mb_trim(str_ireplace($originalTags, $wikiTags, $title));
     if (preg_match("~^\. (.+)$~", $title, $matches)) {
         $title = mb_trim($matches[1]);
@@ -239,11 +239,17 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = str_ireplace(["®", "&reg;", "(r)"], [' ', ' ', ' '], $str);
     $str = str_replace(['   ', '  '], [' ', ' '], $str);
     $str = mb_trim($str);
-    $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
-                        ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''], $str);
+    $str = str_ireplace(
+        ['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com', '& ', '(Clifton, N.J.)', '(Clifton NJ)'],
+        ['Proc', 'Proc', 'Sym', 'Huff ', 'journal of ', 'New York Times', 'and ', '', ''],
+        $str
+    );
     $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
-    $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
-                                            ['Springer',             'Springer',                                 'Springer',                'Springer'               ], $str);
+    $str = str_ireplace(
+        ['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
+        ['Springer', 'Springer', 'Springer', 'Springer'],
+        $str
+    );
     $str = straighten_quotes($str, true);
     $str = str_replace("′", "'", $str);
     $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
@@ -389,18 +395,18 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-    if((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;') !== false) ||
+    if ((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&[lsaquo;') !== false) ||
             (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
             (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);  // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
     $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-    if(in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
+    if (in_array(WIKI_BASE, ENGLISH_WIKI, true) && (
             (mb_strpos($str, '&raquo;') !== false && mb_strpos($str, '&laquo;') !== false) ||
             /** @phpstan-ignore notIdentical.alwaysTrue */
             (mb_strpos($str, '\x{00AB}') !== false && mb_strpos($str, '\x{00AB}') !== false) ||
             (mb_strpos($str, '«') !== false && mb_strpos($str, '»') !== false))) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
-        if ($do_more){
+        if ($do_more) {
             $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
         } else { // Only outer funky quotes, not inner quotes
             if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str, $match1) &&
@@ -472,7 +478,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = mb_trim($new_case); // Remove added spaces
 
     $new_case = mb_trim(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "));
-    foreach(UC_SMALL_WORDS as $key=>$_value) {
+    foreach (UC_SMALL_WORDS as $key=>$_value) {
         $upper = UC_SMALL_WORDS[$key];
         $lower = LC_SMALL_WORDS[$key];
         foreach ([': ', ', ', '. ', '; '] as $char) {
@@ -483,12 +489,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if ($caps_after_punctuation || (mb_substr_count($in, '.') / mb_strlen($in)) > .07) {
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
-        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
+        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-        $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
+        $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u", // Capitalize after slash unless part of ending html tag
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
@@ -498,7 +504,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     $new_case = safe_preg_replace_callback(
-        "~ \([a-z]~u" /* uppercase after parenthesis */,
+        "~ \([a-z]~u", // uppercase after parenthesis
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
@@ -506,7 +512,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
 
     $new_case = safe_preg_replace_callback(
-        "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */,
+        "~\w{2}'[A-Z]\b~u", // Lowercase after apostrophes
         static function (array $matches): string {
             return mb_strtolower($matches[0]);
         },
@@ -542,7 +548,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Catch some specific epithets, which should be lowercase
     $new_case = safe_preg_replace_callback(
-        "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
+        "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui", // Species names to lowercase
         static function (array $matches): string {
             return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);
         },
@@ -602,7 +608,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     }
 
     // 42th, 33rd, 1st, ...
-    if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
+    if (preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
         $replace_me = $matches[0];
         $replace = mb_strtolower($matches[0]);
         $new_case = mb_trim(str_replace($replace_me, $replace, ' ' . $new_case . ' '));
@@ -873,7 +879,7 @@ function tidy_date_inside(string $string): string {
         if (intval($matches[3]) < ((int) date("y") + 2)) {
             $matches[3] = (int) $matches[3] + 2000;
         }
-        if (intval($matches[3]) < 100)  {
+        if (intval($matches[3]) < 100) {
             $matches[3] = (int) $matches[3] + 1900;
         }
         return tidy_date_inside((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
@@ -960,7 +966,7 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url): string {
-    $in = [' ', '"', '\'', '<','>', '[', ']', '{', '|', '}'];
+    $in = [' ', '"', '\'', '<', '>', '[', ']', '{', '|', '}'];
     $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
     return str_replace($in, $out, $url);
 }
@@ -970,7 +976,7 @@ function numberToRomanRepresentation(int $number): string { // https://stackover
     $returnValue = '';
     while ($number > 0) {
         foreach ($map as $roman => $int) {
-            if($number >= $int) {
+            if ($number >= $int) {
                 $number -= $int;
                 $returnValue .= $roman;
                 break;

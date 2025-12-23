@@ -1492,12 +1492,12 @@ EP - 999 }}';
         $this->assertSame('10.1038/ntheses.01928', $prepared->get2('doi'));
 
         $prepared = $this->process_citation($code_coverage1);
-        $this->assertSame('This Title', $prepared->get2('title'));;
+        $this->assertSame('This Title', $prepared->get2('title'));
         $this->assertSame('9999-9999', $prepared->get2('issn'));
         $this->assertNull($prepared->get2('doi'));
 
         $prepared = $this->process_citation($code_coverage2);
-        $this->assertSame('This Title', $prepared->get2('title'));;
+        $this->assertSame('This Title', $prepared->get2('title'));
         $this->assertSame('000-000-000-0X', $prepared->get2('isbn'));
     }
 

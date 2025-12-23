@@ -309,7 +309,18 @@ final class Template
             }
             // delete obviously incorrect author parameters
             if (mb_strtolower ($this->get('last')) === 'archive' || mb_strtolower ($this->get('last1')) === 'archive') {
-                if ($this->get('first2') === 'Get author RSS' || $this->get('first3') === 'Get author RSS' || $this->get('first4') === 'Get author RSS' || ($this->get('first2') === 'Email the' && $this->get('last2') === 'Author' || $this->get('first1') === 'From our online')) {
+                if (
+                    $this->get('first2') === 'Get author RSS' ||
+                    $this->get('first3') === 'Get author RSS' ||
+                    $this->get('first4') === 'Get author RSS' ||
+                    (
+                        (
+                            $this->get('first2') === 'Email the' &&
+                            $this->get('last2') === 'Author'
+                        ) ||
+                        $this->get('first1') === 'From our online'
+                    )
+                ) {
                     foreach (FLATTENED_AUTHOR_PARAMETERS as $author) {
                         $this->forget($author);
                     }
@@ -2979,9 +2990,7 @@ final class Template
                         $closest = $parameter;
                         $shortish = $shortest;
                         $shortest = $lev;
-                    }
-                    // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
-                    elseif ($lev < $shortish) {
+                    } elseif ($lev < $shortish) { // Keep track of the second-shortest result, to ensure that our chosen parameter is an out and out winner
                         $shortish = $lev;
                         $comp = $parameter;
                     }
@@ -3201,9 +3210,9 @@ final class Template
             }
             $new_name_mapped = $new_name;
             if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
-                foreach(ALL_TEMPLATES_MAP as $map_array) {
+                foreach (ALL_TEMPLATES_MAP as $map_array) {
                     if (in_array(mb_strtolower($this->name), $map_array)) {
-                        foreach($map_array as $map_in => $map_out) {
+                        foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
                                  $new_name_mapped = $map_in;
                             }
@@ -3792,7 +3801,7 @@ final class Template
                         return;
                     }
                     if ($this->wikiname() === 'cite journal') {
-                        if(mb_stripos($doi, '10.2307/j.') === 0 || preg_match('~^10\.\d+/\d+\.ch\d+$~', $doi)) {
+                        if (mb_stripos($doi, '10.2307/j.') === 0 || preg_match('~^10\.\d+/\d+\.ch\d+$~', $doi)) {
                             $this->change_name_to('cite book');
                         }
                     }
@@ -3832,7 +3841,7 @@ final class Template
                         }
                     }
                     if (preg_match('~^(10\.2173\/bow\..+)species_shared\.bow\.project_name$~', $doi, $matched)) {
-                        $this->set('doi',  $matched[1]);
+                        $this->set('doi', $matched[1]);
                         $doi = $matched[1];
                     }
                     if (mb_substr($doi, 0, 8) === '10.5555/') {

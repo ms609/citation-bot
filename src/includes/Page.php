@@ -122,7 +122,7 @@ class Page {
         $this->text = WikipediaBot::GetAPage($title);
 
         if ($this->text === '') {
-            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
+            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
             return false;                                                                                                                                    // @codeCoverageIgnore
         }
         $this->start_text = $this->text;
@@ -587,8 +587,8 @@ class Page {
         // we often just fix Journal caps, so must be case sensitive compare
         // Avoid minor edits - gadget API will make these changes, since it does not check return code
         $caps_ok = ['isbn', '{{jstor', '{{youtube'];
-        $last_first_in  = [' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
-        $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','ite news',      '',            '',              '',             '',             '',             '',               '',              '',              '',             '',               '',              '',              '',              '',                '',               '',               'Cite',  'cite',  'ubscription',          'work'];
+        $last_first_in  = [' last=', ' last =', '|last=', '|last =', ' first=', ' first =', '|first=', '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
+        $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'ite news', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Cite', 'cite', 'ubscription', 'work'];
         // @codeCoverageIgnoreStart
         if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (mb_stripos($this->title, "draft:") === 0)) { // Backload clean-up
             $caps_ok = [];
@@ -930,7 +930,7 @@ class Page {
 
     private function announce_page(): void {
         $url_encoded_title =    urlencode($this->title);
-        if ($url_encoded_title === ''){
+        if ($url_encoded_title === '') {
             return;
         }
         html_echo("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"

@@ -74,7 +74,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 $template->forget($url_type);
             } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org', '', $url) !== $url) {
                 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-                $template->forget($url_type);;
+                $template->forget($url_type);
                 $template->set($url_type, "https://dx.doi.org/" . doi_encode($doi));
             } elseif (str_ireplace('wkhealth.com', '', $url) !== $url) {
                 report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");

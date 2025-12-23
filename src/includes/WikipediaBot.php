@@ -170,7 +170,7 @@ final class WikipediaBot {
             }         // @codeCoverageIgnoreEnd
             return self::ret_okay($ret) ? $ret : null;
             // @codeCoverageIgnoreStart
-        } catch(Exception $E) {
+        } catch (Exception $E) {
             report_warning("Exception caught!\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
@@ -180,7 +180,7 @@ final class WikipediaBot {
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
-        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false)  {
+        if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
             return false;                                                                             // @codeCoverageIgnore
         }
@@ -421,7 +421,7 @@ final class WikipediaBot {
             }
             return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
-        } catch(Exception $E) {
+        } catch (Exception $E) {
             report_warning("Exception caught!!\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
@@ -499,7 +499,7 @@ final class WikipediaBot {
         return $this->the_user;
     }
     public static function GetLastUser(): string {
-        if(isset(self::$last_WikipediaBot)) {
+        if (isset(self::$last_WikipediaBot)) {
             return self::$last_WikipediaBot->get_the_user_internal();
         }
         return '';  // @codeCoverageIgnore
@@ -539,8 +539,7 @@ final class WikipediaBot {
                 $_SESSION['citation_bot_user_id'] = $this->the_user;
                 session_write_close(); // Done with the session
                 return;
-            }
-            catch (Throwable) {
+            } catch (Throwable) {
                 /** fall through */
             }
         }
