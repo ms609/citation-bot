@@ -656,7 +656,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         foreach (DOI_FREE_PREFIX as $prefix) {
-            $this->assertTrue($prefix != '');
+            $this->assertTrue(is_string($prefix));
             if (mb_strpos($prefix, '/') === false) {
                 $this->assertSame('This needs a slash', $prefix);
             }
