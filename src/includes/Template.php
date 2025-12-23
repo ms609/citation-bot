@@ -1631,7 +1631,7 @@ final class Template
                         $last_page = (int) $newpagenos[2];
                         $old_page = (int) $oldpagenos[1];
                         if ($last_page < $first_page) {
-                            // 2342-5 istead of 2342-2345
+                            // 2342-5 instead of 2342-2345
                             if ($last_page < 10) {
                                 $last_page = $last_page + 10 * (int) ($first_page / 10);
                             } else {
@@ -1666,7 +1666,7 @@ final class Template
                         $first_page = (int) $newpagenos[1];
                         $last_page = (int) $newpagenos[2];
                         if ($last_page < $first_page) {
-                            // 2342-5 istead of 2342-2345
+                            // 2342-5 instead of 2342-2345
                             if ($last_page < 10) {
                                 $last_page = $last_page + 10 * (int) ($first_page / 10);
                             } else {

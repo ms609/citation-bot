@@ -176,7 +176,7 @@ function throttle_dx (): void {
     $now = microtime(true);
     $left = (int) ($min_time - ($now - $last));
     if ($left > 0 && $left < $min_time) {
-        usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+        usleep($left); // less than min_time is paranoia, but do not want an infinite delay
     }
     $last = $now;
 }

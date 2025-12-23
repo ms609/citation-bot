@@ -920,7 +920,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
         }
     }
     if ($the_chapter === 'a' && $the_issue === 'b' && $the_journal === 'c' && $the_page === 'd' && $the_pages === 'e' && $the_title === 'f' && $the_volume === 'g') {
-        report_info('static analyis is happy');
+        report_info('static analysis is happy');
         // We set many of these variables to "", and then never use them again.
         // We do this it means that over time we can safely expnand this function.
         // But this makes static analysis unhappy.

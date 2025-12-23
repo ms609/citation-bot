@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class pubmedTest extends testBaseClass {
     public function testPmidExpansion(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite journal', $expanded->wikiname());
@@ -13,7 +13,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testGetPMIDwitNoDOIorJournal(): void {  // Also has evil colon in the name.   Use wikilinks for code coverage reason
-        sleep(1);
+        $this->sleep_pubmed();
         $text = '{{cite journal|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|volume=[[91]]|issue=[[7|7]]|pages=4346|year=2019|last1=Colby}}';
         $template = $this->make_citation($text);
         find_pmid($template);
@@ -21,14 +21,14 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testPmidIsZero(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = '{{cite journal|pmc=2676591}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('pmid'));
     }
 
     public function testPMCExpansion1(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pmc/articles/PMC154623/}}";
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite journal', $expanded->wikiname());
@@ -37,7 +37,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testPMCExpansion2(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
@@ -46,7 +46,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testPMC2PMID(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = '{{cite journal|pmc=58796}}';
         $expanded = $this->process_citation($text);
         if ($expanded->get('pmid') === "") {
@@ -57,7 +57,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testDoi2PMID(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('11573006', $expanded->get2('pmid'));
