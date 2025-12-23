@@ -240,4 +240,22 @@ final class miscToolsTest extends testBaseClass {
         $duplicates = array_diff_assoc($test, $unique);
         $this->assertEmpty($duplicates);
     }
+
+    public function testEveryThingIsOnTheList(): void {
+        $bad = [];
+        $everything = [];
+        foreach (PARAMETER_LIST as $param) {
+            $everything[] = str_replace('#', '4', $param);
+        }
+        $everything = array_merge($everything, LOTS_OF_EDITORS, FLATTENED_AUTHOR_PARAMETERS);
+        foreach ($everything as $param) {
+            $prior = prior_parameter($param);
+            if (empty($prior)) {
+                $bad[] = $param;
+            }
+        }
+        $this->assertEmpty($bad);
+    }
+
+    
 }
