@@ -309,7 +309,18 @@ final class Template
             }
             // delete obviously incorrect author parameters
             if (mb_strtolower ($this->get('last')) === 'archive' || mb_strtolower ($this->get('last1')) === 'archive') {
-                if ($this->get('first2') === 'Get author RSS' || $this->get('first3') === 'Get author RSS' || $this->get('first4') === 'Get author RSS' || ($this->get('first2') === 'Email the' && $this->get('last2') === 'Author' || $this->get('first1') === 'From our online')) {
+                if (
+                    $this->get('first2') === 'Get author RSS' ||
+                    $this->get('first3') === 'Get author RSS' ||
+                    $this->get('first4') === 'Get author RSS' ||
+                    (
+                        (
+                            $this->get('first2') === 'Email the' &&
+                            $this->get('last2') === 'Author'
+                        ) ||
+                        $this->get('first1') === 'From our online'
+                    )
+                ) {
                     foreach (FLATTENED_AUTHOR_PARAMETERS as $author) {
                         $this->forget($author);
                     }
