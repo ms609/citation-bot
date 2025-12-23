@@ -234,6 +234,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{citation}}", $expanded->parsed_text());
         $text = "{{Cite}}";
         $expanded = $this->process_citation($text);
+        $this->assertSame("{{Citation}}", $expanded->parsed_text());
     }
 
     public function testCleanUpTemplates2(): void {

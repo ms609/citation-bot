@@ -101,33 +101,33 @@ final class PageTest extends testBaseClass {
 
     public function testDontCrashOnDates(): void { // See zotero test testRespectDates for actually making sure that it is used
         $text = '{{Use dmy dates}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{Use mdy dates}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{dmy}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{mdy}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{mdy}}{{dmy}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $this->assertFaker();
     }
 
     public function testDontCrashOnVanNames(): void { // Goofy ones too
         $text = '{{cs1 config |name-list-style=vanc }}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cs1 config |name-list-style=fries }}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cs1 config|name-list-style=vanc }}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
-        $page = $this->process_page($text);
+        $this->process_page($text);
         $this->assertFaker();
     }
 

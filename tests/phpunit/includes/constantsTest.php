@@ -157,12 +157,10 @@ final class constantsTest extends testBaseClass {
                 $leader = true;
             }
             $bits_length = array_map('strlen', $alpha_bits);
-            $bit_length = current($bits_length);
-            $chunk_length = 0;
             $new_line = "\n    ";
             $alphaed = '';
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
-            foreach ($bits_length as $bit_length) {
+            foreach ($bits_length as $_bit_length) {
                 $bit = next($alpha_bits);
                 $alphaed .= $bit ? ($bit . ",") : '';
                 $alphaed .= $new_line;

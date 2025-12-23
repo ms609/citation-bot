@@ -682,7 +682,6 @@ final class zoteroTest extends testBaseClass {
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://www.sciencedirect.com/science/article/pii/S0024379512004405';
-        $url_kind = 'url';
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Geometry of the Welch bounds', 'itemType' => 'journalArticle', 'DOI' => '10.1016/j.laa.2012.05.036'];
         $zotero_response = json_encode($zotero_data);
@@ -984,7 +983,7 @@ final class zoteroTest extends testBaseClass {
     public function testZoteroExpansionNRM(): void {
         $this->requires_zotero(function (): void {
             $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
-            $expanded = $this->process_page($text);
+            $this->process_page($text);
             $this->assertTrue(true); // Gives one fuzzy match.  For now we just check that this doesn't crash PHP.
         });
     }
