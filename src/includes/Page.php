@@ -587,8 +587,8 @@ class Page {
         // we often just fix Journal caps, so must be case sensitive compare
         // Avoid minor edits - gadget API will make these changes, since it does not check return code
         $caps_ok = ['isbn', '{{jstor', '{{youtube'];
-        $last_first_in  = [' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
-        $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'ite news', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Cite',  'cite',  'ubscription', 'work'];
+        $last_first_in  = [' last=', ' last =', '|last=', '|last =', ' first=', ' first =', '|first=', '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
+        $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'ite news', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Cite', 'cite', 'ubscription', 'work'];
         // @codeCoverageIgnoreStart
         if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (mb_stripos($this->title, "draft:") === 0)) { // Backload clean-up
             $caps_ok = [];
