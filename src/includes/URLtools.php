@@ -992,7 +992,11 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         if ($template->get('website') === 'academic.oup.com') {
             $template->forget('website');
         }
-    } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $template->get($param), $matches)) {
+    }
+    if (preg_match("~^(https?://academic\.oup\.com/.+)#no-access-message$~", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+    }
+    if (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $template->get($param), $matches)) {
         if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' || $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
             $matches[2] = '';
         }
