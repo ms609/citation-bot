@@ -226,11 +226,19 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testNoDuplicates(): void {
+    public function testNoDuplicates1(): void {
         $test = array_merge(GROUP_F1, GROUP_L1);
         $unique = array_unique($test);
         $duplicates = array_diff_assoc($test, $unique);
+        if (!empty($duplicates)) {
+            $this->flush();
+            print_r($duplicates);
+            $this->flush();
+        }
         $this->assertEmpty($duplicates);
+    }
+
+    public function testNoDuplicates2(): void {
         $test = array_merge(GROUP1, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6,
                             GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12,
                             GROUP13, GROUP14, GROUP15, GROUP17, GROUP18,
@@ -238,6 +246,11 @@ final class miscToolsTest extends testBaseClass {
                             GROUP25, GROUP26, GROUP27, GROUP28, GROUP29, GROUP30);
         $unique = array_unique($test);
         $duplicates = array_diff_assoc($test, $unique);
+        if (!empty($duplicates)) {
+            $this->flush();
+            print_r($duplicates);
+            $this->flush();
+        }
         $this->assertEmpty($duplicates);
     }
 
