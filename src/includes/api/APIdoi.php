@@ -275,7 +275,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     // Data Quality is CrossRef > DX.doi.org > Zotero
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
+        $ch = bot_curl_init(1.5, // can take a long time when nothing to be found
         [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
     }
     if (mb_strpos($doi, '10.2307') === 0 || // jstor API is better
