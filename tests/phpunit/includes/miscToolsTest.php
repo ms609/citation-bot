@@ -249,7 +249,7 @@ final class miscToolsTest extends testBaseClass {
         }
         $everything = array_merge($everything, LOTS_OF_EDITORS, FLATTENED_AUTHOR_PARAMETERS);
         foreach ($everything as $param) {
-            $prior = prior_parameter($param);
+            $prior = prior_parameters($param);
             if (empty($prior)) {
                 $bad[] = $param;
             }
