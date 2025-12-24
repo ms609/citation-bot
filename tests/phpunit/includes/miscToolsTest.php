@@ -219,6 +219,29 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
+    public function testPriorParametersBlankParameter(): void {
+        $parameter = '';
+        // some params from GROUP 3
+        $list = ['title-link', 'titlelink'];
+        $expected = array_merge(['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title-link'], ['title-link'], ['titlelink']);
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersBlankParameter_2(): void {
+        $parameter = '';
+        // these params are not in any groups
+        $list = ['testing', 'more-testing'];
+        $expected = [];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersBlankParameterBlankList(): void {
+        $parameter = '';
+        $list = [];
+        $expected = [];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
     public function testPriorParametersDefaultNumericBranch(): void {
         $parameter = 'publisher2';
         $list = [];
