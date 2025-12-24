@@ -143,14 +143,14 @@ final class WikipediaBotTest extends testBaseClass {
         $response = (object) ['batchcomplete' => 'we did it', 'query' => (object) ['pages']];
         $pages = [(object) ['lastrevid' => 1, 'revisions' => 1, 'title' => 'x']];
         $pages[0]->revisions = ['0' => (object) ['timestamp' => 1]];
-        $response->query->pages= (object) $pages;
+        $response->query->pages = (object) $pages;
         $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page8(): void {
         $response = (object) ['batchcomplete' => 'we did it', 'query' => (object) ['pages']];
         $pages = [(object) ['lastrevid' => 1, 'revisions' => 1, 'title' => 'x']];
         $pages[0]->revisions = ['0' => (object) ['timestamp' => 1]];
-        $response->query->pages= (object) $pages;
+        $response->query->pages = (object) $pages;
         $response->query->tokens = (object) ['csrftoken' => 1];
         $this->assertNotNull(WikipediaBot::response2page($response));
     }

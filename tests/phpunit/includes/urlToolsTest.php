@@ -13,7 +13,7 @@ final class urlToolsTest extends testBaseClass {
     }
 
     public function testOxLit(): void {
-        $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+        $text = "{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
         $template->forget('doi');
@@ -22,7 +22,7 @@ final class urlToolsTest extends testBaseClass {
     }
 
     public function testOxComms(): void {
-        $text="{{cite web|url=https://oxfordre.com/communication/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+        $text = "{{cite web|url=https://oxfordre.com/communication/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
         $template->forget('doi');
@@ -31,10 +31,10 @@ final class urlToolsTest extends testBaseClass {
     }
 
     public function testShortenMusic(): void {
-        $text="{{cite web|url=https://oxfordmusiconline.com/X/X/2134/1/1/1/1}}";
+        $text = "{{cite web|url=https://oxfordmusiconline.com/X/X/2134/1/1/1/1}}";
         $template = $this->process_citation($text);
         $this->assertSame('https://oxfordmusiconline.com/X/2134/1/1/1/1', $template->get2('url'));
-        $text="{{cite web|url=https://oxfordmusiconline.com/X/X/X/2134/1/1/1/1}}";
+        $text = "{{cite web|url=https://oxfordmusiconline.com/X/X/X/2134/1/1/1/1}}";
         $template = $this->process_citation($text);
         $this->assertSame('https://oxfordmusiconline.com/X/2134/1/1/1/1', $template->get2('url'));
     }

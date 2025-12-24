@@ -464,14 +464,14 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testVariousEncodes2(): void {
-        $test="ショッピング";
+        $test = "ショッピング";
         $decoded = smart_decode($test, 'UTF-8', '');
         $this->assertSame($test, $decoded);
     }
 
     public function testVariousEncodes3(): void {
-        $test="ショッピング";
-        $decoded=smart_decode($test, "iso-8859-11", '');
+        $test = "ショッピング";
+        $decoded = smart_decode($test, "iso-8859-11", '');
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
     }
 
@@ -490,7 +490,7 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testVariousEncodes5(): void {
-        $test="2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£€20AC¥Š0160§š0161©ª«¬SHY®¯Bx°±²³Ž017Dµ¶·ž017E¹º»Œ0152œ0153Ÿ0178¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
+        $test = "2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£€20AC¥Š0160§š0161©ª«¬SHY®¯Bx°±²³Ž017Dµ¶·ž017E¹º»Œ0152œ0153Ÿ0178¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
         $string_utf8_urlencoded = "2xSP%21%23%24%25%26%27%28%29%2A%2B%2C-.%2F3x0123456789%3A%3B%3C%3D%3E%3F4x%40ABCDEFGHIJKLMNO5xPQRSTUVWXYZ%5B%5C%5D%5E_6x%60abcdefghijklmno7xpqrstuvwxyz%7B%7C%7D%7E8x9xAxNBSP%C2%A1%C2%A2%C2%A3%E2%82%AC20AC%C2%A5%C5%A00160%C2%A7%C5%A10161%C2%A9%C2%AA%C2%AB%C2%ACSHY%C2%AE%C2%AFBx%C2%B0%C2%B1%C2%B2%C2%B3%C5%BD017D%C2%B5%C2%B6%C2%B7%C5%BE017E%C2%B9%C2%BA%C2%BB%C5%920152%C5%930153%C5%B80178%C2%BFCx%C3%80%C3%81%C3%82%C3%83%C3%84%C3%85%C3%86%C3%87%C3%88%C3%89%C3%8A%C3%8B%C3%8C%C3%8D%C3%8E%C3%8FDx%C3%90%C3%91%C3%92%C3%93%C3%94%C3%95%C3%96%C3%97%C3%98%C3%99%C3%9A%C3%9B%C3%9C%C3%9D%C3%9E%C3%9FEx%C3%A0%C3%A1%C3%A2%C3%A3%C3%A4%C3%A5%C3%A6%C3%A7%C3%A8%C3%A9%C3%AA%C3%AB%C3%AC%C3%AD%C3%AE%C3%AFFx%C3%B0%C3%B1%C3%B2%C3%B3%C3%B4%C3%B5%C3%B6%C3%B7%C3%B8%C3%B9%C3%BA%C3%BB%C3%BC%C3%BD%C3%BE%C3%BF";
         $string_utf8 = urldecode($string_utf8_urlencoded);
         $string_windows1252_urlencoded = "2xSP%21%23%24%25%26%27%28%29%2A%2B%2C-.%2F3x0123456789%3A%3B%3C%3D%3E%3F4x%40ABCDEFGHIJKLMNO5xPQRSTUVWXYZ%5B%5C%5D%5E_6x%60abcdefghijklmno7xpqrstuvwxyz%7B%7C%7D%7E8x9xAxNBSP%A1%A2%A3%8020AC%A5%8A0160%A7%9A0161%A9%AA%AB%ACSHY%AE%AFBx%B0%B1%B2%B3%8E017D%B5%B6%B7%9E017E%B9%BA%BB%8C0152%9C0153%9F0178%BFCx%C0%C1%C2%C3%C4%C5%C6%C7%C8%C9%CA%CB%CC%CD%CE%CFDx%D0%D1%D2%D3%D4%D5%D6%D7%D8%D9%DA%DB%DC%DD%DE%DFEx%E0%E1%E2%E3%E4%E5%E6%E7%E8%E9%EA%EB%EC%ED%EE%EFFx%F0%F1%F2%F3%F4%F5%F6%F7%F8%F9%FA%FB%FC%FD%FE%FF";
@@ -504,17 +504,17 @@ final class TextToolsTest extends testBaseClass {
     }
 
     public function testVariousEncodes6(): void {
-        $test="ア イ ウ エ オ カ キ ク ケ コ ガ ギ グ ゲ ゴ サ シ ス セ ソ ザ ジ ズ ゼ ゾ タ チ ツ テ ト ダ ヂ ヅ デ ド ナ ニ ヌ ネ ノ ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ マ ミ ム メ モ ヤ ユ ヨ ラ リ ル レ ロ ワ ヰ ヱ ヲ";
+        $test = "ア イ ウ エ オ カ キ ク ケ コ ガ ギ グ ゲ ゴ サ シ ス セ ソ ザ ジ ズ ゼ ゾ タ チ ツ テ ト ダ ヂ ヅ デ ド ナ ニ ヌ ネ ノ ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ マ ミ ム メ モ ヤ ユ ヨ ラ リ ル レ ロ ワ ヰ ヱ ヲ";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "ISO-2022-JP", "UTF-8")));
     }
 
     public function testVariousEncodes7(): void {
-        $test="说文解字简称说文是由东汉经学家文字学家许慎编著的语文工具书著作是中国最早的系统分析汉字字形和考究字源的语文辞书也是世界上最早的字典之说文解字内容共十五卷其中前十四卷为文字解说字头以小篆书写此书编著时首次对“六书做出了具体的解释逐字解释字体来源第十五卷为叙目记录汉字的产生发展功用结构等方面的问题以及作者创作的目的说文解字是最早的按部首编排的汉语字典全书共分个部首收字9353另有“重文即异体字个共10516字说文解字原书作于汉和帝永元十二年100到安帝建光元年（121年）宋太宗雍熙三年年宋太宗命徐铉句中正葛湍王惟恭等同校说文解字分成上下共三十卷奉敕雕版流布后代研究说文多以此版为蓝本如清代段玉裁注释本即用此版说文为底稿而加以注释[1]说文解字是科学文字学和文献语言学的奠基之作在中国语言学史上有重要的地位历代对于说文解字都有许多学者研究清朝时研究最为兴盛段玉裁的说文解字注朱骏声的说文通训定声桂馥的说文解字义证王筠的说文释例说文句读尤备推崇四人也获尊称为说文四大家";
+        $test = "说文解字简称说文是由东汉经学家文字学家许慎编著的语文工具书著作是中国最早的系统分析汉字字形和考究字源的语文辞书也是世界上最早的字典之说文解字内容共十五卷其中前十四卷为文字解说字头以小篆书写此书编著时首次对“六书做出了具体的解释逐字解释字体来源第十五卷为叙目记录汉字的产生发展功用结构等方面的问题以及作者创作的目的说文解字是最早的按部首编排的汉语字典全书共分个部首收字9353另有“重文即异体字个共10516字说文解字原书作于汉和帝永元十二年100到安帝建光元年（121年）宋太宗雍熙三年年宋太宗命徐铉句中正葛湍王惟恭等同校说文解字分成上下共三十卷奉敕雕版流布后代研究说文多以此版为蓝本如清代段玉裁注释本即用此版说文为底稿而加以注释[1]说文解字是科学文字学和文献语言学的奠基之作在中国语言学史上有重要的地位历代对于说文解字都有许多学者研究清朝时研究最为兴盛段玉裁的说文解字注朱骏声的说文通训定声桂馥的说文解字义证王筠的说文释例说文句读尤备推崇四人也获尊称为说文四大家";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-CN", "UTF-8")));
     }
 
     public function testVariousEncodes8(): void {
-        $test="당신 이름이 무엇입니까 이름이 키얀인 어린 소년을 만나보세요. 그러나 그는 다른 많은 이름도 가지고 있습니다. 당신은 얼마나 많은 이름을 가지고 있습니까?";
+        $test = "당신 이름이 무엇입니까 이름이 키얀인 어린 소년을 만나보세요. 그러나 그는 다른 많은 이름도 가지고 있습니다. 당신은 얼마나 많은 이름을 가지고 있습니까?";
         $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-KR", "UTF-8")));
     }
 

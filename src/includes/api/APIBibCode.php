@@ -379,7 +379,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
                     . "issue,page,pub,pubdate,title,volume,year&rows=2000";
 
     report_action("Expanding from BibCodes via AdsAbs API");
-    $curl_opts=[
+    $curl_opts = [
         CURLOPT_URL => $adsabs_url,
         CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => "1",
@@ -466,7 +466,7 @@ function query_adsabs(string $options): object {
                     . ".adsabs.harvard.edu/v1/search/query"
                     . "?q={$options}&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                     . "issue,page,pub,pubdate,title,volume,year";
-    $curl_opts=[
+    $curl_opts = [
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
         CURLOPT_HEADER => "1",
         CURLOPT_URL => $adsabs_url,
@@ -514,30 +514,30 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         }
 
         if (is_object($decoded) && isset($decoded->error)) {
-            $retry_msg='';                                                  // @codeCoverageIgnoreStart
+            $retry_msg = '';                                                  // @codeCoverageIgnoreStart
             $time_to_sleep = null;
             $limit_action = null;
             if (is_int($ratelimit_total) && is_int($ratelimit_left) && is_int($ratelimit_current) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
                 // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
                 // available actions are: sleep, exit, ignore (default).
-                $rai=intval($retry_after[1]);
-                $retry_msg.='Need to retry after ' . strval($rai) . 's (' . date('H:i:s', $rai) . ').';
+                $rai = intval($retry_after[1]);
+                $retry_msg .= 'Need to retry after ' . strval($rai) . 's (' . date('H:i:s', $rai) . ').';
                 if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
                     $limit_action = mb_strtolower(PHP_ADSABSAPILIMITACTION);
                 }
                 if ($limit_action === 'sleep') {
-                    $time_to_sleep = $rai+1;
+                    $time_to_sleep = $rai + 1;
                 } elseif ($limit_action === 'exit') {
                     $time_to_sleep = -1;
                 } elseif ($limit_action === 'ignore' || $limit_action === '' || $limit_action === null) {
                     // just ignore the limit and continue
                 } else {
-                    $retry_msg.= ' The AdsAbs API limit reached, but the on-limit action "' . strval($limit_action) . '" is not recognized and thus ignored.';
+                    $retry_msg .= ' The AdsAbs API limit reached, but the on-limit action "' . strval($limit_action) . '" is not recognized and thus ignored.';
                 }
             }
             if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
-                $rlr=intval($rate_limit_reset[1]);
-                $retry_msg.=' Rate limit resets on ' . date('Y-m-d H:i:s', $rlr) . ' UTC.';
+                $rlr = intval($rate_limit_reset[1]);
+                $retry_msg .= ' Rate limit resets on ' . date('Y-m-d H:i:s', $rlr) . ' UTC.';
             }
             $retry_msg = mb_trim($retry_msg);
             if ($retry_msg !== '') {

@@ -176,7 +176,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function reference_to_template(string $text): Template {
         $this->flush();
-        $text=mb_trim($text);
+        $text = mb_trim($text);
         if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
             $template = new Template();
             $template->parse_text($matches[1]);

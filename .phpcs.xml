@@ -39,8 +39,6 @@
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
         <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
-        <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter"/>
-        <exclude name="Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore"/>
         <exclude name="Squiz.WhiteSpace.OperatorSpacing.SpacingAfter"/>
     </rule>
     <file>./src</file>

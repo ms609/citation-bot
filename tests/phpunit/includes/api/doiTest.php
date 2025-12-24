@@ -256,7 +256,7 @@ final class doiTest extends testBaseClass {
     public function testDoiExpansion4(): void {
         // Replace this test with a real URL (if one exists)
         $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
-        $expanded= $this->prepare_citation($text);
+        $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
         // Do not drop PDF files, in case they are open access and the DOI points to a paywall

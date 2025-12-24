@@ -256,12 +256,12 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
         $zotero_data = [];
-        $zotero_data[0] = (object) ['bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff'];
+        $zotero_data[0] = (object) ['bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
         $zotero_data = [];
-        $zotero_data[0] = (object) ['publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff'];
+        $zotero_data[0] = (object) ['publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());

@@ -45,7 +45,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 report_phase("Saving to file " . echoable($filename));
                 $body = $page->parsed_text();
                 $bodylen = mb_strlen($body);
-                if (file_put_contents($filename, $body)===$bodylen) {
+                if (file_put_contents($filename, $body) === $bodylen) {
                     report_phase("Saved to file " . echoable($filename));
                 } else {
                     report_warning("Save to file failed.");

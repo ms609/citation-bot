@@ -521,7 +521,7 @@ final class constantsTest extends testBaseClass {
         $italics = explode("|", ITALICS_LIST);
         for ($i = 0; $i < count($italics); $i++) {
             $early = $italics[$i];
-            for ($j = $i+1; $j < count($italics); $j++) {
+            for ($j = $i + 1; $j < count($italics); $j++) {
                 $later = $italics[$j];
                 if ((mb_substr_count($later, $early) !== 0) && ($later !== $early)) {
                     $in_order = false;

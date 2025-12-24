@@ -34,20 +34,20 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             mb_strtolower($template->get('title')) === 'archive copy' ||
             mb_strtolower($template->get('title')) === 'usurped title' ||
             mb_substr_count($template->get('title'), '?') > 10 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '�') >0 )) {
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '�') > 0 )) {
             /** @psalm-taint-escape ssrf */
             $archive_url = $template->get('archive-url') . $template->get('archiveurl');
             if (mb_stripos($archive_url, 'archive') !== false && mb_stripos($archive_url, '.pdf') === false) {

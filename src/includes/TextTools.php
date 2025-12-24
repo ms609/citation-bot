@@ -65,7 +65,7 @@ function wikify_external_text(string $title): string {
             $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
             $last_word = mb_substr($title, $last_word_start);
             if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
-                mb_substr($title, $last_word_start-2, 1) !== '.') {
+                mb_substr($title, $last_word_start - 2, 1) !== '.') {
                 $title = mb_substr($title, 0, -1);
             }
         }
@@ -478,7 +478,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = mb_trim($new_case); // Remove added spaces
 
     $new_case = mb_trim(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "));
-    foreach (UC_SMALL_WORDS as $key=>$_value) {
+    foreach (UC_SMALL_WORDS as $key => $_value) {
         $upper = UC_SMALL_WORDS[$key];
         $lower = LC_SMALL_WORDS[$key];
         foreach ([': ', ', ', '. ', '; '] as $char) {
@@ -707,7 +707,7 @@ function mb_ucwords(string $string): string {
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
-    return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start+$length);
+    return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start + $length);
 }
 
 function remove_brackets(string $string): string {
@@ -1038,7 +1038,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
         $first = (int) $matches[1];
         $second = (int) $matches[2];
-        if ($second === $first+1) {
+        if ($second === $first + 1) {
             return $matches[1] . '–' . $matches[2];
         }
     }
@@ -1047,7 +1047,7 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
         $year = $matches[1];
         $month = (int) $matches[2];
         if ($month > 0 && $month < 13) {
-            return MONTH_SEASONS[$month-1] . ' ' . $year;
+            return MONTH_SEASONS[$month - 1] . ' ' . $year;
         }
     }
     return $input;
@@ -1070,7 +1070,7 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0]+$v[1], $v[2]) . '-' . mb_substr($new, $v[0]+$v[1]+$v[2], 1);
+        return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0] + $v[1], $v[2]) . '-' . mb_substr($new, $v[0] + $v[1] + $v[2], 1);
         // split = SKIP3, $v[0], $v[1], $v[2], 1
     } elseif (mb_strlen($new) === 13) {
         $num = (int) $new;
@@ -1084,7 +1084,7 @@ function addISBNdashes(string $isbn): string {
             return $isbn; // Paranoid
         }
         $v = $split;
-        return mb_substr($new, 0, 3) . '-' . mb_substr($new, 3, $v[0]) . '-' . mb_substr($new, 3+$v[0], $v[1]) . '-' . mb_substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . mb_substr($new, 3+$v[0]+$v[1]+$v[2], 1);
+        return mb_substr($new, 0, 3) . '-' . mb_substr($new, 3, $v[0]) . '-' . mb_substr($new, 3 + $v[0], $v[1]) . '-' . mb_substr($new, 3 + $v[0] + $v[1], $v[2]) . '-' . mb_substr($new, 3 + $v[0] + $v[1] + $v[2], 1);
         // split = 3, $v[0], $v[1], $v[2], 1
     } else {
         return $isbn;

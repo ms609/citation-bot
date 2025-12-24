@@ -124,7 +124,7 @@ final class WikipediaBot {
     private function fetch(array $params, int $depth = 1): ?object {
         set_time_limit(120);
         if ($depth > 1) {
-            sleep($depth+2); // @codeCoverageIgnore
+            sleep($depth + 2); // @codeCoverageIgnore
         }
         if ($depth > 4) {
             return null;  // @codeCoverageIgnore
@@ -165,7 +165,7 @@ final class WikipediaBot {
                 mb_stripos((string) $ret->error->info, 'Nonce already used') !== false))
             ) {
                 unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
-                return $this->fetch($params, $depth+1);
+                return $this->fetch($params, $depth + 1);
 
             }         // @codeCoverageIgnoreEnd
             return self::ret_okay($ret) ? $ret : null;
@@ -431,10 +431,10 @@ final class WikipediaBot {
 
     public static function ReadDetails(string $title): object {
         $details = self::QueryAPI([
-            'action'=>'query',
-            'prop'=>'info',
-            'titles'=> $title,
-            'curtimestamp'=>'true',
+            'action' => 'query',
+            'prop' => 'info',
+            'titles' => $title,
+            'curtimestamp' => 'true',
             'inprop' => 'protection',
         ]);
         return (object) @json_decode($details);
@@ -447,7 +447,7 @@ final class WikipediaBot {
     public static function GetAPage(string $title): string {
         curl_setopt_array(self::$ch_logout,
                                 [CURLOPT_HTTPGET => true,
-                                    CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw',]),
+                                    CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' => 'raw',]),
                                 ]);
         $text = @curl_exec(self::$ch_logout);
         if ($text === false) {
@@ -509,7 +509,7 @@ final class WikipediaBot {
      * @codeCoverageIgnore
      */
     private function authenticate_user(): void {
-        @setcookie(session_name(), session_id(), time()+(7*24*3600), "", "", true, true); // 7 days
+        @setcookie(session_name(), session_id(), time() + (7 * 24 * 3600), "", "", true, true); // 7 days
         if (isset($_SESSION['citation_bot_user_id']) &&
             isset($_SESSION['access_key']) &&
             isset($_SESSION['access_secret']) &&

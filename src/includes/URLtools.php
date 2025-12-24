@@ -120,9 +120,11 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         $ch_return = bot_curl_exec($ch_doi);
                         if (mb_strlen($ch_return) > 60) {
                             $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
-                            $redirectedUrl_url =url_simplify($redirectedUrl_url);
-                            if (mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
-                                            mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
+                            $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                            if (
+                                mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
+                                mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false
+                            ) {
                                 report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                                 $template->forget($url_type);
                             }
@@ -1949,7 +1951,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
 
             $the_question = mb_strpos($handle, '?');
             if ($the_question !== false) {
-                $handle = mb_substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(mb_substr($handle, $the_question+1)));
+                $handle = mb_substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(mb_substr($handle, $the_question + 1)));
             }
 
             // Verify that it works as a hdl

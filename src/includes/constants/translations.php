@@ -106,7 +106,7 @@ const MK_TRANS = [
     'Formatted ' => 'Форматиран ',
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Поврзано од',
-    '[[Category:' =>'[[Категорија:',
+    '[[Category:' => '[[Категорија:',
 ];
 
 const RU_TRANS = [
@@ -152,7 +152,7 @@ const SR_TRANS = [
     'Formatted ' => 'Форматиран ',
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Повезано од',
-    '[[Category:' =>'[[Категорија:',
+    '[[Category:' => '[[Категорија:',
 ];
 
 const VI_TRANS = [
@@ -175,5 +175,5 @@ const VI_TRANS = [
     'Formatted ' => 'Định dạng ',
     'Suggested by' => 'Được đề xuất bởi',
     'Linked from' => 'Liên kết từ',
-    '[[Category:' =>'[[Thể loại:',
+    '[[Category:' => '[[Thể loại:',
 ];
