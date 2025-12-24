@@ -56,14 +56,13 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
-        ini-values: pcov.directory=., opcache.enable=1, opcache.enable_cli=1, opcache.jit=tracing, opcache.jit_buffer_size=64M
+        ini-values: pcov.directory=., opcache.enable=1, opcache.enable_cli=1
         coverage: pcov
         extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml, pcntl
         # Performance optimizations for faster test execution:
         # - opcache.enable=1, opcache.enable_cli=1: Enable opcache for CLI to cache compiled PHP code
-        # - opcache.jit=tracing: Enable JIT compilation in tracing mode (optimized for dynamic apps)
-        # - opcache.jit_buffer_size=64M: Allocate 64MB for JIT compilation cache (balanced for test suite size)
-        # These settings provide 10-30% speedup and reduce billable CI minutes
+        # Note: JIT is disabled because it's incompatible with pcov coverage extension (both override zend_execute_ex)
+        # These settings provide modest speedup while maintaining code coverage capabilities
 
     - name: Validate composer.json and composer.lock
       run: composer validate

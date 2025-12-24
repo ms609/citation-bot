@@ -16,6 +16,7 @@
         "php": ">=8.4"
     },
     "require-dev": {
+        "brianium/paratest": "^7",
         "designsecurity/progpilot": "^1",
         "mediawiki/mediawiki-codesniffer": "^48.0.0",
         "overtrue/phplint": "^9",
@@ -35,6 +36,6 @@
         "progpilot": "progpilot --configuration progpilot.yml src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "psalm": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --memory-limit=4G",
         "psalm-taint": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G",
-        "test": "phpunit --processes=auto --enforce-time-limit --default-time-limit 13000 --coverage-clover coverage.xml 1>&2"
+        "test": "paratest --processes=auto --runner=WrapperRunner --coverage-clover=coverage.xml 1>&2"
     }
 }
