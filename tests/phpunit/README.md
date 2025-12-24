@@ -18,7 +18,6 @@ The recommended way to run all tests is:
 This uses ParaTest for parallel test execution:
 - `--processes=auto`: Runs tests across all CPU cores
 - `--runner=WrapperRunner`: PHPUnit 12 compatibility
-- `--do-not-cache-result`: Disables result caching (avoids cache configuration requirement)
 - `--coverage-clover coverage.xml`: Code coverage reports
 
 ParaTest provides 2-4x speedup and 50-80% reduction in CI execution time. Required because PHPUnit 12 removed native parallel execution support.
