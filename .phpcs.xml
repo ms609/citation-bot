@@ -28,7 +28,6 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
-        <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
