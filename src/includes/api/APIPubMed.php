@@ -9,6 +9,7 @@ declare(strict_types=1);
 function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to save memory
     entrez_api($pmids, $templates, 'pubmed');
 }
+
 /**
  * @param array<string> $pmcs
  * @param array<Template> &$templates
@@ -151,7 +152,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
 }
 
 function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
-    $url =    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
     $request = NLM_LOGIN;
     if ($type === "esearch_pubmed") {
         $url  .= "esearch.fcgi";

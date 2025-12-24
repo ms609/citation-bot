@@ -143,7 +143,7 @@ function format_initials(string $str): string {
     if ($str === "") {
         return "";
     }
-    $end = mb_substr($str, mb_strlen($str)-1) === ";" ? ";" : '';
+    $end = mb_substr($str, mb_strlen($str) - 1) === ";" ? ";" : '';
     preg_match_all("~\w~u", $str, $match);
     return mb_strtoupper(implode(".", $match[0]) . ".") . $end;
 }
@@ -228,7 +228,7 @@ function format_author(string $author): string {
             if ($ends_with_period) {
                 $i = [];
                 // it ends in a .
-                if (is_initials($auth[$countAuth-1])) {
+                if (is_initials($auth[$countAuth - 1])) {
                     // it's Conway Morris S.C.
                     foreach (explode(" ", $auth[0]) as $bit) {
                         if (is_initials($bit)) {
@@ -257,8 +257,8 @@ function format_author(string $author): string {
                 $fore = mb_strtoupper(implode(" ", $i));
             } else {
                 // it ends with the surname
-                $surname = $auth[$countAuth-1];
-                unset($auth[$countAuth-1]);
+                $surname = $auth[$countAuth - 1];
+                unset($auth[$countAuth - 1]);
                 $fore = implode(".", $auth);
             }
         } else {
@@ -299,7 +299,7 @@ function format_multiple_authors(string $authors): string {
     $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
     $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
     if (preg_match("~[,;]$~", mb_trim($authors))) {
-        $authors = mb_substr(mb_trim($authors), 0, mb_strlen(mb_trim($authors))-1); // remove trailing punctuation
+        $authors = mb_substr(mb_trim($authors), 0, mb_strlen(mb_trim($authors)) - 1); // remove trailing punctuation
     }
 
     $authors = mb_trim($authors);

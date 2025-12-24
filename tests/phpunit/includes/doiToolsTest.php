@@ -25,6 +25,7 @@ final class doiToolsTest extends testBaseClass {
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
     }
+
     public function testSanitizeDoi2(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);

@@ -51,6 +51,7 @@ final class PageTest extends testBaseClass {
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
         $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
+
     public function testPageChangeSummary9(): void {
         $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
@@ -126,7 +127,7 @@ final class PageTest extends testBaseClass {
         $this->process_page($text);
         $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
         $this->process_page($text);
-        $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
+        $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
         $this->process_page($text);
         $this->assertFaker();
     }
@@ -423,11 +424,13 @@ final class PageTest extends testBaseClass {
         $page = $this->process_page($text);
         $this->assertSame('{{cite thesis| mr=1234 |url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
     }
+
     public function testNobots5(): void {
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
+
     public function testNobots6(): void {
         $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=BobsCoolBot}}';
         $page = $this->process_page($text);
@@ -435,22 +438,25 @@ final class PageTest extends testBaseClass {
     }
 
     public function testODNB1(): void {
-        $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
+        $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
     }
+
     public function testODNB2(): void {
-        $text='{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} {{ODNBsub}}';
+        $text = '{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} ', $page->parsed_text());
     }
+
     public function testODNB3(): void {
-        $text='{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)}} {{ODNBsub}}';
+        $text = '{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text()); // two underscores
     }
+
     public function testODNB4(): void {
-        $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}}{{Yup}}{{ODNBsub}}';
+        $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}}{{Yup}}{{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text()); // template in the way
     }

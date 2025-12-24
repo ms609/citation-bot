@@ -32,12 +32,13 @@ final class HandleCache {
                         count(self::$cache_active) +
                         count(self::$cache_good) +
                         count(self::$cache_hdl_bad) +
-                        10*count(self::$cache_hdl_loc) + // These include a path too
+                        10 * count(self::$cache_hdl_loc) + // These include a path too
                         count(self::$cache_hdl_null);
         if ($usage > self::MAX_CACHE_SIZE) {
             self::free_memory();    // @codeCoverageIgnore
         }
     }
+
     public static function free_memory(): void {
         self::$cache_active = [];
         self::$cache_inactive = BAD_DOI_ARRAY;

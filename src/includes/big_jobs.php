@@ -40,7 +40,7 @@ function big_jobs_check_overused(int $page_count): void {
         return;
     }
     $fn = big_jobs_name();
-    if (file_exists($fn) && fileatime($fn) < (time()-3600)) { // More than an hour
+    if (file_exists($fn) && fileatime($fn) < (time() - 3600)) { // More than an hour
         hard_unlink($fn);
     }
     if (file_exists($fn)) {

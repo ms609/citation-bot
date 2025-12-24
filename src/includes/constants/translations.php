@@ -11,7 +11,7 @@ const RU_ERR1 = 'Следующий текст может помочь вам в
 const RU_ERR2 = 'Если проблема не в этом, то запустите отдельную страницу с &prce=1, добавленным к URL, чтобы изменить механизм синтаксического анализа.';
 
 const SR_ERR1 = 'Следећи текст би вам могао помоћи да схватите где је грешка на страници (потражите усамљене знакове { и } или незатворени коментар).';
-const SR_ERR2 =  'Ако то није проблем, онда покрените једну страницу са додатком &prce=1 у URL да бисте променили механизам за парсирање';
+const SR_ERR2 = 'Ако то није проблем, онда покрените једну страницу са додатком &prce=1 у URL да бисте променили механизам за парсирање';
 
 const ENG_ERR1 = 'The following text might help you figure out where the error on the page is (Look for lone { and } characters, or unclosed comment)';
 const ENG_ERR2 = 'If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine';
@@ -106,7 +106,7 @@ const MK_TRANS = [
     'Formatted ' => 'Форматиран ',
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Поврзано од',
-    '[[Category:' =>'[[Категорија:',
+    '[[Category:' => '[[Категорија:',
 ];
 
 const RU_TRANS = [
@@ -152,7 +152,7 @@ const SR_TRANS = [
     'Formatted ' => 'Форматиран ',
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Повезано од',
-    '[[Category:' =>'[[Категорија:',
+    '[[Category:' => '[[Категорија:',
 ];
 
 const VI_TRANS = [
@@ -175,5 +175,5 @@ const VI_TRANS = [
     'Formatted ' => 'Định dạng ',
     'Suggested by' => 'Được đề xuất bởi',
     'Linked from' => 'Liên kết từ',
-    '[[Category:' =>'[[Thể loại:',
+    '[[Category:' => '[[Thể loại:',
 ];

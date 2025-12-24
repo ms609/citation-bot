@@ -164,6 +164,7 @@ final class doiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
     }
+
     public function testCrossRefAddSeries2(): void {
         // Kind of messed up, but "matches" enough to expand
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
@@ -212,6 +213,7 @@ final class doiTest extends testBaseClass {
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
+
     public function testPoundDOI(): void {
         $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
         $expanded = $this->process_citation($text);
@@ -256,7 +258,7 @@ final class doiTest extends testBaseClass {
     public function testDoiExpansion4(): void {
         // Replace this test with a real URL (if one exists)
         $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
-        $expanded= $this->prepare_citation($text);
+        $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
         // Do not drop PDF files, in case they are open access and the DOI points to a paywall

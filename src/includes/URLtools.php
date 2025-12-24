@@ -120,9 +120,11 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         $ch_return = bot_curl_exec($ch_doi);
                         if (mb_strlen($ch_return) > 60) {
                             $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
-                            $redirectedUrl_url =url_simplify($redirectedUrl_url);
-                            if (mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
-                                            mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false) {
+                            $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                            if (
+                                mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
+                                mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false
+                            ) {
                                 report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                                 $template->forget($url_type);
                             }
@@ -273,56 +275,56 @@ function simplify_google_search(string $url): string {
                 if ($it_is_blank || str_i_same($part_start1, 'any')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "cf":
                 if ($it_is_blank || str_i_same($part_start1, 'all')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "cs":
                 if ($it_is_blank || str_i_same($part_start1, '0')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "btnK":
                 if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "as_epq":
                 if ($it_is_blank) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "btnG":
                 if ($it_is_blank || str_i_same($part_start1, 'Search')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "rct":
                 if ($it_is_blank || str_i_same($part_start1, 'j')) {
                     break; // default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "resnum":
                 if ($it_is_blank || str_i_same($part_start1, '11')) {
                     break; // default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "ie":
             case "oe":
                 if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
                     break; // UTF-8 is the default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "hl":
             case "safe":
@@ -343,12 +345,12 @@ function simplify_google_search(string $url): string {
             case "lpsid":
             case "as_q":
             case "kponly":
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             // @codeCoverageIgnoreStart
             default:
                 report_minor_error("Unexpected Google URL component:    " . echoable($part));
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             // @codeCoverageIgnoreEnd
         }
@@ -1949,7 +1951,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
 
             $the_question = mb_strpos($handle, '?');
             if ($the_question !== false) {
-                $handle = mb_substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(mb_substr($handle, $the_question+1)));
+                $handle = mb_substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(mb_substr($handle, $the_question + 1)));
             }
 
             // Verify that it works as a hdl

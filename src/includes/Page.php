@@ -300,7 +300,7 @@ class Page {
         );
         if (
             ($ref_count < 2) ||
-            (($citation_count/$ref_count) >= 0.5)
+            (($citation_count / $ref_count) >= 0.5)
         ) {
             $this->text = preg_replace_callback(
                 // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
@@ -603,7 +603,7 @@ class Page {
         $auto_summary = "";
         $altered_list = $this->modifications["changeonly"];
         if (count($altered_list) !== 0) {
-            if (count($altered_list)===1) {
+            if (count($altered_list) === 1) {
                 $op = "Altered";
             } else {
                 $op = "Alter:";
@@ -618,7 +618,7 @@ class Page {
         if (count($this->modifications['additions']) !== 0) {
             /** @var array<string> $addns */
             $addns = $this->modifications["additions"];
-            if (count($addns)===1) {
+            if (count($addns) === 1) {
                 $op = "Added";
             } else {
                 $op = "Add:";
@@ -684,7 +684,7 @@ class Page {
             if ($pos6 !== false) {
                 unset($this->modifications["deletions"][$pos6]);
             }
-            if ($pos1 !==false || $pos2 !==false || $pos3 !==false) {
+            if ($pos1 !== false || $pos2 !== false || $pos3 !== false) {
                 if (mb_strpos($auto_summary, 'chapter-url') !== false) {
                     $auto_summary .= "Removed or converted URL. ";
                 } else {
@@ -698,7 +698,7 @@ class Page {
                 $auto_summary .= "Changed bare reference to CS1/2. ";
             }
         }
-        $auto_summary .= ((count($this->modifications["deletions"]) !==0)
+        $auto_summary .= ((count($this->modifications["deletions"]) !== 0)
             ? "Removed parameters. "
             : ""
             ) . (($this->modifications["dashes"])
@@ -929,7 +929,7 @@ class Page {
     }
 
     private function announce_page(): void {
-        $url_encoded_title =    urlencode($this->title);
+        $url_encoded_title = urlencode($this->title);
         if ($url_encoded_title === '') {
             return;
         }

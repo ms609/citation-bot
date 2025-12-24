@@ -34,20 +34,20 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             mb_strtolower($template->get('title')) === 'archive copy' ||
             mb_strtolower($template->get('title')) === 'usurped title' ||
             mb_substr_count($template->get('title'), '?') > 10 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '') >0 ||
-            mb_substr_count($template->get('title'), '�') >0 )) {
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '') > 0 ||
+            mb_substr_count($template->get('title'), '�') > 0 )) {
             /** @psalm-taint-escape ssrf */
             $archive_url = $template->get('archive-url') . $template->get('archiveurl');
             if (mb_stripos($archive_url, 'archive') !== false && mb_stripos($archive_url, '.pdf') === false) {
@@ -158,19 +158,19 @@ function convert_to_utf8(string $value): string {
 }
 
 function convert_to_utf8_inside(string $value): string {
-    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    $encode1 = mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
     if ($encode1 === false || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') {
         return $value;
     }
-    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
+    $encode2 = mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], true);
     if ($encode1 !== $encode2) {
         return $value;
     }
-    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
+    $encode3 = mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], true);
     if ($encode1 !== $encode3) {
         return $value;
     }
-    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
+    $encode4 = mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], true);
     if ($encode1 !== $encode4) {
         return $value;
     }

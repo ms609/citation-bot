@@ -306,7 +306,7 @@ function google_book_details(Template $template, string $gid): void {
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid): void { // PASS BY REFERENCE!!!!!!
     $removed_redundant = 0;
     $hash = '';
-    $removed_parts ='';
+    $removed_parts = '';
     if (mb_strpos($url, "vid=")) {
         return;  // These must be fixed by hand
     }
@@ -522,7 +522,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
     }
 
     if (isset($book_array['q'])) {
-        if (((mb_stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
+        if (((mb_stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !== 'ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
                 mb_stripos($book_array['q'], 'subject:') === 0 ||
                 mb_stripos($book_array['q'], 'inauthor:') === 0 ||
                 mb_stripos($book_array['q'], 'inpublisher:') === 0) {
@@ -530,7 +530,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         }
     }
     if (isset($book_array['dq'])) {
-        if (((mb_stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
+        if (((mb_stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !== 'ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
                 mb_stripos($book_array['dq'], 'subject:') === 0 ||
                 mb_stripos($book_array['dq'], 'inauthor:') === 0 ||
                 mb_stripos($book_array['dq'], 'inpublisher:') === 0) {

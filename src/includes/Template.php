@@ -593,6 +593,7 @@ final class Template
         }
         return true;
     }
+
     /**
      * @param array<string>|string $param
      */
@@ -3028,13 +3029,16 @@ final class Template
     public function initial_author_params(): array {
         return $this->initial_author_params;
     }
+
      /** @param array<string> $auths */
     public function initial_author_params_set(array $auths): void {
         $this->initial_author_params = $auths;
     }
+
     public function had_initial_author(): bool {
         return count($this->initial_author_params) > 0;
     }
+
     public function had_initial_editor(): bool {
         return $this->had_initial_eds;
     }
@@ -3222,7 +3226,7 @@ final class Template
             }
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
             if (ctype_upper(mb_substr($this->name, 0, 1))) {
-                $new_name_mapped =  mb_ucfirst($new_name_mapped);
+                $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
             switch ($new_name) {

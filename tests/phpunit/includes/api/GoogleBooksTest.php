@@ -165,21 +165,25 @@ final class GoogleBooksTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
     }
+
     public function testGoogleBooksCleanup2(): void {
         $text = "{{cite books|url=https://books.google.com/books?vid=12345}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?vid=12345', $expanded->get2('url'));
     }
+
     public function testGoogleBooksCleanup3(): void {
         $text = "{{cite books|url=https://books.google.com/books?qid=12345}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
     }
+
     public function testGoogleBooksCleanup4(): void {
         $text = "{{cite books|url=https://books.google.com/?id=12345}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
     }
+
     public function testGoogleBooksCleanup5(): void {
         $text = "{{cite books|url=https://books.google.uk.co/books?isbn=12345}}";
         $expanded = $this->process_citation($text);

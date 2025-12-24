@@ -20,6 +20,7 @@ final class ParameterTest extends testBaseClass {
         $this->assertSame('[[:en:Bigwig|SomeoneFamous]]', $parameter->val);
         $this->assertSame("\n", $parameter->post);
     }
+
     public function testParameterWithNoParamName(): void {
         $text = " = no param name";
         $parameter = $this->parameter_parse_text_helper($text);
