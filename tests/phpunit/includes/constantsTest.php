@@ -578,18 +578,21 @@ final class constantsTest extends testBaseClass {
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, '('));
     }
+
     public function testItalicsEscaped2(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, ')'));
     }
+
     public function testItalicsEscaped3(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, '\\'));
     }
+
     public function testItalicsEscaped4(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);

@@ -954,6 +954,7 @@ function safe_preg_replace(string $regex, string $replace, string $old): string 
     }
     return $new;
 }
+
 function safe_preg_replace_callback(string $regex, callable $replace, string $old): string {
     if ($old === "") {
         return "";

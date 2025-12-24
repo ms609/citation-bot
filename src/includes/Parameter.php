@@ -74,6 +74,7 @@ final class Parameter {
             }
         }
     }
+
     /**
      * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
      */

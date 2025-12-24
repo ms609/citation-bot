@@ -9,6 +9,7 @@ declare(strict_types=1);
 function query_pmid_api (array $pmids, array &$templates): void {  // Pointer to save memory
     entrez_api($pmids, $templates, 'pubmed');
 }
+
 /**
  * @param array<string> $pmcs
  * @param array<Template> &$templates

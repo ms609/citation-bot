@@ -38,7 +38,6 @@
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
-        <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
     </rule>
     <file>./src</file>
     <file>./tests</file>

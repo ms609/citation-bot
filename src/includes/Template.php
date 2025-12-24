@@ -593,6 +593,7 @@ final class Template
         }
         return true;
     }
+
     /**
      * @param array<string>|string $param
      */
@@ -3028,13 +3029,16 @@ final class Template
     public function initial_author_params(): array {
         return $this->initial_author_params;
     }
+
      /** @param array<string> $auths */
     public function initial_author_params_set(array $auths): void {
         $this->initial_author_params = $auths;
     }
+
     public function had_initial_author(): bool {
         return count($this->initial_author_params) > 0;
     }
+
     public function had_initial_editor(): bool {
         return $this->had_initial_eds;
     }

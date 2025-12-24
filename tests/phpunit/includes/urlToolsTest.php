@@ -330,48 +330,56 @@ final class urlToolsTest extends testBaseClass {
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxforddnb.com/X', $template->get2('url'));
     }
+
     public function testAnonymizeOxford2(): void {
         $text = "{{cite web|url=https://www.anb.org/x;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.anb.org/x', $template->get2('url'));
     }
+
     public function testAnonymizeOxford3(): void {
         $text = "{{cite web|url=https://www.oxfordartonline.com/Y;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxfordartonline.com/Y', $template->get2('url'));
     }
+
     public function testAnonymizeOxford4(): void {
         $text = "{{cite web|url=https://www.ukwhoswho.com/z;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.ukwhoswho.com/z', $template->get2('url'));
     }
+
     public function testAnonymizeOxfor5(): void {
         $text = "{{cite web|url=https://www.oxfordmusiconline.com/z;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://www.oxfordmusiconline.com/z', $template->get2('url'));
     }
+
     public function testAnonymizeOxford6(): void {
         $text = "{{cite web|url=https://oxfordre.com/z;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordre.com/z', $template->get2('url'));
     }
+
     public function testAnonymizeOxford7(): void {
         $text = "{{cite web|url=https://oxfordaasc.com/z;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordaasc.com/z', $template->get2('url'));
     }
+
     public function testAnonymizeOxford8(): void {
         $text = "{{cite web|url=https://oxfordreference.com/z;jsession?print}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://oxfordreference.com/z', $template->get2('url'));
     }
+
     public function testAnonymizeOxford9(): void {
         $text = "{{cite web|url=https://oxford.universitypressscholarship.com/z;jsession?print}}";
         $template = $this->make_citation($text);
@@ -730,11 +738,13 @@ final class urlToolsTest extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
         $this->assertSame('{{ProQuest|12341234}}', $template->get2('id'));
     }
+
     public function testConversionOfURL6b(): void {
         $text = "{{cite web|url=http://search.proquest.com/docview/12341234}}";     // No title
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
     }
+
     public function testConversionOfURL6c(): void {
         $text = "{{cite web|url=http://search.proquest.com/docview/12341234|title=X|id=<!--- --->}}";       // Blocked by comment
         $template = $this->make_citation($text);
@@ -843,36 +853,42 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('0012343', $prepared->get2('mr'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsA(): void {
         $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1234231', $prepared->get2('ssrn'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsB(): void {
         $text = '{{cite journal | url=https://www.osti.gov/biblio/2341}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2341', $prepared->get2('osti'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsC(): void {
         $text = '{{cite journal | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('2341', $prepared->get2('osti'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsD(): void {
         $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:1111.22222}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1111.22222', $prepared->get2('zbl'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsE(): void {
         $text = '{{cite journal | url=https://zbmath.org/?format=complete&q=an:11.2222.44}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('11.2222.44', $prepared->get2('jfm'));
         $this->assertNotNull($prepared->get2('url'));
     }
+
     public function testUrlConversionsF(): void {
         $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf}}';
         $prepared = $this->prepare_citation($text);
@@ -881,6 +897,7 @@ final class urlToolsTest extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $this->assertSame('10.1.1.923.345', $prepared->get2('citeseerx'));
     }
+
     public function testUrlConversionsG(): void {
         $text = '{{cite journal | archiveurl= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
         $prepared = $this->prepare_citation($text);

@@ -383,6 +383,7 @@ final class WikipediaBot {
         $res = self::reset($res->query->pages);
         return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
     }
+
     public static function redirect_target(string $page): ?string {
         $res = self::QueryAPI([
             "action" => "query",
@@ -498,6 +499,7 @@ final class WikipediaBot {
     private function get_the_user_internal(): string {
         return $this->the_user;
     }
+
     public static function GetLastUser(): string {
         if (isset(self::$last_WikipediaBot)) {
             return self::$last_WikipediaBot->get_the_user_internal();

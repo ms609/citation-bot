@@ -38,6 +38,7 @@ final class HandleCache {
             self::free_memory();    // @codeCoverageIgnore
         }
     }
+
     public static function free_memory(): void {
         self::$cache_active = [];
         self::$cache_inactive = BAD_DOI_ARRAY;

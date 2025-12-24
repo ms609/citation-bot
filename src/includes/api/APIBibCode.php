@@ -22,9 +22,11 @@ final class AdsAbsControl {
         self::$big_counter = max(self::$big_counter - 1, 0);
         return self::$big_counter !== 0;
     }
+
     public static function big_give_up(): void {
         self::$big_counter = 1000;
     }
+
     public static function big_back_on(): void {
         self::$big_counter = 0;
     }
@@ -33,9 +35,11 @@ final class AdsAbsControl {
         self::$small_counter = max(self::$small_counter - 1, 0);
         return self::$small_counter !== 0;
     }
+
     public static function small_give_up(): void {
         self::$small_counter = 1000;
     }
+
     public static function small_back_on(): void {
         self::$small_counter = 0;
     }
@@ -55,9 +59,11 @@ final class AdsAbsControl {
             }
         }
     }
+
     public static function get_doi2bib(string $doi): string {
         return (string) @self::$doi2bib[$doi];
     }
+
     public static function get_bib2doi(string $bib): string {
         return (string) @self::$bib2doi[$bib];
     }
@@ -68,6 +74,7 @@ final class AdsAbsControl {
             self::free_memory(); // @codeCoverageIgnore
         }
     }
+
     public static function free_memory(): void {
         self::$doi2bib = [];
         self::$bib2doi = [];

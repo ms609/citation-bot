@@ -164,6 +164,7 @@ final class doiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
     }
+
     public function testCrossRefAddSeries2(): void {
         // Kind of messed up, but "matches" enough to expand
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
@@ -212,6 +213,7 @@ final class doiTest extends testBaseClass {
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
+
     public function testPoundDOI(): void {
         $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
         $expanded = $this->process_citation($text);

@@ -13,6 +13,7 @@ final class zoteroTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     }
+
     public function testZoteroExpansion_biorxiv2(): void {
         $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
         $expanded = $this->process_citation($text);
@@ -24,11 +25,13 @@ final class zoteroTest extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
+
     public function testDropUrlCode2(): void { // URL redirects to URL with the same DOI
         $text = '{{cite journal | last = De Vivo | first = B. | title = New constraints on the pyroclastic eruptive history of the Campanian volcanic Plain (Italy) | url = http://www.springerlink.com/content/8r046aa9t4lmjwxj/ | doi = 10.1007/s007100170010 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
+
     public function testDropUrlCode3(): void { // url is same as one doi points to, except for http vs. https
         $text = "{{cite journal |pmc=XYZ| first = Luca | last = D'Auria | year = 2015 | title = Magma injection beneath the urban area of Naples | url = http://www.nature.com/articles/srep13100 | doi=10.1038/srep13100 }}";
         $expanded = $this->process_citation($text);
@@ -919,6 +922,7 @@ final class zoteroTest extends testBaseClass {
         drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
+
     public function testRemoveURLwithProxy3b(): void { // CANONICAL_PUBLISHER_URLS
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);

@@ -10,60 +10,79 @@ final class TextToolsTest extends testBaseClass {
         unset($pg);
         $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), true));
     }
+
     public function testCapitalization1b(): void {
         $this->assertSame('z/Journal', title_capitalization(title_case('z/Journal'), true));
     }
+
     public function testCapitalization1c(): void {
         $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', true));
     }
+
     public function testCapitalization1d(): void {
         $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', true));
     }
+
     public function testCapitalization1e(): void {
         $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', true));
     }
+
     public function testCapitalization2a(): void {
         $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
     }
+
     public function testCapitalization2b(): void {
         $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
     }
+
     public function testCapitalization2c(): void {
         $this->assertSame("THIS 'A' JOURNAL mittEilUngen", title_capitalization("THIS `A` JOURNAL mittEilUngen", true));
     }
+
     public function testCapitalization3(): void {
         $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', true)); // Do not touch links
     }
+
     public function testCapitalization4(): void {
         $this->assertSame('This is robert WWW', title_capitalization('This is robert www', true));
     }
+
     public function testCapitalization5(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
     }
+
     public function testCapitalization6(): void {
         $this->assertSame('This is robert www.', title_capitalization('This is robert www.', true));
     }
+
     public function testCapitalization7(): void {
         $this->assertSame('This is robert www-', title_capitalization('This is robert www-', true));
     }
+
     public function testCapitalization8a(): void {
         $this->assertSame('I the Las Vegas.  Trip.', title_capitalization('I the las Vegas.  Trip.', true));
     }
+
     public function testCapitalization8b(): void {
         $this->assertSame('I the Las Vegas,  Trip.', title_capitalization('I the las Vegas,  Trip.', true));
     }
+
     public function testCapitalization8c(): void {
         $this->assertSame('I the Las Vegas:  Trip.', title_capitalization('I the las Vegas:  Trip.', true));
     }
+
     public function testCapitalization8d(): void {
         $this->assertSame('I the Las Vegas;  Trip.', title_capitalization('I the las Vegas;  Trip.', true));
     }
+
     public function testCapitalization8e(): void {
         $this->assertSame('I the las Vegas...Trip.', title_capitalization('I the las Vegas...Trip.', true));
     }
+
     public function testCapitalization9(): void {
         $this->assertSame('SAGE Open', title_capitalization('Sage Open', true));
     }
+
     public function testCapitalization10(): void {
         $this->assertSame('CA', title_capitalization('Ca', true));
     }
@@ -91,9 +110,11 @@ final class TextToolsTest extends testBaseClass {
     public function testFrenchCapitalization1(): void {
         $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), true));
     }
+
     public function testFrenchCapitalization2(): void {
         $this->assertSame("Phénomènes d'Évaporation d'Hydrologie", title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), true));
     }
+
     public function testFrenchCapitalization3(): void {
         $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica", title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", true));
     }
@@ -114,6 +135,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('July 2014', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
+
     public function testTidyDate2(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
@@ -124,6 +146,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('2018-10-21', tidy_date('Date published (2018-10-21'));
         $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
     }
+
     public function testTidyDate3(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
@@ -132,6 +155,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
         $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
     }
+
     public function testTidyDate4(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
@@ -240,64 +264,79 @@ final class TextToolsTest extends testBaseClass {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes2(): void {
         $text = "X«Y»Z";
         $this->assertSame('X"Y"Z', straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes3(): void {
         $text = "This › That";
         $this->assertSame($text, straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes4(): void {
         $text = "X‹Y›Z";
         $this->assertSame("X'Y'Z", straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes5(): void {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes6(): void {
         $text = "X«Y»Z";
         $this->assertSame($text, straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes7(): void {
         $text = "This › That";
         $this->assertSame($text, straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes8(): void {
         $text = "X‹Y›Z";
         $this->assertSame("X'Y'Z", straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes9(): void {
         $text = "«XY»Z";
         $this->assertSame($text, straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes10(): void {
         $text = "«XY»Z";
         $this->assertSame('"XY"Z', straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes11(): void {
         $text = "«Y»";
         $this->assertSame('"Y"', straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes12(): void {
         $text = "‹Y›";
         $this->assertSame("'Y'", straighten_quotes($text, true));
     }
+
     public function testArrowAreQuotes13(): void {
         $text = "«Y»";
         $this->assertSame('"Y"', straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes14(): void {
         $text = "‹Y›";
         $this->assertSame("'Y'", straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes15(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame($text, straighten_quotes($text, false));
     }
+
     public function testArrowAreQuotes16(): void {
         $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
@@ -312,10 +351,12 @@ final class TextToolsTest extends testBaseClass {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $this->assertSame($text_math, sanitize_string($text_math));
     }
+
     public function testMathInTitle2(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $this->assertSame('<nowiki>' . $text_math . '</nowiki>', wikify_external_text($text_math));
     }
+
     public function testMathInTitle3(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $text_mml    = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>ß</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si38.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>s</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
@@ -330,24 +371,31 @@ final class TextToolsTest extends testBaseClass {
     public function testTrailingPeriods1(): void {
         $this->assertSame('In the X.Y.', wikify_external_text('In the X.Y.'));
     }
+
     public function testTrailingPeriods2(): void {
         $this->assertSame('In the X. Y.', wikify_external_text('In the X. Y.'));
     }
+
     public function testTrailingPeriods3(): void {
         $this->assertSame('In the X. And Y', wikify_external_text('In the X. and Y.'));
     }
+
     public function testTrailingPeriods4(): void {
         $this->assertSame('A.B.C.', wikify_external_text('A.B.C.'));
     }
+
     public function testTrailingPeriods5(): void {
         $this->assertSame('Blahy', wikify_external_text('Blahy.'));
     }
+
     public function testTrailingPeriods6(): void {
         $this->assertSame('Blahy', wikify_external_text('Blahy............'));
     }
+
     public function testTrailingPeriods7(): void {
         $this->assertSame('Blahy.', wikify_external_text('Blahy....... ....'));
     }
+
     public function testTrailingPeriods8(): void {
         $this->assertSame('Dfadsfds Hoser......', wikify_external_text('Dfadsfds Hoser..... . .'));
     }
@@ -401,6 +449,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('X AAPS', title_capitalization(title_case('X Aaps'), true));
         $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), true));
     }
+
     public function testCapitalization_lots_more2(): void {
         $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), true));
         $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), true));
@@ -410,6 +459,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('X iJournal', title_capitalization(title_case('X IJournal'), true));
         $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), true));
     }
+
     public function testCapitalization_lots_more3(): void {
         $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), true));
         $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), true));
@@ -417,6 +467,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('X PhytoKeys', title_capitalization(title_case('X Phytokeys'), true));
         $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), true));
     }
+
     public function testCapitalization_lots_more4(): void {
         $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), true));
         $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), true));

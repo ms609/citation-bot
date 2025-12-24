@@ -26,6 +26,7 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNotNull($expanded->get2('url'));
     }
+
     public function testCovertUrl2Chapter2(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/0}}';
         $expanded = $this->make_citation($text);
@@ -34,6 +35,7 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNotNull($expanded->get2('url'));
     }
+
     public function testCovertUrl2Chapter3(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/1}}';
         $expanded = $this->make_citation($text);
@@ -42,6 +44,7 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNotNull($expanded->get2('url'));
     }
+
     public function testCovertUrl2Chapter4(): void {
         $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page}}';
         $expanded = $this->make_citation($text);
