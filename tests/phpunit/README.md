@@ -16,11 +16,11 @@ The recommended way to run all tests is:
     composer run test
 
 This uses ParaTest for parallel test execution:
-- `--processes=auto`: Runs tests across all CPU cores
+- `--processes=2`: Limited to 2 processes to prevent API rate limit issues
 - `--runner=WrapperRunner`: PHPUnit 12 compatibility
 - `--coverage-clover coverage.xml`: Code coverage reports
 
-ParaTest provides 2-4x speedup and 50-80% reduction in CI execution time. Required because PHPUnit 12 removed native parallel execution support.
+ParaTest provides ~2x speedup. Process limit set to 2 prevents simultaneous external API calls that could trigger rate limiting. Required because PHPUnit 12 removed native parallel execution support.
 
 To run the tests on Toolforge, first
 
