@@ -26,7 +26,7 @@
         "vimeo/psalm": "^6"
     },
     "scripts": {
-        "coverage-report": "phpunit --processes=auto --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
+        "coverage-report": "phpunit --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
         "phan": "phan --analyze-twice --allow-polyfill-parser",
         "phpcbf": "phpcbf -p -d memory_limit=1000M --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",
