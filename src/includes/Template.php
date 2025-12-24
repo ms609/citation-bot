@@ -3222,7 +3222,7 @@ final class Template
             }
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
             if (ctype_upper(mb_substr($this->name, 0, 1))) {
-                $new_name_mapped =  mb_ucfirst($new_name_mapped);
+                $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
             switch ($new_name) {

@@ -151,7 +151,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
 }
 
 function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
-    $url =    "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
     $request = NLM_LOGIN;
     if ($type === "esearch_pubmed") {
         $url  .= "esearch.fcgi";

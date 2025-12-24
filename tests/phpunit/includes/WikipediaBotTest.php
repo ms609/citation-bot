@@ -96,21 +96,21 @@ final class WikipediaBotTest extends testBaseClass {
         $this->assertFalse(WikipediaBot::ret_okay(null));
     }
     public function test_ret_okay2(): void {
-        $response = (object) ['error' => (object) ['info' =>    'Hello, The database has been automatically locked so give up']];
+        $response = (object) ['error' => (object) ['info' => 'Hello, The database has been automatically locked so give up']];
         $this->assertFalse(WikipediaBot::ret_okay($response));
     }
     public function test_ret_okay3(): void {
-        $response = (object) ['error' => (object) ['info' =>    'Greetings, abusefilter-warning-predatory so give up']];
+        $response = (object) ['error' => (object) ['info' => 'Greetings, abusefilter-warning-predatory so give up']];
         $this->assertTrue(WikipediaBot::ret_okay($response));
     }
     public function test_ret_okay4(): void {
-        $response = (object) ['error' => (object) ['info' =>    'Greetings, this page is protected so give up']];
+        $response = (object) ['error' => (object) ['info' => 'Greetings, this page is protected so give up']];
         $this->assertTrue(WikipediaBot::ret_okay($response));
     }
     public function test_ret_okay5(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
-        $response = (object) ['error' => (object) ['info' =>    'doggiesandcats']];
+        $response = (object) ['error' => (object) ['info' => 'doggiesandcats']];
         $this->assertFalse(WikipediaBot::ret_okay($response));
     }
 
@@ -118,15 +118,15 @@ final class WikipediaBotTest extends testBaseClass {
         $this->assertNull(WikipediaBot::response2page(null));
     }
     public function test_response2page2(): void {
-        $response = (object) ['warnings' => (object)['prop' =>  (object) ['*' => 'this is a prop']]];
+        $response = (object) ['warnings' => (object)['prop' => (object) ['*' => 'this is a prop']]];
         $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page3(): void {
-        $response = (object) ['warnings' => (object) ['info' =>  (object) ['*' => 'this is an info']]];
+        $response = (object) ['warnings' => (object) ['info' => (object) ['*' => 'this is an info']]];
         $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page4(): void {
-        $response = (object) ['dogs' => (object) ['cats' =>  'this has no batchcomplete']];
+        $response = (object) ['dogs' => (object) ['cats' => 'this has no batchcomplete']];
         $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page5(): void {

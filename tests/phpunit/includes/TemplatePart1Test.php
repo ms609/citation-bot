@@ -2448,7 +2448,7 @@ EP - 999 }}';
     public function testHandles2(): void {
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
-        if ($template->get2('hdl') !==  '10125/20269') {
+        if ($template->get2('hdl') !== '10125/20269') {
             sleep(15);
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
@@ -2678,9 +2678,9 @@ EP - 999 }}';
         $template->add('title', 'Thus');
         $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
         $array = $template->modifications();
-        $expected =       [ 'modifications' =>  [0 => 'title',  ],
-                            'additions' =>  [0 => 'title',  ],
-                            'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
+        $expected = [ 'modifications' => [0 => 'title',  ],
+                            'additions' => [0 => 'title',  ],
+                            'deletions' => [0 => 'citation_bot_placeholder_bare_url', ],
                             'changeonly' => [],
                             'dashes' => false,
                             'names' => false];

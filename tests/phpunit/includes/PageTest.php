@@ -126,7 +126,7 @@ final class PageTest extends testBaseClass {
         $this->process_page($text);
         $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
         $this->process_page($text);
-        $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
+        $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
         $this->process_page($text);
         $this->assertFaker();
     }

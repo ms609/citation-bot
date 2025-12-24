@@ -929,7 +929,7 @@ class Page {
     }
 
     private function announce_page(): void {
-        $url_encoded_title =    urlencode($this->title);
+        $url_encoded_title = urlencode($this->title);
         if ($url_encoded_title === '') {
             return;
         }

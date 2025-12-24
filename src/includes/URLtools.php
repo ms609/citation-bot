@@ -275,56 +275,56 @@ function simplify_google_search(string $url): string {
                 if ($it_is_blank || str_i_same($part_start1, 'any')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "cf":
                 if ($it_is_blank || str_i_same($part_start1, 'all')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "cs":
                 if ($it_is_blank || str_i_same($part_start1, '0')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "btnK":
                 if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "as_epq":
                 if ($it_is_blank) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "btnG":
                 if ($it_is_blank || str_i_same($part_start1, 'Search')) {
                     break;
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "rct":
                 if ($it_is_blank || str_i_same($part_start1, 'j')) {
                     break; // default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "resnum":
                 if ($it_is_blank || str_i_same($part_start1, '11')) {
                     break; // default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "ie":
             case "oe":
                 if ($it_is_blank || str_i_same($part_start1, 'utf-8')) {
                     break; // UTF-8 is the default
                 }
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             case "hl":
             case "safe":
@@ -345,12 +345,12 @@ function simplify_google_search(string $url): string {
             case "lpsid":
             case "as_q":
             case "kponly":
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             // @codeCoverageIgnoreStart
             default:
                 report_minor_error("Unexpected Google URL component:    " . echoable($part));
-                $url .=  $part . "&";
+                $url .= $part . "&";
                 break;
             // @codeCoverageIgnoreEnd
         }
