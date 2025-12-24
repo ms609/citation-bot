@@ -1,0 +1,19 @@
+name: Verify Licenses
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: '25 17 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  json-yaml-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: denoland/setup-deno@v1
+      - run: deno run --allow-read https://deno.land/x/license_checker@v3.2.2/main.ts
