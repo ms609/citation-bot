@@ -7,7 +7,7 @@ set_time_limit(120);
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 @header('Access-Control-Allow-Origin: null');
 
-if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
+if (isset($_GET["page"]) && (!isset($_COOKIE['CiteBot']) || $_COOKIE['CiteBot'] === '')) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><main><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></main></body></html>'; // Fast exit, do not even include setup.php
     exit;
 }
@@ -63,7 +63,7 @@ if (HTML_OUTPUT) {
 
 check_blocked();
 
-if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
+if (is_string($_REQUEST["edit"]) && $_REQUEST["edit"] !== '') {
     if ($_REQUEST["edit"] === 'automated_tools') {
         $edit_summary_end .= "| #UCB_automated_tools ";
     } elseif ($_REQUEST["edit"] === 'toolbar') {
