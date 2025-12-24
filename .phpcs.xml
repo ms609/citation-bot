@@ -21,6 +21,8 @@
         <exclude name="MediaWiki.Usage.SuperGlobalsUsage.SuperGlobals"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceAfterOpenParenthesis"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SingleSpaceBeforeCloseParenthesis"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
         <!-- breaks PHPStan to turn this off -->
         <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
@@ -36,8 +38,6 @@
         <exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment"/>
         <exclude name="MediaWiki.WhiteSpace.SpaceyParenthesis.SpaceBeforeOpeningParenthesis"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
-        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterOpen"/>
-        <exclude name="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingBeforeClose"/>
         <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>
     </rule>
     <file>./src</file>
