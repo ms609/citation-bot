@@ -129,8 +129,8 @@ final class Zotero {
     }
 
     /**
-     * @performance Tracks consecutive failures and applies exponential backoff delay (0.1-0.2s).
-     * After 5 failures, stops requests for 100 attempts (circuit breaker). Retries once on timeout.
+     * @performance Keeps track of errors and adds small delays (0.1-0.2 seconds) when things go wrong.
+     * After 5 errors in a row, pauses for 100 tries to avoid overloading the service. Tries again once if it times out.
      */
     private static function zotero_request(string $url): string {
         set_time_limit(120);
