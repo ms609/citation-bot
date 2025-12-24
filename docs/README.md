@@ -42,8 +42,6 @@ This is more properly a bot-gadget-tool combination. The parts are:
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
 
-[![Citation bot's architecture](architecture.svg)](architecture.svg)
-
 ## Web Interface vs. Gadget: Slow Mode Differences
 
 The Citation Bot has two main user-facing interfaces with different performance characteristics:
@@ -67,6 +65,8 @@ The Citation Bot has two main user-facing interfaces with different performance 
 * **Use case**: Quick citation cleanup and expansion while editing Wikipedia articles
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
+
+[![Citation bot's architecture](architecture.svg)](architecture.svg)
 
 ## Structure
 
