@@ -70,8 +70,6 @@ jobs:
     - name: Install dependencies
       run: composer install -vvv --no-progress
       # Verbose logging (-vvv) adds ~5-15 seconds overhead due to detailed package resolution output
-      # This is useful for debugging dependency issues but increases CI log size and processing time
-      # Impact: Minimal (typically <5% of total workflow time) but accumulates across many runs
       # Keeping verbose for better debugging visibility
 
     - name: Full test with PHP
