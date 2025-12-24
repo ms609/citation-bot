@@ -159,12 +159,24 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup5_2(): void {
-        $parameter = 'work';
+    public function testPriorParametersCustomList(): void {
+        $parameter = 'author';
+        $list = ['url', 'id'];
+        $expected = ['author', 'url', 'id'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup1(): void {
+        $parameter = 'not-a-param';
         $list = [];
-        $expected = array_merge(
-            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, ['work']
-        );
+        $expected = ['not-a-param'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup2(): void {
+        $parameter = 's2cid1';
+        $list = [];
+        $expected = ['s2cid1'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
@@ -195,27 +207,6 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersCustomList(): void {
-        $parameter = 'author';
-        $list = ['url', 'id'];
-        $expected = ['author', 'url', 'id'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
-    public function testPriorParametersParameterNotInAnyGroup1(): void {
-        $parameter = 'not-a-param';
-        $list = [];
-        $expected = ['not-a-param'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
-    public function testPriorParametersParameterNotInAnyGroup2(): void {
-        $parameter = 's2cid1';
-        $list = [];
-        $expected = ['s2cid1'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
     public function testPriorParametersBlankParameter(): void {
         $parameter = '';
         // some params from GROUP 3
@@ -236,6 +227,15 @@ final class miscToolsTest extends testBaseClass {
         $parameter = '';
         $list = [];
         $expected = [];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup5_2(): void {
+        $parameter = 'work';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, ['work']
+        );
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
