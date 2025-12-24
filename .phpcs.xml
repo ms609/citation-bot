@@ -27,7 +27,6 @@
         <!-- breaks PHPStan to turn this off -->
         <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
-        <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
