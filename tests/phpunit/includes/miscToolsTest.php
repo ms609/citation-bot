@@ -161,6 +161,16 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
+    public function testPriorParametersGroup5_2(): void {
+        $parameter = 'work';
+        $list = [];
+        // TODO: don't output the first parameter twice? seems unnecessary.
+        $expected = array_merge(
+            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['work']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
     public function testPriorParametersGroup15(): void {
         $parameter = 'doi-access';
         $list = [];
