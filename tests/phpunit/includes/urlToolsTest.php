@@ -895,4 +895,12 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('https://academic.oup.com/gji/article-abstract/230/1/50/6522179', $template->get2('url'));
     }
 
+    public function testRemoveNoAccessMessageFromOUPWithArchive(): void {
+        $text = '{{cite journal|url=https://academic.oup.com/gji/article-abstract/230/1/50/6522179#no-access-message|archive-url=https://web.archive.org/web/20221010045451/https://academic.oup.com/gji/article-abstract/230/1/50/6522179#no-access-message}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('url');
+        $this->assertSame('https://academic.oup.com/gji/article-abstract/230/1/50/6522179', $template->get2('url'));
+        $this->assertSame('https://web.archive.org/web/20221010045451/https://academic.oup.com/gji/article-abstract/230/1/50/6522179', $template->get2('archive-url'));
+    }
+
 }
