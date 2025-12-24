@@ -12,6 +12,7 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="MediaWiki.Commenting.FunctionComment.MissingReturn"/>
+        <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.Commenting.PropertyAnnotations.UnrecognizedAnnotation"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationPrivate"/>
         <exclude name="MediaWiki.Commenting.PropertyDocumentation.MissingDocumentationProtected"/>
@@ -28,7 +29,6 @@
         <exclude name="MediaWiki.Commenting.FunctionComment.NotPunctuationReturnType"/>
         <!-- To fix -->
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
-        <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
         <exclude name="MediaWiki.PHPUnit.AssertCount.NotUsed"/>
