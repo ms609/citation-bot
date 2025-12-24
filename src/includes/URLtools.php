@@ -6,6 +6,9 @@ declare(strict_types=1);
 
 /**
  * @param array<Template> &$templates
+ * 
+ * @performance Makes HTTP requests to dx.doi.org (1-3s each) to verify if URLs are equivalent to DOIs.
+ * Static cURL handles reuse connections across calls.
  */
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;

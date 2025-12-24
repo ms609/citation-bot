@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * @performance Maintains 6 in-memory caches for DOI/HDL validation results.
+ * Clears all caches when weighted entry count exceeds 100k (URL paths weighted 10x).
+ */
 final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
     private const MAX_CACHE_SIZE = 100000;
