@@ -3,6 +3,7 @@
 	<rule ref="./vendor/mediawiki/mediawiki-codesniffer/MediaWiki">
         <!-- Intentionally excluded -->
         <exclude name="Generic.Files.LineLength.TooLong"/>
+        <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
         <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
         <exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
         <exclude name="MediaWiki.Commenting.FunctionAnnotations.UnrecognizedAnnotation"/>
@@ -29,7 +30,6 @@
         <exclude name="Generic.CodeAnalysis.EmptyPHPStatement.SemicolonWithoutCodeDetected"/>
         <exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound"/>
         <exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
-        <exclude name="Generic.Formatting.SpaceAfterCast.TooMuchSpace"/>
         <exclude name="MediaWiki.Commenting.MissingCovers.MissingCovers"/>
         <exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures"/>
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
