@@ -161,27 +161,6 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersCustomList(): void {
-        $parameter = 'author';
-        $list = ['url', 'id'];
-        $expected = ['author', 'url', 'id'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
-    public function testPriorParametersParameterNotInAnyGroup1(): void {
-        $parameter = 'not-a-param';
-        $list = [];
-        $expected = ['not-a-param'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
-    public function testPriorParametersParameterNotInAnyGroup2(): void {
-        $parameter = 's2cid1';
-        $list = [];
-        $expected = ['s2cid1'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
     public function testPriorParametersGroup15(): void {
         $parameter = 'doi-access';
         $list = [];
@@ -206,6 +185,27 @@ final class miscToolsTest extends testBaseClass {
         $expected = array_merge(
             ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['doi-access'], GROUP15, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl'], GROUP23, ['isbn'], GROUP24, ['lccn'], GROUP25, ['url'], GROUP26, ['chapter-url'], GROUP27, ['archive-url'], GROUP28, ['archive-date'], GROUP29, ['id']
         );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersCustomList(): void {
+        $parameter = 'author';
+        $list = ['url', 'id'];
+        $expected = ['author', 'url', 'id'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup1(): void {
+        $parameter = 'not-a-param';
+        $list = [];
+        $expected = ['not-a-param'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersParameterNotInAnyGroup2(): void {
+        $parameter = 's2cid1';
+        $list = [];
+        $expected = ['s2cid1'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
