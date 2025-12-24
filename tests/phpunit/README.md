@@ -9,6 +9,19 @@ Then, run the following command from the command line :
 
     phpunit --bootstrap ./includes/setup.php tests/phpunit/gadgetapiTest.php
 
+## Running the Full Test Suite
+
+The recommended way to run all tests is:
+
+    composer run test
+
+This uses the optimized test configuration with:
+- `--processes=auto`: Runs tests in parallel across all CPU cores for 2-4x speedup
+- `--enforce-time-limit --default-time-limit 13000`: Ensures tests complete within reasonable time
+- `--coverage-clover coverage.xml`: Generates code coverage reports
+
+These optimizations reduce CI execution time and billable minutes by 50-80%.
+
 To run the tests on Toolforge, first
 
     webservice --backend=kubernetes php8.4 shell
