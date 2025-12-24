@@ -4,8 +4,8 @@ Thanks for contributing to the maintenance of Citation Bot.
 
 ## Testing
 
-We use phpunit to test code; please write testcase examples for new code you create.
-It is helpful if each testcase example describes the specific function that it is trying
+We use phpunit to test code; please write test case examples for new code you create.
+It is helpful if each test case example describes the specific function that it is trying
 to test.
 
 ## Quality verification
@@ -27,7 +27,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
 
 ## API keys
 
-The test suite detects missing keys and skips test.  A developer should consider getting their own set up keys for development.
+The test suite detects missing keys and skips tests.  A developer should consider getting their own keys set up for development.
 
 ## Coding conventions
 
@@ -38,7 +38,7 @@ The test suite detects missing keys and skips test.  A developer should consider
   * We prefer `elseif` to `else if`
   * We prefer `===` and `!==` to `==` and `!=`
   * We prefer `bool` to `boolean`, and other such deprecated aliases
-  * We prefer `curl` to `file_get_contents` and `get_headers`for easier debugging and greater control.  The curl header size is in bytes not multibyte character length.
+  * We prefer `curl` to `file_get_contents` and `get_headers` for easier debugging and greater control.  The curl header size is in bytes not multibyte character length.
   * We use `echo` and `exit` instead of `print` and `die`
   * `echo` should use commas instead of dots to avoid concatenation overhead
   * All code must be valid PHP 8.4
@@ -48,7 +48,7 @@ The test suite detects missing keys and skips test.  A developer should consider
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the API php files for lots of examples of non-coverage code.
   * All curl_init() should be replaced with bot_curl_init() calls, which sets reasonable defaults.  Also reasonable timeouts should be set depending upon the website.
   * error_reporting(E_ALL) and declare(strict_types=1) are both set
-  * Multi-byte functions should be used (even when the string are obviously not multi-byte for safety and consistency), such as mb_ucwords instead of ucwords (there are a couple of non-standard ones provided within the source code).  Do use for http headers that are byte counts.
+  * Multi-byte functions should be used (even when the strings are obviously not multi-byte for safety and consistency), such as mb_ucwords instead of ucwords (there are a couple of non-standard ones provided within the source code).  Do not use for http headers that are byte counts.
   * Do not use `strtok` since it saves a buffer internally
 
 ## Bot output conventions
