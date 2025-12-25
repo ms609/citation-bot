@@ -85,12 +85,16 @@ final class GoogleBooksTest extends testBaseClass {
         $this->assertSame('Stephen Jay', $expanded->get2('first1') );
         $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
+    }
 
+    public function testGoogleBooksExpansionA1(): void {
         $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertNull($expanded->get2('url'));
+    }
 
+    public function testGoogleBooksExpansionA2(): void {
         $text = "{{Cite web | http://books.google.com/books?id&#61;SjpSkzjIzfsC&redir_esc&#61;y}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
@@ -232,29 +236,37 @@ final class GoogleBooksTest extends testBaseClass {
         $this->AssertSame('https://books.google.com/books?id=12345&pg=1234', $expanded->get2('url'));
     }
 
-    public function testGoogleBooksHashCleanup8(): void {
+    public function testGoogleBooksHashCleanup8a(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&q=isbn}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345&q=isbn', $expanded->get2('url'));
+    }
 
+    public function testGoogleBooksHashCleanup8b(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&q=isbn1234}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    }
 
+    public function testGoogleBooksHashCleanup8c(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&q=inauthor:34123123}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
     }
 
-    public function testGoogleBooksHashCleanup9(): void {
+    public function testGoogleBooksHashCleanup9a(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&dq=isbn}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345&q=isbn', $expanded->get2('url'));
+    }
 
+    public function testGoogleBooksHashCleanup9b(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&dq=isbn1234}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    }
 
+    public function testGoogleBooksHashCleanup9c(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&dq=inauthor:34123123}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
@@ -266,11 +278,13 @@ final class GoogleBooksTest extends testBaseClass {
         $this->AssertSame('https://books.google.com/books?id=12345&sitesec=reviews', $expanded->get2('url'));
     }
 
-    public function testGoogleBooksHashCleanup11(): void {
+    public function testGoogleBooksHashCleanup11a(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&article_id=3241}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345&article_id=3241', $expanded->get2('url'));
+    }
 
+    public function testGoogleBooksHashCleanup11b(): void {
         $text = "{{cite books|url=https://books.google.com/books?id=12345&article_id=3241&q=huh}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('https://books.google.com/books?id=12345&q=huh&article_id=3241#v=onepage', $expanded->get2('url'));
