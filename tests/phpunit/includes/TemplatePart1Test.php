@@ -41,19 +41,25 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($prepared->get2('accessdate'));
     }
 
-    public function testLotsMagazines(): void {
+    public function testLotsMagazines_1(): void {
         $text_in = "{{cite journal| journal=The New Yorker}}";
         $prepared = $this->process_citation($text_in);
         $this->assertSame('{{cite magazine| magazine=The New Yorker}}', $prepared->parsed_text());
+    }
+
+    public function testLotsMagazines_2(): void {
         $text_in = "{{cite journal| periodical=The Economist}}";
         $prepared = $this->process_citation($text_in);
         $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
     }
 
-    public function testParameterWithNoParameters(): void {
+    public function testParameterWithNoParameters_1(): void {
         $text = "{{Cite web | text without equals sign  }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
+    }
+
+    public function testParameterWithNoParameters_2(): void {
         $text = "{{   No pipe }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
@@ -69,7 +75,9 @@ final class TemplatePart1Test extends testBaseClass {
         $text = "{{cite document}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{cite document}}", $expanded->parsed_text());
+    }
 
+    public function testTemplateConvertComplex2aa(): void {
         $text = "{{cite document|doi=XXX/978-XXX}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite book", $expanded->wikiname());
@@ -92,11 +100,15 @@ final class TemplatePart1Test extends testBaseClass {
         $text = "{{cite document|journal=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite journal", $expanded->wikiname());
+    }
 
+    public function testTemplateConvertComplex2bb(): void {
         $text = "{{cite document|newspaper=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite news", $expanded->wikiname());
+    }
 
+    public function testTemplateConvertComplex2bc(): void {
         $text = "{{cite document|chapter=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite book", $expanded->wikiname());
@@ -106,19 +118,27 @@ final class TemplatePart1Test extends testBaseClass {
         $text = "{{Cite document}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("{{Cite document}}", $expanded->parsed_text());
+    }
 
+    public function testTemplateConvertComplex2cb(): void {
         $text = "{{Cite document|doi=XXX/978-XXX}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite book", $expanded->wikiname());
+    }
 
+    public function testTemplateConvertComplex2cc(): void {
         $text = "{{Cite document|journal=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite journal", $expanded->wikiname());
+    }
 
+    public function testTemplateConvertComplex2cd(): void {
         $text = "{{Cite document|newspaper=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite news", $expanded->wikiname());
+    }
 
+    public function testTemplateConvertComplex2ce(): void {
         $text = "{{Cite document|chapter=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite book", $expanded->wikiname());
@@ -356,15 +376,21 @@ final class TemplatePart1Test extends testBaseClass {
         $text = "{{citation|last=Published|first=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
+    }
 
+    public function testDropBadData5a(): void {
         $text = "{{citation|last=Published|first1=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
+    }
 
+    public function testDropBadData5b(): void {
         $text = "{{citation|last1=Published|first=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
+    }
 
+    public function testDropBadData5c(): void {
         $text = "{{citation|last1=Published|first1=Me}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
@@ -613,13 +639,19 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('journal')); // Doi returns exact same name for journal as series
     }
 
-    public function testEmptyCoauthor(): void {
+    public function testEmptyCoauthor_1(): void {
         $text = '{{Cite journal|pages=2| coauthor= |coauthors= }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
+    }
+
+    public function testEmptyCoauthor_2(): void {
         $text = '{{Cite journal|pages=2| coauthor=}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
+    }
+
+    public function testEmptyCoauthor_3): void {
         $text = '{{Cite journal|pages=2| coauthors=}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
@@ -816,25 +848,33 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('title-link'));
     }
 
-    public function testWebsiteAsJournal(): void {
+    public function testWebsiteAsJournal_1(): void {
         $text = '{{Cite journal | journal=www.foobar.com}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('www.foobar.com', $expanded->get2('website'));
         $this->assertNull($expanded->get2('journal'));
+    }
+
+    public function testWebsiteAsJournal_2(): void {
         $text = '{{Cite journal | journal=https://www.foobar.com}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('https://www.foobar.com', $expanded->get2('url'));
         $this->assertNull($expanded->get2('journal'));
+    }
+
+    public function testWebsiteAsJournal_3(): void {
         $text = '{{Cite journal | journal=[www.foobar.com]}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testDropArchiveDotOrg(): void {
+    public function testDropArchiveDotOrg_1(): void {
         $text = '{{Cite journal | publisher=archive.org}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('publisher'));
+    }
 
+    public function testDropArchiveDotOrg_2(): void {
         $text = '{{Cite journal | website=archive.org|url=http://fake.url/NOT_REAL}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('http://fake.url/NOT_REAL', $expanded->get2('url'));
@@ -1352,13 +1392,19 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('2009', $this->getDateAndYear($prepared));
     }
 
-    public function testDropAmazon(): void {
+    public function testDropAmazon_1(): void {
         $text = '{{Cite journal | publisher=amazon.com}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('publisher'));
+    }
+
+    public function testDropAmazon_2(): void {
         $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/stuff}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('publisher'));
+    }
+
+    public function testDropAmazon_3(): void {
         $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/dp/}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('publisher'));
