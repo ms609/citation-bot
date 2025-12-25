@@ -127,17 +127,21 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('https://junk', $template->get2('url'));
     }
 
-    public function testURLCleanUp2(): void {
+    public function testURLCleanUp2a(): void {
         $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}";
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNotNull($template->get2('url'));
+    }
 
+    public function testURLCleanUp2b(): void {
         $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|pmc=312432}}";
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNull($template->get2('url'));
+    }
 
+    public function testURLCleanUp2c(): void {
         $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|doi-access=free}}";
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
