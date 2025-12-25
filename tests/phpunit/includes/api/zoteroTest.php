@@ -261,6 +261,10 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroResponse92(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
         $zotero_data = [];
         $zotero_data[0] = (object) ['bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
@@ -269,6 +273,10 @@ final class zoteroTest extends testBaseClass {
     }
     
     public function testZoteroResponse93(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
         $zotero_data = [];
         $zotero_data[0] = (object) ['publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
