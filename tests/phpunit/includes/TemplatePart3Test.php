@@ -766,6 +766,7 @@ EP - 999 }}';
     }
 
     public function testTrimResearchGate2(): void {
+        $want = 'https://www.researchgate.net/publication/320041870';
         $text = '{{cite journal|url=https://www.researchgate.net/profile/hello_user-person/publication/320041870_EXTRA_STUFF_ON_EN}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame($want, $prepared->get2('url'));
