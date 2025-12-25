@@ -62,11 +62,11 @@ function string_is_book_series(string $str): bool {
 function prior_parameters(string $parameter, array $list = []): array {
     // If no parameter is provided, use the first one in the list provided.
     if ($parameter === '') {
-        $parameter = $list[0];
+        $parameter = $list[0] ?? '';
+    } else {
+        // Add $parameter at the beginning of the $list.
+        array_unshift($list, $parameter);
     }
-
-    // Add $parameter at the beginning of the $list.
-    array_unshift($list, $parameter);
 
     // Handle parameters with numbers in them, e.g. author1
     $parameterContainsANumber = preg_match('/(\D+)(\d+)/', $parameter, $match);
