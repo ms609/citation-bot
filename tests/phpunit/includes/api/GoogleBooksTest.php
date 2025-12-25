@@ -85,7 +85,6 @@ final class GoogleBooksTest extends testBaseClass {
         $this->assertSame('Stephen Jay', $expanded->get2('first1') );
         $this->assertSame('1989', $expanded->get2('date'));
         $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
-
     }
 
     public function testGoogleBooksExpansionA1(): void {
