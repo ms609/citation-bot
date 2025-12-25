@@ -50,7 +50,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 * **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 * **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 * **Use case**: Users who want comprehensive citation expansion and can wait longer
-* **Timeout limit**: 120 seconds, but typically completes for most pages
+* **Timeout limit**: Typically completes for all pages, even if the web interface times out
 
 ### Citation Expander Gadget (`gadgetapi.php`)
 * **Default mode**: Fast mode only (slow mode is always disabled)
@@ -61,7 +61,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 * **Operations skipped**: 
   - ✗ Searching for new bibcodes
   - ✗ Expanding URLs via Zotero
-* **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion. Slow mode operations (bibcode searches and URL expansions) can exceed the 120-second timeout limit, causing the gadget to fail.
+* **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion. Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
 * **Use case**: Quick citation cleanup and expansion while editing Wikipedia articles
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
