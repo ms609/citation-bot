@@ -824,42 +824,58 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('Summer 1994–3333', $prepared->get2('date'));
     }
 
-    public function testConvertingISBN10intoISBN13(): void { // URLS present just to speed up tests.  Fake years to trick date check
+    public function testConvertingISBN10intoISBN13_1(): void { // URLS present just to speed up tests.  Fake years to trick date check
         $text = "{{cite book|isbn=0-9749009-0-7|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0-9749009-0-2', $prepared->get2('isbn'));  // Convert with dashes
+    }
 
+    public function testConvertingISBN10intoISBN13_2(): void {
         $text = "{{cite book|isbn=978-0-9749009-0-2|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0-9749009-0-2', $prepared->get2('isbn'));  // Unchanged with dashes
+    }
 
+    public function testConvertingISBN10intoISBN13_3(): void {
         $text = "{{cite book|isbn=9780974900902|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('9780974900902', $prepared->get2('isbn'));    // Unchanged without dashes
+    }
 
+    public function testConvertingISBN10intoISBN13_4(): void {
         $text = "{{cite book|isbn=0974900907|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0974900902', $prepared->get2('isbn'));   // Convert without dashes
+    }
 
+    public function testConvertingISBN10intoISBN13_5(): void {
         $text = "{{cite book|isbn=1-84309-164-X|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-1-84309-164-6', $prepared->get2('isbn'));  // Convert with dashes and a big X
+    }
 
+    public function testConvertingISBN10intoISBN13_6(): void {
         $text = "{{cite book|isbn=184309164x|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-1843091646', $prepared->get2('isbn'));   // Convert without dashes and a tiny x
+    }
 
+    public function testConvertingISBN10intoISBN13_7(): void {
         $text = "{{cite book|isbn=Hello Brother}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Hello Brother', $prepared->get2('isbn')); // Rubbish unchanged
+    }
 
+    public function testConvertingISBN10intoISBN13_8(): void {
         $text = "{{cite book|isbn=184309164x 978324132412}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('184309164x 978324132412', $prepared->get2('isbn'));  // Do not dash between multiple ISBNs
+    }
 
+    public function testConvertingISBN10intoISBN13_9(): void {
         $text = "{{cite book|isbn=0-9749009-0-7|url=<!-- -->|year=2019}}";
         $page = $this->process_page($text);
-        $this->assertSame('Altered isbn. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Altered isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testJournalCapitalization2(): void {
