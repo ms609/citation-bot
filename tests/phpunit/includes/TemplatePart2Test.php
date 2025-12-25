@@ -857,20 +857,23 @@ final class TemplatePart2Test extends testBaseClass {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('editor1', 'Phil'));
+        $this->assertSame('Phil', $template->get2('editor1'));
     }
 
     public function testAddEditor_4(): void {
-        $this->assertSame('Phil', $template->get2('editor1'));
         $text = "{{cite journal|editor-last=Junk}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('editor1', 'Phil'));
     }
 
-    public function testAddFirst(): void {
+    public function testAddFirst_1(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first1', 'X M'));
         $this->assertSame('X. M.', $template->get2('first1'));
+    }
+
+    public function testAddFirst_2(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('first2', 'X M'));
