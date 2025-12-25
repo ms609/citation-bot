@@ -1463,6 +1463,7 @@ final class TemplatePart4Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('periodical');
         $this->AssertNull($expanded->get2('periodical'));
+    }
 
     public function testTidyBadPeriodical_2(): void {
         $text = "{{Cite web|periodical=medrxiv}}";
