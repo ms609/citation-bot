@@ -261,17 +261,35 @@ final class NameToolsTest extends testBaseClass {
         $this->assertSame('A.', clean_up_last_names('A.'));
     }
 
-    public function testMiscNameTests(): void {
+    public function testMiscNameTests1(): void {
         $this->assertSame('', format_surname('-'));
-        $this->assertSame('', format_surname(''));
-        $this->assertSame('', format_forename('-'));
-        $this->assertSame('', format_forename(''));
-        $this->assertSame('', format_initials('    '));
-        $this->assertFalse(is_initials('    '));
     }
 
     public function testMiscNameTests2(): void {
+        $this->assertSame('', format_surname(''));
+    }
+
+    public function testMiscNameTests3(): void {
+        $this->assertSame('', format_forename('-'));
+    }
+
+    public function testMiscNameTests4(): void {
+        $this->assertSame('', format_forename(''));
+    }
+
+    public function testMiscNameTests5(): void {
+        $this->assertSame('', format_initials('    '));
+    }
+
+    public function testMiscNameTests62(): void {
+        $this->assertFalse(is_initials('    '));
+    }
+
+    public function testMiscNameTests7(): void {
         $this->assertSame('Aa;xx', format_surname('AA;XX'));
+    }
+
+    public function testMiscNameTests8(): void {
         $this->assertSame('Aa; Xx', format_surname('AA; XX'));
     }
 
