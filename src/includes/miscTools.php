@@ -100,9 +100,9 @@ function prior_parameters(string $parameter, array $list = []): array {
             ];
         } else {
             // Always add new authors at the very end of existing ones, even ones with bigger numbers.
-            return array_merge(
-                FLATTENED_AUTHOR_PARAMETERS,
-                [
+            return [
+                ...FLATTENED_AUTHOR_PARAMETERS,
+                ...[
                     $base . $before,
                     $base . $before . '-last',
                     $base . $before . '-first',
@@ -113,7 +113,7 @@ function prior_parameters(string $parameter, array $list = []): array {
                     $base . '-surname' . $before,
                     $base . '-given' . $before,
                 ]
-            );
+            ];
         }
     }
 
@@ -121,61 +121,61 @@ function prior_parameters(string $parameter, array $list = []): array {
     if (in_array($parameter, GROUP1, true)) {
         return $list;
     } elseif (in_array($parameter, GROUP2, true)) {
-        return prior_parameters('', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+        return prior_parameters('', ...FLATTENED_AUTHOR_PARAMETERS, ...$list);
     } elseif (in_array($parameter, GROUP3, true)) {
-        return prior_parameters('', array_merge(GROUP2, $list));
+        return prior_parameters('', ...GROUP2, ...$list));
     } elseif (in_array($parameter, GROUP4, true)) {
-        return prior_parameters('', array_merge(GROUP3, $list));
+        return prior_parameters('', ...GROUP3, ...$list));
     } elseif (in_array($parameter, GROUP5, true)) {
-        return prior_parameters('', array_merge(GROUP4, $list));
+        return prior_parameters('', ...GROUP4, ...$list));
     } elseif (in_array($parameter, GROUP6, true)) {
-        return prior_parameters('', array_merge(GROUP5, $list));
+        return prior_parameters('', ...GROUP5, ...$list));
     } elseif (in_array($parameter, GROUP7, true)) {
-        return prior_parameters('', array_merge(GROUP6, $list));
+        return prior_parameters('', ...GROUP6, ...$list));
     } elseif (in_array($parameter, GROUP8, true)) {
-        return prior_parameters('', array_merge(GROUP7, $list));
+        return prior_parameters('', ...GROUP7, ...$list));
     } elseif (in_array($parameter, GROUP9, true)) {
-        return prior_parameters('', array_merge(GROUP8, $list));
+        return prior_parameters('', ...GROUP8, ...$list));
     } elseif (in_array($parameter, GROUP10, true)) {
-        return prior_parameters('', array_merge(GROUP9, $list));
+        return prior_parameters('', ...GROUP9, ...$list));
     } elseif (in_array($parameter, GROUP11, true)) {
-        return prior_parameters('', array_merge(GROUP10, $list));
+        return prior_parameters('', ...GROUP10, ...$list));
     } elseif (in_array($parameter, GROUP12, true)) {
-        return prior_parameters('', array_merge(GROUP11, $list));
+        return prior_parameters('', ...GROUP11, ...$list));
     } elseif (in_array($parameter, GROUP13, true)) {
-        return prior_parameters('', array_merge(GROUP12, $list));
+        return prior_parameters('', ...GROUP12, ...$list));
     } elseif (in_array($parameter, GROUP14, true)) {
-        return prior_parameters('', array_merge(GROUP13, $list));
+        return prior_parameters('', ...GROUP13, ...$list));
     } elseif (in_array($parameter, GROUP15, true)) {
-        return prior_parameters('', array_merge(GROUP14, $list));
+        return prior_parameters('', ...GROUP14, ...$list));
     } elseif (in_array($parameter, GROUP17, true)) { // There is no GROUP 16
-        return prior_parameters('', array_merge(GROUP15, $list));
+        return prior_parameters('', ...GROUP15, ...$list));
     } elseif (in_array($parameter, GROUP18, true)) {
-        return prior_parameters('', array_merge(GROUP17, $list));
+        return prior_parameters('', ...GROUP17, ...$list));
     } elseif (in_array($parameter, GROUP19, true)) {
-        return prior_parameters('', array_merge(GROUP18, $list));
+        return prior_parameters('', ...GROUP18, ...$list));
     } elseif (in_array($parameter, GROUP20, true)) {
-        return prior_parameters('', array_merge(GROUP19, $list));
+        return prior_parameters('', ...GROUP19, ...$list));
     } elseif (in_array($parameter, GROUP21, true)) {
-        return prior_parameters('', array_merge(GROUP20, $list));
+        return prior_parameters('', ...GROUP20, ...$list));
     } elseif (in_array($parameter, GROUP22, true)) {
-        return prior_parameters('', array_merge(GROUP21, $list));
+        return prior_parameters('', ...GROUP21, ...$list));
     } elseif (in_array($parameter, GROUP23, true)) {
-        return prior_parameters('', array_merge(GROUP22, $list));
+        return prior_parameters('', ...GROUP22, ...$list));
     } elseif (in_array($parameter, GROUP24, true)) {
-        return prior_parameters('', array_merge(GROUP23, $list));
+        return prior_parameters('', ...GROUP23, ...$list));
     } elseif (in_array($parameter, GROUP25, true)) {
-        return prior_parameters('', array_merge(GROUP24, $list));
+        return prior_parameters('', ...GROUP24, ...$list));
     } elseif (in_array($parameter, GROUP26, true)) {
-        return prior_parameters('', array_merge(GROUP25, $list));
+        return prior_parameters('', ...GROUP25, ...$list));
     } elseif (in_array($parameter, GROUP27, true)) {
-        return prior_parameters('', array_merge(GROUP26, $list));
+        return prior_parameters('', ...GROUP26, ...$list));
     } elseif (in_array($parameter, GROUP28, true)) {
-        return prior_parameters('', array_merge(GROUP27, $list));
+        return prior_parameters('', ...GROUP27, ...$list));
     } elseif (in_array($parameter, GROUP29, true)) {
-        return prior_parameters('', array_merge(GROUP28, $list));
+        return prior_parameters('', ...GROUP28, ...$list));
     } elseif (in_array($parameter, GROUP30, true)) {
-        return prior_parameters('', array_merge(GROUP29, $list));
+        return prior_parameters('', ...GROUP29, ...$list));
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
         if (TRAVIS && $parameter !== 'not-a-param' && $parameter !== 's2cid1') {
