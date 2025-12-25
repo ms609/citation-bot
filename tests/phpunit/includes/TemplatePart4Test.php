@@ -9,21 +9,21 @@ require_once __DIR__ . '/../../testBaseClass.php';
 
 final class TemplatePart4Test extends testBaseClass {
 
-    public function testTidyWork1(): void {
+    public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertNull($template->get2('work'));
     }
     
-    public function testTidyWork2(): void {
+    public function testTidyWork1b(): void {
         $text = "{{cite web|work=}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertNull($template->get2('work'));
     }
     
-    public function testTidyWork3(): void {
+    public function testTidyWork1c(): void {
         $text = "{{cite journal|work=}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
