@@ -15,14 +15,14 @@ final class TemplatePart4Test extends testBaseClass {
         $template->final_tidy();
         $this->assertNull($template->get2('work'));
     }
-    
+
     public function testTidyWork1b(): void {
         $text = "{{cite web|work=}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertNull($template->get2('work'));
     }
-    
+
     public function testTidyWork1c(): void {
         $text = "{{cite journal|work=}}";
         $template = $this->make_citation($text);
