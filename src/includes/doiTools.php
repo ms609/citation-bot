@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * @performance Stores results in 6 memory caches to avoid checking the same things repeatedly.
+ * Clears all caches when they get too large (over 100,000 items, counting full URLs as 10 items each).
+ */
 final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
     private const MAX_CACHE_SIZE = 100000;
