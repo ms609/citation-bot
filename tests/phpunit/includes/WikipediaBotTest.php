@@ -38,7 +38,7 @@ final class WikipediaBotTest extends testBaseClass {
         $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
     }
 
-    public function testRedirect4(): void {   
+    public function testRedirect4(): void {
         $this->assertSame('User:Citation bot/use', WikipediaBot::redirect_target('WP:UCB'));
     }
 
