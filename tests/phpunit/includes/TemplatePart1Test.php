@@ -651,7 +651,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
     }
 
-    public function testEmptyCoauthor_3): void {
+    public function testEmptyCoauthor_3(): void {
         $text = '{{Cite journal|pages=2| coauthors=}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('{{Cite journal|pages=2}}', $prepared->parsed_text());
