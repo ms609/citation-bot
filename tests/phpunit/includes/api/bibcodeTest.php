@@ -52,7 +52,9 @@ final class bibcodeTest extends testBaseClass {
         // Mostly just for code coverage, make sure code does not seg fault.
         $text = "fafa3faewf34af";
         $this->assertSame($text, bibcode_link($text));
+    }
 
+    public function testAdsabsApi2(): void {
         // Now verify that lack of requires_bibcode() blocks API in tests
         $bibcodes = [
             '2017NatCo...814879F', // 0
@@ -388,7 +390,7 @@ final class bibcodeTest extends testBaseClass {
         $this->assertSame('structure and evolution of the stars', mb_strtolower($template->get2('title')));
     }
 
-    public function testBibCodeCache(): void {
+    public function testBibCodeCache1a(): void {
         AdsAbsControl::add_doi_map('2014ApPhA.116..403G', '10.1007/s00339-014-8468-2');
 
         $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
@@ -432,14 +434,20 @@ final class bibcodeTest extends testBaseClass {
         $this->assertNull($prepared->get2('bibcode'));
     }
 
-    public function testDontDoIt(): void { // "complete" already
+    public function testDontDoIt1(): void { // "complete" already
         $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->incomplete());
+
+    }
+
+    public function testDontDoIts(): void {
         $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->incomplete());
+    }
 
+    public function testDontDoIt3(): void {
         $text = '{{citation     |title=X|work=X             |issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->incomplete());
