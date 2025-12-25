@@ -270,7 +270,9 @@ final class doiTest extends testBaseClass {
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+    }
 
+    public function testDOI1093_part2(): void {
         $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
         $template = $this->make_citation($text);
         $template->final_tidy();
