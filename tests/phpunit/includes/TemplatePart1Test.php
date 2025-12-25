@@ -1395,4 +1395,3 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($prepared->get2('year'));
     }
 }
-
