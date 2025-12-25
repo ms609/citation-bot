@@ -903,7 +903,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('20 January 2010', $template->get2('archive-date'));
     }
 
-    public function testArchiveDate_3(): void { 
+    public function testArchiveDate_3(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_WHATEVER;
