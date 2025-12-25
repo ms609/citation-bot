@@ -128,6 +128,10 @@ final class Zotero {
         }
     }
 
+    /**
+     * @performance Keeps track of errors and adds small delays (0.1-0.2 seconds) when things go wrong.
+     * After 5 errors in a row, pauses for 100 tries to avoid overloading the service. Tries again once if it times out.
+     */
     private static function zotero_request(string $url): string {
         set_time_limit(120);
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {

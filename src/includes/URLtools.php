@@ -6,6 +6,9 @@ declare(strict_types=1);
 
 /**
  * @param array<Template> &$templates
+ *
+ * @performance Sends web requests to check if URLs match DOIs (takes 1-3 seconds per check).
+ * Reuses the same connection to save time.
  */
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;

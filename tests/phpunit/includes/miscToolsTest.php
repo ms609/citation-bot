@@ -121,21 +121,6 @@ final class miscToolsTest extends testBaseClass {
         $this->assertNull($template->get2('id'));
     }
 
-    public function testPriorParametersGroup1(): void {
-        $parameter = 'author';
-        $list = [];
-        $expected = ['author'];
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
-    public function testPriorParametersGroup2(): void {
-        $parameter = 'others';
-        $list = [];
-        // Doesn't merge GROUP 1 for some reason. Interesting.
-        $expected = array_merge(['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others']);
-        $this->assertSame($expected, prior_parameters($parameter, $list));
-    }
-
     public function testPriorParametersGroupF1(): void {
         $parameter = 'surname2';
         $list = [];
@@ -150,13 +135,62 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
+    public function testPriorParametersGroup1(): void {
+        $parameter = 'author';
+        $list = [];
+        $expected = ['author'];
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup2(): void {
+        $parameter = 'others';
+        $list = [];
+        // Doesn't merge GROUP 1 for some reason. Interesting.
+        $expected = array_merge(FLATTENED_AUTHOR_PARAMETERS, ['others']);
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
     public function testPriorParametersGroup5(): void {
         $parameter = 'journal';
         $list = [];
-        // prior_parameters() outputs the first parameter twice for some reason. So for example, FLATTENED_AUTHOR_PARAMETERS is an array ['surname', 'forename', 'initials', etc. ]. And the output of prior_parameters() is ['surname, 'surname', 'forename', 'initials', etc. ]. The strings in the below list are these duplicates.
-        // TODO: don't output the first parameter twice? seems unnecessary.
         $expected = array_merge(
-            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal']
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, ['journal']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup5_2(): void {
+        $parameter = 'work';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, ['work']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup15(): void {
+        $parameter = 'doi-access';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6, GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12, GROUP13, GROUP14, ['doi-access']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup23(): void {
+        $parameter = 'hdl';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6, GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12, GROUP13, GROUP14, GROUP15, GROUP17, GROUP18, GROUP19, GROUP20, GROUP21, GROUP22, ['hdl']
+        );
+        $this->assertSame($expected, prior_parameters($parameter, $list));
+    }
+
+    public function testPriorParametersGroup30(): void {
+        $parameter = 'id';
+        $list = [];
+        $expected = array_merge(
+            FLATTENED_AUTHOR_PARAMETERS, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6, GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12, GROUP13, GROUP14, GROUP15, GROUP17, GROUP18, GROUP19, GROUP20, GROUP21, GROUP22, GROUP23, GROUP24, GROUP25, GROUP26, GROUP27, GROUP28, GROUP29, ['id']
         );
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
@@ -164,7 +198,7 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersCustomList(): void {
         $parameter = 'author';
         $list = ['url', 'id'];
-        $expected = ['author', 'url', 'id'];
+        $expected = ['url', 'id', 'author'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
@@ -182,30 +216,26 @@ final class miscToolsTest extends testBaseClass {
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup15(): void {
-        $parameter = 'doi-access';
-        $list = [];
-        $expected = array_merge(
-            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['doi-access']
-        );
+    public function testPriorParametersBlankParameter(): void {
+        $parameter = '';
+        // some params from GROUP 3
+        $list = ['title-link', 'titlelink'];
+        $expected = array_merge(FLATTENED_AUTHOR_PARAMETERS, GROUP2, ['title-link'], ['titlelink']);
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup23(): void {
-        $parameter = 'hdl';
-        $list = [];
-        $expected = array_merge(
-            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['doi-access'], GROUP15, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl']
-        );
+    public function testPriorParametersBlankParameter_2(): void {
+        $parameter = '';
+        // these params are not in any groups
+        $list = ['testing', 'more-testing'];
+        $expected = [];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
-    public function testPriorParametersGroup30(): void {
-        $parameter = 'id';
+    public function testPriorParametersBlankParameterBlankList(): void {
+        $parameter = '';
         $list = [];
-        $expected = array_merge(
-            ['surname'], FLATTENED_AUTHOR_PARAMETERS, ['others'], GROUP2, ['title'], GROUP3, ['chapter'], GROUP4, ['journal'], GROUP5, ['series'], GROUP6, ['year'], GROUP7, ['volume'], GROUP8, ['issue'], GROUP9, ['page'], GROUP10, ['article-number'], GROUP11, ['location'], GROUP12, ['doi'], GROUP13, ['doi-broken-date'], GROUP14, ['doi-access'], GROUP15, ['jstor'], GROUP17, ['pmid'], GROUP18, ['pmc'], GROUP19, ['pmc-embargo-date'], GROUP20, ['arxiv'], GROUP21, ['bibcode'], GROUP22, ['hdl'], GROUP23, ['isbn'], GROUP24, ['lccn'], GROUP25, ['url'], GROUP26, ['chapter-url'], GROUP27, ['archive-url'], GROUP28, ['archive-date'], GROUP29, ['id']
-        );
+        $expected = [];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
