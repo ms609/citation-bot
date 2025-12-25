@@ -196,10 +196,10 @@ EP - 999 }}';
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = et al. }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
+        $this->assertNull($prepared->get2('last3'));
     }
 
     public function testEtAlAsAuthor_3(): void {
-        $this->assertNull($prepared->get2('last3'));
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = etal. }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
