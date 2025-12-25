@@ -663,7 +663,7 @@ EP - 999 }}';
         $this->assertNotNull($expanded->get2('accessdate'));
     }
 
-    public function testAccessDates_2: void {
+    public function testAccessDates_2(): void {
         $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('accessdate'));
