@@ -162,7 +162,7 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersCustomList(): void {
         $parameter = 'author';
         $list = ['url', 'id'];
-        $expected = ['author', 'url', 'id'];
+        $expected = ['url', 'id', 'author'];
         $this->assertSame($expected, prior_parameters($parameter, $list));
     }
 
