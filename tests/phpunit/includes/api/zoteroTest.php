@@ -271,7 +271,7 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
     }
-    
+
     public function testZoteroResponse93(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
@@ -910,7 +910,7 @@ final class zoteroTest extends testBaseClass {
         drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
     }
-                                                     
+
     public function testRemoveURLwithProxy1b(): void { // PROXY_HOSTS_TO_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
