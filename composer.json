@@ -36,6 +36,6 @@
         "progpilot": "progpilot --configuration progpilot.yml src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "psalm": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --memory-limit=4G",
         "psalm-taint": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G",
-        "test": "paratest --processes=2 --runner=WrapperRunner --enforce-time-limit --default-time-limit=13000 --cache-directory=.phpunit.cache --coverage-clover=coverage.xml 1>&2"
+        "test": "paratest --processes=auto --runner=WrapperRunner --enforce-time-limit --default-time-limit=13000 --cache-directory=.phpunit.cache --coverage-clover=coverage.xml 1>&2"
     }
 }
