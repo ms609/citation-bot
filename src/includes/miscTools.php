@@ -65,7 +65,7 @@ function prior_parameters(string $parameter, array $list = []): array {
         $parameter = $list[0] ?? '';
     } else {
         // Add $parameter at the beginning of the $list.
-        array_unshift($list, $parameter);
+        array_push($list, $parameter);
     }
 
     // Handle parameters with numbers in them, e.g. author1
