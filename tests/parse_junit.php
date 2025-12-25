@@ -26,11 +26,11 @@ foreach ($xml->xpath('//testcase') as $testcase) {
     $class = (string)$testcase['class'];
     $name = (string)$testcase['name'];
     $time = (float)$testcase['time'];
-    
+
     // Extract just the class name without namespace
     $classParts = explode('\\', $class);
     $shortClass = end($classParts);
-    
+
     // Check if test failed, was skipped, or had errors
     $status = '✓';
     if (isset($testcase->failure)) {
@@ -40,7 +40,7 @@ foreach ($xml->xpath('//testcase') as $testcase) {
     } elseif (isset($testcase->skipped)) {
         $status = 'S';
     }
-    
+
     $tests[] = [
         'status' => $status,
         'class' => $shortClass,
@@ -51,7 +51,7 @@ foreach ($xml->xpath('//testcase') as $testcase) {
 }
 
 // Sort by time descending to show slowest tests first
-usort($tests, function($a, $b) {
+usort($tests, function ($a, $b) {
     return $b['time'] <=> $a['time'];
 });
 
