@@ -108,7 +108,7 @@ final class doiToolsTest extends testBaseClass {
 
     public function testDOIWorks4c(): void {
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
-     }
+    }
 
     public function testDOIWorks4d(): void {
         $this->assertFalse(doi_works('123456789/32131423'));
