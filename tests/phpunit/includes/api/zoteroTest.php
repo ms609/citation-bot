@@ -258,11 +258,25 @@ final class zoteroTest extends testBaseClass {
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
+    }
+
+    public function testZoteroResponse92(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
         $zotero_data = [];
         $zotero_data[0] = (object) ['bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame($text, $template->parsed_text());
+    }
+
+    public function testZoteroResponse93(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
         $zotero_data = [];
         $zotero_data[0] = (object) ['publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title' => 'this is good stuff'];
         $zotero_response = json_encode($zotero_data);
@@ -790,7 +804,9 @@ final class zoteroTest extends testBaseClass {
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('cite journal', $template->wikiname());
+    }
 
+    public function testZoteroResponse47b(): void {
         $text = '{{cite web|work=DSfadsfsdf}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -893,7 +909,9 @@ final class zoteroTest extends testBaseClass {
         $tmp_array = [$template];
         drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
+    }
 
+    public function testRemoveURLwithProxy1b(): void { // PROXY_HOSTS_TO_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
@@ -907,7 +925,9 @@ final class zoteroTest extends testBaseClass {
         $tmp_array = [$template];
         drop_urls_that_match_dois($tmp_array);
         $this->assertNotNull($template->get2('url'));
+    }
 
+    public function testRemoveURLwithProxy2b(): void { // PROXY_HOSTS_TO_ALWAYS_DROP
         $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
         $template = $this->make_citation($text);
         $tmp_array = [$template];
