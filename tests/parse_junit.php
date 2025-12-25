@@ -7,14 +7,16 @@
 $junitFile = __DIR__ . '/../junit.xml';
 
 if (!file_exists($junitFile)) {
-    echo "JUnit XML file not found: $junitFile\n";
-    exit(1);
+    echo "\nWarning: JUnit XML file not found: $junitFile\n";
+    echo "Test timing report cannot be generated.\n";
+    exit(0); // Don't fail the build if timing report can't be generated
 }
 
 $xml = simplexml_load_file($junitFile);
 if ($xml === false) {
-    echo "Failed to parse JUnit XML file\n";
-    exit(1);
+    echo "\nWarning: Failed to parse JUnit XML file\n";
+    echo "Test timing report cannot be generated.\n";
+    exit(0); // Don't fail the build if timing report can't be generated
 }
 
 $tests = [];
