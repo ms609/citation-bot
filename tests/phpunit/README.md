@@ -19,8 +19,11 @@ This uses ParaTest for parallel test execution:
 - `--processes=auto`: Automatically uses all available CPU cores
 - `--runner=WrapperRunner`: PHPUnit 12 compatibility
 - `--coverage-clover coverage.xml`: Code coverage reports
+- `--log-junit junit.xml`: Individual test execution timings in JUnit XML format
 
 ParaTest provides 2-4x speedup by distributing tests across multiple processes. Required because PHPUnit 12 removed native parallel execution support.
+
+The `junit.xml` file contains detailed timing information for each test, making it easy to identify slow tests and monitor performance.
 
 To run the tests on Toolforge, first
 
