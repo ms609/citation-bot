@@ -9,6 +9,11 @@ try {
     @header('Access-Control-Allow-Origin: *'); // Needed for gadget to work right
     @header('Content-Type: text/json');
 
+    // Force fast mode for gadget to prevent timeouts
+    // The gadget is designed for quick, in-browser citation expansion
+    // Slow mode operations (bibcode searches, URL expansions) can exceed the 120s timeout
+    unset($_GET['slow'], $_POST['slow'], $_REQUEST['slow']);
+
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
 
