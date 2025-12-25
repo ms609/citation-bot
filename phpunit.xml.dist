@@ -10,6 +10,7 @@
   failOnWarning="true"
   cacheResult="false"
   failOnDeprecation="true"
+  executionOrder="random"
 >
   <source>
     <include>
