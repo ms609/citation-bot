@@ -10,9 +10,21 @@ final class doiToolsTest extends testBaseClass {
         unset($pg);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
+    }
+
+    public function testExtractDoi_A(): void {
         $this->assertSame('10.1016/j.physletb.2010.03.064', extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
+    }
+
+    public function testExtractDoi_B(): void {
         $this->assertSame('10.1093/acref/9780199204632.001.0001', extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
+    }
+
+    public function testExtractDoi_C(): void {
         $this->assertSame('10.1038/nature11111', extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+    }
+
+    public function testExtractDoi_D(): void {
         $the_return = extract_doi('https://somenewssite.com/date/25.10.2015/2137303/default.htm'); // 10.2015/2137303 looks like a DOI
         $this->assertSame('', $the_return[0]);
         $this->assertSame('', $the_return[1]);
@@ -84,14 +96,29 @@ final class doiToolsTest extends testBaseClass {
         $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
     }
 
-    public function testDOIWorks4(): void {
+    public function testDOIWorks4a(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $this->assertFalse(doi_works('10.1126/scidip.CITATION_BOT_PLACEHOLDER.ado5059'));
+    }
+
+    public function testDOIWorks4b(): void {
         $this->assertFalse(doi_works('10.1007/springerreference.ado5059'));
+    }
+
+    public function testDOIWorks4c(): void {
         $this->assertFalse(doi_works('10.1126scidip.ado5059'));
+     }
+
+    public function testDOIWorks4d(): void {
         $this->assertFalse(doi_works('123456789/32131423'));
+    }
+
+    public function testDOIWorks4e(): void {
         $this->assertFalse(doi_works('dfasdfsd/CITATION_BOT_PLACEHOLDER'));
+    }
+
+    public function testDOIWorks4f(): void {
         $this->assertFalse(doi_works('/dfadsfasf'));
     }
 
@@ -99,7 +126,13 @@ final class doiToolsTest extends testBaseClass {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $this->assertFalse(hdl_works('10.1126fwerw4w4r2342314'));
+    }
+
+    public function testHDLworksb(): void {
         $this->assertFalse(hdl_works('10.1007/CITATION_BOT_PLACEHOLDER.ado5059'));
+    }
+
+    public function testHDLworksc(): void {
         $this->assertFalse(hdl_works('10.112/springerreference.ado5059'));
     }
 
@@ -238,13 +271,23 @@ final class doiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('doi'));
     }
 
-    public function testForDOIGettingFixed(): void { // These do not work, but it would be nice if they did.    They all have checks in code
-        // https://search.informit.org/doi/10.3316/aeipt.20772 and such
+    public function testForDOIGettingFixed(): void { // These do not work, but it would be nice if they did.    They all have checks in code.  https://search.informit.org/doi/10.3316/aeipt.20772 and such
         $this->assertFalse(doi_works('10.3316/informit.550258516430914'));
+    }
+
+    public function testForDOIGettingFixed_2(): void {
         $this->assertFalse(doi_works('10.3316/ielapa.347150294724689'));
+    }
+
+    public function testForDOIGettingFixed_3(): void {
         $this->assertFalse(doi_works('10.3316/agispt.19930546'));
+    }
+
+    public function testForDOIGettingFixed_4(): void {
         $this->assertFalse(doi_works('10.3316/aeipt.207729'));
-        // DO's, not DOIs
+    }
+
+    public function testForDOIGettingFixed_5(): void { // DO's, not DOIs
         $this->assertFalse(doi_works('10.1002/was.00020423'));
     }
 
