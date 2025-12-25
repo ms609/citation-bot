@@ -14,19 +14,31 @@ final class WikipediaBotTest extends testBaseClass {
         $this->assertFaker();
     }
 
-    public function testCategoryMembers(): void {
+    public function testCategoryMembers1(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
+    }
+
+    public function testCategoryMembers2(): void {
         $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
 
-    public function testRedirects(): void {
+    public function testRedirect1(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
+    }
+
+    public function testRedirect2(): void {
         $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
+    }
+
+    public function testRedirect3(): void {
         $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
+    }
+
+    public function testRedirect4(): void {   
         $this->assertSame('User:Citation bot/use', WikipediaBot::redirect_target('WP:UCB'));
     }
 
