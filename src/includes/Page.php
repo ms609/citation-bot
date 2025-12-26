@@ -483,9 +483,8 @@ class Page {
         drop_urls_that_match_dois($our_templates_conferences);
 
         // Last ditch usage of ISSN - This could mean running the bot again will add more things
-        $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
         foreach ($all_templates as $this_template) {
-            if (in_array($this_template->wikiname(), $issn_templates, true)) {
+            if (in_array($this_template->wikiname(), ISSN_TEMPLATES, true)) {
                 use_issn($this_template);
             }
         }
