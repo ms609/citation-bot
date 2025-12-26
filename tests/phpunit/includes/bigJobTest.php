@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 require_once __DIR__ . '/../../../src/includes/big_jobs.php';
 
-final class BigJobTest extends testBaseClass {
+final class bigJobTest extends testBaseClass {
 
     public function testName(): void {
         $job = big_jobs_name();
