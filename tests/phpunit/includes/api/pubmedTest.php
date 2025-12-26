@@ -67,7 +67,7 @@ final class pubmedTest extends testBaseClass {
     public function testZootaxaDOIPageRejection(): void {
         // Test that bot rejects DOI suffix as page number for Zootaxa articles
         // This is the exact case from the bug report
-        $text = '{{Cite journal|last=Hu|first=Shao-Ji|last2=Zhang|first2=Hui-Hong|last3=Yang|first3=Yang|date=2021-04-16|title=A New Species of Aporia (Lepidoptera: Pieridae) from Northwest Yunnan, China with Taxonomic Notes on Its Similar Sympatric Taxa|url=https://www.biotaxa.org/Zootaxa/article/view/zootaxa.4963.1.1|journal=Zootaxa|volume=4963|issue=1|pages=1–10|doi=10.11646/zootaxa.4963.1.1|issn=1175-5334|doi-access=free}}';
+        $text = '{{Cite journal|journal=Zootaxa|volume=4963|issue=1|pages=1–10|doi=10.11646/zootaxa.4963.1.1}}';
         $template = $this->make_citation($text);
         
         // Try to add the bad page data (DOI suffix) that PMID would return

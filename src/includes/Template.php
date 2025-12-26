@@ -1574,9 +1574,9 @@ final class Template
                 } // bad pmid data
                 // Check if this is a Zootaxa/Phytotaxa DOI and reject page values that look like DOI suffixes
                 $doi = $this->get('doi');
-                if ($doi && preg_match('~^10\.11646/(zoo|phyto)taxa\.(\d+\.\d+\.\d+)$~i', $doi, $doi_match)) {
+                if ($doi && preg_match('~^10\.11646/(?:zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $doi)) {
                     // DOI suffix format: journal.volume.issue.article
-                    if (preg_match('~^(zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $value)) {
+                    if (preg_match('~^(?:zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $value)) {
                         // Page value looks like a DOI suffix - reject it
                         report_warning("Rejecting page value that appears to be DOI suffix for Zootaxa/Phytotaxa: " . echoable($value));
                         return false;
