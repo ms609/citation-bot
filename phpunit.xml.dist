@@ -30,7 +30,6 @@
       <file>./tests/phpunit/includes/TemplatePart4Test.php</file>
       <file>./tests/phpunit/includes/TemplatePart1Test.php</file>
       <file>./tests/phpunit/includes/miscToolsTest.php</file>
-      <directory suffix=".php">./tests/phpunit</directory>
     </testsuite>
   </testsuites>
   <coverage>
