@@ -824,7 +824,7 @@ final class TextToolsTest extends testBaseClass {
         $this->assertSame('Summer 1994–3333', $prepared->get2('date'));
     }
 
-    public function testConvertingISBN10intoISBN13_1(): void { // URLS present just to speed up tests.  Fake years to trick date check
+    public function testConvertingISBN10intoISBN13_1(): void {
         $text = "{{cite book|isbn=0-9749009-0-7|url=<!-- -->|year=2019}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('978-0-9749009-0-2', $prepared->get2('isbn'));  // Convert with dashes
