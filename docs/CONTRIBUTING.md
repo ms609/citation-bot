@@ -50,6 +50,8 @@ The test suite detects missing keys and skips tests.  A developer should conside
   * error_reporting(E_ALL) and declare(strict_types=1) are both set
   * Multi-byte functions should be used (even when the strings are obviously not multi-byte for safety and consistency), such as mb_ucwords instead of ucwords (there are a couple of non-standard ones provided within the source code).  Do not use for http headers that are byte counts.
   * Do not use `strtok` since it saves a buffer internally
+  * `array_merge` can often be replaced with the PHP spread feature which saves time and memory.
+  * `array_unshift` should only be used when adding to the front of the array is needed
 
 ## Bot output conventions
 The bot reports its activity to users using:
