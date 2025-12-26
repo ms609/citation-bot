@@ -408,9 +408,6 @@ function clean_and_expand_up_oxford_stuff(Template $template, string $param): vo
     while (preg_match('~^(https?://oxfordreference\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
         $template->set($param, $matches[1]);
     }
-    while (preg_match('~^(https?://academic\.oup\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
-        $template->set($param, $matches[1]);
-    }
     if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $template->get($param), $matches)) {
         $new_doi = '10.1093/ref:odnb/' . $matches[1];
         if (!doi_works($new_doi)) {
