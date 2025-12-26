@@ -175,19 +175,19 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersGroup15(): void {
         $parameter = 'doi-access';
         $list = [];
-        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...ROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...['doi-access']], prior_parameters($parameter, $list));
+        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...['doi-access']], prior_parameters($parameter, $list));
     }
 
     public function testPriorParametersGroup23(): void {
         $parameter = 'hdl';
         $list = [];
-        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...ROUP14, ...ROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...['hdl']], prior_parameters($parameter, $list));
+        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...['hdl']], prior_parameters($parameter, $list));
     }
 
     public function testPriorParametersGroup30(): void {
         $parameter = 'id';
         $list = [];
-        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...ROUP12, ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...GROUP23, ...GROUP24, ...GROUP25, ...GROUP26, ...GROUP27,... GROUP28, ...GROUP29, ...['id']], prior_parameters($parameter, $list));
+        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18, ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...GROUP23, ...GROUP24, ...GROUP25, ...GROUP26, ...GROUP27, ...GROUP28, ...GROUP29, ...['id']], prior_parameters($parameter, $list));
     }
 
     public function testPriorParametersCustomList(): void {
