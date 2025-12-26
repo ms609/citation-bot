@@ -227,7 +227,7 @@ function google_book_details(Template $template, string $gid): void {
     $template->add_if_new('isbn', $isbn);
 
     $i = 0;
-    if ($template->blank([...FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ...['publisher', 'journal', 'magazine', 'periodical']])) {
+    if ($template->blank([...FIRST_EDITOR_ALIASES, ...FIRST_AUTHOR_ALIASES, ...['publisher', 'journal', 'magazine', 'periodical']])) {
         // Too many errors in gBook database to add to existing data. Only add if blank.
         foreach ($xml->dc___creator as $author) {
             if (mb_strtolower(str_replace("___", ":", (string) $author)) === "gale group") {
