@@ -1447,7 +1447,7 @@ final class TemplatePart1Test extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         // The date should be parsed as 2025-07-13, NOT as -2025 (negative year)
         $access_date = $prepared->get2('access-date');
-        $this->assertNotNull($access_date);
+        $this->assertNotNull($access_date, 'access-date should not be null');
         // Check that the year is positive (no leading hyphen before year)
         $this->assertStringNotContainsString('-2025', $access_date);
         // Check that it's a valid date format (contains 2025 without leading hyphen)
