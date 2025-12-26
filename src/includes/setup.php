@@ -61,7 +61,7 @@ require_once __DIR__ . '/constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once __DIR__ . '/../../vendor/autoload.php';
 
-define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
+define("CI", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 
 define('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
 
@@ -69,7 +69,7 @@ if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sa
     define('EDIT_AS_USER', true);
 }
 
-if (TRAVIS || isset($argv)) {
+if (CI || isset($argv)) {
     define("HTML_OUTPUT", false);
 } else {
     define("HTML_OUTPUT", true);
@@ -82,7 +82,7 @@ if (mb_strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === false) {
     define("FLUSHING_OKAY", false);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv, true))) {
+if (isset($_REQUEST["slow"]) || CI || (isset($argv) && in_array('--slow', $argv, true))) {
     define("SLOW_MODE", true);
 } else {
     define("SLOW_MODE", false);
@@ -202,7 +202,7 @@ if (isset($argv)) {
     define("MAX_PAGES", 2);
 }
 
-if (!TRAVIS) { // This is explicitly "tested" in test suite
+if (!CI) { // This is explicitly "tested" in test suite
     Zotero::create_ch_zotero();
     WikipediaBot::make_ch();
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 function query_ieee_webpages(array &$templates): void {  // Pointer to save memory
     static $ch_ieee;
     if ($ch_ieee === null) {
-        if (TRAVIS) {
+        if (CI) {
             $time = 3.0;
         } else {
             $time = 1.0; // @codeCoverageIgnore

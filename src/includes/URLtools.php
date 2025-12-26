@@ -14,7 +14,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_dx;
     static $ch_doi;
     if ($ch_dx === null) {
-        if (TRAVIS) {
+        if (CI) {
             $time = 3.0;
         } else {
             $time = 1.0; // @codeCoverageIgnore
@@ -1314,7 +1314,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
-        if (TRAVIS) {
+        if (CI) {
             $time = 3.0;
         } else {
             $time = 1.0; // @codeCoverageIgnore

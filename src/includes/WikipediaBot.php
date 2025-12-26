@@ -53,7 +53,7 @@ final class WikipediaBot {
         $this->user_client = new Client($conf);
         $this->user_token = new Token("", "");
 
-        if (TRAVIS) {
+        if (CI) {
             $this->the_user = 'Citation_bot';
             // @codeCoverageIgnoreStart
         } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
@@ -75,7 +75,7 @@ final class WikipediaBot {
     public static function ret_okay(?object $response): bool { // We send back true for thing that are page specific
         if (is_null($response)) {
             report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
-            if (!TRAVIS) {
+            if (!CI) {
                 sleep(10);
             } else {
                 sleep(1);
@@ -115,7 +115,7 @@ final class WikipediaBot {
                 bot_debug_log($err_string); // Good to know about about these things
                 report_warning($err_string);
             }
-            if (!TRAVIS) {
+            if (!CI) {
                 sleep(10);
             } else {
                 sleep(1);

@@ -41,7 +41,7 @@ final class Zotero {
             return;
         }
         $is_setup = true;
-        if (TRAVIS) {
+        if (CI) {
             $time = 3.0;
         } else {
             $time = 1.0; // @codeCoverageIgnore

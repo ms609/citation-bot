@@ -380,7 +380,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     }
 
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
-    $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+    $adsabs_url = "https://" . (CI ? 'qa' : 'api')
                     . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
                     . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                     . "issue,page,pub,pubdate,title,volume,year&rows=2000";
@@ -469,7 +469,7 @@ function query_adsabs(string $options): object {
     if (!PHP_ADSABSAPIKEY) {
         return (object) ['numFound' => 0]; // @codeCoverageIgnore
     }
-    $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+    $adsabs_url = "https://" . (CI ? 'qa' : 'api')
                     . ".adsabs.harvard.edu/v1/search/query"
                     . "?q={$options}&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                     . "issue,page,pub,pubdate,title,volume,year";

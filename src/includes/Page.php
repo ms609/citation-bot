@@ -782,7 +782,7 @@ class Page {
             return true;
         }
         // @codeCoverageIgnoreStart
-        if (TRAVIS) {
+        if (CI) {
             return false;
         }
         sleep(9);    // could be database being locked
