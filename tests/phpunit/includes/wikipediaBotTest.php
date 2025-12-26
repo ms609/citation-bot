@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class WikipediaBotTest extends testBaseClass {
+final class wikipediaBotTest extends testBaseClass {
 
     public function testCoverageFixer(): void {
         WikipediaBot::make_ch();

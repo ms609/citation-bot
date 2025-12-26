@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../testBaseClass.php';
 
-final class doiTest extends testBaseClass {
+final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefRG(): void {
         $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
         $expanded = $this->process_citation($text);

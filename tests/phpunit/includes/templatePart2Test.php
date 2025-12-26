@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class TemplatePart2Test extends testBaseClass {
+final class templatePart2Test extends testBaseClass {
 
     public function testTidy1(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> }}';
