@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class TemplatePart4Test extends testBaseClass {
+final class TemplatePart2Test extends testBaseClass {
 
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
