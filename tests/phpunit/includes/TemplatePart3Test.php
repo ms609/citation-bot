@@ -185,31 +185,49 @@ EP - 999 }}';
         $this->assertSame('etal', $prepared->get2('display-authors'));
     }
 
-    public function testEtAlAsAuthor(): void {
+    public function testEtAlAsAuthor_1(): void {
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = et al. }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('author3'));
+    }
+
+    public function testEtAlAsAuthor_2(): void {
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = et al. }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('last3'));
+    }
+
+    public function testEtAlAsAuthor_3(): void {
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|author3 = etal. }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('author3'));
+    }
+
+    public function testEtAlAsAuthor_4(): void {
         $text = '{{cite book |author1=Alfred A Albertstein|author2= Bertie B Benchmark|last3 = etal }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('last3'));
+    }
+
+    public function testEtAlAsAuthor_5(): void {
         $text = '{{cite book|last1=etal}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('last1'));
+    }
+
+    public function testEtAlAsAuthor_6(): void {
         $text = '{{cite book|last1=et al}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
         $this->assertNull($prepared->get2('last1'));
+    }
+
+    public function testEtAlAsAuthor_7(): void {
         $text = '{{cite book|last1=et al}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('etal', $prepared->get2('display-authors'));
@@ -305,16 +323,22 @@ EP - 999 }}';
         $this->assertSame('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get2('title'));
     }
 
-    public function testZooKeys(): void {
+    public function testZooKeys_1(): void {
         $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('ZooKeys', $expanded->get2('journal'));
         $this->assertSame('445', $expanded->get2('issue'));
         $this->assertNull($expanded->get2('volume'));
+    }
+
+    public function testZooKeys_2(): void {
         $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('445', $expanded->get2('issue'));
         $this->assertNull($expanded->get2('volume'));
+    }
+
+    public function testZooKeys_3(): void {
         $text = "{{cite journal|last1=Bharti|first1=H.|last2=Guénard|first2=B.|last3=Bharti|first3=M.|last4=Economo|first4=E.P.|title=An updated checklist of the ants of India with their specific distributions in Indian states (Hymenoptera, Formicidae)|journal=ZooKeys|date=2016|volume=551|pages=1–83|doi=10.3897/zookeys.551.6767|pmid=26877665|pmc=4741291}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('551', $expanded->get2('issue'));
@@ -377,11 +401,14 @@ EP - 999 }}';
         $this->assertSame("The macro- and microfossil record of the Cambrian priapulid Ottoia", $title);
     }
 
-    public function testSpeciesCaps(): void {
+    public function testSpeciesCaps_1(): void {
         $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
         $expanded = $this->process_citation($text);
         $this->assertSame(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"),
                                       str_replace(' ', '', $expanded->get('title')));
+    }
+
+    public function testSpeciesCaps_2(): void {
         $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
         // Should be able to drop /full from DOI in URL
         $expanded = $this->process_citation($text);
@@ -393,7 +420,6 @@ EP - 999 }}';
         $url = "https://fake.url/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
         $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
         $expanded = $this->process_citation($text);
-
         $this->assertSame('1961', $expanded->get2('date'));
         $this->assertSame('81', $expanded->get2('volume'));
         $this->assertSame('1', $expanded->get2('issue'));
@@ -404,7 +430,6 @@ EP - 999 }}';
         $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
         $text = "{{Cite journal|url=$url}}";
         $expanded = $this->process_citation($text);
-
         $this->assertSame('594900', $expanded->get2('jstor'));
         $this->assertSame('1961', $expanded->get2('date'));
         $this->assertSame('81', $expanded->get2('volume'));
@@ -507,11 +532,14 @@ EP - 999 }}';
         $this->assertNull($template->get2('volume'));
     }
 
-    public function testRenameToArxivWhenLoseUrl(): void {
+    public function testRenameToArxivWhenLoseUrl_1(): void {
         $text = "{{cite web|url=1|arxiv=2}}";
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertSame('cite arxiv', $template->wikiname());
+    }
+
+    public function testRenameToArxivWhenLoseUrl_2(): void {
         $text = "{{cite web|url=1|arxiv=2|chapter-url=XYX}}";
         $template = $this->make_citation($text);
         $template->forget('url');
@@ -599,16 +627,25 @@ EP - 999 }}';
         $this->assertSame('1999', $prepared->get2('year'));
     }
 
-    public function testSmallWords(): void {
+    public function testSmallWords_1(): void {
         $text = '{{cite journal|journal=A Word in ny and n y About cow And Then boys the U S A and y and z}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('A Word in NY and N Y About Cow and then Boys the U S A and y and Z', $prepared->get2('journal'));
+    }
+
+    public function testSmallWords_2(): void {
         $text = '{{cite journal|journal=Ann of Math}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Ann of Math', $prepared->get2('journal'));
+    }
+
+    public function testSmallWords_3(): void {
         $text = '{{cite journal|journal=Ann. of Math.}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Ann. of Math.', $prepared->get2('journal'));
+    }
+
+    public function testSmallWords_4(): void {
         $text = '{{cite journal|journal=Ann. of Math}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('Ann. of Math', $prepared->get2('journal'));
@@ -620,10 +657,13 @@ EP - 999 }}';
         $this->assertNull($expanded->get2('year'));
     }
 
-    public function testAccessDates(): void {
+    public function testAccessDates_1(): void {
         $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapter-url=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('accessdate'));
+    }
+
+    public function testAccessDates_2(): void {
         $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('accessdate'));
@@ -723,6 +763,10 @@ EP - 999 }}';
         $text = '{{cite journal|url=http://researchgate.net/publication/320041870_yup}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame($want, $prepared->get2('url'));
+    }
+
+    public function testTrimResearchGate2(): void {
+        $want = 'https://www.researchgate.net/publication/320041870';
         $text = '{{cite journal|url=https://www.researchgate.net/profile/hello_user-person/publication/320041870_EXTRA_STUFF_ON_EN}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame($want, $prepared->get2('url'));
@@ -1007,7 +1051,7 @@ EP - 999 }}';
         $this->assertSame('cite web', $expanded->wikiname());
     }
 
-    public function testEditors(): void {
+    public function testEditors_1(): void {
         $text = '{{cite journal|editor3=Set}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('editor-last3', 'SetItL');
@@ -1016,7 +1060,9 @@ EP - 999 }}';
         $this->assertSame('Set', $prepared->get2('editor3'));
         $this->assertNull($prepared->get2('editor-last3'));
         $this->assertNull($prepared->get2('editor-first3'));
+    }
 
+    public function testEditors_2(): void {
         $text = '{{cite journal}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('editor-last3', 'SetItL');
@@ -1025,13 +1071,17 @@ EP - 999 }}';
         $this->assertSame('SetItL', $prepared->get2('editor-last3'));
         $this->assertSame('SetItF', $prepared->get2('editor-first3'));
         $this->assertNull($prepared->get2('editor3'));
+    }
 
+    public function testEditors_3(): void {
         $text = '{{cite journal}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('editor-last33', 'SetIt'); // Huge number
         $this->assertNull($prepared->get2('editor-last33'));
         $this->assertNull($prepared->get2('display-editors'));
+    }
 
+    public function testEditors_4(): void {
         $text = '{{cite journal|editor29=dfasddsfadsd}}';
         $prepared = $this->prepare_citation($text);
         $prepared->add_if_new('editor-last33', 'SetIt');
@@ -1156,7 +1206,9 @@ EP - 999 }}';
         $this->assertSame('Last', $template->get2('last1'));
         $this->assertSame('First', $template->get2('first1'));
         $this->assertNull($template->get2('author1'));
+    }
 
+    public function testAuthorToLast2(): void {
         $text = '{{Cite journal|author1=Last|first2=First}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('Last', $template->get2('author1'));
@@ -1168,7 +1220,9 @@ EP - 999 }}';
         $text = '{{Cite web|archive-url=https://web.archive.org/web/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('21 May 2019', $template->get2('archive-date'));
+    }
 
+    public function testAddArchiveDate2(): void {
         $text = '{{Cite web|archive-url=https://wayback.archive-it.org/4554/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('21 May 2019', $template->get2('archive-date'));
@@ -1216,19 +1270,31 @@ EP - 999 }}';
         $this->assertNull($template->get2('issn'));
     }
 
-    public function testURLS(): void {
+    public function testURLS_1(): void {
         $text = '{{cite journal|conference-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
+    }
+
+    public function testURLS_2(): void {
         $text = '{{cite journal|conferenceurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
+    }
+
+    public function testURLS_3(): void {
         $text = '{{cite journal|contribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
+    }
+
+    public function testURLS_4(): void {
         $text = '{{cite journal|contributionurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
+    }
+
+    public function testURLS_5(): void {
         $text = '{{cite journal|article-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
         $template = $this->prepare_citation($text);
         $this->assertSame('1234', $template->get2('mr'));
@@ -1239,13 +1305,17 @@ EP - 999 }}';
         $template = $this->make_citation($text);
         $record = (object) null;
         $this->assertFalse(looksLikeBookReview($template, $record));
+    }
 
+    public function testlooksLikeBookReview2(): void {
         $text = '{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
         $record = (object) null;
         $record->year = '2000';
         $this->assertFalse(looksLikeBookReview($template, $record));
+    }
 
+    public function testlooksLikeBookReview3(): void {
         $text = '{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
         $record = (object) null;
@@ -1297,19 +1367,25 @@ EP - 999 }}';
         $template->tidy_parameter('page');
         $this->assertSame('333-444', $template->get2('page'));
         $this->assertNull($template->get2('pages'));
+    }
 
+    public function testTidyPageRangeLookLikePage2(): void {
         $text_in = "{{cite web| page=333–444}}";
         $template = $this->make_citation($text_in);
         $template->tidy_parameter('page');
         $this->assertSame('333–444', $template->get2('pages'));
         $this->assertSame('', $template->get('page'));
+    }
 
+    public function testTidyPageRangeLookLikePage3(): void {
         $text_in = "{{cite web| page=1-444}}";
         $template = $this->make_citation($text_in);
         $template->tidy_parameter('page');
         $this->assertSame('1-444', $template->get2('page'));
         $this->assertNull($template->get2('pages'));
+    }
 
+    public function testTidyPageRangeLookLikePage4(): void {
         $text_in = "{{cite web| page=1–444}}";
         $template = $this->make_citation($text_in);
         $template->tidy_parameter('page');
@@ -1334,7 +1410,9 @@ EP - 999 }}';
         $template = $this->process_citation($text_in);
         $this->assertSame("https://xy.com", $template->get2('archive-url'));
         $this->assertNull($template->get2('archive'));
+    }
 
+    public function testDashIsEquals2(): void {
         $text_in = "{{cite news|archive=url=https://xy.com }}";
         $template = $this->process_citation($text_in);
         $this->assertSame("https://xy.com", $template->get2('archive-url'));
@@ -1414,7 +1492,9 @@ EP - 999 }}';
         $text = '{{cite journal |title=Proceedings of the 1964 19th ACM national conference on - }}';
         $template = $this->process_citation($text);
         $this->assertSame('Proceedings of the 1964 19th ACM national conference', $template->get2('title'));
+    }
 
+    public function testACMConfWithDash2(): void {
         $text = '{{cite conference |title= }}';
         $template = $this->make_citation($text);
         $template->add_if_new('title', 'Proceedings of the 1964 19th ACM national conference on -');
@@ -1432,51 +1512,65 @@ EP - 999 }}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
+    }
 
+    public function testTidySomeStuff2(): void {
         $text = '{{cite journal | url=http://pubs.rsc.org/XYZ/unauth}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
     }
 
-    public function testTidyPreferVolumes(): void {
+    public function testTidyPreferVolumes_1(): void {
         $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('volume');
         $this->assertNull($template->get2('issue'));
+    }
 
+    public function testTidyPreferVolumes_2(): void {
         $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('volume');
         $this->assertNull($template->get2('number'));
+    }
 
+    public function testTidyPreferVolumes_3(): void {
         $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('issue'));
+    }
 
+    public function testTidyPreferVolumes_4(): void {
         $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('number');
         $this->assertNull($template->get2('number'));
     }
 
-    public function testTidyPreferIssues(): void {
+    public function testTidyPreferIssues_1(): void {
         $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('volume');
         $this->assertNull($template->get2('volume'));
+    }
 
+    public function testTidyPreferIssues_2(): void {
         $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('volume');
         $this->assertNull($template->get2('volume'));
+    }
 
+    public function testTidyPreferIssues_3(): void {
         $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('volume'));
+    }
 
+    public function testTidyPreferIssues_4(): void {
         $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('number');
