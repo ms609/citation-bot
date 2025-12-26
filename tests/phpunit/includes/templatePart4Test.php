@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class templatePart2Test extends testBaseClass {
+final class templatePart4Test extends testBaseClass { // Lower case "t" to run later in test suite
 
     public function testTidy1(): void {
         $text = '{{cite web|postscript = <!-- A comment only --> }}';
