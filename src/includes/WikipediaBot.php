@@ -77,6 +77,8 @@ final class WikipediaBot {
             report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
             if (!TRAVIS) {
                 sleep(10);
+            } else {
+                sleep(1);
             }
             return false;
         }
@@ -115,6 +117,8 @@ final class WikipediaBot {
             }
             if (!TRAVIS) {
                 sleep(10);
+            } else {
+                sleep(1);
             }
             return false;
         }
