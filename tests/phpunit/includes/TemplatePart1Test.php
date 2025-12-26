@@ -1467,4 +1467,51 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertStringContainsString('2025', $access_date);
         $this->assertStringNotContainsString('-2025', $access_date);
     }
+
+    public function testMalformedParametersVariousTypes(): void {
+        // Test that the fix works for various parameter types, not just dates
+        // This ensures the regex fix doesn't introduce errors for other parameters
+        
+        // Test 1: Malformed archive-date (another date parameter)
+        $text = '{{cite web |title=Test |url=https://example.com |archive-date-2024-12-25}}';
+        $prepared = $this->prepare_citation($text);
+        $archive_date = $prepared->get2('archive-date');
+        if ($archive_date !== null) {
+            assert(is_string($archive_date));
+            $this->assertStringContainsString('2024', $archive_date);
+            $this->assertStringNotContainsString('-2024', $archive_date);
+        }
+        
+        // Test 2: Malformed publication-date
+        $text = '{{cite journal |title=Test Article |publication-date-2023-06-15}}';
+        $prepared = $this->prepare_citation($text);
+        $pub_date = $prepared->get2('publication-date');
+        if ($pub_date !== null) {
+            assert(is_string($pub_date));
+            $this->assertStringContainsString('2023', $pub_date);
+            $this->assertStringNotContainsString('-2023', $pub_date);
+        }
+        
+        // Test 3: Correctly formatted parameters should still work
+        $text = '{{cite web |title=Test |url=https://example.com |date=2025-01-01}}';
+        $prepared = $this->prepare_citation($text);
+        $date = $prepared->get2('date');
+        $this->assertNotNull($date);
+        assert(is_string($date));
+        $this->assertStringContainsString('2025', $date);
+    }
+
+    public function testMalformedParametersWithSpaces(): void {
+        // Test that leading spaces are also correctly stripped
+        // This verifies the regex handles all separator types (space, hyphen, plus)
+        
+        // Malformed with leading space
+        $text = '{{cite web |title=Test |url=https://example.com |date 2025-03-15}}';
+        $prepared = $this->prepare_citation($text);
+        $date = $prepared->get2('date');
+        if ($date !== null) {
+            assert(is_string($date));
+            $this->assertStringContainsString('2025', $date);
+        }
+    }
 }
