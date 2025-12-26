@@ -2522,7 +2522,7 @@ final class Template
                 mb_strlen($closest) > mb_strlen($comp))
             ) {
                 // remove leading spaces or hyphens (which may have been typoed for an equals)
-                if (preg_match("~^[ -+]*(.+)~", (string) mb_substr($dat, mb_strlen($closest)), $match)) {
+                if (preg_match("~^[ \\-+]+(.+)~", (string) mb_substr($dat, mb_strlen($closest)), $match)) {
                     // Cast false to string
                     $this->add_if_new($closest, $match[1] /* . " [$shortest / $comp = $shortish]"*/);
                     $replace_pos = mb_strrpos($dat, $match[1]) + mb_strlen($match[1]);
