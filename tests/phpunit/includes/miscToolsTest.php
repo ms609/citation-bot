@@ -236,7 +236,7 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersDefaultNumericBranch(): void {
         $parameter = 'publisher2';
         $list = [];
-        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS,  'publisher1', 'publisher1-last', 'publisher1-first', 'publisher-last1', 'publisher-first1', 'publisher1-surname', 'publisher1-given', 'publisher-surname1', 'publisher-given1'], prior_parameters($parameter, $list));
+        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, 'publisher1', 'publisher1-last', 'publisher1-first', 'publisher-last1', 'publisher-first1', 'publisher1-surname', 'publisher1-given', 'publisher-surname1', 'publisher-given1'], prior_parameters($parameter, $list));
     }
 
     public function testNoDuplicates1(): void {
