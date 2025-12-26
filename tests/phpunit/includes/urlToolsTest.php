@@ -903,4 +903,12 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20221010045451/https://academic.oup.com/gji/article-abstract/230/1/50/6522179', $template->get2('archive-url'));
     }
 
+    public function testNoAccessMessageNotRemovedFromNonOUP(): void {
+        $text = '{{cite web|url=https://www.bbc.com/news/articles/cwyw4x39jdwo#no-access-message|archive-url=https://web.archive.org/web/20251226110705/https://www.bbc.com/news/articles/cwyw4x39jdwo#no-access-message}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('url');
+        $this->assertSame('https://www.bbc.com/news/articles/cwyw4x39jdwo#no-access-message', $template->get2('url'));
+        $this->assertSame('https://web.archive.org/web/20251226110705/https://www.bbc.com/news/articles/cwyw4x39jdwo#no-access-message', $template->get2('archive-url'));
+    }
+
 }
