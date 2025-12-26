@@ -1454,4 +1454,17 @@ final class TemplatePart1Test extends testBaseClass {
         // Check that it's a valid date format (contains 2025 without leading hyphen)
         $this->assertStringContainsString('2025', $access_date);
     }
+
+    public function testAccessDateCorrectFormatsNotStripped(): void {
+        // Verify that correctly formatted dates are not affected by the regex fix
+        // Test with properly formatted access-date parameter (with equals sign)
+        $text = '{{cite web |title=Test |url=https://example.com |access-date=2025-07-13}}';
+        $prepared = $this->prepare_citation($text);
+        $access_date = $prepared->get2('access-date');
+        $this->assertNotNull($access_date, 'access-date should be set');
+        assert(is_string($access_date)); // Type assertion for Phan
+        // Date should be properly formatted, containing the year
+        $this->assertStringContainsString('2025', $access_date);
+        $this->assertStringNotContainsString('-2025', $access_date);
+    }
 }
