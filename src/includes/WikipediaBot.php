@@ -475,11 +475,11 @@ final class WikipediaBot {
             "ususers" => $user,
         ];
         $response = self::QueryAPI($query);
-        if (mb_strpos($response, '"userid"') === false) { // try again if weird
+        if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
             sleep(5);
             $response = self::QueryAPI($query);
         }
-        if (mb_strpos($response, '"userid"') === false) { // try yet again if weird
+        if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
             sleep(10);
             $response = self::QueryAPI($query);
         }
