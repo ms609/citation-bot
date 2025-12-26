@@ -506,7 +506,7 @@ class Page {
                     $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
                     report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
                 } elseif (is_array($this->modifications[$key])) {
-                    $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+                    $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
                 } else {
                     $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
                 }
@@ -532,7 +532,7 @@ class Page {
                     $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
                     report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
                 } elseif (is_array($this->modifications[$key])) {
-                    $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
+                    $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
                 } else {
                     $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
                 }
