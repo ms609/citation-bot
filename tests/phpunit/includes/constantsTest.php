@@ -200,8 +200,8 @@ final class constantsTest extends testBaseClass {
                             'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
                             'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
                             'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
-        $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
-                                            $patent_whitelist, $their_whitelist);
+        $their_whitelist = ['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url',
+                                            ...$patent_whitelist, ...$their_whitelist];
         $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
         $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
 
@@ -245,7 +245,7 @@ final class constantsTest extends testBaseClass {
     public function testWhiteListNotBlacklisted(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
-        $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
+        $whitelist = [...DEAD_PARAMETERS, ...PARAMETER_LIST];
         $orig = '';
         $new = '';
         foreach ($whitelist as $value) {
@@ -696,7 +696,7 @@ final class constantsTest extends testBaseClass {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
         $errors = '';
-        $all_maps = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL);
+        $all_maps = [...COMMON_MISTAKES, ...COMMON_MISTAKES_TOOL];
         $okay_to_be_bad = ['coauthors', 'deadurl', 'lay-date', 'lay-source', 'lay-url', 'month', 'authors'];  // We upgrade dead parameters to better dead parameters
         foreach ($all_maps as $map_me => $mapped) {
             if (isset($all_maps[$mapped])) {
