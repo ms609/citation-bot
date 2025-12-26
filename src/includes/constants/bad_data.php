@@ -13510,3 +13510,5 @@ const BAD_DOI_ARRAY = [
     '10.1267/science.040579197' => true,
     '10.7556/jaoa' => true,
 ];
+
+const ZOTERO_LIST_OF_EVIL = [...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...IN_PRESS_ALIASES];
