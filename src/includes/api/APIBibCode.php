@@ -229,7 +229,7 @@ function expand_by_adsabs(Template $template): void {
         }
         // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
         if (
-            !$template->blank(array_merge(['doi', 'pmc', 'pmid', 'eprint', 'arxiv'], ALL_URL_TYPES)) &&
+            !$template->blank([...['doi', 'pmc', 'pmid', 'eprint', 'arxiv'], ...ALL_URL_TYPES]) &&
             $template->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
             mb_strtolower($record->title[0]) !== mb_strtolower($template->get_without_comments_and_placeholders('title'))
         ) {
@@ -714,7 +714,7 @@ function expand_book_adsabs(Template $template, object $record): void {
     if (isset($record->title)) {
         $template->add_if_new('title', (string) $record->title[0]);
     }
-    if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+    if ($template->blank([...FIRST_EDITOR_ALIASES, ...FIRST_AUTHOR_ALIASES, ...['publisher']])) { // Avoid re-adding editors as authors, etc.
         $i = 0;
         if (isset($record->author)) {
             foreach ($record->author as $author) {
