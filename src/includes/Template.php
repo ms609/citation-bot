@@ -3192,7 +3192,7 @@ final class Template
                                 'displayeditors',
                                 'url',
                                 ...FIRST_EDITOR_ALIASES
-                            ],
+                            ]
                         )
                     )
                 ) {
