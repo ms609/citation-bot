@@ -1572,6 +1572,16 @@ final class Template
                 if (mb_stripos($value, 'gigabyte') !== false) {
                     return false;
                 } // bad pmid data
+                // Check if this is a Zootaxa/Phytotaxa DOI and reject page values that look like DOI suffixes
+                $doi = $this->get('doi');
+                if ($doi && preg_match('~^10\.11646/(zoo|phyto)taxa\.(\d+\.\d+\.\d+)$~i', $doi, $doi_match)) {
+                    // DOI suffix format: journal.volume.issue.article
+                    if (preg_match('~^(zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $value)) {
+                        // Page value looks like a DOI suffix - reject it
+                        report_warning("Rejecting page value that appears to be DOI suffix for Zootaxa/Phytotaxa: " . echoable($value));
+                        return false;
+                    }
+                }
                 $pages_value = $this->get('pages');
                 $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
                 $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
