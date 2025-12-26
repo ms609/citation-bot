@@ -911,4 +911,20 @@ final class urlToolsTest extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20251226110705/https://www.bbc.com/news/articles/cwyw4x39jdwo', $template->get2('archive-url'));
     }
 
+    public function testRemoveNoAccessMessageFromArchiveToday(): void {
+        $text = '{{cite web|url=https://example.com/page#no-access-message|archive-url=https://archive.today/2024/https://example.com/page#no-access-message}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('url');
+        $this->assertSame('https://example.com/page', $template->get2('url'));
+        $this->assertSame('https://archive.today/2024/https://example.com/page', $template->get2('archive-url'));
+    }
+
+    public function testRemoveNoAccessMessageFromArchiveIs(): void {
+        $text = '{{cite web|url=https://example.com/article#no-access-message|archive-url=https://archive.is/AbCdE#no-access-message}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('url');
+        $this->assertSame('https://example.com/article', $template->get2('url'));
+        $this->assertSame('https://archive.is/AbCdE', $template->get2('archive-url'));
+    }
+
 }
