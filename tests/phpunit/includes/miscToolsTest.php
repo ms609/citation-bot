@@ -175,7 +175,7 @@ final class miscToolsTest extends testBaseClass {
     public function testPriorParametersGroup15(): void {
         $parameter = 'doi-access';
         $list = [];
-        $this->assertSame([...LATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...ROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...['doi-access']], prior_parameters($parameter, $list));
+        $this->assertSame([...FLATTENED_AUTHOR_PARAMETERS, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6, ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...ROUP11, ...GROUP12, ...GROUP13, ...GROUP14, ...['doi-access']], prior_parameters($parameter, $list));
     }
 
     public function testPriorParametersGroup23(): void {
