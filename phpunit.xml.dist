@@ -22,6 +22,14 @@
   </source>
   <testsuites>
     <testsuite name="TestSuite">
+      <file>./tests/phpunit/includes/doiToolsTest.php</file>
+      <file>./tests/phpunit/includes/constantsTest.php</file>
+      <file>./tests/phpunit/includes/api/doiTest.php</file>
+      <file>./tests/phpunit/includes/urlToolsTest.php</file>
+      <file>./tests/phpunit/includes/TemplatePart3Test.php</file>
+      <file>./tests/phpunit/includes/TemplatePart4Test.php</file>
+      <file>./tests/phpunit/includes/TemplatePart1Test.php</file>
+      <file>./tests/phpunit/includes/miscToolsTest.php</file>
       <directory suffix=".php">./tests/phpunit</directory>
     </testsuite>
   </testsuites>
