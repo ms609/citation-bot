@@ -4,7 +4,7 @@
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.1/phpunit.xsd"
   colors="true"
   requireCoverageMetadata="false"
-  beStrictAboutCoverageMetadata="false"
+  beStrictAboutCoverageMetadata="true"
   processIsolation="false"
   failOnRisky="true"
   failOnWarning="true"
