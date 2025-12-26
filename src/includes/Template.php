@@ -3193,7 +3193,6 @@ final class Template
                                 'url',
                                 ...FIRST_EDITOR_ALIASES
                             ]
-                        )
                     )
                 ) {
                     return;
