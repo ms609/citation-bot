@@ -1447,7 +1447,7 @@ final class TemplatePart1Test extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $access_date = $prepared->get2('access-date');
         $this->assertNotNull($access_date, 'access-date should not be null');
-        assert(is_string($access_date)); // Type assertion for Phan
+        $this->assertIsString($access_date);
         $this->assertStringNotContainsString('-2025', $access_date);
         $this->assertStringContainsString('2025', $access_date);
     }
@@ -1458,7 +1458,7 @@ final class TemplatePart1Test extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $access_date = $prepared->get2('access-date');
         $this->assertNotNull($access_date, 'access-date should be set');
-        assert(is_string($access_date)); // Type assertion for Phan
+        $this->assertIsString($access_date);
         $this->assertStringContainsString('2025', $access_date);
         $this->assertStringNotContainsString('-2025', $access_date);
     }
@@ -1469,16 +1469,16 @@ final class TemplatePart1Test extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $archive_date = $prepared->get2('archive-date');
         if ($archive_date !== null) {
-            assert(is_string($archive_date));
+            $this->assertIsString($archive_date);
             $this->assertStringContainsString('2024', $archive_date);
             $this->assertStringNotContainsString('-2024', $archive_date);
         }
-        
+
         $text = '{{cite journal |title=Test Article |publication-date-2023-06-15}}';
         $prepared = $this->prepare_citation($text);
         $pub_date = $prepared->get2('publication-date');
         if ($pub_date !== null) {
-            assert(is_string($pub_date));
+            $this->assertIsString($pub_date);
             $this->assertStringContainsString('2023', $pub_date);
             $this->assertStringNotContainsString('-2023', $pub_date);
         }
@@ -1490,7 +1490,7 @@ final class TemplatePart1Test extends testBaseClass {
         $prepared = $this->prepare_citation($text);
         $date = $prepared->get2('date');
         if ($date !== null) {
-            assert(is_string($date));
+            $this->assertIsString($date);
             $this->assertStringContainsString('2025', $date);
         }
     }
