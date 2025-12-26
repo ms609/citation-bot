@@ -22,7 +22,7 @@ final class miscToolsTest extends testBaseClass {
         } else {
             $do_it = -1;
             report_error('We got wrong data in testThrottle: ' . echoable($eventName));
-        }                               
+        }
         for ($x = 0; $x <= $do_it; $x++) {
             throttle();
         }
