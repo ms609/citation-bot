@@ -240,7 +240,7 @@ final class miscToolsTest extends testBaseClass {
     }
 
     public function testNoDuplicates1(): void {
-        $test = array_merge(GROUP_F1, GROUP_L1);
+        $test = [...GROUP_F1, ...GROUP_L1];
         $unique = array_unique($test);
         $duplicates = array_diff_assoc($test, $unique);
         if (!empty($duplicates)) {
@@ -252,11 +252,11 @@ final class miscToolsTest extends testBaseClass {
     }
 
     public function testNoDuplicates2(): void {
-        $test = array_merge(GROUP1, GROUP2, GROUP3, GROUP4, GROUP5, GROUP6,
-                            GROUP7, GROUP8, GROUP9, GROUP10, GROUP11, GROUP12,
-                            GROUP13, GROUP14, GROUP15, GROUP17, GROUP18,
-                            GROUP19, GROUP20, GROUP21, GROUP22, GROUP23, GROUP24,
-                            GROUP25, GROUP26, GROUP27, GROUP28, GROUP29, GROUP30);
+        $test = [...GROUP1, ...GROUP2, ...GROUP3, ...GROUP4, ...GROUP5, ...GROUP6,
+                 ...GROUP7, ...GROUP8, ...GROUP9, ...GROUP10, ...GROUP11, ...GROUP12,
+                 ...GROUP13, ...GROUP14, ...GROUP15, ...GROUP17, ...GROUP18,
+                 ...GROUP19, ...GROUP20, ...GROUP21, ...GROUP22, ...GROUP23, ...GROUP24,
+                 ...GROUP25, ...GROUP26, ...GROUP27, ...GROUP28, ...GROUP29, ...GROUP30];
         $unique = array_unique($test);
         $duplicates = array_diff_assoc($test, $unique);
         if (!empty($duplicates)) {
@@ -273,7 +273,7 @@ final class miscToolsTest extends testBaseClass {
         foreach (PARAMETER_LIST as $param) {
             $everything[] = str_replace('#', '4', $param);
         }
-        $everything = array_merge($everything, LOTS_OF_EDITORS, FLATTENED_AUTHOR_PARAMETERS);
+        $everything = [...$everything, ...LOTS_OF_EDITORS, ...FLATTENED_AUTHOR_PARAMETERS];
         foreach ($everything as $param) {
             $param = mb_strtolower($param);
             $prior = prior_parameters($param);
