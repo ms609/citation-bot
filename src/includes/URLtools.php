@@ -994,7 +994,25 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         if ($template->get('website') === 'academic.oup.com') {
             $template->forget('website');
         }
-    } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $template->get($param), $matches)) {
+    }
+    if (preg_match("~^(https?://.+)#no-access-message$~", $template->get($param), $matches)) {
+        $template->set($param, $matches[1]);
+        // Also clean archive URLs if they contain the same fragment
+        foreach (['archive-url', 'archiveurl'] as $archive_param) {
+            if ($template->has($archive_param)) {
+                $archive_url = $template->get($archive_param);
+                // Check if archive URL contains any URL with #no-access-message
+                // Pattern matches archive services like:
+                // - web.archive.org: https://web.archive.org/web/TIMESTAMP/URL#fragment
+                // - archive.today/is/ph/fo/li/etc: https://archive.*/TIMESTAMP/URL#fragment or https://archive.*/CODE#fragment
+                if (preg_match("~^(https?://(?:web\.archive\.org|archive\.(?:today|is|ph|fo|li|md|vn))/[^#]+)#no-access-message$~", $archive_url, $archive_matches)) {
+                    $cleaned_archive_url = $archive_matches[1];
+                    $template->set($archive_param, $cleaned_archive_url);
+                }
+            }
+        }
+    }
+    if (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $template->get($param), $matches)) {
         if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' || $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
             $matches[2] = '';
         }
