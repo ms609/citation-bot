@@ -85,7 +85,7 @@ function doi_works(string $doi): ?bool {
     if (isset(NULL_DOI_ANNOYING[$doi])) {
         return false;
     }
-    if (!TRAVIS) {
+    if (!CI) {
         foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
             if (mb_stripos($doi, $bad_start) === 0) {
                 return false; // all gone
@@ -815,7 +815,7 @@ function get_headers_array(string $url): false|array {
     static $context_insecure_hdl;
     if (!isset($context_insecure_doi)) {
         $timeout = BOT_HTTP_TIMEOUT * 1.0;
-        if (TRAVIS) {
+        if (CI) {
             $timeout = 5.0; // Give up fast
         }
         $context_insecure_doi = stream_context_create([
@@ -875,7 +875,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
         $doi === '10.3905/jpm' || // over-truncated
-        (mb_strpos($doi, '10.0000/') === 0 && !TRAVIS) || // just urls that look like DOIs - TODO: Fix test suite
+        (mb_strpos($doi, '10.0000/') === 0 && !CI) || // just urls that look like DOIs - TODO: Fix test suite
         mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         mb_strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review

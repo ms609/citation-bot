@@ -4,7 +4,7 @@ parameters:
         - HTML_OUTPUT
         - SLOW_MODE
         - FLUSHING_OKAY
-        - TRAVIS
+        - CI
         - EDIT_AS_USER
         - BIG_JOB_MODE
         - MAX_TRIES

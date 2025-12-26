@@ -7,13 +7,13 @@ const BORING_STUFF = ["boring", "removed", "added", "changed", "subsubitem", "su
 require_once __DIR__ . '/constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text = ''): void {
-    if (!TRAVIS) {
+    if (!CI) {
         echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
     }
 }
 
 function user_notice(string $symbol, string $class, string $text): void {
-    if (!TRAVIS) {
+    if (!CI) {
         // @codeCoverageIgnoreStart
         if (defined('BIG_JOB_MODE') && in_array($class, BORING_STUFF, true)) {
             echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
@@ -65,7 +65,7 @@ function report_forget(string $text): void {
 }
 
 function report_inline(string $text): void {
-    if (!TRAVIS && defined('BIG_JOB_MODE')) {
+    if (!CI && defined('BIG_JOB_MODE')) {
         echo " ", $text;   // @codeCoverageIgnore
     }
 }
@@ -75,7 +75,7 @@ function report_inline(string $text): void {
  * @codeCoverageIgnore
  */
 function report_error(string $text): never {
-    if (TRAVIS) {
+    if (CI) {
         trigger_error($text);  // Stop this test now
     } elseif (function_exists('bot_debug_log')) {
         bot_debug_log($text);  // Code logfile, if defined
@@ -91,7 +91,7 @@ function report_error(string $text): never {
  * @codeCoverageIgnore
  */
 function report_minor_error(string $text): void {  // For things we want to error in tests, but continue on Wikipedia
-    if (!HTML_OUTPUT) { // command line and TRAVIS
+    if (!HTML_OUTPUT) { // command line and CI
         report_error($text);
     } else {
         bot_debug_log($text);
@@ -100,7 +100,7 @@ function report_minor_error(string $text): void {  // For things we want to erro
 }
 
 function quietly(callable $function, string $text): void { // Stuff suppressed when running on the command line
-    if (HTML_OUTPUT || TRAVIS) {
+    if (HTML_OUTPUT || CI) {
         $function($text);
     }
 }

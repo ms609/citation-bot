@@ -5,7 +5,7 @@ declare(strict_types=1);
 function get_doi_from_pii(string $pii): string {
     static $ch_pii;
     if ($ch_pii === null) {
-        if (TRAVIS) {
+        if (CI) {
             $time = 3.0;
         } else {
             $time = 1.0; // @codeCoverageIgnore
