@@ -993,15 +993,15 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             $template->forget('website');
         }
     }
-    if (preg_match("~^(https?://academic\.oup\.com/.+)#no-access-message$~", $template->get($param), $matches)) {
+    if (preg_match("~^(https?://.+)#no-access-message$~", $template->get($param), $matches)) {
         $template->set($param, $matches[1]);
         // Also clean archive URLs if they contain the same fragment
         foreach (['archive-url', 'archiveurl'] as $archive_param) {
             if ($template->has($archive_param)) {
                 $archive_url = $template->get($archive_param);
-                // Check if archive URL contains an academic.oup.com URL with #no-access-message
+                // Check if archive URL contains any URL with #no-access-message
                 // Pattern matches: https://web.archive.org/web/TIMESTAMP/URL#fragment
-                if (preg_match("~^(https?://[^/]+/[^/]+/[^/]+/)(https?://academic\.oup\.com/.+)#no-access-message$~", $archive_url, $archive_matches)) {
+                if (preg_match("~^(https?://[^/]+/[^/]+/[^/]+/)(https?://.+)#no-access-message$~", $archive_url, $archive_matches)) {
                     $cleaned_archive_url = $archive_matches[1] . $archive_matches[2];
                     $template->set($archive_param, $cleaned_archive_url);
                 }
