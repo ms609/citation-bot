@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class urlToolsTest extends testBaseClass {
+final class UrlToolsTest extends testBaseClass {
 
     public function testFixupGoogle(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
