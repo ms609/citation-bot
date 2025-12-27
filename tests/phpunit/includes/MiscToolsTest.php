@@ -12,17 +12,7 @@ final class MiscToolsTest extends testBaseClass {
     }
 
     public function testThrottle(): void { // Just runs over the code and basically does nothing
-        $eventName = getenv('GITHUB_EVENT_NAME');
-        if ($eventName === 'schedule') {
-            $do_it = 25;
-        } elseif ($eventName === 'push') {
-            $do_it = 25;
-        } elseif ($eventName === 'pull_request') {
-            $do_it = 1;
-        } else {
-            $do_it = -1;
-            report_error('We got wrong data in testThrottle: ' . echoable($eventName));
-        }
+        $do_it = run_type_mods(-1, 25, 25, 1, 1);
         for ($x = 0; $x <= $do_it; $x++) {
             throttle();
         }
