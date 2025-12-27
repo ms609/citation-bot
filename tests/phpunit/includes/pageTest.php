@@ -221,7 +221,7 @@ final class pageTest extends testBaseClass {
                 $page->get_text_from($writeTestPage);
                 $this->assertSame($trialCitation, $page->parsed_text());
             }
-            $this->assertTrue(CI || $page_result); // If we have tokens and are not in CI, then should have worked
+            $this->assertTrue((bool) getenv('CI') || $page_result); // If we have tokens and are not in CI, then should have worked
             $page->overwrite_text($trialCitation);
             $page->expand_text();
             $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
