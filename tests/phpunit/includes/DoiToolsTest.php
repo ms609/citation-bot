@@ -238,9 +238,8 @@ final class DoiToolsTest extends testBaseClass {
         unset($pg);
         $changes = "";
         // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAD
-        $this->assertSame("", $changes);
         foreach (BAD_DOI_EXAMPLES as $doi) {
-            $works = doi_works($doi);
+            $works = is_doi_works($doi); // Avoid doi_works() code that automatically just returns false based upon list we are checking
             if ($works === null) {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as null: " . $doi . "             ";
             } elseif ($works === true) {
@@ -251,7 +250,7 @@ final class DoiToolsTest extends testBaseClass {
             $this->assertFaker();
         } else {
             bot_debug_log($changes);
-            $this->assertFaker(); // We just have to manually look at this EVERY time
+            $this->assertFaker(); // We just have to manually look at this EVERY time.  Used to fail test.
         }
     }
 
