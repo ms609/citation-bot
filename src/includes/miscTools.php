@@ -974,13 +974,13 @@ function clean_cite_odnb(Template $template): void {
 }
 
 function run_type_mods(int $non_ci, int $schedule, int $push, int $pull, int $not_github): int {
-	if (!CI) {
-		if ($non_ci === -1) {
-			report_error('non-ci value not set');
-		}
-		return $non_ci;
-	} elseif (GITHUB_EVENT_NAME === 'schedule') {
-    	return $schedule;
+    if (!CI) {
+        if ($non_ci === -1) {
+            report_error('non-ci value not set');
+        }
+        return $non_ci;
+    } elseif (GITHUB_EVENT_NAME === 'schedule') {
+        return $schedule;
     } elseif (GITHUB_EVENT_NAME === 'push') {
         return $push;
     } elseif (GITHUB_EVENT_NAME === 'pull_request') {
