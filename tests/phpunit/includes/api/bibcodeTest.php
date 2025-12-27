@@ -110,7 +110,7 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testBibcodeData2(): void {
-        $text = "{{Cite journal | bibcode = 1996GSAB..108..195R}}";
+        $text = "{{Cite jourdsafdafsafsdnal | bibcode = 1996GSAB..108..195R}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1996GSAB..108..195R',
