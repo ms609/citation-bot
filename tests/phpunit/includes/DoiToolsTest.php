@@ -208,17 +208,7 @@ final class DoiToolsTest extends testBaseClass {
         unset($pg);
         $changes = "";
         $this->assertSame("", $changes);
-        $eventName = getenv('GITHUB_EVENT_NAME');
-        if ($eventName === 'schedule') {
-            $do_it = 500;
-        } elseif ($eventName === 'push') {
-            $do_it = 850;
-        } elseif ($eventName === 'pull_request') {
-            $do_it = 995;
-        } else {
-            $do_it = -1;
-            report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
-        }
+        function run_type_mods(-1, 500, 850, 995, 990): int {
         $null_list = array_keys(NULL_DOI_LIST);
         shuffle($null_list); // Avoid doing similar ones next to each other
         foreach ($null_list as $doi) {
