@@ -77,7 +77,7 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testBibcodeData1(): void {
-        $text = "{{Cite book | bibcode = 2017NatCo...814879F}}";
+        $text = "{{Cite journal | bibcode = 2017NatCo...814879F}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '2017NatCo...814879F',
@@ -105,12 +105,12 @@ final class bibcodeTest extends testBaseClass {
             'year' => '2017',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Nature Communications', $template->get2('journal'));
         $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
     }
 
     public function testBibcodeData2(): void {
-        $text = "{{Cite book | bibcode = 1996GSAB..108..195R}}";
+        $text = "{{Cite journal | bibcode = 1996GSAB..108..195R}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1996GSAB..108..195R',
@@ -136,14 +136,14 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1996',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Geological Society of America Bulletin', $template->get2('journal'));
         $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2', $template->get2('doi'));
         $this->assertNull($template->get2('page'));
         $this->assertNull($template->get2('pages')); // Added letters
     }
 
     public function testBibcodeData3(): void {
-        $text = "{{Cite book | bibcode = 2000A&A...361..952H}}";
+        $text = "{{Cite journal | bibcode = 2000A&A...361..952H}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '2000A&A...361..952H',
@@ -163,13 +163,13 @@ final class bibcodeTest extends testBaseClass {
             'year' => '2000',
          ];
          process_bibcode_data($template, $results);
-         $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+         $this->assertSame('Astronomy and Astrophysics', $template->get2('journal'));
          $this->assertNull($template->get2('doi'));
          $this->assertSame('952', $template->get2('page') . $template->get2('pages'));
     }
 
     public function testBibcodeData4(): void {
-        $text = "{{Cite book | bibcode = 1995Sci...267...77R}}";
+        $text = "{{Cite journal | bibcode = 1995Sci...267...77R}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1995Sci...267...77R',
@@ -189,12 +189,12 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1995',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Science', $template->get2('journal'));
         $this->assertSame('10.1126/science.267.5194.77', $template->get2('doi'));
     }
 
     public function testBibcodeData5(): void {
-        $text = "{{Cite book | bibcode = 1995Geo....23..967E}}";
+        $text = "{{Cite journal | bibcode = 1995Geo....23..967E}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1995Geo....23..967E',
@@ -220,12 +220,12 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1995',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Geology', $template->get2('journal'));
         $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2', $template->get2('doi'));
     }
 
     public function testBibcodeData6(): void {
-        $text = "{{Cite book | bibcode = 1974JPal...48..524M}}";
+        $text = "{{Cite journal | bibcode = 1974JPal...48..524M}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1974JPal...48..524M',
@@ -240,12 +240,12 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1974',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Journal of Paleontology', $template->get2('journal'));
         $this->assertSame('1974', $template->get2('date'));
     }
 
     public function testBibcodeData7(): void {
-        $text = "{{Cite book | bibcode = 1966Natur.211..116M}}";
+        $text = "{{Cite journal | bibcode = 1966Natur.211..116M}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1966Natur.211..116M',
@@ -266,12 +266,12 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1966',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Nature', $template->get2('journal'));
         $this->assertSame('10.1038/211116a0', $template->get2('doi'));
     }
 
     public function testBibcodeData8(): void {
-        $text = "{{Cite book | bibcode = 1995astro.ph..8159B}}";
+        $text = "{{Cite journal | bibcode = 1995astro.ph..8159B}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '1995astro.ph..8159B',
@@ -299,7 +299,7 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testBibcodeData9(): void {
-        $text = "{{Cite book | bibcode = 1932Natur.129Q..18.}}";
+        $text = "{{Cite journal | bibcode = 1932Natur.129Q..18.}}";
         $template = $this->make_citation($text);
         $results = (object) [
         'bibcode' => '1932Natur.129Q..18.',
@@ -319,12 +319,12 @@ final class bibcodeTest extends testBaseClass {
         'year' => '1932',
         ];
         process_bibcode_data($template, $results);
-        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
+        $this->assertSame('Nature', $template->get2('journal'));
         $this->assertSame('10.1038/129018a0', $template->get2('doi'));
     }
 
     public function testBibcodeData10(): void {
-        $text = "{{Cite book | bibcode = 2019arXiv190502552Q}}";
+        $text = "{{Cite journal | bibcode = 2019arXiv190502552Q}}";
         $template = $this->make_citation($text);
         $results = (object) [
             'bibcode' => '2019arXiv190502552Q',
@@ -435,24 +435,24 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testDontDoIt1(): void { // "complete" already
-        $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+        $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0001/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->incomplete());
     }
 
     public function testDontDoIts(): void {
-        $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+        $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0001/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->incomplete());
     }
 
     public function testDontDoIt3(): void {
-        $text = '{{citation     |title=X|work=X             |issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+        $text = '{{citation     |title=X|work=X             |issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0001/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->incomplete());
 
         $this->requires_bibcode(function (): void {
-            $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+            $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0001/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
             $template = $this->make_citation($text);
             $template_array = [$template];
             $bibcode_array = [$template->get('bibcode')];
