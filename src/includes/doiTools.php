@@ -870,7 +870,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
         $doi === '10.3905/jpm' || // over-truncated
-        (mb_strpos($doi, '10.0000/') === 0 && !CI) || // just urls that look like DOIs - TODO: Fix test suite
+        mb_strpos($doi, '10.0000/') === 0 || // just urls that look like DOIs
         mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         mb_strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review

@@ -222,14 +222,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testVolumeIssueDemixing21(): void {
-        $text = '{{cite journal|issue = volume 12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|issue = volume 12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12', $prepared->get2('volume'));
         $this->assertNull($prepared->get2('issue'));
     }
 
     public function testVolumeIssueDemixing22(): void {
-        $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12XX', $prepared->get2('volume'));
         $this->assertNull($prepared->get2('issue'));
@@ -509,14 +509,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testReplaceBadDOI(): void {
-        $text = '{{Cite journal | doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=1999}}';
+        $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
     }
 
     public function testDropBadDOI(): void {
-        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0001/Rubbish_bot_failure_test}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
         $this->assertNotNull($template->get2('chapter-url'));

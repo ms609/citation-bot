@@ -218,19 +218,19 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testURLCleanUp12(): void {
-        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test}}"; // Add bogus
+        $text = "{{cite journal|url=https://dx.doi.org/10.0001/Rubbish_bot_failure_test}}"; // Add bogus
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNotNull($template->get2('url'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', $template->get2('doi'));
     }
 
     public function testURLCleanUp13(): void {
-        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test2|doi=10.0000/Rubbish_bot_failure_test}}"; // Fail to add bogus
+        $text = "{{cite journal|url=https://dx.doi.org/10.0001/Rubbish_bot_failure_test2|doi=10.0001/Rubbish_bot_failure_test}}"; // Fail to add bogus
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
-        $this->assertSame('https://dx.doi.org/10.0000/Rubbish_bot_failure_test2', $template->get2('url'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
+        $this->assertSame('https://dx.doi.org/10.0001/Rubbish_bot_failure_test2', $template->get2('url'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', $template->get2('doi'));
     }
 
     public function testURLCleanUp14(): void {
@@ -273,7 +273,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testURLCleanUp19(): void {
-        $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $text = "{{cite journal|url=https://dx.doi.org/10.0001/Rubbish_bot_failure_test|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
@@ -392,7 +392,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testOxforddnbDOIs1(): void {
-        $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
         $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
@@ -403,7 +403,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testOxforddnbDOIs2(): void {
-        $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
+        $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
         $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
@@ -415,7 +415,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testANBDOIs(): void {
-        $text = "{{cite web|url=https://www.anb.org/view/10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.anb.org/view/10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
@@ -427,7 +427,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testArtDOIs(): void {
-        $text = "{{cite web|url=https://www.oxfordartonline.com/benezit/view/10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordartonline.com/benezit/view/10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
@@ -439,7 +439,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testGroveDOIs(): void {
-        $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
@@ -451,7 +451,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testGroveDOIs2(): void {
-        $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gao/9781884446054.article.T2085714', $template->get2('doi'));
@@ -463,7 +463,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAASCDOIs(): void {
-        $text = "{{cite web|url=https://oxfordaasc.com/view/10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordaasc.com/view/10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
@@ -475,7 +475,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testWhoWhoDOIs(): void {
-        $text = "{{cite web|url=https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-37305|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-37305|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
@@ -487,7 +487,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIs(): void {
-        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
@@ -499,7 +499,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIsA(): void {
-        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
@@ -511,7 +511,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIsO(): void {
-        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
@@ -523,7 +523,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIsL(): void {
-        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
@@ -535,7 +535,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIsJ(): void {
-        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
@@ -547,7 +547,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testLatinDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/view/10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/view/10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
@@ -559,7 +559,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testEnvDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/environmentalscience/view/10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/environmentalscience/view/10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
@@ -571,7 +571,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAmHistDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
@@ -583,7 +583,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAfHistDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
@@ -595,7 +595,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testIntStudDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
@@ -607,7 +607,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testClimateDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/climatescience/view/10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/climatescience/view/10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
@@ -619,7 +619,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testReligionDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
@@ -631,7 +631,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAnthroDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/anthropology/view/10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/anthropology/view/10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
@@ -643,7 +643,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testClassicsDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
@@ -655,7 +655,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testPsychDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/psychology/view/10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/psychology/view/10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
@@ -667,7 +667,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testPoliDOIs(): void {
-        $text = "{{cite web|url=https://oxfordre.com/politics/view/10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordre.com/politics/view/10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
@@ -679,7 +679,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testOxPressDOIs(): void {
-        $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780190124786.001.0001/oso-9780190124786|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780190124786.001.0001/oso-9780190124786|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
@@ -691,7 +691,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMedDOIs(): void {
-        $text = "{{cite web|url=https://oxfordmedicine.com/view/10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxfordmedicine.com/view/10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
@@ -703,7 +703,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testUnPressScholDOIs(): void {
-        $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
@@ -724,7 +724,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testOxHandbookDOIs(): void {
-        $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780198824633.001.0001/oxfordhb-9780198824633-e-1|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
+        $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780198824633.001.0001/oxfordhb-9780198824633-e-1|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
@@ -764,7 +764,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testConversionOfURL8(): void {
-        $text = "{{cite web|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892|title=Xyz|pmc=341322|doi-access=free|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite web|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892|title=Xyz|pmc=341322|doi-access=free|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
@@ -778,49 +778,49 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testConversionOfURL10(): void {
-        $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNotNull($template->get2('url'));
     }
 
     public function testConversionOfURL10B(): void {
-        $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL11(): void {
-        $text = "{{cite web|url=https://zbmath.org/?q=an:7511.33034|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $text = "{{cite web|url=https://zbmath.org/?q=an:7511.33034|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL12(): void {
-        $text = "{{cite web|url=https://www.osti.gov/biblio/1760327-generic-advanced-computing-framework-executing-windows-based-dynamic-contingency-analysis-tool-parallel-cluster-machines|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $text = "{{cite web|url=https://www.osti.gov/biblio/1760327-generic-advanced-computing-framework-executing-windows-based-dynamic-contingency-analysis-tool-parallel-cluster-machines|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL13(): void {
-        $text = "{{cite web|url=https://zbmath.org/?q=an:75.1133.34|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $text = "{{cite web|url=https://zbmath.org/?q=an:75.1133.34|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL14(): void {
-        $text = "{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+        $text = "{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));
     }
 
     public function testConversionOfURL15(): void {
-        $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}';
+        $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertNull($template->get2('url'));

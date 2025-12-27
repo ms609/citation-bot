@@ -502,7 +502,7 @@ EP - 999 }}';
     }
 
     public function testArxivToJournalIfDoi(): void {
-        $text = "{{cite arxiv| eprint=1234|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite arxiv| eprint=1234|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('cite journal', $template->wikiname());
@@ -670,7 +670,7 @@ EP - 999 }}';
     }
 
     public function testIgnoreUnkownCiteTemplates(): void {
-        $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0000/Rubbish_bot_failure_test }}";
+        $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0001/Rubbish_bot_failure_test }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
@@ -927,21 +927,21 @@ EP - 999 }}';
     }
 
     public function testVolumeIssueDemixing11(): void {
-        $text = '{{cite journal|volume = number 12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12', $prepared->get2('issue'));
         $this->assertNull($prepared->get2('volume'));
     }
 
     public function testVolumeIssueDemixing12(): void {
-        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertNull($prepared->get2('volume'));
         $this->assertSame('12', $prepared->get2('issue'));
     }
 
     public function testVolumeIssueDemixing13(): void {
-        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertNull($prepared->get2('volume'));
         $this->assertSame('12', $prepared->get2('issue'));
