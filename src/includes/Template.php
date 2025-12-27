@@ -1244,13 +1244,6 @@ final class Template
             case 'journal':
             case 'newspaper':
             case 'magazine':
-                // Block journal, newspaper, and magazine from being added to cite book templates
-                // These are three of the five parameters in CITE_BOOK_UNSUPPORTED_PARAMS
-                // (work and website are blocked in separate case statements)
-                if (in_array($param_name, WORK_ALIASES, true) && $this->wikiname() === 'cite book') {
-                    report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
-                    return false;
-                }
                 if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
                     return false;
                 }
@@ -2125,11 +2118,6 @@ final class Template
 
             case 'work':
             case 'encyclopedia':
-                // Prevent adding work parameter to cite book templates
-                if (in_array($param_name, WORK_ALIASES, true) && $this->wikiname() === 'cite book') {
-                    report_warning("Not adding work parameter to cite book template (unsupported)");
-                    return false;
-                }
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
@@ -2144,11 +2132,6 @@ final class Template
                 return false;
 
             case 'website':
-                // Prevent adding website parameter to cite book templates
-                if ($this->wikiname() === 'cite book') {
-                    report_warning("Not adding website parameter to cite book template (unsupported)");
-                    return false;
-                }
                 if ($this->blank(WORK_ALIASES)) {
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
