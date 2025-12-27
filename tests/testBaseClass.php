@@ -207,9 +207,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function sleep_pubmed(): void {
         if (empty(HEADER_S2)) { // More forgiving on pull requests
-            sleep(3);
+            sleep(5);
         } else {
-            sleep(1);
+            sleep(2);
         }
     }
 
