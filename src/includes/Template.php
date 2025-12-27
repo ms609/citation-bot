@@ -681,6 +681,7 @@ final class Template
         }
 
         // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
+        // We might want to think about if there are any cases with bad existing data
         if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {
             report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
             return false;
