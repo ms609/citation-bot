@@ -1248,6 +1248,7 @@ final class Template
                 // These are three of the five parameters in CITE_BOOK_UNSUPPORTED_PARAMS
                 // (work and website are blocked in separate case statements at lines ~2126 and ~2144)
                 if (in_array($param_name, ['journal', 'newspaper', 'magazine'], true) && $this->wikiname() === 'cite book') {
+                    report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
                     return false;
                 }
                 if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
@@ -2126,6 +2127,7 @@ final class Template
             case 'encyclopedia':
                 // Prevent adding work parameter to cite book templates
                 if ($param_name === 'work' && $this->wikiname() === 'cite book') {
+                    report_warning("Not adding work parameter to cite book template (unsupported)");
                     return false;
                 }
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
@@ -2144,6 +2146,7 @@ final class Template
             case 'website':
                 // Prevent adding website parameter to cite book templates
                 if ($param_name === 'website' && $this->wikiname() === 'cite book') {
+                    report_warning("Not adding website parameter to cite book template (unsupported)");
                     return false;
                 }
                 if ($this->blank(WORK_ALIASES)) {
