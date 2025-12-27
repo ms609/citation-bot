@@ -201,7 +201,7 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('.'));
     }
 
-    public function testBotExpandWrite(): void {
+    public function testBotExpandWrite(): void { // Warning: this test will start to fail every time, if this file get corrupted https://en.wikipedia.org/w/index.php?title=User:Blocked_Testing_Account/writetest&oldid=1329782075
         $this->requires_secrets(function (): void {
             $api = new WikipediaBot();
             $page = new TestPage();
