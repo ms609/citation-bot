@@ -1428,7 +1428,7 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testInPress(): void {
         $this->flush(); // Flaky test - pubmed seems to be annoyed with us sometimes, so take a break
-        sleep(5);
+        $this->sleep_pubmed();
         $text = '{{Cite journal|pmid=9858586|date =in press}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('1999', $this->getDateAndYear($expanded));
