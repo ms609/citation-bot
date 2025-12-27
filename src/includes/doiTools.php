@@ -814,15 +814,12 @@ function get_headers_array(string $url): false|array {
     static $context_insecure_doi;
     static $context_insecure_hdl;
     if (!isset($context_insecure_doi)) {
-        $timeout = BOT_HTTP_TIMEOUT * 1.0;
-        if (CI) {
-            $timeout = 5.0; // Give up fast
-        }
+        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(4, 2, 1, 1, 1)/4.0); // Give up faster in test suite
         $context_insecure_doi = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
             'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
         ]);
-        $timeout = BOT_HTTP_TIMEOUT * 2.5; // Handles suck
+        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(3, 3, 1, 1, 1)); // Handles suck
         $context_insecure_hdl = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
             'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
