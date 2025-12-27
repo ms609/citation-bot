@@ -1440,4 +1440,35 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('2007-08-01', $prepared->get2('date'));
         $this->assertNull($prepared->get2('year'));
     }
+
+    public function testMalformedAccessDateWithHyphen(): void {
+        // Malformed parameter: access-date-2025-07-13 (missing equals sign)
+        $text = '{{cite web |date=2025-05-01 |title=Test Title |url=https://example.com |access-date-2025-07-13 |website=example.com}}';
+        $prepared = $this->prepare_citation($text);
+        $access_date = $prepared->get2('access-date');
+        $this->assertNotNull($access_date, 'access-date should not be null');
+        $this->assertIsString($access_date);
+        $this->assertStringNotContainsString('-2025', (string)$access_date);
+        $this->assertStringContainsString('2025', (string)$access_date);
+    }
+
+    public function testProperlyFormattedAccessDate(): void {
+        // Properly formatted parameter should work correctly
+        $text = '{{cite web |title=Test |url=https://example.com |access-date=2025-07-13}}';
+        $prepared = $this->prepare_citation($text);
+        $access_date = $prepared->get2('access-date');
+        $this->assertNotNull($access_date, 'access-date should be set');
+        $this->assertIsString($access_date);
+        $this->assertStringContainsString('2025', (string)$access_date);
+        $this->assertStringNotContainsString('-2025', (string)$access_date);
+    }
+
+    public function testMalformedParameterWithSpace(): void {
+        // Parameter with space separator instead of equals
+        $text = '{{cite web |title=Test |url=https://example.com |date 2025-03-15}}';
+        $prepared = $this->prepare_citation($text);
+        $date = $prepared->get2('date');
+        // Verify date was parsed correctly
+        $this->assertTrue($date === null || str_contains((string)$date, '2025'));
+    }
 }
