@@ -12,7 +12,7 @@ const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_A
                    ...JOURNAL_IS_BOOK_SERIES, ...HAS_NO_ISSUE, ...WORKS_ARE_PUBLISHERS, ...PREFER_VOLUMES,
                    ...PREFER_ISSUES];
 
-final class constantsTest extends testBaseClass {
+final class ConstantsTest extends testBaseClass {
 
     public function testConstantsDefined(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging

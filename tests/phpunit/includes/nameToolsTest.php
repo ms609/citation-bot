@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 
-final class NameToolsTest extends testBaseClass {
+final class nameToolsTest extends testBaseClass {
 
     public function testFormatMultipleAuthors1(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
