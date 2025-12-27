@@ -1167,11 +1167,11 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
-            sleep(15);
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
-            sleep(15);
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         $this->assertSame('cite web', $template->wikiname());
@@ -1243,7 +1243,7 @@ EP - 999 }}';
                         "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
         $page = $this->process_page($text);
         if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
-            sleep(3);
+            sleep(run_type_mods(-1, 4, 3, 3, 3));
             $text = $page->parsed_text();
             $page = $this->process_page($text);
         }
