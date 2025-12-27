@@ -245,6 +245,12 @@ final class DoiToolsTest extends testBaseClass {
             } elseif ($works === true) {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as good: " . $doi . "             ";
             }
+            $works = doi_works($doi); // Now use special code which should NEVER fail. F vs f in error messages to tell these apart.
+            if ($works === null) {
+                $changes = $changes . "NULL_DOI_STARTS_BAD flagged as null: " . $doi . "             ";
+            } elseif ($works === true) {
+                $changes = $changes . "NULL_DOI_STARTS_BAD flagged as good: " . $doi . "             ";
+            }
         }
         if ($changes === '') {
             $this->assertFaker();
