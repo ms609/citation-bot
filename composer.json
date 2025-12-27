@@ -13,7 +13,7 @@
     },
     "require": {
         "mediawiki/oauthclient": "2.3.0",
-        "php": ">=8.4"
+        "php": ">=8.3"
     },
     "require-dev": {
         "brianium/paratest": "^7",
