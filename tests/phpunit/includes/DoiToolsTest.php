@@ -256,7 +256,7 @@ final class DoiToolsTest extends testBaseClass {
             $this->assertFaker();
         } else {
             bot_debug_log($changes);
-            $this->assertFaker(); // We just have to manually look at this EVERY time.  Used to fail test.
+            $this->assertFaker(); // We just have to manually look at this EVERY time.  This used to cause the test to fail.
         }
     }
 
