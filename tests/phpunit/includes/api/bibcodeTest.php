@@ -435,7 +435,7 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testDontDoIt1(): void { // "complete" already
-        $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0001/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+        $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0002/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->incomplete());
     }
