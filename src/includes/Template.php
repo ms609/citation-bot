@@ -1246,7 +1246,7 @@ final class Template
             case 'magazine':
                 // Block journal, newspaper, and magazine from being added to cite book templates
                 // These are three of the five parameters in CITE_BOOK_UNSUPPORTED_PARAMS
-                // (work and website are blocked in separate case statements at lines ~2126 and ~2144)
+                // (work and website are blocked in separate case statements)
                 if (in_array($param_name, ['journal', 'newspaper', 'magazine'], true) && $this->wikiname() === 'cite book') {
                     report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
                     return false;
