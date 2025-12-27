@@ -14,11 +14,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_dx;
     static $ch_doi;
     if ($ch_dx === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_dx = bot_curl_init($time, []);
         $ch_doi = bot_curl_init($time, []);
     }
@@ -1329,11 +1325,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_jstor = bot_curl_init($time, []);
         $ch_pmc = bot_curl_init($time, []);
     }
