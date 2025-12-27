@@ -2145,7 +2145,7 @@ final class Template
 
             case 'website':
                 // Prevent adding website parameter to cite book templates
-                if ($param_name === 'website' && $this->wikiname() === 'cite book') {
+                if ($this->wikiname() === 'cite book') {
                     report_warning("Not adding website parameter to cite book template (unsupported)");
                     return false;
                 }
