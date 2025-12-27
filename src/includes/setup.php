@@ -61,8 +61,8 @@ require_once __DIR__ . '/constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once __DIR__ . '/../../vendor/autoload.php';
 
-define("CI", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
-
+define('CI', (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
+define('GITHUB_EVENT_NAME', (string) getenv('GITHUB_EVENT_NAME'));
 define('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
 
 if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
