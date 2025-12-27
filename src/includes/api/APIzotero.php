@@ -41,11 +41,7 @@ final class Zotero {
             return;
         }
         $is_setup = true;
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         self::$zotero_ch = bot_curl_init($time, [
             CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Accept-Language: en-US,en,en-GB,en-CA', 'Cache-Control: no-cache, must-revalidate'],
