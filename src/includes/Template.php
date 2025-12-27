@@ -2126,7 +2126,7 @@ final class Template
             case 'work':
             case 'encyclopedia':
                 // Prevent adding work parameter to cite book templates
-                if ($param_name === 'work' && $this->wikiname() === 'cite book') {
+                if (in_array($param_name, WORK_ALIASES, true) && $this->wikiname() === 'cite book') {
                     report_warning("Not adding work parameter to cite book template (unsupported)");
                     return false;
                 }
