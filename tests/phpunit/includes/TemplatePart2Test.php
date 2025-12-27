@@ -2169,49 +2169,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($prepared->get2('title'));
     }
 
-    public function testBlockJournalInCiteBook(): void {
+    public function testBlockUnsupportedParamsInCiteBook(): void {
+        // Test that journal, newspaper, magazine, work, and website are blocked
         $text = "{{cite book}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('journal', 'Nature'));
         $this->assertNull($template->get2('journal'));
-    }
-
-    public function testBlockNewspaperInCiteBook(): void {
-        $text = "{{cite book}}";
-        $template = $this->make_citation($text);
-        $this->assertFalse($template->add_if_new('newspaper', 'The Times'));
-        $this->assertNull($template->get2('newspaper'));
-    }
-
-    public function testBlockMagazineInCiteBook(): void {
-        $text = "{{cite book}}";
-        $template = $this->make_citation($text);
-        $this->assertFalse($template->add_if_new('magazine', 'Time'));
-        $this->assertNull($template->get2('magazine'));
-    }
-
-    public function testBlockWorkInCiteBook(): void {
-        $text = "{{cite book}}";
-        $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('work', 'Encyclopedia Britannica'));
         $this->assertNull($template->get2('work'));
-    }
-
-    public function testBlockWebsiteInCiteBook(): void {
-        $text = "{{cite book}}";
-        $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('website', 'example.com'));
         $this->assertNull($template->get2('website'));
     }
 
-    public function testPreserveExistingWorkInCiteBook(): void {
-        $text = "{{cite book|work=Human Input}}";
-        $template = $this->make_citation($text);
-        $this->assertFalse($template->add_if_new('work', 'Bot Value'));
-        $this->assertSame('Human Input', $template->get2('work'));
-    }
-
     public function testPreserveExistingJournalInCiteBook(): void {
+        // Existing human-entered journal parameter should be preserved
         $text = "{{cite book|journal=Human Input}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('journal', 'Bot Value'));
@@ -2219,10 +2190,23 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testAllowEncyclopediaInCiteBook(): void {
+        // Encyclopedia IS supported in cite book
         $text = "{{cite book}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
         $this->assertSame('Encyclopedia Britannica', $template->get2('encyclopedia'));
+    }
+
+    public function testRealCiteBookExample(): void {
+        // Real cite book example - verify unsupported parameters aren't added
+        $text = "{{cite book |last1=Agrippa von Nettesheim |first1=Heinrich Cornelius |title=De occulta philosophia libri tres |date=1533 |location=Cologne |pages=160, 163, 276-277 |url=https://www.loc.gov/resource/rbc0001.2009gen12345/?sp=280 |access-date=28 November 2024 }}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Test Journal'));
+        $this->assertNull($template->get2('journal'));
+        $this->assertFalse($template->add_if_new('work', 'Test Work'));
+        $this->assertNull($template->get2('work'));
+        $this->assertSame('Agrippa von Nettesheim', $template->get2('last1'));
+        $this->assertSame('De occulta philosophia libri tres', $template->get2('title'));
     }
 
 }
