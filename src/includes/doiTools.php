@@ -155,7 +155,7 @@ function is_doi_active(string $doi): ?bool {
         $body = substr($return, $header_length);       // phpcs:ignore
     }                                                                       // @codeCoverageIgnoreEnd
     if ($response_code === 429) {  // WE are still getting blocked
-        sleep(10);   // @codeCoverageIgnore
+        sleep(run_type_mods(10, 2, 2, 1, 2));   // @codeCoverageIgnore
     }
     if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         return null;  // @codeCoverageIgnore
