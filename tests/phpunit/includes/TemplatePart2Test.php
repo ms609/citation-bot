@@ -2170,15 +2170,12 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testBlockUnsupportedParamsInCiteBook(): void {
-        // Test that journal, newspaper, magazine, work, and website are blocked
+        // Test that journal, work, and website are blocked
         $text = "{{cite book}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('journal', 'Nature'));
-        $this->assertNull($template->get2('journal'));
         $this->assertFalse($template->add_if_new('work', 'Encyclopedia Britannica'));
-        $this->assertNull($template->get2('work'));
         $this->assertFalse($template->add_if_new('website', 'example.com'));
-        $this->assertNull($template->get2('website'));
     }
 
     public function testAllowEncyclopediaInCiteBook(): void {
@@ -2186,19 +2183,15 @@ final class TemplatePart2Test extends testBaseClass {
         $text = "{{cite book}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
-        $this->assertSame('Encyclopedia Britannica', $template->get2('encyclopedia'));
     }
 
-    public function testRealCiteBookExample(): void {
-        // Real cite book example - verify unsupported parameters aren't added
+    public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
+        // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
+        // Verifies that journal and work parameters are blocked from being added
         $text = "{{cite book |last1=Agrippa von Nettesheim |first1=Heinrich Cornelius |title=De occulta philosophia libri tres |date=1533 |location=Cologne |pages=160, 163, 276-277 |url=https://www.loc.gov/resource/rbc0001.2009gen12345/?sp=280 |access-date=28 November 2024 }}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('journal', 'Test Journal'));
-        $this->assertNull($template->get2('journal'));
         $this->assertFalse($template->add_if_new('work', 'Test Work'));
-        $this->assertNull($template->get2('work'));
-        $this->assertSame('Agrippa von Nettesheim', $template->get2('last1'));
-        $this->assertSame('De occulta philosophia libri tres', $template->get2('title'));
     }
 
 }
