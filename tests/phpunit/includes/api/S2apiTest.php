@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 final class S2apiTest extends testBaseClass {
     public function testSemanticScholar(): void {
         $this->sleep_S2();
-        $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $return = get_unpaywall_url($template, $template->get('doi'));
         $this->assertSame('nothing', $return);

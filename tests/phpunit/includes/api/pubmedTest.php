@@ -50,7 +50,7 @@ final class pubmedTest extends testBaseClass {
         $text = '{{cite journal|pmc=58796}}';
         $expanded = $this->process_citation($text);
         if ($expanded->get('pmid') === "") {
-            sleep(2);
+            sleep(run_type_mods(-1, 5, 3, 2, 2));
             $expanded = $this->process_citation($text);
         }
         $this->assertSame('11573006', $expanded->get2('pmid'));

@@ -139,42 +139,42 @@ final class pageTest extends testBaseClass {
     }
 
     public function testVancNames2(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
         $this->assertSame('{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames3(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue = | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
         $this->assertSame('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue = 2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames4(): void {
-        sleep(1); // Reduce failures
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue = | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
         $this->assertSame('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue = 2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames5(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
         $this->assertSame('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames6(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = <!-- -->}}');
         $this->assertSame(     '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = <!-- -->}}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames7(): void {
-        sleep(1);
+        $this->sleep_pubmed();
         $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = SheHulk}}');
         $this->assertSame(     '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = SheHulk}}', $page->parsed_text());
         $this->assertSame('Alter: volume, issue. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
@@ -221,7 +221,7 @@ final class pageTest extends testBaseClass {
                 $page->get_text_from($writeTestPage);
                 $this->assertSame($trialCitation, $page->parsed_text());
             }
-            $this->assertTrue(CI || $page_result); // If we have tokens and are not in CI, then should have worked
+            $this->assertTrue((bool) getenv('CI') || $page_result); // If we have tokens and are not in CI, then should have worked
             $page->overwrite_text($trialCitation);
             $page->expand_text();
             $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
@@ -275,7 +275,7 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesThatFail(): void {
-        $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.0000/Rubbish_bot_failure_test</ref>';
+        $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.0001/Rubbish_bot_failure_test</ref>';
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }
@@ -354,7 +354,7 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText12(): void {  // One that does not work and returns exact same text
-        $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.0000/Rubbish_bot_failure_test Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
+        $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.0001/Rubbish_bot_failure_test Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
         $page = $this->process_page($text);
         $this->assertSame($text, $page->parsed_text());
     }

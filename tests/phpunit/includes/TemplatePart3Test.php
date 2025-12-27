@@ -502,7 +502,7 @@ EP - 999 }}';
     }
 
     public function testArxivToJournalIfDoi(): void {
-        $text = "{{cite arxiv| eprint=1234|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite arxiv| eprint=1234|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('cite journal', $template->wikiname());
@@ -670,7 +670,7 @@ EP - 999 }}';
     }
 
     public function testIgnoreUnkownCiteTemplates(): void {
-        $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0000/Rubbish_bot_failure_test }}";
+        $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0001/Rubbish_bot_failure_test }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
     }
@@ -927,21 +927,21 @@ EP - 999 }}';
     }
 
     public function testVolumeIssueDemixing11(): void {
-        $text = '{{cite journal|volume = number 12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12', $prepared->get2('issue'));
         $this->assertNull($prepared->get2('volume'));
     }
 
     public function testVolumeIssueDemixing12(): void {
-        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertNull($prepared->get2('volume'));
         $this->assertSame('12', $prepared->get2('issue'));
     }
 
     public function testVolumeIssueDemixing13(): void {
-        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|volume = number 12|issue=12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertNull($prepared->get2('volume'));
         $this->assertSame('12', $prepared->get2('issue'));
@@ -1167,11 +1167,11 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
-            sleep(15);
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
-            sleep(15);
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         $this->assertSame('cite web', $template->wikiname());
@@ -1243,7 +1243,7 @@ EP - 999 }}';
                         "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
         $page = $this->process_page($text);
         if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
-            sleep(3);
+            sleep(run_type_mods(-1, 4, 3, 3, 3));
             $text = $page->parsed_text();
             $page = $this->process_page($text);
         }

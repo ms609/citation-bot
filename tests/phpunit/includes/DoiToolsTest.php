@@ -41,10 +41,10 @@ final class DoiToolsTest extends testBaseClass {
     public function testSanitizeDoi2(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test#page_scan_tab_contents'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test;jsessionid'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test/summary'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test#page_scan_tab_contents'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test;jsessionid'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test/summary'));
     }
 
     public function testJstorInDoi(): void {
@@ -208,17 +208,7 @@ final class DoiToolsTest extends testBaseClass {
         unset($pg);
         $changes = "";
         $this->assertSame("", $changes);
-        $eventName = getenv('GITHUB_EVENT_NAME');
-        if ($eventName === 'schedule') {
-            $do_it = 500;
-        } elseif ($eventName === 'push') {
-            $do_it = 850;
-        } elseif ($eventName === 'pull_request') {
-            $do_it = 995;
-        } else {
-            $do_it = -1;
-            report_error('We got wrong data in testHostIsGoneDOILoop: ' . echoable($eventName));
-        }
+        $do_it = run_type_mods(-1, 500, 850, 995, 990);
         $null_list = array_keys(NULL_DOI_LIST);
         shuffle($null_list); // Avoid doing similar ones next to each other
         foreach ($null_list as $doi) {
@@ -248,20 +238,25 @@ final class DoiToolsTest extends testBaseClass {
         unset($pg);
         $changes = "";
         // Deal with super common ones that flood the list and are bulk covered with NULL_DOI_STARTS_BAD
-        $this->assertSame("", $changes);
         foreach (BAD_DOI_EXAMPLES as $doi) {
-            $works = doi_works($doi);
+            $works = is_doi_works($doi); // Avoid doi_works() code that automatically just returns false based upon list we are checking
             if ($works === null) {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as null: " . $doi . "             ";
             } elseif ($works === true) {
                 $changes = $changes . "NULL_DOI_STARTS_BAD Flagged as good: " . $doi . "             ";
+            }
+            $works = doi_works($doi); // Now use special code which should NEVER fail. F vs f in error messages to tell these apart.
+            if ($works === null) {
+                $changes = $changes . "NULL_DOI_STARTS_BAD flagged as null: " . $doi . "             ";
+            } elseif ($works === true) {
+                $changes = $changes . "NULL_DOI_STARTS_BAD flagged as good: " . $doi . "             ";
             }
         }
         if ($changes === '') {
             $this->assertFaker();
         } else {
             bot_debug_log($changes);
-            $this->assertFaker(); // We just have to manually look at this EVERY time
+            $this->assertFaker(); // We just have to manually look at this EVERY time.  This used to cause the test to fail.
         }
     }
 

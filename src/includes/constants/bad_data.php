@@ -13503,9 +13503,9 @@ const DOI_FREE_PREFIX = [
 
 const BAD_DOI_ARRAY = [
     '' => true,
-    '10.0000/Rubbish_bot_failure_test.x' => true,
-    '10.0000/Rubbish_bot_failure_test' => true,
-    '10.0000/Rubbish_bot_failure_test2' => true,
+    '10.0001/Rubbish_bot_failure_test.x' => true,
+    '10.0001/Rubbish_bot_failure_test' => true,
+    '10.0001/Rubbish_bot_failure_test2' => true,
     '10.1126/science' => true,
     '10.1267/science.040579197' => true,
     '10.7556/jaoa' => true,

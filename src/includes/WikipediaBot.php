@@ -75,11 +75,7 @@ final class WikipediaBot {
     public static function ret_okay(?object $response): bool { // We send back true for thing that are page specific
         if (is_null($response)) {
             report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
-            if (!CI) {
-                sleep(10);
-            } else {
-                sleep(1);
-            }
+            sleep(run_type_mods(10, 2, 2, 1, 2));
             return false;
         }
         if (isset($response->error)) {
@@ -115,11 +111,7 @@ final class WikipediaBot {
                 bot_debug_log($err_string); // Good to know about about these things
                 report_warning($err_string);
             }
-            if (!CI) {
-                sleep(10);
-            } else {
-                sleep(1);
-            }
+            sleep(run_type_mods(10, 2, 2, 1, 2));
             return false;
         }
         return true;

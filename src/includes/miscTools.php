@@ -177,7 +177,7 @@ function prior_parameters(string $parameter, array $list = []): array {
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
         if (CI && $parameter !== 'not-a-param' && $parameter !== 's2cid1') {
-            return [];  // errors in test suite that were not expected
+            return [];  // deliberate errors in test suite that were "not expected"
         }
         return $list;
     }
@@ -971,4 +971,20 @@ function clean_cite_odnb(Template $template): void {
             $template->forget('doi-broken-date');
         }
     }
+}
+
+function run_type_mods(int $non_ci, int $schedule, int $push, int $pull, int $not_github): int {
+    if (!CI) {
+        if ($non_ci === -1) {
+            report_error('non-ci value not set');
+        }
+        return $non_ci;
+    } elseif (GITHUB_EVENT_NAME === 'schedule') {
+        return $schedule;
+    } elseif (GITHUB_EVENT_NAME === 'push') {
+        return $push;
+    } elseif (GITHUB_EVENT_NAME === 'pull_request') {
+        return $pull;
+    }
+    return $not_github; // phpunit run outside of github actions
 }

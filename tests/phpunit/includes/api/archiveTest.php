@@ -11,7 +11,7 @@ final class archiveTest extends testBaseClass {
         expand_templates_from_archives($tmp_array);
         for ($x = 0; $x <= 10; $x++) {
             if ($template->get2('title') == null) {
-                sleep(4); // Sometimes fails for no good reason
+                sleep(run_type_mods(-1, 10, 4, 4, 4)); // Sometimes fails for no good reason
                 expand_templates_from_archives($tmp_array);
             }
         }

@@ -14,11 +14,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_dx;
     static $ch_doi;
     if ($ch_dx === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_dx = bot_curl_init($time, []);
         $ch_doi = bot_curl_init($time, []);
     }
@@ -1001,11 +997,8 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         foreach (['archive-url', 'archiveurl'] as $archive_param) {
             if ($template->has($archive_param)) {
                 $archive_url = $template->get($archive_param);
-                // Check if archive URL contains any URL with #no-access-message
-                // Pattern matches archive services like:
-                // - web.archive.org: https://web.archive.org/web/TIMESTAMP/URL#fragment
-                // - archive.today/is/ph/fo/li/etc: https://archive.*/TIMESTAMP/URL#fragment or https://archive.*/CODE#fragment
-                if (preg_match("~^(https?://(?:web\.archive\.org|archive\.(?:today|is|ph|fo|li|md|vn))/[^#]+)#no-access-message$~", $archive_url, $archive_matches)) {
+                // Check if archive URL ends with #no-access-message. If so, remove it.
+                if (preg_match("~^(.+)#no-access-message$~", $archive_url, $archive_matches)) {
                     $cleaned_archive_url = $archive_matches[1];
                     $template->set($archive_param, $cleaned_archive_url);
                 }
@@ -1332,11 +1325,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_jstor = bot_curl_init($time, []);
         $ch_pmc = bot_curl_init($time, []);
     }
