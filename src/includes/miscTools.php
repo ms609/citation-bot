@@ -177,7 +177,7 @@ function prior_parameters(string $parameter, array $list = []): array {
     } else {
         bot_debug_log("prior_parameters missed: " . $parameter);
         if (CI && $parameter !== 'not-a-param' && $parameter !== 's2cid1') {
-            return [];  // errors in test suite that were not expected
+            return [];  // deliberate errors in test suite that were "not expected"
         }
         return $list;
     }
