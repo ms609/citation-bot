@@ -1245,6 +1245,7 @@ final class Template
             case 'newspaper':
             case 'magazine':
                 // Prevent adding unsupported parameters to cite book templates
+                // Note: periodical is excluded here as it has special handling
                 if (in_array($param_name, ['journal', 'newspaper', 'magazine'], true) && $this->wikiname() === 'cite book') {
                     return false;
                 }
