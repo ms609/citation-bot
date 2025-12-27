@@ -984,7 +984,7 @@ function run_type_mods(int $non_ci, int $schedule, int $push, int $pull, int $no
     } elseif (GITHUB_EVENT_NAME === 'push') {
         return $push;
     } elseif (GITHUB_EVENT_NAME === 'pull_request') {
-        return $pull
+        return $pull;
     }
     return $not_github; // phpunit run outside of github actions
 }
