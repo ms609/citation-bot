@@ -687,7 +687,7 @@ final class Template
             report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
             return false;
         }
-        
+
         /** @psalm-assert string $param_name */
 
         if ($api) {
