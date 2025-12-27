@@ -144,7 +144,7 @@ final class googleBooksTest extends testBaseClass {
     }
 
     public function testGoogleBooksExpansionNEW(): void {
-        sleep(1); // Give google a break, since next test often fails
+        sleep(run_type_mods(-1, 3, 2, 1, 2)); // Give google a break, since next test often fails
         $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
@@ -158,7 +158,7 @@ final class googleBooksTest extends testBaseClass {
     }
 
     public function testGoogleDates(): void {
-        sleep(3); // Give google a break, since this often fails
+        sleep(run_type_mods(-1, 4, 3, 3, 3)); // Give google a break, since this often fails
         $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('February 1935', $expanded->get2('date'));
