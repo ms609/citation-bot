@@ -423,6 +423,16 @@ const LANG_ALIASES = ['language', 'lang'];
 const TYPE_ALIASES = ['medium', 'type'];
 const LOCATIONS_AND_SUCH = ['publication-place', 'location', 'place']; // Not really an alias, but things to clean up
 
+// Parameters not supported by cite book template per Wikipedia documentation
+// Note: 'periodical', 'encyclopedia', and 'encyclopaedia' are excluded as they have special handling
+const CITE_BOOK_UNSUPPORTED_PARAMS = [
+    'work',
+    'journal',
+    'website',
+    'newspaper',
+    'magazine',
+];
+
 const ALL_ALIASES = [
     TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
     DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,

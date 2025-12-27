@@ -2169,4 +2169,60 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($prepared->get2('title'));
     }
 
+    public function testBlockJournalInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Nature'));
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testBlockNewspaperInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('newspaper', 'The Times'));
+        $this->assertNull($template->get2('newspaper'));
+    }
+
+    public function testBlockMagazineInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('magazine', 'Time'));
+        $this->assertNull($template->get2('magazine'));
+    }
+
+    public function testBlockWorkInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'Encyclopedia Britannica'));
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testBlockWebsiteInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('website', 'example.com'));
+        $this->assertNull($template->get2('website'));
+    }
+
+    public function testPreserveExistingWorkInCiteBook(): void {
+        $text = "{{cite book|work=Human Input}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'Bot Value'));
+        $this->assertSame('Human Input', $template->get2('work'));
+    }
+
+    public function testPreserveExistingJournalInCiteBook(): void {
+        $text = "{{cite book|journal=Human Input}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Bot Value'));
+        $this->assertSame('Human Input', $template->get2('journal'));
+    }
+
+    public function testAllowEncyclopediaInCiteBook(): void {
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
+        $this->assertSame('Encyclopedia Britannica', $template->get2('encyclopedia'));
+    }
+
 }

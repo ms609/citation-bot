@@ -1244,6 +1244,10 @@ final class Template
             case 'journal':
             case 'newspaper':
             case 'magazine':
+                // Prevent adding unsupported parameters to cite book templates
+                if (in_array($param_name, ['journal', 'newspaper', 'magazine'], true) && $this->wikiname() === 'cite book') {
+                    return false;
+                }
                 if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
                     return false;
                 }
@@ -2118,6 +2122,10 @@ final class Template
 
             case 'work':
             case 'encyclopedia':
+                // Prevent adding work parameter to cite book templates
+                if ($param_name === 'work' && $this->wikiname() === 'cite book') {
+                    return false;
+                }
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
                 $value = html_entity_decode($value, ENT_COMPAT | ENT_HTML401, "UTF-8");
@@ -2132,6 +2140,10 @@ final class Template
                 return false;
 
             case 'website':
+                // Prevent adding website parameter to cite book templates
+                if ($param_name === 'website' && $this->wikiname() === 'cite book') {
+                    return false;
+                }
                 if ($this->blank(WORK_ALIASES)) {
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
@@ -3260,6 +3272,13 @@ final class Template
                 $tmp = $this->get( 'work' );
                 $this->rename( 'title', 'chapter' );
                 $this->add('title', $tmp);
+            }
+
+            // Remove blank unsupported parameters when converting to cite book
+            foreach (CITE_BOOK_UNSUPPORTED_PARAMS as $unsupported) {
+                if ($this->blank($unsupported)) {
+                    $this->forget($unsupported);
+                }
             }
         }
     }
