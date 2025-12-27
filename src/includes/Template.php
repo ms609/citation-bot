@@ -5764,6 +5764,22 @@ final class Template
             if ($this->initial_name !== $this->name) {
                 $this->tidy();
             }
+            // Clean up existing Zootaxa/Phytotaxa DOI suffixes in page fields
+            $doi = $this->get('doi');
+            if ($doi && preg_match('~^10\.11646/(?:zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $doi)) {
+                $pages_value = $this->get('pages');
+                if ($pages_value && preg_match('~^(?:zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $pages_value)) {
+                    // Pages field contains DOI suffix - remove it
+                    $this->forget('pages');
+                    report_modification("Removed DOI suffix from pages field for Zootaxa/Phytotaxa article");
+                }
+                // Also check 'page' parameter
+                $page_value = $this->get('page');
+                if ($page_value && preg_match('~^(?:zoo|phyto)taxa\.\d+\.\d+\.\d+$~i', $page_value)) {
+                    $this->forget('page');
+                    report_modification("Removed DOI suffix from page field for Zootaxa/Phytotaxa article");
+                }
+            }
             // Sometimes title and chapter come from different databases
             if ($this->has('chapter') && $this->get('chapter') === $this->get('title')) {
                 // Leave only one
