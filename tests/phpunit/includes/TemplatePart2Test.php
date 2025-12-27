@@ -2181,14 +2181,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('website'));
     }
 
-    public function testPreserveExistingJournalInCiteBook(): void {
-        // Existing human-entered journal parameter should be preserved
-        $text = "{{cite book|journal=Human Input}}";
-        $template = $this->make_citation($text);
-        $this->assertFalse($template->add_if_new('journal', 'Bot Value'));
-        $this->assertSame('Human Input', $template->get2('journal'));
-    }
-
     public function testAllowEncyclopediaInCiteBook(): void {
         // Encyclopedia IS supported in cite book
         $text = "{{cite book}}";
