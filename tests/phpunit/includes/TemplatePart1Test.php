@@ -1448,6 +1448,7 @@ final class TemplatePart1Test extends testBaseClass {
         $access_date = $prepared->get2('access-date');
         $this->assertNotNull($access_date, 'access-date should not be null');
         $this->assertIsString($access_date);
+        /** @var string $access_date */
         $this->assertStringNotContainsString('-2025', $access_date);
         $this->assertStringContainsString('2025', $access_date);
     }
@@ -1459,6 +1460,7 @@ final class TemplatePart1Test extends testBaseClass {
         $access_date = $prepared->get2('access-date');
         $this->assertNotNull($access_date, 'access-date should be set');
         $this->assertIsString($access_date);
+        /** @var string $access_date */
         $this->assertStringContainsString('2025', $access_date);
         $this->assertStringNotContainsString('-2025', $access_date);
     }
