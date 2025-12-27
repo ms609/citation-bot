@@ -105,7 +105,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '2017',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Nature Communications', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
     }
 
@@ -136,7 +136,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1996',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Geological Society of America Bulletin', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2', $template->get2('doi'));
         $this->assertNull($template->get2('page'));
         $this->assertNull($template->get2('pages')); // Added letters
@@ -163,7 +163,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '2000',
          ];
          process_bibcode_data($template, $results);
-         $this->assertSame('Astronomy and Astrophysics', $template->get2('journal'));
+         $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
          $this->assertNull($template->get2('doi'));
          $this->assertSame('952', $template->get2('page') . $template->get2('pages'));
     }
@@ -189,7 +189,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1995',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Science', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1126/science.267.5194.77', $template->get2('doi'));
     }
 
@@ -220,7 +220,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1995',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Geology', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2', $template->get2('doi'));
     }
 
@@ -240,7 +240,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1974',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Journal of Paleontology', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('1974', $template->get2('date'));
     }
 
@@ -266,7 +266,7 @@ final class bibcodeTest extends testBaseClass {
             'year' => '1966',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Nature', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1038/211116a0', $template->get2('doi'));
     }
 
@@ -319,7 +319,7 @@ final class bibcodeTest extends testBaseClass {
         'year' => '1932',
         ];
         process_bibcode_data($template, $results);
-        $this->assertSame('Nature', $template->get2('journal'));
+        $this->assertNull($template->get2('journal')); // Journal not added to cite book templates
         $this->assertSame('10.1038/129018a0', $template->get2('doi'));
     }
 
