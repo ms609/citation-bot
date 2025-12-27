@@ -680,9 +680,7 @@ final class Template
             $param_name = COMMON_MISTAKES_TOOL[$param_name];
         }
 
-        // Block journal, newspaper, and magazine from being added to cite book templates
-        // These are three of the five parameters in CITE_BOOK_UNSUPPORTED_PARAMS
-        // (work and website are blocked in separate case statements)
+        // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
         if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {
             report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
             return false;
