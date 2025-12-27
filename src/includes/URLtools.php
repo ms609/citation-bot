@@ -1001,11 +1001,8 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         foreach (['archive-url', 'archiveurl'] as $archive_param) {
             if ($template->has($archive_param)) {
                 $archive_url = $template->get($archive_param);
-                // Check if archive URL contains any URL with #no-access-message
-                // Pattern matches archive services like:
-                // - web.archive.org: https://web.archive.org/web/TIMESTAMP/URL#fragment
-                // - archive.today/is/ph/fo/li/etc: https://archive.*/TIMESTAMP/URL#fragment or https://archive.*/CODE#fragment
-                if (preg_match("~^(https?://(?:web\.archive\.org|archive\.(?:today|is|ph|fo|li|md|vn))/[^#]+)#no-access-message$~", $archive_url, $archive_matches)) {
+                // Check if archive URL ends with #no-access-message. If so, remove it.
+                if (preg_match("~^(.+)#no-access-message$~", $archive_url, $archive_matches)) {
                     $cleaned_archive_url = $archive_matches[1];
                     $template->set($archive_param, $cleaned_archive_url);
                 }
