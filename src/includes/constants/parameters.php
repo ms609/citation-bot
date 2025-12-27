@@ -430,7 +430,7 @@ const CITE_BOOK_UNSUPPORTED_PARAMS = [
     'journal',
     'website',
     'newspaper',
-    'magazine',
+    'magazine',dsaf
 ];
 
 const ALL_ALIASES = [
