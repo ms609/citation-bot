@@ -41,10 +41,10 @@ final class DoiToolsTest extends testBaseClass {
     public function testSanitizeDoi2(): void {
         $pg = new TestPage(); // Fill page name with test name for debugging
         unset($pg);
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test#page_scan_tab_contents'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test;jsessionid'));
-        $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test/summary'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test#page_scan_tab_contents'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test;jsessionid'));
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test/summary'));
     }
 
     public function testJstorInDoi(): void {
