@@ -85,12 +85,10 @@ function doi_works(string $doi): ?bool {
     if (isset(NULL_DOI_ANNOYING[$doi])) {
         return false;
     }
-    if (!CI) {
-        foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
-            if (mb_stripos($doi, $bad_start) === 0) {
-                return false; // all gone
-            }
-        }                                             // @codeCoverageIgnoreEnd
+    foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+        if (mb_stripos($doi, $bad_start) === 0) {
+            return false; // all gone
+        }
     }
     if (mb_strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
