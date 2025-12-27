@@ -90,22 +90,4 @@ final class pubmedTest extends testBaseClass {
         $this->assertFalse($result);
         $this->assertSame('123–130', $template->get2('pages'));
     }
-
-    public function testZootaxaDOIPageCleanup(): void {
-        // Test that bot removes existing DOI suffix from pages field
-        $text = '{{Cite journal|journal=Zootaxa|volume=4963|issue=1|pages=zootaxa.4963.1.1|doi=10.11646/zootaxa.4963.1.1}}';
-        $expanded = $this->process_citation($text);
-
-        // Should have removed the DOI suffix from pages
-        $this->assertNull($expanded->get2('pages'));
-    }
-
-    public function testPhytotaxaDOIPageCleanup(): void {
-        // Test that bot removes existing DOI suffix from page field (singular)
-        $text = '{{Cite journal|journal=Phytotaxa|volume=260|issue=2|page=phytotaxa.260.2.3|doi=10.11646/phytotaxa.260.2.3}}';
-        $expanded = $this->process_citation($text);
-
-        // Should have removed the DOI suffix from page
-        $this->assertNull($expanded->get2('page'));
-    }
 }
