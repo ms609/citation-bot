@@ -10,7 +10,7 @@ require_once __DIR__ . '/../../testBaseClass.php';
 const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_AUTHORS,
                    ...PUBLISHER_ENDINGS, ...BAD_TITLES, ...IN_PRESS_ALIASES, ...NON_PUBLISHERS,
                    ...JOURNAL_IS_BOOK_SERIES, ...HAS_NO_ISSUE, ...WORKS_ARE_PUBLISHERS, ...PREFER_VOLUMES,
-                   ...PREFER_ISSUES];
+                   ...PREFER_ISSUES, ...CITE_BOOK_UNSUPPORTED_PARAMS];
 
 final class ConstantsTest extends testBaseClass {
 

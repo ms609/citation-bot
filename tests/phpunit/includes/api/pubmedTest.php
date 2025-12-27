@@ -58,6 +58,7 @@ final class pubmedTest extends testBaseClass {
 
     public function testDoi2PMID(): void {
         $this->sleep_pubmed();
+        $this->sleep_pubmed(); // picky
         $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('11573006', $expanded->get2('pmid'));
