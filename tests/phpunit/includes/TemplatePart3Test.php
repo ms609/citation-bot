@@ -108,9 +108,9 @@ EP - 999 }}';
         $this->assertSame('The Works of Geoffrey Chaucer', $prepared->get2('title'));
         $this->assertSame('1957', $this->getDateAndYear($prepared));
         $this->assertSame('Houghton', $prepared->get2('publisher'));
-        $this->assertSame('Boston', $prepared->get2('location'));           
-    }    
- 
+        $this->assertSame('Boston', $prepared->get2('location'));
+    }
+
      public function testEndNote2(): void {
         $article = '{{Cite journal |
 %0 Journal Article
@@ -127,8 +127,8 @@ EP - 999 }}';
         $this->assertSame('Hearers and Speech Acts', $prepared->get2('title'));
         $this->assertSame('58', $prepared->get2('volume'));
         $this->assertSame('332–373', $prepared->get2('pages'));
-    }            
-            
+    }
+
     public function testEndNote3(): void {
         $thesis = '{{Citation |
 %0 Thesis
