@@ -87,7 +87,7 @@ function convert_mathml_to_latex(string $mathml): string {
     
     // Handle mfrac (fractions): <mfrac><mn>1</mn><mn>2</mn></mfrac> -> \frac{1}{2}
     $mathml = preg_replace_callback(
-        '~<mfrac>\s*<m[inor]>(.*?)</m[inor]>\s*<m[inor]>(.*?)</m[inor]>\s*</mfrac>~s',
+        '~<mfrac>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mfrac>~s',
         static function (array $matches): string {
             $num = trim($matches[1]);
             $den = trim($matches[2]);
