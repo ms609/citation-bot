@@ -176,6 +176,7 @@ require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/NameTools.php';
 require_once __DIR__ . '/WikipediaBot.php';
 require_once __DIR__ . '/Parameter.php';
+require_once __DIR__ . '/MathTools.php';
 require_once __DIR__ . '/TextTools.php';
 require_once __DIR__ . '/WebTools.php';
 require_once __DIR__ . '/doiTools.php';
