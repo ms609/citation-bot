@@ -424,6 +424,7 @@ const BAD_TITLES = [
     'privacy settings',
     'private site',
     'professional paper',
+    'project muse -- verification required!',
     'proquest ebook central',
     'radware block page',
     'rate limit reached',
