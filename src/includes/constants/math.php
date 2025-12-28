@@ -19,7 +19,7 @@ const MML_TAGS = [
     '<mspace />' => '\,',
     '<mfenced>' => '\left(',
     '</mfenced>' => '\right)',
-    // Complex MathML elements are now handled by convert_mathml_to_latex() function in TextTools.php
+    // Complex MathML elements are now handled by convert_mathml_to_latex() function in MathTools.php
     // These include: <mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>
     // TODO: Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
     /*'<mfrac>' => '\frac{%BLOCK1%}{%BLOCK2%}',
