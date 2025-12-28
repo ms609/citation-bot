@@ -111,7 +111,7 @@ EP - 999 }}';
         $this->assertSame('Boston', $prepared->get2('location'));
     }
 
-     public function testEndNote2(): void {
+    public function testEndNote2(): void {
         $article = '{{Cite journal |
 %0 Journal Article
 %A Herbert H. Clark
