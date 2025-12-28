@@ -1127,7 +1127,7 @@ function changeisbn10Toisbn13(string $isbn10, int $year): string {
     }
     $sum = (10 - ($sum % 10)) % 10;
     $isbn13 = '978' . '-' . mb_substr($isbn10, 0, -1) . (string) $sum; // Assume existing dashes (if any) are right
-    quietly('report_modification', "Converted ISBN10 to ISBN13");
+    report_info("Converted ISBN10 to ISBN13");
     return $isbn13;
 }
 

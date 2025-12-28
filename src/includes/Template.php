@@ -1981,7 +1981,7 @@ final class Template
                 if ($this->blank($param_name)) {
                     if ($this->has('isbn')) {
                         // Already have ISBN
-                        quietly('report_inaction', "Not adding ASIN: redundant to existing ISBN.");
+                        report_inaction("Not adding ASIN: redundant to existing ISBN.");
                         return false;
                     } elseif (preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
                         // 630 and 631 ones are not ISBNs, so block all of 63*
@@ -5161,7 +5161,7 @@ final class Template
                     }
                     if ($this->blank(ALL_URL_TYPES)) {
                         if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $this->get($param), $match)) {
-                            quietly('report_modification', 'Extracting URL from archive');
+                            report_modification('Extracting URL from archive');
                             $this->add_if_new('url', $match[1]);
                         }
                     }
@@ -6857,11 +6857,11 @@ final class Template
                 if ($this->add_if_new('doi', mb_trim($inline_doi[0]))) {
                     // Add doi
                     $this->set('title', mb_trim($inline_doi[1]));
-                    quietly('report_modification', "Converting inline DOI to DOI parameter");
+                    report_modification("Converting inline DOI to DOI parameter");
                 } elseif ($this->get('doi') === mb_trim($inline_doi[0])) {
                     // Already added by someone else
                     $this->set('title', mb_trim($inline_doi[1]));
-                    quietly('report_modification', "Remove duplicate inline DOI ");
+                    report_modification("Remove duplicate inline DOI ");
                 }
             }
         }
