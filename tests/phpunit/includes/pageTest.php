@@ -479,7 +479,7 @@ final class pageTest extends testBaseClass {
         $text = "{{new cambridge medieval history|chapterurl=https://cnn.com|chapter=XYX}}";
         $page = $this->process_page($text);
         $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com|chapter=XYX}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testChapterUrlChanges(): void {
@@ -493,14 +493,14 @@ final class pageTest extends testBaseClass {
         $text = "{{cite iucn|ref=harv}}";
         $page = $this->process_page($text);
         $this->assertSame("{{cite iucn}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Removed redundant ref parameter. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testRefBlank(): void {
         $text = "{{cite iucn|ref=}}";
         $page = $this->process_page($text);
         $this->assertSame("{{cite iucn}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Removed redundant ref parameter. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testInterview(): void {

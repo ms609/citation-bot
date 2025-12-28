@@ -705,6 +705,11 @@ class Page {
             : "");
         if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
             $auto_summary .= 'Some additions/deletions were parameter name changes. ';
+        } elseif ($this->modifications["names"]) {
+            $auto_summary .= 'Normalized parameter names. ';
+        }
+        if ($this->modifications["ref"]) {
+            $auto_summary .= 'Removed redundant ref parameter. ';
         }
         $isbn978_added = (mb_substr_count($this->text, '978 ') + mb_substr_count($this->text, '978-')) - (mb_substr_count($this->start_text, '978 ') + mb_substr_count($this->start_text, '978-'));
         $isbn_added = (mb_substr_count($this->text, 'isbn') + mb_substr_count($this->text, 'ISBN')) -
@@ -1009,5 +1014,6 @@ class Page {
         $this->modifications['modifications'] = [];
         $this->modifications['dashes'] = false;
         $this->modifications['names'] = false;
+        $this->modifications['ref'] = false;
     }
 }
