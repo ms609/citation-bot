@@ -92,8 +92,8 @@ EP - 999 }}';
         $this->assertNull($prepared->get2('pages')); // Range is too big and starts with "i"
     }
 
-    public function testEndNote(): void {
-            $book = '{{Cite book |
+    public function testEndNote1(): void {
+    	$book = '{{Cite book |
 %0 Book
 %A Geoffrey Chaucer
 %D 1957
@@ -103,7 +103,16 @@ EP - 999 }}';
 %C Boston
 %N 2nd
             }}'; // Not quite clear how %E and %N should be handled here. Needs an assertion.
-            $article = '{{Cite journal |
+    	$prepared = $this->prepare_citation($book);
+        $this->assertSame('Chaucer, Geoffrey', $prepared->first_author());
+        $this->assertSame('The Works of Geoffrey Chaucer', $prepared->get2('title'));
+        $this->assertSame('1957', $this->getDateAndYear($prepared));
+        $this->assertSame('Houghton', $prepared->get2('publisher'));
+        $this->assertSame('Boston', $prepared->get2('location'));           
+    }    
+ 
+     public function testEndNote2(): void {
+        $article = '{{Cite journal |
 %0 Journal Article
 %A Herbert H. Clark
 %D 1982
@@ -112,7 +121,16 @@ EP - 999 }}';
 %V 58
 %P 332-373
             }}'; // Not sure how %B should be handled; needs an assertion.
-            $thesis = '{{Citation |
+        $prepared = $this->process_citation($article);
+        $this->assertSame('Clark, Herbert H.', $prepared->first_author());
+        $this->assertSame('1982', $this->getDateAndYear($prepared));
+        $this->assertSame('Hearers and Speech Acts', $prepared->get2('title'));
+        $this->assertSame('58', $prepared->get2('volume'));
+        $this->assertSame('332–373', $prepared->get2('pages'));
+    }            
+            
+    public function testEndNote3(): void {
+        $thesis = '{{Citation |
 %0 Thesis
 %A Cantucci, Elena
 %T Permian strata in South-East Asia
@@ -121,43 +139,31 @@ EP - 999 }}';
 %R 10.1038/ntheses.01928
 %@ Ignore
 %9 Dissertation}}';
-            $code_coverage1   = '{{Citation |
-%0 Journal Article
-%T This Title
-%R NOT_A_DOI
-%@ 9999-9999}}';
-
-            $code_coverage2   = '{{Citation |
-%0 Book
-%T This Title
-%@ 000-000-000-0X}}';
-
-        $prepared = $this->prepare_citation($book);
-        $this->assertSame('Chaucer, Geoffrey', $prepared->first_author());
-        $this->assertSame('The Works of Geoffrey Chaucer', $prepared->get2('title'));
-        $this->assertSame('1957', $this->getDateAndYear($prepared));
-        $this->assertSame('Houghton', $prepared->get2('publisher'));
-        $this->assertSame('Boston', $prepared->get2('location'));
-
-        $prepared = $this->process_citation($article);
-        $this->assertSame('Clark, Herbert H.', $prepared->first_author());
-        $this->assertSame('1982', $this->getDateAndYear($prepared));
-        $this->assertSame('Hearers and Speech Acts', $prepared->get2('title'));
-        $this->assertSame('58', $prepared->get2('volume'));
-        $this->assertSame('332–373', $prepared->get2('pages'));
-
         $prepared = $this->process_citation($thesis);
         $this->assertSame('Cantucci, Elena', $prepared->first_author());
         $this->assertSame('Permian strata in South-East Asia', $prepared->get2('title'));
         $this->assertSame('1990', $this->getDateAndYear($prepared));
         $this->assertSame('University of California, Berkeley', $prepared->get2('publisher'));
         $this->assertSame('10.1038/ntheses.01928', $prepared->get2('doi'));
+    }
 
+    public function testEndNote4(): void {
+        $code_coverage1   = '{{Citation |
+%0 Journal Article
+%T This Title
+%R NOT_A_DOI
+%@ 9999-9999}}';
         $prepared = $this->process_citation($code_coverage1);
         $this->assertSame('This Title', $prepared->get2('title'));
         $this->assertSame('9999-9999', $prepared->get2('issn'));
         $this->assertNull($prepared->get2('doi'));
+    }
 
+    public function testEndNote5(): void {
+        $code_coverage2   = '{{Citation |
+%0 Book
+%T This Title
+%@ 000-000-000-0X}}';
         $prepared = $this->process_citation($code_coverage2);
         $this->assertSame('This Title', $prepared->get2('title'));
         $this->assertSame('000-000-000-0X', $prepared->get2('isbn'));
