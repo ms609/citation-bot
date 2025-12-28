@@ -4974,7 +4974,7 @@ final class Template
                     return;
 
                 case 'ref':
-                    if ($this->has($param)) {
+                    if ($this->has_but_maybe_blank($param)) {
                         $content = mb_strtolower($this->get($param));
                         if ($content === '' || $content === 'harv') {
                             $this->mod_ref = true;
