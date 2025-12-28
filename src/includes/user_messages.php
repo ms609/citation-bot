@@ -91,7 +91,7 @@ function report_error(string $text): never {
  * @codeCoverageIgnore
  */
 function report_minor_error(string $text): void {  // For things we want to error in tests, but continue on Wikipedia
-    if (!HTML_OUTPUT) { // command line and CI
+    if (!HTML_OUTPUT) { // command line and testing
         report_error($text);
     } else {
         bot_debug_log($text);
@@ -100,7 +100,7 @@ function report_minor_error(string $text): void {  // For things we want to erro
 }
 
 function quietly(callable $function, string $text): void { // Stuff suppressed when running on the command line
-    if (HTML_OUTPUT || CI) {
+    if (HTML_OUTPUT) {
         $function($text);
     }
 }
