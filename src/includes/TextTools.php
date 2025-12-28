@@ -73,6 +73,18 @@ function convert_mathml_to_latex(string $mathml): string {
         $mathml
     );
     
+    // Handle msubsup (subscript and superscript): <msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup> -> x_{1}^{2}
+    $mathml = preg_replace_callback(
+        '~<msubsup>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*<mn>(.*?)</mn>\s*</msubsup>~s',
+        static function (array $matches): string {
+            $base = trim($matches[1]);
+            $sub = trim($matches[2]);
+            $super = trim($matches[3]);
+            return $base . "_{" . $sub . "}^{" . $super . "}";
+        },
+        $mathml
+    );
+    
     // Handle mfrac (fractions): <mfrac><mn>1</mn><mn>2</mn></mfrac> -> \frac{1}{2}
     $mathml = preg_replace_callback(
         '~<mfrac>\s*<m[inor]>(.*?)</m[inor]>\s*<m[inor]>(.*?)</m[inor]>\s*</mfrac>~s',

@@ -463,6 +463,17 @@ final class textToolsTest extends testBaseClass {
         $this->assertStringContainsString('2', $result);
     }
 
+    public function testMathMLSubSuperscript(): void {
+        // Test subscript and superscript: x_{1}^{2}
+        $text_mml = '<math><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertStringContainsString('x', $result);
+        $this->assertStringContainsString('_', $result);
+        $this->assertStringContainsString('^', $result);
+        $this->assertStringContainsString('1', $result);
+        $this->assertStringContainsString('2', $result);
+    }
+
     public function testBrackets(): void {
         $this->assertSame("ABC", remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
     }
