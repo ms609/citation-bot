@@ -38,6 +38,7 @@ class Page {
     protected string $title = '';
     /** @var array<bool|array<string>> */
     private array $modifications = [];
+    private bool $odnb_sub_removed = false;
     private DateStyle $date_style = DateStyle::DATES_WHATEVER;
     private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
     private string $read_at = '';
@@ -552,8 +553,12 @@ class Page {
         Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
         unset($all_templates);
 
+        $old_text = $this->text;
         $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
         $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
+        if ($old_text !== $this->text) {
+            $this->odnb_sub_removed = true;
+        }
 
         set_time_limit(120);
         $this->replace_object($singlebrack);
@@ -710,6 +715,12 @@ class Page {
         }
         if ($this->modifications["ref"]) {
             $auto_summary .= 'Removed redundant ref parameter. ';
+        }
+        if ($this->modifications["na"]) {
+            $auto_summary .= 'Removed invalid "n/a" parameter values. ';
+        }
+        if ($this->odnb_sub_removed) {
+            $auto_summary .= 'Removed ODNBsub template. ';
         }
         $isbn978_added = (mb_substr_count($this->text, '978 ') + mb_substr_count($this->text, '978-')) - (mb_substr_count($this->start_text, '978 ') + mb_substr_count($this->start_text, '978-'));
         $isbn_added = (mb_substr_count($this->text, 'isbn') + mb_substr_count($this->text, 'ISBN')) -
@@ -1015,5 +1026,6 @@ class Page {
         $this->modifications['dashes'] = false;
         $this->modifications['names'] = false;
         $this->modifications['ref'] = false;
+        $this->modifications['na'] = false;
     }
 }

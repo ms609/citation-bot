@@ -46,6 +46,7 @@ final class Template
     private bool $mod_dashes = false;
     private bool $mod_names = false;
     private bool $mod_ref = false;
+    private bool $mod_na = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -5841,9 +5842,11 @@ final class Template
                 }
             }
             if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
+                $this->mod_na = true;
                 $this->forget('issue');
             }
             if ($this->get('volume') === 'n/a' && preg_match('~^\d+$~', $this->get('issue'))) {
+                $this->mod_na = true;
                 $this->forget('volume');
             }
             if (
@@ -6834,6 +6837,7 @@ final class Template
         $ret['dashes'] = $this->mod_dashes;
         $ret['names'] = $this->mod_names;
         $ret['ref'] = $this->mod_ref;
+        $ret['na'] = $this->mod_na;
         return $ret;
     }
 
