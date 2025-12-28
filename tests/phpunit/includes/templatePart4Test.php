@@ -1866,4 +1866,10 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('X', $template->get2('work'));
     }
 
+    public function testRemoveTitleIfDictionaryAndEntryAreSet(): void {
+        $text = "{{cite dictionary|title=Supernatural &#124; Definition of Supernatural by Merriam-Webster|dictionary=Merriam-Webster|entry=supernatural}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('title'));
+    }
 }
