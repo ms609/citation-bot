@@ -88,7 +88,7 @@ const ALL_URL_TYPES = [
     'transcripturl', 'URL',
 ];
 
-/** Do not clean orig-date *//
+/** Do not clean orig-date */
 const DATES_TO_CLEAN = [
     'air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
     'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'doi-broken-date',
