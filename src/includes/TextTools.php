@@ -16,7 +16,6 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 
 // ============================================= String/Text functions ======================================
 
-
 // phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function wikify_external_text(string $title): string {
     $replacement = [];
