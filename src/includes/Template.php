@@ -256,7 +256,7 @@ final class Template
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
-            if (in_array($this->get('title'), BAD_TITLES, true)) {
+            if (in_array(mb_strtolower($this->get('title')), BAD_TITLES, true)) {
                 $this->set('title', '');
             }
             if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl']) && $this->get('url') !== 'https://archive.org/web/') {
