@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.1093/acrefore' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001.0001' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357' => true, // Test suite bogus
     '10.1109/MC.2008.515' => true, // 404
     '10.1163/187633193X00829' => true, // not found
     '10.1163/9789004487789_005' => true, // not found
@@ -1623,6 +1628,11 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1093/acrefore' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001.0001' => true, // Test suite bogus
+    '10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357' => true, // Test suite bogus
     '10.1001/archderm.134.11.1484' => true, // 404
     '10.1001/archderm.134.11.1487' => true, // 404
     '10.1001/archderm.136.10.1272-a' => true, // 404
