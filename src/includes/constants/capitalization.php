@@ -523,7 +523,8 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
-const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+/** The following will be automatically updated to alphabetical order */
+const JOURNAL_ACRONYMS = [
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -1059,9 +1060,10 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Ргасе filologiczne ',
-    /* The above will be automatically updated to alphabetical order */
 ];
-const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
+
+/** The following will be automatically updated to alphabetical order */
+const UCFIRST_JOURNAL_ACRONYMS = [
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
@@ -1597,8 +1599,8 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ',
     ' Zprávy o zasedání Král. čes. Společnosti nauk v Praze ',
     ' Ргасе Filologiczne ',
-    /* The above will be automatically updated to alphabetical order */
 ];
+
 const OBVIOUS_FOREIGN_WORDS = [
     ' Aarbøger ',
     ' Abhandlungen ',
@@ -1772,6 +1774,7 @@ const OBVIOUS_FOREIGN_WORDS = [
     'www-',
     'www.',
 ];
+
 const MAP_DIACRITICS = [
     'À' => 'A',
     'Á' => 'A',
