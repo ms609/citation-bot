@@ -439,7 +439,7 @@ final class Zotero {
         if (isset($result->title)) {
             $test_data .= $result->title;
         }
-        foreach (BAD_ZOTERO_TITLES as $bad_title ) {
+        foreach (ZOTERO_BAD_TITLES as $bad_title ) {
             if (mb_stripos($test_data, $bad_title) !== false) {
                 report_info("Received invalid title data for URL " . echoable($url . ": " . $test_data));
                 return;
