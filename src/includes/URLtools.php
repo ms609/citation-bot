@@ -1646,7 +1646,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             if ($template->has('jstor')) {
                 ;
             } else {
-				report_info("Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
+                report_info("Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
                 $template->set('jstor', urldecode($match[1]));
             }
             if ($template->wikiname() === 'cite web') {
