@@ -19,6 +19,10 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 /**
  * Convert MathML elements to LaTeX syntax
  * Handles complex MathML structures like mmultiscripts, msup, msub, mfrac, etc.
+ * 
+ * NOTE: This conversion only applies when adding NEW parameter values to citation templates
+ * via add_if_new(). It does NOT modify existing parameters that already contain MathML.
+ * Existing citations with MathML will retain their current values during tidying operations.
  */
 function convert_mathml_to_latex(string $mathml): string {
     // Remove mml: namespace prefix if present
