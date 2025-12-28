@@ -45,6 +45,8 @@ final class Template
     private bool $had_initial_publisher = false;
     private bool $mod_dashes = false;
     private bool $mod_names = false;
+    private bool $mod_ref = false;
+    private bool $mod_na = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -4972,11 +4974,14 @@ final class Template
                     return;
 
                 case 'ref':
-                    $content = mb_strtolower($this->get($param));
-                    if ($content === '' || $content === 'harv') {
-                        $this->forget($param);
-                    } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
-                        $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
+                    if ($this->has_but_maybe_blank($param)) {
+                        $content = mb_strtolower($this->get($param));
+                        if ($content === '' || $content === 'harv') {
+                            $this->mod_ref = true;
+                            $this->forget($param);
+                        } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
+                            $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
+                        }
                     }
                     return;
 
@@ -5839,9 +5844,11 @@ final class Template
                 }
             }
             if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
+                $this->mod_na = true;
                 $this->forget('issue');
             }
             if ($this->get('volume') === 'n/a' && preg_match('~^\d+$~', $this->get('issue'))) {
+                $this->mod_na = true;
                 $this->forget('volume');
             }
             if (
@@ -6831,6 +6838,8 @@ final class Template
 
         $ret['dashes'] = $this->mod_dashes;
         $ret['names'] = $this->mod_names;
+        $ret['ref'] = $this->mod_ref;
+        $ret['na'] = $this->mod_na;
         return $ret;
     }
 

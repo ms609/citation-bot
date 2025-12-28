@@ -38,6 +38,7 @@ class Page {
     protected string $title = '';
     /** @var array<bool|array<string>> */
     private array $modifications = [];
+    private bool $odnb_sub_removed = false;
     private DateStyle $date_style = DateStyle::DATES_WHATEVER;
     private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
     private string $read_at = '';
@@ -539,6 +540,27 @@ class Page {
             $this_template->final_tidy();
         }
         set_time_limit(120);
+
+        // Record modifications from all templates (including those not in our_templates or our_templates_slight)
+        foreach ($all_templates as $this_template) {
+            if (!in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, true) &&
+                !in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true) &&
+                !in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) {
+                // Only record modifications for templates not already processed above
+                $template_mods = $this_template->modifications();
+                foreach (array_keys($template_mods) as $key) {
+                    if (!isset($this->modifications[$key])) {
+                        $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
+                        report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
+                    } elseif (is_array($this->modifications[$key])) {
+                        $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
+                    } else {
+                        $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
+                    }
+                }
+            }
+        }
+
         // Release memory ASAP
         unset($our_templates);
         unset($our_templates_slight);
@@ -552,8 +574,12 @@ class Page {
         Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
         unset($all_templates);
 
+        $old_text = $this->text;
         $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
         $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
+        if ($old_text !== $this->text) {
+            $this->odnb_sub_removed = true;
+        }
 
         set_time_limit(120);
         $this->replace_object($singlebrack);
@@ -683,6 +709,10 @@ class Page {
             if ($pos6 !== false) {
                 unset($this->modifications["deletions"][$pos6]);
             }
+            $pos7 = array_search('ref', $this->modifications["deletions"]);
+            if ($pos7 !== false && $this->modifications["ref"]) {
+                unset($this->modifications["deletions"][$pos7]);
+            }
             if ($pos1 !== false || $pos2 !== false || $pos3 !== false) {
                 if (mb_strpos($auto_summary, 'chapter-url') !== false) {
                     $auto_summary .= "Removed or converted URL. ";
@@ -705,6 +735,17 @@ class Page {
             : "");
         if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
             $auto_summary .= 'Some additions/deletions were parameter name changes. ';
+        } elseif ($this->modifications["names"]) {
+            $auto_summary .= 'Normalized parameter names. ';
+        }
+        if ($this->modifications["ref"]) {
+            $auto_summary .= 'Removed redundant ref parameter. ';
+        }
+        if ($this->modifications["na"]) {
+            $auto_summary .= 'Removed invalid "n/a" parameter values. ';
+        }
+        if ($this->odnb_sub_removed) {
+            $auto_summary .= 'Removed ODNBsub template. ';
         }
         $isbn978_added = (mb_substr_count($this->text, '978 ') + mb_substr_count($this->text, '978-')) - (mb_substr_count($this->start_text, '978 ') + mb_substr_count($this->start_text, '978-'));
         $isbn_added = (mb_substr_count($this->text, 'isbn') + mb_substr_count($this->text, 'ISBN')) -
@@ -1009,5 +1050,7 @@ class Page {
         $this->modifications['modifications'] = [];
         $this->modifications['dashes'] = false;
         $this->modifications['names'] = false;
+        $this->modifications['ref'] = false;
+        $this->modifications['na'] = false;
     }
 }

@@ -49,13 +49,13 @@ final class pageTest extends testBaseClass {
     public function testPageChangeSummary8(): void {
         $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
-        $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testPageChangeSummary9(): void {
         $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
         $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
-        $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testPageChangeSummary10(): void {
@@ -70,12 +70,12 @@ final class pageTest extends testBaseClass {
 
     public function testPageChangeSummary12(): void {
         $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-        $this->assertSame('Added url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Added url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testPageChangeSummary13(): void {
         $page = $this->process_page('{{cite journal|notestitle=X}}');
-        $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Altered template type. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testPageChangeSummary14(): void {
@@ -479,28 +479,35 @@ final class pageTest extends testBaseClass {
         $text = "{{new cambridge medieval history|chapterurl=https://cnn.com|chapter=XYX}}";
         $page = $this->process_page($text);
         $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com|chapter=XYX}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testChapterUrlChanges(): void {
         $text = "{{cite book|chapter-url=https://pep-web.org|title=X}}";
         $page = $this->process_page($text);
         $this->assertSame("{{cite book|url=https://pep-web.org|title=X}}", $page->parsed_text());
-        $this->assertSame('Added url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Added url. Removed URL that duplicated identifier. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testRefHarv(): void {
         $text = "{{cite iucn|ref=harv}}";
         $page = $this->process_page($text);
         $this->assertSame("{{cite iucn}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Removed redundant ref parameter. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testRefBlank(): void {
         $text = "{{cite iucn|ref=}}";
         $page = $this->process_page($text);
         $this->assertSame("{{cite iucn}}", $page->parsed_text());
-        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Removed redundant ref parameter. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    }
+
+    public function testODNBsubRemoval(): void {
+        $text = "{{cite ODNB|title=Test Article|author=John Doe}}{{ODNBsub}}";
+        $page = $this->process_page($text);
+        $this->assertSame("{{cite ODNB|title=Test Article|author=John Doe}}", $page->parsed_text());
+        $this->assertSame('Removed ODNBsub template. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testInterview(): void {
@@ -524,7 +531,7 @@ final class pageTest extends testBaseClass {
     public function testConvertURLSummary2(): void {
         $text = "{{cite web |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}";
         $page = $this->process_page($text);
-        $this->assertSame('Altered template type. Added chapter-url. Removed or converted URL. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('Altered template type. Added chapter-url. Removed or converted URL. Normalized parameter names. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testConvertCiteNews(): void {
