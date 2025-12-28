@@ -93,7 +93,7 @@ EP - 999 }}';
     }
 
     public function testEndNote1(): void {
-    	$book = '{{Cite book |
+        $book = '{{Cite book |
 %0 Book
 %A Geoffrey Chaucer
 %D 1957
@@ -103,7 +103,7 @@ EP - 999 }}';
 %C Boston
 %N 2nd
             }}'; // Not quite clear how %E and %N should be handled here. Needs an assertion.
-    	$prepared = $this->prepare_citation($book);
+        $prepared = $this->prepare_citation($book);
         $this->assertSame('Chaucer, Geoffrey', $prepared->first_author());
         $this->assertSame('The Works of Geoffrey Chaucer', $prepared->get2('title'));
         $this->assertSame('1957', $this->getDateAndYear($prepared));
