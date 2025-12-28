@@ -15,7 +15,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testZoteroExpansion_biorxiv2(): void {
-        $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{Cite journal| biorxiv=326363 |doi=10.0001/Rubbish_bot_failure_test}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     }
@@ -92,7 +92,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testDropSomeProxiesE(): void {
-        $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $tmp_array = [$template];
         drop_urls_that_match_dois($tmp_array);

@@ -14,11 +14,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_dx;
     static $ch_doi;
     if ($ch_dx === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_dx = bot_curl_init($time, []);
         $ch_doi = bot_curl_init($time, []);
     }
@@ -886,7 +882,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
             $template->rename('website', 'url'); // Change name it first, so that parameters stay in same order
             $template->set('url', $url);
             $url_type = 'url';
-            quietly('report_modification', "website is actually HTTP URL; converting to use url parameter.");
+            report_modification("website is actually HTTP URL; converting to use url parameter.");
         } else {
             // If no URL or website, nothing to worth with.
             return false;
@@ -976,7 +972,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         return;
     } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9/\+]+=*)$~", $template->get($param), $matches)) {
         if (base64_decode($matches[1])) {
-            quietly('report_modification', "Decoding Bloomberg URL.");
+            report_info("Decoding Bloomberg URL.");
             $template->set($param, 'https://www.bloomberg.com' . base64_decode($matches[1]));
         }
     } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $template->get($param), $matches)) {
@@ -986,7 +982,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             $template->set($param, $matches[1] . $matches[2]);
         }
     } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
-        quietly('report_modification', "Decoding OUP URL.");
+        report_info("Decoding OUP URL.");
         $template->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode($matches[1])));
         if ($template->get('title') === 'Validate User') {
             $template->set('title', '');
@@ -1001,11 +997,8 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         foreach (['archive-url', 'archiveurl'] as $archive_param) {
             if ($template->has($archive_param)) {
                 $archive_url = $template->get($archive_param);
-                // Check if archive URL contains any URL with #no-access-message
-                // Pattern matches archive services like:
-                // - web.archive.org: https://web.archive.org/web/TIMESTAMP/URL#fragment
-                // - archive.today/is/ph/fo/li/etc: https://archive.*/TIMESTAMP/URL#fragment or https://archive.*/CODE#fragment
-                if (preg_match("~^(https?://(?:web\.archive\.org|archive\.(?:today|is|ph|fo|li|md|vn))/[^#]+)#no-access-message$~", $archive_url, $archive_matches)) {
+                // Check if archive URL ends with #no-access-message. If so, remove it.
+                if (preg_match("~^(.+)#no-access-message$~", $archive_url, $archive_matches)) {
                     $cleaned_archive_url = $archive_matches[1];
                     $template->set($archive_param, $cleaned_archive_url);
                 }
@@ -1019,7 +1012,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         if (mb_substr($matches[2], -1) === '#' || mb_substr($matches[2], -1) === '.') {
             $matches[2] = mb_substr($matches[2], 0, -1);
         } // Sometime just a trailing # after & part
-        quietly('report_modification', "Unmasking Proquest eBook URL.");
+        report_info("Decoding Proquest eBook URL.");
         $template->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
     } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $template->get($param), $matches)) {
         $template->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
@@ -1332,11 +1325,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     static $ch_jstor;
     static $ch_pmc;
     if ($ch_jstor === null) {
-        if (CI) {
-            $time = 3.0;
-        } else {
-            $time = 1.0; // @codeCoverageIgnore
-        }
+        $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_jstor = bot_curl_init($time, []);
         $ch_pmc = bot_curl_init($time, []);
     }
@@ -1538,7 +1527,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             $doi = $template->get('doi');
             if (str_i_same($doi, $match[1]) || str_i_same($doi, urldecode($match[1]))) {
                 if (!$url_sent && $template->get('doi-access') === 'free') {
-                    quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI parameter");
+                    report_modification("URL is hard-coded DOI; removing since we already have free DOI parameter");
                     $template->forget($url_type);
                 }
                 return false;
@@ -1571,7 +1560,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         }
         if ($template->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
             if (!$url_sent && $template->has_good_free_copy()) {
-                quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
+                report_modification("URL is hard-coded DOI; converting to use DOI parameter.");
                 $template->forget($url_type);
             }
             return true;
@@ -1655,9 +1644,9 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 }
             }
             if ($template->has('jstor')) {
-                quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
+                ;
             } else {
-                quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
+                report_info("Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
                 $template->set('jstor', urldecode($match[1]));
             }
             if ($template->wikiname() === 'cite web') {
@@ -1670,7 +1659,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
     } else {
         if (preg_match(REGEXP_BIBCODE, urldecode($url), $bibcode)) {
             if ($template->blank('bibcode')) {
-                quietly('report_modification', "Converting url to bibcode parameter");
+                report_modification("Converting url to bibcode parameter");
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
                         $template->forget($url_type);
@@ -1694,7 +1683,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     $template->change_name_to('cite journal');
                 }
                 if ($template->blank('pmc')) {
-                    quietly('report_modification', "Converting URL to PMC parameter");
+                    report_modification("Converting URL to PMC parameter");
                 }
                 $new_pmc = (string) @$match[1] . @$match[2] . @$match[3];
                 // php stan does not understand that this could because of the insanity of regex and 8-bit characters and PHP bugs end up being empty
@@ -1748,7 +1737,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
                 if ($template->blank('pmid')) {
-                    quietly('report_modification', "Converting URL to PMID parameter");
+                    report_modification("Converting URL to PMID parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -1792,7 +1781,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     $template->change_name_to('cite journal');
                 }
                 if ($template->blank('pmc')) {
-                    quietly('report_modification', "Converting Europe URL to PMC parameter");
+                    report_modification("Converting Europe URL to PMC parameter");
                 }
                 if (!$url_sent && mb_stripos($url, ".pdf") === false) {
                     $template->forget($url_type); // This is same as PMC-auto-link
@@ -1803,7 +1792,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     $template->change_name_to('cite journal');
                 }
                 if ($template->blank('pmid')) {
-                    quietly('report_modification', "Converting Europe URL to PMID parameter");
+                    report_modification("Converting Europe URL to PMID parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -1819,7 +1808,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     $template->change_name_to('cite journal');
                 }
                 if ($template->blank('pmc')) {
-                    quietly('report_modification', "Converting Canadian URL to PMC parameter");
+                    report_modification("Converting Canadian URL to PMC parameter");
                 }
                 if (!$url_sent) {
                     $template->forget($url_type);  // Always do this conversion, since website is gone!
@@ -1830,7 +1819,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         } elseif (mb_stripos($url, 'citeseerx') !== false) {
             if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
                 if ($template->blank('citeseerx')) {
-                    quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+                    report_modification("URL is hard-coded citeseerx; converting to use citeseerx parameter.");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -1852,7 +1841,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 if (preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
                         || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
                         ) {
-                    quietly('report_modification', "Converting URL to arXiv parameter");
+                    report_modification("Converting URL to arXiv parameter");
                     $ret = $template->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
                     if (!$url_sent) {
                         if ($template->has_good_free_copy() || $template->has('arxiv') || $template->has('eprint')) {
@@ -1880,15 +1869,15 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     }
                 }
                 if ($template->blank('asin')) {
-                    quietly('report_modification', "Converting URL to ASIN parameter");
+                    report_modification("Converting URL to ASIN parameter");
                     return $template->add_if_new('asin', $match['id']);
                 }
             } else {
                 if ($template->has('isbn')) { // Already have ISBN
-                    quietly('report_inaction', "Not converting ASIN URL: redundant to existing ISBN.");
+                    report_info("Not converting ASIN URL: redundant to existing ISBN.");
                 } else {
                     if ($template->blank('id')) { // TODO - deal with when already does and does not have {{ASIN}}
-                        quietly('report_modification', "Converting URL to ASIN template");
+                        report_modification("Converting URL to ASIN template");
                         $template->set('id', $template->get('id') . " {{ASIN|{$match['id']}|country=" . str_replace([".co.", ".com.", "."], "", $match['domain']) . "}}");
                     } else {
                         return false;  // do not continue and delete it, because of TODO above
@@ -1981,7 +1970,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 return false;
             }
             if ($template->blank('hdl')) {
-                quietly('report_modification', "Converting URL to HDL parameter");
+                report_modification("Converting URL to HDL parameter");
             }
             if (!$url_sent) {
                 if ($template->has_good_free_copy()) {
@@ -1997,7 +1986,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         } elseif (mb_stripos($url, 'zbmath.org') !== false) {
             if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
                 if ($template->blank('zbl')) {
-                    quietly('report_modification', "Converting URL to ZBL parameter");
+                    report_modification("Converting URL to ZBL parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -2011,7 +2000,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             }
             if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
                 if ($template->blank('jfm')) {
-                    quietly('report_modification', "Converting URL to JFM parameter");
+                    report_modification("Converting URL to JFM parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -2026,7 +2015,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             return false;
         } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
             if ($template->blank('mr')) {
-                quietly('report_modification', "Converting URL to MR parameter");
+                report_modification("Converting URL to MR parameter");
             }
             //if (!$url_sent) {
             //    $template->forget($url_type); // This points to a review and not the article
@@ -2034,7 +2023,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             return $template->add_if_new('mr', $match[1]);
         } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
             if ($template->blank('ssrn')) {
-                quietly('report_modification', "Converting URL to SSRN parameter");
+                report_modification("Converting URL to SSRN parameter");
             }
             if (!$url_sent) {
                 if ($template->has_good_free_copy()) {
@@ -2048,7 +2037,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         } elseif (mb_stripos($url, 'osti.gov') !== false) {
             if (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
                 if ($template->blank('osti')) {
-                    quietly('report_modification', "Converting URL to OSTI parameter");
+                    report_modification("Converting URL to OSTI parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -2062,7 +2051,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             }
             if (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
                 if ($template->blank('osti')) {
-                    quietly('report_modification', "Converting URL to OSTI parameter");
+                    report_modification("Converting URL to OSTI parameter");
                 }
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
@@ -2086,7 +2075,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     return $template->add_if_new('oclc', $match[1]);
                 }
                 if ($template->blank('oclc')) {
-                    quietly('report_modification', "Converting URL to OCLC parameter");
+                    report_modification("Converting URL to OCLC parameter");
                 }
                 if ($template->wikiname() === 'cite web') {
                     // $template->change_name_to('cite book');  // Better template choice
@@ -2097,7 +2086,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 return $template->add_if_new('oclc', $match[1]);
             } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
                 if ($template->blank('issn')) {
-                    quietly('report_modification', "Converting URL to ISSN parameter");
+                    report_modification("Converting URL to ISSN parameter");
                 }
                 if ($template->wikiname() === 'cite web') {
                     $template->change_name_to('cite journal'); // Better template choice
@@ -2114,7 +2103,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 $template->change_name_to('cite book');  // Better template choice
             }
             if ($template->blank('lccn')) {
-                quietly('report_modification', "Converting URL to LCCN parameter");
+                report_modification("Converting URL to LCCN parameter");
             }
             if (!$url_sent) {
                 $template->forget($url_type);
@@ -2122,7 +2111,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             return $template->add_if_new('lccn', $match[1]);
         } elseif (preg_match("~^https?://openlibrary\.org/books/OL/?(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
             if ($template->blank('ol')) {
-                quietly('report_modification', "Converting URL to OL parameter");
+                report_modification("Converting URL to OL parameter");
             }
             if ($template->wikiname() === 'cite web') {
                 $template->change_name_to('cite book');  // Better template choice
@@ -2133,7 +2122,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             return $template->add_if_new('ol', $match[1]);
         } elseif (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $template->has('title') && $template->blank('id')) {
             if ($template->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {
-                quietly('report_modification', 'Converting URL to ProQuest parameter');
+                report_modification('Converting URL to ProQuest parameter');
                 if (!$url_sent) {
                     if ($template->has_good_free_copy()) {
                         $template->forget($url_type);
@@ -2148,7 +2137,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             /// THIS MUST BE LAST
         } elseif (($template->has('chapterurl') || $template->has('chapter-url') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl') || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}(?:|fw_)/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
             if (!$url_sent) {
-                quietly('report_modification', 'Extracting URL from archive');
+                report_modification('Extracting URL from archive');
                 $template->set($url_type, $match[1]);
                 $template->add_if_new('archive-url', $match[0]);
                 return false; // We really got nothing

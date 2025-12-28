@@ -222,14 +222,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testVolumeIssueDemixing21(): void {
-        $text = '{{cite journal|issue = volume 12|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|issue = volume 12|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12', $prepared->get2('volume'));
         $this->assertNull($prepared->get2('issue'));
     }
 
     public function testVolumeIssueDemixing22(): void {
-        $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0001/Rubbish_bot_failure_test}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('12XX', $prepared->get2('volume'));
         $this->assertNull($prepared->get2('issue'));
@@ -509,14 +509,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testReplaceBadDOI(): void {
-        $text = '{{Cite journal | doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=1999}}';
+        $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
     }
 
     public function testDropBadDOI(): void {
-        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0000/Rubbish_bot_failure_test}}';
+        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0001/Rubbish_bot_failure_test}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
         $this->assertNotNull($template->get2('chapter-url'));
@@ -2167,6 +2167,31 @@ final class TemplatePart2Test extends testBaseClass {
         $prepared = $this->process_citation($text);
         $this->assertSame('Kornbluh', $prepared->get2('script-title'));
         $this->assertNull($prepared->get2('title'));
+    }
+
+    public function testBlockUnsupportedParamsInCiteBook(): void {
+        // Test that journal, work, and website are blocked
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Nature'));
+        $this->assertFalse($template->add_if_new('work', 'Encyclopedia Britannica'));
+        $this->assertFalse($template->add_if_new('website', 'example.com'));
+    }
+
+    public function testAllowEncyclopediaInCiteBook(): void {
+        // Encyclopedia IS supported in cite book
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
+    }
+
+    public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
+        // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
+        // Verifies that journal and work parameters are blocked from being added
+        $text = "{{cite book |last1=Agrippa von Nettesheim |first1=Heinrich Cornelius |title=De occulta philosophia libri tres |date=1533 |location=Cologne |pages=160, 163, 276-277 |url=https://www.loc.gov/resource/rbc0001.2009gen12345/?sp=280 |access-date=28 November 2024 }}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Test Journal'));
+        $this->assertFalse($template->add_if_new('work', 'Test Work'));
     }
 
 }

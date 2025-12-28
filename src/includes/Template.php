@@ -628,7 +628,7 @@ final class Template
     }
 
     /**
-     * Adds a parameter to a template if the parameter and its equivalents are blank
+     * Adds a parameter to a template if the parameter and its equivalents are blank.
      * $api (string) specifies the API route by which a parameter was found; this will log the
      * parameter so it is not used to trigger a new search via the same API.
      */
@@ -679,6 +679,14 @@ final class Template
         if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
             $param_name = COMMON_MISTAKES_TOOL[$param_name];
         }
+
+        // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
+        // We might want to think about if there are any cases with bad existing data
+        if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {
+            report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
+            return false;
+        }
+
         /** @psalm-assert string $param_name */
 
         if ($api) {
@@ -1973,7 +1981,7 @@ final class Template
                 if ($this->blank($param_name)) {
                     if ($this->has('isbn')) {
                         // Already have ISBN
-                        quietly('report_inaction', "Not adding ASIN: redundant to existing ISBN.");
+                        report_inaction("Not adding ASIN: redundant to existing ISBN.");
                         return false;
                     } elseif (preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
                         // 630 and 631 ones are not ISBNs, so block all of 63*
@@ -3260,6 +3268,13 @@ final class Template
                 $tmp = $this->get( 'work' );
                 $this->rename( 'title', 'chapter' );
                 $this->add('title', $tmp);
+            }
+
+            // Remove blank unsupported parameters when converting to cite book
+            foreach (CITE_BOOK_UNSUPPORTED_PARAMS as $unsupported) {
+                if ($this->blank($unsupported)) {
+                    $this->forget($unsupported);
+                }
             }
         }
     }
@@ -5146,7 +5161,7 @@ final class Template
                     }
                     if ($this->blank(ALL_URL_TYPES)) {
                         if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $this->get($param), $match)) {
-                            quietly('report_modification', 'Extracting URL from archive');
+                            report_modification('Extracting URL from archive');
                             $this->add_if_new('url', $match[1]);
                         }
                     }
@@ -5734,11 +5749,13 @@ final class Template
         }
     }
 
+    /**
+     * Should only be run once (perhaps when template is first loaded).
+     * Future tidying should occur when parameters are added using tidy_parameter.
+     * Called in final_tidy when the template type is changed.
+     * We do this again when anything changes - up to three times.
+     */
     public function tidy(): void {
-        // Should only be run once (perhaps when template is first loaded)
-        // Future tidying should occur when parameters are added using tidy_parameter.
-        // Called in final_tidy when the template type is changed
-        // We do this again when anything changes - up to three times
         $orig = $this->parsed_text();
         foreach ($this->param as $param) {
             $this->tidy_parameter($param->param);
@@ -6150,6 +6167,10 @@ final class Template
             }
             if ($this->get('url-status') === 'live' && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
                 $this->forget('url-status');
+            }
+            // If dictionary and entry are set, don't set a title.
+            if ($this->wikiname() === 'cite dictionary' && $this->get('dictionary') && $this->get('entry') && $this->get('title')) {
+                $this->forget('title');
             }
         } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             $this->tidy_parameter('publisher');
@@ -6842,11 +6863,11 @@ final class Template
                 if ($this->add_if_new('doi', mb_trim($inline_doi[0]))) {
                     // Add doi
                     $this->set('title', mb_trim($inline_doi[1]));
-                    quietly('report_modification', "Converting inline DOI to DOI parameter");
+                    report_modification("Converting inline DOI to DOI parameter");
                 } elseif ($this->get('doi') === mb_trim($inline_doi[0])) {
                     // Already added by someone else
                     $this->set('title', mb_trim($inline_doi[1]));
-                    quietly('report_modification', "Remove duplicate inline DOI ");
+                    report_modification("Remove duplicate inline DOI ");
                 }
             }
         }

@@ -85,12 +85,10 @@ function doi_works(string $doi): ?bool {
     if (isset(NULL_DOI_ANNOYING[$doi])) {
         return false;
     }
-    if (!CI) {
-        foreach (NULL_DOI_STARTS_BAD as $bad_start) { // @codeCoverageIgnoreStart
-            if (mb_stripos($doi, $bad_start) === 0) {
-                return false; // all gone
-            }
-        }                                             // @codeCoverageIgnoreEnd
+    foreach (NULL_DOI_STARTS_BAD as $bad_start) {
+        if (mb_stripos($doi, $bad_start) === 0) {
+            return false; // all gone
+        }
     }
     if (mb_strlen($doi) > HandleCache::MAX_HDL_SIZE) {
         return null;   // @codeCoverageIgnore
@@ -814,15 +812,12 @@ function get_headers_array(string $url): false|array {
     static $context_insecure_doi;
     static $context_insecure_hdl;
     if (!isset($context_insecure_doi)) {
-        $timeout = BOT_HTTP_TIMEOUT * 1.0;
-        if (CI) {
-            $timeout = 5.0; // Give up fast
-        }
+        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(4, 2, 1, 1, 1) / 4.0); // Give up faster in test suite
         $context_insecure_doi = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
             'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
         ]);
-        $timeout = BOT_HTTP_TIMEOUT * 2.5; // Handles suck
+        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(3, 3, 1, 1, 1)); // Handles suck
         $context_insecure_hdl = stream_context_create([
             'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
             'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
@@ -875,7 +870,7 @@ function doi_is_bad (string $doi): bool {
         $doi === '10.1093/oi/authority' || // over-truncated
         $doi === '10.1377/forefront' || // over-truncated
         $doi === '10.3905/jpm' || // over-truncated
-        (mb_strpos($doi, '10.0000/') === 0 && !CI) || // just urls that look like DOIs - TODO: Fix test suite
+        mb_strpos($doi, '10.0000/') === 0 || // just urls that look like DOIs
         mb_strpos($doi, '10.5779/hypothesis') === 0 || // SPAM took over
         mb_strpos($doi, '10.5555/') === 0 || // Test DOI prefix
         mb_strpos($doi, '10.5860/choice.') === 0 || // Paywalled book review

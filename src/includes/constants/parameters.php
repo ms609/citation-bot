@@ -80,18 +80,19 @@ const TEMPLATES_WE_HARV = [
     'cite ahcd', 'me-ref', 'slomon-new york central', 'cite archive',
 ];
 
-// 'url' must be the first element, it is assumed elsewhere in the code
+/** 'url' must be the first element, it is assumed elsewhere in the code. Some of these are no longer valid */
 const ALL_URL_TYPES = [
     'url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
     'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
     'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
     'transcripturl', 'URL',
-]; // Some of these are no longer valid
+];
 
+/** Do not clean orig-date */
 const DATES_TO_CLEAN = [
     'air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
     'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'doi-broken-date',
-]; // Do not clean orig-date
+];
 
 const THINGS_THAT_ARE_TITLES = ['chapter', 'title', 'series', 'trans-title', 'book-title', 'contribution'];
 
@@ -415,13 +416,25 @@ const FIRST_FORENAME_ALIASES = ['first1', 'first', 'author', 'author1', 'given',
 const FIRST_EDITOR_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at', 'article-number'];
-const TIME_ALIASES = ['date', 'year', 'publication-date'];  // Not really an alias, but things to clean up
+/** Not really an alias, but things to clean up */
+const TIME_ALIASES = ['date', 'year', 'publication-date'];
 const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia'];
 const ACCESS_ALIASES = ['accessdate', 'access-date'];
 const ISBN_ALIASES = ['ISBN', 'isbn13', 'ISBN13', 'isbn'];
 const LANG_ALIASES = ['language', 'lang'];
 const TYPE_ALIASES = ['medium', 'type'];
-const LOCATIONS_AND_SUCH = ['publication-place', 'location', 'place']; // Not really an alias, but things to clean up
+/** Not really an alias, but things to clean up */
+const LOCATIONS_AND_SUCH = ['publication-place', 'location', 'place'];
+
+// Parameters not supported by cite book template per Wikipedia documentation
+// Note: 'periodical', 'encyclopedia', and 'encyclopaedia' are excluded as they have special handling
+const CITE_BOOK_UNSUPPORTED_PARAMS = [
+    'work',
+    'journal',
+    'website',
+    'newspaper',
+    'magazine',
+];
 
 const ALL_ALIASES = [
     TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,

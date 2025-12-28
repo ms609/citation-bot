@@ -13,22 +13,23 @@ function html_echo(string $text, string $alternate_text = ''): void {
 }
 
 function user_notice(string $symbol, string $class, string $text): void {
-    if (!CI) {
-        // @codeCoverageIgnoreStart
-        if (defined('BIG_JOB_MODE') && in_array($class, BORING_STUFF, true)) {
-            echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
-            return;
-        }
-        // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
-        echo "\n ", (HTML_OUTPUT ? "<span class='{$class}'>" : ""), $symbol;
-        if (defined('BIG_JOB_MODE') && mb_strlen($text) > 900) { // No one looks at this anyway - long ones are often URLs in zotero errors
-            echo "HUGE amount of text NOT printed";
-            bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " . mb_substr($text, 0, 500));
-        } else {
-            echo $text;
-        }
-        echo HTML_OUTPUT ? "</span>" : "";
-        // @codeCoverageIgnoreEnd
+    ob_start();
+    if (defined('BIG_JOB_MODE') && in_array($class, BORING_STUFF, true)) {
+        $text = '.'; // Echo something to keep the code alive, but not so much to overfill the cache
+    }
+    // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
+    echo "\n ", (HTML_OUTPUT ? "<span class='{$class}'>" : ""), $symbol;
+    if (defined('BIG_JOB_MODE') && mb_strlen($text) > 900) { // No one looks at this anyway - long ones are often URLs in zotero errors
+        echo "HUGE amount of text NOT printed";
+        bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " . mb_substr($text, 0, 500));
+    } else {
+        echo $text;
+    }
+    echo HTML_OUTPUT ? "</span>" : "";
+    if (CI) {
+        ob_end_clean();
+    } else {
+        ob_end_flush();
     }
 }
 
@@ -91,17 +92,11 @@ function report_error(string $text): never {
  * @codeCoverageIgnore
  */
 function report_minor_error(string $text): void {  // For things we want to error in tests, but continue on Wikipedia
-    if (!HTML_OUTPUT) { // command line and CI
+    if (!HTML_OUTPUT) { // command line and testing
         report_error($text);
     } else {
         bot_debug_log($text);
         report_warning($text);
-    }
-}
-
-function quietly(callable $function, string $text): void { // Stuff suppressed when running on the command line
-    if (HTML_OUTPUT || CI) {
-        $function($text);
     }
 }
 

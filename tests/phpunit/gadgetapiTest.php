@@ -15,7 +15,7 @@ final class gadgetapiTest extends testBaseClass {
         ob_start();
         $_POST['text'] = '{{cite|pmid=34213}}';
         $_POST['summary'] = 'Something Nice';
-        // Note: gadgetapi.php always runs in fast mode to prevent timeouts
+        // Note: gadgetapi.php runs in fast mode by default to prevent timeouts
         require(__DIR__ . '/../../src/gadgetapi.php');
         $json_text = ob_get_contents();
         ob_end_clean();

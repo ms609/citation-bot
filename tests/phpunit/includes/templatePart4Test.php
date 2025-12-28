@@ -1178,14 +1178,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testAddBrokenDateFormat1(): void {
-        $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
         $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
     }
 
     public function testAddBrokenDateFormat2(): void {
-        $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_MDY;
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
@@ -1193,7 +1193,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testAddBrokenDateFormat3(): void {
-        $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
+        $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_DMY;
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
@@ -1866,4 +1866,10 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('X', $template->get2('work'));
     }
 
+    public function testRemoveTitleIfDictionaryAndEntryAreSet(): void {
+        $text = "{{cite dictionary|title=Supernatural &#124; Definition of Supernatural by Merriam-Webster|dictionary=Merriam-Webster|entry=supernatural}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('title'));
+    }
 }
