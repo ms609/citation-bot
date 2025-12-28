@@ -13192,7 +13192,7 @@ const BAD_TITLES = [
     'one moment, please',
 ];
 
-/* These are case-sensitive sub-strings used to reject new data */
+/* These are case-insensitive sub-strings used to reject new data */
 const ZOTERO_BAD_TITLES = [
     ' has expired',
     ' Log In',
