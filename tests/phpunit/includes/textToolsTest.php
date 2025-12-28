@@ -354,13 +354,17 @@ final class textToolsTest extends testBaseClass {
 
     public function testMathInTitle2(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
-        $this->assertSame('<nowiki>' . $text_math . '</nowiki>', wikify_external_text($text_math));
+        // After MathML conversion, <mrow> tags are stripped, leaving just the content
+        $expected = 'Spectroscopic analysis of the Candidate <math>ß</math> Cephei Star <math>s</math> Cas: Atmospheric Characterization and Line-profile Variability';
+        $this->assertSame($expected, wikify_external_text($text_math));
     }
 
     public function testMathInTitle3(): void {
         $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
         $text_mml    = 'Spectroscopic analysis of the candidate <mml:math altimg="si37.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>ß</mml:mi></mml:mrow></mml:math> Cephei star <mml:math altimg="si38.gif" overflow="scroll" xmlns:xocs="http://www.elsevier.com/xml/xocs/dtd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.elsevier.com/xml/ja/dtd" xmlns:ja="http://www.elsevier.com/xml/ja/dtd" xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:tb="http://www.elsevier.com/xml/common/table/dtd" xmlns:sb="http://www.elsevier.com/xml/common/struct-bib/dtd" xmlns:ce="http://www.elsevier.com/xml/common/dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cals="http://www.elsevier.com/xml/common/cals/dtd"><mml:mrow><mml:mi>s</mml:mi></mml:mrow></mml:math> Cas: Atmospheric characterization and line-profile variability';
-        $this->assertSame('<nowiki>' . $text_math . '</nowiki>', wikify_external_text($text_mml));
+        // After MathML conversion, content is properly converted to LaTeX
+        $expected = 'Spectroscopic analysis of the Candidate <math>ß</math> Cephei Star <math>s</math> Cas: Atmospheric Characterization and Line-profile Variability';
+        $this->assertSame($expected, wikify_external_text($text_mml));
     }
 
     public function testURLInTitle(): void {
@@ -425,6 +429,38 @@ final class textToolsTest extends testBaseClass {
 
     public function testDollarMath(): void {
         $this->assertSame("<math>Abs</math>", wikify_external_text('$$Abs$$'));
+    }
+
+    public function testMathMLIsotopeNotation(): void {
+        // Test isotope notation with mmultiscripts: ^{67}Ni
+        $text_mml = '<math><mmultiscripts>Ni<mprescripts/><none/>67</mmultiscripts></math>';
+        $expected = '<math>^{67}\\mathrm{Ni}</math>';
+        $this->assertSame($expected, wikify_external_text($text_mml));
+    }
+
+    public function testMathMLIsotopeNotationWithNamespace(): void {
+        // Test with mml: namespace prefix
+        $text_mml = '<mml:math><mml:mmultiscripts>Ni<mml:mprescripts/><mml:none/>67</mml:mmultiscripts></mml:math>';
+        $expected = '<math>^{67}\\mathrm{Ni}</math>';
+        $this->assertSame($expected, wikify_external_text($text_mml));
+    }
+
+    public function testMathMLSuperscript(): void {
+        // Test simple superscript: x^{2}
+        $text_mml = '<math><msup><mi>x</mi><mn>2</mn></msup></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertStringContainsString('x', $result);
+        $this->assertStringContainsString('^', $result);
+        $this->assertStringContainsString('2', $result);
+    }
+
+    public function testMathMLSubscript(): void {
+        // Test simple subscript: H_{2}O
+        $text_mml = '<math><msub><mi>H</mi><mn>2</mn></msub></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertStringContainsString('H', $result);
+        $this->assertStringContainsString('_', $result);
+        $this->assertStringContainsString('2', $result);
     }
 
     public function testBrackets(): void {

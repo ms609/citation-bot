@@ -16,6 +16,83 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 
 // ============================================= String/Text functions ======================================
 
+/**
+ * Convert MathML elements to LaTeX syntax
+ * Handles complex MathML structures like mmultiscripts, msup, msub, mfrac, etc.
+ */
+function convert_mathml_to_latex(string $mathml): string {
+    // Remove mml: namespace prefix if present
+    $mathml = str_replace(['<mml:', '</mml:'], ['<', '</'], $mathml);
+    
+    // Handle mmultiscripts for isotope notation: <mmultiscripts>base<mprescripts/>prescript</mmultiscripts>
+    // Example: <mmultiscripts>Ni<mprescripts/><none/>67</mmultiscripts> -> ^{67}\mathrm{Ni}
+    $mathml = preg_replace_callback(
+        '~<mmultiscripts>(.*?)<mprescripts/>(.*?)</mmultiscripts>~s',
+        static function (array $matches): string {
+            $base = trim($matches[1]);
+            $prescripts = trim($matches[2]);
+            
+            // Handle <none/> tags - they represent empty positions
+            $parts = preg_split('~<none/>~', $prescripts);
+            
+            // For isotope notation: <none/>number means superscript on left (mass number)
+            if (count($parts) === 2 && trim($parts[0]) === '') {
+                $superscript = trim(strip_tags($parts[1]));
+                // Wrap base in \mathrm if it's a chemical element (single capital or capital + lowercase)
+                if (preg_match('~^[A-Z][a-z]?$~', $base)) {
+                    return "^{" . $superscript . "}\\mathrm{" . $base . "}";
+                }
+                return "^{" . $superscript . "}" . $base;
+            }
+            
+            // Default fallback
+            return $base;
+        },
+        $mathml
+    );
+    
+    // Handle msup (superscript): <msup><mi>x</mi><mn>2</mn></msup> -> x^{2}
+    $mathml = preg_replace_callback(
+        '~<msup>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*</msup>~s',
+        static function (array $matches): string {
+            $base = trim($matches[1]);
+            $super = trim($matches[2]);
+            return $base . "^{" . $super . "}";
+        },
+        $mathml
+    );
+    
+    // Handle msub (subscript): <msub><mi>H</mi><mn>2</mn></msub> -> H_{2}
+    $mathml = preg_replace_callback(
+        '~<msub>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*</msub>~s',
+        static function (array $matches): string {
+            $base = trim($matches[1]);
+            $sub = trim($matches[2]);
+            return $base . "_{" . $sub . "}";
+        },
+        $mathml
+    );
+    
+    // Handle mfrac (fractions): <mfrac><mn>1</mn><mn>2</mn></mfrac> -> \frac{1}{2}
+    $mathml = preg_replace_callback(
+        '~<mfrac>\s*<m[inor]>(.*?)</m[inor]>\s*<m[inor]>(.*?)</m[inor]>\s*</mfrac>~s',
+        static function (array $matches): string {
+            $num = trim($matches[1]);
+            $den = trim($matches[2]);
+            return "\\frac{" . $num . "}{" . $den . "}";
+        },
+        $mathml
+    );
+    
+    // Apply simple tag replacements from MML_TAGS constant
+    $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
+    
+    // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
+    $mathml = strip_tags($mathml);
+    
+    return $mathml;
+}
+
 // phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function wikify_external_text(string $title): string {
     $replacement = [];
@@ -28,10 +105,9 @@ function wikify_external_text(string $title): string {
     if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
         $num_matches = count($matches[0]);
         for ($i = 0; $i < $num_matches; $i++) {
-            $replacement[$i] = '<math>' .
-                str_replace(array_keys(MML_TAGS), array_values(MML_TAGS),
-                    str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
-                . '</math>';
+            // Use the new convert_mathml_to_latex function to handle complex MathML
+            $converted_latex = convert_mathml_to_latex($matches[1][$i]);
+            $replacement[$i] = '<math>' . $converted_latex . '</math>';
             $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
             // Need to use a placeholder to protect contents from URL-safening
             $title = str_replace($matches[0][$i], $placeholder[$i], $title);
@@ -147,7 +223,7 @@ function wikify_external_text(string $title): string {
         $title = str_ireplace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
     }
 
-    foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
+    foreach (['<mroot>', '<munderover>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
         if (mb_strpos($title, $mathy) !== false) {
             return '<nowiki>' . $title . '</nowiki>';
         }
