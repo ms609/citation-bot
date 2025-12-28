@@ -148,7 +148,7 @@ EP - 999 }}';
     }
 
     public function testEndNote4(): void {
-        $code_coverage1   = '{{Citation |
+        $code_coverage1 = '{{Citation |
 %0 Journal Article
 %T This Title
 %R NOT_A_DOI
@@ -160,7 +160,7 @@ EP - 999 }}';
     }
 
     public function testEndNote5(): void {
-        $code_coverage2   = '{{Citation |
+        $code_coverage2 = '{{Citation |
 %0 Book
 %T This Title
 %@ 000-000-000-0X}}';
