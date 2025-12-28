@@ -18,7 +18,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 
 /**
  * Convert MathML elements to LaTeX syntax
- * Handles complex MathML structures like mmultiscripts, msup, msub, mfrac, etc.
+ * Handles complex MathML structures like mmultiscripts, msup, msub, mfrac, mroot, munder, munderover, etc.
  * 
  * NOTE: This conversion only applies when adding NEW parameter values to citation templates
  * via add_if_new(). It does NOT modify existing parameters that already contain MathML.
@@ -96,6 +96,56 @@ function convert_mathml_to_latex(string $mathml): string {
             $num = trim($matches[1]);
             $den = trim($matches[2]);
             return "\\frac{" . $num . "}{" . $den . "}";
+        },
+        $mathml
+    );
+    
+    // Handle mroot (nth root): <mroot><mi>x</mi><mn>3</mn></mroot> -> \sqrt[3]{x}
+    $mathml = preg_replace_callback(
+        '~<mroot>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mroot>~s',
+        static function (array $matches): string {
+            $base = trim($matches[1]);
+            $index = trim($matches[2]);
+            return "\\sqrt[" . $index . "]{" . $base . "}";
+        },
+        $mathml
+    );
+    
+    // Handle munder (underscript): <munder><mo>lim</mo><mrow>x→0</mrow></munder> -> \underset{x→0}{\lim}
+    $mathml = preg_replace_callback(
+        '~<munder>(.*?)</munder>~s',
+        static function (array $matches): string {
+            $content = $matches[1];
+            // Try to extract base and underscript
+            if (preg_match('~^(.*?)<m[inor]>(.*?)</m[inor]>(.*)$~s', $content, $parts)) {
+                $base = trim(strip_tags($parts[1] . $parts[2]));
+                $under = trim(strip_tags($parts[3]));
+                if ($under !== '') {
+                    return "\\underset{" . $under . "}{" . $base . "}";
+                }
+                return $base;
+            }
+            return strip_tags($content);
+        },
+        $mathml
+    );
+    
+    // Handle munderover (underscript and overscript): <munderover><mo>∑</mo><mn>0</mn><mi>n</mi></munderover> -> \sum_{0}^{n}
+    $mathml = preg_replace_callback(
+        '~<munderover>(.*?)</munderover>~s',
+        static function (array $matches): string {
+            $content = $matches[1];
+            // Try to extract base, under, and over - for simple cases with three m[ino] elements
+            if (preg_match_all('~<m[ino]>(.*?)</m[ino]>~s', $content, $parts)) {
+                if (count($parts[1]) === 3) {
+                    $base = trim($parts[1][0]);
+                    $under = trim($parts[1][1]);
+                    $over = trim($parts[1][2]);
+                    // For sum/integral/product symbols, use subscript/superscript notation
+                    return $base . "_{" . $under . "}^{" . $over . "}";
+                }
+            }
+            return strip_tags($content);
         },
         $mathml
     );
@@ -239,7 +289,7 @@ function wikify_external_text(string $title): string {
         $title = str_ireplace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
     }
 
-    foreach (['<mroot>', '<munderover>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
+    foreach (['<mtable>', '<mtr>', '<mtd>'] as $mathy) {
         if (mb_strpos($title, $mathy) !== false) {
             return '<nowiki>' . $title . '</nowiki>';
         }

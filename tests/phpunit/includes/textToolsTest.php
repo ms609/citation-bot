@@ -474,6 +474,25 @@ final class textToolsTest extends testBaseClass {
         $this->assertStringContainsString('2', $result);
     }
 
+    public function testMathMLRoot(): void {
+        // Test nth root: \sqrt[3]{x}
+        $text_mml = '<math><mroot><mi>x</mi><mn>3</mn></mroot></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertStringContainsString('sqrt', $result);
+        $this->assertStringContainsString('x', $result);
+        $this->assertStringContainsString('3', $result);
+    }
+
+    public function testMathMLUnderOver(): void {
+        // Test underover (sum notation): \sum_{0}^{n}
+        $text_mml = '<math><munderover><mo>∑</mo><mn>0</mn><mi>n</mi></munderover></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertStringContainsString('_', $result);
+        $this->assertStringContainsString('^', $result);
+        $this->assertStringContainsString('0', $result);
+        $this->assertStringContainsString('n', $result);
+    }
+
     public function testBrackets(): void {
         $this->assertSame("ABC", remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
     }
