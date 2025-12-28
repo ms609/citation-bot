@@ -540,6 +540,27 @@ class Page {
             $this_template->final_tidy();
         }
         set_time_limit(120);
+        
+        // Record modifications from all templates (including those not in our_templates or our_templates_slight)
+        foreach ($all_templates as $this_template) {
+            if (!in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, true) && 
+                !in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true) && 
+                !in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) {
+                // Only record modifications for templates not already processed above
+                $template_mods = $this_template->modifications();
+                foreach (array_keys($template_mods) as $key) {
+                    if (!isset($this->modifications[$key])) {
+                        $this->modifications[$key] = $template_mods[$key];                                       // @codeCoverageIgnore
+                        report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
+                    } elseif (is_array($this->modifications[$key])) {
+                        $this->modifications[$key] = array_unique([...$this->modifications[$key], ...$template_mods[$key]]);
+                    } else {
+                        $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
+                    }
+                }
+            }
+        }
+        
         // Release memory ASAP
         unset($our_templates);
         unset($our_templates_slight);
