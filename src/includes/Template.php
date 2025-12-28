@@ -679,6 +679,14 @@ final class Template
         if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
             $param_name = COMMON_MISTAKES_TOOL[$param_name];
         }
+
+        // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
+        // We might want to think about if there are any cases with bad existing data
+        if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {
+            report_warning("Not adding " . echoable($param_name) . " parameter to cite book template (unsupported)");
+            return false;
+        }
+
         /** @psalm-assert string $param_name */
 
         if ($api) {
@@ -3260,6 +3268,13 @@ final class Template
                 $tmp = $this->get( 'work' );
                 $this->rename( 'title', 'chapter' );
                 $this->add('title', $tmp);
+            }
+
+            // Remove blank unsupported parameters when converting to cite book
+            foreach (CITE_BOOK_UNSUPPORTED_PARAMS as $unsupported) {
+                if ($this->blank($unsupported)) {
+                    $this->forget($unsupported);
+                }
             }
         }
     }

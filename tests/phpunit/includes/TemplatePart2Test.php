@@ -2169,4 +2169,29 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($prepared->get2('title'));
     }
 
+    public function testBlockUnsupportedParamsInCiteBook(): void {
+        // Test that journal, work, and website are blocked
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Nature'));
+        $this->assertFalse($template->add_if_new('work', 'Encyclopedia Britannica'));
+        $this->assertFalse($template->add_if_new('website', 'example.com'));
+    }
+
+    public function testAllowEncyclopediaInCiteBook(): void {
+        // Encyclopedia IS supported in cite book
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
+    }
+
+    public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
+        // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
+        // Verifies that journal and work parameters are blocked from being added
+        $text = "{{cite book |last1=Agrippa von Nettesheim |first1=Heinrich Cornelius |title=De occulta philosophia libri tres |date=1533 |location=Cologne |pages=160, 163, 276-277 |url=https://www.loc.gov/resource/rbc0001.2009gen12345/?sp=280 |access-date=28 November 2024 }}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'Test Journal'));
+        $this->assertFalse($template->add_if_new('work', 'Test Work'));
+    }
+
 }
