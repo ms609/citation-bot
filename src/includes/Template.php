@@ -6861,7 +6861,7 @@ final class Template
                 } elseif ($this->get('doi') === mb_trim($inline_doi[0])) {
                     // Already added by someone else
                     $this->set('title', mb_trim($inline_doi[1]));
-                    eport_modification("Remove duplicate inline DOI ");
+                    report_modification("Remove duplicate inline DOI ");
                 }
             }
         }
