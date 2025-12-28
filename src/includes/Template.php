@@ -4974,12 +4974,14 @@ final class Template
                     return;
 
                 case 'ref':
-                    $content = mb_strtolower($this->get($param));
-                    if ($content === '' || $content === 'harv') {
-                        $this->mod_ref = true;
-                        $this->forget($param);
-                    } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
-                        $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
+                    if ($this->has($param)) {
+                        $content = mb_strtolower($this->get($param));
+                        if ($content === '' || $content === 'harv') {
+                            $this->mod_ref = true;
+                            $this->forget($param);
+                        } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
+                            $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
+                        }
                     }
                     return;
 
