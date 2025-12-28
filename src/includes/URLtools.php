@@ -982,7 +982,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             $template->set($param, $matches[1] . $matches[2]);
         }
     } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
-        eport_info("Decoding OUP URL.");
+        report_info("Decoding OUP URL.");
         $template->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode($matches[1])));
         if ($template->get('title') === 'Validate User') {
             $template->set('title', '');
@@ -1012,7 +1012,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         if (mb_substr($matches[2], -1) === '#' || mb_substr($matches[2], -1) === '.') {
             $matches[2] = mb_substr($matches[2], 0, -1);
         } // Sometime just a trailing # after & part
-        eport_info("Decoding Proquest eBook URL.");
+        report_info("Decoding Proquest eBook URL.");
         $template->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
     } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $template->get($param), $matches)) {
         $template->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
