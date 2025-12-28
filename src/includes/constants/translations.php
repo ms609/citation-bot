@@ -70,7 +70,7 @@ const MK_TEMPLATES_MAP = [
     'наведување' => 'citation',
     'наведен arxiv' => 'cite arxiv',
     'наведени вести' => 'cite news',
-    'Hаведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this.  Use capital H so that it is not a duplicate key
+    'Hаведено списание' => 'cite document', // THIS IS CITE JOURNAL in MK, since cite document does not exist this. Use capital H so that it is not a duplicate key
     'наведен научен собир' => 'cite conference',
 ];
 const VI_TEMPLATES_MAP = [

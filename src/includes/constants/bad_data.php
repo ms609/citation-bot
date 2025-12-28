@@ -13085,7 +13085,7 @@ const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n
 
 const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat'];
 
-/* These are case-insensitive strings used to reject new data and delete existing data */
+/** These are case-insensitive strings used to reject new data and delete existing data */
 const ALWAYS_BAD_TITLES = [
     '{title}',
     'bloomberg - are you a robot?',
@@ -13111,7 +13111,7 @@ const ALWAYS_BAD_TITLES = [
     'request rejected',
 ];
 
-/* These are case-insensitive strings used to reject new data */
+/** These are case-insensitive strings used to reject new data */
 const BAD_TITLES = [
     ...ALWAYS_BAD_TITLES,
     '- youtube',
@@ -13192,7 +13192,7 @@ const BAD_TITLES = [
     'one moment, please',
 ];
 
-/* These are case-insensitive sub-strings used to reject new data */
+/** These are case-insensitive sub-strings used to reject new data */
 const ZOTERO_BAD_TITLES = [
     ' has expired',
     ' Log In',
