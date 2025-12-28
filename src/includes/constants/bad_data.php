@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-// Some data we get from outside sources is bad or at least mis-defined
-// Use lower case for all of these, and then compare to a lower cased version
+/**
+ * Some journals have issues only, no volume numbers. Some data we get from outside sources is bad or at least mis-defined. Use lower case for all of these, and then compare to a lower cased version.
+ */
 const HAS_NO_VOLUME = [
     'american museum novitates',
     'analecta hibernica',
@@ -31,8 +32,10 @@ const HAS_NO_VOLUME = [
     'yale french studies',
     'zookeys',
     'library and archives canada',
-]; // Some journals have issues only, no volume numbers
-// oceanic linguistics special publications has the problem that issues will not show up within temlpates
+];
+/**
+ * Some journals have volumes only, no issue numbers. Oceanic linguistics special publications has the problem that issues will not show up within temlpates.
+ */
 const HAS_NO_ISSUE = [
     'archaeological reports',
     'ars orientalis',
@@ -43,12 +46,15 @@ const HAS_NO_ISSUE = [
     "bulletin de l'ecole française d'extrême-orient",
     "cahiers d'extrême-asie",
     'yeats annual',
-]; // Some journals have volumes only, no issue numbers
-const PREFER_VOLUMES = ['illinois classical studies']; // When issue=volume, drop issue.  JSTOR calls volumes issues
+];
+/** When issue=volume, drop issue. JSTOR calls volumes issues. */
+const PREFER_VOLUMES = ['illinois classical studies'];
+
 const PREFER_ISSUES = [
     'bulletin of the united states national museum',
     'mammalian species',
 ];
+
 const CONFERENCE_LIST = [
     ' of the Association for ',
     'Annual Meeting of the Association',
@@ -56,6 +62,7 @@ const CONFERENCE_LIST = [
     'Proceedings of Advancing Astrophysics',
     'Proceedings of the ',
 ];
+
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     '[placeholder]',
     'article not found',
@@ -65,6 +72,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = [
     'placeholder',
     'symbolic placeholder',
 ];
+
 const BAD_AUTHORS = [
     'yg ent.',
     'yg ent',
@@ -119,6 +127,7 @@ const BAD_AUTHORS = [
     'pадіо',
     '自由時報電子報',
 ];
+
 const NON_HUMAN_AUTHORS = [
     'tabloid',
     'peru21',
@@ -205,6 +214,7 @@ const NON_HUMAN_AUTHORS = [
     '기자',
     '試験所',
 ];
+
 const BAD_PUBLISHERS = [
     'edinburgh',
     'edinburgi',
@@ -217,11 +227,13 @@ const BAD_PUBLISHERS = [
     'unknown',
 ];
 
+/** Things with dois that should be {{cite document|work=THIS}} */
 const ARE_WORKS = [
     'ietf datatracker',
     'medrxiv',
-]; // Things with dois that should be {{cite document|work=THIS}}
+];
 
+/** LOWER CASE!  WWW not there too! */
 const PUBLISHERS_ARE_WORKS = [
     'hitfix',
     'forbes (Russia)',
@@ -338,10 +350,12 @@ const PUBLISHERS_ARE_WORKS = [
     'washtimes.com',
     'www.pna.gov.ph',
     // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????    'abc news'  'nbc news', 'cbs news', 'bbc news'
-]; // LOWER CASE!  WWW not there too!
+];
 
-const WORKS_ARE_PUBLISHERS = ['united states census bureau']; // LOWER CASE!
+/** LOWER CASE! */
+const WORKS_ARE_PUBLISHERS = ['united states census bureau'];
 
+/** Things we add, but only if publisher and agency are both blank */
 const DUBIOUS_JOURNALS = [
     'ap wire',
     'ap',
@@ -353,10 +367,9 @@ const DUBIOUS_JOURNALS = [
     'report',
     'reuters',
     'tumblr',
-]; // Things we add, but only if publisher and agency are both blank
+];
 
-// Catch so-called authors such as hearst magazines, time inc, nielsen business media, inc
-// Ordered alphabetically.
+/** Catch so-called authors such as hearst magazines, time inc, nielsen business media, inc.  Ordered alphabetically. */
 const PUBLISHER_ENDINGS = [
     'books',
     'corporation',
@@ -372,6 +385,7 @@ const PUBLISHER_ENDINGS = [
     'publishing',
     'science',
 ];
+
 const BAD_TITLES = [
     '- youtube',
     'browser check',
@@ -450,6 +464,7 @@ const BAD_TITLES = [
     'zbmath',
     'one moment, please',
 ];
+
 const IN_PRESS_ALIASES = [
     'forthcoming',
     'in press',
@@ -469,6 +484,7 @@ const IN_PRESS_ALIASES = [
     'unknown',
     'unpublished',
 ];
+
 const NON_JOURNAL_BIBCODES = [
     'alg.geom',
     'arXiv',
@@ -489,6 +505,7 @@ const NON_JOURNAL_BIBCODES = [
     'physics',
     'quant.ph',
 ];
+/** Google Inc is a valid publisher, however. */
 const NON_PUBLISHERS = [
     'archive.fo',
     'archive.org',
@@ -503,7 +520,8 @@ const NON_PUBLISHERS = [
     'pub med',
     'researchgate',
     'zenodo',
-]; // Google Inc is a valid publisher, however.
+];
+
 const BAD_ZOTERO_TITLES = [
     ' has expired',
     ' Log In',
@@ -660,7 +678,7 @@ const BAD_ZOTERO_TITLES = [
     '页面不存在',
 ];
 
-//  Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals
+/** Some are journal search engines, some are proxies, some are just DOI resolvers, and most are actual journals */
 const CANONICAL_PUBLISHER_URLS = [
     '-ezproxy.',
     '.acm.org',
@@ -966,6 +984,7 @@ const JOURNAL_ARCHIVES_SITES = [
     '/doaj.org'
 ];
 
+/** Drop these if there is a valid FREE DOI */
 const PROXY_HOSTS_TO_ALWAYS_DROP = [
     '-ezproxy.',
     '.ezproxy.',
@@ -977,8 +996,9 @@ const PROXY_HOSTS_TO_ALWAYS_DROP = [
     'proxy.lib.',
     'proxy.libraries',
     'search.ebscohost.com',
-]; // Drop these if there is a valid DOI
+];
 
+/** Drop these if there is a valid FREE DOI */
 const PROXY_HOSTS_TO_DROP = [
     '-ezproxy.',
     '.ebscohost.com',
@@ -998,7 +1018,7 @@ const PROXY_HOSTS_TO_DROP = [
     'proxy.libraries',
     'psycnet.apa.org',
     'sciencedirect.com/science?_ob',
-]; // Drop these if there is a valid FREE DOI
+];
 
 const WEB_NEWSPAPERS = [
     'abante',
@@ -1076,6 +1096,7 @@ const HOSTS_TO_NOT_ADD = [
     'hdl.handle.net',
 ];
 
+/** Be warned, some websites host a separate sunday edition, etc. Be careful and when in doubt link to hostname. */
 const HOSTNAME_MAP = [
     'hitfix.com' => '[[HitFix]]',
     'abante.com.ph' => '[[Abante]]',
@@ -1308,7 +1329,7 @@ const HOSTNAME_MAP = [
     'youtube.com' => '[[YouTube]]',
     'zap2it.com' => '[[Zap2it]]',
     'zdnet.com' => '[[ZDNet]]',
-]; // Be warned, some website host a separate sunday edition, etc.  Be careful and when in doubt link to hostname
+];
 
 const NO_DATE_WEBSITES = [
     'civiroglu.net',
@@ -1459,6 +1480,8 @@ const ZOTERO_AVOID_REGEX = [
     'www\.virtualwall\.org', // Fails 100%
     'www\.wrecksite\.eu', // Fails 100%
 ];
+
+/** Just a list of ones that are obvious. Add ones that time-out as we find them. bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we do not want to grab too many sites. */
 const NON_JOURNAL_WEBSITES = [
     '.newsen.com/',
     '/newsen.com/',
@@ -12617,9 +12640,8 @@ const NON_JOURNAL_WEBSITES = [
     'zobbel.de/',
     'zoominfo.com/',
 ];
-// Just a list of ones that are obvious.  Add ones that time-out as we find them
-// bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we do not want to grab too many sites
 
+/** lowercase EXACT matches - these are not a prefix */
 const NON_JOURNAL_DOIS = [
     '10.1163/2352-0248',
     '10.17487/rfc',
@@ -12627,7 +12649,9 @@ const NON_JOURNAL_DOIS = [
     '10.3318/dib',
     '10.34667/tind.',
     '10.5531/db.vz.0001',
-]; // lowercase EXACT matches - these are not a prefix
+];
+
+/** Case-sensitive sub-string */
 const NON_JOURNALS = [
     'Amphibian Species of the World',
     'an Online Reference',
@@ -12636,7 +12660,9 @@ const NON_JOURNALS = [
     'Digital Collections',
     'Includes:reports from Commissioners, Inspectors and Others',
     'X (Formerly Twitter)',
-]; // Case-sensitive sub-string
+];
+
+/** lowercase axact matches */
 const ARE_MAGAZINES = [
     'billboard (magazine)',
     'billboard',
@@ -12677,7 +12703,9 @@ const ARE_MAGAZINES = [
     'wired uk',
     'wired',
     'yachting world',
-]; // lowercase axact matches
+];
+
+/** lowercase axact matches.  These are things that are both websites and newspapers */
 const ARE_MANY_THINGS = [
     'audible.com',
     'audible',
@@ -12706,7 +12734,9 @@ const ARE_MANY_THINGS = [
     'the royal family',
     'usdakotawar.org',
     'www.finna.fi',
-]; // lowercase axact matches.  These are things that are both websites and newspapers
+];
+
+/** lowercase exact matches */
 const ARE_NEWSPAPERS = [
     'la times',
     'philippine daily inquirer',
@@ -12717,7 +12747,9 @@ const ARE_NEWSPAPERS = [
     'washington post',
     'wikinews.org',
     'wikinews',
-]; // lowercase axact matches
+];
+
+/** lowercase exact matches */
 const NO_PUBLISHER_NEEDED = [
     'forbes magazine',
     'forbes.com',
@@ -12727,7 +12759,7 @@ const NO_PUBLISHER_NEEDED = [
     'new york times',
     'the daily telegraph',
     'the new york times',
-]; // lowercase axact matches
+];
 
 const ENCYCLOPEDIA_WEB = [
     'britannica.com',
@@ -13183,7 +13215,7 @@ const GOOD_10_1093_DOIS = [
     'zoolinnean',
 ];
 
-// List of things to not print links to, since they occur all the time
+/** List of things to not print links to, since they occur all the time */
 const AVOIDED_LINKS = [
     '',
     'ArXiv_(identifier)',
@@ -13222,7 +13254,7 @@ const AVOIDED_LINKS = [
     'Zentralblatt_MATH',
 ];
 
-// Lower case, and periods and dashes converted to spaces
+/** Lower case, and periods and dashes converted to spaces */
 const JOURNAL_IS_BOOK_SERIES = [
     'adv anat embryol cell biol',
     'adv exp med biol',
@@ -13285,6 +13317,7 @@ const JOURNAL_IS_BOOK_SERIES = [
 ];
 
 const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy'];
+
 const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat'];
 
 const ALWAYS_BAD_TITLES = [
