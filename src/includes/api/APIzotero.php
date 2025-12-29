@@ -325,6 +325,10 @@ final class Zotero {
                 report_info("Did not get a title for unknown meta-data reason from URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Maximum number of allowed redirects reached') !== false) {
                 report_info("Too many redirects for URL " . $the_url);
+            } elseif (mb_strpos($zotero_response, 'Unable to retrieve data from ISBN') !== false) {
+                report_info("ISBN data not found for URL " . $the_url);
+            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmcid') !== false) {
+                report_info("PMC data not found for URL " . $the_url);
             } else {
                 report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL " . $the_url); // Odd Error
             }
