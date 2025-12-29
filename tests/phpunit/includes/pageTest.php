@@ -134,7 +134,7 @@ final class pageTest extends testBaseClass {
 
     public function testVancNames1(): void {
         $in  = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
-        $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors =  Glaesemann GS, Hawk RM }}';
+        $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = Glaesemann GS, Hawk RM }}';
         $page = $this->process_page($in);
         $this->assertSame($out, $page->parsed_text());
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
@@ -177,7 +177,7 @@ final class pageTest extends testBaseClass {
         $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = <!-- -- >}}';
         $page = $this->process_page($in);
         $this->assertSame($out, $page->parsed_text());
-        $this->assertSame('', $page->edit_summary());
+        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames7(): void {
@@ -185,7 +185,7 @@ final class pageTest extends testBaseClass {
         $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = SomeBadExistingData }}';
         $page = $this->process_page($in);
         $this->assertSame($out, $page->parsed_text());
-        $this->assertSame('', $page->edit_summary());
+        $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testOverwriteTestPage(): void {
