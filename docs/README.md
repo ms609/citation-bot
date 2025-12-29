@@ -80,6 +80,7 @@ A quick tour of the main files:
 * `constants.php`: constants defined
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `NameTools.php`: defines name functions
+* `MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
 * `setup.php`: sets up needed functions, requires most of the other files listed here
 * `miscFns.php`: a variety of functions
 * `URLtools.php`: normalize urls and extract information from urls
