@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-// Source: http://www.tilman.de/programme/mathparser/substitutions.txt
-// This list previously includes some items twice.  That was okay, but some static analysis tools will complained, so non-used ones have been removed
 // Complex MathML elements (<mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>)
 // are handled by convert_mathml_to_latex() function in MathTools.php
 // TODO: Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
@@ -263,4 +261,129 @@ const MML_TAGS = [
     '&colon;' => ':',
     '&ApplyFunction;' => '',
     '&squ;' => '',
+];
+
+// Unicode-to-LaTeX conversions for math symbols and Greek characters.
+// This is not an exhaustive list; expand as needed.
+const UNICODE_MATH_MAP = [
+    // Lowercase Greek letters
+    'α' => '\\alpha',
+    'β' => '\\beta',
+    'γ' => '\\gamma',
+    'δ' => '\\delta',
+    'ε' => '\\epsilon',
+    'ζ' => '\\zeta',
+    'η' => '\\eta',
+    'θ' => '\\theta',
+    'ι' => '\\iota',
+    'κ' => '\\kappa',
+    'λ' => '\\lambda',
+    'μ' => '\\mu',
+    'ν' => '\\nu',
+    'ξ' => '\\xi',
+    'ο' => 'o',
+    'π' => '\\pi',
+    'ρ' => '\\rho',
+    'σ' => '\\sigma',
+    'τ' => '\\tau',
+    'υ' => '\\upsilon',
+    'φ' => '\\phi',
+    'χ' => '\\chi',
+    'ψ' => '\\psi',
+    'ω' => '\\omega',
+
+    // Uppercase Greek letters
+    'Α' => 'A',
+    'Β' => 'B',
+    'Γ' => '\\Gamma',
+    'Δ' => '\\Delta',
+    'Ε' => 'E',
+    'Ζ' => 'Z',
+    'Η' => 'H',
+    'Θ' => '\\Theta',
+    'Ι' => 'I',
+    'Κ' => 'K',
+    'Λ' => '\\Lambda',
+    'Μ' => 'M',
+    'Ν' => 'N',
+    'Ξ' => '\\Xi',
+    'Ο' => 'O',
+    'Π' => '\\Pi',
+    'Ρ' => 'P',
+    'Σ' => '\\Sigma',
+    'Τ' => 'T',
+    'Υ' => '\\Upsilon',
+    'Φ' => '\\Phi',
+    'Χ' => 'X',
+    'Ψ' => '\\Psi',
+    'Ω' => '\\Omega',
+
+    // Blackboard bold number sets
+    'ℤ' => '\\mathbb{Z}',
+    'ℕ' => '\\mathbb{N}',
+    'ℚ' => '\\mathbb{Q}',
+    'ℝ' => '\\mathbb{R}',
+    'ℂ' => '\\mathbb{C}',
+
+    // Operators and symbols
+    '−' => '-', // U+2212 minus
+    '×' => '\\times',
+    '∙' => '\\cdot',
+    '•' => '\\bullet',
+    '÷' => '\\div',
+    '±' => '\\pm',
+    '∓' => '\\mp',
+    '∗' => '\\ast',
+    '∣' => '\\mid',
+    '∧' => '\\wedge',
+    '∨' => '\\vee',
+    '∩' => '\\cap',
+    '∪' => '\\cup',
+    '∖' => '\\setminus',
+    '⊂' => '\\subset',
+    '⊃' => '\\supset',
+    '⊆' => '\\subseteq',
+    '⊇' => '\\supseteq',
+    '∈' => '\\in',
+    '∉' => '\\notin',
+    '∅' => '\\emptyset',
+    '∞' => '\\infty',
+    '∇' => '\\nabla',
+    '∑' => '\\sum',
+    '∏' => '\\prod',
+    '∫' => '\\int',
+    '∮' => '\\oint',
+
+    // Relations
+    '≠' => '\\neq',
+    '≈' => '\\approx',
+    '≅' => '\\cong',
+    '≡' => '\\equiv',
+    '≤' => '\\leq',
+    '≥' => '\\geq',
+    '≪' => '\\ll',
+    '≫' => '\\gg',
+    '∝' => '\\propto',
+    '∼' => '\\sim',
+
+    // Arrows
+    '←' => '\\leftarrow',
+    '→' => '\\rightarrow',
+    '↔' => '\\leftrightarrow',
+    '⇒' => '\\Rightarrow',
+    '⇐' => '\\Leftarrow',
+    '⇔' => '\\Leftrightarrow',
+    '↑' => '\\uparrow',
+    '↓' => '\\downarrow',
+
+    // Others
+    '°' => '^\\circ',
+    '′' => '\\prime',
+    '″' => '\\prime\\prime',
+    '∂' => '\\partial',
+    '∃' => '\\exists',
+    '∀' => '\\forall',
+    '⊥' => '\\perp',
+    '√' => '\\sqrt{}',
+    'ℓ' => '\\ell',
 ];
