@@ -66,4 +66,13 @@ final class mathToolsTest extends testBaseClass {
         $this->assertStringContainsString('0', $result);
         $this->assertStringContainsString('n', $result);
     }
+
+    public function testUnicodeGreekConversion(): void {
+        // Simulate processing as in convert_mathml_to_latex
+        // You can use the UNICODE_MATH_MAP directly, since it's available via constants/math.php
+        $input = '{\displaystyle γ + π = α}';
+        $expected = '{\displaystyle \gamma + \pi = \alpha}';
+        $output = str_replace(array_keys(UNICODE_MATH_MAP), array_values(UNICODE_MATH_MAP), $input);
+        $this->assertSame($expected, $output, "Unicode Greek letters should be converted to LaTeX macros.");
+    }
 }
