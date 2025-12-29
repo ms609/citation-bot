@@ -22,16 +22,6 @@ const MML_TAGS = [
     // Complex MathML elements are now handled by convert_mathml_to_latex() function in MathTools.php
     // These include: <mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>
     // TODO: Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
-    /*'<mfrac>' => '\frac{%BLOCK1%}{%BLOCK2%}',
-    '<msup>' => '%BLOCK1%^{%BLOCK2%}',
-    '<msub>' => '%BLOCK1%_{%BLOCK2%}',
-    '<mroot>' => '\sqrt[%BLOCK2%]{%BLOCK1%}',
-    '<msubsup>' => '%BLOCK1%_{%BLOCK2%}^{%BLOCK3%}',
-    '<munderover>' => '%BLOCK1%_{%BLOCK2%}^{%BLOCK3%}',
-    '<munder>' => '%BLOCK1%_{%BLOCK2%}',
-    '<mtable>' => '\matrix{%BLOCKS%}',
-    '<mtr>' => '%BLOCKS%\cr',
-    '<mtd>' => '%BLOCK1%&',*/
 
     '&dot;' => '\cdot',
     '&middot;' => '\cdot',
