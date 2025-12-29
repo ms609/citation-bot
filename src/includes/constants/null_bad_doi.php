@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 // TODO - manually check these from time to time - Last Check 23 April 2025
 const NULL_DOI_ANNOYING = [
+    '10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023' => true, // test suite bogus
+    '10.1093/oxfordhb/9780199552238.013.023' => true, // test suite bogus
     '10.1093/acrefore' => true, // Test suite bogus
     '10.1093/acrefore/9780190201098' => true, // Test suite bogus
     '10.1093/acrefore/9780190201098.001' => true, // Test suite bogus
@@ -1628,6 +1630,10 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860
 
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
 const NULL_DOI_LIST = [
+    '10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023' => true, // test suite bogus
+    '10.1093/oxfordhb/9780199552238.013.023' => true, // test suite bogus
+    '10.1093/oi/authority.x' => true,
+    '10.7249/j.ctt4cgd90.10' => true,
     '10.1093/acrefore' => true, // Test suite bogus
     '10.1093/acrefore/9780190201098' => true, // Test suite bogus
     '10.1093/acrefore/9780190201098.001' => true, // Test suite bogus
