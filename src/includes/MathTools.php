@@ -144,5 +144,8 @@ function convert_mathml_to_latex(string $mathml): string {
     // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
     $mathml = strip_tags($mathml);
 
+    // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
+    $mathml = str_replace(array_keys(UNICODE_MATH_MAP), array_values(UNICODE_MATH_MAP), $mathml);
+
     return $mathml;
 }
