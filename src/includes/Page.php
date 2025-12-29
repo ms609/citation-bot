@@ -216,15 +216,15 @@ class Page {
 
         // COMMENTS AND NOWIKI ETC. //
         /** @var array<Comment> $comments */
-        $comments    = $this->extract_object('Comment');
+        $comments = $this->extract_object('Comment');
         /** @var array<Nowiki> $nowiki */
-        $nowiki      = $this->extract_object('Nowiki');
+        $nowiki = $this->extract_object('Nowiki');
         /** @var array<Chemistry> $chemistry */
-        $chemistry   = $this->extract_object('Chemistry');
+        $chemistry = $this->extract_object('Chemistry');
         /** @var array<Mathematics> $mathematics */
         $mathematics = $this->extract_object('Mathematics');
         /** @var array<Musicscores> $musicality */
-        $musicality  = $this->extract_object('Musicscores');
+        $musicality = $this->extract_object('Musicscores');
         /** @var array<Preformated> $preformated */
         $preformated = $this->extract_object('Preformated');
         set_time_limit(120);
@@ -612,12 +612,12 @@ class Page {
         // we often just fix Journal caps, so must be case sensitive compare
         // Avoid minor edits - gadget API will make these changes, since it does not check return code
         $caps_ok = ['isbn', '{{jstor', '{{youtube'];
-        $last_first_in  = [' last=', ' last =', '|last=', '|last =', ' first=', ' first =', '|first=', '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
+        $last_first_in = [' last=', ' last =', '|last=', '|last =', ' first=', ' first =', '|first=', '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper'];
         $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'ite news', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Cite', 'cite', 'ubscription', 'work'];
         // @codeCoverageIgnoreStart
         if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (mb_stripos($this->title, "draft:") === 0)) { // Backload clean-up
             $caps_ok = [];
-            $last_first_in   = [];
+            $last_first_in = [];
             $last_first_out = [];
         } // @codeCoverageIgnoreEnd
         return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),

@@ -890,7 +890,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = null)
     } elseif (preg_match('~^' . MAGIC_STRING_URLS . '(\S+) $~', $url_sent, $matches)) {
         $url_sent = null;
         $url_type = $matches[1];
-        $url   = $template->get($matches[1]);
+        $url = $template->get($matches[1]);
     } else {
         $url = $url_sent;
         $url_type = 'An invalid value';

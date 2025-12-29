@@ -41,20 +41,20 @@ final class Parameter {
                 preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);  // @codeCoverageIgnore
             }
             if (count($pre_eq) === 0) {
-                $this->eq    = $split[0] . '=' . $post_eq[1];
+                $this->eq = $split[0] . '=' . $post_eq[1];
             } else {
-                $this->pre   = $pre_eq[1];
+                $this->pre = $pre_eq[1];
                 $this->param = $pre_eq[2];
-                $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
+                $this->eq = $pre_eq[3] . '=' . $post_eq[1];
             }
-            $this->post  = $post_eq[3];
-            $this->val   = $post_eq[2];
+            $this->post = $post_eq[3];
+            $this->val = $post_eq[2];
         } elseif ($pre_eq) {
-            $this->pre  = $pre_eq[1];
-            $this->val  = $pre_eq[2];
+            $this->pre = $pre_eq[1];
+            $this->val = $pre_eq[2];
             $this->post = $pre_eq[3];
         } else {
-            $this->val  = $text;
+            $this->val = $text;
         }
         // Comments before parameter names
         while (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {

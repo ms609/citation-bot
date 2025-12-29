@@ -1011,7 +1011,7 @@ final class Zotero {
                         }
                         if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
                             if (is_bad_author((string) $result->creators[$i]->lastName)) {
-                                $result->creators[$i]->lastName  = '';
+                                $result->creators[$i]->lastName = '';
                             }
                             if (is_bad_author((string) $result->creators[$i]->firstName)) {
                                 $result->creators[$i]->firstName = '';
