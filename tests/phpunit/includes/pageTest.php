@@ -164,7 +164,7 @@ final class pageTest extends testBaseClass {
         $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-     public function testVancNames5(): void {
+    public function testVancNames5(): void {
         $in  = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
         $out = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
         $page = $this->process_page($in);
