@@ -133,45 +133,59 @@ final class pageTest extends testBaseClass {
     }
 
     public function testVancNames1(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-        $this->assertSame(     '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = Jesch ED, Carr TP }}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $in  = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
+        $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors =  Glaesemann GS, Hawk RM }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames2(): void 
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-        $this->assertSame('{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    public function testVancNames2(): void {
+        $in  = '{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
+        $out = '{|}{{cs1 config|name-list-style=doggiesandcats}}<!-- -->{{{|}}}{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames3(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue = | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-        $this->assertSame('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue = 2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $in  = '{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
+        $out = '{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames4(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue = | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-        $this->assertSame('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue = 2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $in  = '{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
+        $out = '{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
-    public function testVancNames5(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-        $this->assertSame('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> }}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+     public function testVancNames5(): void {
+        $in  = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = }}';
+        $out = '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite book| last1 = Glaesemann | first1 = G. S. | last2 = Hawk | first2 = R. M. | doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testVancNames6(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = <!-- -->}}');
-        $this->assertSame(     '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | vauthors = <!-- -->}}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $in  = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = <!-- -- >}}';
+        $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = <!-- -- >}}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('', $page->edit_summary());
     }
 
     public function testVancNames7(): void {
-        $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = | issue =  | pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | last1 = SheHulk}}');
-        $this->assertSame(     '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume = 22| issue =  2| pages = 67–80 | date = June 2017 | pmid = <!-- --> | pmc = <!-- --> | doi = 10.3746/pnf.2017.22.2.67 | last1 = SheHulk}}', $page->parsed_text());
-        $this->assertSame('Alter: volume, issue. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $in  = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = SomeBadExistingData }}';
+        $out = '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite book| doi = 10.1364/OFS.1992.Th22 | pmid = <!-- --> | pmc = <!-- --> | chapter-url = <!-- --> |  arxiv = <!-- --> | title = Optical Fiber Sensors | chapter = Optical Fibers in Sensor Applications: Designing for Mechanical Reliability | date = 1992 | pages = TH22 | vauthors = SomeBadExistingData }}';
+        $page = $this->process_page($in);
+        $this->assertSame($out, $page->parsed_text());
+        $this->assertSame('', $page->edit_summary());
     }
 
     public function testOverwriteTestPage(): void {
