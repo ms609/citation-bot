@@ -241,7 +241,6 @@ const ITALICS_LIST =
     'Scutarx deltatylus|' .
     'Vernonia amygdalina|' .
     'Papilio memnon|' .
-    'Bromus laevipes|' .
     'Loa loa|' .
     'Ixodes scapularis|' .
     'Bishara backa|' .
