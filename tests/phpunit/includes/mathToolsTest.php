@@ -66,7 +66,7 @@ final class mathToolsTest extends testBaseClass {
         $this->assertStringContainsString('0', $result);
         $this->assertStringContainsString('n', $result);
     }
-    
+
     public function testUnicodeGreekConversion(): void {
         // Simulate processing as in convert_mathml_to_latex
         // You can use the UNICODE_MATH_MAP directly, since it's available via constants/math.php
