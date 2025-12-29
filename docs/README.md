@@ -78,8 +78,10 @@ Basic structure of a Citation bot script:
 
 A quick tour of the main files:
 * `constants.php`: constants defined
+* `constants/math.php`: MathML element and math entity mappings for simple string replacements
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 * `NameTools.php`: defines name functions
+* `MathTools.php`: math-specific processing including MathML to LaTeX conversion
 * `setup.php`: sets up needed functions, requires most of the other files listed here
 * `miscFns.php`: a variety of functions
 * `URLtools.php`: normalize urls and extract information from urls
