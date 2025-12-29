@@ -28,10 +28,9 @@ function wikify_external_text(string $title): string {
     if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
         $num_matches = count($matches[0]);
         for ($i = 0; $i < $num_matches; $i++) {
-            $replacement[$i] = '<math>' .
-                str_replace(array_keys(MML_TAGS), array_values(MML_TAGS),
-                    str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
-                . '</math>';
+            // Use the new convert_mathml_to_latex function to handle complex MathML
+            $converted_latex = convert_mathml_to_latex($matches[1][$i]);
+            $replacement[$i] = '<math>' . $converted_latex . '</math>';
             $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
             // Need to use a placeholder to protect contents from URL-safening
             $title = str_replace($matches[0][$i], $placeholder[$i], $title);
@@ -147,7 +146,7 @@ function wikify_external_text(string $title): string {
         $title = str_ireplace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
     }
 
-    foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
+    foreach (['<mtable>', '<mtr>', '<mtd>'] as $mathy) {
         if (mb_strpos($title, $mathy) !== false) {
             return '<nowiki>' . $title . '</nowiki>';
         }

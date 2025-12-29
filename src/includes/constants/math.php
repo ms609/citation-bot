@@ -4,45 +4,41 @@ declare(strict_types=1);
 
 // Source: http://www.tilman.de/programme/mathparser/substitutions.txt
 // This list previously includes some items twice.  That was okay, but some static analysis tools will complained, so non-used ones have been removed
+// Complex MathML elements (<mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>)
+// are handled by convert_mathml_to_latex() function in MathTools.php
+// TODO: Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
+
 const MML_TAGS = [
-    '<msqrt>' => '\sqrt{',
+    // ============================================= Basic MathML Elements =============================================
     '<mi>' => '',
     '</mi>' => '',
-    '</msqrt>' => '}',
-    '<mo>' => '',
-    '</mo>' => '',
     '<mn>' => '',
     '</mn>' => '',
+    '<mo>' => '',
+    '</mo>' => '',
     '<mtext>' => '\text{',
     '</mtext>' => '}',
+    '<msqrt>' => '\sqrt{',
+    '</msqrt>' => '}',
     '<mfenced>' => '\left(',
     '</mfenced>' => '\right)',
-    // Need to see these bits in action to work out how to resolve - TODO
-    // Perhaps unlikely to occur in article titles, anyway
-    /*'<mfrac>' => '\frac{%BLOCK1%}{%BLOCK2%}',
-    '<msup>' => '%BLOCK1%^{%BLOCK2%}',
-    '<msub>' => '%BLOCK1%_{%BLOCK2%}',
-    '<mroot>' => '\sqrt[%BLOCK2%]{%BLOCK1%}',
-    '<msubsup>' => '%BLOCK1%_{%BLOCK2%}^{%BLOCK3%}',
-    '<munderover>' => '%BLOCK1%_{%BLOCK2%}^{%BLOCK3%}',
-    '<munder>' => '%BLOCK1%_{%BLOCK2%}',
-    '<mtable>' => '\matrix{%BLOCKS%}',
-    '<mtr>' => '%BLOCKS%\cr',
-    '<mtd>' => '%BLOCK1%&',*/
+    '<mspace/>' => '\,',
+    '<mspace />' => '\,',
 
+    // ============================================= Basic Math Operators ==============================================
     '&dot;' => '\cdot',
     '&middot;' => '\cdot',
     '&times;' => '\times',
-    '&equals;' => '\Relbar',
-    '&%x220d;' => '\ni',
     '&minus;' => '-',
     '&frasl;' => '/',
     '&ratio;' => ':',
+    '&equals;' => '\Relbar',
     '&lt;' => '<',
     '&gt;' => '>',
     '&InvisibleTimes;' => '',
+    '&dd;' => 'd',
 
-    // Pfeile
+    // ============================================= Arrows ============================================================
     '&harr;' => '\leftrightarrow',
     '&larr;' => '\leftarrow',
     '&rarr;' => '\rightarrow',
@@ -50,10 +46,7 @@ const MML_TAGS = [
     '&lArr;' => '\Leftarrow',
     '&rArr;' => '\Rightarrow',
 
-    // dynamische Zeichen
-    '&dd;' => 'd',
-
-    // griechisches Alphabet
+    // ============================================= Greek Alphabet ====================================================
     '&alpha;' => '\alpha',
     '&beta;' => '\beta',
     '&gamma;' => '\gamma',
@@ -132,7 +125,7 @@ const MML_TAGS = [
     '&OHgr;' => '\Omega',
     '&Zgr;' => 'Z',
 
-    // Pfeile und andere Operatoren
+    // ============================================= Mathematical Symbols and Operators ================================
     '&perp;' => '\bot',
     '&prime;' => '\prime',
     '&infin;' => '\infty',
