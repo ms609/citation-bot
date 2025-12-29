@@ -263,8 +263,12 @@ const MML_TAGS = [
     '&squ;' => '',
 ];
 
-// Unicode-to-LaTeX conversions for math symbols and Greek characters.
+// UNICODE_MATH_MAP maps Unicode mathematical and Greek symbols to LaTeX.
+// This mapping is used to convert Unicode math/Greek symbols to LaTeX equivalents.
+// It should ONLY be applied as part of the MathML-to-LaTeX conversion process.
+// DO NOT apply globally or to non-math fields in citations or page text.
 // This is not an exhaustive list; expand as needed.
+
 const UNICODE_MATH_MAP = [
     // Lowercase Greek letters
     'α' => '\\alpha',
