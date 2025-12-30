@@ -5,8 +5,9 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/../src/includes/setup.php';
 
-// Map all total errors to exceptions to avoid errors leading to a green checkmark on the tests
-
+/**
+  * @phan-constructor-used-for-side-effects
+  */
 final class TestPage extends Page {
     public function __construct() {
         $bad_functions = ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
