@@ -105,6 +105,7 @@ const BAD_AUTHORS = [
     'great britain',
     'indiatoday',
     'kompas cyber media',
+    'kpopstarz'
     'missing',
     'natural history museum bern',
     'news agencies',
