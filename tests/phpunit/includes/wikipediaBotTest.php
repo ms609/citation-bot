@@ -15,8 +15,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testCategoryMembers1(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
     }
 
@@ -25,8 +24,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testRedirect1(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
     }
 
@@ -43,14 +41,12 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testGetLastRevision(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('805321380', WikipediaBot::get_last_revision('User:Blocked testing account/readtest'));
     }
 
     public function testGetUserName(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $api = new WikipediaBot();
         $this->assertSame('Citation_bot', $api->get_the_user());
     }
@@ -60,15 +56,13 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testIsValidUser1(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('Smith609');
         $this->assertTrue($result);
     }
 
     public function testIsValidUser2(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
         $this->assertTrue($result);
     }
@@ -99,15 +93,13 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testIsBlockedUser(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
         $this->assertFalse($result);
     }
 
     public function testGetLinks(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $json = WikipediaBot::get_links('Covid Watch');
         $this->assertTrue(mb_substr_count($json, 'exists') > 15);
     }
@@ -132,8 +124,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function test_ret_okay5(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $response = (object) ['error' => (object) ['info' => 'doggiesandcats']];
         $this->assertFalse(WikipediaBot::ret_okay($response));
     }
@@ -163,8 +154,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function test_response2page6(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $response = (object) ['batchcomplete' => 'we did it', 'query' => (object) ['pages' => (object) ['0' => (object) ['x' => 'y']]]];
         $this->assertNull(WikipediaBot::response2page($response));
     }
@@ -187,8 +177,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function test_resultsGood1(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $result = null;
         $this->assertFalse(WikipediaBot::resultsGood($result));
     }
