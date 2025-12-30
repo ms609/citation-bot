@@ -13243,6 +13243,7 @@ const ZOTERO_BAD_TITLES = [
     'An error occured',
     'An error occurred',
     'An Error Occurred',
+    'Anime News, Top Stories & In-Depth Anime Insights',
     'Are you a robot',
     'Article expired',
     'bad gateway',
