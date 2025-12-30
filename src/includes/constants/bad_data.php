@@ -13135,6 +13135,7 @@ const BAD_TITLES = [
     'arxiv e-prints',
     'arxiv mathematics e-prints',
     'access restricted',
+    'anime news, top stories & in-depth anime insights',
     'bloomberg - are you a robot?',
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
