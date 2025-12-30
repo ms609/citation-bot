@@ -6,8 +6,8 @@ ini_set('display_errors', 1);
 require_once __DIR__ . '/../src/includes/setup.php';
 
 /**
-  * @phan-constructor-used-for-side-effects
-  */
+ * @phan-constructor-used-for-side-effects
+ */
 final class TestPage extends Page {
     public function __construct() {
         $bad_functions = ['__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
