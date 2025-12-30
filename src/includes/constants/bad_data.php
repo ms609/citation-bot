@@ -3570,7 +3570,7 @@ const NON_JOURNAL_WEBSITES = [
     'discoverypublisher.com/',
     'disguise.one/',
     'dispatch.com/',
-    'dispatch.co.kr',
+    'dispatch.co.kr/',
     'displaymate.com/',
     'displayport.org/',
     'dissentmagazine.org/',
