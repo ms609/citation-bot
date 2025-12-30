@@ -131,6 +131,7 @@ const BAD_AUTHORS = [
     'united states. interstate commerce commission',
     'unknown',
     'vogue',
+    'vnexpress',
     'yucatan times',
     'pадіо',
     '自由時報電子報',
