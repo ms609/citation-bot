@@ -34,7 +34,6 @@ const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levens
     'access day' => 'access-date',
     'access_date' => 'access-date',
     'access- date' => 'access-date',
-    'access- date' => 'access-date',
     'access- дата' => 'access-date',
     'access--date' => 'access-date',
     'access-1date' => 'access-date',
