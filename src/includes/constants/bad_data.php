@@ -13370,6 +13370,7 @@ const DOI_FREE_PREFIX = [
     '10.1016/j.addicn',
     '10.1016/j.aiopen',
     '10.1016/j.apsb',
+    '10.1016/j.gpb',
     '10.1016/j.heliyon',
     '10.1016/j.jbc.',
     '10.1016/j.nlp',
