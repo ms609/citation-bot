@@ -12433,6 +12433,7 @@ const NON_JOURNALS = [
     'Digital Collections',
     'Includes:reports from Commissioners, Inspectors and Others',
     'X (Formerly Twitter)',
+    'X (formerly Twitter)',
 ];
 
 /** lowercase axact matches */
