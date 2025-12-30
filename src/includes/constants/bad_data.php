@@ -173,6 +173,7 @@ const NON_HUMAN_AUTHORS = [
     'editor',
     'editorial',
     'endowment',
+    'entertainment',
     'european central',
     'external',
     'eyewitness',
