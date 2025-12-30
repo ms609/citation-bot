@@ -134,7 +134,6 @@ const BAD_AUTHORS = [
 
 const NON_HUMAN_AUTHORS = [
     'tabloid',
-    'peru21',
     ' news',
     'admin',
     'france-presse',
