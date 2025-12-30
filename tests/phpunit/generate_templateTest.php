@@ -10,8 +10,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class generate_templateTest extends testBaseClass {
 
     public function testGenTemplate(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         // Run API
         ob_start();
         ob_start();
