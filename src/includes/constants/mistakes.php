@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
+/** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
+const COMMON_MISTAKES = [
     '_isbn' => 'isbn',
     '_pages' => 'pages',
     '–citeseerx' => 'citeseerx',
@@ -1521,7 +1522,7 @@ const COMMON_MISTAKES_TOOL = [
     'authorlink' => 'author-link',
 ];
 
-    // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
+/** Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1 */
 const TEMPLATE_CONVERSIONS = [
     ['cite', 'citation'],
     ['Cite', 'Citation'],

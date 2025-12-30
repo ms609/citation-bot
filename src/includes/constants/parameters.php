@@ -426,8 +426,7 @@ const TYPE_ALIASES = ['medium', 'type'];
 /** Not really an alias, but things to clean up */
 const LOCATIONS_AND_SUCH = ['publication-place', 'location', 'place'];
 
-// Parameters not supported by cite book template per Wikipedia documentation
-// Note: 'periodical', 'encyclopedia', and 'encyclopaedia' are excluded as they have special handling
+/** Parameters not supported by cite book template per Wikipedia documentation. Note: 'periodical', 'encyclopedia', and 'encyclopaedia' are excluded as they have special handling */
 const CITE_BOOK_UNSUPPORTED_PARAMS = [
     'work',
     'journal',
@@ -444,10 +443,7 @@ const ALL_ALIASES = [
     ISBN_ALIASES, LANG_ALIASES, TYPE_ALIASES, LOTS_OF_EDITORS, LOCATIONS_AND_SUCH,
 ];
 
-// Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
-// that information can also be presented using the generic {{citation}} template, which we do modify.
-// This list even includes items that are no longer supported, since we need to leave fixing them to humans
-// See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist
+/** Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because that information can also be presented using the generic {{citation}} template, which we do modify. This list even includes items that are no longer supported, since we need to leave fixing them to humans. See https://en.wikipedia.org/wiki/Module:Citation/CS1/Whitelist */
 const PARAMETER_LIST = [
     'ASIN', 'CITATION_BOT_PLACEHOLDER_BARE_URL', 'DOI', 'EISSN', 'HDL', 'ID', 'ISBN',
     'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID',
@@ -539,7 +535,9 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'laydate', 'laysource', 'layurl', 'name-list-format', 'sectionurl', 'seriesno',
     'timecaption', 'titlelink', 'ref name', 'ISBN13', 'booktitle', 'chapterurl', 'episodelink',
     'isbn13', 'mailinglist', 'mapurl', 'nopp', 'publicationdate', 'publicationplace',
-    'serieslink', 'sid', 'note', 'do', 'lien', 'lay-date', 'lay-format', 'lay-source',
+    'serieslink',
+    // sid is actually page range in some no english wiki's but do not fix since so close to id=. lien is French template parameter, but also English work. web could be website or url, tile could be time or title. list should not be changed to last, name should not become time, etc. Some are from other templates.
+    'sid', 'note', 'do', 'lien', 'lay-date', 'lay-format', 'lay-source',
     'lay-url', 'transcripturl', 'pages totales', 'ppprefix', 'pprefix', 'web', 'middle',
     'editor-name', 'libellé', 'la', 'page-url', '-url', 'list', 'user', 'postid',
     'citation', 'name', 'reference', 'book', 'tile', 'data', 'abruf-verborgen', 'kommentar',
@@ -573,9 +571,3 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'titleofsite', 'free-access', 'authority', 'fbid', 'size', 'article-id', 'colast',
     'archive-status', 'tome', 'commentator', 'titledate', 'paragraphs', 'orig-author', 'weite',
 ];
-
-// sid is actually page range in some no english wiki's but do not fix since so close to id=
-// lien is French template parameter, but also English work
-// web could be website or url, tile could be time or title
-// list should not be changed to last, name should not become time, etc.
-// Some are from other templates
