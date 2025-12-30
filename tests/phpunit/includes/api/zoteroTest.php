@@ -1120,20 +1120,17 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testHDLSimpler2a(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertIsString(hdl_works('20.1000/100'));
     }
 
     public function testHDLSimpler2b(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326'));
     }
 
     public function testHDLSimpler2c(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertFalse(hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35'));
     }
 
