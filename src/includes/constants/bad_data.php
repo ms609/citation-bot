@@ -103,6 +103,7 @@ const BAD_AUTHORS = [
     'entertainment',
     'great britain',
     'indiatoday',
+    'kompas cyber media',
     'missing',
     'natural history museum bern',
     'news agencies',
