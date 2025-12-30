@@ -15,8 +15,7 @@ const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_A
 final class ConstantsTest extends testBaseClass {
 
     public function testConstantsDefined(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
         for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
             $this->assertSame(mb_trim(JOURNAL_ACRONYMS[$i]), mb_trim(title_capitalization(mb_ucwords(mb_trim(UCFIRST_JOURNAL_ACRONYMS[$i])), true)));
@@ -51,8 +50,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testConstantsOoops(): void { // Did we forget to upper/lower case one of them?
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
             $this->assertNotEquals(mb_trim(JOURNAL_ACRONYMS[$i]), mb_trim(UCFIRST_JOURNAL_ACRONYMS[$i]));
         }
@@ -62,8 +60,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testForDisasters(): void { // Did we get things out of order and cause a disaster?
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('BJPsych', title_capitalization('Bjpsych', true));
         $this->assertSame('HortScience', title_capitalization('Hortscience', true));
         $this->assertSame('TheMarker', title_capitalization('Themarker', true));
@@ -77,8 +74,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testImplicitConstants(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         // Consonants
         $this->assertSame('X', title_capitalization('x', true));
         $this->assertSame('Xz', title_capitalization('xz', true));
@@ -97,16 +93,14 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testAllLowerCase(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         foreach (BIG_ARRAY as $actual) {
             $this->assertSame(mb_strtolower($actual), $actual);
         }
     }
 
     public function testMinimized(): void { // See is_book_series() function
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         foreach (JOURNAL_IS_BOOK_SERIES as $actual) {
             $simple = mb_trim(str_replace(['-', '.', '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
             $simple = mb_trim(str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $simple));
@@ -115,8 +109,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testNoSpacesOnEnds(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         foreach (BIG_ARRAY as $actual) {
             if (!in_array($actual, ["sign up "], true)) {
                 $this->assertSame(mb_trim($actual), $actual);
@@ -125,8 +118,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testAtoZ(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $leader_bits = [];
         $leader = true;
         $start_alpha = '/* The following will be automatically updated to alphabetical order */';
@@ -182,8 +174,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testWhiteList(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $we_failed = false;
         $our_original_whitelist = PARAMETER_LIST;
         $our_whitelist = array_unique($our_original_whitelist);
@@ -243,8 +234,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testWhiteListNotBlacklisted(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $whitelist = [...DEAD_PARAMETERS, ...PARAMETER_LIST];
         $orig = '';
         $new = '';
@@ -307,8 +297,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testDead(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
         if (empty($overlap)) {
             $this->assertFaker();
@@ -321,8 +310,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testMagazinesAndNot(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
         if (empty($overlap)) {
             $this->assertFaker();
@@ -353,8 +341,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testAuthorsFlat(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $failed = false;
         $test_flat = [];
         foreach (AUTHOR_PARAMETERS as $array) {
@@ -400,8 +387,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testNonJournalList(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $flat = NON_JOURNAL_WEBSITES;
         sort($flat);
         $failed = false;
@@ -437,8 +423,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testNonJournalListIsNotBad(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $failed = false;
         foreach (CANONICAL_PUBLISHER_URLS as $journal) {
             $journal = $journal . '/';
@@ -480,8 +465,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testItalicsOrder(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $in_order = true;
         $spaces_at = 99999999;
         $max_spaces = 0;
@@ -531,8 +515,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testItalicsNoDuplicates(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = explode("|", ITALICS_LIST);
         sort($italics);
         $last = "123412341234";
@@ -550,8 +533,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testCamelNoDuplicates(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = CAMEL_CASE;
         sort($italics);
         $last = "123412341234";
@@ -569,36 +551,31 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testItalicsEscaped1(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, '('));
     }
 
     public function testItalicsEscaped2(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, ')'));
     }
 
     public function testItalicsEscaped3(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, '\\'));
     }
 
     public function testItalicsEscaped4(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
         $this->assertSame(0, mb_substr_count($italics, '.'));
     }
 
     public function testItalicsNoSpaces(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $italics = explode("|", ITALICS_LIST);
         foreach ($italics as $item) {
             $this->assertNotEquals(' ', mb_substr($item, 0, 1));
@@ -607,8 +584,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testItalicsHardCode(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
         for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
             $this->assertSame(0, mb_substr_count(ITALICS_HARDCODE_IN[$i], "'''"));
@@ -650,8 +626,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testFreeDOI(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         foreach (DOI_FREE_PREFIX as $prefix) {
             $this->assertTrue(is_string($prefix));
             if (mb_strpos($prefix, '/') === false) {
@@ -661,8 +636,7 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testISBNlist(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $last = -1;
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             $k = (int) $k;
@@ -677,24 +651,21 @@ final class ConstantsTest extends testBaseClass {
 
     public function testForISBNListUpdates(): void {
         // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
         $this->assertSame(1, mb_substr_count($wikipedia_response, 'RangeMessage timestamp:'));
         $this->assertSame(1, mb_substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
     }
 
     public function testCurlLimit(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $ch = curl_init();
         $this->assertSame(1, curl_limit_page_size($ch, 1, 134217729));
         $this->assertSame(0, curl_limit_page_size($ch, 1, 134217728));
     }
 
     public function testDoubleMap(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $errors = '';
         $all_maps = [...COMMON_MISTAKES, ...COMMON_MISTAKES_TOOL];
         $okay_to_be_bad = ['coauthors', 'deadurl', 'lay-date', 'lay-source', 'lay-url', 'month', 'authors'];  // We upgrade dead parameters to better dead parameters

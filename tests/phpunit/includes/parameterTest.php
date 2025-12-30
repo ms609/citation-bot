@@ -10,8 +10,7 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class parameterTest extends testBaseClass {
 
     public function testValueWithPipeAndTrailingNewline(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";
         $parameter = $this->parameter_parse_text_helper($text);
         $this->assertSame('', $parameter->pre);

@@ -10,8 +10,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class gadgetapiTest extends testBaseClass {
 
     public function testGadget(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         ob_start();
         $_POST['text'] = '{{cite|pmid=34213}}';
         $_POST['summary'] = 'Something Nice';

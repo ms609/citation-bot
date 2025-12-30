@@ -6,8 +6,7 @@ require_once __DIR__ . '/../../testBaseClass.php';
 final class UrlToolsTest extends testBaseClass {
 
     public function testFixupGoogle(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('https://www.google.com/search?x=cows', simplify_google_search('https://www.google.com/search?x=cows'));
         $this->assertSame('https://www.google.com/search/?q=cows', simplify_google_search('https://www.google.com/search/?q=cows'));
     }
