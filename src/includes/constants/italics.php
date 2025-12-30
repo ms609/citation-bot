@@ -417,6 +417,9 @@ const ITALICS_LIST =
     'Accipiter|' .
     'Santacruzodon|' .
     'Escherichia|' .
+    'Ophiocordyceps|' .
+    'Neotamanduaand|' .
+    'Epichloë|' .
     'END_OF_CITE_list_junk';
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
@@ -539,7 +542,7 @@ const CAMEL_CASE = [
     'libRoadRunner', 'pyJac', 'myGrid', 'Cp2TiCl', 'myExperiment',
     'CicArVarDB', 'InDel database', 'BioMoby', 'maxdBrowse', 'GazePlotter',
     'ScanGraph', 'MusicBrainz', 'WontBe', 'InChIs', 'PolyChord', 'CloudCom',
-    'SmartTechCon',
+    'SmartTechCon', 'InCoWoCo', 'AviList',
 ];
 
 const ITALICS_HARDCODE_IN  = [
