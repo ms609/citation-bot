@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-// Complex MathML elements (<mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>)
-// are handled by convert_mathml_to_latex() function in MathTools.php
-// TODO: Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
-
+/**
+ * Complex MathML elements (<mfrac>, <msup>, <msub>, <msubsup>, <mmultiscripts>, <mroot>, <munder>, <munderover>) are handled by convert_mathml_to_latex() function in MathTools.php.
+ *
+ * @todo Consider adding support for <mtable>, <mtr>, <mtd> (table/matrix elements, less common in titles)
+ */
 const MML_TAGS = [
-    // ============================================= Basic MathML Elements =============================================
+    // Basic MathML Elements
     '<mi>' => '',
     '</mi>' => '',
     '<mn>' => '',
@@ -23,7 +24,7 @@ const MML_TAGS = [
     '<mspace/>' => '\,',
     '<mspace />' => '\,',
 
-    // ============================================= Basic Math Operators ==============================================
+    // Basic Math Operators=
     '&dot;' => '\cdot',
     '&middot;' => '\cdot',
     '&times;' => '\times',
@@ -36,7 +37,7 @@ const MML_TAGS = [
     '&InvisibleTimes;' => '',
     '&dd;' => 'd',
 
-    // ============================================= Arrows ============================================================
+    // Arrows
     '&harr;' => '\leftrightarrow',
     '&larr;' => '\leftarrow',
     '&rarr;' => '\rightarrow',
@@ -44,7 +45,7 @@ const MML_TAGS = [
     '&lArr;' => '\Leftarrow',
     '&rArr;' => '\Rightarrow',
 
-    // ============================================= Greek Alphabet ====================================================
+    // Greek Alphabet
     '&alpha;' => '\alpha',
     '&beta;' => '\beta',
     '&gamma;' => '\gamma',
@@ -123,7 +124,7 @@ const MML_TAGS = [
     '&OHgr;' => '\Omega',
     '&Zgr;' => 'Z',
 
-    // ============================================= Mathematical Symbols and Operators ================================
+    // Mathematical Symbols and Operators
     '&perp;' => '\bot',
     '&prime;' => '\prime',
     '&infin;' => '\infty',
@@ -263,12 +264,7 @@ const MML_TAGS = [
     '&squ;' => '',
 ];
 
-// UNICODE_MATH_MAP maps Unicode mathematical and Greek symbols to LaTeX.
-// This mapping is used to convert Unicode math/Greek symbols to LaTeX equivalents.
-// It should ONLY be applied as part of the MathML-to-LaTeX conversion process.
-// DO NOT apply globally or to non-math fields in citations or page text.
-// This is not an exhaustive list; expand as needed.
-
+/** UNICODE_MATH_MAP maps Unicode mathematical and Greek symbols to LaTeX. This mapping is used to convert Unicode math/Greek symbols to LaTeX equivalents. It should ONLY be applied as part of the MathML-to-LaTeX conversion process. DO NOT apply globally or to non-math fields in citations or page text. This is not an exhaustive list; expand as needed. */
 const UNICODE_MATH_MAP = [
     // Lowercase Greek letters
     'α' => '\\alpha',

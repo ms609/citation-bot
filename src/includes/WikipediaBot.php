@@ -30,7 +30,7 @@ final class WikipediaBot {
         }
         $init_done = true;
         // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-        self::$ch_write  = bot_curl_init(1.0,
+        self::$ch_write = bot_curl_init(1.0,
                 [CURLOPT_FAILONERROR => true,
                     CURLOPT_POST => true,
                     CURLOPT_REFERER => "https://citations.toolforge.org/",

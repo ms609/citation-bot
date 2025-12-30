@@ -46,9 +46,9 @@ enum VancStyle
     case NAME_LIST_STYLE_VANC;
 }
 
-const COMMONUSERNAME   = 'citations@tools.wmflabs.org';
+const COMMONUSERNAME = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
-const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
+const PUBMEDUSERNAME = 'martins+pubmed@gmail.com';
 
 const BOT_CROSSREF_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . CROSSREFUSERNAME . "; +https://citations.toolforge.org/)";
 const BOT_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . COMMONUSERNAME . "; +https://citations.toolforge.org/)";

@@ -545,7 +545,7 @@ const CAMEL_CASE = [
     'SmartTechCon', 'InCoWoCo', 'AviList',
 ];
 
-const ITALICS_HARDCODE_IN  = [
+const ITALICS_HARDCODE_IN = [
     'The Myth ofPiers Plowman',
     'BioelectromagnetismPrinciples and Applications',
     'Practice inThe Nice Valour',

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// TODO - manually check these from time to time - Last Check 23 April 2025
+/** Manually check these from time to time. Last Check 23 April 2025 */
 const NULL_DOI_ANNOYING = [
     '10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023' => true, // test suite bogus
     '10.1093/oxfordhb/9780199552238.013.023' => true, // test suite bogus
@@ -1619,7 +1619,8 @@ const NULL_DOI_ANNOYING = [
     '10.9774/GLEAF.4700.2016.ju.00011' => true, // page not found
 ];
 
-const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area, see below
+/** These need one test in expandFnsTest.php "Deal with super common ones that flood the list" area. See below */
+const NULL_DOI_STARTS_BAD = [
     '10.2277/',
     '10.3149/csm.',
     '10.5860/choice.',
@@ -1628,7 +1629,7 @@ const NULL_DOI_STARTS_BAD = [ // These need one test in expandFnsTest.php "Deal 
 const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860/choice.28-3158'];
 // TODO: need to manually check old ones like 10.4435/BSPI.2018.11 are casinos, and new one like 10.4435/BSPI.2024.06 go to the main page - special code block ALL of these
 
- /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above ===================================================================================== */
+/** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above. */
 const NULL_DOI_LIST = [
     '10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023' => true, // test suite bogus
     '10.1093/oxfordhb/9780199552238.013.023' => true, // test suite bogus
