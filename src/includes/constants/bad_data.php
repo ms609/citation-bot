@@ -197,7 +197,6 @@ const NON_HUMAN_AUTHORS = [
     'nations',
     'natural history',
     'new york',
-    ' news'
     'news desk',
     'obituaries',
     'office of',
