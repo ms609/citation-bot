@@ -88,6 +88,7 @@ const BAD_AUTHORS = [
     '- -',
     '- -.',
     '(:unav)',
+    'about.com food',
     'admin',
     'all rights reserved',
     'author',
