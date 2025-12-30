@@ -101,6 +101,7 @@ const BAD_AUTHORS = [
     'el pais',
     'el país',
     'entertainment',
+    'express', 
     'great britain',
     'indiatoday',
     'kompas cyber media',
