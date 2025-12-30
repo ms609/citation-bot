@@ -27,7 +27,7 @@ final class TestPage extends Page {
         $this->text = $text;
     }
 
-    #[\Override]
+    #[Override]
     public function parse_text(string $text): void { // Save title from test name
         $save_title = $this->title;
         parent::parse_text($text);
@@ -41,7 +41,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     private bool $testing_skip_bibcode;
     private bool $testing_skip_wiki;
 
-    #[\Override]
+    #[Override]
     protected function setUp(): void {
         Zotero::create_ch_zotero();
         $wb = new WikipediaBot();
