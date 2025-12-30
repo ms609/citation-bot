@@ -5,8 +5,7 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class googleBooksTest extends testBaseClass {
     public function testGoogleBookNormalize0(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $removed_redundant = 0;
         $removed_parts = '';
         $gid = [];
@@ -62,8 +61,7 @@ final class googleBooksTest extends testBaseClass {
     }
 
     public function testGoogleBookNormalize5(): void {
-        $pg = new TestPage(); // Fill page name with test name for debugging
-        unset($pg);
+        new TestPage(); // Fill page name with test name for debugging
         $removed_redundant = 0;
         $removed_parts = '';
         $gid = [];
