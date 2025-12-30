@@ -121,6 +121,7 @@ const BAD_AUTHORS = [
     'rundfunk',
     'super user',
     'the editor',
+    'the times of israel',
     'tfpc content',
     'top gear',
     'topstarnews',
