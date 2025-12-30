@@ -4164,7 +4164,7 @@ const NON_JOURNAL_WEBSITES = [
     'everydayprojects.org/',
     'everyspec.com/',
     'evilhat.com/',
-    'e.vnexpress.net/'
+    'e.vnexpress.net/',
     'evo.co.uk/',
     'evolutionarystrategies.net/',
     'evostar.org/',
