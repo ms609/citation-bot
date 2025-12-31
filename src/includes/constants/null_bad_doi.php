@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /** Manually check these from time to time. Last Check 23 April 2025 */
 const NULL_DOI_ANNOYING = [
+    '10.1186/s12863-015-0293-x' => true, // landing page
     '10.1515/crll.1878.84.1' => true, // 404
     '10.24247/ijeefusapr20183' => true, // bogus pdf
     '10.24247/ijelapr20184' => true, // bogus pdf
@@ -2874,7 +2875,7 @@ const NULL_DOI_LIST = [
     '10.1186/s12862-015-0579-7' => true,
     '10.1186/s12862-016-0582-7' => true,
     '10.1186/s12863-015-0203-2' => true,
-    '10.1186/s12863-015-0293-x' => true,
+    '10.1186/s12863-015-0293-x' => true, // landing page
     '10.1186/s12875-016-0400-8' => true,
     '10.1186/s13075-016-0935-z' => true,
     '10.11863/j.suse.2021.06.06' => true,
