@@ -41,31 +41,31 @@ final class UrlToolsTest extends testBaseClass {
     public function testGroveMusic1(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |access-date=November 20, 2018 |url-access=subscription|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 |access-date=November 20, 2018 |url-access=subscription|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testGroveMusic2(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testGroveMusic3(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testGroveMusic4(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online |doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testGroveMusic5(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|via=The Dog Farm|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |isbn=978-1-56159-263-0 |via=The Dog Farm|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 |via=The Dog Farm|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
     }
 
     public function testAmazonExpansion1(): void {
