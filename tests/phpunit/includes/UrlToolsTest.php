@@ -486,7 +486,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIs(): void {
-        $text = '{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';;
+        $text = '{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
@@ -510,7 +510,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testMusicDOIsO(): void {
-        $text = '{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';;
+        $text = '{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
@@ -582,7 +582,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAfHistDOIs(): void {
-        $text = '{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';;
+        $text = '{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
@@ -618,7 +618,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testReligionDOIs(): void {
-        $text = '{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';;
+        $text = '{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
@@ -642,7 +642,7 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testClassicsDOIs(): void {
-        $text = '{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';;
+        $text = '{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=Y|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('url');
         $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
