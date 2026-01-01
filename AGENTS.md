@@ -2,6 +2,12 @@
 
 This file provides context for AI assistants working on the Citation Bot project.
 
+## Quick Start for AI Assistants
+   - Language: PHP 8.4+
+   - Main logic: Template.php
+   - Test command: php process_page.php "Page"
+   - Code style: verbose, explicit, spaced-out, highly formatted style, assignments in conditionals are normal
+
 ## Project Overview
 
 Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR) and generates properly formatted Wikipedia citation templates.
@@ -43,12 +49,13 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 **Important characteristics of this codebase:**
 
-- Dense, compact coding style
+- Uses a verbose, explicit, spaced-out, highly formatted style
 - Assignments within conditionals are common
-- One-line if/foreach/else statements (no braces)
+- Multi-line if/foreach/else statements (with braces)
 - Method calls that modify state often occur within assignments
-- Pay attention to `else if` vs `elseif` (they behave differently)
+- Do not use `else if` but do use `elseif` (they behave differently)
 - Action can happen through method calls in equality checks
+- String operations need to be multi-byte versions
 
 **Example patterns you'll see:**
 ```php
