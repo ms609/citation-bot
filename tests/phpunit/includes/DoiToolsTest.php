@@ -515,13 +515,13 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function testBrokenDoiDetection5(): void {
-        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}';
+        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $expanded->parsed_text());
     }
 
     public function testCrossRefEvilDoi(): void {
-        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}';
+        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('39', $expanded->get2('volume'));
@@ -547,7 +547,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff1(): void {
-        $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}';
+        $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
