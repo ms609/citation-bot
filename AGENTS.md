@@ -177,14 +177,12 @@ All tests must pass before merging.
 ## Important Constraints
 
 ### Browser Storage Limitation
-**NEVER use localStorage or sessionStorage** - not supported in artifacts/web interface. Use:
-- React state (useState) for React components
 - JavaScript variables for HTML artifacts
 - In-memory storage only
 
 ### Fast Mode Requirements (Gadget)
 The gadget MUST:
-- Complete within 10 seconds
+- Complete within 60 seconds
 - Not perform slow operations (bibcode search, URL expansion)
 - Handle browser timeout gracefully
 - Provide useful partial results if API calls fail
