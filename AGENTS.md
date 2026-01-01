@@ -7,6 +7,7 @@ This file provides context for AI assistants working on the Citation Bot project
    - Main logic: Template.php
    - Test command: php process_page.php "Page"
    - Code style: verbose, explicit, spaced-out, highly formatted style, assignments in conditionals are normal
+   - First task: Read Template.php and Parameter.php
 
 ## Project Overview
 
@@ -57,10 +58,19 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - Action can happen through method calls in equality checks
 - String operations need to be multi-byte versions
 
-**Example patterns you'll see:**
+**Good (matches project style):**
 ```php
-if ($value = $this->get_something()) process($value);
-foreach ($items as $item) if ($item->valid()) $item->process();
+if ($doi = $template->get('doi')) {
+  if ($metadata = CrossRef::query($doi)) {
+    $template->add_if_new('title', $metadata->title);
+  }
+}
+```
+
+**Avoid (too compact for this project):**
+```php
+if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi)) 
+  $template->add_if_new('title', $metadata->title);
 ```
 
 ## External API Integration
