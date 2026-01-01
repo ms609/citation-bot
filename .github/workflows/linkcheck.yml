@@ -1,0 +1,22 @@
+on:
+  push:
+    branches: [ master ]
+
+  pull_request:
+    paths:
+      - '*.md'
+      - '*/*.md'
+      - '*/*/*.md'
+      - '*/*/*/*.md'
+
+  schedule:
+    - cron: '25 17 * * 1'
+
+name: Testing linkcheck
+jobs:
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: md-linkcheck
+      uses: ocular-d/md-linkcheck-action@master
