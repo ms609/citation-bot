@@ -268,6 +268,11 @@ Check `setup.php` for debug flags and logging configuration.
 5. Follow existing code style
 6. Update documentation
 7. Submit pull request with clear description
+8. **Common Pitfalls:**
+   - Using `else if` instead of `elseif`
+   - Forgetting multi-byte string functions
+   - Not handling API failures gracefully
+   - Violating the verbose code style with compact one-liners
 
 ## Bug Reporting
 
@@ -355,7 +360,18 @@ When helping with this project:
 5. **Standards:** Follow existing patterns in the codebase
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
-8. **See also:** docs/CONTRIBUTING.md is that CONTRIBUTING.md file
+8. **See also:** For detailed contribution guidelines, see [docs/CONTRIBUTING.md](../docs/CONTRIBUTING.md)
+
+## Project Philosophy
+
+### Why PHP?
+The bot runs on Wikimedia Toolforge, which has excellent PHP support and infrastructure for Wikipedia bots.
+
+### Why Verbose Code Style?
+The project prioritizes readability and maintainability over compactness. With 15,000+ commits and multiple contributors over many years, explicit code is easier to debug and modify safely.
+
+### Why Maintenance Mode?
+The bot has reached a stable, feature-complete state. It reliably processes thousands of Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
 
 ---
 
