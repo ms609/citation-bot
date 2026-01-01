@@ -363,7 +363,7 @@ final class Zotero {
         if (isset($result->identifiers->doi) && empty($result->DOI)) {
             $result->DOI = $result->identifiers->doi;
         }
-        unset(result->identifiers->doi);
+        unset($result->identifiers->doi);
 
         if (isset($result->publicationTitle) && mb_substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = mb_substr($result->publicationTitle, 0, -2);
