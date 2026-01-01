@@ -4,10 +4,12 @@ on:
 
   pull_request:
     paths:
+      - '.github/workflows/linkcheck.yml'
       - '*.md'
       - '*/*.md'
       - '*/*/*.md'
       - '*/*/*/*.md'
+      - '*/*/*/*/*.md'
 
   schedule:
     - cron: '25 17 * * 1'
