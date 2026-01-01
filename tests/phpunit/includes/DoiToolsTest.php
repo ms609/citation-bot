@@ -45,21 +45,21 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function testJstorInDoi(): void {
-        $template = $this->prepare_citation('{{cite journal|jstor=}}');
+        $template = $this->prepare_citation('{{cite journal|jstor=|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code
         check_doi_for_jstor($doi, $template);
         $this->assertSame('3241423', $template->get2('jstor'));
     }
 
     public function testJstorInDoi2(): void {
-        $template = $this->prepare_citation('{{cite journal|jstor=3111111}}');
+        $template = $this->prepare_citation('{{cite journal|jstor=3111111|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '10.2307/3241423?junk';
         check_doi_for_jstor($doi, $template);
         $this->assertSame('3111111', $template->get2('jstor'));
     }
 
     public function testJstorInDoi3(): void {
-        $template = $this->prepare_citation('{{cite journal|jstor=3111111}}');
+        $template = $this->prepare_citation('{{cite journal|jstor=3111111|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '3241423';
         check_doi_for_jstor($doi, $template);
         $this->assertSame('3111111', $template->get2('jstor'));
@@ -246,7 +246,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function testBankruptDOICompany(): void {
-        $text = "{{cite journal|doi=10.2277/JUNK_INVALID}}";
+        $text = "{{cite journal|doi=10.2277/JUNK_INVALID|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('doi'));
     }
@@ -272,282 +272,282 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function testFixLotsOfDOIs1(): void {
-        $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463}}';
+        $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs2(): void {
-        $text = '{{cite journal| doi= 10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357}}';
+        $text = '{{cite journal| doi= 10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs3(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs4(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs5(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs6(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs7(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs8(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs9(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs10(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs11(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs12(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs13(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs14(): void {
-        $text = '{{cite journal| doi=10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224 }}';
+        $text = '{{cite journal| doi=10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs15(): void {
-        $text = '{{cite journal| doi=10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262 }}';
+        $text = '{{cite journal| doi=10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs16(): void {
-        $text = '{{cite journal| doi=10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827 }}';
+        $text = '{{cite journal| doi=10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs17(): void {
-        $text = '{{cite journal| doi=10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129 }}';
+        $text = '{{cite journal| doi=10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs18(): void {
-        $text = '{{cite journal| doi=10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199 }}';
+        $text = '{{cite journal| doi=10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs19(): void {
-        $text = '{{cite journal| doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 }}';
+        $text = '{{cite journal| doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs20(): void {
-        $text = '{{cite journal| doi=10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 }}';
+        $text = '{{cite journal| doi=10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs21(): void {
-        $text = '{{cite journal| doi=10.1093/odnb/29929 }}';
+        $text = '{{cite journal| doi=10.1093/odnb/29929 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs23(): void {
-        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055 }}';
+        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs24(): void {
-        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442 }}';
+        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs25(): void {
-        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300 }}';
+        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs26(): void {
-        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256}}';
+        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs27(): void {
-        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391 }}';
+        $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs28(): void {
-        $text = '{{cite journal| doi=10.1093/ref:odnb/108196 }}';
+        $text = '{{cite journal| doi=10.1093/ref:odnb/108196 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs29(): void {
-        $text = '{{cite journal| doi=10.1093/9780198614128.013.108196 }}';
+        $text = '{{cite journal| doi=10.1093/9780198614128.013.108196 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs30(): void {
-        $text = '{{cite journal| doi=10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023 }}';
+        $text = '{{cite journal| doi=10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs31(): void {
-        $text = '{{cite journal| doi=10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5 }}';
+        $text = '{{cite journal| doi=10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
     }
 
     public function testFixLotsOfDOIs32(): void {
-        $text = '{{cite journal| doi=10.1093/oso/9780190124786.001.0001/oso-9780190124786 }}';
+        $text = '{{cite journal| doi=10.1093/oso/9780190124786.001.0001/oso-9780190124786 |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     }
 
     public function testBrokenDoiDetection1(): void {
-        $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $text = '{{cite journal|doi=10.3265/Nefrologia.pre2010.May.10269|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
 
     public function testBrokenDoiDetection2(): void {
-        $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases}}';
+        $text = '{{cite journal|doi=10.3265/Nefrologia.NOTAREALDOI.broken|title=Acute renal failure due to multiple stings by Africanized bees. Report on 43 cases|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('doi-broken-date'));
     }
 
     public function testBrokenDoiDetection3(): void {
-        $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->}}';
+        $text = '{{cite journal|doi= <!-- MC Hammer says to not touch this -->|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('<!-- MC Hammer says to not touch this -->', $expanded->get2('doi'));
     }
 
     public function testBrokenDoiDetection4(): void {
-        $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} }}';
+        $text = '{{cite journal|doi= {{MC Hammer says to not touch this}} |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('{{MC Hammer says to not touch this}}', $expanded->get2('doi'));
     }
 
     public function testBrokenDoiDetection5(): void {
-        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}';
+        $text = '{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|url={{This is not real}}|doi={{I am wrong}}|jstor={{yet another bogus one }}|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $expanded->parsed_text());
     }
 
     public function testCrossRefEvilDoi(): void {
-        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#}}';
+        $text = '{{cite journal | doi = 10.1002/(SICI)1097-0134(20000515)39:3<216::AID-PROT40>3.0.CO;2-#|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertSame('39', $expanded->get2('volume'));
     }
 
     public function testDoiExpansionBook(): void {
-        $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1}}";
+        $text = "{{cite book|doi=10.1007/978-981-10-3180-9_1|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
         $this->assertSame('978-981-10-3179-3', $expanded->get2('isbn'));
     }
 
     public function testDoiEndings1(): void {
-        $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full}}';
+        $text = '{{cite journal | doi=10.1111/j.1475-4983.2012.01203.x/full|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     }
 
     public function testDoiEndings2(): void {
-        $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full}}';
+        $text = '{{cite journal| url=http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     }
 
     public function test1093DoiStuff1(): void {
-        $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose}}';
+        $text = '{{cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -558,7 +558,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff2(): void {
-        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose}}';
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -569,7 +569,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff3(): void {
-        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose}}';
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -580,7 +580,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff4(): void {
-        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies}}';
+        $text = '{{Cite web|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -591,7 +591,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff5(): void {
-        $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose}}';
+        $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -602,7 +602,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff6(): void {
-        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose}}';
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -613,7 +613,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff7(): void {
-        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose}}';
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
@@ -624,7 +624,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function test1093DoiStuff8(): void {
-        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies}}';
+        $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->forget('url');
         $this->assertNull($template->get2('url'));
