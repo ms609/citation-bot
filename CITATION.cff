@@ -10,6 +10,8 @@ type: software
 authors:
   - name: Martin Smith
   - name: GlazerMann
+  - name: redalert2fan
+  - name: Others
 identifiers:
   - type: url
     value: 'https://en.wikipedia.org/wiki/User:Citation_bot'
