@@ -347,7 +347,7 @@ final class Zotero {
         unset($result->version);
         unset($result->accessDate);
         unset($result->libraryCatalog);
-        unset($result->url);
+        unset($result->identifiers->url);
         unset($result->tags);
         unset($result->key);
         unset($result->websiteTitle);
@@ -517,8 +517,8 @@ final class Zotero {
 
         if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
             if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-                if (!isset($result->DOI)) {
-                    $result->DOI = mb_trim($matches[1]);
+                if (!isset($result->identifiers->doi)) {
+                    $result->identifiers->doi = mb_trim($matches[1]);
                 }
                 $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));
             }
@@ -673,11 +673,11 @@ final class Zotero {
             }
         }
 
-        if (isset($result->DOI) && $template->blank('doi')) {
-            if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
-                    $result->DOI = $matches[1];
+        if (isset($result->identifiers->doi) && $template->blank('doi')) {
+            if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->identifiers->doi, $matches)) {
+                $result->identifiers->doi = $matches[1];
             }
-            $possible_doi = sanitize_doi($result->DOI);
+            $possible_doi = sanitize_doi($result->identifiers->doi);
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
                 expand_by_doi($template);
