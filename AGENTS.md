@@ -360,7 +360,7 @@ When helping with this project:
 5. **Standards:** Follow existing patterns in the codebase
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
-8. **See also:** For detailed contribution guidelines, see [docs/CONTRIBUTING.md](../docs/CONTRIBUTING.md)
+8. **See also:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines
 
 ## Project Philosophy
 
