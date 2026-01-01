@@ -1,4 +1,4 @@
-# Claude.md - Citation Bot
+# AGENTS.md - Citation Bot
 
 This file provides context for AI assistants working on the Citation Bot project.
 
