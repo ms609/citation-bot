@@ -361,7 +361,7 @@ final class Zotero {
         unset($result->source);
         /* Different API endpoints */
         if (isset($result->identifiers->doi) && empty($result->DOI)) {
-            $result->DOI = result->identifiers->doi;
+            $result->DOI = $result->identifiers->doi;
         }
         unset(result->identifiers->doi);
 
