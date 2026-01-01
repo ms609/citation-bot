@@ -348,6 +348,7 @@ final class Zotero {
         unset($result->accessDate);
         unset($result->libraryCatalog);
         unset($result->url);
+        unset($result->identifiers->url);
         unset($result->tags);
         unset($result->key);
         unset($result->websiteTitle);
@@ -358,6 +359,11 @@ final class Zotero {
         unset($result->nameOfAct);
         unset($result->language);
         unset($result->source);
+        /* Different API endpoints */
+        if (isset($result->identifiers->doi) && empty($result->DOI)) {
+            $result->DOI = result->identifiers->doi;
+        }
+        unset(result->identifiers->doi);
 
         if (isset($result->publicationTitle) && mb_substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = mb_substr($result->publicationTitle, 0, -2);
