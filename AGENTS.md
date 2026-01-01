@@ -6,7 +6,7 @@ This file provides context for AI assistants working on the Citation Bot project
    - Language: PHP 8.4+
    - Main logic: Template.php
    - Test command: php process_page.php "Page"
-   - Code style: verbose, explicit, spaced-out, highly formatted style, assignments in conditionals are normal
+   - Code style: verbose, explicit, spaced-out, highly formatted style
    - First task: Read Template.php and Parameter.php
 
 ## Project Overview
@@ -75,7 +75,7 @@ if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
 
 ## External API Integration
 
-The bot integrates with multiple external services:
+The bot integrates with multiple external services.  Sometimes these APIs will fail:
 
 | Service | Identifier | Purpose |
 |---------|------------|---------|
@@ -175,10 +175,6 @@ All tests must pass before merging.
 4. Add validation rules if needed
 
 ## Important Constraints
-
-### Browser Storage Limitation
-- JavaScript variables for HTML artifacts
-- In-memory storage only
 
 ### Fast Mode Requirements (Gadget)
 The gadget MUST:
