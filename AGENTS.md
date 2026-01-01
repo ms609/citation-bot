@@ -354,7 +354,7 @@ The bot supports all standard Wikipedia citation templates:
 
 When helping with this project:
 
-1. **Remember:** Dense code style with inline assignments
+1. **Remember:** Avoid dense code style with inline assignments
 2. **Test:** Always test with real Wikipedia pages
 3. **Security:** Never expose OAuth tokens or API keys
 4. **Performance:** Consider gadget timeout constraints
