@@ -1,0 +1,23 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Citation Bot
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - name: Martin Smith
+  - name: GlazerMann
+identifiers:
+  - type: url
+    value: 'https://en.wikipedia.org/wiki/User:Citation_bot'
+repository-code: 'https://github.com/ms609/citation-bot'
+url: 'https://citations.toolforge.org'
+abstract: >-
+  Citation bot is a tool to expand and format references at
+  Wikipedia. It retrieves citation data from a variety of
+  sources including CrossRef (DOI), PMID, PMC and JSTOR, and
+  returns a formatted citation.
+license: AGPL-3.0
