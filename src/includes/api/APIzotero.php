@@ -8,7 +8,7 @@ require_once __DIR__ . '/../URLtools.php';
 require_once __DIR__ . '/../miscTools.php'; // @codeCoverageIgnoreEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
-const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
+const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/wikibase/";
 const THESIS_TYPES = ['PhD', 'MS', 'MA', 'MFA', 'MBA', 'EdD', 'BSN', 'DMin', 'DDiv'];
 const BAD_URL_STATUS = ['usurped', 'unfit', 'dead', 'deviated'];
 
