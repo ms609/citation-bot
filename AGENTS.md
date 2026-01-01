@@ -355,6 +355,7 @@ When helping with this project:
 5. **Standards:** Follow existing patterns in the codebase
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
+8. **See also:** docs/CONTRIBUTING.md is that CONTRIBUTING.md file
 
 ---
 
