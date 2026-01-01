@@ -36,6 +36,7 @@ on:
       - '.phplint.yml'
       - 'tests/phpunit/README.md'
       - 'AGENTS.md'
+      - 'CITATION.cff'
 
   schedule:
     - cron: '25 17 * * 1'
