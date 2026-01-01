@@ -35,6 +35,7 @@ on:
       - '.phpcs.xml'
       - '.phplint.yml'
       - 'tests/phpunit/README.md'
+      - 'AGENTS.md'
 
   schedule:
     - cron: '25 17 * * 1'
