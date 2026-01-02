@@ -48,7 +48,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 ### Web Interface (`index.html` + `process_page.php`)
 * **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
-* **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
+dsdsd* **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 * **Use case**: Users who want comprehensive citation expansion and can wait longer
 * **Timeout limit**: Typically completes for all pages, even if the web interface times out
 
