@@ -22,7 +22,7 @@
 
 ## GitHub repository details
 
-- The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
+- The **master** code is implemented at <https://citations.toolforge.org/>, and is intended for public use.
 - When needed, the **development** branch is intended for major restructuring and testing.  
 
 ## Overview
