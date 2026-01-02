@@ -1,3 +1,5 @@
+# Citation bot
+
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/DesignSecurity.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/phplint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/phplint.yml)
@@ -18,11 +20,8 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml)
 
-
-
-# Citation bot
-
 ## GitHub repository details
+
 - The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
 - When needed, the **development** branch is intended for major restructuring and testing.  
 
@@ -36,29 +35,31 @@ This is more properly a bot-gadget-tool combination. The parts are:
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.  Single pages can be GETed.
-- Citation expander (https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js) + `gadgetapi.php`. This
+- Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `gadgetapi.php`. This
   comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-- `generate_template.php` creates the wiki reference given an identifier (for example: https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183)
+- `generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
-Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
+Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_talk:Citation_bot>.
 
 ## Web Interface vs. Gadget: Slow Mode Differences
 
 The Citation Bot has two main user-facing interfaces with different performance characteristics:
 
 ### Web Interface (`index.html` + `process_page.php`)
+
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
 - **Timeout limit**: Typically completes for all pages, even if the web interface times out
 
 ### Citation Expander Gadget (`gadgetapi.php`)
+
 - **Default mode**: Fast mode only (slow mode is always disabled)
-- **Operations performed**: 
+- **Operations performed**:
   - ✓ Expands PMIDs, DOIs, arXiv, JSTOR IDs to full citations
   - ✓ Adds missing citation parameters (authors, title, journal, date, pages, etc.)
   - ✓ Cleans up citation formatting and fixes template types
-- **Operations skipped**: 
+- **Operations skipped**:
   - ✗ Searching for new bibcodes
   - ✗ Expanding URLs via Zotero
 - **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion. Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
@@ -71,12 +72,13 @@ The Citation Bot has two main user-facing interfaces with different performance 
 ## Structure
 
 Basic structure of a Citation bot script:
+
 - the `env.php` that defines configuration constants (you can create it from `env.php.example`)
 - the `setup.php` that sets up the functions needed (usually, you don't need to modify this file)
 - the Page functions to fetch/expand/post the page's text
 
-
 A quick tour of the main files:
+
 - `constants.php`: constants defined
 - `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 - `NameTools.php`: defines name functions
