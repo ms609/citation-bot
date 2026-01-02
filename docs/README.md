@@ -100,9 +100,9 @@ A quick tour of the main files:
 ## Style and structure notes
 
 Constants and definitions should be provided in `constants.php`.
-Classes should be in individual files. The code is generally written densely. 
-Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, 
-and action taking place through method calls that take place in assignments or equality checks. 
+Classes should be in individual files. The code is generally written densely.
+Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements,
+and action taking place through method calls that take place in assignments or equality checks.
 Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
@@ -126,6 +126,7 @@ Or for testing in the shell:
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
 ## Running on the command line
+
 In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
@@ -133,10 +134,12 @@ In order to run on the command line one needs OAuth tokens as documented in `env
 The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
 
 Command line parameters:
+
 - `--slow` - retrieve bibcodes and expand urls
 - `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
 
 ## Running in web browser locally
+
 One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit https://localhost:8081.
 
 To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
