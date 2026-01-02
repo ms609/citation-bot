@@ -19,8 +19,8 @@ Citation Bot is a Wikipedia maintenance tool that automatically expands and form
 - **Language:** PHP 8.4+
 - **License:** GPL-3.0
 - **Status:** Stable/Inactive (maintenance mode)
-- **Repository:** hdsafsdattps://github.com/ms609/citation-bot
-- **Production:** https://citations.toolforge.org/
+- **Repository:** <https://github.com/ms609/citation-bot>
+- **Production:** <https://citations.toolforge.org>
 - **Platform:** Wikimedia Toolforge (Kubernetes)
 
 ## Architecture
@@ -296,7 +296,7 @@ Check `setup.php` for debug flags and logging configuration.
 
 ## Bug Reporting
 
-**Primary channel:** https://en.wikipedia.org/wiki/User_talk:Citation_bot
+**Primary channel:** <https://en.wikipedia.org/wiki/User_talk:Citation_bot>
 
 Include:
 
@@ -366,9 +366,9 @@ The bot supports all standard Wikipedia citation templates:
 
 ## Resources
 
-- **Documentation:** https://en.wikipedia.org/wiki/User:Citation_bot/use
-- **Bug reports:** https://en.wikipedia.org/wiki/User_talk:Citation_bot
-- **Source code:** https://github.com/ms609/citation-bot
+- **Documentation:** <https://en.wikipedia.org/wiki/User:Citation_bot/use>
+- **Bug reports:** <https://en.wikipedia.org/wiki/User_talk:Citation_bot>
+- **Source code:** <https://github.com/ms609/citation-bot>
 
 ## Quick Reference for AI Assistants
 

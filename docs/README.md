@@ -140,7 +140,7 @@ Command line parameters:
 
 ## Running in web browser locally
 
-One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit https://localhost:8081.
+One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit <https://localhost:8081>.
 
 To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
 
