@@ -9,7 +9,7 @@ Then, run the following command from the command line :
 
     phpunit --bootstrap ./includes/setup.php tests/phpunit/gadgetapiTest.php
 
-# Running the Full Test Suite
+## Running the Full Test Suite
 
 The recommended way to run all tests is:
 
