@@ -59,6 +59,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - String operations need to be multi-byte versions
 
 **Good (matches project style):**
+
 ```php
 if ($doi = $template->get('doi')) {
   if ($metadata = CrossRef::query($doi)) {
@@ -68,6 +69,7 @@ if ($doi = $template->get('doi')) {
 ```
 
 **Avoid (too compact for this project):**
+
 ```php
 if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi)) 
   $template->add_if_new('title', $metadata->title);
@@ -78,7 +80,7 @@ if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
 The bot integrates with multiple external services.  Sometimes these APIs will fail:
 
 | Service | Identifier | Purpose |
-|---------|------------|---------|
+| ------- | ---------- | ------- |
 | CrossRef | DOI | Journal article metadata |
 | PubMed | PMID | Biomedical literature |
 | PubMed Central | PMC | Open access articles |
@@ -103,6 +105,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 ## Development Environment
 
 ### Local Setup with Docker
+
 ```bash
 docker compose up -d
 # Access at http://localhost:8081
@@ -110,6 +113,7 @@ docker exec -it citation-bot-php-1 composer update
 ```
 
 ### Toolforge Deployment
+
 ```bash
 become citations
 webservice stop
@@ -117,6 +121,7 @@ webservice --backend=kubernetes php8.4 start
 ```
 
 ### Command Line Usage
+
 ```bash
 php process_page.php "PageName|Another Page" --slow --savetofiles
 ```
