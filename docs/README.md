@@ -22,7 +22,7 @@
 
 ## GitHub repository details
 
-- The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
+- The **master** code is implemented at <https://citations.toolforge.org/>, and is intended for public use.
 - When needed, the **development** branch is intended for major restructuring and testing.  
 
 ## Overview
@@ -147,9 +147,7 @@ One way to set up a localhost that runs in your web browser is to use Docker. In
 To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
 
 To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See env.php.example in the root.
-dafads
 
-dfads
-fds
-fa
-sd
+## Submitting issues
+
+Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers internal use.
