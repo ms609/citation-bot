@@ -69,7 +69,7 @@ The bot reports its activity to users using:
   - `~` denotes that the name or value of an existing parameter is being modified
   - `.` denotes that a change has been considered but deemed unnecessary or unsuitable
   - `!` is used to denote an outcome that may require review by the user or bot maintainer
-      
+
   We recommend using the "report_" family of functions defined in `user_messages.php` to communicate with the user.
 
 ## Defensive programming is necessary
@@ -78,4 +78,3 @@ The bot reports its activity to users using:
 - External data sources that suddenly change data - we need tests to detect this
 - CS1/CS2 sometimes changes and what was a good edit yesterday is bad edit today.  Thus the wikipedia talk page for the bot need to be monitored for bugs and suggestions.
 - Do not merge changes without running the test suite. At a minimum, run the full test suite and ensure the non-static tests execute beyond initial startup before merging. “Minor changes” are frequently incorrect and must be validated by tests.  Trust us, we have failed.
-
