@@ -69,7 +69,7 @@ The bot reports its activity to users using:
   - `~` denotes that the name or value of an existing parameter is being modified
   - `.` denotes that a change has been considered but deemed unnecessary or unsuitable
   - `!` is used to denote an outcome that may require review by the user or bot maintainer
-      
+afdsfasd  
   We recommend using the "report_" family of functions defined in `user_messages.php` to communicate with the user.
 
 ## Defensive programming is necessary
