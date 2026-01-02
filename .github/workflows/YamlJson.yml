@@ -1,4 +1,4 @@
-name: Validate JSON and XML
+name: Validate JSON, XML, and MD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  json-yaml-validate:
+  json-yaml-md-validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6.0.1
@@ -18,3 +18,9 @@ jobs:
       - name: json-yaml-validate
         id: json-yaml-validate
         uses: GrantBirki/json-yaml-validate@v4.0.0
+
+      - name: markdown-validate
+        id: markdown-validate
+        uses: DavidAnson/markdownlint-cli2-action@v22
+        with:
+          globs: '**/*.md'
