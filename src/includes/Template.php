@@ -2873,6 +2873,7 @@ final class Template
                     case "ndlpid":
                     case "core output":
                     case "core work":
+                    case "ark":
                     case "internet archive id":
                     case "lccn8": // Assume not normal template for a reason
                     case "google books": // Usually done for fancy formatting and because already has title-link/url
