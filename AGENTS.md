@@ -1,6 +1,7 @@
 # AGENTS.md - Citation Bot
 
-This file provides context for AI assistants working on the Citation Bot project.
+This file provides context for AI assistants working on the Citation Bot
+project.
 
 ## Quick Start for AI Assistants
 
@@ -12,7 +13,10 @@ This file provides context for AI assistants working on the Citation Bot project
 
 ## Project Overview
 
-Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR) and generates properly formatted Wikipedia citation templates.
+Citation Bot is a Wikipedia maintenance tool that automatically expands
+and formats bibliographic references. It retrieves metadata from
+authoritative sources (CrossRef, PubMed, arXiv, JSTOR) and generates
+properly formatted Wikipedia citation templates.
 
 **Key Facts:**
 
@@ -27,8 +31,10 @@ Citation Bot is a Wikipedia maintenance tool that automatically expands and form
 
 The system has two main components:
 
-1. **Web Interface** (`index.html` + `process_page.php`) - Batch processes entire Wikipedia pages
-2. **Gadget API** (`gadgetapi.php`) - Real-time in-browser citation expansion during editing
+1. **Web Interface** (`index.html` + `process_page.php`) - Batch
+processes entire Wikipedia pages
+2. **Gadget API** (`gadgetapi.php`) - Real-time in-browser citation
+expansion during editing
 
 ### Core Processing Flow
 
@@ -39,7 +45,8 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ## Key Classes
 
-- **`Page.php`** - Manages Wikipedia page content (fetch, process, write)
+- **`Page.php`** - Manages Wikipedia page content (fetch, process,
+write)
 - **`Template.php`** - Core citation expansion logic
 - **`Parameter.php`** - Template parameter handling
 - **`WikipediaBot.php`** - Wikipedia API client with OAuth
@@ -79,7 +86,8 @@ if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
 
 ## External API Integration
 
-The bot integrates with multiple external services.  Sometimes these APIs will fail:
+The bot integrates with multiple external services.  Sometimes these
+APIs will fail:
 
 | Service | Identifier | Purpose |
 | ------- | ---------- | ------- |
@@ -207,11 +215,11 @@ The gadget MUST:
 ## File Organization
 
 ```text
-/
-├── src/                    # Source code directory
-├── tests/                  # PHPUnit tests
-├── .github/workflows/      # CI/CD workflows
-├── constants.php           # Application constants
+
+├── src/                   # Source code directory
+├── tests/                 # PHPUnit tests
+├── .github/workflows/     # CI/CD workflows
+├── constants.php          # Application constants
 ├── setup.php              # Bootstrap configuration
 ├── env.php                # Configuration (not in repo)
 ├── Page.php               # Page management
@@ -296,7 +304,8 @@ Check `setup.php` for debug flags and logging configuration.
 
 ## Bug Reporting
 
-**Primary channel:** <https://en.wikipedia.org/wiki/User_talk:Citation_bot>
+**Primary channel:**
+<https://en.wikipedia.org/wiki/User_talk:Citation_bot>
 
 Include:
 
@@ -366,8 +375,10 @@ The bot supports all standard Wikipedia citation templates:
 
 ## Resources
 
-- **Documentation:** <https://en.wikipedia.org/wiki/User:Citation_bot/use>
-- **Bug reports:** <https://en.wikipedia.org/wiki/User_talk:Citation_bot>
+- **Documentation:**
+<https://en.wikipedia.org/wiki/User:Citation_bot/use>
+- **Bug reports:**
+<https://en.wikipedia.org/wiki/User_talk:Citation_bot>
 - **Source code:** <https://github.com/ms609/citation-bot>
 
 ## Quick Reference for AI Assistants
@@ -381,21 +392,28 @@ When helping with this project:
 5. **Standards:** Follow existing patterns in the codebase
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
-8. **See also:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines
+8. **See also:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for
+detailed contribution guidelines
 
 ## Project Philosophy
 
 ### Why PHP?
 
-The bot runs on Wikimedia Toolforge, which has excellent PHP support and infrastructure for Wikipedia bots.
+The bot runs on Wikimedia Toolforge, which has excellent PHP support and
+infrastructure for Wikipedia bots.
 
 ### Why Verbose Code Style?
 
-The project prioritizes readability and maintainability over compactness. With 15,000+ commits and multiple contributors over many years, explicit code is easier to debug and modify safely.
+The project prioritizes readability and maintainability over
+compactness. With 15,000+ commits and multiple contributors over many
+years, explicit code is easier to debug and modify safely.
 
 ### Why Maintenance Mode?
 
-The bot has reached a stable, feature-complete state. It reliably processes thousands of Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
+The bot has reached a stable, feature-complete state. It reliably
+processes thousands of Wikipedia pages daily. New features are welcome
+but the focus is on stability and bug fixes.  Also, the main coders have
+busy lives.
 
 ---
 
