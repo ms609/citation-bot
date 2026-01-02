@@ -149,4 +149,5 @@ To install Composer dependencies, start the container as noted above, then type 
 To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See env.php.example in the root.
 
 ## Submitting issues
+
 Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers internal use.
