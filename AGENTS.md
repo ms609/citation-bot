@@ -384,6 +384,7 @@ When helping with this project:
 ## Project Philosophy
 
 ### Why PHP?
+dafssdfas
 The bot runs on Wikimedia Toolforge, which has excellent PHP support and infrastructure for Wikipedia bots.
 
 ### Why Verbose Code Style?
