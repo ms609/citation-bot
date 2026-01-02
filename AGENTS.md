@@ -4,11 +4,11 @@ This file provides context for AI assistants working on the Citation Bot project
 
 ## Quick Start for AI Assistants
 
-   - Language: PHP 8.4+
-   - Main logic: Template.php
-   - Test command: php process_page.php "Page"
-   - Code style: verbose, explicit, spaced-out, highly formatted style
-   - First task: Read Template.php and Parameter.php
+- Language: PHP 8.4+
+- Main logic: Template.php
+- Test command: php process_page.php "Page"
+- Code style: verbose, explicit, spaced-out, highly formatted style
+- First task: Read Template.php and Parameter.php
 
 ## Project Overview
 
@@ -135,11 +135,13 @@ php process_page.php "PageName|Another Page" --slow --savetofiles
 **Required:** Create `env.php` from `env.php.example`
 
 Must include:
+
 - OAuth tokens (consumer token/secret, access token/secret)
 - Bot username
 - API keys (CrossRef, JSTOR, etc.)
 
 **Security:**
+
 ```bash
 chmod go-rwx env.php
 ```
@@ -204,7 +206,7 @@ The gadget MUST:
 
 ## File Organization
 
-```
+```text
 /
 ├── src/                    # Source code directory
 ├── tests/                  # PHPUnit tests
@@ -384,13 +386,15 @@ When helping with this project:
 ## Project Philosophy
 
 ### Why PHP?
-dafssdfas
+
 The bot runs on Wikimedia Toolforge, which has excellent PHP support and infrastructure for Wikipedia bots.
 
 ### Why Verbose Code Style?
+
 The project prioritizes readability and maintainability over compactness. With 15,000+ commits and multiple contributors over many years, explicit code is easier to debug and modify safely.
 
 ### Why Maintenance Mode?
+
 The bot has reached a stable, feature-complete state. It reliably processes thousands of Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
 
 ---
