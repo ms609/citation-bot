@@ -59,6 +59,7 @@ The test suite detects missing keys and skips tests.  A developer should conside
 ## Bot output conventions
 
 The bot reports its activity to users using:
+
 - A new line beginning with an asterisk `*_` to announce that a new item is being analysed
 - A new line beginning with a space and a right angle bracket `_>_` to announce that it is undertaking an expansion activity
 - A new line beginning with three, five, seven or more spaces to announce sub-steps of the expansion activity
