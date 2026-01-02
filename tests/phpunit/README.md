@@ -1,21 +1,22 @@
-## Tests for Citation Bot classes
+# Tests for Citation Bot classes
 
 To run the tests for Parameter.php (for example), first check that PHP is installed and that the
 php directory is added to your system `PATH` environment variable.
-Then navigate to the root directory in which you have checked out the citation bot code, 
-i.e. the folder containing setup.php. 
+Then navigate to the root directory in which you have checked out the citation bot code,
+i.e. the folder containing setup.php.
 
 Then, run the following command from the command line :
 
     phpunit --bootstrap ./includes/setup.php tests/phpunit/gadgetapiTest.php
 
-## Running the Full Test Suite
+# Running the Full Test Suite
 
 The recommended way to run all tests is:
 
     composer run test
 
 This uses ParaTest for parallel test execution:
+
 - `--processes=auto`: Automatically uses all available CPU cores
 - `--runner=WrapperRunner`: PHPUnit 12 compatibility
 - `--coverage-clover coverage.xml`: Code coverage reports

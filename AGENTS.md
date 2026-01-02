@@ -3,7 +3,7 @@
 This file provides context for AI assistants working on the Citation Bot project.
 
 ## Quick Start for AI Assistants
-dfasdfasf
+
    - Language: PHP 8.4+
    - Main logic: Template.php
    - Test command: php process_page.php "Page"
@@ -15,6 +15,7 @@ dfasdfasf
 Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR) and generates properly formatted Wikipedia citation templates.
 
 **Key Facts:**
+
 - **Language:** PHP 8.4+
 - **License:** GPL-3.0
 - **Status:** Stable/Inactive (maintenance mode)
@@ -31,7 +32,7 @@ The system has two main components:
 
 ### Core Processing Flow
 
-```
+```text
 Wikipedia Page → Extract Templates → Query External APIs → 
 Add Missing Metadata → Clean Formatting → Post to Wikipedia
 ```
@@ -187,6 +188,7 @@ All tests must pass before merging.
 ### Fast Mode Requirements (Gadget)
 
 The gadget MUST:
+
 - Complete within 60 seconds
 - Not perform slow operations (bibcode search, URL expansion)
 - Handle browser timeout gracefully
@@ -239,16 +241,19 @@ Check `setup.php` for debug flags and logging configuration.
 ### Common Issues
 
 **OAuth failures:**
+
 - Verify tokens in `env.php`
 - Check token permissions on Wikipedia
 - Ensure OAuth client is approved
 
 **API timeouts:**
+
 - Check network connectivity
 - Verify API keys are valid
 - Check API rate limits
 
 **Template not expanding:**
+
 - Verify template syntax is correct
 - Check if identifier is valid
 - Look for errors in logs
@@ -281,6 +286,7 @@ Check `setup.php` for debug flags and logging configuration.
 6. Update documentation
 7. Submit pull request with clear description
 8. **Common Pitfalls:**
+
    - Using `else if` instead of `elseif`
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
@@ -291,6 +297,7 @@ Check `setup.php` for debug flags and logging configuration.
 **Primary channel:** https://en.wikipedia.org/wiki/User_talk:Citation_bot
 
 Include:
+
 - Page name or URL
 - Expected behavior
 - Actual behavior
