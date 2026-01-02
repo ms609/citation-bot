@@ -3,6 +3,7 @@
 This file provides context for AI assistants working on the Citation Bot project.
 
 ## Quick Start for AI Assistants
+dfasdfasf
    - Language: PHP 8.4+
    - Main logic: Template.php
    - Test command: php process_page.php "Page"
