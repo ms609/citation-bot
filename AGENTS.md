@@ -91,6 +91,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 ## Operating Modes
 
 ### Fast Mode (Gadget Default)
+
 - Expands existing identifiers (DOI, PMID, etc.)
 - Adds missing parameters
 - Cleans formatting
@@ -98,6 +99,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 - **Reason:** Must complete within browser timeout
 
 ### Slow Mode (Web Interface Default)
+
 - All fast mode operations
 - **Plus:** Bibcode searches, Zotero URL expansion
 - Takes longer but more thorough
@@ -182,6 +184,7 @@ All tests must pass before merging.
 ## Important Constraints
 
 ### Fast Mode Requirements (Gadget)
+
 The gadget MUST:
 - Complete within 60 seconds
 - Not perform slow operations (bibcode search, URL expansion)
@@ -189,6 +192,7 @@ The gadget MUST:
 - Provide useful partial results if API calls fail
 
 ### Wikipedia API Guidelines
+
 - Respect rate limits
 - Use OAuth authentication
 - Include proper User-Agent
@@ -221,12 +225,14 @@ The gadget MUST:
 ## Debugging Tips
 
 ### Testing Individual Pages
+
 ```bash
 php process_page.php "Article_Name" --savetofiles
 # Check output in Article_Name.md
 ```
 
 ### Enabling Debug Output
+
 Check `setup.php` for debug flags and logging configuration.
 
 ### Common Issues
@@ -326,7 +332,7 @@ The bot supports all standard Wikipedia citation templates:
 ## Common Template Parameters
 
 | Parameter | Description |
-|-----------|-------------|
+| --------- | ----------- |
 | `title` | Article/book title |
 | `author`, `last`, `first` | Author names |
 | `journal` | Journal name |
