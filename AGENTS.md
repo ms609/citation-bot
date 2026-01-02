@@ -80,7 +80,7 @@ if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
 The bot integrates with multiple external services.  Sometimes these APIs will fail:
 
 | Service | Identifier | Purpose |
-|---------|------------|---------|
+| ------- | ---------- | ------- |
 | CrossRef | DOI | Journal article metadata |
 | PubMed | PMID | Biomedical literature |
 | PubMed Central | PMC | Open access articles |
