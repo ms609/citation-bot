@@ -20,5 +20,5 @@ if (($_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
 } else {
     $git_hub = "Please try again - lock file found";
 }
-echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>', $git_hub, '</pre></main></body></html>';
+echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Git Pull</title></head><body><main><pre>', $git_hub, '</pre></main></body></html>';
 flush(); // paranoid about disk I/O
