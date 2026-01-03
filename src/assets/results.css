@@ -1,43 +1,220 @@
-header, footer {
-  background-color: #eed;
-  margin: -9px;
-  padding: 0.5em 1em;
-  text-align: center;
-  text-decoration: none;
+/* Base Styles */
+* {
+  box-sizing: border-box;
 }
 
-header, footer, form {
-  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif';
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f7fa;
+  color: #2c3e50;
 }
 
+/* Header Styles */
 header {
-  border-bottom: 1px solid #335;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2em 1em;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-footer {
-  background: #eed url('Powered-by-Toolforge.png') no-repeat;
-  background-position-x: 2px;
-  background-position-y: 20px;
-  border-top: 1px solid #335;
-  box-shadow: 0 50vh 0 50vh #eed;
-  margin-top: 3em;
-  min-height: 80px;
+header h1 {
+  margin: 0 0 0.5em 0;
+  font-size: 2.5em;
+  font-weight: 600;
+  letter-spacing: -0.5px;
 }
 
+header p {
+  margin: 0;
+  font-size: 1.1em;
+  opacity: 0.95;
+}
+
+/* Main Content */
+main {
+  max-width: 900px;
+  margin: 2em auto;
+  padding: 0 1em;
+}
+
+/* Form Styles */
 form {
-  margin: 3em 1em 0;
-  padding-bottom: 2em;
+  background: white;
+  padding: 2.5em;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+form > p {
+  margin: 0 0 1.5em 0;
+}
+
+/* Checkbox Section */
+form > p:first-child {
+  background: #f8f9fa;
+  padding: 1em 1.25em;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  margin-bottom: 2em;
+}
+
+/* Labels */
+label {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 0.95em;
+}
+
+code {
+  background: #f8f9fa;
+  padding: 0.2em 0.5em;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #667eea;
+}
+
+/* Input Fields */
+input[type="text"],
+input[name="page"],
+input[name="cat"],
+input[name="linkpage"],
+select {
+  padding: 0.75em 1em;
+  border: 2px solid #e1e4e8;
+  border-radius: 6px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+  width: 300px;
+  max-width: 100%;
+  font-family: inherit;
+}
+
+input[type="text"]:focus,
+input[name="page"]:focus,
+input[name="cat"]:focus,
+input[name="linkpage"]:focus,
+select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 input.error {
-  background-color: #f1e545;
-  border-color: #e79f26;
+  background-color: #fff3cd;
+  border-color: #f59e0b;
 }
 
-header a, footer a { text-decoration: none; }
+/* Checkbox Styles */
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5em;
+  cursor: pointer;
+  vertical-align: middle;
+}
 
-a { color: #0773b3; }
+/* Buttons */
+button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75em 1.75em;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+  margin-left: 0.75em;
+}
 
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+img[id$="Spinner"] {
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
+
+/* Dividers */
+form > p:has(+ p > label[for="botCat"]),
+form > p:has(+ p > label[for="botLinked"]) {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  margin: 2em 0 1.5em 0;
+  position: relative;
+}
+
+/* Section Spacing */
+p:has(label[for="botPage"]),
+p:has(label[for="botCat"]),
+p:has(label[for="botLinked"]),
+p:has(label[for="wiki_base"]) {
+  background: #f8f9fa;
+  padding: 1.5em;
+  border-radius: 8px;
+  margin-bottom: 1em !important;
+}
+
+/* Footer Styles */
+footer {
+  background: white;
+  padding: 2em 1em 2em 120px;
+  border-top: 1px solid #e1e4e8;
+  margin-top: 4em;
+  text-align: center;
+  position: relative;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 80px;
+  background: url('Powered-by-Toolforge.png') no-repeat center;
+  background-size: contain;
+}
+
+footer p {
+  margin: 0.75em 0;
+  font-size: 0.95em;
+  color: #6c757d;
+}
+
+footer a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Result Spans (for process output) */
 span.added      { color: #02a074; font-weight: bold;}
 span.boring     { color: #bbb; }
 span.changed    { color: #5eb3e5; font-weight: bold;}
@@ -46,3 +223,48 @@ span.removed    { color: #e79f26; font-weight: bold;}
 span.subitem    { color: #666; }
 span.subsubitem { color: #999; }
 span.warning    { color: #d36027; }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2em;
+  }
+  
+  form {
+    padding: 1.5em;
+  }
+  
+  input[type="text"],
+  input[name="page"],
+  input[name="cat"],
+  input[name="linkpage"],
+  select {
+    width: 100%;
+    margin-bottom: 0.75em;
+  }
+  
+  button {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.75em;
+  }
+  
+  footer {
+    padding: 2em 1em;
+    text-align: center;
+  }
+  
+  footer::before {
+    position: static;
+    display: block;
+    margin: 0 auto 1em;
+    transform: none;
+  }
+  
+  p:has(label[for="botPage"]),
+  p:has(label[for="botCat"]),
+  p:has(label[for="botLinked"]),
+  p:has(label[for="wiki_base"]) {
+    padding: 1em;
+  }
+}
