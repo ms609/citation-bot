@@ -25,4 +25,4 @@ jobs:
         continue-on-error: true
         with:
           globs: '**/*.md'
-          config: '.markdownlint.json'
+          config: '.custom.markdownlint.json'
