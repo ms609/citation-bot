@@ -509,14 +509,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testReplaceBadDOI(): void {
-        $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999}}';
+        $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
     }
 
     public function testDropBadDOI(): void {
-        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0001/Rubbish_bot_failure_test}}';
+        $text = '{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0001/Rubbish_bot_failure_test|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
         $this->assertNotNull($template->get2('chapter-url'));
@@ -574,7 +574,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testSuppressWarnings(): void {
-        $text = '{{Cite journal |doi=((10.1063/1.478352 )) }}';
+        $text = '{{Cite journal |doi=((10.1063/1.478352 )) |pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('doi-broken-date'));
         $this->assertSame('10.1063/1.478352', $template->get2('doi'));
@@ -788,28 +788,28 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testRoman(): void { // No roman and then wrong roman
-        $text = '{{Cite journal | title=On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
+        $text = '{{Cite journal | title=On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('Transactions of the Royal Society of Edinburgh', $template->get2('journal'));
-        $text = '{{Cite journal | title=XXI.—On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751}}';
+        $text = '{{Cite journal | title=XXI.—On q-Functions and a certain Difference Operator|doi=10.1017/S0080456800002751|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('journal'));
     }
 
     public function testRoman2(): void { // Bogus roman to start with
-        $text = '{{Cite journal | title=Improved heat capacity estimator for path integral simulations. XXXI. part of many|doi=10.1063/1.1493184}}';
+        $text = '{{Cite journal | title=Improved heat capacity estimator for path integral simulations. XXXI. part of many|doi=10.1063/1.1493184|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('The Journal of Chemical Physics', $template->get2('journal'));
     }
 
     public function testRoman3(): void { // Bogus roman in the middle
-        $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? IIII. Analysis of FORS configurations}}";
+        $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? IIII. Analysis of FORS configurations|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('journal'));
     }
 
     public function testRoman4(): void { // Right roman in the middle
-        $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? III. Analysis of FORS configurations}}";
+        $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? III. Analysis of FORS configurations|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame('Chemical Physics', $template->get2('journal'));
     }
@@ -883,7 +883,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testFindDOIBadAuthorAndFinalPage(): void { // Testing this code:        If fail, try again with fewer constraints...
-        $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019}}';
+        $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         get_doi_from_crossref($template);
         $this->assertSame('10.1021/acs.analchem.8b04567', $template->get2('doi'));
@@ -1165,7 +1165,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testOxfordTemplate(): void {
-        $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+        $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('cite odnb', $template->wikiname());
         $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
@@ -1176,7 +1176,7 @@ final class TemplatePart2Test extends testBaseClass {
 
     /** Now with caps in wikiname */
     public function testOxfordTemplate2(): void {
-        $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+        $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('cite odnb', $template->wikiname());
         $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
@@ -1203,7 +1203,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testSaveAccessType(): void {
-        $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
+        $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->get_identifiers_from_url();
         $this->assertNull($template->get2('doi-access'));
@@ -1563,7 +1563,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testCleanArxivDOI1(): void {
-        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789}}";
+        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->AssertNull($expanded->get2('doi'));
@@ -1571,7 +1571,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testCleanArxivDOI2(): void {
-        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|eprint=1234.56789}}";
+        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|eprint=1234.56789|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->AssertNull($expanded->get2('doi'));
@@ -1579,7 +1579,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testCleanArxivDOI3(): void {
-        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|arxiv=1234.56789}}";
+        $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|arxiv=1234.56789|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->AssertNull($expanded->get2('doi'));
@@ -1642,7 +1642,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testDoiThatFailsWeird(): void {
-        $text = "{{cite web|doi=10.1111/j.1475-4983.2002.32412432423423421314324234233242314234|year=2002}}"; // Special Papers in Palaeontology - they do not work
+        $text = "{{cite web|doi=10.1111/j.1475-4983.2002.32412432423423421314324234233242314234|year=2002|pmid=<!-- -->|pmc=<!-- -->}}"; // Special Papers in Palaeontology - they do not work
         $expanded = $this->process_citation($text);
         $this->AssertNull($expanded->get2('doi'));
     }
@@ -1897,7 +1897,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testBaleOutDois(): void {
-        $text = "{{cite arXiv|doi=10.1093/oi/authority/343214332}}";
+        $text = "{{cite arXiv|doi=10.1093/oi/authority/343214332|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->AssertSame('cite arxiv', $expanded->wikiname());
@@ -2106,7 +2106,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testBadChapterStays(): void {
-        $text = "{{cite journal|url=http://oxfordindex.oup.com/view/10.1093/ww/9780199540884.013.U162881|title=Chope, His Honour Robert Charles : Who Was Who - oi|chapter=Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85 |date=December 2007 |doi=10.1093/ww/9780199540884.013.u162881}}";
+        $text = "{{cite journal|url=http://oxfordindex.oup.com/view/10.1093/ww/9780199540884.013.U162881|title=Chope, His Honour Robert Charles : Who Was Who - oi|chapter=Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85 |date=December 2007 |doi=10.1093/ww/9780199540884.013.u162881|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('cite journal', $expanded->wikiname());
         $this->assertSame('Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85', $expanded->get2('chapter'));
@@ -2155,7 +2155,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testArticleNumber(): void {
-        $text = "{{cite journal|doi=10.1038/ncomms15367}}";
+        $text = "{{cite journal|doi=10.1038/ncomms15367|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('15367', $expanded->get3('article-number'));
         $this->assertNull($expanded->get2('pages'));
