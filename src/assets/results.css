@@ -29,6 +29,10 @@ form {
   padding-bottom: 2em;
 }
 
+input, select, button {
+  max-width: 100%;
+}
+
 input.error {
   background-color: #f1e545;
   border-color: #e79f26;

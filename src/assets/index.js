@@ -70,20 +70,39 @@ function ValidateLinked() {
 }
 
 function InitializeForm() {
-  document.getElementById("botForm").onsubmit = ValidateForm;
-  document.getElementById("botPage").oninput = ValidatePageName;
-  document.getElementById("botCat").oninput = ValidateCategory;
-  document.getElementById("botLinked").oninput = ValidateLinked;
-  document.getElementById("CatSubmit").disabled = false;
-  document.getElementById("PageSubmit").disabled = false;
-  document.getElementById("LinkedSubmit").disabled = false;
-  document.getElementById("PageSpinner").style.display = "none";
-  document.getElementById("CatSpinner").style.display = "none";
-  document.getElementById("LinkSpinner").style.display = "none";
-  document.getElementById("botPage").value = "";
-  document.getElementById("botCat").value = "";
-  document.getElementById("botLinked").value = "";
-  this.classList.remove("error");
+  var botForm = document.getElementById("botForm");
+  var botPage = document.getElementById("botPage");
+  var botCat = document.getElementById("botCat");
+  var botLinked = document.getElementById("botLinked");
+  var catSubmit = document.getElementById("CatSubmit");
+  var pageSubmit = document.getElementById("PageSubmit");
+  var linkedSubmit = document.getElementById("LinkedSubmit");
+  var pageSpinner = document.getElementById("PageSpinner");
+  var catSpinner = document.getElementById("CatSpinner");
+  var linkSpinner = document.getElementById("LinkSpinner");
+  
+  if (botForm) botForm.onsubmit = ValidateForm;
+  if (botPage) {
+    botPage.oninput = ValidatePageName;
+    botPage.value = "";
+    botPage.classList.remove("error");
+  }
+  if (botCat) {
+    botCat.oninput = ValidateCategory;
+    botCat.value = "";
+    botCat.classList.remove("error");
+  }
+  if (botLinked) {
+    botLinked.oninput = ValidateLinked;
+    botLinked.value = "";
+    botLinked.classList.remove("error");
+  }
+  if (catSubmit) catSubmit.disabled = false;
+  if (pageSubmit) pageSubmit.disabled = false;
+  if (linkedSubmit) linkedSubmit.disabled = false;
+  if (pageSpinner) pageSpinner.style.display = "none";
+  if (catSpinner) catSpinner.style.display = "none";
+  if (linkSpinner) linkSpinner.style.display = "none";
 }
 
 window.onload = InitializeForm;

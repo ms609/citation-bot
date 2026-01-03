@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="license" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
   <link rel="stylesheet" type="text/css" href="assets/results.css" />
   <title>
@@ -27,7 +28,7 @@
       <label for="botPage"><code>Single page:&nbsp;</code></label>
       <input name="page" id="botPage" value="" placeholder="Page name" />
       <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
-      <img style="display:none" src="assets/spinner_18_18.gif" id="PageSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="PageSpinner" alt="Loading" aria-hidden="true" />
       <br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)
     </p>
     <p>– or –</p>
@@ -35,7 +36,7 @@
       <label for="botCat"><code>Category:&nbsp;</code></label>
       <input name="cat" id="botCat" value="" placeholder="Category name" />
       <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
-      <img style="display:none" src="assets/spinner_18_18.gif" id="CatSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="CatSpinner" alt="Loading" aria-hidden="true" />
       <br />
     </p>
     <p>– or –</p>
@@ -43,7 +44,7 @@
       <label for="botLinked"><code>Linked pages:&nbsp;</code></label>
       <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" />
       <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
-      <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="" aria-hidden="true" />
+      <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="Loading" aria-hidden="true" />
       <br />
     </p>
     <p>
@@ -67,13 +68,13 @@
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report&nbsp;bugs/suggestions</a> |
       <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source&nbsp;code</a> |
       Recent edits on:
-      &nbsp;<a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent English contributions" aria-label="Recent English contributions (opens in a new tab)" >English</a>,
-      &nbsp;<a href="https://simple.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent Simple contributions" aria-label="Recent Simple contributions (opens in a new tab)" >Simple</a>,
-      &nbsp;<a href="https://mk.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent mk contributions" aria-label="Recent mk contributions (opens in a new tab)" >mk</a>,
-      &nbsp;<a href="https://ru.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent ru contributions" aria-label="Recent ru contributions (opens in a new tab)" >ru</a>,
-      &nbsp;<a href="https://sr.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent sr contributions" aria-label="Recent sr contributions (opens in a new tab)" >sr</a>,
-      &nbsp;<a href="https://vi.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent vi contributions" aria-label="Recent vi contributions (opens in a new tab)" >vi</a>,
-      &nbsp;<a href="https://mdwiki.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent mdwiki contributions" aria-label="Recent mdwiki contributions (opens in a new tab)" >mdwiki</a>
+      &nbsp;<a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent English contributions" aria-label="Recent English contributions (opens in a new tab)" >English</a>,
+      &nbsp;<a href="https://simple.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent Simple contributions" aria-label="Recent Simple contributions (opens in a new tab)" >Simple</a>,
+      &nbsp;<a href="https://mk.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent mk contributions" aria-label="Recent mk contributions (opens in a new tab)" >mk</a>,
+      &nbsp;<a href="https://ru.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent ru contributions" aria-label="Recent ru contributions (opens in a new tab)" >ru</a>,
+      &nbsp;<a href="https://sr.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent sr contributions" aria-label="Recent sr contributions (opens in a new tab)" >sr</a>,
+      &nbsp;<a href="https://vi.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent vi contributions" aria-label="Recent vi contributions (opens in a new tab)" >vi</a>,
+      &nbsp;<a href="https://mdwiki.org/wiki/Special:Contributions/Citation_bot" target="_blank" rel="noopener noreferrer" title="Recent mdwiki contributions" aria-label="Recent mdwiki contributions (opens in a new tab)" >mdwiki</a>
     </p>
     <p>
     Your Wikipedia username will be included in the edit, such as: "Suggested&nbsp;by&nbsp;YourUserID"
