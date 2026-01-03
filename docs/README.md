@@ -31,12 +31,12 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-- Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is
-  POSTed to this and it does the citation expansion; backend). This automatically
-  posts a new page revision with expanded citations and thus requires a bot account.
-  All activity takes place on Tool Labs.  Single pages can be GETed.
-- Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `gadgetapi.php`. This
-  comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+- Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is POSTed to this and it does the citation expansion; backend).
+  This automatically posts a new page revision with expanded citations and thus requires a bot account.
+  All activity takes place on Tool Labs.
+  Single pages can be GETed.
+- Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `gadgetapi.php`.
+  This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 - `generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_talk:Citation_bot>.
@@ -62,10 +62,12 @@ The Citation Bot has two main user-facing interfaces with different performance 
 - **Operations skipped**:
   - ✗ Searching for new bibcodes
   - ✗ Expanding URLs via Zotero
-- **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion. Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
+- **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion.
+  Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
 - **Use case**: Quick citation cleanup and expansion while editing Wikipedia articles
 
-**Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
+**Note**: Both interfaces perform core citation expansion effectively.
+  The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
 
 [![Citation bot's architecture](architecture.svg)](architecture.svg)
 
@@ -102,16 +104,16 @@ A quick tour of the main files:
 ## Style and structure notes
 
 Constants and definitions should be provided in `constants.php`.
-Classes should be in individual files. The code is generally written densely.
-Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements,
-and action taking place through method calls that take place in assignments or equality checks.
+A good balance between splitting funcionality into single files and avoiding too many files should be maintained.
+The code is generally NOT written densely.
+Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, and action taking place through method calls that take place in assignments or equality checks.
 Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
 The bot requires PHP >= 8.4.
 
-To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
     chmod go-rwx env.php
 
