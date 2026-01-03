@@ -5,14 +5,13 @@ Thanks for contributing to the maintenance of Citation Bot.
 ## Testing
 
 We use phpunit to test code; please write test case examples for new code you create.
-It is helpful if each test case example describes the specific function that it is trying
-to test.
+It is helpful if each test case example describes the specific function that it is trying to test.
 
 ## Quality verification
 
-All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates.
+There are a variety of static code analysis tests that look for common errors.
 The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting.
-The GitHub provided CodeQL test suite is also enabled, but that just checks the one JavaScript file.
 
 ## Submitting changes
 
