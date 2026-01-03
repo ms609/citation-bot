@@ -241,7 +241,7 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testDoiExpansion2(): void {
-        $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract|pmid=<!-- -->|pmc=<!-- -->}}";
+        $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
@@ -257,7 +257,7 @@ final class DoiTest extends testBaseClass {
 
     public function testDoiExpansion4(): void {
         // Replace this test with a real URL (if one exists)
-        $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf|pmid=<!-- -->|pmc=<!-- -->}}"; // Fake URL, real DOI
+        $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
