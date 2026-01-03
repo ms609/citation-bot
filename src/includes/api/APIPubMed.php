@@ -24,10 +24,15 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
  */
 function entrez_api(array $ids, array &$templates, string $db): void {    // Pointer to save memory
     set_time_limit(120);
+    foreach ($ids as $idx => $_value) {
+        if (!preg_match('~^\d+$~', $ids[$idx])) {
+            $ids[$idx] = '0';
+        }
+    }
+    unset($idx, $_value);
     if (!count($ids) ||
-        $ids === ['XYZ'] ||
         $ids === ['1'] ||
-        $ids === ['']) {
+        $ids === ['0']) {
         return; // junk data from test suite
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
@@ -42,8 +47,8 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     $xml = get_entrez_xml($db, implode(',', $ids));
 
     if ($xml === null) {
-        report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
-        return;                                                                // @codeCoverageIgnore
+        report_warning("Error in PubMed search: No response from Entrez server");
+        return;
     }
 
     // A few PMC do not have any data, just pictures of stuff
