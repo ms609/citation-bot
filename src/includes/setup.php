@@ -13,7 +13,7 @@ date_default_timezone_set('UTC');
 
 if (file_exists('git_pull.lock')) {
     sleep(5);
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
     exit;
 }
 
@@ -37,7 +37,7 @@ function bot_debug_log(string $log_this): void {
 if (isset($_REQUEST["wiki_base"])) {
     $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
-        echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
+        echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
         exit;
     }
 } else {
