@@ -24,12 +24,12 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
  */
 function entrez_api(array $ids, array &$templates, string $db): void {    // Pointer to save memory
     set_time_limit(120);
-    foreach ($ids as $idx => $value) {
-        if (!preg_match('~^\d+$~', $value)) {
+    foreach ($ids as $idx => $_value) {
+        if (!preg_match('~^\d+$~', $ids[$idx])) {
             $ids[$idx] = '0';
         }
     }
-    unset($idx, $value);
+    unset($idx, $_value);
     if (!count($ids) ||
         $ids === ['XYZ'] ||
         $ids === ['1'] ||
@@ -39,9 +39,12 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
         report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
-    }adsf
-        dsfdsfads
-dsfdfas
+    }
+    if (count($ids) !== count($templates)) {
+        bot_debug_log('Count mismatch in entrez_api: ' . count($ids) . '  ' . count($templates));
+        return;
+    }
+
     report_action("Using {$db} API to retrieve publication details: ");
     $xml = get_entrez_xml($db, implode(',', $ids));
 
