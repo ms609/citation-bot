@@ -26,16 +26,13 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     set_time_limit(120);
     foreach ($ids as $idx => $_value) {
         if (!preg_match('~^\d+$~', $ids[$idx])) {
-            bot_debug_log('Bad data in entrez_api: ' . echoable($ids[$idx]));
             $ids[$idx] = '0';
         }
     }
     unset($idx, $_value);
     if (!count($ids) ||
-        $ids === ['XYZ'] ||
         $ids === ['1'] ||
-        $ids === ['0'] ||
-        $ids === ['']) {
+        $ids === ['0'] {
         return; // junk data from test suite
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
