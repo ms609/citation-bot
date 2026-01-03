@@ -1512,7 +1512,7 @@ EP - 999 }}';
     public function testNullDOInoCrash(): void { // This DOI does not work, but CrossRef does have a record
         $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> |pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite journal |last1=Kofel |first1=Dominika |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |journal=Światowit |date=2019 |volume=56 |pages=89–98 | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}', $template->parsed_text());
+        $this->assertSame('{{cite journal |last1=Kofel |first1=Dominika |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |journal=Światowit |date=2019 |volume=56 |pages=89–98 | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> |pmid=<!-- -->|pmc=<!-- -->}}', $template->parsed_text());
     }
 
     public function testTidySomeStuff(): void {
