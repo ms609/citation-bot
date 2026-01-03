@@ -33,6 +33,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     if ($db !== 'pubmed' && $db !== 'pmc') {
         report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
     }
+    if (count($ids) !== count($templates)) {
+        bot_debug_log('Count mismatch in entrez_api: ' . count($ids) . '  ' . count($templates));
+        return;
+    }
 
     report_action("Using {$db} API to retrieve publication details: ");
     $xml = get_entrez_xml($db, implode(',', $ids));
