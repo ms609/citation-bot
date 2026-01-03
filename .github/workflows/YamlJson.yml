@@ -22,6 +22,5 @@ jobs:
       - name: markdown-validate
         id: markdown-validate
         uses: DavidAnson/markdownlint-cli2-action@v22
-        continue-on-error: true
         with:
           globs: '**/*.md'
