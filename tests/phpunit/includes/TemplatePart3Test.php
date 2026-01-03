@@ -324,13 +324,13 @@ EP - 999 }}';
     }
 
     public function testNewWikiText(): void { // checks for new information that looks like wiki text and needs escaped
-        $text = '{{Cite journal|doi=10.1021/jm00193a001}}';   // This has greek letters, [, ], (, and ).
+        $text = '{{Cite journal|doi=10.1021/jm00193a001|pmid=<!-- -->|pmc=<!-- -->}}';   // This has greek letters, [, ], (, and ).
         $expanded = $this->process_citation($text);
         $this->assertSame('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get2('title'));
     }
 
     public function testZooKeys_1(): void {
-        $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
+        $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('ZooKeys', $expanded->get2('journal'));
         $this->assertSame('445', $expanded->get2('issue'));
@@ -338,7 +338,7 @@ EP - 999 }}';
     }
 
     public function testZooKeys_2(): void {
-        $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]}}';
+        $text = '{{Cite journal|doi=10.3897/zookeys.445.7778|journal=[[Zookeys]]|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('445', $expanded->get2('issue'));
         $this->assertNull($expanded->get2('volume'));
@@ -352,7 +352,7 @@ EP - 999 }}';
     }
 
     public function testZooKeysDoiTidy1(): void {
-        $text = '{{Cite journal|doi=10.3897//zookeys.123.322222}}'; // Note extra slash for fun
+        $text = '{{Cite journal|doi=10.3897//zookeys.123.322222|pmid=<!-- -->|pmc=<!-- -->}}'; // Note extra slash for fun
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->assertNull($expanded->get2('journal'));
@@ -360,7 +360,7 @@ EP - 999 }}';
     }
 
     public function testZooKeysDoiTidy2(): void {
-        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|issue=2323323}}';
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|issue=2323323|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->assertNull($expanded->get2('journal'));
@@ -368,7 +368,7 @@ EP - 999 }}';
     }
 
     public function testZooKeysDoiTidy3(): void {
-        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|number=2323323}}';
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222|number=2323323|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->assertNull($expanded->get2('journal'));
@@ -376,7 +376,7 @@ EP - 999 }}';
     }
 
     public function testZooKeysDoiTidy4(): void {
-        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222X}}';
+        $text = '{{Cite journal|doi=10.3897/zookeys.123.322222X|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('doi');
         $this->assertNull($expanded->get2('journal'));
@@ -399,7 +399,7 @@ EP - 999 }}';
     }
 
     public function testTitleItalics(): void {
-        $text = '{{cite journal|doi=10.1111/pala.12168}}';
+        $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $title = $expanded->get('title');
         $title = str_replace('‐', '-', $title); // Dashes vary
@@ -408,14 +408,14 @@ EP - 999 }}';
     }
 
     public function testSpeciesCaps_1(): void {
-        $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
+        $text = '{{Cite journal | doi = 10.1007%2Fs001140100225|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"),
                                       str_replace(' ', '', $expanded->get('title')));
     }
 
     public function testSpeciesCaps_2(): void {
-        $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
+        $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full|pmid=<!-- -->|pmc=<!-- -->}}';
         // Should be able to drop /full from DOI in URL
         $expanded = $this->process_citation($text);
         $this->assertSame(str_replace(' ', '', "''Cryptosporidiumhominis''n.Sp.(Apicomplexa:Cryptosporidiidae)from''Homosapiens''"),
@@ -424,7 +424,7 @@ EP - 999 }}';
 
     public function testSICI(): void {
         $url = "https://fake.url/sici?sici=9999-9999(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
-        $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
+        $text = "{{Cite journal|url=$url|pmid=<!-- -->|pmc=<!-- -->}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
         $expanded = $this->process_citation($text);
         $this->assertSame('1961', $expanded->get2('date'));
         $this->assertSame('81', $expanded->get2('volume'));
@@ -458,7 +458,7 @@ EP - 999 }}';
     }
 
     public function testConvertJournalToBook(): void {
-        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15}}';
+        $text = '{{Cite journal|doi=10.1007/978-3-540-74735-2_15|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('cite book', $expanded->wikiname());
     }
@@ -579,13 +579,13 @@ EP - 999 }}';
     }
 
     public function testPagesDash4(): void {
-        $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004}}';
+        $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('15–22', $expanded->get2('pages')); // Converted should use long dashes
     }
 
     public function testPagesDash5(): void {
-        $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures}}';
+        $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get2('at')); // Leave complex at=
     }
@@ -615,13 +615,13 @@ EP - 999 }}';
     }
 
     public function testBogusPageRanges(): void { // Fake year for code that updates page ranges that start with 1
-        $text = '{{Cite journal| year = ' . date("Y") . '| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+        $text = '{{Cite journal| year = ' . date("Y") . '| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('955–971', $expanded->get2('pages')); // Converted should use long dashes
     }
 
     public function testBogusPageRanges2(): void {
-        $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|pages = 960}}';
+        $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|pages = 960|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('960', $expanded->get2('pages')); // Existing page number was within existing range
     }
@@ -658,7 +658,7 @@ EP - 999 }}';
     }
 
     public function testDoNotAddYearIfDate(): void {
-        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2}}';
+        $text = '{{cite journal|date=2002|doi=10.1635/0097-3157(2002)152[0215:HPOVBM]2.0.CO;2|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('year'));
     }
@@ -729,7 +729,7 @@ EP - 999 }}';
     }
 
     public function testPageRange(): void {
-        $text = '{{Citation|doi=10.3406/befeo.1954.5607}}';
+        $text = '{{Citation|doi=10.3406/befeo.1954.5607|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('405–554', $expanded->get2('pages'));
     }
@@ -827,7 +827,7 @@ EP - 999 }}';
     }
 
     public function testDOIExtraSlash(): void {
-        $text = '{{cite web|doi=10.1109//PESGM41954.2020.9281477}}';
+        $text = '{{cite web|doi=10.1109//PESGM41954.2020.9281477|pmid=<!-- -->|pmc=<!-- -->}}';
         $prepared = $this->make_citation($text);
         $prepared->tidy_parameter('doi');
         $this->assertSame('10.1109/PESGM41954.2020.9281477', $prepared->get2('doi'));
@@ -857,7 +857,7 @@ EP - 999 }}';
     }
 
     public function testDoiValidation(): void {
-        $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
+        $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013|pmid=<!-- -->|pmc=<!-- -->}}';
         $prepared = $this->prepare_citation($text);
         $this->assertNull($prepared->get2('doi'));
         $expanded = $this->process_citation($text);
@@ -1050,7 +1050,7 @@ EP - 999 }}';
     }
 
     public function testDoiThatIsJustAnISSN(): void {
-        $text = '{{cite web |url=http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html}}';
+        $text = '{{cite web |url=http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi'));
         $this->assertSame('http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-0739/homepage/EditorialBoard.html', $expanded->get2('url'));
@@ -1472,7 +1472,7 @@ EP - 999 }}';
     }
 
     public function testDoiHasNoLastFirstSplit(): void {
-        $text = "{{cite journal|doi=10.11468/seikatsueisei1925.16.2_123}}";
+        $text = "{{cite journal|doi=10.11468/seikatsueisei1925.16.2_123|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertNull($template->get2('last1'));
         $this->assertNull($template->get2('last'));
@@ -1510,7 +1510,7 @@ EP - 999 }}';
     }
 
     public function testNullDOInoCrash(): void { // This DOI does not work, but CrossRef does have a record
-        $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}';
+        $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> |pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('{{cite journal |last1=Kofel |first1=Dominika |title=To Dye or Not to Dye: Bioarchaeological Studies of Hala Sultan Tekke Site, Cyprus |journal=Światowit |date=2019 |volume=56 |pages=89–98 | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}', $template->parsed_text());
     }
