@@ -9,7 +9,7 @@ set_time_limit(120);
 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
-echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>';
+echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Make a Template</title></head><body><main><pre>';
 
 require_once __DIR__ . '/includes/setup.php';
 
