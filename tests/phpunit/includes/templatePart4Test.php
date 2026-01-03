@@ -1164,14 +1164,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testResearchGateDOI(): void {
-        $text = "{{cite journal|doi=10.13140/RG.2.2.26099.32807}}";
+        $text = "{{cite journal|doi=10.13140/RG.2.2.26099.32807|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi', '10.1002/jcc.21074'));       // Not the same article, random
         $this->assertSame('10.1002/jcc.21074', $template->get2('doi'));
     }
 
     public function testResearchJstorDOI(): void {
-        $text = "{{cite journal|doi=10.2307/1974136}}";
+        $text = "{{cite journal|doi=10.2307/1974136|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
         $this->assertNull($template->get2('doi'));
@@ -1436,14 +1436,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testTidyOIDOI(): void {
-        $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
+        $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi'));
     }
 
     public function testTidyEPILDOI(): void {
-        $text = "{{cite web|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1206|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1206}}";
+        $text = "{{cite web|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1206|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1206|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi'));
