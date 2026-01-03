@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefRG(): void {
-        $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
+        $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->get2('title'));
         $this->assertSame('2015', $expanded->get2('date'));
@@ -13,7 +13,7 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testExpansion_doi_not_from_crossrefJapanJournal(): void {
-        $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
+        $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get2('title'));
         $this->assertSame('1935', $expanded->get2('date'));
@@ -160,32 +160,32 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testCrossRefAddSeries1(): void {
-        $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
+        $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
     }
 
     public function testCrossRefAddSeries2(): void {
         // Kind of messed up, but "matches" enough to expand
-        $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
+        $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame("2008", $template->get2('date'));
     }
 
     public function testCrossRefAddEditors(): void {
-        $text = "{{Cite book | doi = 10.1117/12.135408}}";
+        $text = "{{Cite book | doi = 10.1117/12.135408|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame("Kopera", $template->get2('editor-last1'));
     }
 
     public function testBlankTypeFromDX1(): void {
-        $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
+        $text = "{{cite book| doi=10.14989/doctor.k19250 |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame('2015', $prepared->get2('date'));
     }
 
     public function testBlankTypeFromDX2(): void {
-        $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
+        $text = "{{Cite journal|doi=10.26099/aacp-5268|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame('Collins', $prepared->get2('last1'));
     }
@@ -197,51 +197,51 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testCrossRefAlternativeAPI2(): void {
-        $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley }}";
+        $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
 
     public function testCrossRefAlternativeAPI3(): void {
-        $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics }}";
+        $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
 
     public function testCrossRefAlternativeAPI4(): void {
-        $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven}}";
+        $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
         $this->assertSame($text, $prepared->parsed_text());
     }
 
     public function testPoundDOI(): void {
-        $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1}}";
+        $text = "{{cite book |url=https://link.springer.com/chapter/10.1007%2F978-3-642-75924-6_15#page-1|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1007/978-3-642-75924-6_15', $expanded->get2('doi'));
     }
 
     public function testPlusDOI(): void {
         $doi = "10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U#page_scan_tab_contents=342342"; // Also check #page_scan_tab_contents stuff too
-        $text = "{{cite journal|doi = $doi }}";
+        $text = "{{cite journal|doi = $doi |pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("10.1002/1097-0142(19840201)53:3+<815::AID-CNCR2820531334>3.0.CO;2-U", $expanded->get2('doi'));
     }
 
     public function testNewsdDOI(): void {
-        $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024;jsessionid=222}}"; // Also check jsesssion removal
+        $text = "{{cite news|url=http://doi.org/10.1021/cen-v076n048.p024;jsessionid=222|pmid=<!-- -->|pmc=<!-- -->}}"; // Also check jsesssion removal
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1021/cen-v076n048.p024', $expanded->get2('doi'));
     }
 
     public function testDoiExpansion1(): void {
-        $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+        $text = "{{Cite web | http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract|pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite journal', $prepared->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $prepared->get2('doi'));
     }
 
     public function testDoiExpansion2(): void {
-        $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
+        $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
@@ -250,14 +250,14 @@ final class DoiTest extends testBaseClass {
 
     public function testDoiExpansion3(): void {
         // Recognize official DOI targets in URL with extra fragments - fall back to S2
-        $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
+        $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
     public function testDoiExpansion4(): void {
         // Replace this test with a real URL (if one exists)
-        $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
+        $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf|pmid=<!-- -->|pmc=<!-- -->}}"; // Fake URL, real DOI
         $expanded = $this->prepare_citation($text);
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
@@ -266,21 +266,21 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testDOI1093(): void {
-        $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->final_tidy();
-        $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+        $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}', $template->parsed_text());
     }
 
     public function testDOI1093_part2(): void {
-        $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
+        $text = '{{Cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
         $template->final_tidy();
-        $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+        $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|pmid=<!-- -->|pmc=<!-- -->}}', $template->parsed_text());
     }
 
     public function testDOI1093WW(): void {
-        $text = '{{cite web |doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-221850}}';
+        $text = '{{cite web |doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-221850|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
     }
