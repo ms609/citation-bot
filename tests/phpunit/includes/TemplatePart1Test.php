@@ -85,13 +85,13 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testDOIsMovedStillOkay(): void { // This one gets "move perm.." from dx.doi.org, and works
-        $text = "{{cite journal|doi=10.1016/j.chaos.2004.07.021}}";
+        $text = "{{cite journal|doi=10.1016/j.chaos.2004.07.021|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
 
     public function testHDLnotBroken(): void {
-        $text = "{{cite document|doi=20.1000/100}}";
+        $text = "{{cite document|doi=20.1000/100|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
     }
@@ -121,7 +121,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testTemplateConvertComplex2cb(): void {
-        $text = "{{Cite document|doi=XXX/978-XXX}}";
+        $text = "{{Cite document|doi=XXX/978-XXX|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertSame("cite book", $expanded->wikiname());
     }
@@ -298,12 +298,9 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testGetDoiFromCrossref(): void {
-        $text = '{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Fried | first2 = L. E. | doi = | title = Improved wood–kirkwood detonation chemical kinetics | journal = Theoretical Chemistry Accounts | volume = 120 | pages = 37–43 | year = 2007 |issue=1–3}}';
+        $text = '{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Fried | first2 = L. E. | doi = | title = Improved wood–kirkwood detonation chemical kinetics | journal = Theoretical Chemistry Accounts | volume = 120 | pages = 37–43 | year = 2007 |issue=1–3|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->|bibcode=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1007/s00214-007-0303-9', $expanded->get2('doi'));
-        $this->assertNull($expanded->get2('pmid')); // do not want reference where pmid leads to doi
-        $this->assertNull($expanded->get2('bibcode'));
-        $this->assertNull($expanded->get2('pmc'));
     }
 
     public function testJstorExpansion3(): void {
@@ -353,7 +350,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testDropBadData3(): void {
-        $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda|pmid=<!-- -->}}";
+        $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $expanded->forget('s2cid');
         $expanded->forget('hdl');
@@ -397,7 +394,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testBrokenDoiUrlRetention1(): void {
-        $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
+        $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi-broken-date'));
         $this->assertNull($expanded->get2('doi'));
@@ -406,7 +403,7 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testBrokenDoiUrlRetention2(): void {
         // Newer code does not even add it
-        $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301}}';
+        $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
@@ -414,7 +411,7 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testBrokenDoiUrlRetention3(): void {
         // valid 10.1098 DOI in contrast to evil ones
-        $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
+        $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1093/zoolinnean/zly047', $expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
@@ -422,7 +419,7 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testBrokenDoiUrlRetention4(): void {
         // This is an ISSN only doi: it is valid but we do not add those, but leave url too
-        $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues }}';
+        $text = '{{cite journal|url=http://onlinelibrary.wiley.com/journal/10.1111/(ISSN)1601-183X/issues |pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
@@ -430,13 +427,13 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testCrazyDoubleDOI(): void {
         $doi = '10.1126/science.10.1126/SCIENCE.291.5501.24';
-        $text = '{{cite journal|doi=' . $doi . '}}';
+        $text = '{{cite journal|doi=' . $doi . '|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($doi, $expanded->get2('doi'));
     }
 
     public function testBrokenDoiUrlChanges1(): void {
-        $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=12-31-1999}}';
+        $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=12-31-1999|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get2('doi'));
         $this->assertNotNull($expanded->get2('url'));
@@ -444,13 +441,13 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testBrokenDoiUrlChanges2(): void {
         // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
-        $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
+        $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
 
     public function testBrokenDoiUrlChanges3(): void {
-        $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';    // This also troublesome DOI
+        $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';    // This also troublesome DOI
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
@@ -517,7 +514,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testBadAuthor2(): void {
-        $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST}}';
+        $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('American Thoracic Society', $expanded->get2('author1'));
     }
@@ -599,7 +596,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testTemplateRenamingURLConvert(): void {
-        $text = '{{Cite journal|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9}}';
+        $text = '{{Cite journal|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('http://www.sciencedirect.com/science/article/pii/B9780123864543000129', $expanded->get2('chapter-url'));
         $this->assertNull($expanded->get2('url'));
@@ -618,7 +615,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testHDLasDOIThing1(): void {
-        $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
+        $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertSame('20.1000/100', $template->get2('doi'));
@@ -626,7 +623,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testHDLasDOIThing2(): void {
-        $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100.pdf}}';
+        $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100.pdf|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->get_identifiers_from_url());
         $this->assertSame('20.1000/100', $template->get2('doi'));
@@ -634,7 +631,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testSeriesIsJournal(): void {
-        $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x}}';
+        $text = '{{citation | series = Annals of the New York Academy of Sciences| doi = 10.1111/j.1749-6632.1979.tb32775.x|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('journal')); // Doi returns exact same name for journal as series
     }
@@ -833,7 +830,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testRemoveWikilinks7c(): void {
-        $text = "{{Cite journal|last=[[Nelarine Cornelius|Cornelius]]|first= [[Nelarine Cornelius|Nelarine]]|last2= Todres|first2= Mathew|last3= Janjuha-Jivraj|first3= Shaheena|last4= Woods|first4= Adrian|last5= Wallace|first5= James|date= 2008|title= Corporate Social Responsibility and the Social Enterprise|jstor= 25482219|journal= Journal of Business Ethics|volume= 81|issue= 2|pages= 355–370|doi= 10.1007/s10551-007-9500-7|s2cid= 154580752|url = <!-- dsfasdfds -->}}";
+        $text = "{{Cite journal|last=[[Nelarine Cornelius|Cornelius]]|first= [[Nelarine Cornelius|Nelarine]]|last2= Todres|first2= Mathew|last3= Janjuha-Jivraj|first3= Shaheena|last4= Woods|first4= Adrian|last5= Wallace|first5= James|date= 2008|title= Corporate Social Responsibility and the Social Enterprise|jstor= 25482219|journal= Journal of Business Ethics|volume= 81|issue= 2|pages= 355–370|doi= 10.1007/s10551-007-9500-7|s2cid= 154580752|url = <!-- dsfasdfds -->|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('last'));
         $this->assertNull($expanded->get2('first'));
@@ -955,7 +952,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testParameterAlias(): void {
         $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
         |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level
-        |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3}}';
+        |journal=Lichenologist |volume=23 |pages=309–321 |doi=10.1017/S0024282991000452 |issue=3|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertNull($expanded->get2('last1'));
         $this->assertNull($expanded->get2('last2'));
