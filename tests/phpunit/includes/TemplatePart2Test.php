@@ -52,14 +52,14 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testTidyChapterNotJournalSpecial1093_1(): void {
-        $text = "{{cite web|chapter=X|title=Y|url=Z|doi=10.1093/1|pmid=<!-- -->|pmc=<!-- -->}}";
+        $text = "{{cite web|chapter=X|title=Y|url=Z|doi=10.1093/1}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('cite book', $template->wikiname());
     }
 
     public function testTidyChapterNotJournalSpecial1093_2(): void {
-        $text = "{{Cite web|chapter=X|title=Y|url=Z|doi=10.1093/1|pmid=<!-- -->|pmc=<!-- -->}}";
+        $text = "{{Cite web|chapter=X|title=Y|url=Z|doi=10.1093/1}}";
         $template = $this->make_citation($text);
         $template->final_tidy();
         $this->assertSame('cite book', $template->wikiname());
@@ -465,28 +465,28 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testCAPSGoingAway1(): void {
-        $text = '{{Cite journal | doi=10.1016/j.ifacol.2017.08.010|title=THIS IS A VERY BAD ALL CAPS TITLE|journal=THIS IS A VERY BAD ALL CAPS JOURNAL|pmid=<!-- -->|pmc=<!-- -->}}';
+        $text = '{{Cite journal | doi=10.1016/j.ifacol.2017.08.010|title=THIS IS A VERY BAD ALL CAPS TITLE|journal=THIS IS A VERY BAD ALL CAPS JOURNAL}}';
         $template = $this->process_citation($text);
         $this->assertSame('Contingency Analysis Post-Processing with Advanced Computing and Visualization', $template->get2('title'));
         $this->assertSame('IFAC-PapersOnLine', $template->get2('journal'));
     }
 
     public function testCAPSGoingAway2(): void {
-        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=THIS IS A VERY BAD ALL CAPS TITLE|chapter=THIS IS A VERY BAD ALL CAPS CHAPTER|pmid=<!-- -->|pmc=<!-- -->}}';
+        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=THIS IS A VERY BAD ALL CAPS TITLE|chapter=THIS IS A VERY BAD ALL CAPS CHAPTER}}';
         $template = $this->process_citation($text);
         $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get2('chapter'));
         $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get2('title'));
     }
 
     public function testCAPSGoingAway3(): void {
-        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same|pmid=<!-- -->|pmc=<!-- -->}}';
+        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same}}';
         $template = $this->process_citation($text);
         $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get2('chapter'));
         $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get2('title'));
     }
 
     public function testCAPSGoingAway4(): void {
-        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same|journal=Same|pmid=<!-- -->|pmc=<!-- -->}}';
+        $text = '{{Cite book | doi=10.1109/PESGM.2015.7285996|title=Same|chapter=Same|journal=Same}}';
         $template = $this->process_citation($text);
         $this->assertSame('Sub-second state estimation implementation and its evaluation with real data', $template->get2('chapter'));
         $this->assertSame('2015 IEEE Power & Energy Society General Meeting', $template->get2('title'));
