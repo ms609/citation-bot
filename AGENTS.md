@@ -208,10 +208,10 @@ The gadget MUST:
 
 ```text
 /
-├── src/                    # Source code directory
-├── tests/                  # PHPUnit tests
-├── .github/workflows/      # CI/CD workflows
-├── constants.php           # Application constants
+├── src/                   # Source code directory
+├── tests/                 # PHPUnit tests
+├── .github/workflows/     # CI/CD workflows
+├── constants.php          # Application constants
 ├── setup.php              # Bootstrap configuration
 ├── env.php                # Configuration (not in repo)
 ├── Page.php               # Page management
