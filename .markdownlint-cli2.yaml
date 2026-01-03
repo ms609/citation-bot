@@ -1,2 +1,2 @@
 config:
-  MD013: false
+  MD013: false # Disable line length rule
