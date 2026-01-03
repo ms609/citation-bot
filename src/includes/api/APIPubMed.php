@@ -32,7 +32,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     unset($idx, $_value);
     if (!count($ids) ||
         $ids === ['1'] ||
-        $ids === ['0'] {
+        $ids === ['0']) {
         return; // junk data from test suite
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
