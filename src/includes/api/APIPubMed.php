@@ -34,7 +34,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
         report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
     }
     if (count($ids) !== count($templates)) {
-        bot_log_error('Count mismatch in entrez_api: ' . count($ids) . '  ' . count($templates));
+        bot_debug_log('Count mismatch in entrez_api: ' . count($ids) . '  ' . count($templates));
         return;
     }
 
