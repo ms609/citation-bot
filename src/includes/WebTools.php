@@ -109,7 +109,6 @@ function bot_html_header(): void {
     }
     echo '<!DOCTYPE html><html lang="en" dir="ltr">', "\n",
     ' <head>', "\n",
-    '  <meta name="viewport" content="width=device-width, initial-scale=1.0" />', "\n",
     '  <title>Citation Bot: running</title>', "\n",
     '  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
     '  <link rel="stylesheet" type="text/css" href="assets/results.css" />', "\n",
@@ -118,9 +117,9 @@ function bot_html_header(): void {
     '  <header>', "\n",
     '   <p>Follow Citation bots progress below.</p>', "\n",
     '   <p>', "\n",
-    '    <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" rel="noopener noreferrer" title="Using Citation Bot" aria-label="Using Citation Bot (opens new window)">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |', "\n",
-    '    <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank" rel="noopener noreferrer" aria-label="Report bugs at Wikipedia (opens new window)">Report&nbsp;bugs</a> |', "\n",
-    '    <a href="https://github.com/ms609/citation-bot" target="_blank" rel="noopener noreferrer" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>', "\n",
+    '    <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot" aria-label="Using Citation Bot (opens new window)">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |', "\n",
+    '    <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank" aria-label="Report bugs at Wikipedia (opens new window)">Report&nbsp;bugs</a> |', "\n",
+    '    <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>', "\n",
     '   </p>', "\n",
     '  </header>', "\n",
     '  <pre id="botOutput">', "\n";
