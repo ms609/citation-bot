@@ -37,7 +37,7 @@ on:
       - 'tests/phpunit/README.md'
       - 'AGENTS.md'
       - 'CITATION.cff'
-      - '.markdownlint-cli2.jsonc'
+      - '.markdownlint-cli2.yaml'
 
   schedule:
     - cron: '25 17 * * 1'
