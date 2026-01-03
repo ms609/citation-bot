@@ -1,4 +1,4 @@
 {
   "extends": "base.json",
-  "MD013": false,
+  "MD013": false
 }
