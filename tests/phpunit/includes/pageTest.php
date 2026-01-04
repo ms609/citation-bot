@@ -542,7 +542,7 @@ final class pageTest extends testBaseClass {
     }
 
     public function testConvertCiteNews(): void {
-        $text = "{{Cite news|doi=10.1088/1742-6596/1087/6/062024}}";
+        $text = "{{Cite news|doi=10.1088/1742-6596/1087/6/062024|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
         $this->assertSame('10.1088/1742-6596/1087/6/062024', $template->get2('doi'));
         $this->assertSame('The application of 3D technology in video games', $template->get2('title'));
@@ -558,6 +558,14 @@ final class pageTest extends testBaseClass {
         $this->assertSame('https://cnn2.com', $template->get2('url'));
         $this->assertNull($template->get2('chapterurl'));
         $this->assertNull($template->get2('accessdate'));
+    }
+
+    public function testPMIDwithComment(): void { /* Make sure we do not get PMID out of alignment */
+        $this->sleep_pubmed();
+        $text_inn = '{{cite journal|pmid=24432}}{{cite journal|pmid=<!-- -->}}{{cite journal|pmid=34232}}';
+        $text_out = '{{cite journal|last1=Fung |first1=K. P. |last2=Ng |first2=M. H. |title=Purification of human diploid fibroblast interferon by immobilized neuraminidase |journal=Archives of Virology |date=1978 |volume=56 |issue=1–2 |pages=1–6 |doi=10.1007/BF01317278 |pmid=24432}}{{cite journal|pmid=<!-- -->}}{{cite journal|title=Oral epidemiology |journal=South African Medical Journal = Suid-Afrikaanse Tydskrif vir Geneeskunde |date=1978 |volume=54 |issue=21 |pages=843–844 |pmid=34232}}';
+        $page = $this->process_page($text_inn);
+        $this->assertSame($text_out, $page->parsed_text());
     }
 
 }
