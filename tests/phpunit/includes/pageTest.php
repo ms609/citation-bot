@@ -567,5 +567,5 @@ final class pageTest extends testBaseClass {
         $page = $this->process_page($text_inn);
         $this->assertSame($text_out, $page->parsed_text());
     }
-    
+
 }
