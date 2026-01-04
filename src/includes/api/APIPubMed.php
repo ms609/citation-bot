@@ -24,23 +24,18 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
  */
 function entrez_api(array $ids, array &$templates, string $db): void {    // Pointer to save memory
     set_time_limit(120);
-    foreach ($ids as $idx => $_value) {
-        if (!preg_match('~^\d+$~', $ids[$idx])) {
-            $ids[$idx] = '0';
+    /* idx is also the index into the template array */
+    foreach ($ids as $idx => $value) {
+        if (!preg_match('~^\d+$~', $value) || $value === '1' || $value === '0') {
+            unset($ids[$idx]);
         }
     }
-    unset($idx, $_value);
-    if (!count($ids) ||
-        $ids === ['1'] ||
-        $ids === ['0']) {
-        return; // junk data from test suite
+    unset($idx, $value);
+    if (!count($ids))
+        return;
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
         report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
-    }
-    if (count($ids) !== count($templates)) {
-        bot_debug_log('Count mismatch in entrez_api: ' . count($ids) . '  ' . count($templates));
-        return;
     }
 
     report_action("Using {$db} API to retrieve publication details: ");
@@ -58,8 +53,8 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
             foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
                 $an_id = (string) $an_id;
                 if (!array_key_exists($template_key, $templates)) {
-                    bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id); // @codeCoverageIgnore
-                    $an_id = '-3333';  // @codeCoverageIgnore
+                    bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . $an_id);
+                    $an_id = '-3333';
                 }
                 if ($an_id === (string) $document->Id) {
                     $this_template = $templates[$template_key];
