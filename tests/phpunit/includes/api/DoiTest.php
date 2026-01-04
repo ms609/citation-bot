@@ -301,13 +301,4 @@ final class DoiTest extends testBaseClass {
         // Should have series
         $this->assertSame('International Review of Neurobiology', $template->get2('series'));
     }
-
-    public function testBookChapterDOIFromJournalComplete(): void {
-        // Test that complete templates with book chapter DOIs get type converted
-        // Even if DOI expansion is skipped, tidy_parameter('doi') should detect ISBN pattern
-        $text = '{{cite journal | title=Test Article | journal=Test Journal | volume=1 | pages=1-10 | date=2020 | doi = 10.1016/B978-0-12-801022-8.00014-3 }}';
-        $template = $this->process_citation($text);
-        // Should be converted to cite book based on DOI pattern
-        $this->assertSame('cite book', $template->wikiname());
-    }
 }

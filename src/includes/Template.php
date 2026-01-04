@@ -3831,7 +3831,7 @@ final class Template
                         return;
                     }
                     if ($this->wikiname() === 'cite journal') {
-                        if (mb_stripos($doi, '10.2307/j.') === 0 || preg_match('~^10\.\d+/\d+\.ch\d+$~', $doi) || preg_match('~^10\.\d+/B?978[‐\-\x{2010}-\x{2015}‑]~u', $doi)) {
+                        if (mb_stripos($doi, '10.2307/j.') === 0 || preg_match('~^10\.\d+/\d+\.ch\d+$~', $doi)) {
                             $this->change_name_to('cite book');
                         }
                     }
