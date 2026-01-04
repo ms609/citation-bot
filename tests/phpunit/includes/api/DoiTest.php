@@ -295,10 +295,12 @@ final class DoiTest extends testBaseClass {
         // Should have chapter title added in single pass
         $chapter = $template->get2('chapter');
         $this->assertIsString($chapter);
+        // @phan-suppress-next-line PhanTypeMismatchArgumentNullable - assertIsString guarantees non-null
         $this->assertStringContainsString('Adenosine', $chapter);
         // Should have book title
         $title = $template->get2('title');
         $this->assertIsString($title);
+        // @phan-suppress-next-line PhanTypeMismatchArgumentNullable - assertIsString guarantees non-null
         $this->assertStringContainsString('Adenosine Receptors', $title);
         // Should have series
         $this->assertSame('International Review of Neurobiology', $template->get2('series'));
