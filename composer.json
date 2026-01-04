@@ -27,15 +27,15 @@
         "vimeo/psalm": "^6"
     },
     "scripts": {
-        "coverage-report": "phpunit --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
-        "phan": "phan --analyze-twice --allow-polyfill-parser",
+        "coverage-report": "php -d memory_limit=1G vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
+        "phan": "php -d memory_limit=1G vendor/bin/phan --analyze-twice --allow-polyfill-parser",
         "phpcbf": "phpcbf -p -d memory_limit=1000M --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1000M --warning-severity=0",
-        "phplint": "phplint --exclude=vendor --no-interaction -vv ./",
+        "phplint": "php -d memory_limit=1G vendor/bin/phplint --exclude=vendor --no-interaction -vv ./",
         "phpstan": "phpstan --no-interaction analyse --memory-limit=2G src/*.php src/*/*.php src/*/*/*.php",
-        "progpilot": "progpilot --configuration progpilot.yml src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
+        "progpilot": "php -d memory_limit=1G vendor/bin/progpilot --configuration progpilot.yml src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "psalm": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --memory-limit=4G",
         "psalm-taint": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G",
-        "test": "paratest --processes=auto --runner=WrapperRunner --enforce-time-limit --default-time-limit=60000 --cache-directory=.phpunit.cache --coverage-clover=coverage.xml --log-junit=junit.xml --verbose 1>&2; TEST_EXIT=$?; sync; sync; php tests/parse_junit.php; sync; exit $TEST_EXIT"
+        "test": "php -d memory_limit=1G vendor/bin/paratest --processes=auto --runner=WrapperRunner --enforce-time-limit --default-time-limit=60000 --cache-directory=.phpunit.cache --coverage-clover=coverage.xml --log-junit=junit.xml --verbose 1>&2; TEST_EXIT=$?; sync; sync; php -d memory_limit=1G tests/parse_junit.php; sync; exit $TEST_EXIT"
     }
 }
