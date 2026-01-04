@@ -284,4 +284,19 @@ final class DoiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
     }
+
+    public function testBookChapterDOIFromJournal(): void {
+        // Test that book chapter DOIs are properly expanded in a single pass
+        // Previously required two passes: first to change template type, second to add chapter
+        $text = '{{cite journal | vauthors = Huang ZL, Zhang Z, Qu WM | title = Roles of adenosine and its receptors in sleep-wake regulation | journal = International Review of Neurobiology | volume = 119 | pages = 349–71 | date = 2014 | pmid = 25175972 | doi = 10.1016/B978-0-12-801022-8.00014-3 | isbn = 978-0-12-801022-8 }}';
+        $template = $this->process_citation($text);
+        // Should be converted to cite book
+        $this->assertSame('cite book', $template->wikiname());
+        // Should have chapter title added in single pass
+        $this->assertSame('Roles of Adenosine and Its Receptors in Sleep–Wake Regulation', $template->get2('chapter'));
+        // Should have book title
+        $this->assertSame('Adenosine Receptors in Neurology and Psychiatry', $template->get2('title'));
+        // Should have series
+        $this->assertSame('International Review of Neurobiology', $template->get2('series'));
+    }
 }
