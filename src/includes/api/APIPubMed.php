@@ -31,7 +31,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
         }
     }
     unset($idx, $value);
-    if (!count($ids))
+    if (!count($ids)) {
         return;
     }
     if ($db !== 'pubmed' && $db !== 'pmc') {
