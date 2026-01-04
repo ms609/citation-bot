@@ -294,13 +294,11 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('cite book', $template->wikiname());
         // Should have chapter title added in single pass
         $chapter = $template->get2('chapter');
-        $this->assertNotNull($chapter);
-        assert(is_string($chapter)); // For Phan
+        $this->assertIsString($chapter);
         $this->assertStringContainsString('Adenosine', $chapter);
         // Should have book title
         $title = $template->get2('title');
-        $this->assertNotNull($title);
-        assert(is_string($title)); // For Phan
+        $this->assertIsString($title);
         $this->assertStringContainsString('Adenosine Receptors', $title);
         // Should have series
         $this->assertSame('International Review of Neurobiology', $template->get2('series'));
