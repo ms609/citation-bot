@@ -13061,6 +13061,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'inorganic syntheses',
     'int rev cyt',
     'international review of cytology',
+    'international review of neurobiology',
     'international studies on childhood and adolescence',
     'lecture notes in computer science',
     'lecture notes in mathematics',
