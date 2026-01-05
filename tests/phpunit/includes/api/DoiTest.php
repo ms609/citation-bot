@@ -284,4 +284,25 @@ final class DoiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
     }
+
+    public function testBookChapterDOIFromJournal(): void {
+        // Test that book chapter DOIs are properly expanded in a single pass
+        // Previously required two passes: first to change template type, second to add chapter
+        $text = '{{cite journal | doi = 10.1016/B978-0-12-801022-8.00014-3 }}';
+        $template = $this->process_citation($text);
+        // Should be converted to cite book
+        $this->assertSame('cite book', $template->wikiname());
+        // Should have chapter title added in single pass
+        $chapter = $template->get2('chapter');
+        $this->assertIsString($chapter);
+        // @phan-suppress-next-line PhanTypeMismatchArgumentNullable - assertIsString guarantees non-null
+        $this->assertStringContainsString('Adenosine', $chapter);
+        // Should have book title
+        $title = $template->get2('title');
+        $this->assertIsString($title);
+        // @phan-suppress-next-line PhanTypeMismatchArgumentNullable - assertIsString guarantees non-null
+        $this->assertStringContainsString('Adenosine Receptors', $title);
+        // Should have series
+        $this->assertSame('International Review of Neurobiology', $template->get2('series'));
+    }
 }
