@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /** Manually check these from time to time. Last Check 23 April 2025 */
 const NULL_DOI_ANNOYING = [
+    '10.1511/1998.4.358' => true, // not found
     '10.1074/jbc.M001654200' => true, // An error has occurred
     '10.1075/hl.32.1-2.06and' => true, // not available
     '10.1123/ijatt.2009-0044' => true, // not found
@@ -3564,7 +3565,7 @@ const NULL_DOI_LIST = [
     '10.1501/Ilhfak_0000000674' => true, // not found
     '10.1501/Intrel_0000000013' => true,
     '10.1501/TAD_0000000253' => true,
-    '10.1511/1998.4.358' => true,
+    '10.1511/1998.4.358' => true, // not found
     '10.1511/1999.20.809' => true, // not found
     '10.1511/1999.5.398' => true, // not found
     '10.1511/2006.3.220' => true, // landing page
