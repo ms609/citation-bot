@@ -58,8 +58,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 - **Operations skipped**:
   - ✗ Searching for new bibcodes
   - ✗ Expanding URLs via Zotero
-- **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion.
-  Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
+- **Why fast mode only**: The gadget is designed for quick, in-browser citation expansion.  Slow mode operations (bibcode searches and URL expansions) can exceed the web browser's connection timeout limit, causing the gadget to fail.
 - **Use case**: Quick citation cleanup and expansion while editing Wikipedia articles
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
