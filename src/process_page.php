@@ -63,7 +63,7 @@ if (HTML_OUTPUT) {
 
 check_blocked();
 
-if (is_string($_REQUEST["edit"]) && $_REQUEST["edit"] !== '') {
+if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
     if ($_REQUEST["edit"] === 'automated_tools') {
         $edit_summary_end .= "| #UCB_automated_tools ";
     } elseif ($_REQUEST["edit"] === 'toolbar') {
