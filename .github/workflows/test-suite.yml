@@ -39,6 +39,9 @@ on:
       - 'CITATION.cff'
       - '.markdownlint-cli2.yaml'
       - '.github/dependabot.yml'
+      - 'src/assets/results.css'
+      - 'src/assets/index.js'
+      - 'src/index.html'
 
   schedule:
     - cron: '25 17 * * 1'
