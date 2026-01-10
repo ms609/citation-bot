@@ -4240,7 +4240,7 @@ final class Template
                     if (mb_stripos($periodical, 'arxiv') !== false) {
                         return;
                     }
-					 // Check for bioRxiv journal conversion - only for cite journal
+                    // Check for bioRxiv journal conversion - only for cite journal
                     if (
                         (mb_stripos($periodical, 'biorxiv') !== false || mb_strtolower($periodical) === 'biorxiv: the preprint server for biology') &&
                         $this->wikiname() === 'cite journal' &&

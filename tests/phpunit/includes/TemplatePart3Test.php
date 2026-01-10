@@ -1649,7 +1649,7 @@ EP - 999 }}';
         $page = $this->process_page($text);
         $this->assertSame("{{cs1 config|name-list-style=vanc}}<ref>{{cite journal | title=From fibrositis to fibromyalgia to nociplastic pain: How rheumatology helped get us here and where do we go from here? | journal=Annals of the Rheumatic Diseases | date=2024 | volume=83 | issue=11 | pages=1421–1427 | doi=10.1136/ard-2023-225327 | pmid=39107083 | pmc=11503076 | vauthors = Clauw DJ }}</ref>{{cs1 config|name-list-style=vanc}}", $page->parsed_text());
     }
-	
+
     public function testBioRxivConversion(): void {
         $text = '{{cite journal |last=Smith |first=John |title=Test Paper |journal=bioRxiv |doi=10.1101/123456 |year=2023}}';
         $prepared = $this->prepare_citation($text);
