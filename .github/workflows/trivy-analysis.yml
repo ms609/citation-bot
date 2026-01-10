@@ -40,9 +40,8 @@ jobs:
             exit 1
           fi
           ls -lash ${{ env.SARIF_FILE }}
-          
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ env.SARIF_FILE }}
-
