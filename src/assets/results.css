@@ -1,13 +1,21 @@
+/* Global font setup - using system fonts for consistent rendering */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
 header, footer {
   background-color: #eed;
   margin: -9px;
   padding: 0.5em 1em;
   text-align: center;
   text-decoration: none;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
-header, footer, form {
-  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif';
+form {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  margin: 3em 1em 0;
+  padding-bottom: 2em;
 }
 
 header {
@@ -22,11 +30,6 @@ footer {
   box-shadow: 0 50vh 0 50vh #eed;
   margin-top: 3em;
   min-height: 80px;
-}
-
-form {
-  margin: 3em 1em 0;
-  padding-bottom: 2em;
 }
 
 input, select, button {
