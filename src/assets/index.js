@@ -80,7 +80,7 @@ function InitializeForm() {
   var pageSpinner = document.getElementById("PageSpinner");
   var catSpinner = document.getElementById("CatSpinner");
   var linkSpinner = document.getElementById("LinkSpinner");
-  
+
   if (botForm) botForm.onsubmit = ValidateForm;
   if (botPage) {
     botPage.oninput = ValidatePageName;
@@ -107,4 +107,3 @@ function InitializeForm() {
 
 window.onload = InitializeForm;
 window.addEventListener('pageshow', InitializeForm);
-
