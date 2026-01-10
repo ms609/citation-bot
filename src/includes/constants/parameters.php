@@ -435,6 +435,38 @@ const CITE_BOOK_UNSUPPORTED_PARAMS = [
     'magazine',
 ];
 
+/** Parameters allowed by cite bioRxiv template 
+const CITE_BIORXIV_ALLOWED_PARAMS = [
+    'biorxiv',
+    'title',
+    'trans-title',
+    'script-title',
+    'language',
+    'lang',
+    'date',
+    'year',
+    'publication-date',
+    'quote',
+    'quotation',
+    'postscript',
+    'ref',
+    'mode',
+    'class',
+    'page',
+    'pages',
+    'pp',
+    'p',
+    'at',
+    'no-pp',
+    'df',
+    'name-list-style',
+    'name-list-format',
+    'collaboration',
+    'access-date',
+    'archive-date',
+    'orig-date',
+];
+
 const ALL_ALIASES = [
     TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
     DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,
