@@ -33,7 +33,7 @@ The system has two main components:
 ### Core Processing Flow
 
 ```text
-Wikipedia Page → Extract Templates → Query External APIs → 
+Wikipedia Page → Extract Templates → Query External APIs →
 Add Missing Metadata → Clean Formatting → Post to Wikipedia
 ```
 
@@ -73,7 +73,7 @@ if ($doi = $template->get('doi')) {
 **Avoid (too compact for this project):**
 
 ```php
-if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi)) 
+if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
   $template->add_if_new('title', $metadata->title);
 ```
 
@@ -399,5 +399,5 @@ The bot has reached a stable, feature-complete state. It reliably processes thou
 
 ---
 
-**Last updated:** January 2026  
+**Last updated:** January 2026
 **Maintained by:** Citation Bot community

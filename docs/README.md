@@ -23,7 +23,7 @@
 ## GitHub repository details
 
 - The **master** code is implemented at <https://citations.toolforge.org/>, and is intended for public use.
-- When needed, the **development** branch is intended for major restructuring and testing.  
+- When needed, the **development** branch is intended for major restructuring and testing.
 
 ## Overview
 
@@ -123,7 +123,7 @@ Before entering the k8s shell, it may be necessary to install phpunit (as wget i
 In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
-    
+
 The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
 
 Command line parameters:

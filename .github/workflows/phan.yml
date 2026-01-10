@@ -31,4 +31,3 @@ jobs:
 
     - name: PHP phan
       run: composer run phan
-     
