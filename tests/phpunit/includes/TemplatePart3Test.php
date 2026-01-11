@@ -1684,4 +1684,20 @@ EP - 999 }}';
         $this->assertSame('123–456', $prepared->get2('pages'));
         $this->assertNull($prepared->get2('biorxiv'));
     }
+
+    public function testBioRxivRealWorldExample(): void {
+        // Test case from GitHub issue - parameters should be removed even if present in input
+        $text = '{{cite journal |vauthors=Lyu J, Kapolka N, Gumpper R, Alon A, Wang L, Jain MK, Barros-Álvarez X, Sakamoto K, Kim Y, DiBerto J, Kim K, Tummino TA, Huang S, Irwin JJ, Tarkhanova OO, Moroz Y, Skiniotis G, Kruse AC, Shoichet BK, Roth BL |title=AlphaFold2 structures template ligand discovery |journal=BioRxiv: The Preprint Server for Biology |date=December 2023 |pmid=38187536 |pmc=10769324 |doi=10.1101/2023.12.20.572662}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite biorxiv', $prepared->wikiname());
+        $this->assertSame('10.1101/2023.12.20.572662', $prepared->get2('biorxiv'));
+        $this->assertNull($prepared->get2('doi'), 'DOI should be removed (converted to biorxiv parameter)');
+        $this->assertNull($prepared->get2('pmid'), 'PMID should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('pmc'), 'PMC should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('journal'), 'Journal should be removed from cite biorxiv');
+        // Verify allowed parameters are retained
+        $this->assertSame('AlphaFold2 structures template ligand discovery', $prepared->get2('title'));
+        $this->assertNotNull($prepared->get2('vauthors'), 'vauthors should be retained');
+        $this->assertSame('December 2023', $prepared->get2('date'));
+    }
 }
