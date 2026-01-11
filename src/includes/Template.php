@@ -4352,7 +4352,7 @@ final class Template
                         $doi_value = $this->get('doi');
                         if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
                             // Convert to cite medRxiv
-                            $this->change_name_to('cite medrxiv', true, true);
+                            $this->change_name_to('cite medRxiv', true, true);
                             $this->rename('doi', 'medrxiv');
 
                             // Remove parameters not allowed in cite medRxiv
