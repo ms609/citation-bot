@@ -689,6 +689,32 @@ final class Template
             return false;
         }
 
+        // Block parameters not allowed in cite bioRxiv template
+        if ($this->wikiname() === 'cite biorxiv') {
+            $param_name_lower = mb_strtolower($param_name);
+            $is_allowed = in_array($param_name_lower, CITE_BIORXIV_ALLOWED_PARAMS, true);
+
+            // Allow author and editor parameters even if not in the explicit allowed list
+            if (!$is_allowed && (
+                preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
+                preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
+                preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
+                preg_match('~^editor\d*$~i', $param_name) ||
+                preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                mb_stripos($param_name, 'DUPLICATE') !== false
+            )) {
+                $is_allowed = true;
+            }
+
+            if (!$is_allowed) {
+                report_warning("Not adding " . echoable($param_name) . " parameter to cite biorxiv template (unsupported)");
+                return false;
+            }
+        }
+
         /** @psalm-assert string $param_name */
 
         if ($api) {
@@ -5976,6 +6002,40 @@ final class Template
             if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
                 $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
             }
+
+            // Final cleanup for cite biorxiv - ensure only allowed parameters are present
+            if ($this->wikiname() === 'cite biorxiv') {
+                $params_to_remove = [];
+                foreach ($this->param as $p) {
+                    $param_name = $p->param;
+                    $param_name_lower = mb_strtolower($param_name);
+                    $is_allowed = in_array($param_name_lower, CITE_BIORXIV_ALLOWED_PARAMS, true);
+
+                    // Allow author and editor parameters even if not in the explicit allowed list
+                    if (!$is_allowed && (
+                        preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
+                        preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
+                        preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                        preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
+                        preg_match('~^editor\d*$~i', $param_name) ||
+                        preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                        preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                        mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                        mb_stripos($param_name, 'DUPLICATE') !== false
+                    )) {
+                        $is_allowed = true;
+                    }
+
+                    if (!$is_allowed) {
+                        $params_to_remove[] = $param_name;
+                    }
+                }
+
+                foreach ($params_to_remove as $param_name) {
+                    $this->forget($param_name);
+                }
+            }
+
             if ($this->wikiname() === 'cite web') {
                 if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
                     if ($this->name === 'cite web') {
