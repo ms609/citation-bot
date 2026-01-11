@@ -600,26 +600,33 @@ final class ConstantsTest extends testBaseClass {
         $page = new TestPage();
         $errors = "";
         foreach (TEMPLATE_CONVERSIONS as $convert) {
-            // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
             }
+            /* We get int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
+            /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
             $tem = 'Template:' . $convert[0];
             $tem = str_replace(' ', '_', $tem);
-            // Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis
-            if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
+            $status = WikipediaBot::is_redirect($tem); // Expect "1"
+            if ($status === 0) {
                 $page->get_text_from($tem);
                 $text = $page->parsed_text();
                 if (mb_stripos($text, 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
+            } elseif ($status === -1) { // The page is gone
+                $errors = $errors . '   Does not exist anymore:' . $convert[0];
             }
             $tem = 'Template:' . $convert[1];
             $tem = str_replace(' ', '_', $tem);
-            if (WikipediaBot::is_redirect($tem) !== 0 &&
-                $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
+            if ($tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
                 $tem !== 'Template:LCCN' && $tem !== 'Template:PMC' && $tem !== 'Template:URN') { // We remove one layer of re-direct, but not both
-                $errors = $errors . '   Is now a redirect:' . $convert[1];
+                $status = WikipediaBot::is_redirect($tem); // Expect "0"
+                if ($status === 1) {
+                    $errors = $errors . '   Is now a redirect:' . $convert[1];
+                elseif ($status === -1) {
+                    $errors = $errors . '   Does not exist anymore:' . $convert[1];
+                }
             }
         }
         $this->assertSame("", $errors); // We want a list of all of them
