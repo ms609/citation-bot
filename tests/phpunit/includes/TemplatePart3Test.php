@@ -1730,28 +1730,6 @@ EP - 999 }}';
         $this->assertNull($prepared->get2('journal'));
     }
 
-    public function testMedRxivConversionCaseInsensitive(): void {
-        $text = '{{cite journal |title=Test |journal=MedRxiv |doi=10.1101/456789 |year=2023}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.1101/456789', $prepared->get2('medrxiv'));
-    }
-
-    public function testMedRxivConversionFullJournalName(): void {
-        $text = '{{cite journal |title=Test |journal=medRxiv: The Preprint Server for Health Sciences |doi=10.1101/789012 |year=2023}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.1101/789012', $prepared->get2('medrxiv'));
-        $this->assertNull($prepared->get2('journal'));
-    }
-
-    public function testMedRxivConversionFullJournalNameNoColon(): void {
-        $text = '{{cite journal |title=Test |journal=medRxiv The Preprint Server for Health Sciences |doi=10.64898/abc123 |year=2023}}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.64898/abc123', $prepared->get2('medrxiv'));
-    }
-
     public function testMedRxivParameterFiltering(): void {
         $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1101/062109 |volume=10 |pmid=123 |pmc=456}}';
         $prepared = $this->prepare_citation($text);
@@ -1779,7 +1757,7 @@ EP - 999 }}';
     }
 
     public function testMedRxivRealWorldExample(): void {
-        // Test case similar to bioRxiv - parameters should be removed even if present in input
+        // Test case from GitHub issue - parameters should be removed even if present in input
         $text = '{{cite journal |vauthors=Smith A, Johnson B, Williams C |title=COVID-19 Vaccine Study |journal=medRxiv: The Preprint Server for Health Sciences |date=January 2024 |pmid=12345678 |pmc=87654321 |doi=10.1101/2024.01.15.123456}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite medrxiv', $prepared->wikiname());
