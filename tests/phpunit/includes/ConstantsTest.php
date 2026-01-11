@@ -609,7 +609,7 @@ final class ConstantsTest extends testBaseClass {
             $tem = str_replace(' ', '_', $tem);
             $status = WikipediaBot::is_redirect($tem); // Expect "1" or "-1"
             if ($status === 0) {
-                usleep(50000); /* one twentieth of a second */
+                usleep(250000); /* one quarter of a second */
                 $page->get_text_from($tem);
                 $text = $page->parsed_text();
                 if (mb_stripos($text, 'safesubst:') === false) {
