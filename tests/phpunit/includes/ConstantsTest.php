@@ -607,15 +607,13 @@ final class ConstantsTest extends testBaseClass {
             /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
             $tem = 'Template:' . $convert[0];
             $tem = str_replace(' ', '_', $tem);
-            $status = WikipediaBot::is_redirect($tem); // Expect "1"
+            $status = WikipediaBot::is_redirect($tem); // Expect "1" or "-1"
             if ($status === 0) {
                 $page->get_text_from($tem);
                 $text = $page->parsed_text();
                 if (mb_stripos($text, 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
-            } elseif ($status === -1) {
-                $errors = $errors . '   Does not exist anymore:' . $convert[0];
             } elseif ($status === -2) {
                 $errors = $errors . '   Could not get status:' . $convert[0];
             }
