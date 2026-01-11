@@ -1700,4 +1700,24 @@ EP - 999 }}';
         $this->assertNotNull($prepared->get2('vauthors'), 'vauthors should be retained');
         $this->assertSame('December 2023', $prepared->get2('date'));
     }
+
+    public function testBioRxivComprehensiveParameterFiltering(): void {
+        // Test that ALL disallowed parameters are removed, not just pmid/pmc/doi/journal
+        $text = '{{cite journal |title=Test Paper |journal=bioRxiv |doi=10.1101/123456 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite biorxiv', $prepared->wikiname());
+        $this->assertSame('10.1101/123456', $prepared->get2('biorxiv'));
+        // Check that disallowed parameters are removed
+        $this->assertNull($prepared->get2('doi'));
+        $this->assertNull($prepared->get2('journal'));
+        $this->assertNull($prepared->get2('volume'), 'volume should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('issue'), 'issue should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('publisher'), 'publisher should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('issn'), 'issn should be removed from cite biorxiv');
+        $this->assertNull($prepared->get2('url'), 'url should be removed from cite biorxiv');
+        // Check that allowed parameters are retained
+        $this->assertSame('Test Paper', $prepared->get2('title'));
+        $this->assertSame('2023', $prepared->get2('year'));
+        $this->assertSame('100–200', $prepared->get2('pages'), 'pages is allowed and should be retained');
+    }
 }
