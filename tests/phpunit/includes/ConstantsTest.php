@@ -624,7 +624,7 @@ final class ConstantsTest extends testBaseClass {
                 $status = WikipediaBot::is_redirect($tem); // Expect "0"
                 if ($status === 1) {
                     $errors = $errors . '   Is now a redirect:' . $convert[1];
-                elseif ($status === -1) {
+                } elseif ($status === -1) {
                     $errors = $errors . '   Does not exist anymore:' . $convert[1];
                 }
             }
