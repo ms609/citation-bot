@@ -4275,7 +4275,7 @@ final class Template
                         $doi_value = $this->get('doi');
                         if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
                             // Convert to cite bioRxiv
-                            $this->change_name_to('cite biorxiv', true, true);
+                            $this->change_name_to('cite bioRxiv', true, true);
                             $this->rename('doi', 'biorxiv');
 
                             // Remove parameters not allowed in cite bioRxiv
