@@ -614,8 +614,10 @@ final class ConstantsTest extends testBaseClass {
                 if (mb_stripos($text, 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
-            } elseif ($status === -1) { // The page is gone
+            } elseif ($status === -1) {
                 $errors = $errors . '   Does not exist anymore:' . $convert[0];
+            } elseif ($status === -2) {
+                $errors = $errors . '   Could not get status:' . $convert[0];
             }
             $tem = 'Template:' . $convert[1];
             $tem = str_replace(' ', '_', $tem);
@@ -626,6 +628,8 @@ final class ConstantsTest extends testBaseClass {
                     $errors = $errors . '   Is now a redirect:' . $convert[1];
                 } elseif ($status === -1) {
                     $errors = $errors . '   Does not exist anymore:' . $convert[1];
+                } elseif ($status === -2) {
+                    $errors = $errors . '   Could not get status:' . $convert[1];
                 }
             }
         }
