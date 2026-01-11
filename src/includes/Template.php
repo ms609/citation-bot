@@ -736,7 +736,7 @@ final class Template
             }
 
             if (!$is_allowed) {
-                report_warning("Not adding " . echoable($param_name) . " parameter to cite medrxiv template (unsupported)");
+                report_warning("Not adding " . echoable($param_name) . " parameter to cite medRxiv template (unsupported)");
                 return false;
             }
         }
