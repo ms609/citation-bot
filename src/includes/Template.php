@@ -710,7 +710,7 @@ final class Template
             }
 
             if (!$is_allowed) {
-                report_warning("Not adding " . echoable($param_name) . " parameter to cite biorxiv template (unsupported)");
+                report_warning("Not adding " . echoable($param_name) . " parameter to cite bioRxiv template (unsupported)");
                 return false;
             }
         }
