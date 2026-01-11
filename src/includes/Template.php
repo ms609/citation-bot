@@ -702,7 +702,9 @@ final class Template
                 preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
                 preg_match('~^editor\d*$~i', $param_name) ||
                 preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
-                preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name)
+                preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                mb_stripos($param_name, 'DUPLICATE') !== false
             )) {
                 $is_allowed = true;
             }
