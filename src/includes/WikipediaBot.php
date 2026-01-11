@@ -377,8 +377,12 @@ final class WikipediaBot {
         ]);
         $res = @json_decode($res);
         if (!isset($res->query->pages)) {
-            report_warning("Failed to get redirect status");    // @codeCoverageIgnore
-            return -1;                                          // @codeCoverageIgnore
+            sleep(5);
+            $res = @json_decode($res);
+        }
+        if (!isset($res->query->pages)) {
+            report_warning("Failed to get redirect status");
+            return -1;  // TODO - should probably be -2, but need to fix code that uses this also
         }
         $res = self::reset($res->query->pages);
         return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
