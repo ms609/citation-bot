@@ -388,7 +388,7 @@ final class Template
 
             $this->tidy();
             // Fix up URLs hiding in identifiers
-            foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr', 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
+            foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr', 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl', 'medrxiv'] as $possible) {
                 if ($this->has($possible)) {
                     $url = $this->get($possible);
                     if (
@@ -2151,6 +2151,7 @@ final class Template
             case 'jfm':
             case 'osti':
             case 'biorxiv':
+            case 'medrxiv':
             case 'citeseerx':
             case 'via':
                 if ($this->blank($param_name)) {
@@ -2747,6 +2748,7 @@ final class Template
                     case "lcc":
                     case "ismn":
                     case "biorxiv":
+                    case "medrxiv":
                         // Specific checks for particular templates:
                         if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
                             report_info("{{ASIN}} country parameter not supported: cannot convert.");
@@ -2778,6 +2780,10 @@ final class Template
                         }
                         if ($subtemplate_name === 'biorxiv' && $subtemplate->has_multiple_params()) {
                             report_info("{{biorxiv}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
+                            break;
+                        }
+                        if ($subtemplate_name === 'medrxiv' && $subtemplate->has_multiple_params()) {
+                            report_info("{{medrxiv}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
                             break;
                         }
                         if ($subtemplate_name === 'lcc') {
@@ -6332,7 +6338,7 @@ final class Template
             if (
                 ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
                 $this->blank(WORK_ALIASES) &&
-                $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+                $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv', 'medrxiv']) &&
                 $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
                 $this->has('url')
             ) {
