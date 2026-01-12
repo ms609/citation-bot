@@ -121,7 +121,7 @@ final class WikipediaBot {
      * @phpstan-impure
      * @param array<string> $params
      */
-    private function fetch(array $params, int $depth = 1): ?object {
+    private function fetch(array $params, int $depth = 1): ?object { // The $params array is strings only.  No booleans or integers, since http_build_query() turns everything into strings
         set_time_limit(120);
         if ($depth > 1) {
             sleep($depth + 2); // @codeCoverageIgnore
