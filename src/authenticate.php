@@ -35,7 +35,7 @@ session_start();
 
 require_once __DIR__ . '/includes/setup.php';
 
-if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
+if (getenv('PHP_WP_OAUTH_CONSUMER') === false || getenv('PHP_WP_OAUTH_SECRET') === false) {
     death_time("Citation Bot's authorization tokens not configured");
 }
 
