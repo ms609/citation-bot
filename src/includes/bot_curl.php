@@ -29,13 +29,13 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
         CURLOPT_USERAGENT => BOT_USER_AGENT,
-        CURLOPT_AUTOREFERER => "1",
+        CURLOPT_AUTOREFERER => true,
         CURLOPT_REFERER => "https://en.wikipedia.org",
-        CURLOPT_COOKIESESSION => "1",
-        CURLOPT_RETURNTRANSFER => "1",
+        CURLOPT_COOKIESESSION => true,
+        CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
         CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
-        CURLOPT_NOPROGRESS => "0",
+        CURLOPT_NOPROGRESS => false,
         CURLOPT_COOKIEJAR => COOKIE_FILE_PATH,
         CURLOPT_COOKIEFILE => COOKIE_FILE_PATH,
         // 2 - Default Time by ratio
