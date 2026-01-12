@@ -20,7 +20,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
     static $ch = null;
     set_time_limit(120);
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HEADER => "1"]);
+        $ch = bot_curl_init(0.5, [CURLOPT_HEADER => true]);
     }
     foreach ($templates as $template) {
         set_time_limit(120);
