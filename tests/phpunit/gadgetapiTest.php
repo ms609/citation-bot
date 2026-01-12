@@ -12,7 +12,7 @@ final class gadgetapiTest extends testBaseClass {
     public function testGadget(): void {
         new TestPage(); // Fill page name with test name for debugging
         ob_start();
-        $_POST['text'] = '{{cite|pmid=34213}}';
+        $_POST['text'] = '{{cite journal|doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}';
         $_POST['summary'] = 'Something Nice';
         // Note: gadgetapi.php runs in fast mode by default to prevent timeouts
         require(__DIR__ . '/../../src/gadgetapi.php');
@@ -26,7 +26,7 @@ final class gadgetapiTest extends testBaseClass {
         unset($_REQUEST);
         // Output checking time
         $json = json_decode($json_text);
-        $this->assertSame('{{citation|last1=Weber |first1=F. |last2=Kayser |first2=F. H. |title=Antimicrobial resistance and serotypes of Streptococcus pneumoniae in Switzerland |journal=Schweizerische Medizinische Wochenschrift |date=1979 |volume=109 |issue=11 |pages=395–399 |pmid=34213}}', $json->expandedtext);
-        $this->assertSame('Something Nice | Altered template type. Add: pages, issue, volume, date, journal, title, authors 1-2. Removed Template redirect. | [[:en:WP:UCB|Use this tool]]. [[:en:WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
+        $this->assertSame('{{cite journal|last1=Leyser Da Costa Gouveia |first1=Tiago |last2=Maganas |first2=Dimitrios |last3=Neese |first3=Frank |title=Restricted Open-Shell Hartree–Fock Method for a General Configuration State Function Featuring Arbitrarily Complex Spin-Couplings |journal=The Journal of Physical Chemistry A |date=2024 |volume=128 |issue=25 |pages=5041–5053 |doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}', $json->expandedtext);
+        $this->assertSame('Something Nice | Add: pages, issue, volume, date, journal, title, authors 1-3. | [[:en:WP:UCB|Use this tool]]. [[:en:WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
     }
 }

@@ -44,6 +44,7 @@ The test suite detects missing keys and skips tests.  A developer should conside
 - Directly comparing strings to integer with comparison operators is different in PHP 7 and 8, so they should not be used
 - We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the API php files for lots of examples of non-coverage code.
 - All curl_init() should be replaced with bot_curl_init() calls, which sets reasonable defaults.  Also reasonable timeouts should be set depending upon the website.
+- We prefer `true` and `false` instead of `1` and `0` in calls to curl_setopt()
 - error_reporting(E_ALL) and declare(strict_types=1) are both set
 - Multi-byte functions should be used (even when the strings are obviously not multi-byte for safety and consistency), such as mb_ucwords instead of ucwords (there are a couple of non-standard ones provided within the source code).  Do not use for http headers that are byte counts.
 - Do not use `strtok` since it saves a buffer internally

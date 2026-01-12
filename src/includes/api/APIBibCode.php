@@ -389,7 +389,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
     $curl_opts = [
         CURLOPT_URL => $adsabs_url,
         CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-        CURLOPT_HEADER => "1",
+        CURLOPT_HEADER => true,
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids),
     ];
@@ -475,13 +475,13 @@ function query_adsabs(string $options): object {
                     . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts = [
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-        CURLOPT_HEADER => "1",
+        CURLOPT_HEADER => true,
         CURLOPT_URL => $adsabs_url,
     ];
     return Bibcode_Response_Processing($curl_opts, $adsabs_url);
 }
 
-/** @param array<int|string|bool|array<string>> $curl_opts */
+/** @param array<string|bool|array<string>> $curl_opts */
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): object {
     try {
         $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly

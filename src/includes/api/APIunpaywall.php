@@ -186,13 +186,13 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 // The above line might have eaten the URL and upgraded it
                 $the_url = $template->get($url_type);
                 $ch = bot_curl_init(1.5, [
-                CURLOPT_HEADER => '1',
-                CURLOPT_NOBODY => '1',
-                CURLOPT_SSL_VERIFYHOST => '0',
-                CURLOPT_SSL_VERIFYPEER => '0',
-                CURLOPT_SSL_VERIFYSTATUS => '0',
-                CURLOPT_URL => $the_url,
-                    ]);
+                    CURLOPT_HEADER => true,
+                    CURLOPT_NOBODY => true,
+                    CURLOPT_SSL_VERIFYHOST => false,
+                    CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_SSL_VERIFYSTATUS => false,
+                    CURLOPT_URL => $the_url,
+                ]);
                 $headers_test = bot_curl_exec($ch);
                 // @codeCoverageIgnoreStart
                 if ($headers_test === "") {

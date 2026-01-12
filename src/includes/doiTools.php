@@ -128,8 +128,8 @@ function is_doi_active(string $doi): ?bool {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
-            CURLOPT_HEADER => "1",
-            CURLOPT_NOBODY => "0",
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => false,
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
         ]);
     }
@@ -789,7 +789,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     }
     $pos = mb_strpos($doi, '?');
     if ($pos) {
-            $doi = mb_substr($doi, 0, $pos);
+        $doi = mb_substr($doi, 0, $pos);
     }
     curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
     $ris = bot_curl_exec($ch);
