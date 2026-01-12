@@ -30,13 +30,13 @@ const GET_IS_OKAY = [
 ];
 
 $category = '';
-if (isset($_POST["cat"]) && is_string($_POST["cat"])) {
+if (is_string(@$_POST["cat"])) {
     $category = mb_trim($_POST["cat"]);
 }
 if (mb_strtolower(mb_substr($category, 0, 9)) === 'category:') {
     $category = mb_trim(mb_substr($category, 9));
 }
-if ($category === '' && is_string($_GET["cat"])) {
+if ($category === '' && is_string(@$_GET["cat"])) {
     $try = mb_trim(urldecode($_GET["cat"]));
     if (in_array($try, GET_IS_OKAY, true)) {
         $category = $try;
@@ -46,7 +46,7 @@ if (!$category) {
     bot_html_header();
     if (isset($_POST["cat"])) {
         report_warning("Invalid category on the webform.");
-    } elseif (is_string($_GET["cat"])) {
+    } elseif (is_string(@$_GET["cat"])) {
         report_warning("You must specify this category using the webform.  Got: " . echoable($_GET["cat"]));
     } elseif (isset($_GET["cat"])) {
         report_warning("You must specify your single category as a string using the webform. "); // Get array if multiple cat's are sent
