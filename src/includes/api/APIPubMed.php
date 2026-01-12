@@ -180,7 +180,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
-            CURLOPT_POST => "1",
+            CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"],
         ]);
     }
