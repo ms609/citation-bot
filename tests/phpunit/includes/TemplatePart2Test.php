@@ -1219,7 +1219,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testRedirectFixing(): void {
         $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
         $template = $this->prepare_citation($text);
-        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $expanded->parsed_text());
+        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
     }
 
     public function testRedirectFixing2(): void {
