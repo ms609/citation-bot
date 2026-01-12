@@ -1213,13 +1213,13 @@ final class TemplatePart2Test extends testBaseClass {
     public function testZooKeys2(): void {
         $text = '{{Cite journal|journal=[[Zookeys]]}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('[[ZooKeys]]', $expanded->get2('journal'));
+        $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
     }
 
     public function testRedirectFixing(): void {
         $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
         $template = $this->prepare_citation($text);
-        $this->assertSame('[[Journal of Polymer Science]]', $template->get2('journal'));
+        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $expanded->parsed_text());
     }
 
     public function testRedirectFixing2(): void {
