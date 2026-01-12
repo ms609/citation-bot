@@ -226,11 +226,11 @@ final class WikipediaBot {
             "title" => $page,
             "text" => $text,
             "summary" => $editSummary,
-            "notminor" => "1",
-            "bot" => "1",
+            "notminor" => true,
+            "bot" => true,
             "basetimestamp" => $baseTimeStamp,
             "starttimestamp" => $startedEditing,
-            "nocreate" => "1",
+            "nocreate" => true,
             "watchlist" => "nochange",
             'token' => $auth_token,
         ];
@@ -396,7 +396,7 @@ final class WikipediaBot {
     public static function redirect_target(string $page): ?string {
         $res = self::QueryAPI([
             "action" => "query",
-            "redirects" => "1",
+            "redirects" => true,
             "titles" => $page,
         ]);
         $res = @json_decode($res);
