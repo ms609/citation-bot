@@ -119,7 +119,7 @@ final class WikipediaBot {
 
     /**
      * @phpstan-impure
-     * @param array<string> $params
+     * @param array<string|boolean> $params
      */
     private function fetch(array $params, int $depth = 1): ?object {
         set_time_limit(120);
