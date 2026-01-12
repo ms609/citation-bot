@@ -1801,7 +1801,7 @@ EP - 999 }}';
         // wikiname() should return lowercase version
         $this->assertSame('cite medrxiv', $expanded->wikiname());
     }
-  
+
     public function testBioRxivCapitalization(): void {
         // Test that bioRxiv template name has proper capitalization (capital R)
         $text = '{{cite journal |title=Test Paper |journal=bioRxiv |doi=10.1101/123456 |year=2023}}';
