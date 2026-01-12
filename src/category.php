@@ -49,7 +49,7 @@ if (!$category) {
     } elseif (is_string($_GET["cat"])) {
         report_warning("You must specify this category using the webform.  Got: " . echoable($_GET["cat"]));
     } elseif (isset($_GET["cat"])) {
-        report_warning("You must specify you category string using the webform.  Got: " . echoable(print_r($_GET["cat"], true))); // Get array if multiple cat's are sent
+        report_warning("You must specify your single category as a string using the webform. "); // Get array if multiple cat's are sent
     } else {
         report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
     }
