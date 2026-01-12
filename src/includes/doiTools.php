@@ -789,7 +789,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     }
     $pos = mb_strpos($doi, '?');
     if ($pos) {
-            $doi = mb_substr($doi, 0, $pos);
+        $doi = mb_substr($doi, 0, $pos);
     }
     curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
     $ris = bot_curl_exec($ch);
