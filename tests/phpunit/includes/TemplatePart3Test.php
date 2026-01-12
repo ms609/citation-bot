@@ -1791,4 +1791,14 @@ EP - 999 }}';
         $this->assertSame('2023', $prepared->get2('year'));
         $this->assertSame('100–200', $prepared->get2('pages'), 'pages is allowed and should be retained');
     }
+
+    public function testMedRxivCapitalization(): void {
+        // Test that medRxiv template name has proper capitalization (capital R)
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.1101/123456 |year=2023}}';
+        $expanded = $this->process_citation($text);
+        // The actual template name should have capital R
+        $this->assertStringContainsString('{{cite medRxiv', $expanded->parsed_text());
+        // wikiname() should return lowercase version
+        $this->assertSame('cite medrxiv', $expanded->wikiname());
+    }
 }

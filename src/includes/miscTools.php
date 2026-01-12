@@ -654,7 +654,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_journal = '';
             $bad_data = true;
             if ($template->wikiname() === 'cite journal') {
-                $template->change_name_to('cite arxiv');
+                $template->change_name_to('cite arXiv');
             }
         }
         if (mb_stripos($the_journal, 'arXiv') !== false) {

@@ -710,7 +710,7 @@ final class Template
             }
 
             if (!$is_allowed) {
-                report_warning("Not adding " . echoable($param_name) . " parameter to cite biorxiv template (unsupported)");
+                report_warning("Not adding " . echoable($param_name) . " parameter to cite bioRxiv template (unsupported)");
                 return false;
             }
         }
@@ -3302,6 +3302,8 @@ final class Template
                 }
             }
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
+            $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
+            $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
             if (ctype_upper(mb_substr($this->name, 0, 1))) {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
@@ -4307,7 +4309,7 @@ final class Template
                         $doi_value = $this->get('doi');
                         if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
                             // Convert to cite bioRxiv
-                            $this->change_name_to('cite biorxiv', true, true);
+                            $this->change_name_to('cite bioRxiv', true, true);
                             $this->rename('doi', 'biorxiv');
 
                             // Remove parameters not allowed in cite bioRxiv
