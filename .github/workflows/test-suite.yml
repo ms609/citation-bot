@@ -20,6 +20,7 @@ on:
       - '.github/workflows/trivy-analysis.yml'
       - '.github/workflows/YamlJson.yml'
       - '.github/workflows/html5check.yml'
+      - '.github/workflows/PHPCodeSniffer.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
