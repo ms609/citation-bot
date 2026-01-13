@@ -32,7 +32,7 @@
         "phpcbf": "phpcbf -p -d memory_limit=1G --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1G --warning-severity=0",
         "phplint": "php -d memory_limit=1G vendor/bin/phplint --exclude=vendor --no-interaction -vv ./",
-        "phpstan": "phpstan --no-interaction analyse --memory-limit=2G src/*.php src/*/*.php src/*/*/*.php",
+        "phpstan": "phpstan --no-interaction analyse --memory-limit=2G src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "progpilot": "php -d memory_limit=1G vendor/bin/progpilot --configuration progpilot.yml src/*.php src/*/*.php src/*/*/*.php tests/*.php tests/*/*.php tests/*/*/*.php",
         "psalm": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --memory-limit=4G --show-info=true",
         "psalm-taint": "PSALM_ALLOW_XDEBUG=1 php ./vendor/bin/psalm --taint-analysis --memory-limit=4G",
