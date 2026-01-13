@@ -1721,6 +1721,87 @@ EP - 999 }}';
         $this->assertSame('100–200', $prepared->get2('pages'), 'pages is allowed and should be retained');
     }
 
+    public function testMedRxivConversion(): void {
+        $text = '{{cite journal |last=Smith |first=John |title=Test Paper |journal=medRxiv |doi=10.1101/123456 |year=2023}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite medrxiv', $prepared->wikiname());
+        $this->assertSame('10.1101/123456', $prepared->get2('medrxiv'));
+        $this->assertNull($prepared->get2('doi'));
+        $this->assertNull($prepared->get2('journal'));
+    }
+
+    public function testMedRxivParameterFiltering(): void {
+        $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1101/062109 |volume=10 |pmid=123 |pmc=456}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite medrxiv', $prepared->wikiname());
+        $this->assertNull($prepared->get2('volume'));
+        $this->assertNull($prepared->get2('pmid'));
+        $this->assertNull($prepared->get2('pmc'));
+    }
+
+    public function testMedRxivNoConversionWrongDOI(): void {
+        $text = '{{cite journal |title=Test |journal=medRxiv |doi=10.1234/wrong}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite journal', $prepared->wikiname());
+    }
+
+    public function testMedRxivNoConversionDifferentJournal(): void {
+        $text = '{{cite journal |title=Test Paper |journal=Nature Medicine |doi=10.1101/123456 |volume=500 |pages=123-456}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite journal', $prepared->wikiname());
+        $this->assertSame('Nature Medicine', $prepared->get2('journal'));
+        $this->assertSame('10.1101/123456', $prepared->get2('doi'));
+        $this->assertSame('500', $prepared->get2('volume'));
+        $this->assertSame('123–456', $prepared->get2('pages'));
+        $this->assertNull($prepared->get2('medrxiv'));
+    }
+
+    public function testMedRxivRealWorldExample(): void {
+        // Test case from GitHub issue - parameters should be removed even if present in input
+        $text = '{{cite journal |vauthors=Smith A, Johnson B, Williams C |title=COVID-19 Vaccine Study |journal=medRxiv: The Preprint Server for Health Sciences |date=January 2024 |pmid=12345678 |pmc=87654321 |doi=10.1101/2024.01.15.123456}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite medrxiv', $prepared->wikiname());
+        $this->assertSame('10.1101/2024.01.15.123456', $prepared->get2('medrxiv'));
+        $this->assertNull($prepared->get2('doi'), 'DOI should be removed (converted to medrxiv parameter)');
+        $this->assertNull($prepared->get2('pmid'), 'PMID should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('pmc'), 'PMC should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('journal'), 'Journal should be removed from cite medrxiv');
+        // Verify allowed parameters are retained
+        $this->assertSame('COVID-19 Vaccine Study', $prepared->get2('title'));
+        $this->assertNotNull($prepared->get2('vauthors'), 'vauthors should be retained');
+        $this->assertSame('January 2024', $prepared->get2('date'));
+    }
+
+    public function testMedRxivComprehensiveParameterFiltering(): void {
+        // Test that ALL disallowed parameters are removed, not just pmid/pmc/doi/journal
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.64898/test123 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('cite medrxiv', $prepared->wikiname());
+        $this->assertSame('10.64898/test123', $prepared->get2('medrxiv'));
+        // Check that disallowed parameters are removed
+        $this->assertNull($prepared->get2('doi'));
+        $this->assertNull($prepared->get2('journal'));
+        $this->assertNull($prepared->get2('volume'), 'volume should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('issue'), 'issue should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('publisher'), 'publisher should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('issn'), 'issn should be removed from cite medrxiv');
+        $this->assertNull($prepared->get2('url'), 'url should be removed from cite medrxiv');
+        // Check that allowed parameters are retained
+        $this->assertSame('Test Paper', $prepared->get2('title'));
+        $this->assertSame('2023', $prepared->get2('year'));
+        $this->assertSame('100–200', $prepared->get2('pages'), 'pages is allowed and should be retained');
+    }
+
+    public function testMedRxivCapitalization(): void {
+        // Test that medRxiv template name has proper capitalization (capital R)
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.1101/123456 |year=2023}}';
+        $expanded = $this->process_citation($text);
+        // The actual template name should have capital R
+        $this->assertStringContainsString('{{cite medRxiv', $expanded->parsed_text());
+        // wikiname() should return lowercase version
+        $this->assertSame('cite medrxiv', $expanded->wikiname());
+    }
+
     public function testBioRxivCapitalization(): void {
         // Test that bioRxiv template name has proper capitalization (capital R)
         $text = '{{cite journal |title=Test Paper |journal=bioRxiv |doi=10.1101/123456 |year=2023}}';

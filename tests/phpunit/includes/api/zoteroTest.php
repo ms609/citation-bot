@@ -20,6 +20,18 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     }
 
+    public function testZoteroExpansion_medrxiv1(): void {
+        $text = '{{Cite journal| medrxiv=2020.04.05.20054502 }}';
+        $expanded = $this->process_citation($text);
+        $this->assertNotNull($expanded->get2('title'));
+    }
+
+    public function testZoteroExpansion_medrxiv2(): void {
+        $text = '{{Cite journal| medrxiv=2020.04.05.20054502 |doi=10.0001/Rubbish_bot_failure_test}}';
+        $expanded = $this->process_citation($text);
+        $this->assertNotNull($expanded->get2('title'));
+    }
+
     public function testDropUrlCode(): void {       // url is same as one doi points to
         $text = '{{cite journal |pmc=XYZ|url=https://pubs.rsc.org/en/Content/ArticleLanding/1999/CP/a808518h|doi=10.1039/A808518H|title=A study of FeCO+ with correlated wavefunctions|journal=Physical Chemistry Chemical Physics|volume=1|issue=6|pages=967–975|year=1999|last1=Glaesemann|first1=Kurt R.|last2=Gordon|first2=Mark S.|last3=Nakano|first3=Haruyuki|bibcode=1999PCCP....1..967G}}';
         $expanded = $this->process_citation($text);

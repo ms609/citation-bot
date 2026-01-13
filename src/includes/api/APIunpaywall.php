@@ -135,6 +135,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 $template->has('arxiv') ||
                 $template->has('eprint') ||
                 $template->has('biorxiv') ||
+                $template->has('medrxiv') ||
                 $template->has('citeseerx') ||
                 $template->has('pmc') ||
                 $template->has('rfc') ||

@@ -388,7 +388,7 @@ final class Template
 
             $this->tidy();
             // Fix up URLs hiding in identifiers
-            foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr', 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
+            foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr', 'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl', 'medrxiv'] as $possible) {
                 if ($this->has($possible)) {
                     $url = $this->get($possible);
                     if (
@@ -711,6 +711,32 @@ final class Template
 
             if (!$is_allowed) {
                 report_warning("Not adding " . echoable($param_name) . " parameter to cite bioRxiv template (unsupported)");
+                return false;
+            }
+        }
+
+        // Block parameters not allowed in cite medRxiv template
+        if ($this->wikiname() === 'cite medrxiv') {
+            $param_name_lower = mb_strtolower($param_name);
+            $is_allowed = in_array($param_name_lower, CITE_MEDRXIV_ALLOWED_PARAMS, true);
+
+            // Allow author and editor parameters even if not in the explicit allowed list
+            if (!$is_allowed && (
+                preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
+                preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
+                preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
+                preg_match('~^editor\d*$~i', $param_name) ||
+                preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                mb_stripos($param_name, 'DUPLICATE') !== false
+            )) {
+                $is_allowed = true;
+            }
+
+            if (!$is_allowed) {
+                report_warning("Not adding " . echoable($param_name) . " parameter to cite medRxiv template (unsupported)");
                 return false;
             }
         }
@@ -2125,6 +2151,7 @@ final class Template
             case 'jfm':
             case 'osti':
             case 'biorxiv':
+            case 'medrxiv':
             case 'citeseerx':
             case 'via':
                 if ($this->blank($param_name)) {
@@ -2721,6 +2748,7 @@ final class Template
                     case "lcc":
                     case "ismn":
                     case "biorxiv":
+                    case "medrxiv":
                         // Specific checks for particular templates:
                         if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
                             report_info("{{ASIN}} country parameter not supported: cannot convert.");
@@ -2752,6 +2780,10 @@ final class Template
                         }
                         if ($subtemplate_name === 'biorxiv' && $subtemplate->has_multiple_params()) {
                             report_info("{{biorxiv}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
+                            break;
+                        }
+                        if ($subtemplate_name === 'medrxiv' && $subtemplate->has_multiple_params()) {
+                            report_info("{{medrxiv}} has multiple parameters: cannot convert. " . echoable($subtemplate->parsed_text()));
                             break;
                         }
                         if ($subtemplate_name === 'lcc') {
@@ -3271,6 +3303,7 @@ final class Template
             }
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
             $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
+            $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
             if (ctype_upper(mb_substr($this->name, 0, 1))) {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
@@ -4309,6 +4342,51 @@ final class Template
                             }
 
                             report_modification('Converted cite journal to cite bioRxiv');
+                            return;
+                        }
+                    }
+                    // Check for medRxiv journal conversion - only for cite journal
+                    if (
+                        (mb_stripos($periodical, 'medrxiv') !== false || mb_strtolower($periodical) === 'medrxiv: the preprint server for health sciences') &&
+                        $this->wikiname() === 'cite journal' &&
+                        $this->has('doi')
+                    ) {
+                        $doi_value = $this->get('doi');
+                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
+                            // Convert to cite medRxiv
+                            $this->change_name_to('cite medRxiv', true, true);
+                            $this->rename('doi', 'medrxiv');
+
+                            // Remove parameters not allowed in cite medRxiv
+                            $params_to_remove = [];
+                            foreach ($this->param as $p) {
+                                $param_name = mb_strtolower($p->param);
+                                $keep = in_array($param_name, CITE_MEDRXIV_ALLOWED_PARAMS, true);
+
+                                if (!$keep && (
+                                    preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $p->param) ||
+                                    preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $p->param) ||
+                                    preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
+                                    preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $p->param) ||
+                                    preg_match('~^editor\d*$~i', $p->param) ||
+                                    preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $p->param) ||
+                                    preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $p->param) ||
+                                    mb_stripos($p->param, 'CITATION_BOT') !== false ||
+                                    mb_stripos($p->param, 'DUPLICATE') !== false
+                                )) {
+                                    $keep = true;
+                                }
+
+                                if (!$keep) {
+                                    $params_to_remove[] = $p->param;
+                                }
+                            }
+
+                            foreach ($params_to_remove as $param_name) {
+                                $this->forget($param_name);
+                            }
+
+                            report_modification('Converted cite journal to cite medRxiv');
                             return;
                         }
                     }
@@ -5375,7 +5453,7 @@ final class Template
                             $this->forget('via');
                         } elseif (mb_stripos($this->get('via'), 'library') !== false) {
                             $this->forget('via');
-                        } elseif (in_array($this->wikiname(), ['cite arxiv', 'cite biorxiv', 'cite citeseerx', 'cite ssrn'], true)) {
+                        } elseif (in_array($this->wikiname(), ['cite arxiv', 'cite biorxiv', 'cite citeseerx', 'cite ssrn', 'cite medrxiv'], true)) {
                             $this->forget('via');
                         } elseif (
                             $this->has('pmc') ||
@@ -6037,6 +6115,39 @@ final class Template
                 }
             }
 
+            // Final cleanup for cite medRxiv - ensure only allowed parameters are present
+            if ($this->wikiname() === 'cite medrxiv') {
+                $params_to_remove = [];
+                foreach ($this->param as $p) {
+                    $param_name = $p->param;
+                    $param_name_lower = mb_strtolower($param_name);
+                    $is_allowed = in_array($param_name_lower, CITE_MEDRXIV_ALLOWED_PARAMS, true);
+
+                    // Allow author and editor parameters even if not in the explicit allowed list
+                    if (!$is_allowed && (
+                        preg_match('~^(?:author|last|first|given|surname|forename|initials)\d*$~i', $param_name) ||
+                        preg_match('~^(?:author|editor)\d+-(?:last|first|given|surname|forename|initials|link|mask)$~i', $param_name) ||
+                        preg_match('~^(?:author|editor)-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                        preg_match('~^(?:authorlink|authormask|editorlink|editormask)\d*$~i', $param_name) ||
+                        preg_match('~^editor\d*$~i', $param_name) ||
+                        preg_match('~^editor-(?:last|first|given|surname|forename|initials|link|mask)\d*$~i', $param_name) ||
+                        preg_match('~^(?:vauthors|authors|display-authors|displayauthors|veditors|editors|display-editors|displayeditors)$~i', $param_name) ||
+                        mb_stripos($param_name, 'CITATION_BOT') !== false ||
+                        mb_stripos($param_name, 'DUPLICATE') !== false
+                    )) {
+                        $is_allowed = true;
+                    }
+
+                    if (!$is_allowed) {
+                        $params_to_remove[] = $param_name;
+                    }
+                }
+
+                foreach ($params_to_remove as $param_name) {
+                    $this->forget($param_name);
+                }
+            }
+
             if ($this->wikiname() === 'cite web') {
                 if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
                     if ($this->name === 'cite web') {
@@ -6229,7 +6340,7 @@ final class Template
             if (
                 ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
                 $this->blank(WORK_ALIASES) &&
-                $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+                $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv', 'medrxiv']) &&
                 $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
                 $this->has('url')
             ) {

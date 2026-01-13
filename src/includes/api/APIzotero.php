@@ -91,6 +91,26 @@ final class Zotero {
                     self::expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv')); // Rare case there is a different DOI
                 }
             }
+            if ($template->has('medrxiv')) {
+                if ($template->blank('doi')) {
+                    // medRxiv can use either 10.1101 or 10.64898 prefix
+                    $medrxiv_id = $template->get('medrxiv');
+                    if (mb_strpos($medrxiv_id, '10.1101/') === 0) {
+                        $template->add_if_new('doi', $medrxiv_id);
+                    } elseif (mb_strpos($medrxiv_id, '10.64898/') === 0) {
+                        $template->add_if_new('doi', $medrxiv_id);
+                    } else {
+                        // Assume 10.1101 prefix if not specified
+                        $template->add_if_new('doi', '10.1101/' . $medrxiv_id);
+                    }
+                    expand_by_doi($template, true); // this data is better than zotero
+                } elseif (mb_strstr($template->get('doi'), '10.1101') === false && mb_strstr($template->get('doi'), '10.64898') === false) {
+                    $medrxiv_id = $template->get('medrxiv');
+                    $doi_to_try = (mb_strpos($medrxiv_id, '10.') === 0) ? $medrxiv_id : '10.1101/' . $medrxiv_id;
+                    expand_doi_with_dx($template, $doi_to_try);  // dx data is better than zotero
+                    self::expand_by_zotero($template, 'https://dx.doi.org/' . $doi_to_try); // Rare case there is a different DOI
+                }
+            }
             $doi = $template->get('doi'); // might have changed
             if (!doi_active($doi)) {
                 if ($template->has('citeseerx')) {

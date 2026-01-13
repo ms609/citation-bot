@@ -11,8 +11,8 @@ const TEMPLATES_WE_PROCESS = [
     'web reference', 'cite citation', 'cite contribution', 'cite ebook', 'cite manual',
 ];
 const TEMPLATES_WE_SLIGHTLY_PROCESS = ['cite news', 'cite newspaper', 'citenews', 'cite new'];
-const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite biorxiv', 'cite conference'];
-const TEMPLATES_WE_RENAME = ['cite arxiv', 'cite biorxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite paper', 'cite website'];
+const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite biorxiv', 'cite medrxiv', 'cite conference'];
+const TEMPLATES_WE_RENAME = ['cite arxiv', 'cite biorxiv', 'cite medrxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite paper', 'cite website'];
 const TEMPLATES_WE_CHAPTER_URL = [
     'new cambridge medieval history', 'setton-a history of the crusades', 'new cambridge medieval history',
     'the cambridge history of iran', 'the buwayhid dynasty in iraq', 'the cambridge history of egypt',
@@ -438,6 +438,38 @@ const CITE_BOOK_UNSUPPORTED_PARAMS = [
 /** Parameters allowed by cite bioRxiv template per Wikipedia documentation at https://en.wikipedia.org/wiki/Template:Cite_bioRxiv */
 const CITE_BIORXIV_ALLOWED_PARAMS = [
     'biorxiv',
+    'title',
+    'trans-title',
+    'script-title',
+    'language',
+    'lang',
+    'date',
+    'year',
+    'publication-date',
+    'quote',
+    'quotation',
+    'postscript',
+    'ref',
+    'mode',
+    'class',
+    'page',
+    'pages',
+    'pp',
+    'p',
+    'at',
+    'no-pp',
+    'df',
+    'name-list-style',
+    'name-list-format',
+    'collaboration',
+    'access-date',
+    'archive-date',
+    'orig-date',
+];
+
+/** Parameters allowed by cite medRxiv template (mirrors cite bioRxiv) */
+const CITE_MEDRXIV_ALLOWED_PARAMS = [
+    'medrxiv',
     'title',
     'trans-title',
     'script-title',
