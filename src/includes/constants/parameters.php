@@ -634,4 +634,5 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'authorformat', 'archiveprefix', 'cstr', 'trans-author', 'updated', 'editor-trans',
     'titleofsite', 'free-access', 'authority', 'fbid', 'size', 'article-id', 'colast',
     'archive-status', 'tome', 'commentator', 'titledate', 'paragraphs', 'orig-author', 'weite',
+    'trans-edition', 'trans-subtitle',
 ];
