@@ -12,7 +12,7 @@ use MediaWiki\OAuthClient\Token;
 function death_time(string $err): never {
     unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Authentication System Failure</title></head><body><main>', $err, '</main></body></html>';
-    exit;
+    exit(0);
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
@@ -20,7 +20,7 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/'): n
         death_time('Error in return_to_sender');
     }
     header("Location: " . $where);
-    exit;
+    exit(0);
 }
 
 set_time_limit(120);
