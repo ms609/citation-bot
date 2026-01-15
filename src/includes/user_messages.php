@@ -85,7 +85,7 @@ function report_error(string $text): never {
         report_warning($text); // To the user
         trigger_error($text);  // System Logfile
     }
-    exit;
+    exit(0);
 }
 
 /**

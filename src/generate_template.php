@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/setup.php';
 
 function die_in_template(string $err): never {
     echo $err, '</pre></main></body></html>'; // @codeCoverageIgnore
-    exit; // @codeCoverageIgnore
+    exit(0); // @codeCoverageIgnore
 }
 
 if (count($_GET) !== 1) {

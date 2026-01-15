@@ -54,7 +54,7 @@ if (!$category) {
         report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
     }
     bot_html_footer();
-    exit;
+    exit(0);
 }
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
@@ -69,7 +69,7 @@ $total = count($pages_in_category);
 if ($total === 0) {
     report_warning('Category appears to be empty');
     bot_html_footer();
-    exit;
+    exit(0);
 }
 if ($total > intval(MAX_PAGES / 4)) {
     report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
@@ -79,7 +79,7 @@ if ($total > intval(MAX_PAGES / 4)) {
     }
     echo "\n\n";
     bot_html_footer();
-    exit;
+    exit(0);
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);

@@ -533,7 +533,7 @@ final class WikipediaBot {
         if (mb_strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
             report_warning('You need to run the bot on a page normally first to get permission tokens');
             bot_html_footer();
-            exit;
+            exit(0);
         }
         @session_start(); // Need write access
         unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
@@ -569,7 +569,7 @@ final class WikipediaBot {
             $return = urlencode($return);
             header("Location: authenticate.php?return=" . $return);
         }
-        exit;
+        exit(0);
     }
 
     private static function reset(object &$obj): object { // We use old php 7 style reset, so emulate

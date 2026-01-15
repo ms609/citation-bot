@@ -14,7 +14,7 @@ date_default_timezone_set('UTC');
 if (file_exists('git_pull.lock')) {
     sleep(5);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>';
-    exit;
+    exit(0);
 }
 
 function bot_debug_log(string $log_this): void {
@@ -38,7 +38,7 @@ if (isset($_REQUEST["wiki_base"])) {
     $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
         echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>';
-        exit;
+        exit(0);
     }
 } else {
     $wiki_base = 'en';
@@ -109,7 +109,7 @@ if (file_exists(__DIR__ . '/../env.php')) {
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
     echo 'Unable to set encoding';
-    exit;
+    exit(0);
 }
 
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
@@ -125,7 +125,7 @@ if (isset($_REQUEST['PHP_ADSABSAPIKEY'])) {
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
-        exit;
+        exit(0);
     }
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
@@ -163,7 +163,7 @@ function check_blocked(): void {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction or disagreement about its edits - so BE CAREFUL.</h1></div><pre>';
         } else {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction or disagreement about its edits.</h1><br/><h1>Alternatively, the bot has not been fully enabled on this wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
-            exit;
+            exit(0);
         }
     }
 }
