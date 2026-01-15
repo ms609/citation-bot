@@ -8,8 +8,8 @@ set_time_limit(120);
 @header('Access-Control-Allow-Origin: null');
 
 if (isset($_GET["page"]) && (!isset($_COOKIE['CiteBot']) || $_COOKIE['CiteBot'] === '')) {
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><main><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></main></body></html>'; // Fast exit, do not even include setup.php
-    exit;
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Citation Bot: error</title></head><body><main><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></main></body></html>'; // Quit fast, do not even include setup.php
+    exit(0);
 }
 
 require_once __DIR__ . '/includes/setup.php';
@@ -25,13 +25,13 @@ if (isset($argv[1])) {
         bot_html_header();
         report_warning('Non-string found in GET for page.');
         bot_html_footer();
-        exit;
+        exit(0);
     }
     if (mb_strpos($pages, '|') !== false) {
         bot_html_header();
         report_warning('Use the webform for multiple pages.');
         bot_html_footer();
-        exit;
+        exit(0);
     }
 } elseif (isset($_POST["page"])) {
     $pages = $_POST["page"];
@@ -39,13 +39,13 @@ if (isset($argv[1])) {
         bot_html_header();
         report_warning('Non-string found in POST for page.');
         bot_html_footer();
-        exit;
+        exit(0);
     }
 } else {
     bot_html_header();
     report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
     bot_html_footer();
-    exit;
+    exit(0);
 }
 
 // Do not open session until we know we have good data
