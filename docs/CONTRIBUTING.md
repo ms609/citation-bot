@@ -36,7 +36,7 @@ The test suite detects missing keys and skips tests.  A developer should conside
 - We prefer `===` and `!==` to `==` and `!=`
 - We prefer `bool` to `boolean`, and other such deprecated aliases
 - We prefer `curl` to `file_get_contents` and `get_headers` for easier debugging and greater control.  The curl header size is in bytes not multibyte character length.
-- We use `echo` and `exit` instead of `print` and `die`
+- We use `echo` and `exit(0)` instead of `print` and `die`
 - `echo` should use commas instead of dots to avoid concatenation overhead
 - All code must be valid PHP 8.4
 - We prefer [] to array()
