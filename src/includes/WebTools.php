@@ -110,6 +110,7 @@ function bot_html_header(): void {
     echo '<!DOCTYPE html><html lang="en" dir="ltr">', "\n",
     ' <head>', "\n",
     '  <meta name="viewport" content="width=device-width, initial-scale=1.0" />', "\n",
+    '  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />', "\n",
     '  <title>Citation Bot: running</title>', "\n",
     '  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
     '  <link rel="stylesheet" type="text/css" href="assets/results.css" />', "\n",
