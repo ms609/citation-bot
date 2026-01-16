@@ -368,6 +368,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     $try_to_add_it('page', @$json['pages']);
     $try_to_add_it('volume', @$json['volume']);
     $try_to_add_it('isbn', @$json['ISBN']['0']);
+    $try_to_add_it('isbn', @$json['isbn-type']['value']);
     $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
     if (isset($json['author'])) {
         $i = 0;
@@ -469,6 +470,14 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $template->change_name_to('cite thesis');
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['publisher']);
+        if (mb_stripos(@$json['URL'], 'hdl.handle.net')) {
+            $template->get_identifiers_from_url($json['URL']);
+        }
+    } elseif ($type === 'standard') {
+        $try_to_add_it('title', @$json['title']);
+        $try_to_add_it('location', @$json['publisher-location']);
+        $try_to_add_it('publisher', @$json['standards-body']['name']);
         $try_to_add_it('publisher', @$json['publisher']);
         if (mb_stripos(@$json['URL'], 'hdl.handle.net')) {
             $template->get_identifiers_from_url($json['URL']);
