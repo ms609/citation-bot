@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 /** TODO: Manually check these from time to time. Last Check 15 January 2026 */
 const NULL_DOI_ANNOYING = [
+    '10.3138/flor.27.6' => true, // 404
+    '10.3138/flor.29.1' => true, // 404
     '10.1074/jbc.M004951200' => true, // not found
     '10.15804/rop201703' => true, // something went wrong
     '10.18314/cogo.v1i1.862' => true, // domain for sale
@@ -4777,8 +4779,8 @@ const NULL_DOI_LIST = [
     '10.31377/HAW.V17I0.67' => true, // hijack
     '10.3138/anth-2019-0004' => true, // 404
     '10.3138/cjpe.0011.007' => true, // 404
-    '10.3138/flor.27.6' => true,
-    '10.3138/flor.29.1' => true,
+    '10.3138/flor.27.6' => true, // 404
+    '10.3138/flor.29.1' => true, // 404
     '10.31418/2177-2770.2021.v13.n.35.p242-259' => true,
     '10.31421/IJHS/12/1/622' => true,
     '10.3145/epi.2019.nov.19' => true,
