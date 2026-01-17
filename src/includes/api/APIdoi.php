@@ -629,7 +629,7 @@ function get_doi_from_crossref(Template $template): void {
 /**
  * Check if a bioRxiv or medRxiv preprint has been published in a journal
  * by querying CrossRef for relation data.
- * 
+ *
  * @param string $doi The bioRxiv or medRxiv DOI (must start with 10.1101/ or 10.64898/)
  * @return string|null The published DOI if found, null otherwise
  */
@@ -637,24 +637,24 @@ function get_biorxiv_published_doi(string $doi): ?string {
     if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
         return null;
     }
-    
+
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
-    
+
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $json = @json_decode($json);
-    
+
     if (!is_object($json) || !isset($json->message) || !isset($json->status) || (string) $json->status !== "ok") {
         return null;
     }
-    
+
     $result = $json->message;
-    
+
     // Check for relation data indicating the preprint has been published
     if (isset($result->relation) && is_object($result->relation)) {
         // Check for is-preprint-of relation
@@ -663,7 +663,7 @@ function get_biorxiv_published_doi(string $doi): ?string {
             if (!is_array($relations)) {
                 $relations = [$relations];
             }
-            
+         
             foreach ($relations as $relation) {
                 if (isset($relation->{'id-type'}) && (string) $relation->{'id-type'} === 'doi') {
                     if (isset($relation->id)) {
@@ -677,6 +677,6 @@ function get_biorxiv_published_doi(string $doi): ?string {
             }
         }
     }
-    
+
     return null;
 }
