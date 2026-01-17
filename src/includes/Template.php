@@ -355,6 +355,24 @@ final class Template
                         $this->quietly_forget('CITATION_BOT_PLACEHOLDER_date'); // @codeCoverageIgnore
                     }
                     break;
+                case "cite biorxiv":
+                case "cite medrxiv":
+                    // Check if the preprint has been published in a journal
+                    $preprint_param = ($this->wikiname() === 'cite biorxiv') ? 'biorxiv' : 'medrxiv';
+                    $preprint_doi = $this->get($preprint_param);
+                    if ($preprint_doi !== '') {
+                        $published_doi = get_biorxiv_published_doi('10.1101/' . $preprint_doi);
+                        if ($published_doi !== null) {
+                            // Convert to cite journal and add the published DOI
+                            report_action("Converting " . $this->wikiname() . " to cite journal - now published with DOI: " . doi_link($published_doi));
+                            $this->change_name_to('cite journal', false, false);
+                            $this->add_if_new('doi', $published_doi);
+                            // Expand with the published DOI to get full metadata
+                            expand_by_doi($this);
+                            report_modification('Converted ' . $preprint_param . ' citation to published journal article');
+                        }
+                    }
+                    break;
                 case "cite journal":
                     use_sici($this);
             }

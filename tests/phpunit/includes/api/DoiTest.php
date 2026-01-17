@@ -311,4 +311,22 @@ final class DoiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame($text, $template->parsed_text());
     }
+
+    public function testGetBioRxivPublishedDoi(): void {
+        // Test the get_biorxiv_published_doi function
+        // Note: This test requires network access and may fail if CrossRef API is unavailable
+        
+        // Test with invalid DOI (not 10.1101/)
+        $result = get_biorxiv_published_doi('10.1234/invalid');
+        $this->assertNull($result);
+        
+        // Test with bioRxiv DOI that has not been published
+        // Most recent preprints won't have published versions yet
+        // This is just to test the function doesn't crash
+        $result = get_biorxiv_published_doi('10.1101/999999999');
+        $this->assertNull($result); // Should return null for non-existent DOI
+        
+        // Note: Testing with real published bioRxiv DOIs would require
+        // network access and could be flaky, so we keep these tests minimal
+    }
 }
