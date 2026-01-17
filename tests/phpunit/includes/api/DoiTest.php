@@ -315,7 +315,7 @@ final class DoiTest extends testBaseClass {
     public function testGetBioRxivPublishedDoi(): void {
         // Test the get_biorxiv_published_doi function
         // Note: This test requires network access and may fail if CrossRef API is unavailable
-  
+
         // Test with invalid DOI (not 10.1101/)
         $result = get_biorxiv_published_doi('10.1234/invalid');
         $this->assertNull($result);
