@@ -2254,9 +2254,12 @@ final class Template
 
         // Check if value looks like a URL and parameter doesn't allow URLs
         if (!in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
-            if (preg_match('~^https?://~i', $value) ||
-                preg_match('~://~', $value) ||
-                preg_match('~^www\.~i', $value)) {
+            // Remove XML/HTML tags and their attributes to avoid false positives from xmlns attributes
+            $value_without_tags = preg_replace('~<[^>]+>~', '', $value);
+            
+            if (preg_match('~^https?://~i', $value_without_tags) ||
+                preg_match('~://~', $value_without_tags) ||
+                preg_match('~^www\.~i', $value_without_tags)) {
                 return true;
             }
         }
