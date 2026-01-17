@@ -630,11 +630,11 @@ function get_doi_from_crossref(Template $template): void {
  * Check if a bioRxiv or medRxiv preprint has been published in a journal
  * by querying CrossRef for relation data.
  * 
- * @param string $doi The bioRxiv or medRxiv DOI (must start with 10.1101/)
+ * @param string $doi The bioRxiv or medRxiv DOI (must start with 10.1101/ or 10.64898/)
  * @return string|null The published DOI if found, null otherwise
  */
 function get_biorxiv_published_doi(string $doi): ?string {
-    if (mb_strpos($doi, '10.1101/') !== 0) {
+    if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
         return null;
     }
     
@@ -669,7 +669,7 @@ function get_biorxiv_published_doi(string $doi): ?string {
                     if (isset($relation->id)) {
                         $published_doi = (string) $relation->id;
                         // Verify it's not a bioRxiv/medRxiv DOI
-                        if (mb_strpos($published_doi, '10.1101/') !== 0) {
+                        if (mb_strpos($published_doi, '10.1101/') !== 0 && mb_strpos($published_doi, '10.64898/') !== 0) {
                             return $published_doi;
                         }
                     }
