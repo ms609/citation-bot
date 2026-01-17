@@ -377,9 +377,16 @@ final class Template
                             // Clean up the template after conversion
                             $this->tidy();
                             report_modification('Converted ' . $preprint_param . ' citation to published journal article');
+                            // Fall through to cite journal case to apply journal-specific processing
+                        } else {
+                            // Not published yet, keep as cite biorxiv/medrxiv
+                            break;
                         }
+                    } else {
+                        // No biorxiv/medrxiv parameter, keep as is
+                        break;
                     }
-                    break;
+                    // Note: NO break here when conversion happens - fall through to cite journal case
                 case "cite journal":
                     use_sici($this);
             }
