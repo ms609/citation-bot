@@ -389,6 +389,7 @@ final class Template
                     // Note: NO break here when conversion happens - fall through to cite journal case
                 case "cite journal":
                     use_sici($this);
+                    break;
             }
 
             // APA PsycNet
