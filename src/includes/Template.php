@@ -2256,7 +2256,7 @@ final class Template
         if (!in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
             // Remove XML/HTML tags and their attributes to avoid false positives from xmlns attributes
             $value_without_tags = preg_replace('~<[^>]+>~', '', $value);
-            
+
             if (preg_match('~^https?://~i', $value_without_tags) ||
                 preg_match('~://~', $value_without_tags) ||
                 preg_match('~^www\.~i', $value_without_tags)) {
