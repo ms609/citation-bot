@@ -361,7 +361,12 @@ final class Template
                     $preprint_param = ($this->wikiname() === 'cite biorxiv') ? 'biorxiv' : 'medrxiv';
                     $preprint_doi = $this->get($preprint_param);
                     if ($preprint_doi !== '') {
-                        $published_doi = get_biorxiv_published_doi('10.1101/' . $preprint_doi);
+                        // The biorxiv/medrxiv parameter may contain just the numeric part or the full DOI
+                        // Normalize to full DOI format if needed
+                        if (mb_strpos($preprint_doi, '10.1101/') !== 0 && mb_strpos($preprint_doi, '10.64898/') !== 0) {
+                            $preprint_doi = '10.1101/' . $preprint_doi;
+                        }
+                        $published_doi = get_biorxiv_published_doi($preprint_doi);
                         if ($published_doi !== null) {
                             // Convert to cite journal and add the published DOI
                             report_action("Converting " . $this->wikiname() . " to cite journal - now published with DOI: " . doi_link($published_doi));
