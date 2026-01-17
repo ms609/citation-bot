@@ -663,7 +663,7 @@ function get_biorxiv_published_doi(string $doi): ?string {
             if (!is_array($relations)) {
                 $relations = [$relations];
             }
-         
+
             foreach ($relations as $relation) {
                 if (isset($relation->{'id-type'}) && (string) $relation->{'id-type'} === 'doi') {
                     if (isset($relation->id)) {
