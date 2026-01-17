@@ -339,6 +339,9 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         if ($data === 'Array') {
             return;
         }
+        if ($data === 'Unknown') {
+            return;
+        }
         if (str_ends_with(mb_strtolower($data), '.pdf')) {
             return;
         }
