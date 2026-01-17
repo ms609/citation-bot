@@ -6444,6 +6444,34 @@ final class Template
                 }
             }
         }
+
+        // Check for existing URLs in non-URL parameters and warn the user
+        if ($this->should_be_processed() && !empty($this->param)) {
+            $url_holding_params = [
+                'url', 'archive-url', 'archiveurl', 'article-url',
+                'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
+                'contribution-url', 'contributionurl', 'entry-url', 'entryurl',
+                'event-url', 'eventurl', 'lay-url', 'layurl',
+                'map-url', 'mapurl', 'section-url', 'sectionurl',
+                'transcript-url', 'transcripturl'
+            ];
+
+            $insource_locator_params = [
+                'page', 'pages', 'p', 'pp', 'at', 'quote-page', 'quote-pages'
+            ];
+
+            foreach ($this->param as $p) {
+                $param_name = $p->param;
+                $value = $p->val;
+                if ($param_name && $value && !in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
+                    if (preg_match('~^https?://~i', $value) ||
+                        preg_match('~://~', $value) ||
+                        preg_match('~^www\.~i', $value)) {
+                        report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value));
+                    }
+                }
+            }
+        }
     }
 
     public function verify_doi(): bool {
