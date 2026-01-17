@@ -683,28 +683,10 @@ final class Template
         }
 
         // Block URLs from being added to non-URL parameters
-        $url_holding_params = [
-            'url', 'archive-url', 'archiveurl', 'article-url',
-            'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
-            'contribution-url', 'contributionurl', 'entry-url', 'entryurl',
-            'event-url', 'eventurl', 'lay-url', 'layurl',
-            'map-url', 'mapurl', 'section-url', 'sectionurl',
-            'transcript-url', 'transcripturl'
-        ];
-
-        $insource_locator_params = [
-            'page', 'pages', 'p', 'pp', 'at', 'quote-page', 'quote-pages'
-        ];
-
-        // Check if value looks like a URL
-        if (!in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
-            if (preg_match('~^https?://~i', $value) ||
-                preg_match('~://~', $value) ||
-                preg_match('~^www\.~i', $value)) {
-                report_warning("Rejecting URL in non-URL parameter |" . echoable($param_name) . "=");
-                bot_debug_log("URL rejected for parameter: " . $param_name . " = " . $value);
-                return false;
-            }
+        if ($this->is_url_in_non_url_parameter($param_name, $value)) {
+            report_warning("Rejecting URL in non-URL parameter |" . echoable($param_name) . "=");
+            bot_debug_log("URL rejected for parameter: " . $param_name . " = " . $value);
+            return false;
         }
 
         // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
@@ -6447,31 +6429,40 @@ final class Template
 
         // Check for existing URLs in non-URL parameters and warn the user
         if ($this->should_be_processed() && !empty($this->param)) {
-            $url_holding_params = [
-                'url', 'archive-url', 'archiveurl', 'article-url',
-                'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
-                'contribution-url', 'contributionurl', 'entry-url', 'entryurl',
-                'event-url', 'eventurl', 'lay-url', 'layurl',
-                'map-url', 'mapurl', 'section-url', 'sectionurl',
-                'transcript-url', 'transcripturl'
-            ];
-
-            $insource_locator_params = [
-                'page', 'pages', 'p', 'pp', 'at', 'quote-page', 'quote-pages'
-            ];
-
             foreach ($this->param as $p) {
                 $param_name = $p->param;
                 $value = $p->val;
-                if ($param_name && $value && !in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
-                    if (preg_match('~^https?://~i', $value) ||
-                        preg_match('~://~', $value) ||
-                        preg_match('~^www\.~i', $value)) {
-                        report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value));
-                    }
+                if ($param_name && $value && $this->is_url_in_non_url_parameter($param_name, $value)) {
+                    report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value));
                 }
             }
         }
+    }
+
+    private function is_url_in_non_url_parameter(string $param_name, string $value): bool {
+        // Define parameters that are allowed to contain URLs
+        $url_holding_params = [
+            'url', 'archive-url', 'archiveurl', 'article-url',
+            'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
+            'contribution-url', 'contributionurl', 'entry-url', 'entryurl',
+            'event-url', 'eventurl', 'lay-url', 'layurl',
+            'map-url', 'mapurl', 'section-url', 'sectionurl',
+            'transcript-url', 'transcripturl'
+        ];
+
+        $insource_locator_params = [
+            'page', 'pages', 'p', 'pp', 'at', 'quote-page', 'quote-pages'
+        ];
+
+        // Check if value looks like a URL and parameter doesn't allow URLs
+        if (!in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
+            if (preg_match('~^https?://~i', $value) ||
+                preg_match('~://~', $value) ||
+                preg_match('~^www\.~i', $value)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function verify_doi(): bool {
