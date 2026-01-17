@@ -374,6 +374,8 @@ final class Template
                             $this->add_if_new('doi', $published_doi);
                             // Expand with the published DOI to get full metadata
                             expand_by_doi($this);
+                            // Clean up the template after conversion
+                            $this->tidy();
                             report_modification('Converted ' . $preprint_param . ' citation to published journal article');
                         }
                     }
