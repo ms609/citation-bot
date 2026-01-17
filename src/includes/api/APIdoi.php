@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 const BAD_DOIS_FROM_CROSSREF = ['10.1355/9789812306319'];
+const NO_CHAPTER_ADD = ['citation', 'cite web', 'cite news', 'cite magazine', 'cite press release', 'cite podcast', 'cite newsgroup', 'cite journal'];
 
 /**
  * @param array<string> $_ids
@@ -124,7 +125,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             // Check if this is a book chapter based on DOI type from the new API
             $doi_type = isset($crossRefNewAPI->type) ? (string) $crossRefNewAPI->type : '';
             $is_book_chapter = ($doi_type === 'book-chapter' || $doi_type === 'chapter' || $doi_type === 'book-section');
-            if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book' || ($is_book_chapter && $template->wikiname() !== 'citation'))) {
+            if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book' || ($is_book_chapter && !in_array($template->wikiname(), NO_CHAPTER_ADD)))) {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
                     $template->rename('title', 'chapter');
                 } else {
