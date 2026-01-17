@@ -2194,4 +2194,25 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertFalse($template->add_if_new('work', 'Test Work'));
     }
 
+    public function testRejectURLInArticleNumber(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('article-number', 'https://www.insightturkey.com/'));
+        $this->assertNull($template->get2('article-number'));
+    }
+
+    public function testRejectURLInVolume(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('volume', 'http://example.com/vol23'));
+        $this->assertNull($template->get2('volume'));
+    }
+
+    public function testAllowURLInURLParameter(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('url', 'https://example.org/article'));
+        $this->assertSame('https://example.org/article', $template->get2('url'));
+    }
+
 }
