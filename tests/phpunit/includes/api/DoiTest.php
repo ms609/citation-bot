@@ -309,6 +309,6 @@ final class DoiTest extends testBaseClass {
     public function testNoHaveBadChapter(): void {
         $text = "{{Citation |last=Chuku |first=Gloria |title=Kenneth Dike: The Father of Modern African Historiography |date=2013 |work=The Igbo Intellectual Tradition: Creative Conflict in African and African Diasporic Thought |pages=137–164 |editor-last=Chuku |editor-first=Gloria |url=https://link.springer.com/chapter/10.1057/9781137311290_6 |access-date=2024-11-18 |place=New York |publisher=Palgrave Macmillan US |language=en |doi=10.1057/9781137311290_6 |isbn=978-1-137-31129-0|url-access=subscription }}";
         $template = $this->process_citation($text);
-        $this->assertSame($text, $template->parsed_text();
+        $this->assertSame($text, $template->parsed_text());
     }
 }
