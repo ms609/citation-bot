@@ -124,7 +124,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
             // Check if this is a book chapter based on DOI type from the new API
             $doi_type = isset($crossRefNewAPI->type) ? (string) $crossRefNewAPI->type : '';
             $is_book_chapter = ($doi_type === 'book-chapter' || $doi_type === 'chapter' || $doi_type === 'book-section');
-            if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book' || $is_book_chapter)) {
+            if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book' || ($is_book_chapter && $template->wikiname() !== 'citation'))) {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
                     $template->rename('title', 'chapter');
                 } else {
