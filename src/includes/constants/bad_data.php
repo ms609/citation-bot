@@ -106,6 +106,7 @@ const BAD_AUTHORS = [
     'express',
     'goautomedia',
     'great britain',
+    'guardian nigeria',
     'indiatoday',
     'kompas cyber media',
     'kpopstarz',
