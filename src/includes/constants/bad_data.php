@@ -13098,8 +13098,13 @@ const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', '
 /** These are case-insensitive strings used to reject new data and delete existing data */
 const ALWAYS_BAD_TITLES = [
     '{title}',
+    'bloomberg - are you a robot?',
+    'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
+    'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
     'dpg media privacy gate',
     'how to access research remotely',
+    'log in - proquest',
+    'page not found',
     'pressreader.com - connecting people through news.',
     'pressreader.com - connecting people through news',
     'pressreader.com - digital newspaper & magazine subscriptions.',
@@ -13113,6 +13118,7 @@ const ALWAYS_BAD_TITLES = [
     'pressreader.com – your favorite newspapers and magazines',
     'radware bot manager captcha',
     'register &#124; british newspaper archive',
+    'request rejected',
 ];
 
 /** These are case-insensitive strings used to reject new data */
@@ -13135,9 +13141,6 @@ const BAD_TITLES = [
     'access restricted',
     'anime news, top stories & in-depth anime insights',
     'bot verification',
-    'bloomberg - are you a robot?',
-    'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
-    'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
     'cur_title',
     'digital library - pdf document',
     'dissertations available from proquest',
@@ -13158,7 +13161,6 @@ const BAD_TITLES = [
     'just a moment',
     'library login',
     'loading',
-    'log in - proquest',
     'missing',
     'missing article title',
     'msn',
@@ -13167,7 +13169,6 @@ const BAD_TITLES = [
     'openid transaction in progress',
     'optica publishing group',
     'oxford music online',
-    'page not found',
     'pagina inicia',
     'privacy settings',
     'private site',
@@ -13179,7 +13180,6 @@ const BAD_TITLES = [
     'redirect notice',
     'redirecting',
     'report',
-    'request rejected',
     'rte.ie',
     'sciencedirect',
     'secure request and redirect',
