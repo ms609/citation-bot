@@ -3786,13 +3786,6 @@ final class Template
 
                 case 'chapter':
                     if ($this->has('chapter')) {
-                        // Check for HTML entities in chapter
-                        $chapter_value = $this->get('chapter');
-                        if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $chapter_value)) {
-                            $display_value = mb_strlen($chapter_value) > 100 ? mb_substr($chapter_value, 0, 100) . '...' : $chapter_value;
-                            report_warning("Parameter |chapter= contains HTML entities that should be decoded: " . echoable($display_value));
-                        }
-                        
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
@@ -4342,13 +4335,6 @@ final class Template
                 case 'periodical':
                     if ($this->blank($param)) {
                         return;
-                    }
-                    
-                    // Check for HTML entities in journal
-                    $journal_value = $this->get($param);
-                    if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $journal_value)) {
-                        $display_value = mb_strlen($journal_value) > 100 ? mb_substr($journal_value, 0, 100) . '...' : $journal_value;
-                        report_warning("Parameter |" . echoable($param) . "= contains HTML entities that should be decoded: " . echoable($display_value));
                     }
                     
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
@@ -5204,15 +5190,6 @@ final class Template
                     return;
 
                 case 'series':
-                    // Check for HTML entities in series
-                    if ($this->has('series')) {
-                        $series_value = $this->get('series');
-                        if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $series_value)) {
-                            $display_value = mb_strlen($series_value) > 100 ? mb_substr($series_value, 0, 100) . '...' : $series_value;
-                            report_warning("Parameter |series= contains HTML entities that should be decoded: " . echoable($display_value));
-                        }
-                    }
-                    
                     if (str_equivalent($this->get($param), $this->get('work'))) {
                         $this->forget('work');
                     }
@@ -5244,12 +5221,6 @@ final class Template
                         return;
                     }
                     $title = $this->get($param);
-                    
-                    // Check for HTML entities
-                    if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $title)) {
-                        $display_value = mb_strlen($title) > 100 ? mb_substr($title, 0, 100) . '...' : $title;
-                        report_warning("Parameter |title= contains HTML entities that should be decoded: " . echoable($display_value));
-                    }
                     
                     // Check for MathML
                     if (preg_match('~<(?:mml:)?m(?:sup|sub|frac|root|under|over|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
