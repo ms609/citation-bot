@@ -13100,7 +13100,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'profiles of drug substances, excipients and related methodology',
     'progress in brain research',
     'progress in optics',
-    'progess in optics', // misspelling received from API
+    'progess in optics', // misspelling received from API, if misspelling is not included in this list it will not get recognized as a series. will get fixed to correct spelling by SERIES_CORRECTIONS
     'rev mod astron',
     'reviews in modern astronomy',
     'studies in bilingualism',
