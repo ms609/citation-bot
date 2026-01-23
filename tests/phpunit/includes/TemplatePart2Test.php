@@ -2224,4 +2224,66 @@ final class TemplatePart2Test extends testBaseClass {
         // A warning should have been generated (captured by report_warning)
     }
 
+    // Tests for "Progess in Optics" misspelling correction
+
+    public function testSeriesMisspellingCorrectedWhenAdding(): void {
+        // Part 3: Test that misspelling is corrected when adding new series parameter
+        $text = "{{cite book|title=Test}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'Progess in Optics');
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingCorrectedInTidy(): void {
+        // Part 4: Test that existing misspelling is corrected during tidy
+        $text = "{{cite book|series=Progess in Optics}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesCorrectSpellingPreserved(): void {
+        // Test that correct spelling is preserved when adding
+        $text = "{{cite book|title=Test}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'Progress in Optics');
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesCorrectSpellingNotOverwritten(): void {
+        // Test that correct spelling already present is not overwritten
+        $text = "{{cite book|series=Progress in Optics}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'Progess in Optics');
+        // Should keep the correct existing value
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingEquivalence(): void {
+        // Part 1: Test that misspelling and correct spelling are considered equivalent
+        $text = "{{cite book|series=Progress in Optics}}";
+        $template = $this->make_citation($text);
+        // Try to add misspelled version - should be blocked because correct version exists
+        $result = $template->add_if_new('series', 'Progess in Optics');
+        $this->assertFalse($result);
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingRecognizedAsBookSeries(): void {
+        // Part 2: Test that misspelling is recognized as a book series
+        $text1 = "{{cite journal|journal=Progess in Optics}}";
+        $template1 = $this->process_citation($text1);
+        // Should be converted from journal to book series
+        $this->assertSame('cite book', $template1->wikiname());
+        $this->assertSame('Progress in Optics', $template1->get2('series'));
+    }
+
+    public function testSeriesMisspellingCaseInsensitive(): void {
+        // Test that correction is case-insensitive
+        $text = "{{cite book|title=Test}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'PROGESS IN OPTICS');
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
 }
