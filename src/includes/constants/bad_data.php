@@ -13112,6 +13112,7 @@ const ALWAYS_BAD_TITLES = [
     'pressreader.com – your favorite newspapers and magazines.',
     'pressreader.com – your favorite newspapers and magazines',
     'radware bot manager captcha',
+    'register &#124; british newspaper archive',
 ];
 
 /** These are case-insensitive strings used to reject new data */
