@@ -3627,6 +3627,12 @@ final class Template
 
                 case 'author':
                     $the_author = $this->get($param);
+                    
+                    // Check for all-caps author names
+                    if ($the_author && preg_match('/^[A-Z\s]{4,}$/', $the_author) && !preg_match('/^[IVX]+$/', $the_author)) {
+                        report_warning("Author name is in all-caps and should be properly capitalized: " . echoable($the_author));
+                    }
+                    
                     if ($this->blank('agency') && in_array(mb_strtolower($the_author), ['associated press', 'reuters'], true) && $this->wikiname() !== 'cite book') {
                         $this->rename('author' . $pmatch[2], 'agency');
                         if ($pmatch[2] === '1' || $pmatch[2] === '') {
@@ -3670,6 +3676,14 @@ final class Template
                     // no break; Continue from authors without break
                 case 'last':
                 case 'surname':
+                    // Check for all-caps last names
+                    if ($pmatch[1] === 'last' || $pmatch[1] === 'surname') {
+                        $the_last = $this->get($param);
+                        if ($the_last && preg_match('/^[A-Z\s]{4,}$/', $the_last) && !preg_match('/^[IVX]+$/', $the_last)) {
+                            report_warning("Author last name is in all-caps and should be properly capitalized: " . echoable($the_last));
+                        }
+                    }
+                    
                     if (!$this->had_initial_author()) {
                         if ($pmatch[2]) {
                             $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
@@ -3772,6 +3786,23 @@ final class Template
 
                 case 'chapter':
                     if ($this->has('chapter')) {
+                        // Check for HTML entities in chapter
+                        $chapter_value = $this->get('chapter');
+                        if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $chapter_value)) {
+                            $display_value = mb_strlen($chapter_value) > 100 ? mb_substr($chapter_value, 0, 100) . '...' : $chapter_value;
+                            report_warning("Parameter |chapter= contains HTML entities that should be decoded: " . echoable($display_value));
+                        }
+                        
+                        // Check for curly quotes in chapter
+                        if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $chapter_value)) {
+                            report_warning("Parameter |chapter= contains curly quotes that should be straightened");
+                        }
+                        
+                        // Check for excessive whitespace in chapter
+                        if (preg_match('/\s{2,}/', $chapter_value) || preg_match('/\t/', $chapter_value)) {
+                            report_warning("Parameter |chapter= contains excessive whitespace that should be normalized");
+                        }
+                        
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
@@ -3809,6 +3840,15 @@ final class Template
                     if ($this->blank('date') && $this->has('year')) {
                         $this->forget('date');
                     }
+                    
+                    // Check for non-standard date formats
+                    if ($this->has('date')) {
+                        $date_value = $this->get('date');
+                        if (preg_match('~^\d{1,2}/\d{1,2}/\d{4}$~', $date_value)) {
+                            report_warning("Date uses numeric format (MM/DD/YYYY or DD/MM/YYYY) - consider converting to standard format like '31 December 2020'");
+                        }
+                    }
+                    
                     if (preg_match('~^([A-Za-z]+)\-([A-Za-z]+ \d{4})$~', $this->get('date'), $matched)) {
                         $this->set('date', $matched[1] . '–' . $matched[2]);
                     }
@@ -4272,6 +4312,16 @@ final class Template
                     if ($this->blank('isbn')) {
                         return;
                     }
+                    
+                    // Check for ISBN-10 format in recent publications
+                    $isbn_value = $this->get('isbn');
+                    $year = $this->get('year');
+                    if (preg_match('/^\d{9}[0-9X]$/', str_replace(['-', ' '], '', $isbn_value))) {
+                        if ($year && is_numeric($year) && (int)$year >= 2007) {
+                            report_warning("ISBN-10 format should be converted to ISBN-13 for post-2007 publication: " . echoable($isbn_value));
+                        }
+                    }
+                    
                     $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
                     $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn'), false));
                     if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
@@ -4320,6 +4370,24 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
+                    
+                    // Check for HTML entities in journal
+                    $journal_value = $this->get($param);
+                    if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $journal_value)) {
+                        $display_value = mb_strlen($journal_value) > 100 ? mb_substr($journal_value, 0, 100) . '...' : $journal_value;
+                        report_warning("Parameter |" . echoable($param) . "= contains HTML entities that should be decoded: " . echoable($display_value));
+                    }
+                    
+                    // Check for curly quotes in journal
+                    if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $journal_value)) {
+                        report_warning("Parameter |" . echoable($param) . "= contains curly quotes that should be straightened");
+                    }
+                    
+                    // Check for excessive whitespace in journal
+                    if (preg_match('/\s{2,}/', $journal_value) || preg_match('/\t/', $journal_value)) {
+                        report_warning("Parameter |" . echoable($param) . "= contains excessive whitespace that should be normalized");
+                    }
+                    
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
                         $this->forget($param);
                         return;
@@ -5173,6 +5241,25 @@ final class Template
                     return;
 
                 case 'series':
+                    // Check for HTML entities in series
+                    if ($this->has('series')) {
+                        $series_value = $this->get('series');
+                        if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $series_value)) {
+                            $display_value = mb_strlen($series_value) > 100 ? mb_substr($series_value, 0, 100) . '...' : $series_value;
+                            report_warning("Parameter |series= contains HTML entities that should be decoded: " . echoable($display_value));
+                        }
+                        
+                        // Check for curly quotes in series
+                        if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $series_value)) {
+                            report_warning("Parameter |series= contains curly quotes that should be straightened");
+                        }
+                        
+                        // Check for excessive whitespace in series
+                        if (preg_match('/\s{2,}/', $series_value) || preg_match('/\t/', $series_value)) {
+                            report_warning("Parameter |series= contains excessive whitespace that should be normalized");
+                        }
+                    }
+                    
                     if (str_equivalent($this->get($param), $this->get('work'))) {
                         $this->forget('work');
                     }
@@ -5204,6 +5291,28 @@ final class Template
                         return;
                     }
                     $title = $this->get($param);
+                    
+                    // Check for HTML entities
+                    if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $title)) {
+                        $display_value = mb_strlen($title) > 100 ? mb_substr($title, 0, 100) . '...' : $title;
+                        report_warning("Parameter |title= contains HTML entities that should be decoded: " . echoable($display_value));
+                    }
+                    
+                    // Check for curly quotes
+                    if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $title)) {
+                        report_warning("Parameter |title= contains curly quotes that should be straightened");
+                    }
+                    
+                    // Check for MathML
+                    if (preg_match('~<(?:mml:)?m(?:sup|sub|frac|root|under|over|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
+                        report_warning("Title contains MathML markup that should be converted to LaTeX: " . echoable(mb_substr($title, 0, 100)));
+                    }
+                    
+                    // Check for excessive whitespace
+                    if (preg_match('/\s{2,}/', $title) || preg_match('/\t/', $title)) {
+                        report_warning("Title contains excessive whitespace that should be normalized");
+                    }
+                    
                     if (preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Reuters(?:|\.com)$~i', $title, $matches)) {
                         if (mb_stripos($this->get('agency') . $this->get('work') . $this->get('website') . $this->get('newspaper') . $this->get('website') . $this->get('publisher'), 'reuters') !== false) {
                             $title = $matches[1];
@@ -5379,6 +5488,13 @@ final class Template
                     }
                     // no break
                 case 'url':
+                    // Check for URL tracking parameters
+                    if ($this->has('url')) {
+                        $url_value = $this->get('url');
+                        if (preg_match('/[?&]utm_[a-z]+=/i', $url_value)) {
+                            report_warning("URL contains tracking parameters (utm_*) that could be removed");
+                        }
+                    }
                     clean_existing_urls($this, $param);
                     return;
 

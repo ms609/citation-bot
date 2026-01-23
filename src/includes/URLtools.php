@@ -1059,20 +1059,20 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         // Look for proxy first for speed, this list will grow and grow
         // Use dots, not \. since it might match dot or dash
         if (preg_match("~^https?://ieeexplore.ieee.org.+proxy.*/document/(.+)$~", $template->get($param), $matches)) {
-            report_info("Remove proxy from IEEE URL");
+            report_warning("Removed institutional proxy from IEEE URL - verify URL still accessible");
             $template->set($param, 'https://ieeexplore.ieee.org/document/' . $matches[1]);
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
         } elseif (preg_match("~^https?://(?:www.|)oxfordhandbooks.com.+proxy.*/view/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://www.oxfordhandbooks.com/view/' . $matches[1]);
-            report_info("Remove proxy from Oxford Handbooks URL");
+            report_warning("Removed institutional proxy from Oxford Handbooks URL - verify URL still accessible");
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
         } elseif (preg_match("~^https?://(?:www.|)oxfordartonline.com.+proxy.*/view/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://www.oxfordartonline.com/view/' . $matches[1]);
-            report_info("Remove proxy from Oxford Art URL");
+            report_warning("Removed institutional proxy from Oxford Art URL - verify URL still accessible");
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
@@ -1090,13 +1090,13 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             } else {
                 $template->set($param, $matches[1] . $matches[2]);
             }
-            report_info("Remove proxy from URL");
+            report_warning("Removed institutional proxy from URL - verify URL still accessible");
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
         } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?%3A%2F%2F.+)$~i", $template->get($param), $matches)) {
             $template->set($param, urldecode($matches[1]));
-            report_info("Remove proxy from URL");
+            report_warning("Removed institutional proxy from URL - verify URL still accessible");
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
