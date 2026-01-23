@@ -4295,15 +4295,6 @@ final class Template
                         return;
                     }
                     
-                    // Check for ISBN-10 format in recent publications
-                    $isbn_value = $this->get('isbn');
-                    $year = $this->get('year');
-                    if (preg_match('/^\d{9}[0-9X]$/', str_replace(['-', ' '], '', $isbn_value))) {
-                        if ($year && is_numeric($year) && (int)$year >= 2007) {
-                            report_warning("ISBN-10 format should be converted to ISBN-13 for post-2007 publication: " . echoable($isbn_value));
-                        }
-                    }
-                    
                     $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
                     $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn'), false));
                     if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
