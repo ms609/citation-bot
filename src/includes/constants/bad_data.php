@@ -13100,6 +13100,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'profiles of drug substances, excipients and related methodology',
     'progress in brain research',
     'progress in optics',
+    'progess in optics',  // Common misspelling of Progress in Optics
     'rev mod astron',
     'reviews in modern astronomy',
     'studies in bilingualism',
@@ -13108,9 +13109,14 @@ const JOURNAL_IS_BOOK_SERIES = [
     'curr top behav neurosci',
 ];
 
-const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy'];
+const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy', 'progess in optics'];
 
-const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat'];
+const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat', 'progress in optics'];
+
+/** Series name corrections - maps common misspellings to correct forms */
+const SERIES_CORRECTIONS = [
+    'progess in optics' => 'Progress in Optics',
+];
 
 /** These are case-insensitive strings used to reject new data and delete existing data */
 const ALWAYS_BAD_TITLES = [
