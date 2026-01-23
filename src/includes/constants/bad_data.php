@@ -13070,12 +13070,10 @@ const JOURNAL_IS_BOOK_SERIES = [
     'methods enzymol',
     'methods in cell biology',
     'methods in enzymology',
-    'methods in enzymology',
     'methods in molecular biology (clifton, n j )',
     'methods in molecular biology',
     'methods in molecular medicine',
     'methods in neurosciences',
-    'methods mol biol',
     'methods mol biol',
     'methods of molecular biology (clifton, n j )',
     'methods of molecular biology',
@@ -13100,13 +13098,8 @@ const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', '
 /** These are case-insensitive strings used to reject new data and delete existing data */
 const ALWAYS_BAD_TITLES = [
     '{title}',
-    'bloomberg - are you a robot?',
-    'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
-    'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
     'dpg media privacy gate',
     'how to access research remotely',
-    'log in - proquest',
-    'page not found',
     'pressreader.com - connecting people through news.',
     'pressreader.com - connecting people through news',
     'pressreader.com - digital newspaper & magazine subscriptions.',
@@ -13119,8 +13112,6 @@ const ALWAYS_BAD_TITLES = [
     'pressreader.com – your favorite newspapers and magazines.',
     'pressreader.com – your favorite newspapers and magazines',
     'radware bot manager captcha',
-    'register &#124; british newspaper archive',
-    'request rejected',
 ];
 
 /** These are case-insensitive strings used to reject new data */
@@ -13307,7 +13298,6 @@ const ZOTERO_BAD_TITLES = [
     'not longer available',
     'OpenId transaction in progress',
     'Page non trouvée',
-    'page not found',
     'Page Not Found',
     'Pagina inicia',
     'pagina is niet gevonden',
