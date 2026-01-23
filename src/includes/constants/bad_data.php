@@ -13100,7 +13100,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'profiles of drug substances, excipients and related methodology',
     'progress in brain research',
     'progress in optics',
-    'progess in optics', // Common misspelling of Progress in Optics
+    'progess in optics', // misspelling received from API 
     'rev mod astron',
     'reviews in modern astronomy',
     'studies in bilingualism',
