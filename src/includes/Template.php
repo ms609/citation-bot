@@ -5223,7 +5223,7 @@ final class Template
                     $title = $this->get($param);
                     
                     // Check for MathML
-                    if (preg_match('~<(?:mml:)?m(?:sup|sub|frac|root|under|over|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
+                    if (preg_match('~<(?:mml:)?m(?:sup|sub|subsup|frac|root|under|over|underover|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
                         report_warning("Title contains MathML markup that should be converted to LaTeX: " . echoable(mb_substr($title, 0, 100)));
                     }
                     
