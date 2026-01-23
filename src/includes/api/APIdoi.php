@@ -627,9 +627,9 @@ function get_doi_from_crossref(Template $template): void {
 }
 
 /**
- * Check if bioRxiv/medRxiv preprint published via CrossRef.
+ * Check if bioRxiv/medRxiv preprint published.
  *
- * @param string $doi bioRxiv/medRxiv DOI (10.1101/* or 10.64898/*)
+ * @param string $doi DOI (10.1101/* or 10.64898/*)
  * @return string|null Published DOI or null
  */
 function get_biorxiv_published_doi(string $doi): ?string {
