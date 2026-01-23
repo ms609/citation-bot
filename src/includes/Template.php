@@ -682,6 +682,13 @@ final class Template
             $param_name = COMMON_MISTAKES_TOOL[$param_name];
         }
 
+        // Block URLs from being added to non-URL parameters
+        if ($this->is_url_in_non_url_parameter($param_name, $value)) {
+            report_warning("Rejecting URL in non-URL parameter |" . echoable($param_name) . "=");
+            bot_debug_log("URL rejected for parameter: " . $param_name . " = " . $value);
+            return false;
+        }
+
         // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
         // We might want to think about if there are any cases with bad existing data
         if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {
@@ -2228,6 +2235,35 @@ final class Template
                 return false;
             // @codeCoverageIgnoreEnd
         }
+    }
+
+    private function is_url_in_non_url_parameter(string $param_name, string $value): bool {
+        // Define parameters that are allowed to contain URLs
+        $url_holding_params = [
+            'url', 'archive-url', 'archiveurl', 'article-url',
+            'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
+            'contribution-url', 'contributionurl', 'entry-url', 'entryurl',
+            'event-url', 'eventurl', 'lay-url', 'layurl',
+            'map-url', 'mapurl', 'section-url', 'sectionurl',
+            'transcript-url', 'transcripturl'
+        ];
+
+        $insource_locator_params = [
+            'page', 'pages', 'p', 'pp', 'at', 'quote-page', 'quote-pages'
+        ];
+
+        // Check if value looks like a URL and parameter doesn't allow URLs
+        if (!in_array($param_name, array_merge($url_holding_params, $insource_locator_params), true)) {
+            // Remove XML/HTML tags and their attributes to avoid false positives from xmlns attributes
+            $value_without_tags = preg_replace('~<[^>]+>~', '', $value);
+
+            if (preg_match('~^https?://~i', $value_without_tags) ||
+                preg_match('~://~', $value_without_tags) ||
+                preg_match('~^www\.~i', $value_without_tags)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing): void {
@@ -6416,6 +6452,17 @@ final class Template
                     if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe, true)) {
                         unset($this->param[$key]);
                     }
+                }
+            }
+        }
+
+        // Check for existing URLs in non-URL parameters and warn the user
+        if ($this->should_be_processed() && !empty($this->param)) {
+            foreach ($this->param as $p) {
+                $param_name = $p->param;
+                $value = $p->val;
+                if ($param_name && $value && $this->is_url_in_non_url_parameter($param_name, $value)) {
+                    report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value));
                 }
             }
         }
