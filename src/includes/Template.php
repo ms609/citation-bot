@@ -3793,16 +3793,6 @@ final class Template
                             report_warning("Parameter |chapter= contains HTML entities that should be decoded: " . echoable($display_value));
                         }
                         
-                        // Check for curly quotes in chapter
-                        if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $chapter_value)) {
-                            report_warning("Parameter |chapter= contains curly quotes that should be straightened");
-                        }
-                        
-                        // Check for excessive whitespace in chapter
-                        if (preg_match('/\s{2,}/', $chapter_value) || preg_match('/\t/', $chapter_value)) {
-                            report_warning("Parameter |chapter= contains excessive whitespace that should be normalized");
-                        }
-                        
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
@@ -3839,14 +3829,6 @@ final class Template
                 case 'date':
                     if ($this->blank('date') && $this->has('year')) {
                         $this->forget('date');
-                    }
-                    
-                    // Check for non-standard date formats
-                    if ($this->has('date')) {
-                        $date_value = $this->get('date');
-                        if (preg_match('~^\d{1,2}/\d{1,2}/\d{4}$~', $date_value)) {
-                            report_warning("Date uses numeric format (MM/DD/YYYY or DD/MM/YYYY) - consider converting to standard format like '31 December 2020'");
-                        }
                     }
                     
                     if (preg_match('~^([A-Za-z]+)\-([A-Za-z]+ \d{4})$~', $this->get('date'), $matched)) {
@@ -4376,16 +4358,6 @@ final class Template
                     if (preg_match('/&(?:lt|gt|amp|quot|apos|#\d+|[a-z]+);/i', $journal_value)) {
                         $display_value = mb_strlen($journal_value) > 100 ? mb_substr($journal_value, 0, 100) . '...' : $journal_value;
                         report_warning("Parameter |" . echoable($param) . "= contains HTML entities that should be decoded: " . echoable($display_value));
-                    }
-                    
-                    // Check for curly quotes in journal
-                    if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $journal_value)) {
-                        report_warning("Parameter |" . echoable($param) . "= contains curly quotes that should be straightened");
-                    }
-                    
-                    // Check for excessive whitespace in journal
-                    if (preg_match('/\s{2,}/', $journal_value) || preg_match('/\t/', $journal_value)) {
-                        report_warning("Parameter |" . echoable($param) . "= contains excessive whitespace that should be normalized");
                     }
                     
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
@@ -5248,16 +5220,6 @@ final class Template
                             $display_value = mb_strlen($series_value) > 100 ? mb_substr($series_value, 0, 100) . '...' : $series_value;
                             report_warning("Parameter |series= contains HTML entities that should be decoded: " . echoable($display_value));
                         }
-                        
-                        // Check for curly quotes in series
-                        if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $series_value)) {
-                            report_warning("Parameter |series= contains curly quotes that should be straightened");
-                        }
-                        
-                        // Check for excessive whitespace in series
-                        if (preg_match('/\s{2,}/', $series_value) || preg_match('/\t/', $series_value)) {
-                            report_warning("Parameter |series= contains excessive whitespace that should be normalized");
-                        }
                     }
                     
                     if (str_equivalent($this->get($param), $this->get('work'))) {
@@ -5298,19 +5260,9 @@ final class Template
                         report_warning("Parameter |title= contains HTML entities that should be decoded: " . echoable($display_value));
                     }
                     
-                    // Check for curly quotes
-                    if (preg_match('/[\x{201C}\x{201D}\x{2018}\x{2019}]/u', $title)) {
-                        report_warning("Parameter |title= contains curly quotes that should be straightened");
-                    }
-                    
                     // Check for MathML
                     if (preg_match('~<(?:mml:)?m(?:sup|sub|frac|root|under|over|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
                         report_warning("Title contains MathML markup that should be converted to LaTeX: " . echoable(mb_substr($title, 0, 100)));
-                    }
-                    
-                    // Check for excessive whitespace
-                    if (preg_match('/\s{2,}/', $title) || preg_match('/\t/', $title)) {
-                        report_warning("Title contains excessive whitespace that should be normalized");
                     }
                     
                     if (preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Reuters(?:|\.com)$~i', $title, $matches)) {
@@ -5488,13 +5440,6 @@ final class Template
                     }
                     // no break
                 case 'url':
-                    // Check for URL tracking parameters
-                    if ($this->has('url')) {
-                        $url_value = $this->get('url');
-                        if (preg_match('/[?&]utm_[a-z]+=/i', $url_value)) {
-                            report_warning("URL contains tracking parameters (utm_*) that could be removed");
-                        }
-                    }
                     clean_existing_urls($this, $param);
                     return;
 
