@@ -13100,7 +13100,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'profiles of drug substances, excipients and related methodology',
     'progress in brain research',
     'progress in optics',
-    'progess in optics', // misspelling received from API, if misspelling is not included in this list it will not get recognized as a series. will get fixed to correct spelling by SERIES_CORRECTIONS
+    'progess in optics', // Common misspelling received from APIs - enables book series recognition and template conversion
     'rev mod astron',
     'reviews in modern astronomy',
     'studies in bilingualism',
@@ -13109,9 +13109,9 @@ const JOURNAL_IS_BOOK_SERIES = [
     'curr top behav neurosci',
 ];
 
-const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy', 'progess in optics'];
+const COMPARE_SERIES_IN = ['[', ']', '.', '-', '    ', '   ', '  ', '(clifton, n j )', '(san diego, calif )', 'advances in ', 'experimental', 'pharmacology', 'methods in ', 'immunology', 'methods ', 'molecular', 'medicine', 'biology', ' of ', 'enzymology', 'biol', ' and ', '  ', 'embryology', 'anatomy'];
 
-const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat', 'progress in optics'];
+const COMPARE_SERIES_OUT = [' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', 'adv ', 'exp', 'pharmacol', 'meth ', 'immunol', 'meth ', 'mol', 'med', 'bio', ' ', 'enzymol', 'bio', ' ', ' ', 'embryol', 'anat'];
 
 /** Series name corrections - maps common misspellings to correct forms */
 const SERIES_CORRECTIONS = [
