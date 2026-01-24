@@ -3627,6 +3627,10 @@ final class Template
 
                 case 'author':
                     $the_author = $this->get($param);
+                    // Check for all-caps author names
+                    if ($the_author && preg_match('/^[A-Z\s]{4,}$/', $the_author) && !preg_match('/^[IVX]+$/', $the_author)) {
+                        report_warning("Author name is in all-caps and should be properly capitalized: " . echoable($the_author));
+                    }
                     if ($this->blank('agency') && in_array(mb_strtolower($the_author), ['associated press', 'reuters'], true) && $this->wikiname() !== 'cite book') {
                         $this->rename('author' . $pmatch[2], 'agency');
                         if ($pmatch[2] === '1' || $pmatch[2] === '') {
@@ -3670,6 +3674,13 @@ final class Template
                     // no break; Continue from authors without break
                 case 'last':
                 case 'surname':
+                    // Check for all-caps last names
+                    if ($pmatch[1] === 'last' || $pmatch[1] === 'surname') {
+                        $the_last = $this->get($param);
+                        if ($the_last && preg_match('/^[A-Z\s]{4,}$/', $the_last) && !preg_match('/^[IVX]+$/', $the_last)) {
+                            report_warning("Author last name is in all-caps and should be properly capitalized: " . echoable($the_last));
+                        }
+                    }
                     if (!$this->had_initial_author()) {
                         if ($pmatch[2]) {
                             $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
@@ -5204,6 +5215,10 @@ final class Template
                         return;
                     }
                     $title = $this->get($param);
+                    // Check for MathML
+                    if (preg_match('~<(?:mml:)?m(?:sup|sub|subsup|frac|root|under|over|underover|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
+                        report_warning("Title contains MathML markup that should be converted to LaTeX: " . echoable(mb_substr($title, 0, 100)));
+                    }
                     if (preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Reuters(?:|\.com)$~i', $title, $matches)) {
                         if (mb_stripos($this->get('agency') . $this->get('work') . $this->get('website') . $this->get('newspaper') . $this->get('website') . $this->get('publisher'), 'reuters') !== false) {
                             $title = $matches[1];
