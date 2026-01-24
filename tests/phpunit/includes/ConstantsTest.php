@@ -595,8 +595,8 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
-    /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $convert */
     public function testConversionsGood(): void {
+        /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $convert */
         WikipediaBot::make_ch();
         $page = new TestPage();
         $errors = "";
@@ -646,8 +646,8 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
-    /** @var array{0: int, 1: int, 2: int} $v */
     public function testISBNlist(): void {
+        /** @var array{0: int, 1: int, 2: int} $v */
         new TestPage(); // Fill page name with test name for debugging
         $last = -1;
         foreach (ISBN_HYPHEN_POS as $k => $v) {
