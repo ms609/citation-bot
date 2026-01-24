@@ -638,6 +638,11 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
         return null;
     }
 
+    // Validate server parameter to prevent SSRF
+    if ($server !== 'biorxiv' && $server !== 'medrxiv') {
+        return null;
+    }
+
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
@@ -656,7 +661,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
     if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
         $article = $data->collection[0];
         if (is_object($article) && isset($article->published_doi)) {
-            $published_doi = trim((string) $article->published_doi);
+            $published_doi = mb_trim((string) $article->published_doi);
             if ($published_doi !== '') {
                 $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
                 $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
