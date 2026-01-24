@@ -1844,10 +1844,10 @@ EP - 999 }}';
     }
 
     public function testBioRxivToJournalConversionWorks(): void {
-        // Using 10.1101/2020.04.23.20076042 (medRxiv) published in The Lancet as 10.1016/s0140-6736(20)31180-6
-        // This is a widely-cited COVID-19 vaccine trial that has verified CrossRef relation metadata
-        $biorxiv_doi = '10.1101/2020.04.23.20076042';
-        $expected_published_doi = '10.1016/s0140-6736(20)31180-6';
+        // Using 10.1101/063172 published in Human Genetics as 10.1007/s00439-016-1742-y
+        // This is a verified conversion (Kutanan et al. 2016) with proper CrossRef relation metadata
+        $biorxiv_doi = '10.1101/063172';
+        $expected_published_doi = '10.1007/s00439-016-1742-y';
 
         $published_doi = get_biorxiv_published_doi($biorxiv_doi);
 
@@ -1867,14 +1867,14 @@ EP - 999 }}';
             "Got: $published_doi"
         );
 
-        $text = '{{cite bioRxiv |title=Test |biorxiv=2020.04.23.20076042}}';
+        $text = '{{cite bioRxiv |title=Test |biorxiv=063172}}';
         $expanded = $this->process_citation($text);
 
         $this->assertSame('cite journal', $expanded->wikiname(),
             'Template should be converted from cite bioRxiv to cite journal');
         $this->assertSame($expected_published_doi, mb_strtolower($expanded->get2('doi')),
             'Published DOI should be added to template');
-        $this->assertSame('2020.04.23.20076042', $expanded->get2('biorxiv'),
+        $this->assertSame('063172', $expanded->get2('biorxiv'),
             'Original bioRxiv parameter should be preserved (in numeric form as provided)');
         $this->assertNotEmpty($expanded->get2('title'),
             'Title should be expanded from published article metadata');
