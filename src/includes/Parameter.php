@@ -80,9 +80,9 @@ final class Parameter {
      */
     public function parsed_text(): string {
         // Normalize non-breaking spaces (U+00A0) to regular spaces within citation template
-        $pre = str_replace("\xc2\xa0", ' ', $this->pre);
-        $eq = str_replace("\xc2\xa0", ' ', $this->eq);
-        $post = str_replace("\xc2\xa0", ' ', $this->post);
+        $pre = str_replace("\u{00A0}", ' ', $this->pre);
+        $eq = str_replace("\u{00A0}", ' ', $this->eq);
+        $post = str_replace("\u{00A0}", ' ', $this->post);
         
         return $pre . $this->param . $eq . $this->val . $post;
     }

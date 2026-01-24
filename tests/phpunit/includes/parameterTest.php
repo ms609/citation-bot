@@ -106,12 +106,12 @@ final class parameterTest extends testBaseClass {
 
     public function testNonBreakingSpaceNormalization(): void {
         // Test with Unicode non-breaking space (U+00A0) in various positions
-        $text = "\xc2\xa0publisher=\xc2\xa0BBC\xc2\xa0";  // Contains non-breaking spaces
+        $text = "\u{00A0}publisher=\u{00A0}BBC\u{00A0}";  // Contains non-breaking spaces
         $parameter = $this->parameter_parse_text_helper($text);
         $result = $parameter->parsed_text();
         
         // Verify non-breaking spaces have been converted to regular spaces
-        $this->assertStringNotContainsString("\xc2\xa0", $result);
+        $this->assertStringNotContainsString("\u{00A0}", $result);
         $this->assertStringContainsString(' publisher', $result);
         $this->assertStringContainsString('BBC ', $result);
     }
