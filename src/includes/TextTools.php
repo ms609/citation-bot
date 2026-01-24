@@ -1052,8 +1052,8 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     return $input;
 }
 
-/** @var array{0: int, 1: int, 2: int} $v */
 function addISBNdashes(string $isbn): string {
+    /** @var array{0: int, 1: int, 2: int} $v */
     if (mb_substr_count($isbn, '-') > 1) {
         return $isbn;
     }
