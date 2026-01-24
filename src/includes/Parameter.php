@@ -83,7 +83,7 @@ final class Parameter {
         $pre = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->pre);
         $eq = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->eq);
         $post = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->post);
-        
+  
         return $pre . $this->param . $eq . $this->val . $post;
     }
 }
