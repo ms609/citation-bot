@@ -1845,7 +1845,7 @@ EP - 999 }}';
 
     public function testBioRxivToJournalConversionWorks(): void {
         // Using 10.1101/063172 published in Human Genetics as 10.1007/s00439-016-1742-y
-        // This is a verified conversion (Kutanan et al. 2016) with proper CrossRef relation metadata
+        // This is a verified conversion (Kutanan et al. 2016) from bioRxiv API
         $biorxiv_doi = '10.1101/063172';
         $expected_published_doi = '10.1007/s00439-016-1742-y';
 
@@ -1854,9 +1854,9 @@ EP - 999 }}';
         // Distinguish between API unavailable vs. no published version exists
         $this->assertNotNull(
             $published_doi,
-            "CrossRef API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
-            "If null: API is unavailable or returned no 'is-preprint-of' relation.\n" .
-            "Check https://api.crossref.org/v1/works/" . urlencode($biorxiv_doi)
+            "bioRxiv API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
+            "If null: API is unavailable or preprint not yet published.\n" .
+            "Check https://api.biorxiv.org/pubs/biorxiv/$biorxiv_doi"
         );
 
         $this->assertSame(

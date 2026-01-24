@@ -627,7 +627,7 @@ function get_doi_from_crossref(Template $template): void {
 }
 
 /**
- * Check if bioRxiv/medRxiv preprint published.
+ * Check if bioRxiv/medRxiv preprint published via bioRxiv API.
  *
  * @param string $doi DOI (10.1101/* or 10.64898/*)
  * @return string|null Published DOI or null
@@ -643,35 +643,24 @@ function get_biorxiv_published_doi(string $doi): ?string {
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
 
-    $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME;
+    $server = 'biorxiv';
+    $url = "https://api.biorxiv.org/pubs/" . $server . "/" . $doi;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
-    $json = @json_decode($json);
+    $data = @json_decode($json);
 
-    if (!is_object($json) || !isset($json->message) || !isset($json->status) || (string) $json->status !== "ok") {
+    if (!is_object($data)) {
         return null;
     }
 
-    $result = $json->message;
-
-    if (isset($result->relation) && is_object($result->relation)) {
-        if (isset($result->relation->{'is-preprint-of'})) {
-            $relations = $result->relation->{'is-preprint-of'};
-            if (!is_array($relations)) {
-                $relations = [$relations];
-            }
-
-            foreach ($relations as $relation) {
-                if (isset($relation->{'id-type'}) && (string) $relation->{'id-type'} === 'doi') {
-                    if (isset($relation->id)) {
-                        $published_doi = (string) $relation->id;
-                        $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
-                        $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
-                        if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
-                            return $published_doi;
-                        }
-                    }
-                }
+    if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
+        $article = $data->collection[0];
+        if (isset($article->published_doi) && $article->published_doi !== '' && $article->published_doi !== null) {
+            $published_doi = (string) $article->published_doi;
+            $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
+            $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
+            if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
+                return $published_doi;
             }
         }
     }
