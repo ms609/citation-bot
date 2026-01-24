@@ -1844,10 +1844,10 @@ EP - 999 }}';
     }
 
     public function testBioRxivToJournalConversionWorks(): void {
-        // Using a well-established bioRxiv paper that was published in eLife
-        // This specific DOI has been verified to have proper CrossRef relation metadata
-        $biorxiv_doi = '10.1101/007237';
-        $expected_published_doi = '10.7554/eLife.05856';
+        // Using 10.1101/2020.09.01.278465 which was published as 10.1038/s41586-021-03819-2 in Nature
+        // This DOI has verified CrossRef "is-preprint-of" relation metadata
+        $biorxiv_doi = '10.1101/2020.09.01.278465';
+        $expected_published_doi = '10.1038/s41586-021-03819-2';
 
         $published_doi = get_biorxiv_published_doi($biorxiv_doi);
 
@@ -1856,7 +1856,7 @@ EP - 999 }}';
             $published_doi,
             "CrossRef API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
             "If null: API is unavailable or returned no 'is-preprint-of' relation.\n" .
-            "Check https://api.crossref.org/v1/works/10.1101%2F007237"
+            "Check https://api.crossref.org/v1/works/" . urlencode($biorxiv_doi)
         );
 
         $this->assertSame(
@@ -1867,14 +1867,14 @@ EP - 999 }}';
             "Got: $published_doi"
         );
 
-        $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=007237}}';
+        $text = '{{cite bioRxiv |title=Test |biorxiv=2020.09.01.278465}}';
         $expanded = $this->process_citation($text);
 
         $this->assertSame('cite journal', $expanded->wikiname(),
             'Template should be converted from cite bioRxiv to cite journal');
         $this->assertSame($expected_published_doi, $expanded->get2('doi'),
             'Published DOI should be added to template');
-        $this->assertSame('007237', $expanded->get2('biorxiv'),
+        $this->assertSame('2020.09.01.278465', $expanded->get2('biorxiv'),
             'Original bioRxiv parameter should be preserved (in numeric form as provided)');
         $this->assertNotEmpty($expanded->get2('title'),
             'Title should be expanded from published article metadata');
