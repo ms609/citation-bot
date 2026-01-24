@@ -2194,4 +2194,60 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertFalse($template->add_if_new('work', 'Test Work'));
     }
 
+    public function testRejectURLInArticleNumber(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('article-number', 'https://www.insightturkey.com/'));
+        $this->assertNull($template->get2('article-number'));
+    }
+
+    public function testRejectURLInVolume(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('volume', 'http://example.com/vol23'));
+        $this->assertNull($template->get2('volume'));
+    }
+
+    public function testAllowURLInURLParameter(): void {
+        $text = "{{cite journal}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('url', 'https://example.org/article'));
+        $this->assertSame('https://example.org/article', $template->get2('url'));
+    }
+
+    public function testWarnAboutExistingURLInNonURLParameter(): void {
+        // Test that existing URLs in non-URL parameters trigger warnings but are not removed
+        $text = "{{cite journal|article-number=https://www.example.com/}}";
+        $template = $this->process_citation($text);
+        // The parameter should still be there (we don't remove it)
+        $this->assertSame('https://www.example.com/', $template->get2('article-number'));
+        // A warning should have been generated (captured by report_warning)
+    }
+
+    // Tests for "Progess in Optics" misspelling correction
+
+    public function testSeriesMisspellingCorrectedWhenAdding(): void {
+        // Test that misspelling is corrected when adding new series parameter
+        $text = "{{cite book|title=Test}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'Progess in Optics');
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingCorrectedInTidy(): void {
+        // Test that existing misspelling is corrected during tidy
+        $text = "{{cite book|series=Progess in Optics}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingRecognizedAsBookSeries(): void {
+        // Test that misspelling is recognized as a book series and converted
+        $text = "{{cite journal|journal=Progess in Optics}}";
+        $template = $this->process_citation($text);
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
 }
