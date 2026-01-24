@@ -3464,7 +3464,7 @@ final class Template
                 $param !== 'script-title' && // these can be very weird
                 (($param !== 'chapter' && $param !== 'title') || mb_strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
             ) {
-                $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
+                $this->set($param, safe_preg_replace('~[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
                 $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
                 $bom = pack('H*', 'EFBBBF');
                 $this->set($param, safe_preg_replace('~' . $bom . '~', ' ', $this->get($param)));
