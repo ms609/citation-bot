@@ -1823,4 +1823,13 @@ EP - 999 }}';
         $template = $this->make_citation($text);
         $this->assertSame('cite medrxiv', $template->wikiname());
     }
+
+    public function testBioRxivToJournalConversionWorks(): void {
+        $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=10.1101/007237}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('cite journal', $expanded->wikiname());
+        $this->assertSame('10.7554/eLife.05856', $expanded->get2('doi'));
+        $this->assertSame('10.1101/007237', $expanded->get2('biorxiv'));
+        $this->assertSame('Expression noise facilitates the evolution of gene regulation', $expanded->get2('title'));
+    }
 }
