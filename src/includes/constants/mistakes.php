@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
+/** @var array<string, string> */
 const COMMON_MISTAKES = [
     '_isbn' => 'isbn',
     '_pages' => 'pages',
@@ -1519,6 +1520,7 @@ const COMMON_MISTAKES = [
     '확인날짜' => 'access-date',
 ];
 
+/** @var array<string, string> */
 const COMMON_MISTAKES_TOOL = [
     'accessdate' => 'access-date',
     'archivedate' => 'archive-date',
@@ -1527,6 +1529,7 @@ const COMMON_MISTAKES_TOOL = [
 ];
 
 /** Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1 */
+/** @var list<array{0: string, 1: string}> */
 const TEMPLATE_CONVERSIONS = [
     ['cite', 'citation'],
     ['Cite', 'Citation'],
