@@ -66,6 +66,7 @@ final class Template
         // Done in parse_text() and in variable initialization
     }
 
+    /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $trial */
     public function parse_text(string $text): void {
         set_time_limit(120);
         /** @psalm-suppress RedundantPropertyInitializationCheck */
@@ -101,7 +102,6 @@ final class Template
 
         if (in_array(WIKI_BASE, ENGLISH_WIKI)) {
             foreach (TEMPLATE_CONVERSIONS as $trial) {
-                /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $trial */
                 if ($trim_name === $trial[0]) {
                     $this->name = $spacing[1] . $trial[1] . $spacing[2];
                     break;
