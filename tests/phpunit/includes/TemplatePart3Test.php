@@ -1824,6 +1824,25 @@ EP - 999 }}';
         $this->assertSame('cite medrxiv', $template->wikiname());
     }
 
+    public function testBioRxivToJournalConversionLogic(): void {
+        $text = '{{cite biorxiv |last=Smith |first=John |title=Test Title |biorxiv=10.1101/123456 |date=2023}}';
+        $template = $this->make_citation($text);
+        
+        $this->assertSame('cite biorxiv', $template->wikiname(), 'Template should start as cite biorxiv');
+        $this->assertSame('Smith', $template->get2('last'), 'Author should be preserved');
+        $this->assertSame('Test Title', $template->get2('title'), 'Title should be preserved');
+        $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'bioRxiv parameter should be present');
+        
+        $template->change_name_to('cite journal', false, false);
+        $template->add_if_new('doi', '10.1234/test.doi');
+        
+        $this->assertSame('cite journal', $template->wikiname(), 'Template should be converted to cite journal');
+        $this->assertSame('10.1234/test.doi', $template->get2('doi'), 'DOI should be added');
+        $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'Original bioRxiv parameter should be preserved');
+        $this->assertSame('Smith', $template->get2('last'), 'Author should still be present');
+        $this->assertSame('Test Title', $template->get2('title'), 'Title should still be present');
+    }
+
     public function testBioRxivToJournalConversionWorks(): void {
         $published_doi = get_biorxiv_published_doi('10.1101/007237');
         
