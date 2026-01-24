@@ -1851,22 +1851,21 @@ EP - 999 }}';
 
         $published_doi = get_biorxiv_published_doi($biorxiv_doi);
 
-        if ($published_doi === null) {
-            // Check if it's an API issue or data issue by trying the URL directly
-            $test_url = "https://api.crossref.org/v1/works/10.1101%2F007237";
-            $this->markTestSkipped(
-                "CrossRef API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
-                "This may indicate:\n" .
-                " 1. CrossRef API is temporarily unavailable\n" .
-                " 2. Rate limiting is in effect\n" .
-                " 3. The DOI relation data has changed in CrossRef\n" .
-                "Test URL: $test_url"
-            );
-            return;
-        }
+        // Distinguish between API unavailable vs. no published version exists
+        $this->assertNotNull(
+            $published_doi,
+            "CrossRef API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
+            "If null: API is unavailable or returned no 'is-preprint-of' relation.\n" .
+            "Check https://api.crossref.org/v1/works/10.1101%2F007237"
+        );
 
-        $this->assertSame($expected_published_doi, $published_doi,
-            'API should return the expected published DOI for this well-known bioRxiv→eLife publication');
+        $this->assertSame(
+            $expected_published_doi,
+            $published_doi,
+            "API returned a published DOI but not the expected one.\n" .
+            "Expected: $expected_published_doi\n" .
+            "Got: $published_doi"
+        );
 
         $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=007237}}';
         $expanded = $this->process_citation($text);
