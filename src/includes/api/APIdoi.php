@@ -644,7 +644,7 @@ function get_biorxiv_published_doi(string $doi): ?string {
     }
 
     $server = 'biorxiv';
-    $url = "https://api.biorxiv.org/pubs/" . $server . "/" . $doi;
+    $url = "https://api.biorxiv.org/details/" . $server . "/" . $doi;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $data = @json_decode($json);
