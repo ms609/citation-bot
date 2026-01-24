@@ -363,7 +363,7 @@ final class Template
                         if (mb_strpos($preprint_doi, '10.1101/') !== 0 && mb_strpos($preprint_doi, '10.64898/') !== 0) {
                             $preprint_doi = '10.1101/' . $preprint_doi;
                         }
-                        $published_doi = get_biorxiv_published_doi($preprint_doi);
+                        $published_doi = get_biorxiv_published_doi($preprint_doi, $preprint_param);
                         if ($published_doi !== null) {
                             report_action("Converting " . $this->wikiname() . " to cite journal - now published with DOI: " . doi_link($published_doi));
                             $this->change_name_to('cite journal', false, false);

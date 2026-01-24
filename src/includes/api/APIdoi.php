@@ -630,9 +630,10 @@ function get_doi_from_crossref(Template $template): void {
  * Check if bioRxiv/medRxiv preprint published via bioRxiv API.
  *
  * @param string $doi DOI (10.1101/* or 10.64898/*)
+ * @param string $server Server type: 'biorxiv' or 'medrxiv' (default: 'biorxiv')
  * @return string|null Published DOI or null
  */
-function get_biorxiv_published_doi(string $doi): ?string {
+function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?string {
     if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
         return null;
     }
@@ -643,7 +644,6 @@ function get_biorxiv_published_doi(string $doi): ?string {
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
 
-    $server = 'biorxiv';
     $url = "https://api.biorxiv.org/details/" . $server . "/" . $doi;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
