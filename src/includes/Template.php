@@ -1466,6 +1466,11 @@ final class Template
                     if ($value === 'Also known as:Official records of the Union and Confederate armies') {
                         return false;
                     }
+                    // Correct series misspellings before adding
+                    $lower = mb_strtolower($value);
+                    if (isset(SERIES_CORRECTIONS[$lower])) {
+                        $value = SERIES_CORRECTIONS[$lower];
+                    }
                     return $this->add($param_name, $value);
                 }
                 return false;
@@ -6004,6 +6009,14 @@ final class Template
                     $this->forget('journal');
                 } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
                     $this->forget('series');
+                }
+            }
+            // Correct existing series misspellings
+            if ($this->has('series')) {
+                $series_value = $this->get('series');
+                $lower = mb_strtolower($series_value);
+                if (isset(SERIES_CORRECTIONS[$lower])) {
+                    $this->set('series', SERIES_CORRECTIONS[$lower]);
                 }
             }
             if ($this->has('journal') && str_equivalent($this->get('title'), $this->get('journal'))) {

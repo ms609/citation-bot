@@ -2224,4 +2224,30 @@ final class TemplatePart2Test extends testBaseClass {
         // A warning should have been generated (captured by report_warning)
     }
 
+    // Tests for "Progess in Optics" misspelling correction
+
+    public function testSeriesMisspellingCorrectedWhenAdding(): void {
+        // Test that misspelling is corrected when adding new series parameter
+        $text = "{{cite book|title=Test}}";
+        $template = $this->make_citation($text);
+        $template->add_if_new('series', 'Progess in Optics');
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingCorrectedInTidy(): void {
+        // Test that existing misspelling is corrected during tidy
+        $text = "{{cite book|series=Progess in Optics}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testSeriesMisspellingRecognizedAsBookSeries(): void {
+        // Test that misspelling is recognized as a book series and converted
+        $text = "{{cite journal|journal=Progess in Optics}}";
+        $template = $this->process_citation($text);
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
 }
