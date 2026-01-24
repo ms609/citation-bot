@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /** https://en.wikipedia.org/wiki/Module:Format_ISBN/data */
 const ISBN_TIME_STAMP_USED = 'RangeMessage timestamp: 2026-01-01T03:48:59 GMT';
-/** @var array<string, array<int, int, int>> */
+/** @var array<string, list<int>> */
 const ISBN_HYPHEN_POS = [
     '9780199999999' => [1, 2, 6], //  English language
     '9780227999999' => [1, 3, 5],
