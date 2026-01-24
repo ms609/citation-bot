@@ -12,3 +12,4 @@ src/includes/CodeCoverage
 src/includes/cookie.txt
 tmp/*
 vendor/*
+tests.xml

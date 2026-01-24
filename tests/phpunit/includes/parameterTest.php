@@ -106,7 +106,7 @@ final class parameterTest extends testBaseClass {
 
     public function testNonBreakingSpaceNormalization(): void {
         // Test with Unicode non-breaking space (U+00A0) in various positions
-        $text = " publisher= BBC | ";  // Contains non-breaking spaces
+        $text = "\xc2\xa0publisher=\xc2\xa0BBC\xc2\xa0";  // Contains non-breaking spaces
         $parameter = $this->parameter_parse_text_helper($text);
         $result = $parameter->parsed_text();
         
