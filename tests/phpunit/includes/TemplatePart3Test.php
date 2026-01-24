@@ -1827,15 +1827,15 @@ EP - 999 }}';
     public function testBioRxivToJournalConversionLogic(): void {
         $text = '{{cite biorxiv |last=Smith |first=John |title=Test Title |biorxiv=10.1101/123456 |date=2023}}';
         $template = $this->make_citation($text);
-        
+
         $this->assertSame('cite biorxiv', $template->wikiname(), 'Template should start as cite biorxiv');
         $this->assertSame('Smith', $template->get2('last'), 'Author should be preserved');
         $this->assertSame('Test Title', $template->get2('title'), 'Title should be preserved');
         $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'bioRxiv parameter should be present');
-        
+
         $template->change_name_to('cite journal', false, false);
         $template->add_if_new('doi', '10.1234/test.doi');
-        
+
         $this->assertSame('cite journal', $template->wikiname(), 'Template should be converted to cite journal');
         $this->assertSame('10.1234/test.doi', $template->get2('doi'), 'DOI should be added');
         $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'Original bioRxiv parameter should be preserved');
@@ -1848,9 +1848,9 @@ EP - 999 }}';
         // This specific DOI has been verified to have proper CrossRef relation metadata
         $biorxiv_doi = '10.1101/007237';
         $expected_published_doi = '10.7554/eLife.05856';
-        
+
         $published_doi = get_biorxiv_published_doi($biorxiv_doi);
-        
+
         if ($published_doi === null) {
             // Check if it's an API issue or data issue by trying the URL directly
             $test_url = "https://api.crossref.org/v1/works/10.1101%2F007237";
@@ -1864,22 +1864,22 @@ EP - 999 }}';
             );
             return;
         }
-        
+
         $this->assertSame($expected_published_doi, $published_doi, 
             'API should return the expected published DOI for this well-known bioRxiv→eLife publication');
-        
+
         $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=007237}}';
         $expanded = $this->process_citation($text);
-        
-        $this->assertSame('cite journal', $expanded->wikiname(), 
+
+        $this->assertSame('cite journal', $expanded->wikiname(),
             'Template should be converted from cite bioRxiv to cite journal');
-        $this->assertSame($expected_published_doi, $expanded->get2('doi'), 
+        $this->assertSame($expected_published_doi, $expanded->get2('doi'),
             'Published DOI should be added to template');
-        $this->assertSame('007237', $expanded->get2('biorxiv'), 
+        $this->assertSame('007237', $expanded->get2('biorxiv'),
             'Original bioRxiv parameter should be preserved (in numeric form as provided)');
-        $this->assertNotEmpty($expanded->get2('title'), 
+        $this->assertNotEmpty($expanded->get2('title'),
             'Title should be expanded from published article metadata');
-        $this->assertNotEmpty($expanded->get2('journal'), 
+        $this->assertNotEmpty($expanded->get2('journal'),
             'Journal name should be added from published article metadata');
     }
 }
