@@ -365,12 +365,16 @@ final class Template
                         }
                         $published_doi = get_biorxiv_published_doi($preprint_doi, $preprint_param);
                         if ($published_doi !== null) {
-                            report_action("Converting " . $this->wikiname() . " to cite journal - now published with DOI: " . doi_link($published_doi));
+                            $msg = "Converting " . $this->wikiname() .
+                                   " to cite journal - now published with DOI: " . doi_link($published_doi);
+                            report_action($msg);
                             $this->change_name_to('cite journal', false, false);
                             $this->add_if_new('doi', $published_doi);
                             expand_by_doi($this);
                             $this->tidy();
-                            report_modification('Converted ' . $preprint_param . ' citation to published journal article');
+                            $mod_msg = 'Converted ' . $preprint_param .
+                                       ' citation to published journal article';
+                            report_modification($mod_msg);
                             use_sici($this);
                         }
                     }
