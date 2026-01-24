@@ -5975,6 +5975,7 @@ final class Template
                     $this->forget('series');
                 }
             }
+            conflict, just because
             if ($this->has('journal') && str_equivalent($this->get('title'), $this->get('journal'))) {
                 if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
                     $this->forget('journal');
