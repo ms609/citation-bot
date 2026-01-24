@@ -1865,7 +1865,7 @@ EP - 999 }}';
             return;
         }
 
-        $this->assertSame($expected_published_doi, $published_doi, 
+        $this->assertSame($expected_published_doi, $published_doi,
             'API should return the expected published DOI for this well-known bioRxiv→eLife publication');
 
         $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=007237}}';
