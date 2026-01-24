@@ -638,8 +638,13 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
         return null;
     }
 
-    // Validate server parameter to prevent SSRF
-    if ($server !== 'biorxiv' && $server !== 'medrxiv') {
+    // Validate server parameter to prevent SSRF - use explicit whitelist
+    $safe_server = '';
+    if ($server === 'biorxiv') {
+        $safe_server = 'biorxiv';
+    } elseif ($server === 'medrxiv') {
+        $safe_server = 'medrxiv';
+    } else {
         return null;
     }
 
@@ -649,7 +654,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
 
-    $url = "https://api.biorxiv.org/details/" . $server . "/" . $doi;
+    $url = "https://api.biorxiv.org/details/" . $safe_server . "/" . $doi;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $data = @json_decode($json);
