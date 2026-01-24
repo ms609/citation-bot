@@ -20,7 +20,7 @@
         "designsecurity/progpilot": "^1",
         "mediawiki/mediawiki-codesniffer": "^49.0.0",
         "overtrue/phplint": "^9",
-        "phan/phan": "^5",
+        "phan/phan": "^6",
         "phpstan/phpstan": "^2.1.32",
         "phpunit/php-invoker": "^6",
         "phpunit/phpunit": "^12",
