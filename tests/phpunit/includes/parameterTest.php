@@ -104,6 +104,18 @@ final class parameterTest extends testBaseClass {
         $this->assertSame("\n", $parameter->post);
     }
 
+    public function testNonBreakingSpaceNormalization(): void {
+        // Test with Unicode non-breaking space (U+00A0) in various positions
+        $text = " publisher= BBC | ";  // Contains non-breaking spaces
+        $parameter = $this->parameter_parse_text_helper($text);
+        $result = $parameter->parsed_text();
+        
+        // Verify non-breaking spaces have been converted to regular spaces
+        $this->assertStringNotContainsString("\xc2\xa0", $result);
+        $this->assertStringContainsString(' publisher', $result);
+        $this->assertStringContainsString('BBC ', $result);
+    }
+
     public function testMultilinevalueTrailingNewline(): void {
         $text = "param=multiline\nvalue\n";
         $parameter = $this->parameter_parse_text_helper($text);

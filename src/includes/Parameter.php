@@ -79,6 +79,11 @@ final class Parameter {
      * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
      */
     public function parsed_text(): string {
-        return $this->pre . $this->param . $this->eq . $this->val . $this->post;
+        // Normalize non-breaking spaces (U+00A0) to regular spaces within citation template
+        $pre = str_replace("\xc2\xa0", ' ', $this->pre);
+        $eq = str_replace("\xc2\xa0", ' ', $this->eq);
+        $post = str_replace("\xc2\xa0", ' ', $this->post);
+        
+        return $pre . $this->param . $eq . $this->val . $post;
     }
 }
