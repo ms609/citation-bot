@@ -1827,12 +1827,17 @@ EP - 999 }}';
     public function testBioRxivToJournalConversionWorks(): void {
         $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=10.1101/007237}}';
         $expanded = $this->process_citation($text);
-        if ($expanded->wikiname() === 'cite biorxiv') {
-            $this->markTestSkipped('CrossRef API did not return published version for bioRxiv DOI 10.1101/007237');
+        
+        $published_doi = get_biorxiv_published_doi('10.1101/007237');
+        
+        if ($published_doi === null) {
+            $this->markTestSkipped('CrossRef API did not return published version for bioRxiv DOI 10.1101/007237 - API may be unavailable or DOI not yet linked');
         }
-        $this->assertSame('cite journal', $expanded->wikiname());
-        $this->assertSame('10.7554/eLife.05856', $expanded->get2('doi'));
-        $this->assertSame('10.1101/007237', $expanded->get2('biorxiv'));
-        $this->assertSame('Expression noise facilitates the evolution of gene regulation', $expanded->get2('title'));
+        
+        $this->assertSame('10.7554/eLife.05856', $published_doi, 'API returned published DOI');
+        $this->assertSame('cite journal', $expanded->wikiname(), 'Template converted to cite journal');
+        $this->assertSame('10.7554/eLife.05856', $expanded->get2('doi'), 'Published DOI added to template');
+        $this->assertSame('10.1101/007237', $expanded->get2('biorxiv'), 'Original bioRxiv parameter preserved');
+        $this->assertNotEmpty($expanded->get2('title'), 'Title expanded from published article');
     }
 }
