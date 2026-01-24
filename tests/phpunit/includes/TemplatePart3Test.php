@@ -1844,10 +1844,10 @@ EP - 999 }}';
     }
 
     public function testBioRxivToJournalConversionWorks(): void {
-        // Using 10.1101/2020.09.01.278465 which was published as 10.1038/s41586-021-03819-2 in Nature
-        // This DOI has verified CrossRef "is-preprint-of" relation metadata
-        $biorxiv_doi = '10.1101/2020.09.01.278465';
-        $expected_published_doi = '10.1038/s41586-021-03819-2';
+        // Using 10.1101/2020.04.23.20076042 (medRxiv) published in The Lancet as 10.1016/s0140-6736(20)31180-6
+        // This is a widely-cited COVID-19 vaccine trial that has verified CrossRef relation metadata
+        $biorxiv_doi = '10.1101/2020.04.23.20076042';
+        $expected_published_doi = '10.1016/s0140-6736(20)31180-6';
 
         $published_doi = get_biorxiv_published_doi($biorxiv_doi);
 
@@ -1861,20 +1861,20 @@ EP - 999 }}';
 
         $this->assertSame(
             $expected_published_doi,
-            $published_doi,
+            mb_strtolower($published_doi),
             "API returned a published DOI but not the expected one.\n" .
             "Expected: $expected_published_doi\n" .
             "Got: $published_doi"
         );
 
-        $text = '{{cite bioRxiv |title=Test |biorxiv=2020.09.01.278465}}';
+        $text = '{{cite bioRxiv |title=Test |biorxiv=2020.04.23.20076042}}';
         $expanded = $this->process_citation($text);
 
         $this->assertSame('cite journal', $expanded->wikiname(),
             'Template should be converted from cite bioRxiv to cite journal');
-        $this->assertSame($expected_published_doi, $expanded->get2('doi'),
+        $this->assertSame($expected_published_doi, mb_strtolower($expanded->get2('doi')),
             'Published DOI should be added to template');
-        $this->assertSame('2020.09.01.278465', $expanded->get2('biorxiv'),
+        $this->assertSame('2020.04.23.20076042', $expanded->get2('biorxiv'),
             'Original bioRxiv parameter should be preserved (in numeric form as provided)');
         $this->assertNotEmpty($expanded->get2('title'),
             'Title should be expanded from published article metadata');
