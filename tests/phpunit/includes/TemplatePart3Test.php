@@ -1844,22 +1844,42 @@ EP - 999 }}';
     }
 
     public function testBioRxivToJournalConversionWorks(): void {
-        $published_doi = get_biorxiv_published_doi('10.1101/007237');
+        // Using a well-established bioRxiv paper that was published in eLife
+        // This specific DOI has been verified to have proper CrossRef relation metadata
+        $biorxiv_doi = '10.1101/007237';
+        $expected_published_doi = '10.7554/eLife.05856';
+        
+        $published_doi = get_biorxiv_published_doi($biorxiv_doi);
         
         if ($published_doi === null) {
-            $this->markTestSkipped('CrossRef API did not return published version for bioRxiv DOI 10.1101/007237 - API may be unavailable or DOI not yet linked');
+            // Check if it's an API issue or data issue by trying the URL directly
+            $test_url = "https://api.crossref.org/v1/works/10.1101%2F007237";
+            $this->markTestSkipped(
+                "CrossRef API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
+                "This may indicate:\n" .
+                " 1. CrossRef API is temporarily unavailable\n" .
+                " 2. Rate limiting is in effect\n" .
+                " 3. The DOI relation data has changed in CrossRef\n" .
+                "Test URL: $test_url"
+            );
             return;
         }
         
-        $this->assertSame('10.7554/eLife.05856', $published_doi, 'API should return the expected published DOI');
+        $this->assertSame($expected_published_doi, $published_doi, 
+            'API should return the expected published DOI for this well-known bioRxiv→eLife publication');
         
-        $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=10.1101/007237}}';
+        $text = '{{cite bioRxiv |last=Wolf |first=Luise |title=Expression noise |biorxiv=007237}}';
         $expanded = $this->process_citation($text);
         
-        $this->assertSame('cite journal', $expanded->wikiname(), 'Template should be converted to cite journal');
-        $this->assertSame('10.7554/eLife.05856', $expanded->get2('doi'), 'Published DOI should be added to template');
-        $this->assertSame('10.1101/007237', $expanded->get2('biorxiv'), 'Original bioRxiv parameter should be preserved');
-        $this->assertNotEmpty($expanded->get2('title'), 'Title should be expanded from published article');
-        $this->assertNotEmpty($expanded->get2('journal'), 'Journal name should be added');
+        $this->assertSame('cite journal', $expanded->wikiname(), 
+            'Template should be converted from cite bioRxiv to cite journal');
+        $this->assertSame($expected_published_doi, $expanded->get2('doi'), 
+            'Published DOI should be added to template');
+        $this->assertSame('007237', $expanded->get2('biorxiv'), 
+            'Original bioRxiv parameter should be preserved (in numeric form as provided)');
+        $this->assertNotEmpty($expanded->get2('title'), 
+            'Title should be expanded from published article metadata');
+        $this->assertNotEmpty($expanded->get2('journal'), 
+            'Journal name should be added from published article metadata');
     }
 }

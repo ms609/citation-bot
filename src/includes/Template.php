@@ -377,6 +377,7 @@ final class Template
                     break;
                 case "cite journal":
                     use_sici($this);
+                    break;
             }
 
             // APA PsycNet

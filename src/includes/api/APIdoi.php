@@ -665,7 +665,9 @@ function get_biorxiv_published_doi(string $doi): ?string {
                 if (isset($relation->{'id-type'}) && (string) $relation->{'id-type'} === 'doi') {
                     if (isset($relation->id)) {
                         $published_doi = (string) $relation->id;
-                        if (mb_strpos($published_doi, '10.1101/') !== 0 && mb_strpos($published_doi, '10.64898/') !== 0) {
+                        $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
+                        $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
+                        if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
                             return $published_doi;
                         }
                     }
