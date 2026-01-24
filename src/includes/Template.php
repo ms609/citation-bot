@@ -66,8 +66,8 @@ final class Template
         // Done in parse_text() and in variable initialization
     }
 
-    /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $trial */
     public function parse_text(string $text): void {
+        /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $trial */
         set_time_limit(120);
         /** @psalm-suppress RedundantPropertyInitializationCheck */
         if (isset($this->rawtext)) {
