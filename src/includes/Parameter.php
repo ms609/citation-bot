@@ -79,11 +79,11 @@ final class Parameter {
      * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
      */
     public function parsed_text(): string {
-        // Normalize all Unicode space separators (\p{Zs}) to regular spaces within citation template
-        // This includes U+00A0 (NO-BREAK SPACE), U+202F (NARROW NO-BREAK SPACE), U+2007 (FIGURE SPACE), etc.
-        $pre = preg_replace('/\p{Zs}/u', ' ', $this->pre);
-        $eq = preg_replace('/\p{Zs}/u', ' ', $this->eq);
-        $post = preg_replace('/\p{Zs}/u', ' ', $this->post);
+        // Normalize non-standard Unicode space separators to regular spaces within citation template
+        // Same pattern as Template::tidy_parameter() for consistency
+        $pre = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->pre);
+        $eq = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->eq);
+        $post = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->post);
         
         return $pre . $this->param . $eq . $this->val . $post;
     }
