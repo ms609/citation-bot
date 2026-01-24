@@ -1059,6 +1059,7 @@ function addISBNdashes(string $isbn): string {
     $new = str_replace('-', '', $isbn);
     if (mb_strlen($new) === 10) {
         $num = 9780000000000 + (int) str_ireplace('x', '9', $new);
+        /** @var array{0: int, 1: int, 2: int} $v */
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
                 $split = $v;
