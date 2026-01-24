@@ -595,12 +595,12 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
+    /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $convert */
     public function testConversionsGood(): void {
         WikipediaBot::make_ch();
         $page = new TestPage();
         $errors = "";
         foreach (TEMPLATE_CONVERSIONS as $convert) {
-            /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $convert */
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
             }
@@ -646,11 +646,11 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
+    /** @var array{0: int, 1: int, 2: int} $v */
     public function testISBNlist(): void {
         new TestPage(); // Fill page name with test name for debugging
         $last = -1;
         foreach (ISBN_HYPHEN_POS as $k => $v) {
-            /** @var array{0: int, 1: int, 2: int} $v */
             $k = (int) $k;
             $this->assertTrue($k > $last);
             $last = $k;
