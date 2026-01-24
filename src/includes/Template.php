@@ -101,7 +101,7 @@ final class Template
 
         if (in_array(WIKI_BASE, ENGLISH_WIKI)) {
             foreach (TEMPLATE_CONVERSIONS as $trial) {
-                /** @var array{0: string, 1: string} $trial */
+                /** @var array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string} $trial */
                 if ($trim_name === $trial[0]) {
                     $this->name = $spacing[1] . $trial[1] . $spacing[2];
                     break;
