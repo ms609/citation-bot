@@ -1074,6 +1074,7 @@ function addISBNdashes(string $isbn): string {
         // split = SKIP3, $v[0], $v[1], $v[2], 1
     } elseif (mb_strlen($new) === 13) {
         $num = (int) $new;
+        /** @var array{0: int, 1: int, 2: int} $v */
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
                 $split = $v;
