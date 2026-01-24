@@ -114,6 +114,16 @@ final class parameterTest extends testBaseClass {
         $this->assertStringNotContainsString("\u{00A0}", $result);
         $this->assertStringContainsString(' publisher', $result);
         $this->assertStringContainsString('BBC ', $result);
+        
+        // Test with other Unicode space separators (U+202F, U+2007)
+        $text2 = "\u{202F}author=\u{2007}Smith\u{00A0}";  // Mix of space types
+        $parameter2 = $this->parameter_parse_text_helper($text2);
+        $result2 = $parameter2->parsed_text();
+        
+        // Verify all space separators are normalized
+        $this->assertStringNotContainsString("\u{202F}", $result2);
+        $this->assertStringNotContainsString("\u{2007}", $result2);
+        $this->assertStringNotContainsString("\u{00A0}", $result2);
     }
 
     public function testMultilinevalueTrailingNewline(): void {

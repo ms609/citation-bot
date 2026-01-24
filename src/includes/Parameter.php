@@ -79,10 +79,11 @@ final class Parameter {
      * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
      */
     public function parsed_text(): string {
-        // Normalize non-breaking spaces (U+00A0) to regular spaces within citation template
-        $pre = str_replace("\u{00A0}", ' ', $this->pre);
-        $eq = str_replace("\u{00A0}", ' ', $this->eq);
-        $post = str_replace("\u{00A0}", ' ', $this->post);
+        // Normalize all Unicode space separators (\p{Zs}) to regular spaces within citation template
+        // This includes U+00A0 (NO-BREAK SPACE), U+202F (NARROW NO-BREAK SPACE), U+2007 (FIGURE SPACE), etc.
+        $pre = preg_replace('/\p{Zs}/u', ' ', $this->pre);
+        $eq = preg_replace('/\p{Zs}/u', ' ', $this->eq);
+        $post = preg_replace('/\p{Zs}/u', ' ', $this->post);
         
         return $pre . $this->param . $eq . $this->val . $post;
     }
