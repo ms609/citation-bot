@@ -1856,7 +1856,7 @@ EP - 999 }}';
             $published_doi,
             "bioRxiv API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
             "If null: API is unavailable or preprint not yet published.\n" .
-            "Check https://api.biorxiv.org/pubs/biorxiv/$biorxiv_doi"
+            "Check https://api.biorxiv.org/details/biorxiv/$biorxiv_doi"
         );
 
         $this->assertSame(

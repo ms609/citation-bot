@@ -655,12 +655,14 @@ function get_biorxiv_published_doi(string $doi): ?string {
 
     if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
         $article = $data->collection[0];
-        if (isset($article->published_doi) && $article->published_doi !== '' && $article->published_doi !== null) {
-            $published_doi = (string) $article->published_doi;
-            $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
-            $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
-            if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
-                return $published_doi;
+        if (is_object($article) && isset($article->published_doi)) {
+            $published_doi = trim((string) $article->published_doi);
+            if ($published_doi !== '' && $published_doi !== null) {
+                $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
+                $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
+                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
+                    return $published_doi;
+                }
             }
         }
     }
