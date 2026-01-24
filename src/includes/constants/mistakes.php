@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
-/** @var list<array{0: literal-string&non-falsy-string, 1: literal-string&non-falsy-string}> */
+/** @var array<string, string> */
 const COMMON_MISTAKES = [
     '_isbn' => 'isbn',
     '_pages' => 'pages',
