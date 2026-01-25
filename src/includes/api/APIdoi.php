@@ -679,7 +679,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
                     if (doi_works($published_doi)) {
                         return $published_doi;
                     } else {
-                        bot_debug_log("Got bad DOI from biorxiv: " . echoable($published_doi);
+                        bot_debug_log("Got bad DOI from biorxiv: " . echoable($published_doi));
                     }
                 }
             }
