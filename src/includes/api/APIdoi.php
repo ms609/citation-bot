@@ -653,7 +653,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT, [CURLOPT_HTTPHEADER => ["Accept: application/json"]]);
     }
 
-    $url = "https://api.biorxiv.org/details/" . $api_server . "/" . doi_encode($doi) . "/en/json"; // Force JSON, just in case default changes
+    $url = "https://api.biorxiv.org/details/" . $api_server . "/" . doi_encode($doi) . "/na/json"; // Force JSON, just in case default changes
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $data = @json_decode($json);
