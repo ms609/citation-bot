@@ -277,7 +277,7 @@ final class Template
                 }
             }
         }
-  
+
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
             if (in_array(mb_strtolower($this->get('title')), ALWAYS_BAD_TITLES, true)) {
