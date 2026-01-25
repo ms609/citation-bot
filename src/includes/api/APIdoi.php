@@ -653,8 +653,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
 
-    /** @psalm-taint-escape ssrf */
-    $url = "https://api.biorxiv.org/details/" . $api_server . "/" . $doi;
+    $url = "https://api.biorxiv.org/details/" . $api_server . "/" . doi_encode($doi) . "/en/json"; // Force JSON, just in case default changes
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
     $data = @json_decode($json);
@@ -665,12 +664,18 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
 
     if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
         $article = $data->collection[0];
-        if (is_object($article) && isset($article->published_doi)) {
-            $published_doi = mb_trim((string) $article->published_doi);
-            if ($published_doi !== '') {
+        if (is_object($article)) {
+            if (!empty($article->published_doi)) {
+                $published_doi = mb_trim((string) $article->published_doi);
+            } elseif (!empty($article->published)) {
+                $published_doi = mb_trim((string) $article->published);
+            } else {
+                return null;
+            }
+            if ($published_doi !== '') { // Possible, if the original string was just spaces
                 $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
                 $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
-                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
+                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi && doi_works($published_doi)) {
                     return $published_doi;
                 }
             }
