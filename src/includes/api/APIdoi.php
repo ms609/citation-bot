@@ -675,8 +675,12 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
             if ($published_doi !== '') { // Possible, if the original string was just spaces
                 $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
                 $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
-                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi && doi_works($published_doi)) {
-                    return $published_doi;
+                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
+                    if (doi_works($published_doi)) {
+                        return $published_doi;
+                    } else {
+                        bot_debug_log("Got bad DOI from biorxiv: " . echoable($published_doi);
+                    }
                 }
             }
         }
