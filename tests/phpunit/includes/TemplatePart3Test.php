@@ -1811,4 +1811,73 @@ EP - 999 }}';
         // wikiname() should return lowercase version
         $this->assertSame('cite biorxiv', $expanded->wikiname());
     }
+
+    public function testBioRxivToJournalConversion(): void {
+        $text = '{{cite biorxiv |last1=Wolf |first1=Luise |last2=Silander |first2=Olin K. |last3=Van Nimwegen |first3=Erik J. |date=2014 |title=Expression noise facilitates the evolution of gene regulation |biorxiv=007237}}';
+        $template = $this->make_citation($text);
+        $this->assertSame('cite biorxiv', $template->wikiname());
+    }
+
+    public function testMedRxivToJournalConversion(): void {
+        $text = '{{cite medrxiv |last=Smith |first=John |title=Test Paper |medrxiv=123456 |date=2023}}';
+        $template = $this->make_citation($text);
+        $this->assertSame('cite medrxiv', $template->wikiname());
+    }
+
+    public function testBioRxivToJournalConversionLogic(): void {
+        $text = '{{cite biorxiv |last=Smith |first=John |title=Test Title |biorxiv=10.1101/123456 |date=2023}}';
+        $template = $this->make_citation($text);
+
+        $this->assertSame('cite biorxiv', $template->wikiname(), 'Template should start as cite biorxiv');
+        $this->assertSame('Smith', $template->get2('last'), 'Author should be preserved');
+        $this->assertSame('Test Title', $template->get2('title'), 'Title should be preserved');
+        $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'bioRxiv parameter should be present');
+
+        $template->change_name_to('cite journal', false, false);
+        $template->add_if_new('doi', '10.1234/test.doi');
+
+        $this->assertSame('cite journal', $template->wikiname(), 'Template should be converted to cite journal');
+        $this->assertSame('10.1234/test.doi', $template->get2('doi'), 'DOI should be added');
+        $this->assertSame('10.1101/123456', $template->get2('biorxiv'), 'Original bioRxiv parameter should be preserved');
+        $this->assertSame('Smith', $template->get2('last'), 'Author should still be present');
+        $this->assertSame('Test Title', $template->get2('title'), 'Title should still be present');
+    }
+
+    public function testBioRxivToJournalConversionWorks(): void {
+        // Using 10.1101/063172 published in Human Genetics as 10.1007/s00439-016-1742-y
+        // This is a verified conversion (Kutanan et al. 2016) from bioRxiv API
+        $biorxiv_doi = '10.1101/063172';
+        $expected_published_doi = '10.1007/s00439-016-1742-y';
+
+        $published_doi = get_biorxiv_published_doi($biorxiv_doi);
+
+        $this->assertNotNull(
+            $published_doi,
+            "bioRxiv API did not return published version for bioRxiv DOI $biorxiv_doi.\n" .
+            "API should return the published DOI when it exists.\n" .
+            "Check https://api.biorxiv.org/details/biorxiv/$biorxiv_doi"
+        );
+
+        $this->assertSame(
+            $expected_published_doi,
+            mb_strtolower($published_doi),
+            "API returned a published DOI but not the expected one.\n" .
+            "Expected: $expected_published_doi\n" .
+            "Got: $published_doi"
+        );
+
+        $text = '{{cite bioRxiv |title=Test |biorxiv=063172}}';
+        $expanded = $this->process_citation($text);
+
+        $this->assertSame('cite journal', $expanded->wikiname(),
+            'Template should be converted from cite bioRxiv to cite journal');
+        $this->assertSame($expected_published_doi, mb_strtolower($expanded->get2('doi')),
+            'Published DOI should be added to template');
+        $this->assertSame('063172', $expanded->get2('biorxiv'),
+            'Original bioRxiv parameter should be preserved (in numeric form as provided)');
+        $this->assertNotEmpty($expanded->get2('title'),
+            'Title should be expanded from published article metadata');
+        $this->assertNotEmpty($expanded->get2('journal'),
+            'Journal name should be added from published article metadata');
+    }
 }

@@ -311,4 +311,12 @@ final class DoiTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame($text, $template->parsed_text());
     }
+
+    public function testGetBioRxivPublishedDoi(): void {
+        $result = get_biorxiv_published_doi('10.1234/invalid');
+        $this->assertNull($result);
+
+        $result = get_biorxiv_published_doi('10.1101/999999999');
+        $this->assertNull($result);
+    }
 }
