@@ -254,7 +254,7 @@ final class Template
         }
     }
 
-    public function prepare(): void {
+    public function prepare_rxiv(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), ["cite biorxiv", "cite medrxiv"])) {
             $preprint_param = ($this->wikiname() === 'cite biorxiv') ? 'biorxiv' : 'medrxiv';
@@ -277,6 +277,10 @@ final class Template
                 }
             }
         }
+    }
+
+    public function prepare(): void {
+        set_time_limit(120);
 
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
             // Clean up bad data
