@@ -653,6 +653,7 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
             [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     }
 
+    /** @psalm-taint-escape ssrf */
     $url = "https://api.biorxiv.org/details/" . $api_server . "/" . $doi;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
