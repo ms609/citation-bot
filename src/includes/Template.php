@@ -269,6 +269,7 @@ final class Template
                     report_action($msg);
                     $this->change_name_to('cite journal', false, false);
                     $this->add_if_new('doi', $published_doi);
+                    $this->forget('date');
                     expand_by_doi($this);
                     $this->tidy();
                     $mod_msg = 'Converted ' . $preprint_param . ' citation to published journal article';
