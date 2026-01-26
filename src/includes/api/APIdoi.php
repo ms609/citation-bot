@@ -667,12 +667,18 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
     if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
         $article = $data->collection[0];
         if (is_object($article)) {
+            $published_doi = '';
             if (!empty($article->published_doi)) {
                 $published_doi = mb_trim((string) $article->published_doi);
-            } elseif (!empty($article->published)) {
+                if ($published_doi === 'NA') {
+                    $published_doi = '';
+                }
+            }
+            if (empty($published_doi) && !empty($article->published)) {
                 $published_doi = mb_trim((string) $article->published);
-            } else {
-                return null;
+                if ($published_doi === 'NA') {
+                    $published_doi = '';
+                }
             }
             if ($published_doi !== '') { // Possible, if the original string was just spaces
                 $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
