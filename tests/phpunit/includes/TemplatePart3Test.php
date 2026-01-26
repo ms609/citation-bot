@@ -1644,6 +1644,13 @@ EP - 999 }}';
         $this->assertSame($text, $expanded->parsed_text());
     }
 
+    public function testInvoke8(): void {
+        $text = "{{#invoke:Cite|medrxiv|X=Y}}";
+        $expanded = $this->make_template($text);
+        $expanded->change_name_to('cite journal', true, true);
+        $this->assertSame("{{#invoke:Cite|journal|X=Y}}", $expanded->parsed_text());
+    }
+
     public function testVADuplicate(): void {
         $text = "{{cs1 config|name-list-style=vanc}}<ref>https://pmc.ncbi.nlm.nih.gov/articles/PMC11503076/</ref>{{cs1 config|name-list-style=vanc}}";
         $page = $this->process_page($text);
