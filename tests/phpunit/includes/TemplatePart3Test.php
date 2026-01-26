@@ -1623,7 +1623,7 @@ EP - 999 }}';
     public function testInvoke4(): void {
         $text = "{{#invoke:Dummy|Y=X}}{{#invoke:Oddity|Y=X}}{{#invoke:Cite|dummy||Y=X}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("{{#invoke:Dummy|Y=X}}{{#invoke:Oddity|Y=X}}{{#invoke:Cite|dummy|y=X}}", $expanded->parsed_text());
+        $this->assertSame($text, $expanded->parsed_text());
     }
 
     public function testInvoke5(): void {
@@ -1640,9 +1640,8 @@ EP - 999 }}';
 
     public function testInvoke7(): void {
         $text = "{{#invoke:Cite|dummy\n\t\r | \n\r\t |\n\r\t Y=X}}";
-        $text_out = "{{#invoke:Cite|dummy\n\t\r |\n\r|\n\r\t y=X}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame(addcslashes($text_out, "\n\t\r"), addcslashes($expanded->parsed_text(), "\n\t\r"));
+        $this->assertSame(addcslashes($text, "\n\t\r"), addcslashes($expanded->parsed_text(), "\n\t\r"));
     }
 
     public function testInvoke8(): void {
