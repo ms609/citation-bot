@@ -11,7 +11,7 @@ const TEMPLATES_WE_PROCESS = [
     'web reference', 'cite citation', 'cite contribution', 'cite ebook', 'cite manual',
 ];
 const TEMPLATES_WE_SLIGHTLY_PROCESS = ['cite news', 'cite newspaper', 'citenews', 'cite new'];
-const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite biorxiv', 'cite medrxiv', 'cite conference'];
+const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite conference'];
 const TEMPLATES_WE_RENAME = ['cite arxiv', 'cite biorxiv', 'cite medrxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite paper', 'cite website'];
 const TEMPLATES_WE_CHAPTER_URL = [
     'new cambridge medieval history', 'setton-a history of the crusades', 'new cambridge medieval history',
