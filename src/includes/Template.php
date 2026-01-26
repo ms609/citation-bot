@@ -3384,7 +3384,7 @@ final class Template
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
             $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
-            if (ctype_upper(mb_substr($this->name, 0, 1))) {
+            if (ctype_upper(mb_substr($this->name, 0, 1)) || $invoke !== '') {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
@@ -3427,7 +3427,8 @@ final class Template
      */
     public function wikiname(): string {
         $name = mb_trim(mb_strtolower(str_replace('_', ' ', $this->name)));
-        $name = mb_trim(mb_strtolower(str_replace('#invoke:', '', $name)));
+        $name = mb_trim(str_replace('#invoke:', '', $name));
+        $name = str_replace('|', ' ', $name);
         // Treat the same since alias
         if ($name === 'cite work') {
             $name = 'cite book';
