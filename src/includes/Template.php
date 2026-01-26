@@ -75,7 +75,17 @@ final class Template
         $this->rawtext = $text;
         $pipe_pos = mb_strpos($text, '|');
         if ($pipe_pos) {
-            $this->name = mb_substr($text, 2, $pipe_pos - 2); # Remove {{ and }}
+            $name = mb_trim(mb_substr($text, 2, $pipe_pos - 2));
+            if (mb_strpos($name, '#invoke:') === 0) {
+                if (mb_strpos($name, ' ') !== false) {
+                    $pipe_pos = false;
+                } else {
+                    $pipe_pos = mb_strpos($text, '|', $pipe_pos + 2);
+                }
+            }
+        }
+        if ($pipe_pos) {
+            $this->name = mb_substr($text, 2, $pipe_pos - 2);
             $this->split_params(mb_substr($text, $pipe_pos + 1, -2));
         } else {
             $this->name = mb_substr($text, 2, -2);
