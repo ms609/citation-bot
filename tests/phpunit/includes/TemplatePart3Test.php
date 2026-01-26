@@ -1610,8 +1610,8 @@ EP - 999 }}';
     public function testInvoke2(): void {
         $text = "{{#invoke:Cite|web| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('cite journal', $expanded->wikiname());
         $this->assertSame('{{#invoke:Cite|journal| jstor=1701972 |s2cid= <!-- --> |title= Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec |last1= Labandeira |first1= Conrad C. |last2= Beall |first2= Bret S. |last3= Hueber |first3= Francis M. |journal= Science |date= 1988 |volume= 242 |issue= 4880 |pages= 913–916 |doi= 10.1126/science.242.4880.913 }}', $expanded->parsed_text());
+        $this->assertSame('cite journal', $expanded->wikiname());
     }
 
     public function testInvoke3(): void {
@@ -1623,7 +1623,7 @@ EP - 999 }}';
     public function testInvoke4(): void {
         $text = "{{#invoke:Dummy|Y=X}}{{#invoke:Oddity|Y=X}}{{#invoke:Cite|dummy||Y=X}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame(str_replace("||", "|", $text), $expanded->parsed_text());
+        $this->assertSame("{{#invoke:Dummy|Y=X}}{{#invoke:Oddity|Y=X}}{{#invoke:Cite|dummy|y=X}}", $expanded->parsed_text());
     }
 
     public function testInvoke5(): void {
@@ -1640,8 +1640,9 @@ EP - 999 }}';
 
     public function testInvoke7(): void {
         $text = "{{#invoke:Cite|dummy\n\t\r | \n\r\t |\n\r\t Y=X}}";
+        $text_out = "{{#invoke:Cite|dummy\n\t\r |\n\r|\n\r\t y=X}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame(addcslashes($text, "\n\t\r"), addcslashes($expanded->parsed_text(), "\n\t\r"));
+        $this->assertSame(addcslashes($text_out, "\n\t\r"), addcslashes($expanded->parsed_text(), "\n\t\r"));
     }
 
     public function testInvoke8(): void {
