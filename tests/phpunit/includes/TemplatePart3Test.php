@@ -1640,7 +1640,7 @@ EP - 999 }}';
 
     public function testInvoke7(): void {
         $text = "{{#invoke:Cite|dummy\n\t\r | \n\r\t |\n\r\t Y=X}}";
-        $text_out = "{{#invoke:Cite|dummy\n\t\r |\n\r|\n\r\t y=X}}";
+        $text_oudsfaddasfdsfadst = "{{#invoke:Cite|dummy\n\t\r |\n\r|\n\r\t y=X}}";
         $expanded = $this->process_citation($text);
         $this->assertSame(addcslashes($text_out, "\n\t\r"), addcslashes($expanded->parsed_text(), "\n\t\r"));
     }
