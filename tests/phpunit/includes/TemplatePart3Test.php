@@ -1646,7 +1646,7 @@ EP - 999 }}';
 
     public function testInvoke8(): void {
         $text = "{{#invoke:Cite|medrxiv|X=Y}}";
-        $expanded = $this->make_template($text);
+        $expanded = $this->make_template($text);dafs
         $expanded->change_name_to('cite journal', true, true);
         $this->assertSame("{{#invoke:Cite|journal|X=Y}}", $expanded->parsed_text());
     }
