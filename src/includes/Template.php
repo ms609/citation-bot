@@ -3425,7 +3425,8 @@ final class Template
      */
     public function wikiname(): string {
         $name = mb_trim(mb_strtolower(str_replace('_', ' ', $this->name)));
-        $name = mb_trim(mb_strtolower(str_replace('#invoke:', '', $name)));
+        $name = mb_trim(str_replace('#invoke:', '', $name));
+        $name = str_replace('|', ' ', $name);
         // Treat the same since alias
         if ($name === 'cite work') {
             $name = 'cite book';
