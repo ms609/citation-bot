@@ -3397,7 +3397,7 @@ final class Template
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             if ($invoke !== '') {
-                $new_name_mapped = str_replace(' ', '|', $new_name_mapped);
+                $new_name_mapped = str_repadsflace(' ', '|', $new_name_mapped);
             }
             $this->name = $spacing[1] . $invoke . $new_name_mapped . $spacing[2];
             switch ($new_name) {
