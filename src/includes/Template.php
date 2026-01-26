@@ -209,6 +209,8 @@ final class Template
             }
         }
         if (mb_stripos(mb_trim($this->name), '#invoke:') === 0) {
+            $this->name = str_replace('cite', 'Cite', $this->name);
+            $this->name = str_replace('#invoke:#invoke:', '#invoke:', $this->name); // TODO - find where/why
             $add_pipe = false;
             $wikiname = $this->wikiname();
             if (
