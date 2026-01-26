@@ -208,30 +208,7 @@ final class Template
                 return base64_decode($this->get(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
             }
         }
-        if (mb_stripos(mb_trim($this->name), '#invoke:') === 0) {
-            $this->name = str_replace('#invoke:#invoke:', '#invoke:', $this->name); // TODO - find where/why
-            $add_pipe = false;
-            $wikiname = $this->wikiname();
-            if (
-                in_array($wikiname, TEMPLATES_WE_PROCESS, true) ||
-                in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS, true) ||
-                in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS, true) ||
-                in_array($wikiname, TEMPLATES_WE_RENAME, true) ||
-                mb_strpos($wikiname, 'cite ') === 0
-            ) {
-                $add_pipe = true;
-            }
-            if ($wikiname === 'citation') {
-                $add_pipe = false; // Do not double pipe this one - actually it is "cite"
-            }
-            $joined = str_replace(["\t", "\n", "\r", " "], '', $this->join_params());
-            if (mb_strpos($joined, "||") === 0) {
-                $add_pipe = false;
-            }
-            if ($add_pipe) {
-                return '{{' . $this->name . '|' . $this->join_params() . '}}';
-            }
-        }
+        $this->name = str_replace('#invoke:#invoke:', '#invoke:', $this->name); // TODO - find where/why
         return '{{' . $this->name . $this->join_params() . '}}';
     }
 
