@@ -77,7 +77,7 @@ final class Template
         if ($pipe_pos) {
             $name = mb_trim(mb_substr($text, 2, $pipe_pos - 2));
             if (mb_strpos($name, '#invoke:') === 0) {
-                if (strpos($name, ' ') !== false) {
+                if (mb_strpos($name, ' ') !== false) {
                     $pipe_pos = false;
                 } else {
                     $pipe_pos = mb_strpos($text, '|', $pipe_pos + 2);
