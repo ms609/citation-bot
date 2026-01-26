@@ -219,7 +219,6 @@ final class Template
             }
         }
         if (mb_stripos(mb_trim($this->name), '#invoke:') === 0) {
-            $this->name = str_replace('cite', 'Cite', $this->name);
             $this->name = str_replace('#invoke:#invoke:', '#invoke:', $this->name); // TODO - find where/why
             $add_pipe = false;
             $wikiname = $this->wikiname();
@@ -1889,7 +1888,7 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
-                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxi'])) {
+                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'])) {
                     return false;
                 }
                 if (preg_match(REGEXP_DOI, $value, $match)) {
