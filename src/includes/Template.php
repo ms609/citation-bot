@@ -1877,7 +1877,7 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
-                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxi'])) {
+                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'])) {
                     return false;
                 }
                 if (preg_match(REGEXP_DOI, $value, $match)) {
