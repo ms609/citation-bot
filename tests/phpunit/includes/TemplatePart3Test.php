@@ -1641,7 +1641,7 @@ EP - 999 }}';
     public function testInvoke7(): void {
         $text = "{{#invoke:Cite|dummy\n\t\r | \n\r\t |\n\r\t Y=X}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame(addcslashes($text), addcslashes($expanded->parsed_text()));
+        $this->assertSame(addcslashes($text, '\n\t\r'), addcslashes($expanded->parsed_text(), '\n\t\r'));
     }
 
     public function testInvoke8(): void {
