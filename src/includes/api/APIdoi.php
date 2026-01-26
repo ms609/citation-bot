@@ -638,6 +638,8 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
         return null;
     }
 
+    $doi = preg_replace('~v\d+$~', '', $doi); // Remove trailing versions
+
     // Validate server parameter to prevent SSRF - use explicit literal values
     if ($server === 'biorxiv') {
         $api_server = 'biorxiv';
