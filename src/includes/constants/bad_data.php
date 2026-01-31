@@ -52,7 +52,6 @@ const HAS_NO_ISSUE = [
 const PREFER_VOLUMES = [
     'illinois classical studies',
     'novartis foundation symposia',
-
 ];
 
 const PREFER_ISSUES = [
