@@ -46,6 +46,7 @@ const HAS_NO_ISSUE = [
     "bulletin de l'ecole française d'extrême-orient",
     "cahiers d'extrême-asie",
     'yeats annual',
+    'novartis foundation symposia',
 ];
 /** When issue=volume, drop issue. JSTOR calls volumes issues. */
 const PREFER_VOLUMES = ['illinois classical studies'];
@@ -105,8 +106,10 @@ const BAD_AUTHORS = [
     'goautomedia',
     'great britain',
     'guardian nigeria',
+    'hibiscus matters'
     'kompas cyber media',
     'kpopstarz',
+    'local matters'
     'missing',
     'natural history museum bern',
     'news agencies',
