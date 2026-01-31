@@ -106,10 +106,10 @@ const BAD_AUTHORS = [
     'goautomedia',
     'great britain',
     'guardian nigeria',
-    'hibiscus matters'
+    'hibiscus matters',
     'kompas cyber media',
     'kpopstarz',
-    'local matters'
+    'local matters',
     'missing',
     'natural history museum bern',
     'news agencies',
