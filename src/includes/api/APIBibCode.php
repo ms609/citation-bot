@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 final class AdsAbsControl {
-    private const MAX_CACHE_SIZE = 50000;
+    private const int MAX_CACHE_SIZE = 50000;
     private static int $big_counter = 0;
     private static int $small_counter = 0;
     /** @var array<string> */
