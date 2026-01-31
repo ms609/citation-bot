@@ -46,7 +46,6 @@ const HAS_NO_ISSUE = [
     "bulletin de l'ecole française d'extrême-orient",
     "cahiers d'extrême-asie",
     'yeats annual',
-    
 ];
 /** When issue=volume, drop issue. JSTOR calls volumes issues. */
 const PREFER_VOLUMES = [
