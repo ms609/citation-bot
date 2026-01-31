@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
-
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0): int {
     // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
     // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
@@ -19,6 +17,7 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
  * @param array<int, int|string|bool|array<int, string>> $ops
  */
 function bot_curl_init(float $time, array $ops): CurlHandle {
+    const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
     $ch = curl_init();
     if ($ch === false) {
         report_error("curl_init failure"); // @codeCoverageIgnore
