@@ -23,40 +23,40 @@ abstract class WikiThings {
 
 final class Comment extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
-    public const string REGEXP = ['~<!--[^\<\>\-]*?-->~us', '~<!--[\s\S]*?-->~us'];
+    public const array REGEXP = ['~<!--[^\<\>\-]*?-->~us', '~<!--[\s\S]*?-->~us'];
 }
 
 final class Nowiki extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
-    public const string REGEXP = ['~<nowiki>[^\<\>]*?</nowiki>~us', '~<nowiki>[\s\S]*?</nowiki>~us'];
+    public const array REGEXP = ['~<nowiki>[^\<\>]*?</nowiki>~us', '~<nowiki>[\s\S]*?</nowiki>~us'];
 }
 
 final class Chemistry extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
-    public const string REGEXP = ['~<chem>[\s\S]*?</chem>~us'];
+    public const array REGEXP = ['~<chem>[\s\S]*?</chem>~us'];
 }
 
 final class Mathematics extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-    public const string REGEXP = ['~<math(?:| chem)(?:| display=.inline.|display=.block.)>[\s\S]*?</math>~us'];
+    public const array REGEXP = ['~<math(?:| chem)(?:| display=.inline.|display=.block.)>[\s\S]*?</math>~us'];
 }
 
 final class Musicscores extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
-    public const string REGEXP = ['~<score>[\s\S]*?</score>~us'];
+    public const array REGEXP = ['~<score>[\s\S]*?</score>~us'];
 }
 
 final class Preformated extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
-    public const string REGEXP = ['~<pre>[\s\S]*?</pre>~us'];
+    public const array REGEXP = ['~<pre>[\s\S]*?</pre>~us'];
 }
 
 final class SingleBracket extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
-    public const string REGEXP = ['~(?<!\{)\{[^\{\}]+\}(?!\})~us'];
+    public const array REGEXP = ['~(?<!\{)\{[^\{\}]+\}(?!\})~us'];
 }
 
 final class TripleBracket extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TRIPLE_BRACKET %s # # #';
-    public const string REGEXP = ['~(?<!\{)\{\{\{[^\{\}]+\}\}\}(?!\})~us'];
+    public const array REGEXP = ['~(?<!\{)\{\{\{[^\{\}]+\}\}\}(?!\})~us'];
 }
