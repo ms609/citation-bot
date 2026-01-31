@@ -46,10 +46,13 @@ const HAS_NO_ISSUE = [
     "bulletin de l'ecole française d'extrême-orient",
     "cahiers d'extrême-asie",
     'yeats annual',
-    'novartis foundation symposia',
+    
 ];
 /** When issue=volume, drop issue. JSTOR calls volumes issues. */
-const PREFER_VOLUMES = ['illinois classical studies'];
+const PREFER_VOLUMES = [
+    'illinois classical studies',
+    'novartis foundation symposia',
+];
 
 const PREFER_ISSUES = [
     'bulletin of the united states national museum',
