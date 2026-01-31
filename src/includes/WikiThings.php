@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 abstract class WikiThings {
     public const bool TREAT_IDENTICAL_SEPARATELY = false;  // The contents of theses items never get edited, so this is safe
-    private string|null $rawtext; // Uninitialized.  Will crash if read before set; which is good.
+    private string $rawtext; // Uninitialized.  Will crash if read before set; which is good.
 
     public function parse_text(string $text): void {
         $this->rawtext = $text;
