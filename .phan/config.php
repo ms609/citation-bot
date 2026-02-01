@@ -19,4 +19,3 @@ return [
         './src/includes/constants', './src/includes/api', './src/includes', './src', './vendor', './tests'
     ],
 ];
-
