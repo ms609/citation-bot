@@ -934,7 +934,7 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->make_citation($text);
         $template->tidy_parameter('publisher');
         $this->assertNull($template->get2('publisher'));
-        $this->assertSame('[[abc|abc]]', mb_strtolower($template->get2('journal'))); // Might "fix" Abc redirect to ABC
+        $this->assertSame('[[abc|abc]]', mb_strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
     }
 
     public function testRemoveAuthorLinks(): void {

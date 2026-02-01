@@ -1867,7 +1867,7 @@ EP - 999 }}';
 
         $this->assertSame(
             $expected_published_doi,
-            mb_strtolower($published_doi),
+            mb_strtolower((string) $published_doi),
             "API returned a published DOI but not the expected one.\n" .
             "Expected: $expected_published_doi\n" .
             "Got: $published_doi"
@@ -1878,7 +1878,7 @@ EP - 999 }}';
 
         $this->assertSame('cite journal', $expanded->wikiname(),
             'Template should be converted from cite bioRxiv to cite journal');
-        $this->assertSame($expected_published_doi, mb_strtolower($expanded->get2('doi')),
+        $this->assertSame($expected_published_doi, mb_strtolower($expanded->get('doi')),
             'Published DOI should be added to template');
         $this->assertSame('063172', $expanded->get2('biorxiv'),
             'Original bioRxiv parameter should be preserved (in numeric form as provided)');
