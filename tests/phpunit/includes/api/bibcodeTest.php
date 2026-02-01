@@ -387,7 +387,7 @@ final class bibcodeTest extends testBaseClass {
         ];
         expand_book_adsabs($template, $results->docs[0]);
         $this->assertSame('1958', $template->get2('date'));
-        $this->assertSame('structure and evolution of the stars', mb_strtolower($template->get2('title')));
+        $this->assertSame('structure and evolution of the stars', mb_strtolower($template->get('title')));
     }
 
     public function testBibCodeCache1a(): void {
