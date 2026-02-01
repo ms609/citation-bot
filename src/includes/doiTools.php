@@ -8,8 +8,8 @@ declare(strict_types=1);
  */
 final class HandleCache {
     // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-    private const MAX_CACHE_SIZE = 100000;
-    public const MAX_HDL_SIZE = 1024;
+    private const int MAX_CACHE_SIZE = 100000;
+    public const int MAX_HDL_SIZE = 1024;
 
     /** @var array<bool> */
     public static array $cache_active = [];             // DOI is in CrossRef, no claims if it still works.

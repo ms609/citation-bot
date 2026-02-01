@@ -21,9 +21,9 @@ function query_url_api(array $_ids, array &$templates): void { // Pointer to sav
 }
 
 final class Zotero {
-    private const ZOTERO_GIVE_UP = 5;
-    private const ZOTERO_SKIPS = 100;
-    private const ERROR_DONE = 'ERROR_DONE';
+    private const int ZOTERO_GIVE_UP = 5;
+    private const int ZOTERO_SKIPS = 100;
+    private const string ERROR_DONE = 'ERROR_DONE';
     private static int $zotero_announced = 0;
     private static CurlHandle $zotero_ch;
     private static int $zotero_failures_count = 0;
