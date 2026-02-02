@@ -243,8 +243,8 @@ final class textToolsTest extends testBaseClass {
         $future_uk = date('j F Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_uk));
 
-        // Past date (should be accepted)
-        $this->assertSame('15 January 2020', tidy_date('15 January 2020'));
+        // Past date (should be accepted and normalized to ISO format)
+        $this->assertSame('2020-01-15', tidy_date('15 January 2020'));
     }
 
     public function testTidyDateFormatUSStyle(): void {
@@ -253,8 +253,8 @@ final class textToolsTest extends testBaseClass {
         $future_us = date('F j, Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_us));
 
-        // Past date (should be accepted)
-        $this->assertSame('January 15, 2020', tidy_date('January 15, 2020'));
+        // Past date (should be accepted and normalized to ISO format)
+        $this->assertSame('2020-01-15', tidy_date('January 15, 2020'));
     }
 
     public function testTidyDateFormatShortMonth(): void {
@@ -267,9 +267,9 @@ final class textToolsTest extends testBaseClass {
         $future_us_short = date('M j, Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_us_short));
 
-        // Past dates (should be accepted)
-        $this->assertSame('15 Jan 2020', tidy_date('15 Jan 2020'));
-        $this->assertSame('Jan 15, 2020', tidy_date('Jan 15, 2020'));
+        // Past dates (should be accepted and normalized to ISO format)
+        $this->assertSame('2020-01-15', tidy_date('15 Jan 2020'));
+        $this->assertSame('2020-01-15', tidy_date('Jan 15, 2020'));
     }
 
     public function testRemoveComments(): void {
