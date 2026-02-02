@@ -19,7 +19,7 @@ return [
         './vendor/mediawiki', './vendor/phpunit', './src/includes/constants', './src/includes/api', './src/includes', './src', './tests'
     ],
     // Maximum array elements per level (default: 256) - our large data arrays have very consistent styles within themselves
-    'ast_trim_max_elements_per_level' => 128,
+    'ast_trim_max_elements_per_level' => 256,
 
     // Maximum total elements across all levels (default: 512) - effectively infinite value
     'ast_trim_max_total_elements' => 16348,
