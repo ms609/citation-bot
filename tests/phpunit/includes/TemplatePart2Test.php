@@ -2193,6 +2193,15 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('issue'));
     }
 
+    public function testRemoveExistingIssueFromCiteBook(): void {
+        // Test that existing issue parameter is removed from cite book during final_tidy
+        $text = "{{cite book|title=Test Book|issue=Foundations of Quantum Theory}}";
+        $template = $this->make_citation($text);
+        $this->assertSame('Foundations of Quantum Theory', $template->get2('issue'));
+        $template->final_tidy();
+        $this->assertNull($template->get2('issue'));
+    }
+
     public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
         // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
         // Verifies that journal and work parameters are blocked from being added

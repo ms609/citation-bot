@@ -6289,6 +6289,11 @@ final class Template
                     report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal') . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' . $this->get('isbn')));
                 }
             }
+            // Remove issue parameter from cite book as it is not supported
+            if ($this->wikiname() === 'cite book' && $this->has('issue') && !$this->blank('issue')) {
+                report_forget('Cite book does not support issue parameter, removing: ' . echoable($this->get('issue')));
+                $this->forget('issue');
+            }
             if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
                 // Remove blank stuff that will most likely never get filled in
                 $this->forget('issue');
