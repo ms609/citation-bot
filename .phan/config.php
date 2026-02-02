@@ -18,12 +18,12 @@ return [
     'directory_list' => [
         './vendor/mediawiki', './vendor/phpunit', './src/includes/constants', './src/includes/api', './src/includes', './src', './tests'
     ],
-    // Maximum array elements per level (default: 256)
+    // Maximum array elements per level (default: 256) - our large data arrays have very consistent styles within themselves
     'ast_trim_max_elements_per_level' => 128,
 
-    // Maximum total elements across all levels (default: 512)
-    'ast_trim_max_total_elements' => 5096,
+    // Maximum total elements across all levels (default: 512) - effectively infinite value
+    'ast_trim_max_total_elements' => 16348,
 
-    // Maximum union set size (default: 1024)
-    'max_union_type_set_size' => 2048,
+    // Maximum union set size (default: 1024) - effectively infinite value
+    'max_union_type_set_size' => 16348,
 ];
