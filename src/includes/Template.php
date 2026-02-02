@@ -1620,6 +1620,9 @@ final class Template
                     return false;
                 }
                 $temp_string = mb_strtolower($this->get('journal'));
+                if ($temp_string === '') {
+                    $temp_string = mb_strtolower($this->get('series'));  // Also check series for cite book
+                }
                 if (mb_substr($temp_string, 0, 2) === "[[" && mb_substr($temp_string, -2) === "]]") {
                     // Wikilinked journal title
                     $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -5697,6 +5700,9 @@ final class Template
                             return;
                         }
                         $temp_string = mb_strtolower($this->get('journal'));
+                        if ($temp_string === '') {
+                            $temp_string = mb_strtolower($this->get('series'));  // Also check series for cite book
+                        }
                         if (mb_substr($temp_string, 0, 2) === "[[" && mb_substr($temp_string, -2) === "]]") {
                             // Wikilinked journal title
                             $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
