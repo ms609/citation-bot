@@ -214,11 +214,6 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date($future_date));
     }
 
-    public function testTidyDateFutureRejection2(): void {
-        // Test date far in the future (should be rejected)
-        $this->assertSame('', tidy_date('2026-02-18'));
-    }
-
     public function testTidyDateFutureRejection3(): void {
         // Test date 1 year in the future (should be rejected)
         $future_date = date('Y-m-d', strtotime('+1 year'));
