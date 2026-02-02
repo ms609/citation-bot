@@ -19,9 +19,9 @@ return [
     ],
     
     /**
-     * This will get almost all of our large arrays completely used
+     * This will get almost all of our large arrays completely used - not the null hdl ones
      */
-    'ast_trim_max_elements_per_level' => 5000,
+    'ast_trim_max_elements_per_level' => 10000,
  
     /**
      * Set these to effectivelly infinite, since defaults result in false positives
