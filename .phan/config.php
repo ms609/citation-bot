@@ -19,9 +19,9 @@ return [
     ],
     
     /**
-     * Our large data arrays are very consistent within themselves, so no need to change default
+     * This will get almost all of our large arrays completely used
      */
-    'ast_trim_max_elements_per_level' => 256,
+    'ast_trim_max_elements_per_level' => 5000,
  
     /**
      * Set these to effectivelly infinite, since defaults result in false positives
