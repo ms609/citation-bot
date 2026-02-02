@@ -243,7 +243,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date(date('j F Y', strtotime('+1 year'))));
         $this->assertSame('', tidy_date(date('F j, Y', strtotime('+1 year'))));
         $this->assertSame('', tidy_date(date('j M Y', strtotime('+1 year'))));
-        
+
         // Past dates should be accepted and normalized to ISO format
         $this->assertSame('2020-01-15', tidy_date('15 January 2020'));  // UK format
         $this->assertSame('2020-01-15', tidy_date('January 15, 2020')); // US format
