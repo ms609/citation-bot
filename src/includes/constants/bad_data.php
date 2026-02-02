@@ -13423,6 +13423,7 @@ const DOI_FREE_PREFIX = [
     '10.1016/j.ophoto',
     '10.1016/j.opresp',
     '10.1016/j.osep',
+    '10.1016/j.patter',
     '10.1016/j.physo',
     '10.1016/j.proche',
     '10.1016/j.rcro',
