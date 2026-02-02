@@ -1163,6 +1163,7 @@ const NO_DATE_WEBSITES = [
     'portal.dnb.de',
     'pro-football-reference.com',
     'pro-w-wave.com',
+    'qmul.ac.uk',
     'riaa.com/gold-platinum',
     'rottentomatoes.com',
     'shop.schizoidshop.com',
