@@ -1221,7 +1221,7 @@ const ZOTERO_AVOID_REGEX = [
     'olympics\.com', // Fails 100%
     'pep\-web\.org', // Does not parse very well at all
     'pressreader\.com', // Bad titles
-    'qmul\.ac\.uk', // Redirects cause bad dates
+    'qmul\.ac\.uk', // Redirects cause data from other pages to be returned
     'radiomap\.eu', // Fails 100%
     'scholarlycommons\.pacific\.edu\/euler\-works', // returns journal reference to works, not the actual work
     'seapower\-digital\.com', // highjacked
