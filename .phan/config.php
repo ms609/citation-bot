@@ -8,22 +8,24 @@ declare(strict_types=1);
  * after this file is read.
  */
 return [
-    // A directory list that defines files that will be excluded
-    // from static analysis, but whose class and method
-    // information should be included.
-    //
+    /**
+     * Excluded from static analysis, but whose class and method information are used
+     */
     'exclude_analysis_directory_list' => [
         './vendor'
     ],
     'directory_list' => [
         './vendor/mediawiki', './vendor/phpunit', './src/includes/constants', './src/includes/api', './src/includes', './src', './tests'
     ],
-    // Maximum array elements per level (default: 256)
-    'ast_trim_max_elements_per_level' => 128,
-
-    // Maximum total elements across all levels (default: 512)
-    'ast_trim_max_total_elements' => 5096,
-
-    // Maximum union set size (default: 1024)
-    'max_union_type_set_size' => 2048,
+    
+    /**
+     * Our large data arrays are very consistent within themselves, so no need to change default
+     */
+    'ast_trim_max_elements_per_level' => 256,
+ 
+    /**
+     * Set these to effectivelly infinite, since defaults result in false positives
+     */
+    'ast_trim_max_total_elements' => 500000,
+    'max_union_type_set_size' => 500000,
 ];
