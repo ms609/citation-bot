@@ -745,6 +745,9 @@ class Page {
         if ($this->modifications["na"]) {
             $auto_summary .= 'Removed invalid "n/a" parameter values. ';
         }
+        if ($this->modifications["issue_citebook"]) {
+            $auto_summary .= 'Removed unsupported issue parameter from cite book. ';
+        }
         if ($this->odnb_sub_removed) {
             $auto_summary .= 'Removed ODNBsub template. ';
         }
@@ -1053,5 +1056,6 @@ class Page {
         $this->modifications['names'] = false;
         $this->modifications['ref'] = false;
         $this->modifications['na'] = false;
+        $this->modifications['issue_citebook'] = false;
     }
 }

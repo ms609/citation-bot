@@ -47,6 +47,7 @@ final class Template
     private bool $mod_names = false;
     private bool $mod_ref = false;
     private bool $mod_na = false;
+    private bool $mod_issue_citebook = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -6292,6 +6293,7 @@ final class Template
             // Remove issue parameter from cite book as it is not supported
             if ($this->wikiname() === 'cite book' && $this->has('issue') && !$this->blank('issue')) {
                 report_forget('Cite book does not support issue parameter, removing: ' . echoable($this->get('issue')));
+                $this->mod_issue_citebook = true;
                 $this->forget('issue');
             }
             if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
@@ -7167,6 +7169,7 @@ final class Template
         $ret['names'] = $this->mod_names;
         $ret['ref'] = $this->mod_ref;
         $ret['na'] = $this->mod_na;
+        $ret['issue_citebook'] = $this->mod_issue_citebook;
         return $ret;
     }
 
