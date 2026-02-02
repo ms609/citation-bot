@@ -237,6 +237,41 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('2020-01-15', tidy_date('2020-01-15'));
     }
 
+    public function testTidyDateFormatUKStyle(): void {
+        // Test UK/European format: Day Month Year
+        // Future date (should be rejected)
+        $future_uk = date('j F Y', strtotime('+1 year'));
+        $this->assertSame('', tidy_date($future_uk));
+        
+        // Past date (should be accepted)
+        $this->assertSame('15 January 2020', tidy_date('15 January 2020'));
+    }
+
+    public function testTidyDateFormatUSStyle(): void {
+        // Test US format: Month Day, Year
+        // Future date (should be rejected)
+        $future_us = date('F j, Y', strtotime('+1 year'));
+        $this->assertSame('', tidy_date($future_us));
+        
+        // Past date (should be accepted)
+        $this->assertSame('January 15, 2020', tidy_date('January 15, 2020'));
+    }
+
+    public function testTidyDateFormatShortMonth(): void {
+        // Test short month names
+        // Future date UK style (should be rejected)
+        $future_uk_short = date('j M Y', strtotime('+1 year'));
+        $this->assertSame('', tidy_date($future_uk_short));
+        
+        // Future date US style (should be rejected)
+        $future_us_short = date('M j, Y', strtotime('+1 year'));
+        $this->assertSame('', tidy_date($future_us_short));
+        
+        // Past dates (should be accepted)
+        $this->assertSame('15 Jan 2020', tidy_date('15 Jan 2020'));
+        $this->assertSame('Jan 15, 2020', tidy_date('Jan 15, 2020'));
+    }
+
     public function testRemoveComments(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
