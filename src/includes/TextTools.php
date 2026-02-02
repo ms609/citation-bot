@@ -727,7 +727,7 @@ function tidy_date(string $string): string { // Wrapper to change all pre-1900 d
     // Check for future dates (more than 3 days ahead)
     $three_days_future = time() + 259200; // 3 days in seconds
     if ($time > $three_days_future) {
-        report_warning("Rejected future date: " . echoable($string) . ". Dates cannot be more than 3 days in the future.");
+        report_warning("Rejected future date: " . echoable($string) . ". Dates cannot be in the future.");
         return '';
     }
     $old = strtotime('1 January 1900');
