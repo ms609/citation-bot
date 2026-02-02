@@ -19,13 +19,14 @@ return [
     ],
     
     /**
-     * Our large data arrays are very consistent within themselves, so no need to change default
+     * This uses a 150MB more, and is probably not needed, but this gets 100% testing
+     * This should not really be needed, since our arrays are consistent, but we do not want to assume that
      */
-    'ast_trim_max_elements_per_level' => 256,
+    'ast_trim_max_elements_per_level' => 500000,
  
     /**
-     * Set these to effectivelly infinite, since defaults result in false positives
+     * Set these to effectivelly infinite, since defaults result in false positives as data is lost
      */
-    'ast_trim_max_total_elements' => 500000,
-    'max_union_type_set_size' => 500000,
+    'ast_trim_max_total_elements' => 5000000,
+    'max_union_type_set_size' => 5000000,
 ];
