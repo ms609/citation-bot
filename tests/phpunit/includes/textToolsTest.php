@@ -242,7 +242,7 @@ final class textToolsTest extends testBaseClass {
         // Future date (should be rejected)
         $future_uk = date('j F Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_uk));
-        
+
         // Past date (should be accepted)
         $this->assertSame('15 January 2020', tidy_date('15 January 2020'));
     }
@@ -252,7 +252,7 @@ final class textToolsTest extends testBaseClass {
         // Future date (should be rejected)
         $future_us = date('F j, Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_us));
-        
+
         // Past date (should be accepted)
         $this->assertSame('January 15, 2020', tidy_date('January 15, 2020'));
     }
@@ -262,11 +262,11 @@ final class textToolsTest extends testBaseClass {
         // Future date UK style (should be rejected)
         $future_uk_short = date('j M Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_uk_short));
-        
+
         // Future date US style (should be rejected)
         $future_us_short = date('M j, Y', strtotime('+1 year'));
         $this->assertSame('', tidy_date($future_us_short));
-        
+
         // Past dates (should be accepted)
         $this->assertSame('15 Jan 2020', tidy_date('15 Jan 2020'));
         $this->assertSame('Jan 15, 2020', tidy_date('Jan 15, 2020'));
