@@ -29,7 +29,7 @@
     },
     "scripts": {
         "coverage-report": "php -d memory_limit=1G vendor/bin/phpunit --enforce-time-limit --default-time-limit 13000 --coverage-html coverage",
-        "phan": "php -d memory_limit=1G vendor/bin/phan --analyze-twice",
+        "phan": "php -d memory_limit=2G vendor/bin/phan --analyze-twice",
         "phpcbf": "phpcbf -p -d memory_limit=1G --warning-severity=0",
         "phpcs": "phpcs -p -s -d memory_limit=1G --warning-severity=0",
         "phplint": "php -d memory_limit=1G vendor/bin/phplint --exclude=vendor --no-interaction -vv ./",
