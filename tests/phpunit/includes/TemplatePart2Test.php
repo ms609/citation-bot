@@ -2185,6 +2185,14 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertTrue($template->add_if_new('encyclopedia', 'Encyclopedia Britannica'));
     }
 
+    public function testBlockIssueInCiteBook(): void {
+        // Test that issue parameter is blocked in cite book
+        $text = "{{cite book}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('issue', 'Foundations of Quantum Theory'));
+        $this->assertNull($template->get2('issue'));
+    }
+
     public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
         // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
         // Verifies that journal and work parameters are blocked from being added
