@@ -34,7 +34,7 @@ const HAS_NO_VOLUME = [
     'library and archives canada',
 ];
 /**
- * Some journals and book series have volumes only, no issue numbers. 
+ * Some journals and book series have volumes only, no issue numbers.
  * Oceanic linguistics special publications has the problem that issues will not show up within templates.
  * Applies to both journal= and series= parameters.
  */
