@@ -1621,7 +1621,7 @@ final class Template
                 }
                 $temp_string = mb_strtolower($this->get('journal'));
                 if ($temp_string === '') {
-                    $temp_string = mb_strtolower($this->get('series'));  // Also check series for cite book
+                    $temp_string = mb_strtolower($this->get('series'));
                 }
                 if (mb_substr($temp_string, 0, 2) === "[[" && mb_substr($temp_string, -2) === "]]") {
                     // Wikilinked journal title
@@ -5701,7 +5701,7 @@ final class Template
                         }
                         $temp_string = mb_strtolower($this->get('journal'));
                         if ($temp_string === '') {
-                            $temp_string = mb_strtolower($this->get('series'));  // Also check series for cite book
+                            $temp_string = mb_strtolower($this->get('series'));
                         }
                         if (mb_substr($temp_string, 0, 2) === "[[" && mb_substr($temp_string, -2) === "]]") {
                             // Wikilinked journal title
