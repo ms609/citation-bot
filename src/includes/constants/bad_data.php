@@ -1163,7 +1163,6 @@ const NO_DATE_WEBSITES = [
     'portal.dnb.de',
     'pro-football-reference.com',
     'pro-w-wave.com',
-    'qmul.ac.uk',
     'riaa.com/gold-platinum',
     'rottentomatoes.com',
     'shop.schizoidshop.com',
@@ -1222,6 +1221,7 @@ const ZOTERO_AVOID_REGEX = [
     'olympics\.com', // Fails 100%
     'pep\-web\.org', // Does not parse very well at all
     'pressreader\.com', // Bad titles
+    'qmul\.ac\.uk', // Redirects cause bad dates
     'radiomap\.eu', // Fails 100%
     'scholarlycommons\.pacific\.edu\/euler\-works', // returns journal reference to works, not the actual work
     'seapower\-digital\.com', // highjacked
