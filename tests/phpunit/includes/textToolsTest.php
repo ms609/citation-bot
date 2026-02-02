@@ -207,6 +207,53 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('-0003-10-22'));
     }
 
+    public function testTidyDateFutureRejection1(): void {
+        new TestPage(); // Fill page name with test name for debugging
+        // Test date 4 days in the future (should be rejected)
+        $future_date = date('Y-m-d', strtotime('+4 days'));
+        $this->assertSame('', tidy_date($future_date));
+    }
+
+    public function testTidyDateFutureRejection2(): void {
+        // Test date far in the future (should be rejected)
+        $this->assertSame('', tidy_date('2026-02-18'));
+    }
+
+    public function testTidyDateFutureRejection3(): void {
+        // Test date 1 year in the future (should be rejected)
+        $future_date = date('Y-m-d', strtotime('+1 year'));
+        $this->assertSame('', tidy_date($future_date));
+    }
+
+    public function testTidyDateFutureAcceptance1(): void {
+        // Test date exactly 3 days in the future (should be accepted)
+        $three_days_future = date('Y-m-d', strtotime('+3 days'));
+        $this->assertNotSame('', tidy_date($three_days_future));
+    }
+
+    public function testTidyDateFutureAcceptance2(): void {
+        // Test date 2 days in the future (should be accepted)
+        $two_days_future = date('Y-m-d', strtotime('+2 days'));
+        $this->assertNotSame('', tidy_date($two_days_future));
+    }
+
+    public function testTidyDateFutureAcceptance3(): void {
+        // Test date 1 day in the future (should be accepted)
+        $one_day_future = date('Y-m-d', strtotime('+1 day'));
+        $this->assertNotSame('', tidy_date($one_day_future));
+    }
+
+    public function testTidyDateCurrentAcceptance(): void {
+        // Test current date (should be accepted)
+        $current_date = date('Y-m-d');
+        $this->assertNotSame('', tidy_date($current_date));
+    }
+
+    public function testTidyDatePastAcceptance(): void {
+        // Test past date (should be accepted)
+        $this->assertSame('2020-01-15', tidy_date('2020-01-15'));
+    }
+
     public function testRemoveComments(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
