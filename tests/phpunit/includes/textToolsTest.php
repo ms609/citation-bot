@@ -373,6 +373,33 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
 
+    public function testC1QuoteNormalization1(): void {
+        // Test normalization of C1 control characters 0x91-0x94
+        $input = "\x91smart\x92 and \x93test\x94";
+        $expected = "'smart' and \"test\"";
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization2(): void {
+        // Test C1 control characters in a more realistic context
+        $input = "The \x91Citation Bot\x92 handles \x93Windows-1252\x94 encoding";
+        $expected = "The 'Citation Bot' handles \"Windows-1252\" encoding";
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization3(): void {
+        // Test that empty strings are handled correctly
+        $this->assertSame('', straighten_quotes('', true));
+        $this->assertSame('', straighten_quotes('', false));
+    }
+
+    public function testC1QuoteNormalization4(): void {
+        // Test with do_more=false
+        $input = "\x91test\x92";
+        $expected = "'test'";
+        $this->assertSame($expected, straighten_quotes($input, false));
+    }
+
     /**
      * This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
      *
@@ -402,33 +429,6 @@ final class textToolsTest extends testBaseClass {
     public function testURLInTitle(): void {
         $text = '[http://dfadfd]';
         $this->assertSame($text, sanitize_string($text));
-    }
-
-    public function testNormalizeC1Quotes(): void {
-        // Test normalization of C1 control characters 0x91-0x94
-        $input = "\x91smart\x92 and \x93test\x94";
-        $expected = "'smart' and \"test\"";
-        $this->assertSame($expected, sanitize_string($input));
-    }
-
-    public function testNormalizeC1QuotesInContext(): void {
-        // Test C1 control characters in a more realistic context
-        $input = "The \x91Citation Bot\x92 handles \x93Windows-1252\x94 encoding";
-        $expected = "The 'Citation Bot' handles \"Windows-1252\" encoding";
-        $this->assertSame($expected, sanitize_string($input));
-    }
-
-    public function testNormalizeC1QuotesEmpty(): void {
-        // Test that empty strings are handled correctly
-        $this->assertSame('', sanitize_string(''));
-        $this->assertSame('', normalize_c1_quotes(''));
-    }
-
-    public function testNormalizeC1QuotesOnly(): void {
-        // Test the normalize_c1_quotes function directly
-        $input = "\x91\x92\x93\x94";
-        $expected = "''\"\"";
-        $this->assertSame($expected, normalize_c1_quotes($input));
     }
 
     public function testTrailingPeriods1(): void {

@@ -182,21 +182,6 @@ function restore_italics (string $text): string {
     return $text; // @codeCoverageIgnore
 }
 
-function normalize_c1_quotes(string $str): string {
-    // Normalize Windows-1252/ISO-8859-1 smart quotes encoded as C1 control characters
-    // 0x91 (U+0091) → ' (ASCII single quote)
-    // 0x92 (U+0092) → ' (ASCII single quote)
-    // 0x93 (U+0093) → " (ASCII double quote)
-    // 0x94 (U+0094) → " (ASCII double quote)
-    // These bytes are often misinterpreted C1 control characters from Windows-1252 encoding
-    if ($str === '') {
-        return '';
-    }
-    $str = safe_preg_replace('~[\x91\x92]~', "'", $str);
-    $str = safe_preg_replace('~[\x93\x94]~', '"', $str);
-    return $str;
-}
-
 function sanitize_string(string $str): string {
     // ought only be applied to newly-found data.
     if ($str === '') {
@@ -208,8 +193,6 @@ function sanitize_string(string $str): string {
     if (preg_match('~^\[http.+\]$~', $str)) {
         return $str; // It is a link out
     }
-    // Normalize C1 control characters early in the pipeline
-    $str = normalize_c1_quotes($str);
     $replacement = [];
     $placeholder = [];
     $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
@@ -407,6 +390,12 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     if ($str === '') {
         return '';
     }
+    // Normalize Windows-1252/ISO-8859-1 smart quotes encoded as C1 control characters
+    // 0x91, 0x92 (misinterpreted as U+0091, U+0092) → ' (ASCII single quote)
+    // 0x93, 0x94 (misinterpreted as U+0093, U+0094) → " (ASCII double quote)
+    // These bytes are often misinterpreted C1 control characters from Windows-1252 encoding
+    $str = safe_preg_replace('~[\x91\x92]~', "'", $str);
+    $str = safe_preg_replace('~[\x93\x94]~', '"', $str);
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
