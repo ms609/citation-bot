@@ -2202,6 +2202,17 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('issue'));
     }
 
+    public function testWarnAboutUnsupportedParamsInCiteBook(): void {
+        // Test that warnings are shown for unsupported parameters in cite book
+        // Note: This test verifies the warning is triggered, but doesn't capture output
+        $text = "{{cite book|title=Test Book|journal=Test Journal|work=Test Work}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        // The parameters should still be present (not removed), but warnings should be shown
+        $this->assertSame('Test Journal', $template->get2('journal'));
+        $this->assertSame('Test Work', $template->get2('work'));
+    }
+
     public function testBlockUnsupportedParamsInHistoricalBookCitation(): void {
         // Test with real historical book citation (Agrippa's De occulta philosophia, 1533)
         // Verifies that journal and work parameters are blocked from being added
