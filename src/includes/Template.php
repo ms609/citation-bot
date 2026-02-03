@@ -47,6 +47,7 @@ final class Template
     private bool $mod_names = false;
     private bool $mod_ref = false;
     private bool $mod_na = false;
+    private bool $mod_issue_citebook = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -6295,6 +6296,20 @@ final class Template
                     report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal') . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' . $this->get('isbn')));
                 }
             }
+            // Remove issue parameter from cite book as it is not supported
+            if ($this->wikiname() === 'cite book' && $this->has('issue') && !$this->blank('issue')) {
+                report_forget('Cite book does not support issue parameter, removing: ' . echoable($this->get('issue')));
+                $this->mod_issue_citebook = true;
+                $this->forget('issue');
+            }
+            // Warn about other unsupported parameters in cite book that are present but not automatically removed
+            if ($this->wikiname() === 'cite book') {
+                foreach (CITE_BOOK_UNSUPPORTED_PARAMS as $unsupported_param) {
+                    if ($unsupported_param !== 'issue' && $this->has($unsupported_param) && !$this->blank($unsupported_param)) {
+                        report_warning('Cite book template has unsupported parameter |' . echoable($unsupported_param) . '=' . echoable($this->get($unsupported_param)) . '| - consider reviewing');
+                    }
+                }
+            }
             if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
                 // Remove blank stuff that will most likely never get filled in
                 $this->forget('issue');
@@ -7168,6 +7183,7 @@ final class Template
         $ret['names'] = $this->mod_names;
         $ret['ref'] = $this->mod_ref;
         $ret['na'] = $this->mod_na;
+        $ret['issue_citebook'] = $this->mod_issue_citebook;
         return $ret;
     }
 

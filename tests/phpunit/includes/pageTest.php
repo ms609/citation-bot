@@ -83,6 +83,11 @@ final class pageTest extends testBaseClass {
         $this->assertSame('Altered pages. Formatted [[WP:ENDASH|dashes]]. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
+    public function testPageChangeSummary15(): void {
+        $page = $this->process_page('{{cite book|title=Test Book|issue=Some Issue}}');
+        $this->assertSame('Removed unsupported issue parameter from cite book. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    }
+
     public function testBotReadblocked(): void {
         $page = new TestPage();
         $page->get_text_from('User:Blocked Testing Account/readtest');

@@ -433,6 +433,7 @@ const CITE_BOOK_UNSUPPORTED_PARAMS = [
     'website',
     'newspaper',
     'magazine',
+    'issue',
 ];
 
 /** Parameters allowed by cite bioRxiv template per Wikipedia documentation at https://en.wikipedia.org/wiki/Template:Cite_bioRxiv */
