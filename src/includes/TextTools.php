@@ -390,12 +390,6 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     if ($str === '') {
         return '';
     }
-    // Normalize Windows-1252/ISO-8859-1 smart quotes encoded as C1 control characters
-    // 0x91, 0x92 (misinterpreted as U+0091, U+0092) → ' (ASCII single quote)
-    // 0x93, 0x94 (misinterpreted as U+0093, U+0094) → " (ASCII double quote)
-    // These bytes are often misinterpreted C1 control characters from Windows-1252 encoding
-    $str = safe_preg_replace('~[\x91\x92]~', "'", $str);
-    $str = safe_preg_replace('~[\x93\x94]~', '"', $str);
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
