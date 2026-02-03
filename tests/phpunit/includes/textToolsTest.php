@@ -404,6 +404,33 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame($text, sanitize_string($text));
     }
 
+    public function testNormalizeC1Quotes(): void {
+        // Test normalization of C1 control characters 0x91-0x94
+        $input = "\x91smart\x92 and \x93test\x94";
+        $expected = "'smart' and \"test\"";
+        $this->assertSame($expected, sanitize_string($input));
+    }
+
+    public function testNormalizeC1QuotesInContext(): void {
+        // Test C1 control characters in a more realistic context
+        $input = "The \x91Citation Bot\x92 handles \x93Windows-1252\x94 encoding";
+        $expected = "The 'Citation Bot' handles \"Windows-1252\" encoding";
+        $this->assertSame($expected, sanitize_string($input));
+    }
+
+    public function testNormalizeC1QuotesEmpty(): void {
+        // Test that empty strings are handled correctly
+        $this->assertSame('', sanitize_string(''));
+        $this->assertSame('', normalize_c1_quotes(''));
+    }
+
+    public function testNormalizeC1QuotesOnly(): void {
+        // Test the normalize_c1_quotes function directly
+        $input = "\x91\x92\x93\x94";
+        $expected = "''\"\"";
+        $this->assertSame($expected, normalize_c1_quotes($input));
+    }
+
     public function testTrailingPeriods1(): void {
         $this->assertSame('In the X.Y.', wikify_external_text('In the X.Y.'));
     }
