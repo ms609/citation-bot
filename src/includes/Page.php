@@ -714,6 +714,10 @@ class Page {
             if ($pos7 !== false && $this->modifications["ref"]) {
                 unset($this->modifications["deletions"][$pos7]);
             }
+            $pos8 = array_search('issue', $this->modifications["deletions"]);
+            if ($pos8 !== false && $this->modifications["issue_citebook"]) {
+                unset($this->modifications["deletions"][$pos8]);
+            }
             if ($pos1 !== false || $pos2 !== false || $pos3 !== false) {
                 if (mb_strpos($auto_summary, 'chapter-url') !== false) {
                     $auto_summary .= "Removed or converted URL. ";
