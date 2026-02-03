@@ -373,6 +373,61 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
 
+    public function testC1QuoteNormalization1(): void {
+        // Test normalization of actual C1 control characters (invalid UTF-8)
+        $input = "\x91smart\x92 and \x93test\x94";
+        $expected = "'smart' and \"test\"";
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization2(): void {
+        // Test that valid UTF-8 en-dash is NOT corrupted
+        $input = "Hartree–Fock Method"; // Contains UTF-8 en-dash (e2 80 93)
+        $expected = "Hartree–Fock Method"; // Should remain unchanged
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization3(): void {
+        // Test that Japanese characters are NOT corrupted
+        $input = "大学における研究"; // Contains bytes that include 91 in UTF-8 sequences
+        $expected = "大学における研究"; // Should remain unchanged
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization4(): void {
+        // Test that accented characters are NOT corrupted
+        $input = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ"; // Contains c3 91-94 sequences
+        $expected = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ"; // Should remain unchanged
+        $this->assertSame($expected, straighten_quotes($input, true));
+    }
+
+    public function testC1QuoteNormalization5(): void {
+        // Test empty string
+        $this->assertSame('', straighten_quotes('', true));
+        $this->assertSame('', normalize_c1_quotes(''));
+    }
+
+    public function testC1QuoteNormalization6(): void {
+        // Test C1 with do_more=false
+        $input = "\x91test\x92";
+        $expected = "'test'";
+        $this->assertSame($expected, straighten_quotes($input, false));
+    }
+
+    public function testC1QuoteNormalization7(): void {
+        // Test that normalize_c1_quotes can be called directly
+        $input = "Text \x91with C1\x92 bytes";
+        $expected = "Text 'with C1' bytes";
+        $this->assertSame($expected, normalize_c1_quotes($input));
+    }
+
+    public function testC1QuoteNormalization8(): void {
+        // Test that valid UTF-8 is not touched by normalize_c1_quotes
+        $input = "Valid UTF-8 with 'quotes' and –dashes";
+        $expected = "Valid UTF-8 with 'quotes' and –dashes";
+        $this->assertSame($expected, normalize_c1_quotes($input));
+    }
+
     /**
      * This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
      *
