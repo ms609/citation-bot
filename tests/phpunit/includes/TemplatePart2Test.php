@@ -1430,6 +1430,14 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame('3', $expanded->get2('volume'));
     }
 
+    public function testHasNoIssuesWithSeries(): void {
+        $text = "{{Cite book|series=novartis foundation symposia|issue=57|volume=57}}";
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('issue');
+        $this->AssertNull($expanded->get2('issue'));
+        $this->AssertSame('57', $expanded->get2('volume'));
+    }
+
     public function testTidyBadArchives_1(): void {
         $text = "{{Cite web|archive-url=https://www.britishnewspaperarchive.co.uk/account/register/dsfads}}";
         $expanded = $this->make_citation($text);
