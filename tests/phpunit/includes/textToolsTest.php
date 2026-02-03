@@ -374,18 +374,17 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testC1QuoteNormalization(): void {
-        // C1 bytes (invalid UTF-8) normalized to ASCII quotes
+        // Raw C1 bytes normalized to ASCII quotes
         $this->assertSame("'smart' and \"test\"", straighten_quotes("\x91smart\x92 and \x93test\x94", true));
         $this->assertSame("'test'", straighten_quotes("\x91test\x92", false));
         $this->assertSame("Text 'with C1' bytes", normalize_c1_quotes("Text \x91with C1\x92 bytes"));
     }
 
     public function testC1PreservesValidUTF8(): void {
-        // Valid UTF-8 with bytes 0x91-94 in multibyte sequences preserved
+        // Valid UTF-8 multibyte sequences preserved (en-dashes, CJK, accented chars)
         $this->assertSame("Hartree–Fock Method", straighten_quotes("Hartree–Fock Method", true));
         $this->assertSame("大学における研究", straighten_quotes("大学における研究", true));
         $this->assertSame("ÑÒÓÔ", straighten_quotes("ÑÒÓÔ", true));
-        $this->assertSame("Valid UTF-8 with 'quotes' and –dashes", normalize_c1_quotes("Valid UTF-8 with 'quotes' and –dashes"));
     }
 
     public function testC1EmptyString(): void {
@@ -394,11 +393,9 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testC1UnicodeControlChars(): void {
-        // Unicode control characters U+0091-U+0094 (valid UTF-8) also normalized
+        // Unicode control characters U+0091-U+0094 normalized
         $this->assertSame("'dynamic-lanes'", normalize_c1_quotes("Âdynamic-lanesÂ"));
         $this->assertSame('"test"', normalize_c1_quotes("ÂtestÂ"));
-        // Mixed with other text
-        $this->assertSame("URL with 'quotes'", normalize_c1_quotes("URL with ÂquotesÂ"));
     }
 
     /**

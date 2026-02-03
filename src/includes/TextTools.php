@@ -386,27 +386,19 @@ function strip_diacritics (string $input): string {
 }
 
 function normalize_c1_quotes(string $str): string {
-    // Normalize Windows-1252/ISO-8859-1 smart quotes encoded as C1 control characters
-    // Handles both:
-    // 1. Invalid UTF-8 (raw bytes 0x91-0x94 from Windows-1252)
-    // 2. Valid UTF-8 (Unicode U+0091-U+0094 control characters)
-    // 0x91/U+0091, 0x92/U+0092 → ' (ASCII single quote)
-    // 0x93/U+0093, 0x94/U+0094 → " (ASCII double quote)
+    // Normalize C1 control characters (0x91-0x94, U+0091-U+0094) to ASCII quotes
     if ($str === '') {
         return '';
     }
     
-    // First, handle invalid UTF-8 (raw C1 bytes from Windows-1252)
+    // Handle invalid UTF-8 (raw bytes from Windows-1252)
     if (!mb_check_encoding($str, 'UTF-8')) {
-        // String has invalid UTF-8, likely contains raw Windows-1252 C1 bytes
         $str = (string) preg_replace('/[\x91\x92]/', "'", $str);
         $str = (string) preg_replace('/[\x93\x94]/', '"', $str);
     }
     
-    // Second, handle valid UTF-8 encodings of these control characters
-    // U+0091 and U+0092 (single quote equivalents)
+    // Handle valid UTF-8 control characters (U+0091-U+0094)
     $str = (string) preg_replace('/[\x{0091}\x{0092}]/u', "'", $str);
-    // U+0093 and U+0094 (double quote equivalents)
     $str = (string) preg_replace('/[\x{0093}\x{0094}]/u', '"', $str);
     
     return $str;
