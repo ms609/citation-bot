@@ -373,59 +373,24 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
 
-    public function testC1QuoteNormalization1(): void {
-        // Test normalization of actual C1 control characters (invalid UTF-8)
-        $input = "\x91smart\x92 and \x93test\x94";
-        $expected = "'smart' and \"test\"";
-        $this->assertSame($expected, straighten_quotes($input, true));
+    public function testC1QuoteNormalization(): void {
+        // C1 bytes (invalid UTF-8) normalized to ASCII quotes
+        $this->assertSame("'smart' and \"test\"", straighten_quotes("\x91smart\x92 and \x93test\x94", true));
+        $this->assertSame("'test'", straighten_quotes("\x91test\x92", false));
+        $this->assertSame("Text 'with C1' bytes", normalize_c1_quotes("Text \x91with C1\x92 bytes"));
     }
 
-    public function testC1QuoteNormalization2(): void {
-        // Test that valid UTF-8 en-dash is NOT corrupted
-        $input = "Hartree–Fock Method"; // Contains UTF-8 en-dash (e2 80 93)
-        $expected = "Hartree–Fock Method"; // Should remain unchanged
-        $this->assertSame($expected, straighten_quotes($input, true));
+    public function testC1PreservesValidUTF8(): void {
+        // Valid UTF-8 with bytes 0x91-94 in multibyte sequences preserved
+        $this->assertSame("Hartree–Fock Method", straighten_quotes("Hartree–Fock Method", true));
+        $this->assertSame("大学における研究", straighten_quotes("大学における研究", true));
+        $this->assertSame("ÑÒÓÔ", straighten_quotes("ÑÒÓÔ", true));
+        $this->assertSame("Valid UTF-8 with 'quotes' and –dashes", normalize_c1_quotes("Valid UTF-8 with 'quotes' and –dashes"));
     }
 
-    public function testC1QuoteNormalization3(): void {
-        // Test that Japanese characters are NOT corrupted
-        $input = "大学における研究"; // Contains bytes that include 91 in UTF-8 sequences
-        $expected = "大学における研究"; // Should remain unchanged
-        $this->assertSame($expected, straighten_quotes($input, true));
-    }
-
-    public function testC1QuoteNormalization4(): void {
-        // Test that accented characters are NOT corrupted
-        $input = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ"; // Contains c3 91-94 sequences
-        $expected = "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ"; // Should remain unchanged
-        $this->assertSame($expected, straighten_quotes($input, true));
-    }
-
-    public function testC1QuoteNormalization5(): void {
-        // Test empty string
+    public function testC1EmptyString(): void {
         $this->assertSame('', straighten_quotes('', true));
         $this->assertSame('', normalize_c1_quotes(''));
-    }
-
-    public function testC1QuoteNormalization6(): void {
-        // Test C1 with do_more=false
-        $input = "\x91test\x92";
-        $expected = "'test'";
-        $this->assertSame($expected, straighten_quotes($input, false));
-    }
-
-    public function testC1QuoteNormalization7(): void {
-        // Test that normalize_c1_quotes can be called directly
-        $input = "Text \x91with C1\x92 bytes";
-        $expected = "Text 'with C1' bytes";
-        $this->assertSame($expected, normalize_c1_quotes($input));
-    }
-
-    public function testC1QuoteNormalization8(): void {
-        // Test that valid UTF-8 is not touched by normalize_c1_quotes
-        $input = "Valid UTF-8 with 'quotes' and –dashes";
-        $expected = "Valid UTF-8 with 'quotes' and –dashes";
-        $this->assertSame($expected, normalize_c1_quotes($input));
     }
 
     /**
