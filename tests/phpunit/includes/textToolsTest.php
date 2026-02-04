@@ -394,8 +394,8 @@ final class textToolsTest extends testBaseClass {
 
     public function testC1UnicodeControlChars(): void {
         // Unicode control characters U+0091-U+0094 normalized
-        $this->assertSame("'dynamic-lanes'", normalize_c1_quotes("Âdynamic-lanesÂ"));
-        $this->assertSame('"test"', normalize_c1_quotes("ÂtestÂ"));
+        $this->assertSame("'dynamic-lanes'", normalize_c1_quotes("dynamic-lanes"));
+        $this->assertSame('"test"', normalize_c1_quotes("test"));
     }
 
     /**
