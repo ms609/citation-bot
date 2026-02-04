@@ -385,11 +385,31 @@ function strip_diacritics (string $input): string {
     return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
+function normalize_c1_quotes(string $str): string {
+    // Normalize C1 control characters (0x91-0x94, U+0091-U+0094) to ASCII quotes
+    if ($str === '') {
+        return '';
+    }
+
+    // Handle invalid UTF-8 (raw bytes from Windows-1252)
+    if (!mb_check_encoding($str, 'UTF-8')) {
+        $str = (string) preg_replace('/[\x91\x92]/', "'", $str);
+        $str = (string) preg_replace('/[\x93\x94]/', '"', $str);
+    }
+
+    // Handle valid UTF-8 control characters (U+0091-U+0094)
+    $str = (string) preg_replace('/[\x{0091}\x{0092}]/u', "'", $str);
+    $str = (string) preg_replace('/[\x{0093}\x{0094}]/u', '"', $str);
+
+    return $str;
+}
+
 function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
     // These Regex can die on Unicode because of backward looking
     if ($str === '') {
         return '';
     }
+    $str = normalize_c1_quotes($str);
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);

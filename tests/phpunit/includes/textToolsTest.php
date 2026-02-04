@@ -373,6 +373,31 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, true));
     }
 
+    public function testC1QuoteNormalization(): void {
+        // Raw C1 bytes normalized to ASCII quotes
+        $this->assertSame("'smart' and \"test\"", straighten_quotes("\x91smart\x92 and \x93test\x94", true));
+        $this->assertSame("'test'", straighten_quotes("\x91test\x92", false));
+        $this->assertSame("Text 'with C1' bytes", normalize_c1_quotes("Text \x91with C1\x92 bytes"));
+    }
+
+    public function testC1PreservesValidUTF8(): void {
+        // Valid UTF-8 multibyte sequences preserved (en-dashes, CJK, accented chars)
+        $this->assertSame("Hartree–Fock Method", straighten_quotes("Hartree–Fock Method", true));
+        $this->assertSame("大学における研究", straighten_quotes("大学における研究", true));
+        $this->assertSame("ÑÒÓÔ", straighten_quotes("ÑÒÓÔ", true));
+    }
+
+    public function testC1EmptyString(): void {
+        $this->assertSame('', straighten_quotes('', true));
+        $this->assertSame('', normalize_c1_quotes(''));
+    }
+
+    public function testC1UnicodeControlChars(): void {
+        // Unicode control characters U+0091-U+0094 normalized
+        $this->assertSame("'dynamic-lanes'", normalize_c1_quotes("dynamic-lanes"));
+        $this->assertSame('"test"', normalize_c1_quotes("test"));
+    }
+
     /**
      * This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
      *
