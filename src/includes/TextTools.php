@@ -390,17 +390,17 @@ function normalize_c1_quotes(string $str): string {
     if ($str === '') {
         return '';
     }
-    
+
     // Handle invalid UTF-8 (raw bytes from Windows-1252)
     if (!mb_check_encoding($str, 'UTF-8')) {
         $str = (string) preg_replace('/[\x91\x92]/', "'", $str);
         $str = (string) preg_replace('/[\x93\x94]/', '"', $str);
     }
-    
+
     // Handle valid UTF-8 control characters (U+0091-U+0094)
     $str = (string) preg_replace('/[\x{0091}\x{0092}]/u', "'", $str);
     $str = (string) preg_replace('/[\x{0093}\x{0094}]/u', '"', $str);
-    
+
     return $str;
 }
 
