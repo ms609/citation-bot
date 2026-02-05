@@ -1505,4 +1505,18 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertTrue($expanded->add_if_new('url', 'https://www.example.com/article'));
         $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
     }
+
+    public function testBlockedUrlDomain_entry_url(): void {
+        $text = "{{Cite encyclopedia|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('entry-url', 'https://infoscience.epfl.ch/record/123'));
+        $this->assertNull($expanded->get2('entry-url'));
+    }
+
+    public function testBlockedUrlDomain_event_url(): void {
+        $text = "{{Cite conference|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('event-url', 'https://ci.nii.ac.jp/event/123'));
+        $this->assertNull($expanded->get2('event-url'));
+    }
 }
