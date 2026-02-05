@@ -712,6 +712,19 @@ final class Template
             return false;
         }
 
+        // Check if this is a URL parameter and if it contains a blocked domain
+        $url_params = ['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 
+                       'contribution-url', 'contributionurl', 'article-url', 'section-url', 'sectionurl'];
+        if (in_array(mb_strtolower($param_name), $url_params, true)) {
+            foreach (BLOCKED_URL_DOMAINS as $blocked_domain) {
+                if (mb_stripos($value, $blocked_domain) !== false) {
+                    report_warning("Rejected URL from blocked domain (" . echoable($blocked_domain) . 
+                                 ") because it doesn't provide useful citation data: " . echoable($value));
+                    return false;
+                }
+            }
+        }
+
         // Block journal, newspaper, etc. (CITE_BOOK_UNSUPPORTED_PARAMS) from being added to cite book templates
         // We might want to think about if there are any cases with bad existing data
         if (in_array($param_name, CITE_BOOK_UNSUPPORTED_PARAMS, true) && $this->wikiname() === 'cite book') {

@@ -1461,4 +1461,48 @@ final class TemplatePart1Test extends testBaseClass {
         $date = $prepared->get2('date');
         $this->assertSame('15 March 2025', $date);
     }
+
+    public function testBlockedUrlDomain_ci_nii(): void {
+        $text = "{{Cite web|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('url', 'https://ci.nii.ac.jp/naid/12345'));
+        $this->assertNull($expanded->get2('url'));
+    }
+
+    public function testBlockedUrlDomain_cir_nii(): void {
+        $text = "{{Cite journal|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('url', 'https://cir.nii.ac.jp/crid/1234567890'));
+        $this->assertNull($expanded->get2('url'));
+    }
+
+    public function testBlockedUrlDomain_infoscience(): void {
+        $text = "{{Cite book|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('chapter-url', 'https://infoscience.epfl.ch/record/12345'));
+        $this->assertNull($expanded->get2('chapter-url'));
+    }
+
+    public function testBlockedUrlDomain_caseInsensitive(): void {
+        $text = "{{Cite web|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('url', 'https://CI.NII.AC.JP/naid/12345'));
+        $this->assertNull($expanded->get2('url'));
+    }
+
+    public function testBlockedUrlDomain_nonUrlParam(): void {
+        // Should not block domains in non-URL parameters
+        $text = "{{Cite web|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('journal', 'ci.nii.ac.jp Journal'));
+        $this->assertSame('ci.nii.ac.jp Journal', $expanded->get2('journal'));
+    }
+
+    public function testBlockedUrlDomain_normalUrl(): void {
+        // Should allow normal URLs that don't contain blocked domains
+        $text = "{{Cite web|title=Test}}";
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('url', 'https://www.example.com/article'));
+        $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
+    }
 }
