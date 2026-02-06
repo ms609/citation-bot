@@ -2754,7 +2754,6 @@ const NON_JOURNAL_WEBSITES = [
     'ciodive.com/',
     'cipsm.de/',
     'ciputraartpreneur.com/',
-    'cir.nii.ac.jp/',
     'circlechart.kr/',
     'circleid.com/',
     'circuitousroot.com/',
