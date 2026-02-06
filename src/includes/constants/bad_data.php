@@ -453,7 +453,9 @@ const NON_PUBLISHERS = [
     'citeseerx.ist.psu.edu',
     'google book',
     'google books',
+    'google docs',
     'google news',
+    'google sheets',
     'google.co',
     'hdl.handle.net',
     'pub med',
@@ -12442,6 +12444,8 @@ const NON_JOURNALS = [
     'Boston Almanac and Guide1',
     'Digital Collections',
     'Includes:reports from Commissioners, Inspectors and Others',
+    'Google Docs',
+    'Google Sheets',
     'X (Formerly Twitter)',
     'X (formerly Twitter)',
 ];
