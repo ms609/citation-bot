@@ -888,14 +888,14 @@ final class Zotero {
         // Re-index array to eliminate gaps in numeric indices caused by unsetting elements
         // This ensures author numbering will be contiguous (1, 2, 3...) instead of (1, 3, 5...)
         $result->author = array_values($result->author);
-        
+
         // Special case: remove a single non-human author
         if (isset($result->author[0]) && !isset($result->author[1]) &&
                 !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
             unset($result->author[0]); // Do not add a single non-human author
             $result->author = array_values($result->author); // Re-index again after removal
         }
-        
+
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
         $author_number = 0;
