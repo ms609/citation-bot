@@ -1200,9 +1200,9 @@ final class zoteroTest extends testBaseClass {
         $access_date = 0;
         $url = '';
         $author = [];
-        $author[0] = [0 => 'Aleaziz', 1 => 'Hamed'];
-        $author[1] = [0 => '|', 1 => 'Staff']; // Bad author (pipe character)
-        $author[2] = [0 => 'Bosman', 1 => 'Julie'];
+        $author[0] = [0 => 'Hamed', 1 => 'Aleaziz'];  // [0] = first name, [1] = last name
+        $author[1] = [0 => 'Staff', 1 => '|']; // Bad author (pipe character in last name)
+        $author[2] = [0 => 'Julie', 1 => 'Bosman'];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1222,8 +1222,8 @@ final class zoteroTest extends testBaseClass {
         $access_date = 0;
         $url = '';
         $author = [];
-        $author[0] = [0 => 'Agencies', 1 => '']; // Non-human author (will be filtered)
-        $author[1] = [0 => 'Magid', 1 => 'Jacob'];
+        $author[0] = [0 => '', 1 => 'Agencies']; // Non-human author (will be filtered)
+        $author[1] = [0 => 'Jacob', 1 => 'Magid'];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1241,11 +1241,11 @@ final class zoteroTest extends testBaseClass {
         $access_date = 0;
         $url = '';
         $author = [];
-        $author[0] = [0 => '|', 1 => '']; // Bad author
-        $author[1] = [0 => 'published', 1 => '']; // Bad author
-        $author[2] = [0 => 'Dahir', 1 => 'Abdi Latif'];
-        $author[3] = [0 => 'Hayeri', 1 => 'Kiana'];
-        $author[4] = [0 => 'Fassihi', 1 => 'Farnaz'];
+        $author[0] = [0 => '', 1 => '|']; // Bad author
+        $author[1] = [0 => '', 1 => 'published']; // Bad author
+        $author[2] = [0 => 'Abdi Latif', 1 => 'Dahir'];
+        $author[3] = [0 => 'Kiana', 1 => 'Hayeri'];
+        $author[4] = [0 => 'Farnaz', 1 => 'Fassihi'];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1267,11 +1267,11 @@ final class zoteroTest extends testBaseClass {
         $access_date = 0;
         $url = '';
         $author = [];
-        $author[0] = [0 => 'Smith', 1 => 'John'];
-        $author[1] = [0 => '|', 1 => '']; // Bad author
-        $author[2] = [0 => 'Jones', 1 => 'Mary'];
-        $author[3] = [0 => 'published', 1 => '']; // Bad author
-        $author[4] = [0 => 'Wilson', 1 => 'Bob'];
+        $author[0] = [0 => 'John', 1 => 'Smith'];
+        $author[1] = [0 => '', 1 => '|']; // Bad author
+        $author[2] = [0 => 'Mary', 1 => 'Jones'];
+        $author[3] = [0 => '', 1 => 'published']; // Bad author
+        $author[4] = [0 => 'Bob', 1 => 'Wilson'];
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
