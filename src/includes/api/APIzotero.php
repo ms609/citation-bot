@@ -878,8 +878,10 @@ final class Zotero {
             if (is_bad_author((string) @$result->author[$i][0])) {
                 unset($result->author[$i][0]);
             }
-            // If both given and family names are missing or bad, remove the entire author entry
-            if (!isset($result->author[$i][0]) && !isset($result->author[$i][1])) {
+            // If both given and family names are missing, bad, or empty, remove the entire author entry
+            $first_name = isset($result->author[$i][0]) ? mb_trim((string) $result->author[$i][0]) : '';
+            $last_name = isset($result->author[$i][1]) ? mb_trim((string) $result->author[$i][1]) : '';
+            if ($first_name === '' && $last_name === '') {
                 unset($result->author[$i]);
             }
             $i++;
