@@ -898,22 +898,19 @@ final class Zotero {
         
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
-        $author_number = 1;
+        $author_number = 0;
         $i = 0;
         while (isset($result->author[$i])) {
             if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) {
+                ++$author_number;  // Pre-increment before adding
                 $template->validate_and_add('author' . (string) $author_number, (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
-                // Only increment author_number if a field was actually added
-                if (!$template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
-                    $author_number++;
+                // Break if nothing was added (e.g., template already has authors)
+                if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
+                    break;
                 }
             }
             $i++;
-            // Break if the last author slot is blank (meaning validate_and_add couldn't add, likely hit author limit)
-            if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
-                break; // Break out if nothing added at current position
-            }
         }
         unset($i);
 
