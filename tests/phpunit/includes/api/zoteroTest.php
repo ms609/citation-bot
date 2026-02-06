@@ -1193,7 +1193,6 @@ final class zoteroTest extends testBaseClass {
     }
 
     // Test for author numbering fix: ensure authors are numbered contiguously after filtering
-    // https://github.com/redalert2fan/citation-bot/issues/XXX
     public function testAuthorNumberingAfterFiltering1(): void {
         // Test case: Two valid authors with a bad author in between should be numbered 1 and 2
         $text = '{{cite web|id=}}';

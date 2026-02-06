@@ -907,11 +907,13 @@ final class Zotero {
                 // Only increment author_number if a field was actually added
                 if (!$template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
                     $author_number++;
-                } else {
-                    break; // Break out if nothing added
                 }
             }
             $i++;
+            // Break if the last author slot is blank (meaning validate_and_add couldn't add, likely hit author limit)
+            if ($template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
+                break; // Break out if nothing added at current position
+            }
         }
         unset($i);
 
