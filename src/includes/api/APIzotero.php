@@ -869,6 +869,7 @@ final class Zotero {
         if (isset($result->series) && mb_stripos($url, '.acm.org') === false) {
             $template->add_if_new('series', (string) $result->series);
         }
+        // Filter out bad author name components and remove entirely empty author entries
         $i = 0;
         while (isset($result->author[$i])) {
             if (is_bad_author((string) @$result->author[$i][1])) {
@@ -877,23 +878,40 @@ final class Zotero {
             if (is_bad_author((string) @$result->author[$i][0])) {
                 unset($result->author[$i][0]);
             }
+            // If both given and family names are missing or bad, remove the entire author entry
+            if (!isset($result->author[$i][0]) && !isset($result->author[$i][1])) {
+                unset($result->author[$i]);
+            }
             $i++;
         }
         unset($i);
+        // Re-index array to eliminate gaps in numeric indices caused by unsetting elements
+        // This ensures author numbering will be contiguous (1, 2, 3...) instead of (1, 3, 5...)
+        $result->author = array_values($result->author);
+        
+        // Special case: remove a single non-human author
         if (isset($result->author[0]) && !isset($result->author[1]) &&
                 !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
             unset($result->author[0]); // Do not add a single non-human author
+            $result->author = array_values($result->author); // Re-index again after removal
         }
+        
+        // Use a dedicated counter for author numbering to ensure contiguous numbering
+        // Do not rely on array indices, as they may have gaps if authors were filtered
+        $author_number = 1;
         $i = 0;
         while (isset($result->author[$i])) {
             if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) {
-                $template->validate_and_add('author' . (string) ($i + 1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
+                $template->validate_and_add('author' . (string) $author_number, (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
+                // Only increment author_number if a field was actually added
+                if (!$template->blank(['author' . (string) $author_number, 'first' . (string) $author_number, 'last' . (string) $author_number])) {
+                    $author_number++;
+                } else {
+                    break; // Break out if nothing added
+                }
             }
             $i++;
-            if ($template->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) {
-                break; // Break out if nothing added
-            }
         }
         unset($i);
 
