@@ -234,7 +234,7 @@ final class ConstantsTest extends testBaseClass {
             $this->flush();
             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
             foreach ($our_whitelist_sorted as $value) {
-                echo "    '" , $value, "',\n";
+                echo "    '", $value, "',\n";
             }
             $this->flush();
             $we_failed = true;
