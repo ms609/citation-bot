@@ -497,9 +497,9 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
         $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         if ($http_response_code === 0 || $header_length === 0) {
             throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
-        }   // These are byte counts, not character counts
-        $header = substr($return, 0, $header_length);  // phpcs:ignore
-        $body = substr($return, $header_length);       // phpcs:ignore
+        }   
+        $header = mb_substr($return, 0, $header_length, '8bit');  // These are byte counts, not character counts
+        $body = mb_substr($return, $header_length, '8bit');       // These are byte counts, not character counts
         unset($return);
         $decoded = @json_decode($body);
 
