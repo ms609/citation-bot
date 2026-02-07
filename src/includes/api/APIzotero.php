@@ -1038,7 +1038,6 @@ final class Zotero {
                         // Only process if author passes validation
                         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
                             // Increment counter only after validation passes, based on creator type
-                            $authorParam = '';
                             switch ($creatorType) {
                                 case 'author':
                                 case 'contributor':
