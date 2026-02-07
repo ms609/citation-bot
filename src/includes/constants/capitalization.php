@@ -523,8 +523,7 @@ const UC_SMALL_WORDS = [ /* The following will be automatically updated to alpha
 
 // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 
-/** The following will be automatically updated to alphabetical order */
-const JOURNAL_ACRONYMS = [
+const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' (and the Middle East) ',
     ' (BBA) ',
     ' (online ed.) ',
@@ -1061,10 +1060,10 @@ const JOURNAL_ACRONYMS = [
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Ргасе filologiczne ',
+    /* The above will be automatically updated to alphabetical order */
 ];
 
-/** The following will be automatically updated to alphabetical order */
-const UCFIRST_JOURNAL_ACRONYMS = [
+const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
     ' (And the Middle East) ',
     ' (Bba) ',
     ' (online Ed.) ',
@@ -1601,9 +1600,10 @@ const UCFIRST_JOURNAL_ACRONYMS = [
     ' Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ',
     ' Zprávy o zasedání Král. čes. Společnosti nauk v Praze ',
     ' Ргасе Filologiczne ',
+    /* The above will be automatically updated to alphabetical order */
 ];
 
-const OBVIOUS_FOREIGN_WORDS = [
+const OBVIOUS_FOREIGN_WORDS = [  /* The following will be automatically updated to alphabetical order */
     ' Aarbøger ',
     ' Abhandlungen ',
     ' Actes ',
@@ -1775,9 +1775,10 @@ const OBVIOUS_FOREIGN_WORDS = [
     'ische ',
     'www-',
     'www.',
+    /* The above will be automatically updated to alphabetical order */
 ];
 
-const MAP_DIACRITICS = [
+const MAP_DIACRITICS = [ /* The following will be automatically updated to alphabetical order */
     'À' => 'A',
     'Á' => 'A',
     'Â' => 'A',
@@ -2238,4 +2239,5 @@ const MAP_DIACRITICS = [
     'ʫ' => 'lz',
     'ʮ' => 'h',
     'ʯ' => 'h',
+    /* The above will be automatically updated to alphabetical order */
 ];
