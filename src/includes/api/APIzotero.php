@@ -1071,6 +1071,8 @@ final class Zotero {
                             } elseif ($paramType === 'translator') {
                                 ++$translator_i;
                                 $authorParam = 'translator' . (string) $translator_i;
+                            } else {
+                                $authorParam = ''; // Should not reach here if paramType validation works correctly
                             }
                             if (is_bad_author((string) $result->creators[$i]->lastName)) {
                                 $result->creators[$i]->lastName = '';
