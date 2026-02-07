@@ -1192,4 +1192,98 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    // Test for author numbering fix: ensure authors are numbered contiguously after filtering
+    public function testAuthorNumberingAfterFiltering1(): void {
+        // Test case: Two valid authors with a bad author in between should be numbered 1 and 2
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => 'Hamed', 1 => 'Aleaziz'];  // [0] = first name, [1] = last name
+        $author[1] = [0 => 'Staff', 1 => '|']; // Bad author (pipe character in last name)
+        $author[2] = [0 => 'Julie', 1 => 'Bosman'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify authors are numbered 1 and 2, not 1 and 3
+        $this->assertSame('Aleaziz', $template->get2('last1'));
+        $this->assertSame('Hamed', $template->get2('first1'));
+        $this->assertSame('Bosman', $template->get2('last2'));
+        $this->assertSame('Julie', $template->get2('first2'));
+        $this->assertNull($template->get2('last3')); // Should not exist
+    }
+
+    public function testAuthorNumberingAfterFiltering2(): void {
+        // Test case: First author is bad, second author should become author1
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => '', 1 => 'Agencies']; // Non-human author (will be filtered)
+        $author[1] = [0 => 'Jacob', 1 => 'Magid'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify the remaining author is numbered 1, not 2
+        $this->assertSame('Magid', $template->get2('last1'));
+        $this->assertSame('Jacob', $template->get2('first1'));
+        $this->assertNull($template->get2('last2')); // Should not exist
+    }
+
+    public function testAuthorNumberingAfterFiltering3(): void {
+        // Test case: Multiple bad authors at the start, valid authors should be numbered sequentially
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => '', 1 => '|']; // Bad author
+        $author[1] = [0 => '', 1 => 'published']; // Bad author
+        $author[2] = [0 => 'Abdi Latif', 1 => 'Dahir'];
+        $author[3] = [0 => 'Kiana', 1 => 'Hayeri'];
+        $author[4] = [0 => 'Farnaz', 1 => 'Fassihi'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify authors are numbered 1, 2, 3 (not 3, 4, 5)
+        $this->assertSame('Dahir', $template->get2('last1'));
+        $this->assertSame('Abdi Latif', $template->get2('first1'));
+        $this->assertSame('Hayeri', $template->get2('last2'));
+        $this->assertSame('Kiana', $template->get2('first2'));
+        $this->assertSame('Fassihi', $template->get2('last3'));
+        $this->assertSame('Farnaz', $template->get2('first3'));
+        $this->assertNull($template->get2('last4')); // Should not exist
+    }
+
+    public function testAuthorNumberingAfterFiltering4(): void {
+        // Test case: Mix of good and bad authors should result in contiguous numbering
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => 'John', 1 => 'Smith'];
+        $author[1] = [0 => '', 1 => '|']; // Bad author
+        $author[2] = [0 => 'Mary', 1 => 'Jones'];
+        $author[3] = [0 => '', 1 => 'published']; // Bad author
+        $author[4] = [0 => 'Bob', 1 => 'Wilson'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify authors are numbered 1, 2, 3 (contiguously)
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+        $this->assertSame('Jones', $template->get2('last2'));
+        $this->assertSame('Mary', $template->get2('first2'));
+        $this->assertSame('Wilson', $template->get2('last3'));
+        $this->assertSame('Bob', $template->get2('first3'));
+        $this->assertNull($template->get2('last4')); // Should not exist
+    }
+
 }

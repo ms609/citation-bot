@@ -16,7 +16,9 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 
 // ============================================= String/Text functions ======================================
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
+/**
+ * This function converts formatting from external sources into wiki style
+ */
 function wikify_external_text(string $title): string {
     $replacement = [];
     $placeholder = [];
@@ -449,7 +451,9 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
 
 // ============================================= Capitalization functions ======================================
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
+/**
+ * Converts to title case, unless obviously a url
+ */
 function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
         return $text; // Who knows - duplicate code below
@@ -734,8 +738,10 @@ function remove_brackets(string $string): string {
 
 // ============================================= Data processing functions ======================================
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
-function tidy_date(string $string): string { // Wrapper to change all pre-1900 dates to just years
+/**
+ * Wrapper to change all pre-1900 dates to just years
+ */
+function tidy_date(string $string): string {
     $string = tidy_date_inside($string);
     if ($string === '') {
         return $string;
@@ -917,9 +923,10 @@ function tidy_date_inside(string $string): string {
 
 // ============================================= Other functions ======================================
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
+/**
+ * See Comment::PLACEHOLDER_TEXT for syntax
+ */
 function remove_comments(string $string): string {
-    // See Comment::PLACEHOLDER_TEXT for syntax
     $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
     $ret = preg_replace("~<!--.*?-->~us", "", $string);
     if ($ret === null) {
