@@ -127,7 +127,7 @@ final class ConstantsTest extends testBaseClass {
         $starts = mb_substr_count($old_contents, START_ALPHA);
         $ending = mb_substr_count($old_contents, END_ALPHA);
         $this->assertSame($starts, $ending);
-        $this->assertSame(6, $starts); // Current number
+        $this->assertSame(4, $starts); // Current number
     }
 
     public function testAtoZ(): void {
@@ -234,7 +234,7 @@ final class ConstantsTest extends testBaseClass {
             $this->flush();
             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
             foreach ($our_whitelist_sorted as $value) {
-                echo "    '" . $value . "',\n";
+                echo "    '" , $value, "',\n";
             }
             $this->flush();
             $we_failed = true;
