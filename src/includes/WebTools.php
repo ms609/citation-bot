@@ -44,7 +44,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
                 report_phase("Saving to file " . echoable($filename));
                 $body = $page->parsed_text();
-                $bodylen = strlen($body);
+                $bodylen = mb_strlen($body, '8bit'); // byte count, not character count
                 if (file_put_contents($filename, $body) === $bodylen) {
                     report_phase("Saved to file " . echoable($filename));
                 } else {
