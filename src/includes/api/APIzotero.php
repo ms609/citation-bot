@@ -1035,32 +1035,43 @@ final class Zotero {
                 while (isset($result->creators[$i])) {
                     $creatorType = $result->creators[$i]->creatorType ?? 'author';
                     if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+                        // Determine the parameter type without incrementing counters yet
+                        $paramType = '';
                         switch ($creatorType) {
                             case 'author':
                             case 'contributor':
                             case 'artist':
-                                ++$author_i;
-                                $authorParam = 'author' . (string) $author_i;
+                                $paramType = 'author';
                                 break;
                             case 'editor':
-                                ++$editor_i;
-                                $authorParam = 'editor' . (string) $editor_i;
+                                $paramType = 'editor';
                                 break;
                             case 'translator':
-                                ++$translator_i;
-                                $authorParam = 'translator' . (string) $translator_i;
+                                $paramType = 'translator';
                                 break;
                             case 'reviewedAuthor':  // @codeCoverageIgnore
-                                $authorParam = '';   // @codeCoverageIgnore
+                                $paramType = '';   // @codeCoverageIgnore
                                 break;         // @codeCoverageIgnore
                             case 'performer': // http://catalog.nypl.org/search/o77059475
-                                $authorParam = '';
+                                $paramType = '';
                                 break;
                             default:                                // @codeCoverageIgnore
                                 report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));   // @codeCoverageIgnore
-                                $authorParam = '';                          // @codeCoverageIgnore
+                                $paramType = '';                          // @codeCoverageIgnore
                         }
-                        if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                        // Only increment counters and add if author passes validation
+                        if ($paramType && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                            // Increment counter only after validation passes
+                            if ($paramType === 'author') {
+                                ++$author_i;
+                                $authorParam = 'author' . (string) $author_i;
+                            } elseif ($paramType === 'editor') {
+                                ++$editor_i;
+                                $authorParam = 'editor' . (string) $editor_i;
+                            } elseif ($paramType === 'translator') {
+                                ++$translator_i;
+                                $authorParam = 'translator' . (string) $translator_i;
+                            }
                             if (is_bad_author((string) $result->creators[$i]->lastName)) {
                                 $result->creators[$i]->lastName = '';
                             }
