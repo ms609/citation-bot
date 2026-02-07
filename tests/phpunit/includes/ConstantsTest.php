@@ -144,7 +144,7 @@ final class ConstantsTest extends testBaseClass {
                 $leader_bits = [];
                 $leader = true;
             }
-            $bits_length = array_map('strlen', $alpha_bits);
+            $bits_length = array_map('mb_strlen', $alpha_bits);
             $new_line = "\n    ";
             $alphaed = '';
             array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
