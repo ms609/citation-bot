@@ -168,6 +168,7 @@ const NON_HUMAN_AUTHORS = [
     'business',
     'center for',
     'central bank',
+    'chicago',
     'circuit',
     'collaborat',
     'college',
