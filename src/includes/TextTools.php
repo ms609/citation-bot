@@ -14,9 +14,10 @@ const SANE_ENCODE = ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii
 const DOI_BAD_ENDS = ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'];
 const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'];
 
-// ============================================= String/Text functions ======================================
+/**
+ * ============================================= String/Text functions ======================================
+ */
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function wikify_external_text(string $title): string {
     $replacement = [];
     $placeholder = [];
@@ -447,9 +448,10 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     return str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
 }
 
-// ============================================= Capitalization functions ======================================
+/**
+ * ============================================= Capitalization functions ======================================
+ */
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
         return $text; // Who knows - duplicate code below
@@ -732,9 +734,10 @@ function remove_brackets(string $string): string {
     return str_replace(['(', ')', '{', '}', '[', ']'], '', $string);
 }
 
-// ============================================= Data processing functions ======================================
+/**
+ * ============================================= Data processing functions ======================================
+ */
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function tidy_date(string $string): string { // Wrapper to change all pre-1900 dates to just years
     $string = tidy_date_inside($string);
     if ($string === '') {
@@ -915,9 +918,10 @@ function tidy_date_inside(string $string): string {
     return ''; // And we give up
 }
 
-// ============================================= Other functions ======================================
+/**
+ * ============================================= Other functions ======================================
+ */
 
-// phpcs:ignore MediaWiki.Commenting.FunctionComment.WrongStyle
 function remove_comments(string $string): string {
     // See Comment::PLACEHOLDER_TEXT for syntax
     $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
