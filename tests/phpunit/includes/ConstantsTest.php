@@ -176,7 +176,7 @@ final class ConstantsTest extends testBaseClass {
             $this->assertFaker();
         } else {
             $this->flush();
-            echo "\n\n", ALPHA_FILE, " needs alphabetized as follows\n", $new_contents, "\n\n\n";
+            file_put_contents(__DIR__ . '../../../src/includes/CodeCoverage', "\n\n" . ALPHA_FILE . " needs alphabetized as follows\n" . $new_contents . "\n\n\n"); // Parallel tests do not output to log file
             $this->flush();
             $this->assertFailure();
         }
