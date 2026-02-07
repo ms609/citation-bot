@@ -12,6 +12,10 @@ const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_A
                    ...JOURNAL_IS_BOOK_SERIES, ...HAS_NO_ISSUE, ...WORKS_ARE_PUBLISHERS, ...PREFER_VOLUMES,
                    ...PREFER_ISSUES, ...CITE_BOOK_UNSUPPORTED_PARAMS];
 
+const START_ALPHA = '/* The following will be automatically updated to alphabetical order */';
+const END_ALPHA = '/* The above will be automatically updated to alphabetical order */';
+const ALPHA_FILE = __DIR__ . '/../../../src/includes/constants/capitalization.php';
+
 final class ConstantsTest extends testBaseClass {
 
     public function testConstantsDefined(): void {
@@ -117,17 +121,23 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
+    public function testAtoZcomments(): void {
+        new TestPage(); // Fill page name with test name for debugging
+        $old_contents = file_get_contents(ALPHA_FILE);
+        $starts = mb_substr_count($old_contents, START_ALPHA);
+        $ending = mb_substr_count($old_contents, END_ALPHA);
+        $this->assertSame($starts, $ending);
+        $this->assertSame(4, $starts); // Current number
+    }
+
     public function testAtoZ(): void {
         new TestPage(); // Fill page name with test name for debugging
         $leader_bits = [];
         $leader = true;
-        $start_alpha = '/* The following will be automatically updated to alphabetical order */';
-        $end_alpha = '/* The above will be automatically updated to alphabetical order */';
-        $filename = __DIR__ . '/../../../src/includes/constants/capitalization.php';
-        $old_contents = file_get_contents($filename);
-        $sections = explode($start_alpha, $old_contents);
+        $old_contents = file_get_contents(ALPHA_FILE);
+        $sections = explode(START_ALPHA, $old_contents);
         foreach ($sections as &$section) {
-            $alpha_end = mb_stripos($section, $end_alpha);
+            $alpha_end = mb_stripos($section, END_ALPHA);
             if (!$alpha_end) {
                 continue;
             }
@@ -160,14 +170,13 @@ final class ConstantsTest extends testBaseClass {
         }
         unset($section); // Destroy pointer to be safe
 
-        $new_contents = implode($start_alpha, $sections);
+        $new_contents = implode(START_ALPHA, $sections);
 
         if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
             $this->assertFaker();
         } else {
             $this->flush();
-            echo "\n\n", $filename, " needs alphabetized as follows\n";
-            echo $new_contents, "\n\n\n";
+            echo "\n\n", ALPHA_FILE, " needs alphabetized as follows\n", $new_contents, "\n\n\n";
             $this->flush();
             $this->assertFailure();
         }
@@ -225,7 +234,7 @@ final class ConstantsTest extends testBaseClass {
             $this->flush();
             echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
             foreach ($our_whitelist_sorted as $value) {
-                echo "    '" . $value . "',\n";
+                echo "    '", $value, "',\n";
             }
             $this->flush();
             $we_failed = true;
