@@ -1035,62 +1035,54 @@ final class Zotero {
                 while (isset($result->creators[$i])) {
                     $creatorType = $result->creators[$i]->creatorType ?? 'author';
                     if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
-                        // Determine the parameter type without incrementing counters yet
-                        $paramType = '';
-                        switch ($creatorType) {
-                            case 'author':
-                            case 'contributor':
-                            case 'artist':
-                                $paramType = 'author';
-                                break;
-                            case 'editor':
-                                $paramType = 'editor';
-                                break;
-                            case 'translator':
-                                $paramType = 'translator';
-                                break;
-                            case 'reviewedAuthor':  // @codeCoverageIgnore
-                                $paramType = '';   // @codeCoverageIgnore
-                                break;         // @codeCoverageIgnore
-                            case 'performer': // http://catalog.nypl.org/search/o77059475
-                                $paramType = '';
-                                break;
-                            default:                                // @codeCoverageIgnore
-                                report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));   // @codeCoverageIgnore
-                                $paramType = '';                          // @codeCoverageIgnore
-                        }
-                        // Only increment counters and add if author passes validation
-                        if ($paramType && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-                            // Increment counter only after validation passes
-                            if ($paramType === 'author') {
-                                ++$author_i;
-                                $authorParam = 'author' . (string) $author_i;
-                            } elseif ($paramType === 'editor') {
-                                ++$editor_i;
-                                $authorParam = 'editor' . (string) $editor_i;
-                            } elseif ($paramType === 'translator') {
-                                ++$translator_i;
-                                $authorParam = 'translator' . (string) $translator_i;
-                            } else {
-                                $authorParam = ''; // Should not reach here if paramType validation works correctly
+                        // Only process if author passes validation
+                        if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                            // Increment counter only after validation passes, based on creator type
+                            $authorParam = '';
+                            switch ($creatorType) {
+                                case 'author':
+                                case 'contributor':
+                                case 'artist':
+                                    ++$author_i;
+                                    $authorParam = 'author' . (string) $author_i;
+                                    break;
+                                case 'editor':
+                                    ++$editor_i;
+                                    $authorParam = 'editor' . (string) $editor_i;
+                                    break;
+                                case 'translator':
+                                    ++$translator_i;
+                                    $authorParam = 'translator' . (string) $translator_i;
+                                    break;
+                                case 'reviewedAuthor':  // @codeCoverageIgnore
+                                    $authorParam = '';   // @codeCoverageIgnore
+                                    break;         // @codeCoverageIgnore
+                                case 'performer': // http://catalog.nypl.org/search/o77059475
+                                    $authorParam = '';
+                                    break;
+                                default:                                // @codeCoverageIgnore
+                                    report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));   // @codeCoverageIgnore
+                                    $authorParam = '';                          // @codeCoverageIgnore
                             }
-                            if (is_bad_author((string) $result->creators[$i]->lastName)) {
-                                $result->creators[$i]->lastName = '';
-                            }
-                            if (is_bad_author((string) $result->creators[$i]->firstName)) {
-                                $result->creators[$i]->firstName = '';
-                            }
-                            $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                            isset($result->rights) ? (string) $result->rights : '', false);
-                                // Break out if nothing added
-                            if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
-                                break;
-                            }
-                            if ((mb_strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
-                                break;
-                            }
-                            if ((mb_strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string) ($translator_i)])) {
-                                break;
+                            if ($authorParam) {
+                                if (is_bad_author((string) $result->creators[$i]->lastName)) {
+                                    $result->creators[$i]->lastName = '';
+                                }
+                                if (is_bad_author((string) $result->creators[$i]->firstName)) {
+                                    $result->creators[$i]->firstName = '';
+                                }
+                                $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+                                isset($result->rights) ? (string) $result->rights : '', false);
+                                    // Break out if nothing added
+                                if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
+                                    break;
+                                }
+                                if ((mb_strpos($authorParam, 'editor') === 0) && $template->blank(['editor' . (string) ($editor_i)])) {
+                                    break;
+                                }
+                                if ((mb_strpos($authorParam, 'translator') === 0) && $template->blank(['translator' . (string) ($translator_i)])) {
+                                    break;
+                                }
                             }
                         }
                     }
