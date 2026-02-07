@@ -137,9 +137,9 @@ function is_doi_active(string $doi): ?bool {
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME; // do not encode crossref email
     curl_setopt($ch, CURLOPT_URL, $url);
     $return = bot_curl_exec($ch);
-    $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE); // Byte count, not characters
-    $header = substr($return, 0, $header_length);    // phpcs:ignore
-    $body = substr($return, $header_length);         // phpcs:ignore
+    $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $header = mb_substr($return, 0, $header_length, '8bit');  // Byte count, not characters
+    $body = mb_substr($return, $header_length, '8bit');  // Byte count, not characters
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     if ($header === "" || ($response_code === 503) || ($response_code === 429)) {
         sleep(4);                                                             // @codeCoverageIgnoreStart
@@ -148,9 +148,9 @@ function is_doi_active(string $doi): ?bool {
         }
         $return = bot_curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE); // Byte count, not characters
-        $header = substr($return, 0, $header_length);  // phpcs:ignore
-        $body = substr($return, $header_length);       // phpcs:ignore
+        $header_length = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($return, 0, $header_length, '8bit');  // Byte count, not characters
+        $body = substr($return, $header_length, '8bit');  // Byte count, not characters
     }                                                                       // @codeCoverageIgnoreEnd
     if ($response_code === 429) {  // WE are still getting blocked
         sleep(run_type_mods(10, 2, 2, 1, 2));   // @codeCoverageIgnore
