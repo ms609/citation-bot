@@ -499,7 +499,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
             throw new Exception('Size of zero from AdsAbs website'); // @codeCoverageIgnore
         }
         $header = mb_substr($return, 0, $header_length, '8bit');  // These are byte counts, not character counts
-        $body = mb_substr($return, $header_length, '8bit');       // These are byte counts, not character counts
+        $body = mb_substr($return, $header_length, null, '8bit'); // These are byte counts, not character counts
         unset($return);
         $decoded = @json_decode($body);
 
