@@ -136,7 +136,7 @@ final class ConstantsTest extends testBaseClass {
             $alpha_bits = array_map('mb_trim', $alpha_bits);
             if ($leader) {
                 $leader_bits = $alpha_bits;
-                sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
+                sort($alpha_bits, SORT_LOCALE_STRING | SORT_FLAG_CASE);
                 $leader = false;
             } else {
                 $this->assertSame(count($leader_bits), count($alpha_bits));
