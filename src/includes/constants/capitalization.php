@@ -1603,7 +1603,7 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     /* The above will be automatically updated to alphabetical order */
 ];
 
-const OBVIOUS_FOREIGN_WORDS = [  /* The following will be automatically updated to alphabetical order */
+const OBVIOUS_FOREIGN_WORDS = [
     ' Aarbøger ',
     ' Abhandlungen ',
     ' Actes ',
@@ -1775,10 +1775,9 @@ const OBVIOUS_FOREIGN_WORDS = [  /* The following will be automatically updated 
     'ische ',
     'www-',
     'www.',
-    /* The above will be automatically updated to alphabetical order */
 ];
 
-const MAP_DIACRITICS = [ /* The following will be automatically updated to alphabetical order */
+const MAP_DIACRITICS = [
     'À' => 'A',
     'Á' => 'A',
     'Â' => 'A',
@@ -2239,5 +2238,4 @@ const MAP_DIACRITICS = [ /* The following will be automatically updated to alpha
     'ʫ' => 'lz',
     'ʮ' => 'h',
     'ʯ' => 'h',
-    /* The above will be automatically updated to alphabetical order */
 ];
