@@ -208,35 +208,34 @@ final class ConstantsTest extends testBaseClass {
         $our_missing = array_diff($their_whitelist, $our_whitelist);
         $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
 
+        $evil_data = '';
         if (count($our_internal_extra) !== 0) {
-            $this->flush();
-            echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
-            print_r($our_internal_extra);
-            $this->flush();
+            $evil_data .= "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
+            $evil_data .= print_r($our_internal_extra, true);
             $we_failed = true;
         }
         if (count($our_extra) !== 0) {
-            $this->flush();
-            echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
-            print_r($our_extra);
-            $this->flush();
+            $evil_data .=  "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+            $evil_data .= print_r($our_extra, true);
             $we_failed = true;
         }
         if (count($our_missing) !== 0) {
-            $this->flush();
-            echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
-            print_r($our_missing);
-            $this->flush();
+            $evil_data .=  "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+            $evil_data .= print_r($our_missing, true);
             $we_failed = true;
         }
         if ($our_whitelist !== $our_whitelist_sorted) {
-            $this->flush();
-            echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+            $evil_data .=  "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
             foreach ($our_whitelist_sorted as $value) {
-                echo "    '", $value, "',\n";
+                $evil_data .=  "    '", $value, "',\n";
             }
-            $this->flush();
             $we_failed = true;
+        }
+        if ($we_failed) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertFalse($we_failed);
     }
