@@ -8,7 +8,7 @@ coverage
 coverage.xml
 junit.xml
 src/env.php
-src/includes/CodeCoverage
+src/includes/DebugLog.txt
 src/includes/cookie.txt
 tmp/*
 vendor/*
