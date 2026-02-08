@@ -5902,7 +5902,6 @@ const NON_JOURNAL_WEBSITES = [
     'iptvdictionary.com/',
     'iqiyi.com/',
     'iqlikmovies.com/',
-    'ir.lib.uwo.ca/ntp_mndta',
     'iraklis-fc.gr/',
     'iraklis.org/',
     'iraklis1908.gr/',
