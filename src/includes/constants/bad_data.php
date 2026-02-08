@@ -13458,6 +13458,7 @@ const DOI_FREE_PREFIX = [
     '10.1093/pnasnexus',
     '10.1093/rasti',
     '10.1096/',
+    bbgvv
     '10.1098/rsos',
     '10.1099/00221287',
     '10.1099/acmi',
