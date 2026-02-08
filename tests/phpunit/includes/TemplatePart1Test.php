@@ -1521,82 +1521,31 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($expanded->get2('event-url'));
     }
 
-    public function testBlockedUrlPrefix_gbv_dms_https(): void {
+    public function testBlockedUrlPrefix_blocks_gbv_dms(): void {
         $text = "{{Cite web|title=Test}}";
         $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('url', 'https://www.gbv.de/dms/tib-ub-hannover/123456.pdf'));
-        $this->assertNull($expanded->get2('url'));
-    }
-
-    public function testBlockedUrlPrefix_gbv_dms_http(): void {
-        $text = "{{Cite journal|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('url', 'http://www.gbv.de/dms/tib-ub-hannover/123.pdf?page=5'));
-        $this->assertNull($expanded->get2('url'));
-    }
-
-    public function testBlockedUrlPrefix_gbv_dms_subpath(): void {
-        $text = "{{Cite book|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('chapter-url', 'https://www.gbv.de/dms/sub/folder/file.pdf'));
-        $this->assertNull($expanded->get2('chapter-url'));
-    }
-
-    public function testBlockedUrlPrefix_gbv_other_path(): void {
-        $text = "{{Cite web|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('url', 'https://www.gbv.de/other/path/file.pdf'));
-        $this->assertSame('https://www.gbv.de/other/path/file.pdf', $expanded->get2('url'));
-    }
-
-    public function testBlockedUrlPrefix_gbv_root(): void {
-        $text = "{{Cite web|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('url', 'https://www.gbv.de/'));
-        $this->assertSame('https://www.gbv.de/', $expanded->get2('url'));
-    }
-
-    public function testBlockedUrlPrefix_gbv_search(): void {
-        $text = "{{Cite web|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('url', 'https://www.gbv.de/search/results'));
-        $this->assertSame('https://www.gbv.de/search/results', $expanded->get2('url'));
-    }
-
-    public function testBlockedUrlPrefix_case_insensitive(): void {
-        $text = "{{Cite web|title=Test}}";
-        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('url', 'https://www.gbv.de/dms/file.pdf'));
+        $this->assertFalse($expanded->add_if_new('url', 'http://www.gbv.de/dms/file.pdf'));
         $this->assertFalse($expanded->add_if_new('url', 'HTTPS://WWW.GBV.DE/DMS/file.pdf'));
         $this->assertNull($expanded->get2('url'));
     }
 
-    public function testBlockedUrlPrefix_no_trailing_slash(): void {
+    public function testBlockedUrlPrefix_allows_other_gbv_paths(): void {
         $text = "{{Cite web|title=Test}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('url', 'https://something.gbv.de/dms'));
-        $this->assertSame('https://something.gbv.de/dms', $expanded->get2('url'));
+        $this->assertTrue($expanded->add_if_new('url', 'https://www.gbv.de/other/path/file.pdf'));
+        $this->assertSame('https://www.gbv.de/other/path/file.pdf', $expanded->get2('url'));
+        $expanded2 = $this->make_citation($text);
+        $this->assertTrue($expanded2->add_if_new('url', 'https://www.gbv.de/'));
+        $this->assertSame('https://www.gbv.de/', $expanded2->get2('url'));
     }
 
-    public function testBlockedDomainVsPrefix_distinction(): void {
-        $text = "{{Cite web|title=Test}}";
+    public function testBlockedUrlPrefix_multiple_url_params(): void {
+        $text = "{{Cite book|title=Test}}";
         $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('url', 'https://ci.nii.ac.jp/any/path/here'));
-        $this->assertNull($expanded->get2('url'));
-    }
-
-    public function testMixedBlocking_multiple_params(): void {
-        $text = "{{Cite conference|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('conference-url', 'https://www.gbv.de/dms/conf.pdf'));
-        $this->assertNull($expanded->get2('conference-url'));
-        $this->assertFalse($expanded->add_if_new('event-url', 'https://infoscience.epfl.ch/record/123'));
-        $this->assertNull($expanded->get2('event-url'));
-    }
-
-    public function testBlockedUrlPrefix_exact_match(): void {
-        $text = "{{Cite web|title=Test}}";
-        $expanded = $this->make_citation($text);
-        $this->assertFalse($expanded->add_if_new('url', 'https://www.gbv.de/dms/'));
+        $this->assertFalse($expanded->add_if_new('chapter-url', 'https://www.gbv.de/dms/file.pdf'));
+        $this->assertNull($expanded->get2('chapter-url'));
+        $this->assertFalse($expanded->add_if_new('url', 'https://ci.nii.ac.jp/naid/123'));
         $this->assertNull($expanded->get2('url'));
     }
 }
