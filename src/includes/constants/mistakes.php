@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 /** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
 const COMMON_MISTAKES = [
+    'otsikko' => 'title',
+    'আর্কাইভের-ইউআরএল' => 'archive-url',
+    'শিরোনাম' => 'title',
+    'fecha de acceso' => 'access-date',
+    'fecha-acceso' => 'access-date',
     'accesat' => 'access-date',
     'author‑link' => 'author-linke',
     'doi_access' => 'doi-accesse',
