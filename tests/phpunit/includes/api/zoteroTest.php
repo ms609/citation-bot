@@ -1286,4 +1286,26 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last4')); // Should not exist
     }
 
+    /**
+     * Test case 5: Real-world example from issue - Cite web with only last2/first2
+     * Zotero should not leave gaps when filtering non-human authors
+     */
+    public function testAuthorNumberingAfterFiltering5_RealWorldExample1(): void {
+        // Simulate scenario where Zotero filtered out first author, leaving only second
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => '', 1 => 'Agencies']; // Non-human, will be filtered
+        $author[1] = [0 => 'Jacob', 1 => 'Magid']; // Should become author1
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify the remaining author is numbered 1, not 2
+        $this->assertSame('Magid', $template->get2('last1'));
+        $this->assertSame('Jacob', $template->get2('first1'));
+        $this->assertNull($template->get2('last2')); // Should not exist
+    }
 }
