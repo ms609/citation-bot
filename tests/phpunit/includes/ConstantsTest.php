@@ -399,32 +399,31 @@ final class ConstantsTest extends testBaseClass {
         sort($flat);
         $failed = false;
         $last = 'XXXXXXXX';
+        $evil_data = '';
         foreach ($flat as $param) {
             if (mb_substr($param, -1) !== '/') {
                 $failed = true;
-                $this->flush();
-                echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
             }
             if ($param === $last) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
             }
             if (mb_strpos($param, '.') === false) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
             }
             if (preg_match('~\s~', $param) !== 0) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
             }
             $last = $param;
+        }
+        if ($failed) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertFalse($failed);
     }
@@ -432,6 +431,7 @@ final class ConstantsTest extends testBaseClass {
     public function testNonJournalListIsNotBad(): void {
         new TestPage(); // Fill page name with test name for debugging
         $failed = false;
+        $evil_data = '';
         foreach (CANONICAL_PUBLISHER_URLS as $journal) {
             $journal = $journal . '/';
             $check = $journal;
@@ -440,9 +440,7 @@ final class ConstantsTest extends testBaseClass {
             }
             if ($check !== $journal) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n CANONICAL_PUBLISHER_URLS damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
             }
             $check = $journal;
             foreach (JOURNAL_ARCHIVES_SITES as $bad) {
@@ -450,9 +448,7 @@ final class ConstantsTest extends testBaseClass {
             }
             if ($check !== $journal) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n JOURNAL_ARCHIVES_SITES damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n JOURNAL_ARCHIVES_SITES damaged by NON_JOURNAL_WEBSITES: " . $journal . ' changed to ' . $check . "\n\n";
             }
         }
         foreach (NON_JOURNAL_WEBSITES as $journal) {
@@ -463,10 +459,14 @@ final class ConstantsTest extends testBaseClass {
             }
             if ($check !== $journal) {
                 $failed = true;
-                $this->flush();
-                echo "\n\n NON_JOURNAL_WEBSITES damaged by JOURNAL_ARCHIVES_SITES: " . $journal . ' changed to ' . $check . "\n\n";
-                $this->flush();
+                $evil_data .= "\n\n NON_JOURNAL_WEBSITES damaged by JOURNAL_ARCHIVES_SITES: " . $journal . ' changed to ' . $check . "\n\n";
             }
+        }
+        if ($failed) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertFalse($failed);
     }
