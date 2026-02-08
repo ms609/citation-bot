@@ -721,7 +721,7 @@ final class Template
         if (in_array(mb_strtolower($param_name), $url_params, true)) {
             foreach (BLOCKED_URL_DOMAINS as $blocked_entry) {
                 $is_blocked = false;
-                
+
                 if (mb_strpos($blocked_entry, '/') !== false) {
                     // Prefix block: pattern must appear in URL (case-insensitive substring match)
                     if (mb_stripos($value, $blocked_entry) !== false) {
@@ -733,7 +733,7 @@ final class Template
                         $is_blocked = true;
                     }
                 }
-                
+
                 if ($is_blocked) {
                     $block_type = (mb_strpos($blocked_entry, '/') !== false) ? 'prefix' : 'domain';
                     report_warning("Rejected URL from blocked {$block_type} (" . echoable($blocked_entry) .
