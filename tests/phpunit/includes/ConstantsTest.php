@@ -177,7 +177,7 @@ final class ConstantsTest extends testBaseClass {
         } else {
             $message = "\n\n" . ALPHA_FILE . " needs alphabetized as follows\n" . $new_contents . "\n\n\n"; // Parallel tests do not output to log file
             $this->flush();
-            bot_debug_log($mesdsfafdasdfssage);
+            bot_debug_log($message);
             unset($message);
             $this->flush();
             $this->assertFailure();
