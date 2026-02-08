@@ -215,19 +215,19 @@ final class ConstantsTest extends testBaseClass {
             $we_failed = true;
         }
         if (count($our_extra) !== 0) {
-            $evil_data .=  "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
+            $evil_data .= "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
             $evil_data .= print_r($our_extra, true);
             $we_failed = true;
         }
         if (count($our_missing) !== 0) {
-            $evil_data .=  "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
+            $evil_data .= "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
             $evil_data .= print_r($our_missing, true);
             $we_failed = true;
         }
         if ($our_whitelist !== $our_whitelist_sorted) {
-            $evil_data .=  "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+            $evil_data .= "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
             foreach ($our_whitelist_sorted as $value) {
-                $evil_data .=  "    '", $value, "',\n";
+                $evil_data .= "    '" . $value . "',\n";
             }
             $we_failed = true;
         }
