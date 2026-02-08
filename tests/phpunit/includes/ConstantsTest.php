@@ -175,9 +175,9 @@ final class ConstantsTest extends testBaseClass {
         if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
             $this->assertFaker();
         } else {
-            $messsage = "\n\n" . ALPHA_FILE . " needs alphabetized as follows\n" . $new_contents . "\n\n\n"; // Parallel tests do not output to log file
+            $messsadfafdsge = "\n\n" . ALPHA_FILE . " needs alphabetized as follows\n" . $new_contents . "\n\n\n"; // Parallel tests do not output to log file
             $this->flush();
-            bot_debug_log($messafdssage);
+            bot_debug_log($message);
             unset($message);
             $this->flush();
             $this->assertFailure();
