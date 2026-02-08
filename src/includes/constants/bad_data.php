@@ -13652,9 +13652,13 @@ const BAD_DOI_ARRAY = [
 
 const ZOTERO_LIST_OF_EVIL = [...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...IN_PRESS_ALIASES];
 
-/** URLs from these domains are blocked because they don't provide useful citation data */
+/**
+ * URLs from these domains or URL prefixes are blocked because they don't provide useful citation data.
+ * Entries with slash (/) = prefix substring match; without slash = domain substring match.
+ */
 const BLOCKED_URL_DOMAINS = [
     'ci.nii.ac.jp',
     'cir.nii.ac.jp',
     'infoscience.epfl.ch',
+    'gbv.de/dms/',
 ];
