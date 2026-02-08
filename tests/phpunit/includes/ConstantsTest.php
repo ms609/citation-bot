@@ -142,7 +142,7 @@ final class ConstantsTest extends testBaseClass {
                 continue;
             }
             $alpha_bit = mb_substr($section, 0, $alpha_end);
-            $alpha_bits = preg_split('~(?<=\'),~', $alpha_bit);
+            $alpha_bits = preg_split('~(?<=\'),~u', $alpha_bit);
             $alpha_bits = array_map('mb_trim', $alpha_bits);
             if ($leader) {
                 $leader_bits = $alpha_bits;
