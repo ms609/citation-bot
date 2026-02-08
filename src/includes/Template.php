@@ -712,15 +712,31 @@ final class Template
             return false;
         }
 
-        // Check if this is a URL parameter and if it contains a blocked domain
+        // Check if URL parameter contains a blocked domain or matches a blocked URL prefix
+        // Entries with '/' are treated as prefixes (anywhere in URL), others as domain substrings
         $url_params = ['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                        'contribution-url', 'contributionurl', 'article-url', 'section-url', 'sectionurl',
                        'entry-url', 'event-url', 'eventurl', 'lay-url', 'layurl', 'map-url', 'mapurl',
                        'transcript-url', 'transcripturl'];
         if (in_array(mb_strtolower($param_name), $url_params, true)) {
-            foreach (BLOCKED_URL_DOMAINS as $blocked_domain) {
-                if (mb_stripos($value, $blocked_domain) !== false) {
-                    report_warning("Rejected URL from blocked domain (" . echoable($blocked_domain) .
+            foreach (BLOCKED_URL_DOMAINS as $blocked_entry) {
+                $is_blocked = false;
+
+                if (mb_strpos($blocked_entry, '/') !== false) {
+                    // Prefix block: pattern must appear in URL (case-insensitive substring match)
+                    if (mb_stripos($value, $blocked_entry) !== false) {
+                        $is_blocked = true;
+                    }
+                } else {
+                    // Domain block: pattern can appear anywhere in URL (case-insensitive)
+                    if (mb_stripos($value, $blocked_entry) !== false) {
+                        $is_blocked = true;
+                    }
+                }
+
+                if ($is_blocked) {
+                    $block_type = (mb_strpos($blocked_entry, '/') !== false) ? 'prefix' : 'domain';
+                    report_warning("Rejected URL from blocked {$block_type} (" . echoable($blocked_entry) .
                                  ") because it doesn't provide useful citation data: " . echoable($value));
                     return false;
                 }
