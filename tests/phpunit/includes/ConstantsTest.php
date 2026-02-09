@@ -530,7 +530,7 @@ final class ConstantsTest extends testBaseClass {
         sort($italics);
         $last = "123412341234";
         $good = true;
-        $evil_data ='';
+        $evil_data = '';
         foreach ($italics as $item) {
             if ($item === $last) {
                 $evil_data .= "\n Found duplicate: $item \n";
