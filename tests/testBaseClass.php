@@ -69,7 +69,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function requires_secrets(callable $function): void {
-        fwrite(STDERR, "XXXXXXXXXXXXX"); fflush(STDERR);
         if ($this->testing_skip_wiki) {
             $this->flush();
             echo 'A'; // For API, since W is taken
@@ -106,7 +105,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     /** Speeds up non-zotero tests */
     protected function requires_zotero(callable $function): void {
-        fwrite(STDERR, "ZZZZZZZZZZZZZZZZ"); fflush(STDERR);
         try {
             usleep(300000); // Reduce failures
             Zotero::unblock_zotero();
