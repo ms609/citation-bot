@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /*
- * Tests for constants.php.
+ * Tests for constants.php and constants subdirectory.
  */
 
 require_once __DIR__ . '/../../testBaseClass.php';
@@ -359,36 +359,37 @@ final class ConstantsTest extends testBaseClass {
         $flat = FLATTENED_AUTHOR_PARAMETERS;
         $extra_flat = array_diff($flat, $test_flat);
         $missing_flat = array_diff($test_flat, $flat);
+        $evil_data = '';
 
         if (!empty($extra_flat)) {
-            $this->flush();
-            echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
-            print_r($extra_flat);
-            $this->flush();
+            $evil_data .= "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
+            $evil_data .= print_r($extra_flat, true);
             $failed = true;
         }
         if (!empty($missing_flat)) {
-            $this->flush();
-            echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
-            print_r($missing_flat);
-            echo "\n expected \n";
-            print_r($test_flat);
-            $this->flush();
+            $evil_data .= "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+            $evil_data .= print_r($missing_flat, true);
+            $evil_data .= "\n expected \n";
+            $evil_data .= print_r($test_flat, true);
             $failed = true;
         }
         if (count($flat) !== count(array_unique($flat))) {
-            $this->flush();
-            echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+            $evil_data .= "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
             sort($flat);
             $last = 'XXXXXXXX';
             foreach ($flat as $param) {
                 if ($param === $last) {
-                    echo "\n" . $param . "\n";
+                    $evil_data .= "\n" . $param . "\n";
                 }
                 $last = $param;
             }
-            $this->flush();
             $failed = true;
+        }
+        if ($failed) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertFalse($failed);
     }
