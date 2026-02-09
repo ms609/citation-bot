@@ -479,6 +479,7 @@ final class ConstantsTest extends testBaseClass {
         $max_spaces = 0;
         $italics = explode("|", ITALICS_LIST);
         $this->assertSame("END_OF_CITE_list_junk", end($italics));
+        $evil_data = '';
         foreach ($italics as $item) {
             $spaces = mb_substr_count($item, " ");
             if ($spaces > $spaces_at) {
@@ -488,19 +489,16 @@ final class ConstantsTest extends testBaseClass {
             $max_spaces = max($max_spaces, $spaces);
         }
         if (!$in_order) {
-            $this->flush();
-            echo "\n Correct values for italics.php\n";
-            echo "\n";
-            echo "const ITALICS_LIST =\n";
+            $evil_data .= "\n Correct values for italics.php\n\n";
+            $evil_data .= "const ITALICS_LIST =\n";
             for ($i = $max_spaces; $i > -1; $i--) {
                 foreach ($italics as $item) {
                     if (mb_substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
-                         echo ' "' . $item . '|" .' . "\n";
+                         $evil_data .= ' "' . $item . '|" .' . "\n";
                     }
                 }
             }
-            echo ' "END_OF_CITE_list_junk";' . "\n";
-            $this->flush();
+            $evil_data .= ' "END_OF_CITE_list_junk";' . "\n";
         }
         $this->assertTrue($in_order);
 
@@ -513,11 +511,15 @@ final class ConstantsTest extends testBaseClass {
                 $later = $italics[$j];
                 if ((mb_substr_count($later, $early) !== 0) && ($later !== $early)) {
                     $in_order = false;
-                    $this->flush();
-                    echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
-                    $this->flush();
+                    $evil_data .= "\n\nWRONG ORDER: $later   AND   $early\n\n";
                 }
             }
+        }
+        if (!$in_order) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertTrue($in_order);
     }
@@ -528,14 +530,19 @@ final class ConstantsTest extends testBaseClass {
         sort($italics);
         $last = "123412341234";
         $good = true;
+        $evil_data ='';
         foreach ($italics as $item) {
             if ($item === $last) {
-                $this->flush();
-                echo "\n Found duplicate: $item \n";
-                $this->flush();
+                $evil_data .= "\n Found duplicate: $item \n";
                 $good = false;
             }
             $last = $item;
+        }
+        if (!$good) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertTrue($good);
     }
@@ -546,14 +553,19 @@ final class ConstantsTest extends testBaseClass {
         sort($italics);
         $last = "123412341234";
         $good = true;
+        $evil_data = '';
         foreach ($italics as $item) {
             if ($item === $last) {
-                $this->flush();
-                echo "\n Found duplicate: $item \n";
-                $this->flush();
+                $evil_data .= "\n Found duplicate: $item \n";
                 $good = false;
             }
             $last = $item;
+        }
+        if (!$good) {
+            $this->flush();
+            bot_debug_log($evil_data);
+            unset($evil_data);
+            $this->flush();
         }
         $this->assertTrue($good);
     }
