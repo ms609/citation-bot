@@ -369,7 +369,7 @@ final class ConstantsTest extends testBaseClass {
         if (!empty($missing_flat)) {
             $evil_data .= "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
             $evil_data .= print_r($missing_flat, true);
-            $evil_data .=  "\n expected \n";
+            $evil_data .= "\n expected \n";
             $evil_data .= print_r($test_flat, true);
             $failed = true;
         }
