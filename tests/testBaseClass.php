@@ -69,7 +69,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function requires_secrets(callable $function): void {
-        fwrite(STDERR, "XXXXXXXXXXXXX");
+        fwrite(STDERR, "\n\nXXXXXXXXXXXXX\n\n");
         if ($this->testing_skip_wiki) {
             $this->flush();
             echo 'A'; // For API, since W is taken
@@ -82,7 +82,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     /** Only routines that absolutely need bibcode access since we are limited */
     protected function requires_bibcode(callable $function): void {
-                fwrite(STDERR, "XXXXXXXXXXXXX");
+                fwrite(STDERR, "\n\nYYYYYYYYYYYYYYYY\n\n");
+        $this->flush();
         if ($this->testing_skip_bibcode) {
             $this->flush();
             echo 'B';
@@ -106,7 +107,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     /** Speeds up non-zotero tests */
     protected function requires_zotero(callable $function): void {
-                fwrite(STDERR, "XXXXXXXXXXXXX");
+        $this->flush();
+                fwrite(STDERR, "\n\nZZZZZZZZZZZZZZZZZ\n\n");
+        $this->flush();
         try {
             usleep(300000); // Reduce failures
             Zotero::unblock_zotero();
