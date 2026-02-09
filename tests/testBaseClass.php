@@ -70,9 +70,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function requires_secrets(callable $function): void {
         if ($this->testing_skip_wiki) {
-            $this->flush();
-            echo 'A'; // For API, since W is taken
-            $this->flush();
+            bot_debug_log('Skipping part/all of a test because of no wiki secrets');
             $this->assertFaker();
         } else {
             $function();
@@ -82,9 +80,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     /** Only routines that absolutely need bibcode access since we are limited */
     protected function requires_bibcode(callable $function): void {
         if ($this->testing_skip_bibcode) {
-            $this->flush();
-            echo 'B';
-            $this->flush();
+            bot_debug_log('Skipping part/all of a test because of no bibcode key');
             AdsAbsControl::big_back_on();
             AdsAbsControl::big_give_up();
             AdsAbsControl::small_back_on();
