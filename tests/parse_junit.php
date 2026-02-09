@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Parse JUnit XML report and display test timings in a readable format
  * Format: [✓] ClassName::testName  time
@@ -55,6 +56,7 @@ usort($tests, function ($a, $b) {
     return $b['time'] <=> $a['time'];
 });
 
+flush();
 echo "\n";
 echo "================================================================================\n";
 echo "Test Execution Times (sorted by duration, slowest first)\n";
