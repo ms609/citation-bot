@@ -1,3 +1,9 @@
-# GEMINI
+# Main GEMINI.md file
 
-Please follow instructions from @./CONTRIBUTING.md and @./AGENTS.md
+This is the main content
+
+@./AGENTS.md
+
+More content here
+
+@./docs/CONTRIBUTING.md 
