@@ -2,8 +2,8 @@
 
 This is the main content
 
-@./AGENTS.md
+@../AGENTS.md
 
 More content here
 
-@./docs/CONTRIBUTING.md
+@../docs/CONTRIBUTING.md
