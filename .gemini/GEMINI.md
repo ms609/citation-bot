@@ -6,4 +6,4 @@ This is the main content
 
 More content here
 
-@./docs/CONTRIBUTING.md 
+@./docs/CONTRIBUTING.md
