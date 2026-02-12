@@ -1,0 +1,38 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: citation-bot
+  title: Citation Bot
+  description: >
+    A tool to expand and format references at Wikipedia. Retrieves citation data
+    from a variety of sources including CrossRef (DOI), PMID, PMC, and JSTOR,
+    and returns a formatted citation. Deployed at https://citations.toolforge.org/.
+  annotations:
+    github.com/project-slug: ms609/citation-bot
+    backstage.io/source-location: url:https://github.com/ms609/citation-bot
+    backstage.io/techdocs-ref: url:https://github.com/ms609/citation-bot/tree/master/docs
+  tags:
+    - php
+    - wikipedia
+    - bot
+    - citations
+    - toolforge
+  links:
+    - url: https://citations.toolforge.org/
+      title: Production Website
+      icon: web
+    - url: https://en.wikipedia.org/wiki/User:Citation_bot/use
+      title: User Documentation
+      icon: docs
+    - url: https://en.wikipedia.org/wiki/User_talk:Citation_bot
+      title: Bug Reports
+      icon: alert
+spec:
+  type: website
+  lifecycle: active
+  owner: user:ms609
+  system: wikimedia-toolforge
+  providesApis:
+    - citation-bot-gadget-api
+    - citation-template-generator-api
+    - citation-bot-exapnder-api
