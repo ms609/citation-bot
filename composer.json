@@ -19,7 +19,7 @@
     "require-dev": {
         "brianium/paratest": "^7",
         "designsecurity/progpilot": "^1",
-        "mediawiki/mediawiki-codesniffer": "^49.0.0",
+        "mediawiki/mediawiki-codesniffer": "^50.0.0",
         "overtrue/phplint": "^9",
         "phan/phan": "^6",
         "phpstan/phpstan": "^2.1.32",
