@@ -40,7 +40,7 @@ on:
       - 'CITATION.cff'
       - '.markdownlint-cli2.yaml'
       - '.github/dependabot.yml'
-      - 'catalog-info.yamlcatalog-info.yaml'
+      - 'catalog-info.yaml'
       - 'src/assets/results.css'
       - 'src/assets/index.js'
       - '.aider.conf.yml'
