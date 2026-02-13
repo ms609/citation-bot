@@ -13492,6 +13492,7 @@ const DOI_FREE_PREFIX = [
     '10.1128/msystems',
     '10.1128/spectrum',
     '10.1136/bmjopen',
+    '10.1140/epjc',
     '10.11569/',
     '10.11646/megataxa',
     '10.11646/mesozoic',
