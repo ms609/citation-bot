@@ -21,7 +21,7 @@ try {
 
     if (mb_strlen($originalText) < 6) {
         throw new Exception('tiny page');  // @codeCoverageIgnore
-    } elseif (mb_strlen($originalText) > 90000) { // will probably time-out otherwise, see https://en.wikipedia.org/wiki/Special:LongPages
+    } elseif (mb_strlen($originalText) > 150000) { // will probably time-out otherwise, see https://en.wikipedia.org/wiki/Special:LongPages
         throw new Exception('bogus huge page');    // @codeCoverageIgnore
     } elseif (mb_strlen($editSummary) > 1000) { // see https://en.wikipedia.org/wiki/Help:Edit_summary#The_500-character_limit
         throw new Exception('bogus summary');  // @codeCoverageIgnore
