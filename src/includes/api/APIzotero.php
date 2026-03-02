@@ -116,8 +116,8 @@ final class Zotero {
                 if ($template->has('citeseerx')) {
                     self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
                 }
-                //  Has a CAPCHA -- if ($template->has('jfm'))
-                //  Has a CAPCHA -- if ($template->has('zbl'))
+                //  Has a CAPTCHA -- if ($template->has('jfm'))
+                //  Has a CAPTCHA -- if ($template->has('zbl'))
                 //  Do NOT do MR -- it is a review not the article itself. Note that html does have doi, but do not use it.
                 if ($template->has('hdl')) {
                     self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));

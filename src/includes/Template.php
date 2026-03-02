@@ -5692,7 +5692,7 @@ final class Template
                     }
                     if ($this->get($param) === 'n.d.') {
                         return;
-                    } // Special no-date code that citation template recognize.
+                    } // Special no-date code that the citation template recognizes.
                     // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
                     // no break
                 case 'issue':
