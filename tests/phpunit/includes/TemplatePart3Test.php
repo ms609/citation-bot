@@ -8,7 +8,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
-    public function testND(): void {  // n.d. is special case that template recognize.  Must protect final period.
+    public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.
         $text = '{{Cite journal|date =n.d.}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
@@ -675,7 +675,7 @@ EP - 999 }}';
         $this->assertNotNull($expanded->get2('accessdate'));
     }
 
-    public function testIgnoreUnkownCiteTemplates(): void {
+    public function testIgnoreUnknownCiteTemplates(): void {
         $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0001/Rubbish_bot_failure_test }}";
         $expanded = $this->process_citation($text);
         $this->assertSame($text, $expanded->parsed_text());
