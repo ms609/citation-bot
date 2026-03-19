@@ -104,7 +104,7 @@ jobs:
 
     - name: Code Coverage
       if:  ${{ !cancelled() && github.event_name != 'pull_request' }}
-      uses: codecov/codecov-action@v5.5.2
+      uses: codecov/codecov-action@v5.5.3
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
