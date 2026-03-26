@@ -1267,9 +1267,9 @@ EP - 999 }}';
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn', '1111-2222');
-        $this->assertNull($template->get2('issn'));
+        $this->assertNull($template->get2('issn')); // ISSN is no longer added
         $template->add_if_new('issn_force', '1111-2222');
-        $this->assertSame('1111-2222', $template->get2('issn'));
+        $this->assertNull($template->get2('issn')); // ISSN is no longer added
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn_force', 'EEEE-3333'); // Won't happen

@@ -1344,17 +1344,10 @@ final class Template
             // JOURNAL IDENTIFIERS
 
             case 'issn':
-                if ($this->blank(["journal", "periodical", "work", $param_name]) && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
-                    // Only add ISSN if journal is unspecified
-                    return $this->add($param_name, $value);
-                }
-                return false;
+                return false; // Do not add new ISSNs to citations
 
             case 'issn_force': // When dropping URL, force adding it
-                if ($this->blank('issn') && preg_match('~^\d{4}-\d{3}[\dxX]$~', $value)) {
-                    return $this->add('issn', $value);
-                }
-                return false;
+                return false; // Do not add new ISSNs to citations
 
             case 'ismn':
                 $value = str_ireplace('m', '9790', $value); // update them
