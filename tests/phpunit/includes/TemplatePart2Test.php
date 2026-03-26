@@ -2286,4 +2286,46 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Progress in Optics', $template->get2('series'));
     }
 
+    // Tests for work/website not added when publisher is already present (issue #5301)
+
+    public function testWorkNotAddedWhenPublisherPresent(): void {
+        // Bug report: work= is added even though publisher= is already set
+        $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'Some Organization'));
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testWebsiteNotAddedWhenPublisherPresent(): void {
+        // Bug report: website= is added even though publisher= is already set
+        $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('website', 'Some Organization'));
+        $this->assertNull($template->get2('website'));
+    }
+
+    public function testWorkAddedWhenNoPublisher(): void {
+        // Work should still be added when there is no publisher
+        $text = "{{cite web|title=Some Article|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('work', 'Some Publication'));
+        $this->assertSame('Some Publication', $template->get2('work'));
+    }
+
+    public function testWebsiteAddedWhenNoPublisher(): void {
+        // Website should still be added when there is no publisher
+        $text = "{{cite web|title=Some Article|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('website', 'example.org'));
+        $this->assertSame('example.org', $template->get2('website'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresentCitation(): void {
+        // Bug report: work= added to {{citation}} when publisher= is already set
+        $text = "{{citation|title=Some Article|publisher=EATCS|url=https://www.eatcs.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'EATCS'));
+        $this->assertNull($template->get2('work'));
+    }
+
 }

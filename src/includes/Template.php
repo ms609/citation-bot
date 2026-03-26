@@ -2262,12 +2262,18 @@ final class Template
                     $value = sanitize_string($value);
                 }
                 if ($this->blank(WORK_ALIASES)) {
+                    if ($this->has('publisher')) {
+                        return false; // Do not add work/website when publisher is already present
+                    }
                     return $this->add($param_name, $value);
                 }
                 return false;
 
             case 'website':
                 if ($this->blank(WORK_ALIASES)) {
+                    if ($this->has('publisher')) {
+                        return false; // Do not add work/website when publisher is already present
+                    }
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
                 return false;
