@@ -21,6 +21,6 @@ jobs:
 
       - name: markdown-validate
         id: markdown-validate
-        uses: DavidAnson/markdownlint-cli2-action@v22
+        uses: DavidAnson/markdownlint-cli2-action@v23
         with:
           globs: '**/*.md'
