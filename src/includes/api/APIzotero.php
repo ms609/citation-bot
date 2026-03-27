@@ -393,6 +393,9 @@ final class Zotero {
         if (isset($result->publicationTitle) && mb_strpos($result->publicationTitle, ' – ') !== false) {
             $result->publicationTitle = mb_trim(mb_substr($result->publicationTitle, 0, (int) mb_strpos($result->publicationTitle, ' – ')));
         }
+        if (isset($result->publicationTitle) && mb_strpos($result->publicationTitle, ' | ') !== false) {
+            $result->publicationTitle = mb_trim(mb_substr($result->publicationTitle, 0, (int) mb_strpos($result->publicationTitle, ' | ')));
+        }
         if (mb_stripos($url, 'www.royal.uk') !== false || mb_stripos($url, 'astanatimes.com') !== false || mb_stripos($url, 'theyucatantimes.com') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
