@@ -250,7 +250,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                 $ris_review = "Reviewed work: " . mb_trim($ris_part[1]); // Get these from JSTOR
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
                 break;
-            case "SN": // Deal with ISSN later
+            case "SN": // Deal with SN later (may be ISBN; ISSN addition is disabled per request on bot talk page)
                 $ris_issn = mb_trim($ris_part[1]);
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
                 break;
@@ -311,11 +311,8 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     if ($ris_issn) {
         if (preg_match("~[\d\-]{9,}[\dXx]~", $ris_issn)) {
             $template->add_if_new('isbn', $ris_issn);
-        } elseif (preg_match("~\d{4}\-?\d{3}[\dXx]~", $ris_issn)) {
-            if ($template->blank('journal')) {
-                  $template->add_if_new('issn', $ris_issn); // ISSN addition is disabled per request on bot talk page - this call is a no-op
-            }
         }
+        // ISSN addition is disabled per request on bot talk page - ISSN values from SN field are not added
     }
     if ($ris_publisher) {
         if ($ris_book || $template->blank(['journal', 'magazine'])) {
