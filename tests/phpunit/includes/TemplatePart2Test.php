@@ -2393,4 +2393,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('UK', $template->get2('location'));
     }
 
+    public function testWorkNotAddedWhenPublisherIsWikilinked(): void {
+        // Bug report #6: {{citation}} with publisher=[[European Association for Theoretical Computer Science]]
+        // was having work=EATCS added by Zotero even though EATCS is the org abbreviation, not a website name.
+        // The fix: work= is blocked whenever publisher= is set, including wikilinked publisher values.
+        $text = "{{citation|url=https://www.eatcs.org/index.php/component/content/article/20-eatcs-awards/1874-eatcs-ipec-nerode-prize-2014-laudatio|title=EATCS-IPEC Nerode Prize 2014 - Laudatio|publisher=[[European Association for Theoretical Computer Science]]|accessdate=2015-09-03}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle = abbreviated org name
+        $this->assertFalse($template->add_if_new('work', 'EATCS'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be the full wikilinked name
+        $this->assertSame('[[European Association for Theoretical Computer Science]]', $template->get2('publisher'));
+    }
+
 }
