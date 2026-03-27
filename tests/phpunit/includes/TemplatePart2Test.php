@@ -2407,4 +2407,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[European Association for Theoretical Computer Science]]', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherIsWikilinkAndWorkHasThePrefix(): void {
+        // Bug report #7: {{cite web}} with publisher=[[British Museum]] was having
+        // work=The British Museum added by Zotero (same org, but with "The" prefix).
+        // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
+        $text = "{{cite web|url=https://www.britishmuseum.org/blog/who-was-homer|access-date=7 March 2024|title=Who was Homer?|author=[[Daisy Dunn]]|date=22 January 2020|publisher=[[British Museum]]}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with "The" prefix
+        $this->assertFalse($template->add_if_new('work', 'The British Museum'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be the wikilinked name
+        $this->assertSame('[[British Museum]]', $template->get2('publisher'));
+    }
+
 }
