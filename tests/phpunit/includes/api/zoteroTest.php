@@ -941,6 +941,21 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('디스패치', $template->get2('work'));
     }
 
+    public function testZoteroResponse55(): void {
+        // Report 11: sportsworldi.com publicationTitle includes article title concatenated with
+        // the site name ("스포츠월드") with only a space separator, so the whole value is wrong.
+        // It must be replaced with just "스포츠월드" (the actual publication name).
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'http://www.sportsworldi.com/newsView/20190219537085';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => '가을로 가는 기차, 25일 컴백…두 번째 싱글 \'다시 이별\' 발표', 'itemType' => 'newspaperArticle', 'publicationTitle' => '가을로 가는 기차, 25일 컴백…두 번째 싱글 "다시 이별" 발표 스포츠월드'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('스포츠월드', $template->get2('work'));
+    }
+
     public function testRemoveURLthatRedirects(): void { // This URL is a redirect -- tests code that does that
         $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
         $template = $this->make_citation($text);

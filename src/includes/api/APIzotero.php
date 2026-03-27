@@ -410,6 +410,9 @@ final class Zotero {
         if (mb_stripos($url, 'newsen.com') !== false) { // Includes title of article
             $result->publicationTitle = 'Newsen';
         }
+        if (mb_stripos($url, 'sportsworldi.com') !== false) { // Includes title of article
+            $result->publicationTitle = '스포츠월드';
+        }
 
         if (mb_stripos($url, '/x.com') !== false || mb_stripos($url, 'twitter.com') !== false) {
             $result->itemType = 'webpage';   // @codeCoverageIgnore
