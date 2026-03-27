@@ -7,7 +7,7 @@ final class siciTest extends testBaseClass {
     public function testSiciExtraction1(): void {
         $text = '{{cite journal|url=http://fake.url/9999-9999(2002)152[0215:XXXXXX]2.0.CO;2}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('9999-9999', $expanded->get2('issn')); // Fake to avoid cross-ref search
+        $this->assertNull($expanded->get2('issn')); // ISSN is no longer added
         $this->assertSame('2002', $this->getDateAndYear($expanded));
         $this->assertSame('152', $expanded->get2('volume'));
         $this->assertSame('215', $expanded->get2('page'));

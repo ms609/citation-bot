@@ -524,7 +524,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): obje
             $retry_msg = '';                                                  // @codeCoverageIgnoreStart
             $time_to_sleep = null;
             $limit_action = null;
-            if (is_int($ratelimit_total) && is_int($ratelimit_left) && is_int($ratelimit_current) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+            if (is_int($ratelimit_total) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
                 // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
                 // available actions are: sleep, exit, ignore (default).
                 $rai = intval($retry_after[1]);

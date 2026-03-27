@@ -139,6 +139,18 @@ To install Composer dependencies, start the container as noted above, then type 
 
 To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See env.php.example in the root.
 
+## Debugging when the bot is blocked
+
+If the Citation Bot is currently blocked (i.e. `Citation_bot` is not a valid user on the target wiki), it will normally halt and display an error message.  For developers who need to test or debug the bot's behaviour during a block without writing to Wikipedia, the `ignore_block` URL parameter can be passed in the request.
+
+When `ignore_block` is present, the bot displays a warning — "Running bot anyway, but it will fail to write." — and continues processing.  This is useful for inspecting what the bot would do without risking any edits to Wikipedia.
+
+Example URL:
+
+    https://citations.toolforge.org/process_page.php?page=Example&ignore_block=1
+
+**Note:** In this mode all citation expansion runs normally, but the bot will fail when it attempts to write the results back to Wikipedia.  Use this only for debugging purposes.
+
 ## Submitting issues
 
 Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers internal use.

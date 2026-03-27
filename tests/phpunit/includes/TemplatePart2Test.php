@@ -164,9 +164,9 @@ final class TemplatePart2Test extends testBaseClass {
     public function testConversionOfURL3(): void {
         $text = "{{cite web|url=http://worldcat.org/issn/1234-1234}}";
         $template = $this->make_citation($text);
-        $this->assertTrue($template->get_identifiers_from_url());
-        $this->assertSame('1234-1234', $template->get2('issn'));
-        $this->assertNull($template->get2('url'));
+        $this->assertFalse($template->get_identifiers_from_url()); // ISSN is no longer added from WorldCat URL
+        $this->assertNull($template->get2('issn'));
+        $this->assertSame('http://worldcat.org/issn/1234-1234', $template->get2('url'));
     }
 
     public function testConversionOfURL4(): void {
