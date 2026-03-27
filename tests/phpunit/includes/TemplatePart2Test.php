@@ -2479,4 +2479,64 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('California State University, Northridge Faculty Senate', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport14b(): void {
+        // Bug report #14.2: {{citation}} with publisher=Seabiscuit Heritage Foundation
+        // was having work=Seabiscuit Heritage Foundation added by Zotero, then publisher= removed
+        // by tidy() because work and publisher matched, losing the original publisher value.
+        // The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=http://www.seabiscuitheritage.org/contact-us/|title=Directions to the ranch|publisher=Seabiscuit Heritage Foundation|accessdate=2019-12-04}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Seabiscuit Heritage Foundation'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Seabiscuit Heritage Foundation', $template->get2('publisher'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresentReport14c(): void {
+        // Bug report #14.3: {{citation}} with publisher=Ministère de lʼEnseignement supérieur...
+        // (using the modifier letter apostrophe U+02BC) was having work= added by Zotero
+        // using a regular apostrophe U+0027, resulting in both work= and publisher= being set.
+        // The fix: work= is blocked whenever publisher= is set, regardless of apostrophe differences.
+        $text = "{{citation|url=http://www.enseignementsup-recherche.gouv.fr/cid20476/cinquieme-edition-du-prix-irene-joliot-curie.html|title=Cinquième édition du Prix Irène Joliot-Curie|publisher=Ministère de lʼEnseignement supérieur, de la Recherche et de lʼInnovation|accessdate=2020-01-04}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with regular apostrophe instead of modifier letter apostrophe
+        $this->assertFalse($template->add_if_new('work', "Ministère de l'Enseignement supérieur, de la Recherche et de l'Innovation"));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved with its original apostrophe characters
+        $this->assertStringContainsString('Enseignement', $template->get2('publisher'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresentReport14d(): void {
+        // Bug report #14.4: {{citation}} with publisher=St. Lawrence University
+        // was having work=St. Lawrence University added by Zotero, then publisher= removed
+        // by tidy() because work and publisher matched (a university website, not a publication).
+        // The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=https://www.stlawu.edu/math-computer-science-and-statistics/news/patti-frazer-lock-honored-distinguished-teaching-award|title=Patti Frazer Lock honored with Distinguished Teaching Award|publisher=St. Lawrence University|date=February 19, 2016|access-date=2020-01-24}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'St. Lawrence University'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('St. Lawrence University', $template->get2('publisher'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresentReport14e(): void {
+        // Bug report #14.5: {{citation}} with publisher=[[Royal Society of Edinburgh]]
+        // was having work=The Royal Society of Edinburgh added by Zotero alongside the existing
+        // publisher= (with wikilink and no "The" prefix), resulting in both being set.
+        // The fix: work= is blocked whenever publisher= is set, including wikilinked publishers.
+        $text = "{{citation|url=https://www.rse.org.uk/fellow/bonnie-webber/|title=Professor Bonnie Lynn Webber FRSE|publisher=[[Royal Society of Edinburgh]]|accessdate=2020-03-12}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with "The" prefix and without wikilink
+        $this->assertFalse($template->add_if_new('work', 'The Royal Society of Edinburgh'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be the original wikilinked name
+        $this->assertSame('[[Royal Society of Edinburgh]]', $template->get2('publisher'));
+    }
+
 }
