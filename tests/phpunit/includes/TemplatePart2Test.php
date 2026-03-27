@@ -2336,4 +2336,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Some Publication', $template->get2('work'));
     }
 
+    public function testPublisherNotDroppedWhenWorkAdditionIsBlocked(): void {
+        // Bug report #2: publisher= was being removed when work= was added with the same value
+        // (Zotero would add work=X matching publisher=X, then tidy would drop publisher because it matched work)
+        // With the fix, work= is never added when publisher= is present, so publisher is preserved
+        $text = "{{cite web|title=Some Article|publisher=Haldimand County|url=https://www.haldimandcounty.ca/}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero would do: try to add work= with the same value as publisher=
+        $this->assertFalse($template->add_if_new('work', 'Haldimand County'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be present (not dropped by dedup logic)
+        $this->assertSame('Haldimand County', $template->get2('publisher'));
+    }
+
 }
