@@ -2263,6 +2263,7 @@ final class Template
                 }
                 if ($this->blank(WORK_ALIASES)) {
                     if (!$this->blank_other_than_comments('publisher')) {
+                        report_warning("Not adding |" . echoable($param_name) . "=" . echoable($value) . "| because |publisher=" . echoable($this->get('publisher')) . "| is already present - please verify the existing publisher value is correct");
                         return false; // Do not add work/website when publisher is already present
                     }
                     return $this->add($param_name, $value);
@@ -2272,6 +2273,7 @@ final class Template
             case 'website':
                 if ($this->blank(WORK_ALIASES)) {
                     if (!$this->blank_other_than_comments('publisher')) {
+                        report_warning("Not adding |" . echoable($param_name) . "=" . echoable($value) . "| because |publisher=" . echoable($this->get('publisher')) . "| is already present - please verify the existing publisher value is correct");
                         return false; // Do not add work/website when publisher is already present
                     }
                     return $this->add($param_name, $value); // Do NOT Sanitize
