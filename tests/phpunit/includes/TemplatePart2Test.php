@@ -2378,4 +2378,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Princess of Asturias Foundation', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherAndLocationPresentAndWorkCombinesBoth(): void {
+        // Bug report #5: cite web with publisher=Toyota location=UK was having work=Toyota UK added
+        // by Zotero, producing the redundant rendered output "Toyota UK. UK: Toyota."
+        // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
+        $text = "{{cite web|title=Some Page|publisher=Toyota|location=UK|url=https://www.toyota.co.uk/some-page}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle combining publisher + location
+        $this->assertFalse($template->add_if_new('work', 'Toyota UK'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= and location= must be preserved
+        $this->assertSame('Toyota', $template->get2('publisher'));
+        $this->assertSame('UK', $template->get2('location'));
+    }
+
 }
