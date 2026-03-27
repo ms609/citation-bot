@@ -2262,7 +2262,7 @@ final class Template
                     $value = sanitize_string($value);
                 }
                 if ($this->blank(WORK_ALIASES)) {
-                    if ($this->has('publisher')) {
+                    if (!$this->blank_other_than_comments('publisher')) {
                         return false; // Do not add work/website when publisher is already present
                     }
                     return $this->add($param_name, $value);
@@ -2271,7 +2271,7 @@ final class Template
 
             case 'website':
                 if ($this->blank(WORK_ALIASES)) {
-                    if ($this->has('publisher')) {
+                    if (!$this->blank_other_than_comments('publisher')) {
                         return false; // Do not add work/website when publisher is already present
                     }
                     return $this->add($param_name, $value); // Do NOT Sanitize
