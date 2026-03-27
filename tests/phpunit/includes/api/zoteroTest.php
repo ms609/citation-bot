@@ -899,6 +899,20 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('1234M', $template->get2('ol'));
     }
 
+    public function testZoteroResponse53(): void {
+        // Report 8: publicationTitle "VnExpress International – Latest news, business, travel and analysis from Vietnam"
+        // should be stripped to just "VnExpress International" (tagline after en-dash must be removed).
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://e.vnexpress.net/news/travel/places/vietjet-to-launch-new-route-4765004.html';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Vietjet to launch new route', 'itemType' => 'webpage', 'publicationTitle' => 'VnExpress International – Latest news, business, travel and analysis from Vietnam'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('VnExpress International', $template->get2('work'));
+    }
+
     public function testRemoveURLthatRedirects(): void { // This URL is a redirect -- tests code that does that
         $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
         $template = $this->make_citation($text);
