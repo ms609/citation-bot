@@ -2364,4 +2364,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('The West Australian', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentAndValueDiffersSlightly(): void {
+        // Bug report #4: cite web with publisher=Princess of Asturias Foundation was having
+        // work=The Princess of Asturias Foundation added by Zotero (same org, but with "The" prefix).
+        // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
+        $text = "{{cite web|title=Some Award|publisher=Princess of Asturias Foundation|url=https://www.fpa.es/en/some-award.html|access-date=23 June 2020}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns for fpa.es: publicationTitle with "The" prefix added
+        $this->assertFalse($template->add_if_new('work', 'The Princess of Asturias Foundation'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be intact
+        $this->assertSame('Princess of Asturias Foundation', $template->get2('publisher'));
+    }
+
 }
