@@ -2435,4 +2435,48 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Foundation for Polish Science', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport12a(): void {
+        // Bug report #12: cite web with publisher=Alan Turing Institute was having
+        // work=The Alan Turing Institute added by Zotero (same org, but with "The" prefix).
+        // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
+        $text = "{{cite web|title=Some Page|publisher=Alan Turing Institute|url=https://www.turing.ac.uk/some-page}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with "The" prefix
+        $this->assertFalse($template->add_if_new('work', 'The Alan Turing Institute'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Alan Turing Institute', $template->get2('publisher'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresentReport12b(): void {
+        // Bug report #12: cite web with publisher=American Association for the Advancement of Science
+        // was having work=AAAS - The World's Largest General Scientific Society added by Zotero
+        // (same org, with promotional wording in the publicationTitle).
+        // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
+        $text = "{{cite web|title=Some Page|publisher=American Association for the Advancement of Science|url=https://www.science.org/some-page}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with promotional wording
+        $this->assertFalse($template->add_if_new('work', 'AAAS - The World\'s Largest General Scientific Society'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('American Association for the Advancement of Science', $template->get2('publisher'));
+    }
+
+    public function testWorkNotAddedWhenPublisherMoreSpecificThanWork(): void {
+        // Bug report #12: cite web with publisher=California State University, Northridge Faculty Senate
+        // was having work=California State University, Northridge added by Zotero
+        // (publisher is more specific than the publicationTitle Zotero returned).
+        // The fix: work= is blocked whenever publisher= is set, even when publisher is more specific.
+        $text = "{{cite web|title=Some Page|publisher=California State University, Northridge Faculty Senate|url=https://www.csun.edu/some-page}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle is less specific than the existing publisher
+        $this->assertFalse($template->add_if_new('work', 'California State University, Northridge'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved (the more specific value)
+        $this->assertSame('California State University, Northridge Faculty Senate', $template->get2('publisher'));
+    }
+
 }
