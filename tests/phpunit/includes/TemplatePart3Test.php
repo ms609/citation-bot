@@ -155,7 +155,7 @@ EP - 999 }}';
 %@ 9999-9999}}';
         $prepared = $this->process_citation($code_coverage1);
         $this->assertSame('This Title', $prepared->get2('title'));
-        $this->assertSame('9999-9999', $prepared->get2('issn'));
+        $this->assertNull($prepared->get2('issn')); // ISSNs are no longer added to citations
         $this->assertNull($prepared->get2('doi'));
     }
 
@@ -436,7 +436,7 @@ EP - 999 }}';
         $url = "https://www.jstor.org/sici?sici=0003-0279(196101/03)81:1<43:WLIMP>2.0.CO;2-9";
         $text = "{{Cite journal|url=$url}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('594900', $expanded->get2('jstor'));
+        // ISSN is no longer added, so CrossRef search can't find the JSTOR ID from SICI alone
         $this->assertSame('1961', $expanded->get2('date'));
         $this->assertSame('81', $expanded->get2('volume'));
         $this->assertSame('1', $expanded->get2('issue'));
@@ -446,7 +446,10 @@ EP - 999 }}';
     public function testJstorSICIEncoded(): void {
         $text = '{{Cite journal|url=https://www.jstor.org/sici?sici=0003-0279(196101%2F03)81%3A1%3C43%3AWLIMP%3E2.0.CO%3B2-9}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('594900', $expanded->get2('jstor'));
+        // ISSN is no longer added, so CrossRef search can't find the JSTOR ID from SICI alone
+        $this->assertSame('1961', $expanded->get2('date'));
+        $this->assertSame('81', $expanded->get2('volume'));
+        $this->assertSame('1', $expanded->get2('issue'));
     }
 
     public function testIgnoreJstorPlants(): void {
@@ -1267,9 +1270,9 @@ EP - 999 }}';
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn', '1111-2222');
-        $this->assertNull($template->get2('issn'));
+        $this->assertNull($template->get2('issn')); // ISSN is no longer added
         $template->add_if_new('issn_force', '1111-2222');
-        $this->assertSame('1111-2222', $template->get2('issn'));
+        $this->assertNull($template->get2('issn')); // ISSN is no longer added
         $text = '{{Cite journal|journal=Yes}}';
         $template = $this->prepare_citation($text);
         $template->add_if_new('issn_force', 'EEEE-3333'); // Won't happen
