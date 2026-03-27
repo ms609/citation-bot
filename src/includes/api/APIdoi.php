@@ -426,7 +426,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     } elseif ($type === 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
         $try_to_add_it('journal', @$json['container-title']);  // @codeCoverageIgnore
     } elseif ($type === 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
-        // ISSN addition is disabled per request on bot talk page - nothing to do here
+        // Journal type identified; ISSN addition is disabled per request on bot talk page
     } elseif ($type === 'reference-entry' || $type === 'component') { // Very rare: reference-entry from 10.1002/14356007.a02_115.pub2, component from 10.3998/mpub.11422327.cmp.11
         $try_to_add_it('work', @$json['container-title']);    // @codeCoverageIgnore
         $try_to_add_it('title', @$json['title']);        // @codeCoverageIgnore
