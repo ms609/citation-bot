@@ -78,6 +78,7 @@ if ($total === 0) {
     exit(0);
 }
 $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
+$default_web_limit = intval(MAX_PAGES / 4);
 if ($total > intval($effective_max / 4)) {
     report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval($effective_max / 4));
     echo "\n\n";
@@ -87,6 +88,9 @@ if ($total > intval($effective_max / 4)) {
     echo "\n\n";
     bot_html_footer();
     exit(0);
+}
+if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
+    report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
