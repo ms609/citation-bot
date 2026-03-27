@@ -2350,4 +2350,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Haldimand County', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedToCiteNewsWhenPublisherPresent(): void {
+        // Bug report #3: cite news with publisher=<newspaper name> was being wrongly converted
+        // to work=<newspaper name> when Zotero returned publicationTitle for a newspaperArticle.
+        // The fix: work= is never added when publisher= is already set (same fix as reports 1 & 2).
+        $text = "{{cite news|title=Some Article|publisher=The West Australian|url=https://thewest.com.au/}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero would do for a newspaperArticle: add work= with the publicationTitle
+        $this->assertFalse($template->add_if_new('work', 'The West Australian'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be 'The West Australian'
+        $this->assertSame('The West Australian', $template->get2('publisher'));
+    }
+
 }
