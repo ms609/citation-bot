@@ -93,4 +93,7 @@ if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
     report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
+if (defined('MAX_PAGES_OVERRIDE')) {
+    $edit_summary_end .= "| Whitelisted category ";
+}
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
