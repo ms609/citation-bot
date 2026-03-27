@@ -2085,7 +2085,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 }
                 return $template->add_if_new('oclc', $match[1]);
             } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
-                return false; // Do not add new ISSNs to citations
+                return false; // Do not add new ISSNs to citations - disabled per request on bot talk page
             }
             return false;
         } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match) &&

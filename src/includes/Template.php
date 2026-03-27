@@ -1344,10 +1344,10 @@ final class Template
             // JOURNAL IDENTIFIERS
 
             case 'issn':
-                return false; // Do not add new ISSNs to citations
+                return false; // Do not add new ISSNs to citations - disabled per request on bot talk page
 
-            case 'issn_force': // When dropping URL, force adding it
-                return false; // Do not add new ISSNs to citations
+            case 'issn_force': // When dropping URL, force adding it - disabled per request on bot talk page
+                return false; // Do not add new ISSNs to citations - disabled per request on bot talk page
 
             case 'ismn':
                 $value = str_ireplace('m', '9790', $value); // update them
