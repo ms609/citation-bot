@@ -2421,4 +2421,18 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[British Museum]]', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherIsDifferentLanguageTranslation(): void {
+        // Bug report #9: {{citation}} with publisher=Foundation for Polish Science was having
+        // work=Fundacja na rzecz Nauki Polskiej added by Zotero (the same organisation in Polish).
+        // The fix: work= is blocked whenever publisher= is set, regardless of the language difference.
+        $text = "{{citation|url=https://www.fnp.org.pl/en/fnp-prizes-laureates/|title=FNP Prizes Laureates|publisher=Foundation for Polish Science|access-date=2023-02-21}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle in Polish (different language, same organisation)
+        $this->assertFalse($template->add_if_new('work', 'Fundacja na rzecz Nauki Polskiej'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must still be intact
+        $this->assertSame('Foundation for Polish Science', $template->get2('publisher'));
+    }
+
 }
