@@ -2288,7 +2288,7 @@ final class TemplatePart2Test extends testBaseClass {
 
     // Tests for work/website not added when publisher is already present (issue #5301)
 
-    public function testWorkNotAddedWhenPublisherPresent(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport1(): void {
         // Bug report: work= is added even though publisher= is already set
         $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
         $template = $this->make_citation($text);
@@ -2296,7 +2296,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('work'));
     }
 
-    public function testWebsiteNotAddedWhenPublisherPresent(): void {
+    public function testWebsiteNotAddedWhenPublisherPresentReport1(): void {
         // Bug report: website= is added even though publisher= is already set
         $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
         $template = $this->make_citation($text);
@@ -2320,7 +2320,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('example.org', $template->get2('website'));
     }
 
-    public function testWorkNotAddedWhenPublisherPresentCitation(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport1Citation(): void {
         // Bug report: work= added to {{citation}} when publisher= is already set
         $text = "{{citation|title=Some Article|publisher=EATCS|url=https://www.eatcs.org/}}";
         $template = $this->make_citation($text);
@@ -2336,7 +2336,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Some Publication', $template->get2('work'));
     }
 
-    public function testPublisherNotDroppedWhenWorkAdditionIsBlocked(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport2(): void {
         // Bug report #2: publisher= was being removed when work= was added with the same value
         // (Zotero would add work=X matching publisher=X, then tidy would drop publisher because it matched work)
         // With the fix, work= is never added when publisher= is present, so publisher is preserved
@@ -2350,7 +2350,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Haldimand County', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedToCiteNewsWhenPublisherPresent(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport3(): void {
         // Bug report #3: cite news with publisher=<newspaper name> was being wrongly converted
         // to work=<newspaper name> when Zotero returned publicationTitle for a newspaperArticle.
         // The fix: work= is never added when publisher= is already set (same fix as reports 1 & 2).
@@ -2364,7 +2364,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('The West Australian', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedWhenPublisherPresentAndValueDiffersSlightly(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport4(): void {
         // Bug report #4: cite web with publisher=Princess of Asturias Foundation was having
         // work=The Princess of Asturias Foundation added by Zotero (same org, but with "The" prefix).
         // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
@@ -2378,7 +2378,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Princess of Asturias Foundation', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedWhenPublisherAndLocationPresentAndWorkCombinesBoth(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport5(): void {
         // Bug report #5: cite web with publisher=Toyota location=UK was having work=Toyota UK added
         // by Zotero, producing the redundant rendered output "Toyota UK. UK: Toyota."
         // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
@@ -2393,7 +2393,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('UK', $template->get2('location'));
     }
 
-    public function testWorkNotAddedWhenPublisherIsWikilinked(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport6(): void {
         // Bug report #6: {{citation}} with publisher=[[European Association for Theoretical Computer Science]]
         // was having work=EATCS added by Zotero even though EATCS is the org abbreviation, not a website name.
         // The fix: work= is blocked whenever publisher= is set, including wikilinked publisher values.
@@ -2407,7 +2407,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[European Association for Theoretical Computer Science]]', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedWhenPublisherIsWikilinkAndWorkHasThePrefix(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport7(): void {
         // Bug report #7: {{cite web}} with publisher=[[British Museum]] was having
         // work=The British Museum added by Zotero (same org, but with "The" prefix).
         // The fix: work= is blocked whenever publisher= is set, regardless of the value difference.
@@ -2421,7 +2421,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[British Museum]]', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedWhenPublisherIsDifferentLanguageTranslation(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport9(): void {
         // Bug report #9: {{citation}} with publisher=Foundation for Polish Science was having
         // work=Fundacja na rzecz Nauki Polskiej added by Zotero (the same organisation in Polish).
         // The fix: work= is blocked whenever publisher= is set, regardless of the language difference.
@@ -2464,7 +2464,7 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('American Association for the Advancement of Science', $template->get2('publisher'));
     }
 
-    public function testWorkNotAddedWhenPublisherMoreSpecificThanWork(): void {
+    public function testWorkNotAddedWhenPublisherPresentReport12c(): void {
         // Bug report #12: cite web with publisher=California State University, Northridge Faculty Senate
         // was having work=California State University, Northridge added by Zotero
         // (publisher is more specific than the publicationTitle Zotero returned).

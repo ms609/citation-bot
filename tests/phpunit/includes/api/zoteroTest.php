@@ -899,7 +899,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('1234M', $template->get2('ol'));
     }
 
-    public function testZoteroResponse53(): void {
+    public function testEnDashTaglineStrippedReport8(): void {
         // Report 8: publicationTitle "VnExpress International – Latest news, business, travel and analysis from Vietnam"
         // should be stripped to just "VnExpress International" (tagline after en-dash must be removed).
         $text = '{{cite web}}';
@@ -913,7 +913,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('VnExpress International', $template->get2('work'));
     }
 
-    public function testZoteroResponse53b(): void {
+    public function testEnDashTaglineOnlyStrippedWhenPresentReport8(): void {
         // Regression for Report 8 fix: publicationTitle WITHOUT an en-dash must pass through unmodified.
         // The en-dash stripping must only fire when the separator ' – ' (U+2013) is present.
         $text = '{{cite web}}';
@@ -927,7 +927,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Some Magazine', $template->get2('work'));
     }
 
-    public function testZoteroResponse54(): void {
+    public function testPipeTaglineStrippedReport10(): void {
         // Report 10: publicationTitle "디스패치 | 뉴스는 팩트다!" should be stripped to just "디스패치"
         // (tagline after space-pipe-space separator must be removed).
         $text = '{{cite web}}';
@@ -941,7 +941,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('디스패치', $template->get2('work'));
     }
 
-    public function testZoteroResponse55(): void {
+    public function testSportsworldiPublicationTitleReport11(): void {
         // Report 11: sportsworldi.com publicationTitle includes article title concatenated with
         // the site name ("스포츠월드") with only a space separator, so the whole value is wrong.
         // It must be replaced with just "스포츠월드" (the actual publication name).
@@ -1366,7 +1366,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last2')); // Should not exist
     }
 
-    public function testEatcsOrgAuthorSuppressed(): void {
+    public function testEatcsOrgAuthorSuppressedReport20(): void {
         // Bug report #20: eatcs.org is a Joomla CMS site that records the posting
         // admin ("Efi Chita") as the article "author" in page metadata.  Zotero picks
         // this up and the bot was adding last1=Chita|first1=Efi to award-announcement
