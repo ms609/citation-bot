@@ -2508,7 +2508,7 @@ final class TemplatePart2Test extends testBaseClass {
         // work= must not have been added
         $this->assertNull($template->get2('work'));
         // publisher= must be preserved with its original apostrophe characters
-        $this->assertStringContainsString('Enseignement', $template->get2('publisher'));
+        $this->assertSame("Ministère de lʼEnseignement supérieur, de la Recherche et de lʼInnovation", $template->get2('publisher'));
     }
 
     public function testWorkNotAddedWhenPublisherPresentReport14d(): void {
