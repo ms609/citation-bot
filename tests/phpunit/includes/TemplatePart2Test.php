@@ -2329,9 +2329,11 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testWorkAllowedWhenPublisherIsCommentOnly(): void {
-        // publisher=<!-- --> is effectively empty - work= should still be addable
-        $text = "{{cite web|title=Some Article|publisher=<!-- -->|url=https://example.org/}}";
-        $template = $this->process_citation($text);
+        // publisher=<!-- --> is effectively empty - work= should still be addable.
+        // During page processing, <!-- --> is stored as a CITATION_BOT_PLACEHOLDER_COMMENT
+        // before templates are expanded, so we test with the placeholder form directly.
+        $text = "{{cite web|title=Some Article|publisher=# # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #|url=https://example.org/}}";
+        $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('work', 'Some Publication'));
         $this->assertSame('Some Publication', $template->get2('work'));
     }
