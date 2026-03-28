@@ -2584,4 +2584,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Royal Society of Edinburgh', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport18(): void {
+        // Bug report #18: {{citation}} with publisher=Cardiff University (no work=)
+        // was having work=Cardiff University added by Zotero (publicationTitle from cardiff.ac.uk),
+        // then tidy() dropped publisher= because it equalled work=, losing the original publisher.
+        // The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=https://www.cardiff.ac.uk/people/view/118164-spasic-irena|title=Professor Irena Spasic|publisher=Cardiff University|access-date=2021-05-01}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Cardiff University'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Cardiff University', $template->get2('publisher'));
+    }
+
 }
