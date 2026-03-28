@@ -2708,4 +2708,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Penn State Great Valley', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport27(): void {
+        // Bug report #27: {{citation}} with publisher=University of Edinburgh School of Informatics
+        // was having work=The University of Edinburgh added by Zotero (publicationTitle from ed.ac.uk).
+        // The publisher was not removed in this case - work= was added alongside the existing publisher=.
+        // The fix: work= is blocked whenever publisher= is set (Template.php publisher guard).
+        $text = "{{citation|url=https://www.ed.ac.uk/informatics/news-events/stories/2016/goldwater-bcs-award|title=Dr Goldwater wins BCS Award|publisher=University of Edinburgh School of Informatics|date=21 June 2017|access-date=2022-07-28}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle = "The University of Edinburgh"
+        $this->assertFalse($template->add_if_new('work', 'The University of Edinburgh'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('University of Edinburgh School of Informatics', $template->get2('publisher'));
+    }
+
 }
