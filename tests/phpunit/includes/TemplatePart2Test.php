@@ -2744,7 +2744,7 @@ final class TemplatePart2Test extends testBaseClass {
         // was having work=Centro Universitario de Ciencias Exactas e Ingenierías added by Zotero
         // (publicationTitle from cucei.udg.mx).
         // The fix: work= is blocked whenever publisher= is set (Template.php publisher guard).
-        $text = "{{citation|url=http://www.cucei.udg.mx/es/contenido/arana-daniel-nancy-guadalupe|title=Arena Daniel Nancy Guadalupe|date=8 May 2013|publisher=University of Guadalajara Department of Computational Sciences|access-date=2023-01-08}}";
+        $text = "{{citation|url=http://www.cucei.udg.mx/es/contenido/arana-daniel-nancy-guadalupe|title=Arana Daniel Nancy Guadalupe|date=8 May 2013|publisher=University of Guadalajara Department of Computational Sciences|access-date=2023-01-08}}";
         $template = $this->make_citation($text);
         // Simulate what Zotero returns: publicationTitle = "Centro Universitario de Ciencias Exactas e Ingenierías"
         $this->assertFalse($template->add_if_new('work', 'Centro Universitario de Ciencias Exactas e Ingenierías'));
