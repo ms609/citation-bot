@@ -2693,4 +2693,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('European Association for Theoretical Computer Science', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport26(): void {
+        // Bug report #26: {{citation}} with publisher=Penn State Great Valley (no work=)
+        // was having work=Penn State Great Valley added by Zotero (publicationTitle from greatvalley.psu.edu).
+        // The cleanup code then saw publisher==work and called forget('publisher'), leaving only work=.
+        // The fix: work= is blocked whenever publisher= is set, so the cleanup code is never triggered.
+        $text = "{{citation|url=https://greatvalley.psu.edu/person/kathryn-w-jablokow|title=Kathryn W. Jablokow|publisher=Penn State Great Valley|access-date=2022-07-14}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Penn State Great Valley'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Penn State Great Valley', $template->get2('publisher'));
+    }
+
 }
