@@ -2739,4 +2739,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('The Combustion Institute', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport29(): void {
+        // Bug report #29: {{citation}} with publisher=University of Guadalajara Department of Computational Sciences
+        // was having work=Centro Universitario de Ciencias Exactas e Ingenierías added by Zotero
+        // (publicationTitle from cucei.udg.mx).
+        // The fix: work= is blocked whenever publisher= is set (Template.php publisher guard).
+        $text = "{{citation|url=http://www.cucei.udg.mx/es/contenido/arana-daniel-nancy-guadalupe|title=Arena Daniel Nancy Guadalupe|date=8 May 2013|publisher=University of Guadalajara Department of Computational Sciences|access-date=2023-01-08}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle = "Centro Universitario de Ciencias Exactas e Ingenierías"
+        $this->assertFalse($template->add_if_new('work', 'Centro Universitario de Ciencias Exactas e Ingenierías'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('University of Guadalajara Department of Computational Sciences', $template->get2('publisher'));
+    }
+
 }
