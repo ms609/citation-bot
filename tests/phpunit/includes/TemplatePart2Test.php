@@ -2661,4 +2661,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Museo de la Mujer', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport24(): void {
+        // Bug report #24: {{citation}} with publisher=Institut d'ingénierie et de management, Grenoble Alpes University
+        // was having work=Grenoble INP Institut d'ingénierie et de management, Université Grenoble Alpes
+        // added by Zotero (publicationTitle from grenoble-inp.fr) alongside the existing publisher.
+        // The fix: work= is blocked whenever publisher= is set, even when the two values differ
+        // (e.g. the same institution named in different languages or with different formatting).
+        $text = "{{citation|url=https://www.grenoble-inp.fr/fr/l-institut/jocelyne-troccaz-et-philippe-cinquin-recompenses-par-l-academie-nationale-de-chirurgie|title=Jocelyne Troccaz et Philippe Cinquin récompensés par l'Académie nationale de Chirurgie|date=29 January 2014|publisher=Institut d'ingénierie et de management, Grenoble Alpes University|access-date=2022-06-25}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle is the French name of the same institution
+        $this->assertFalse($template->add_if_new('work', "Grenoble INP Institut d'ingénierie et de management, Université Grenoble Alpes"));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved unchanged
+        $this->assertSame("Institut d'ingénierie et de management, Grenoble Alpes University", $template->get2('publisher'));
+    }
+
 }
