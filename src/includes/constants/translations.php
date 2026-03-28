@@ -111,6 +111,7 @@ const MK_TRANS = [
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Поврзано од',
     '[[Category:' => '[[Категорија:',
+    'Whitelisted category ' => 'Категорија на белата листа ',
 ];
 
 const RU_TRANS = [
@@ -138,6 +139,7 @@ const RU_TRANS = [
     'Suggested by' => 'Предложено',
     'Linked from' => 'Ссылки с',
     '[[Category:' => '[[Категория:',
+    'Whitelisted category ' => 'Категория из белого списка ',
 ];
 
 const SR_TRANS = [
@@ -165,6 +167,7 @@ const SR_TRANS = [
     'Suggested by' => 'Предложено од',
     'Linked from' => 'Повезано од',
     '[[Category:' => '[[Категорија:',
+    'Whitelisted category ' => 'Категорија са беле листе ',
 ];
 
 const VI_TRANS = [
@@ -192,4 +195,5 @@ const VI_TRANS = [
     'Suggested by' => 'Được đề xuất bởi',
     'Linked from' => 'Liên kết từ',
     '[[Category:' => '[[Thể loại:',
+    'Whitelisted category ' => 'Danh mục được cho phép ',
 ];

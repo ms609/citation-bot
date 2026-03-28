@@ -23,8 +23,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         return;
     }
     $total = count($pages_in_category);
-    if ($total > MAX_PAGES) {
-        report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) MAX_PAGES);
+    $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
+    if ($total > $effective_max) {
+        report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) $effective_max);
         bot_html_footer();
         return;
     }

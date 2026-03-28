@@ -30,6 +30,7 @@ const GET_IS_OKAY = [
 ];
 
 $category = '';
+$from_get = false;
 if (is_string(@$_POST["cat"])) {
     $category = mb_trim($_POST["cat"]);
 }
@@ -40,6 +41,7 @@ if ($category === '' && is_string(@$_GET["cat"])) {
     $try = mb_trim(urldecode($_GET["cat"]));
     if (in_array($try, GET_IS_OKAY, true)) {
         $category = $try;
+        $from_get = true;
     }
 }
 if (!$category) {
@@ -57,6 +59,10 @@ if (!$category) {
     exit(0);
 }
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
+if ($from_get) {
+    define('MAX_PAGES_OVERRIDE', 1000000); // Match CLI limit (see setup.php) for whitelisted GET categories
+}
+unset($from_get);
 
 session_start(['read_and_close' => true]);
 bot_html_header();
@@ -71,8 +77,10 @@ if ($total === 0) {
     bot_html_footer();
     exit(0);
 }
-if ($total > intval(MAX_PAGES / 4)) {
-    report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval(MAX_PAGES / 4));
+$effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
+$default_web_limit = intval(MAX_PAGES / 4);
+if ($total > intval($effective_max / 4)) {
+    report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval($effective_max / 4));
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
         echo echoable(str_replace(' ', '_', (string) $page_title)), "\n";
@@ -81,5 +89,11 @@ if ($total > intval(MAX_PAGES / 4)) {
     bot_html_footer();
     exit(0);
 }
+if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
+    report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
+}
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
+if (defined('MAX_PAGES_OVERRIDE')) {
+    $edit_summary_end .= "| Whitelisted category ";
+}
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
