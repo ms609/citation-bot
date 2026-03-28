@@ -2646,4 +2646,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Fundación Gadea Ciencia', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport23(): void {
+        // Bug report #23: {{citation}} with publisher=Museo de la Mujer (no work=)
+        // was having work=Museo de la mujer added by Zotero (publicationTitle from museodelamujer.org.mx).
+        // The cleanup code then saw publisher==work (case-insensitively) and called forget('publisher'),
+        // leaving only work=.  The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=https://museodelamujer.org.mx/virtual/efenacional/fallece-silvia-de-neymet-urbina/|title=Fallece Silvia de Neymet Urbina|publisher=Museo de la Mujer|access-date=2021-09-27|language=es}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle matching the existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Museo de la mujer'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Museo de la Mujer', $template->get2('publisher'));
+    }
+
 }
