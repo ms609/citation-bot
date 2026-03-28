@@ -448,6 +448,10 @@ final class Zotero {
             unset($result->creators);
             unset($result->author);
         }
+        if (mb_stripos($url, 'eatcs.org') !== false) {
+            unset($result->creators);
+            unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
+        }
         if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);
         }

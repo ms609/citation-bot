@@ -1365,4 +1365,25 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Jacob', $template->get2('first1'));
         $this->assertNull($template->get2('last2')); // Should not exist
     }
+
+    public function testEatcsOrgAuthorSuppressed(): void {
+        // Bug report #20: eatcs.org is a Joomla CMS site that records the posting
+        // admin ("Efi Chita") as the article "author" in page metadata.  Zotero picks
+        // this up and the bot was adding last1=Chita|first1=Efi to award-announcement
+        // citations where no author should appear.
+        // The fix: unset author/creators for all eatcs.org URLs in process_zotero_response.
+        $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011';
+        $author = [];
+        $author[0] = [0 => 'Efi', 1 => 'Chita']; // Site admin listed as author in Joomla metadata
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Presburger Award 2011', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Author must NOT have been added
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+    }
 }

@@ -2614,4 +2614,21 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Royal Society of Edinburgh', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport20(): void {
+        // Bug report #20: {{citation}} with publisher=European Association for Theoretical Computer Science
+        // was having work=EATCS added by Zotero alongside the existing publisher=, producing both fields
+        // simultaneously.  Additionally, last1=Chita|first1=Efi was being added because the Joomla CMS
+        // used by eatcs.org records its posting admin as the page "author".
+        // The work= fix: work= is blocked whenever publisher= is set.
+        // The author fix: eatcs.org author/creators are suppressed in APIzotero.php.
+        $text = "{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle = EATCS abbreviation
+        $this->assertFalse($template->add_if_new('work', 'EATCS'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('European Association for Theoretical Computer Science', $template->get2('publisher'));
+    }
+
 }
