@@ -2631,4 +2631,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('European Association for Theoretical Computer Science', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport22(): void {
+        // Bug report #22: {{citation}} with publisher=Fundación Gadea Ciencia (no work=)
+        // was having work=Fundación Gadea Ciencia added by Zotero (publicationTitle from gadeaciencia.org).
+        // The cleanup code then saw publisher==work and called forget('publisher'), leaving only work=.
+        // The fix: work= is blocked whenever publisher= is set, so the cleanup code is never triggered.
+        $text = "{{citation|url=https://gadeaciencia.org/teams/moya-de-guerra-elvira-2/|title=Elvira Moya de Guerra|publisher=Fundación Gadea Ciencia|access-date=2021-08-01}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Fundación Gadea Ciencia'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Fundación Gadea Ciencia', $template->get2('publisher'));
+    }
+
 }
