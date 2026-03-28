@@ -1418,4 +1418,25 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response(json_encode($zotero_data3), $template3, $url3, $access_date);
         $this->assertNull($template3->get2('work'));
     }
+
+    public function testEatcsOrgAuthorSuppressedReport25(): void {
+        // Bug report #25: A different eatcs.org article URL was still having last1=Chita|first1=Efi added.
+        // Same root cause as Report 20 – Joomla CMS records the posting admin as the article "author".
+        // The fix: unset author/creators for all eatcs.org URLs in process_zotero_response.
+        $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/2103-eatcs-honours-three-outstanding-phd-theses-with-the-first-eatcs-distinguished-dissertation-awards|title=EATCS honours three outstanding PhD theses with the first EATCS Distinguished Dissertation Awards|publisher=European Association for Theoretical Computer Science|year=2015|access-date=2022-06-29}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://eatcs.org/index.php/component/content/article/1-news/2103-eatcs-honours-three-outstanding-phd-theses-with-the-first-eatcs-distinguished-dissertation-awards';
+        $author = [];
+        $author[0] = [0 => 'Efi', 1 => 'Chita']; // Site admin listed as author in Joomla metadata
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'EATCS honours three outstanding PhD theses', 'itemType' => 'webpage', 'author' => $author, 'publicationTitle' => 'EATCS'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Author must NOT have been added
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        // work= must NOT have been added (publisher= is already present)
+        $this->assertNull($template->get2('work'));
+    }
 }
