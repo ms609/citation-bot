@@ -2539,4 +2539,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('[[Royal Society of Edinburgh]]', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport15(): void {
+        // Bug report #15: {{citation}} with publisher=Mayo Clinic (no work=)
+        // was having work=Mayo Clinic added by Zotero (publicationTitle from mayo.edu URL),
+        // then tidy() dropped publisher= because it equalled work=, losing the original publisher.
+        // The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=https://www.mayo.edu/research/departments-divisions/department-health-sciences-research/division-biomedical-statistics-informatics/research/survival-analysis/people|title=Research departments and divisions: Survival analysis|publisher=Mayo Clinic|accessdate=2020-06-20}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle identical to existing publisher
+        $this->assertFalse($template->add_if_new('work', 'Mayo Clinic'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Mayo Clinic', $template->get2('publisher'));
+    }
+
 }
