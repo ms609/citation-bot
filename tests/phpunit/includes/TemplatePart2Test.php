@@ -2599,4 +2599,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Cardiff University', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport19(): void {
+        // Bug report #19: {{citation}} with publisher=Royal Society of Edinburgh (no work=)
+        // was having work=The Royal Society of Edinburgh added by Zotero alongside the existing
+        // publisher= (with "The" prefix), resulting in both being set simultaneously.
+        // The fix: work= is blocked whenever publisher= is set.
+        $text = "{{citation|url=https://www.rse.org.uk/fellow/margaret-lucas/|title=Professor Margaret Lucas FRSE|publisher=Royal Society of Edinburgh|access-date=2021-05-19}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle with "The" prefix added
+        $this->assertFalse($template->add_if_new('work', 'The Royal Society of Edinburgh'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('Royal Society of Edinburgh', $template->get2('publisher'));
+    }
+
 }
