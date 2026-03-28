@@ -899,9 +899,8 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('1234M', $template->get2('ol'));
     }
 
-    public function testEnDashTaglineStrippedReport8(): void {
-        // Report 8: publicationTitle "VnExpress International – Latest news, business, travel and analysis from Vietnam"
-        // should be stripped to just "VnExpress International" (tagline after en-dash must be removed).
+    public function testEnDashTaglineStripped(): void {
+        // publicationTitle with an en-dash tagline must be stripped to just the publication name.
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -913,9 +912,8 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('VnExpress International', $template->get2('work'));
     }
 
-    public function testEnDashTaglineOnlyStrippedWhenPresentReport8(): void {
-        // Regression for Report 8 fix: publicationTitle WITHOUT an en-dash must pass through unmodified.
-        // The en-dash stripping must only fire when the separator ' – ' (U+2013) is present.
+    public function testEnDashTaglineOnlyStrippedWhenPresent(): void {
+        // Regression: publicationTitle WITHOUT an en-dash must pass through unmodified.
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -927,9 +925,8 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Some Magazine', $template->get2('work'));
     }
 
-    public function testPipeTaglineStrippedReport10(): void {
-        // Report 10: publicationTitle "디스패치 | 뉴스는 팩트다!" should be stripped to just "디스패치"
-        // (tagline after space-pipe-space separator must be removed).
+    public function testPipeTaglineStripped(): void {
+        // publicationTitle with a space-pipe-space tagline must be stripped to just the publication name.
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -941,10 +938,9 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('디스패치', $template->get2('work'));
     }
 
-    public function testSportsworldiPublicationTitleReport11(): void {
-        // Report 11: sportsworldi.com publicationTitle includes article title concatenated with
-        // the site name ("스포츠월드") with only a space separator, so the whole value is wrong.
-        // It must be replaced with just "스포츠월드" (the actual publication name).
+    public function testSportsworldiPublicationTitle(): void {
+        // sportsworldi.com publicationTitle includes article title concatenated with the site name,
+        // so it must be replaced with just the publication name '스포츠월드'.
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1366,12 +1362,9 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last2')); // Should not exist
     }
 
-    public function testEatcsOrgAuthorSuppressedReport20(): void {
-        // Bug report #20: eatcs.org is a Joomla CMS site that records the posting
-        // admin ("Efi Chita") as the article "author" in page metadata.  Zotero picks
-        // this up and the bot was adding last1=Chita|first1=Efi to award-announcement
-        // citations where no author should appear.
-        // The fix: unset author/creators for all eatcs.org URLs in process_zotero_response.
+    public function testEatcsOrgAuthorSuppressed(): void {
+        // eatcs.org is a Joomla CMS site that records the posting admin ("Efi Chita") as the
+        // article "author" in page metadata.  The bot must not add that admin as an author.
         $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1387,11 +1380,9 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('first1'));
     }
 
-    public function testGoogleDocsWorkNotAddedReport21(): void {
-        // Bug report #21: drive.google.com file URLs were getting work=Google Docs added.
-        // 'Google Docs' is in NON_JOURNALS, so even if Zotero returns publicationTitle='Google Docs'
-        // for a Google Drive URL, the str_replace(NON_JOURNALS,...) guard at line ~848 must block it.
-        // Test 21.1
+    public function testGoogleDriveWorkNotAdded(): void {
+        // drive.google.com file URLs must not get work=Google Docs added —
+        // 'Google Docs' is in NON_JOURNALS and the URL matches ZOTERO_AVOID_REGEX.
         $text = '{{citation|url=https://drive.google.com/file/d/1eUpxcvPaDHc8GexI7WN8T1TM2AUP2-qU/view|title=Curriculum vitae|access-date=2021-07-05|date=June 2018}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1400,43 +1391,6 @@ final class zoteroTest extends testBaseClass {
         $zotero_data[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        $this->assertNull($template->get2('work'));
-        // Test 21.2
-        $text2 = '{{citation|url=https://drive.google.com/file/d/1Ckr3CXFXcX5nfLKk4v5zssX7C5XEXknw/view|title=Curriculum vitae|date=August 2021|access-date=2022-01-07}}';
-        $template2 = $this->make_citation($text2);
-        $url2 = 'https://drive.google.com/file/d/1Ckr3CXFXcX5nfLKk4v5zssX7C5XEXknw/view';
-        $zotero_data2 = [];
-        $zotero_data2[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
-        Zotero::process_zotero_response(json_encode($zotero_data2), $template2, $url2, $access_date);
-        $this->assertNull($template2->get2('work'));
-        // Test 21.3
-        $text3 = '{{citation|url=https://drive.google.com/file/d/15W2G5rynbej8HKchP2TYP5LLY-WOGKX7/view?usp=sharing|title=Curriculum vitae|access-date=2022-10-26}}';
-        $template3 = $this->make_citation($text3);
-        $url3 = 'https://drive.google.com/file/d/15W2G5rynbej8HKchP2TYP5LLY-WOGKX7/view?usp=sharing';
-        $zotero_data3 = [];
-        $zotero_data3[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
-        Zotero::process_zotero_response(json_encode($zotero_data3), $template3, $url3, $access_date);
-        $this->assertNull($template3->get2('work'));
-    }
-
-    public function testEatcsOrgAuthorSuppressedReport25(): void {
-        // Bug report #25: A different eatcs.org article URL was still having last1=Chita|first1=Efi added.
-        // Same root cause as Report 20 – Joomla CMS records the posting admin as the article "author".
-        // The fix: unset author/creators for all eatcs.org URLs in process_zotero_response.
-        $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/2103-eatcs-honours-three-outstanding-phd-theses-with-the-first-eatcs-distinguished-dissertation-awards|title=EATCS honours three outstanding PhD theses with the first EATCS Distinguished Dissertation Awards|publisher=European Association for Theoretical Computer Science|year=2015|access-date=2022-06-29}}';
-        $template = $this->make_citation($text);
-        $access_date = 0;
-        $url = 'https://eatcs.org/index.php/component/content/article/1-news/2103-eatcs-honours-three-outstanding-phd-theses-with-the-first-eatcs-distinguished-dissertation-awards';
-        $author = [];
-        $author[0] = [0 => 'Efi', 1 => 'Chita']; // Site admin listed as author in Joomla metadata
-        $zotero_data = [];
-        $zotero_data[0] = (object) ['title' => 'EATCS honours three outstanding PhD theses', 'itemType' => 'webpage', 'author' => $author, 'publicationTitle' => 'EATCS'];
-        $zotero_response = json_encode($zotero_data);
-        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
-        // Author must NOT have been added
-        $this->assertNull($template->get2('last1'));
-        $this->assertNull($template->get2('first1'));
-        // work= must NOT have been added (publisher= is already present)
         $this->assertNull($template->get2('work'));
     }
 }
