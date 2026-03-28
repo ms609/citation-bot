@@ -2723,4 +2723,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('University of Edinburgh School of Informatics', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport28(): void {
+        // Bug report #28: {{citation}} with publisher=The Combustion Institute
+        // was having work=The Combustion Institute | Promoting and disseminating combustion science research
+        // added by Zotero (publicationTitle from combustioninstitute.org).
+        // After Zotero tagline stripping (' | ' separator removed), the value becomes "The Combustion Institute".
+        // The fix: work= is blocked whenever publisher= is set (Template.php publisher guard).
+        $text = "{{citation|url=https://www.combustioninstitute.org/resources/awards/fellows-of-the-combustion-institute/|publisher=The Combustion Institute|title=Fellows of The Combustion Institute|access-date=2022-09-12}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns after tagline stripping: publicationTitle = "The Combustion Institute"
+        $this->assertFalse($template->add_if_new('work', 'The Combustion Institute'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('The Combustion Institute', $template->get2('publisher'));
+    }
+
 }
