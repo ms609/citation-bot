@@ -2754,4 +2754,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('University of Guadalajara Department of Computational Sciences', $template->get2('publisher'));
     }
 
+    public function testWorkNotAddedWhenPublisherPresentReport30(): void {
+        // Bug report #30: {{citation}} with publisher=United States Airforce Academy
+        // was having work=U.S. Air Force Academy added by Zotero
+        // (publicationTitle from usafa.af.mil).
+        // The fix: work= is blocked whenever publisher= is set (Template.php publisher guard).
+        $text = "{{citation|url=https://www.usafa.af.mil/News/Article/619534/2012-thomas-d-white-national-defense-award-goes-to-rand-corporation-official/|title=2012 Thomas D. White National Defense Award goes to RAND Corporation official|date=November 15, 2013|first=Veronica|last=Ward|publisher=United States Airforce Academy|access-date=2023-03-19}}";
+        $template = $this->make_citation($text);
+        // Simulate what Zotero returns: publicationTitle = "U.S. Air Force Academy"
+        $this->assertFalse($template->add_if_new('work', 'U.S. Air Force Academy'));
+        // work= must not have been added
+        $this->assertNull($template->get2('work'));
+        // publisher= must be preserved
+        $this->assertSame('United States Airforce Academy', $template->get2('publisher'));
+    }
+
 }
