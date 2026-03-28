@@ -1386,4 +1386,36 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last1'));
         $this->assertNull($template->get2('first1'));
     }
+
+    public function testGoogleDocsWorkNotAddedReport21(): void {
+        // Bug report #21: drive.google.com file URLs were getting work=Google Docs added.
+        // 'Google Docs' is in NON_JOURNALS, so even if Zotero returns publicationTitle='Google Docs'
+        // for a Google Drive URL, the str_replace(NON_JOURNALS,...) guard at line ~848 must block it.
+        // Test 21.1
+        $text = '{{citation|url=https://drive.google.com/file/d/1eUpxcvPaDHc8GexI7WN8T1TM2AUP2-qU/view|title=Curriculum vitae|access-date=2021-07-05|date=June 2018}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://drive.google.com/file/d/1eUpxcvPaDHc8GexI7WN8T1TM2AUP2-qU/view';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('work'));
+        // Test 21.2
+        $text2 = '{{citation|url=https://drive.google.com/file/d/1Ckr3CXFXcX5nfLKk4v5zssX7C5XEXknw/view|title=Curriculum vitae|date=August 2021|access-date=2022-01-07}}';
+        $template2 = $this->make_citation($text2);
+        $url2 = 'https://drive.google.com/file/d/1Ckr3CXFXcX5nfLKk4v5zssX7C5XEXknw/view';
+        $zotero_data2 = [];
+        $zotero_data2[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
+        Zotero::process_zotero_response(json_encode($zotero_data2), $template2, $url2, $access_date);
+        $this->assertNull($template2->get2('work'));
+        // Test 21.3
+        $text3 = '{{citation|url=https://drive.google.com/file/d/15W2G5rynbej8HKchP2TYP5LLY-WOGKX7/view?usp=sharing|title=Curriculum vitae|access-date=2022-10-26}}';
+        $template3 = $this->make_citation($text3);
+        $url3 = 'https://drive.google.com/file/d/15W2G5rynbej8HKchP2TYP5LLY-WOGKX7/view?usp=sharing';
+        $zotero_data3 = [];
+        $zotero_data3[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
+        Zotero::process_zotero_response(json_encode($zotero_data3), $template3, $url3, $access_date);
+        $this->assertNull($template3->get2('work'));
+    }
 }

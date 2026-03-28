@@ -1202,6 +1202,7 @@ const ZOTERO_AVOID_REGEX = [
     'biodiversity\.org\.au', // gives bad data
     'bloomberg\.com/tosv2.html', // Junk
     'books\.google\.', // We have special google books code
+    'drive\.google\.com', // Google Drive file hosting; not a publication source, returns Google Docs metadata
     'britishnewspaperarchive\.co\.uk', // Requires registration
     'cagematch\.net', // Fails 100%
     'censusindia\.gov\.in', // Fails 100%
