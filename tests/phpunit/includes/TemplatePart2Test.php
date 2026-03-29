@@ -2260,8 +2260,6 @@ final class TemplatePart2Test extends testBaseClass {
         // A warning should have been generated (captured by report_warning)
     }
 
-    // Tests for "Progess in Optics" misspelling correction
-
     public function testSeriesMisspellingCorrectedWhenAdding(): void {
         // Test that misspelling is corrected when adding new series parameter
         $text = "{{cite book|title=Test}}";
@@ -2285,8 +2283,6 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('cite book', $template->wikiname());
         $this->assertSame('Progress in Optics', $template->get2('series'));
     }
-
-    // Tests for work/website not added when publisher is already present (issue #5301)
 
     public function testWorkNotAddedWhenPublisherPresent(): void {
         // work= must not be added when publisher= is already set
@@ -2321,9 +2317,6 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testWorkAllowedWhenPublisherIsCommentOnly(): void {
-        // publisher=<!-- --> is effectively empty — work= should still be addable.
-        // During page processing, <!-- --> is stored as a CITATION_BOT_PLACEHOLDER_COMMENT
-        // before templates are expanded, so we test with the placeholder form directly.
         $text = "{{cite web|title=Some Article|publisher=# # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #|url=https://example.org/}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('work', 'Some Publication'));
