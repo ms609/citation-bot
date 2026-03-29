@@ -573,4 +573,46 @@ final class pageTest extends testBaseClass {
         $this->assertSame($text_out, $page->parsed_text());
     }
 
+    public function testTitleToChapterOnlyChangeIsNotEdit(): void { // Report 1: title->chapter with no other changes should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite book|title=Test Article Title}}');
+        $page->overwrite_text('{{cite book|chapter=Test Article Title}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testTitleToChapterBundledWithOtherChangesIsEdit(): void { // Report 1: title->chapter bundled with other real changes should trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite book|title=Test Article Title}}');
+        $page->overwrite_text('{{cite book|chapter=Test Article Title|publisher=Some Publisher}}');
+        $this->assertTrue($page->expand_text());
+    }
+
+    public function testCiteEncyclopediaTitleNotChangedToChapter(): void { // Report 2: title->chapter should not happen in cite encyclopedia
+        $page = new TestPage();
+        $page->parse_text('{{cite encyclopedia|title=Test Entry Title}}');
+        $page->overwrite_text('{{cite encyclopedia|chapter=Test Entry Title}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testChapterToTitleOnlyChangeIsNotEdit(): void { // chapter->title with no other changes should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|chapter=Test Article Title}}');
+        $page->overwrite_text('{{cite web|title=Test Article Title}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testNewTitleAdditionIsEdit(): void { // Genuine title= addition (no pre-existing title) must still trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|url=https://example.com}}');
+        $page->overwrite_text('{{cite web|url=https://example.com|title=Some Article}}');
+        $this->assertTrue($page->expand_text());
+    }
+
+    public function testNewUrlAdditionIsEdit(): void { // Genuine url= addition (no pre-existing url) must still trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|title=Some Article}}');
+        $page->overwrite_text('{{cite web|title=Some Article|url=https://example.com}}');
+        $this->assertTrue($page->expand_text());
+    }
+
 }
