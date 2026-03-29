@@ -2260,8 +2260,6 @@ final class TemplatePart2Test extends testBaseClass {
         // A warning should have been generated (captured by report_warning)
     }
 
-    // Tests for "Progess in Optics" misspelling correction
-
     public function testSeriesMisspellingCorrectedWhenAdding(): void {
         // Test that misspelling is corrected when adding new series parameter
         $text = "{{cite book|title=Test}}";
@@ -2284,6 +2282,54 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame('cite book', $template->wikiname());
         $this->assertSame('Progress in Optics', $template->get2('series'));
+    }
+
+    public function testWorkNotAddedWhenPublisherPresent(): void {
+        // work= must not be added when publisher= is already set
+        $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'Some Organization'));
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testWebsiteNotAddedWhenPublisherPresent(): void {
+        // website= must not be added when publisher= is already set
+        $text = "{{cite web|title=Some Article|publisher=Some Organization|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('website', 'Some Organization'));
+        $this->assertNull($template->get2('website'));
+    }
+
+    public function testWorkAddedWhenNoPublisher(): void {
+        // work= should still be added when there is no publisher
+        $text = "{{cite web|title=Some Article|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('work', 'Some Publication'));
+        $this->assertSame('Some Publication', $template->get2('work'));
+    }
+
+    public function testWebsiteAddedWhenNoPublisher(): void {
+        // website= should still be added when there is no publisher
+        $text = "{{cite web|title=Some Article|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('website', 'example.org'));
+        $this->assertSame('example.org', $template->get2('website'));
+    }
+
+    public function testWorkAllowedWhenPublisherIsCommentOnly(): void {
+        $text = "{{cite web|title=Some Article|publisher=# # # CITATION_BOT_PLACEHOLDER_COMMENT 0 # # #|url=https://example.org/}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('work', 'Some Publication'));
+        $this->assertSame('Some Publication', $template->get2('work'));
+    }
+
+    public function testPublisherPreservedWhenWorkBlocked(): void {
+        // publisher= must remain intact after work= is blocked; tidy must not drop it
+        $text = "{{cite web|title=Some Article|publisher=Haldimand County|url=https://www.haldimandcounty.ca/}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('work', 'Haldimand County'));
+        $this->assertNull($template->get2('work'));
+        $this->assertSame('Haldimand County', $template->get2('publisher'));
     }
 
 }

@@ -2255,12 +2255,20 @@ final class Template
                     $value = sanitize_string($value);
                 }
                 if ($this->blank(WORK_ALIASES)) {
+                    if (!$this->blank_other_than_comments('publisher')) {
+                        report_warning("Not adding |" . echoable($param_name) . "=" . echoable($value) . "| because |publisher=" . echoable($this->get('publisher')) . "| is already present - please verify the existing publisher value is correct");
+                        return false; // Do not add work/website when publisher is already present
+                    }
                     return $this->add($param_name, $value);
                 }
                 return false;
 
             case 'website':
                 if ($this->blank(WORK_ALIASES)) {
+                    if (!$this->blank_other_than_comments('publisher')) {
+                        report_warning("Not adding |" . echoable($param_name) . "=" . echoable($value) . "| because |publisher=" . echoable($this->get('publisher')) . "| is already present - please verify the existing publisher value is correct");
+                        return false; // Do not add work/website when publisher is already present
+                    }
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
                 return false;
