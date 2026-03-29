@@ -573,4 +573,25 @@ final class pageTest extends testBaseClass {
         $this->assertSame($text_out, $page->parsed_text());
     }
 
+    public function testTitleToChapterOnlyChangeIsNotEdit(): void { // Report 1: title->chapter with no other changes should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite book|title=Test Article Title}}');
+        $page->overwrite_text('{{cite book|chapter=Test Article Title}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testTitleToChapterWithUrlOnlyChangeIsNotEdit(): void { // Report 1: title->chapter + url->chapter-url with no other changes should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite book|title=Test Article Title|url=https://example.com/article}}');
+        $page->overwrite_text('{{cite book|chapter=Test Article Title|chapter-url=https://example.com/article}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testTitleToChapterBundledWithOtherChangesIsEdit(): void { // Report 1: title->chapter bundled with other real changes should trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite book|title=Test Article Title}}');
+        $page->overwrite_text('{{cite book|chapter=Test Article Title|publisher=Some Publisher}}');
+        $this->assertTrue($page->expand_text());
+    }
+
 }
