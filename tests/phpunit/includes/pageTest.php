@@ -601,4 +601,18 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->expand_text());
     }
 
+    public function testNewTitleAdditionIsEdit(): void { // Genuine title= addition (no pre-existing title) must still trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|url=https://example.com}}');
+        $page->overwrite_text('{{cite web|url=https://example.com|title=Some Article}}');
+        $this->assertTrue($page->expand_text());
+    }
+
+    public function testNewUrlAdditionIsEdit(): void { // Genuine url= addition (no pre-existing url) must still trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|title=Some Article}}');
+        $page->overwrite_text('{{cite web|title=Some Article|url=https://example.com}}');
+        $this->assertTrue($page->expand_text());
+    }
+
 }
