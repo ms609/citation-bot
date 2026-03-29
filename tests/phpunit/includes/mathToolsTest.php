@@ -75,4 +75,36 @@ final class mathToolsTest extends testBaseClass {
         $output = str_replace(array_keys(UNICODE_MATH_MAP), array_values(UNICODE_MATH_MAP), $input);
         $this->assertSame($expected, $output, "Unicode Greek letters should be converted to LaTeX macros.");
     }
+
+    public function testArrowNotMergedWithFollowingLetter(): void {
+        // Regression test: b→sℓℓ was producing \rightarrows which is an unknown LaTeX command.
+        // The {} after \rightarrow terminates the command name so it never merges with the next letter.
+        $text = '<math>b→sℓℓ</math>';
+        $result = wikify_external_text($text);
+        $this->assertStringNotContainsString('\rightarrows', $result, "\\rightarrows is not a valid LaTeX command");
+        $this->assertSame('<math>b\rightarrow{}s\ell\ell</math>', $result);
+    }
+
+    public function testArrowBetweenParticleSymbols(): void {
+        // Regression test: B+→K+ℓ+ℓ- was producing \rightarrowK which is an unknown LaTeX command.
+        $text = '<math>B+→K+ℓ+ℓ-</math>';
+        $result = wikify_external_text($text);
+        $this->assertStringNotContainsString('\rightarrowK', $result, "\\rightarrowK is not a valid LaTeX command");
+        $this->assertSame('<math>B+\rightarrow{}K+\ell+\ell-</math>', $result);
+    }
+
+    public function testMathMLSubscriptWithIdentifier(): void {
+        // Regression test: <msub><mi>R</mi><mi>K</mi></msub> was producing RK (losing the subscript)
+        // because the msub pattern only matched <mn> (number) subscripts, not <mi> (identifier) ones.
+        $text = '<math><msub><mi>R</mi><mi>K</mi></msub></math>';
+        $result = wikify_external_text($text);
+        $this->assertSame('<math>R_{K}</math>', $result);
+    }
+
+    public function testMathMLSuperscriptWithIdentifier(): void {
+        // <msup> should handle <mi> superscripts, e.g. x^{n} (variable to variable power)
+        $text = '<math><msup><mi>x</mi><mi>n</mi></msup></math>';
+        $result = wikify_external_text($text);
+        $this->assertSame('<math>x^{n}</math>', $result);
+    }
 }
