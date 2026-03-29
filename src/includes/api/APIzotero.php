@@ -390,6 +390,12 @@ final class Zotero {
         if (isset($result->publicationTitle) && mb_substr($result->publicationTitle, -2) === " |") {
             $result->publicationTitle = mb_substr($result->publicationTitle, 0, -2);
         }
+        if (isset($result->publicationTitle) && mb_strpos($result->publicationTitle, ' – ') !== false) {
+            $result->publicationTitle = mb_trim(mb_substr($result->publicationTitle, 0, (int) mb_strpos($result->publicationTitle, ' – ')));
+        }
+        if (isset($result->publicationTitle) && mb_strpos($result->publicationTitle, ' | ') !== false) {
+            $result->publicationTitle = mb_trim(mb_substr($result->publicationTitle, 0, (int) mb_strpos($result->publicationTitle, ' | ')));
+        }
         if (mb_stripos($url, 'www.royal.uk') !== false || mb_stripos($url, 'astanatimes.com') !== false || mb_stripos($url, 'theyucatantimes.com') !== false) {
             unset($result->creators);  // @codeCoverageIgnore
             unset($result->author);   // @codeCoverageIgnore
@@ -403,6 +409,9 @@ final class Zotero {
         }
         if (mb_stripos($url, 'newsen.com') !== false) { // Includes title of article
             $result->publicationTitle = 'Newsen';
+        }
+        if (mb_stripos($url, 'sportsworldi.com') !== false) { // Includes title of article
+            $result->publicationTitle = '스포츠월드';
         }
 
         if (mb_stripos($url, '/x.com') !== false || mb_stripos($url, 'twitter.com') !== false) {
@@ -438,6 +447,10 @@ final class Zotero {
             $result->itemType = 'webpage';
             unset($result->creators);
             unset($result->author);
+        }
+        if (mb_stripos($url, 'eatcs.org') !== false) {
+            unset($result->creators);
+            unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
         }
         if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);

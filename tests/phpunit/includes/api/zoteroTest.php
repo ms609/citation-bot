@@ -899,6 +899,57 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('1234M', $template->get2('ol'));
     }
 
+    public function testEnDashTaglineStripped(): void {
+        // publicationTitle with an en-dash tagline must be stripped to just the publication name.
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://e.vnexpress.net/news/travel/places/vietjet-to-launch-new-route-4765004.html';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Vietjet to launch new route', 'itemType' => 'webpage', 'publicationTitle' => 'VnExpress International – Latest news, business, travel and analysis from Vietnam'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('VnExpress International', $template->get2('work'));
+    }
+
+    public function testEnDashTaglineOnlyStrippedWhenPresent(): void {
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Some article', 'itemType' => 'webpage', 'publicationTitle' => 'Some Magazine'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Some Magazine', $template->get2('work'));
+    }
+
+    public function testPipeTaglineStripped(): void {
+        // publicationTitle with a space-pipe-space tagline must be stripped to just the publication name.
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://www.dispatch.co.kr/2324926';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Enhypen pre-orders', 'itemType' => 'webpage', 'publicationTitle' => '디스패치 | 뉴스는 팩트다!'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('디스패치', $template->get2('work'));
+    }
+
+    public function testSportsworldiPublicationTitle(): void {
+        // sportsworldi.com publicationTitle includes article title concatenated with the site name which should be stripped
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'http://www.sportsworldi.com/newsView/20190219537085';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => '가을로 가는 기차, 25일 컴백…두 번째 싱글 \'다시 이별\' 발표', 'itemType' => 'newspaperArticle', 'publicationTitle' => '가을로 가는 기차, 25일 컴백…두 번째 싱글 "다시 이별" 발표 스포츠월드'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('스포츠월드', $template->get2('work'));
+    }
+
     public function testRemoveURLthatRedirects(): void { // This URL is a redirect -- tests code that does that
         $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
         $template = $this->make_citation($text);
@@ -1307,5 +1358,35 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Magid', $template->get2('last1'));
         $this->assertSame('Jacob', $template->get2('first1'));
         $this->assertNull($template->get2('last2')); // Should not exist
+    }
+
+    public function testEatcsOrgAuthorSuppressed(): void {
+        // eatcs.org records the posting admin as the article "author" in page metadata. The bot must not add that as the author.
+        $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011';
+        $author = [];
+        $author[0] = [0 => 'Efi', 1 => 'Chita']; // Site admin listed as author in Joomla metadata
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Presburger Award 2011', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Author must NOT have been added
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+    }
+
+    public function testGoogleDriveWorkNotAdded(): void {
+        // drive.google.com file URLs must not get work=Google Docs added
+        $text = '{{citation|url=https://drive.google.com/file/d/example|title=Curriculum vitae|access-date=2021-07-05|date=June 2018}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://drive.google.com/file/d/example';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('work'));
     }
 }
