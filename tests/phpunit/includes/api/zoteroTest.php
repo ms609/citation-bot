@@ -1308,4 +1308,28 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Jacob', $template->get2('first1'));
         $this->assertNull($template->get2('last2')); // Should not exist
     }
+
+    public function testInterviewerFieldBlocksAuthorAddition(): void {
+        // When a citation already has interviewer-last/first, Zotero authors (who are
+        // the interviewee/interviewer listed in repository metadata) should not be added
+        $text = '{{citation|title=Elisabeth Drake (interviewed by Anne Marie Atencio)|publisher=Association of MIT Alumnae (AMITA)|hdl=1721.3/74344|date=April 23, 1989|interviewer-last=Atencio|interviewer-first=Anne Marie}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://hdl.handle.net/1721.3/74344';
+        $author = [];
+        $author[0] = [0 => 'Anne Marie', 1 => 'Atencio']; // Interviewer - should not be added as author
+        $author[1] = [0 => 'Elisabeth', 1 => 'Drake'];    // Interview subject - should not be added as author
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Elisabeth Drake (interviewed by Anne Marie Atencio)', 'itemType' => 'document', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        // Verify no authors were added
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        $this->assertNull($template->get2('last2'));
+        $this->assertNull($template->get2('first2'));
+        // Interviewer fields should remain unchanged
+        $this->assertSame('Atencio', $template->get2('interviewer-last'));
+        $this->assertSame('Anne Marie', $template->get2('interviewer-first'));
+    }
 }
