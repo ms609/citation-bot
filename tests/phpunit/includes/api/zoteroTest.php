@@ -1310,8 +1310,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testInterviewerFieldBlocksAuthorAddition(): void {
-        // When a citation already has interviewer-last/first, Zotero authors (who are
-        // the interviewer AND the interview subject listed in repository metadata) should not be added
+        // When a citation already has interviewer-last/first, Zotero authors (who are the interviewer AND the interview subject listed in repository metadata) should not be added
         $text = '{{citation|title=Elisabeth Drake (interviewed by Anne Marie Atencio)|publisher=Association of MIT Alumnae (AMITA)|hdl=1721.3/74344|date=April 23, 1989|interviewer-last=Atencio|interviewer-first=Anne Marie}}';
         $template = $this->make_citation($text);
         $access_date = 0;
