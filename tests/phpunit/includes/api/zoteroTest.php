@@ -1413,6 +1413,8 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last1'));
         $this->assertNull($template->get2('first1'));
         $this->assertSame('Anne Marie Atencio', $template->get2('interviewer'));
+    }
+
     public function testEatcsOrgAuthorSuppressed(): void {
         // eatcs.org records the posting admin as the article "author" in page metadata. The bot must not add that as the author.
         $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}';
