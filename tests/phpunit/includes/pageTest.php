@@ -594,4 +594,12 @@ final class pageTest extends testBaseClass {
         $this->assertTrue($page->expand_text());
     }
 
+    public function testCiteEncyclopediaTitleNotChangedToChapter(): void { // Report 2: title->chapter should not happen in cite encyclopedia
+        $page = new TestPage();
+        $page->parse_text('{{cite encyclopedia|title=Test Entry Title}}');
+        $page->overwrite_text('{{cite encyclopedia|chapter=Test Entry Title}}');
+        $this->assertFalse($page->expand_text());
+    }
+
 }
+

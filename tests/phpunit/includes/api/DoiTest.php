@@ -312,6 +312,11 @@ final class DoiTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testCiteEncyclopediaInNoChapterAdd(): void { // Report 2: cite encyclopedia/encyclopaedia must never get title renamed to chapter
+        $this->assertContains('cite encyclopedia', NO_CHAPTER_ADD);
+        $this->assertContains('cite encyclopaedia', NO_CHAPTER_ADD);
+    }
+
     public function testGetBioRxivPublishedDoi(): void {
         $result = get_biorxiv_published_doi('10.1234/invalid');
         $this->assertNull($result);
