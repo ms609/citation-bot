@@ -870,8 +870,9 @@ final class Zotero {
             $template->add_if_new('series', (string) $result->series);
         }
         // Do not add authors if this is an interview: people in metadata are
-        // already identified as interviewer/subject via interviewer-last/first fields
-        if ($template->has('interviewer-last') || $template->has('interviewer-first')) {
+        // already identified as interviewer/subject via interviewer fields.
+        // Cover all name-split variants (-last/-surname, -first/-given) and combined form.
+        if (!$template->blank(['interviewer-last', 'interviewer-first', 'interviewer-surname', 'interviewer-given', 'interviewer'])) {
             unset($result->author);
             unset($result->creators);
         }

@@ -1311,7 +1311,7 @@ final class zoteroTest extends testBaseClass {
 
     public function testInterviewerFieldBlocksAuthorAddition(): void {
         // When a citation already has interviewer-last/first, Zotero authors (who are
-        // the interviewee/interviewer listed in repository metadata) should not be added
+        // the interviewer AND the interview subject listed in repository metadata) should not be added
         $text = '{{citation|title=Elisabeth Drake (interviewed by Anne Marie Atencio)|publisher=Association of MIT Alumnae (AMITA)|hdl=1721.3/74344|date=April 23, 1989|interviewer-last=Atencio|interviewer-first=Anne Marie}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1331,5 +1331,43 @@ final class zoteroTest extends testBaseClass {
         // Interviewer fields should remain unchanged
         $this->assertSame('Atencio', $template->get2('interviewer-last'));
         $this->assertSame('Anne Marie', $template->get2('interviewer-first'));
+    }
+
+    public function testInterviewerSurnameGivenBlocksAuthorAddition(): void {
+        // interviewer-surname / interviewer-given are synonyms for -last / -first; guard should cover them too
+        $text = '{{citation|title=Test Interview|interviewer-surname=Smith|interviewer-given=John}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://example.com/interview';
+        $author = [];
+        $author[0] = [0 => 'John', 1 => 'Smith'];
+        $author[1] = [0 => 'Jane', 1 => 'Doe'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Interview', 'itemType' => 'document', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        $this->assertNull($template->get2('last2'));
+        $this->assertNull($template->get2('first2'));
+        $this->assertSame('Smith', $template->get2('interviewer-surname'));
+        $this->assertSame('John', $template->get2('interviewer-given'));
+    }
+
+    public function testInterviewerCombinedFieldBlocksAuthorAddition(): void {
+        // Plain interviewer= field (combined name) should also trigger the guard
+        $text = '{{citation|title=Test Interview|interviewer=Anne Marie Atencio}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://example.com/interview';
+        $author = [];
+        $author[0] = [0 => 'Anne Marie', 1 => 'Atencio'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Interview', 'itemType' => 'document', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        $this->assertSame('Anne Marie Atencio', $template->get2('interviewer'));
     }
 }
