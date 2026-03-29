@@ -1286,10 +1286,6 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('last4')); // Should not exist
     }
 
-    /**
-     * Test case 5: Real-world example from issue - Cite web with only last2/first2
-     * Zotero should not leave gaps when filtering non-human authors
-     */
     public function testAuthorNumberingAfterFiltering5_RealWorldExample1(): void {
         // Simulate scenario where Zotero filtered out first author, leaving only second
         $text = '{{cite web|id=}}';
@@ -1333,7 +1329,6 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testInterviewerSurnameGivenBlocksAuthorAddition(): void {
-        // interviewer-surname / interviewer-given are synonyms for -last / -first; guard should cover them too
         $text = '{{citation|title=Test Interview|interviewer-surname=Smith|interviewer-given=John}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1354,7 +1349,6 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testInterviewerCombinedFieldBlocksAuthorAddition(): void {
-        // Plain interviewer= field (combined name) should also trigger the guard
         $text = '{{citation|title=Test Interview|interviewer=Anne Marie Atencio}}';
         $template = $this->make_citation($text);
         $access_date = 0;
