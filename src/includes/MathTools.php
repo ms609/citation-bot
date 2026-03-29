@@ -68,12 +68,13 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle msubsup (subscript and superscript): <msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup> -> x_{1}^{2}
+    // Also handles <mi> sub/superscripts for consistency with msub/msup, e.g. R_{K}^{*}
     $mathml = preg_replace_callback(
-        '~<msubsup>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*<mn>(.*?)</mn>\s*</msubsup>~s',
+        '~<msubsup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*<(mi|mn)>(.*?)</\5>\s*</msubsup>~s',
         static function (array $matches): string {
-            $base = mb_trim($matches[1]);
-            $sub = mb_trim($matches[2]);
-            $super = mb_trim($matches[3]);
+            $base = mb_trim($matches[2]);
+            $sub = mb_trim($matches[4]);
+            $super = mb_trim($matches[6]);
             return $base . "_{" . $sub . "}^{" . $super . "}";
         },
         $mathml

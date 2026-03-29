@@ -23,29 +23,29 @@ final class mathToolsTest extends testBaseClass {
         // Test simple superscript: x^{2}
         $text_mml = '<math><msup><mi>x</mi><mn>2</mn></msup></math>';
         $result = wikify_external_text($text_mml);
-        $this->assertStringContainsString('x', $result);
-        $this->assertStringContainsString('^', $result);
-        $this->assertStringContainsString('2', $result);
+        $this->assertSame('<math>x^{2}</math>', $result);
     }
 
     public function testMathMLSubscript(): void {
-        // Test simple subscript: H_{2}O
+        // Test simple subscript: H_{2}
         $text_mml = '<math><msub><mi>H</mi><mn>2</mn></msub></math>';
         $result = wikify_external_text($text_mml);
-        $this->assertStringContainsString('H', $result);
-        $this->assertStringContainsString('_', $result);
-        $this->assertStringContainsString('2', $result);
+        $this->assertSame('<math>H_{2}</math>', $result);
     }
 
     public function testMathMLSubSuperscript(): void {
         // Test subscript and superscript: x_{1}^{2}
         $text_mml = '<math><msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup></math>';
         $result = wikify_external_text($text_mml);
-        $this->assertStringContainsString('x', $result);
-        $this->assertStringContainsString('_', $result);
-        $this->assertStringContainsString('^', $result);
-        $this->assertStringContainsString('1', $result);
-        $this->assertStringContainsString('2', $result);
+        $this->assertSame('<math>x_{1}^{2}</math>', $result);
+    }
+
+    public function testMathMLSubSuperscriptWithIdentifiers(): void {
+        // msubsup should handle <mi> children, consistent with msub/msup fixes.
+        // e.g. R_{K}^{*} from <msubsup><mi>R</mi><mi>K</mi><mi>*</mi></msubsup>
+        $text_mml = '<math><msubsup><mi>R</mi><mi>K</mi><mi>*</mi></msubsup></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertSame('<math>R_{K}^{*}</math>', $result);
     }
 
     public function testMathMLRoot(): void {
