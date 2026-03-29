@@ -913,7 +913,6 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testEnDashTaglineOnlyStrippedWhenPresent(): void {
-        // Regression: publicationTitle WITHOUT an en-dash must pass through unmodified.
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -939,8 +938,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testSportsworldiPublicationTitle(): void {
-        // sportsworldi.com publicationTitle includes article title concatenated with the site name,
-        // so it must be replaced with just the publication name '스포츠월드'.
+        // sportsworldi.com publicationTitle includes article title concatenated with the site name which should be stripped
         $text = '{{cite web}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1363,8 +1361,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testEatcsOrgAuthorSuppressed(): void {
-        // eatcs.org is a Joomla CMS site that records the posting admin ("Efi Chita") as the
-        // article "author" in page metadata.  The bot must not add that admin as an author.
+        // eatcs.org records the posting admin as the article "author" in page metadata. The bot must not add that as the author.
         $text = '{{citation|url=https://eatcs.org/index.php/component/content/article/1-news/956-presburger-award-2011|title=Presburger Award 2011|publisher=European Association for Theoretical Computer Science|access-date=2021-05-24}}';
         $template = $this->make_citation($text);
         $access_date = 0;
@@ -1381,12 +1378,11 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testGoogleDriveWorkNotAdded(): void {
-        // drive.google.com file URLs must not get work=Google Docs added —
-        // 'Google Docs' is in NON_JOURNALS and the URL matches ZOTERO_AVOID_REGEX.
-        $text = '{{citation|url=https://drive.google.com/file/d/1eUpxcvPaDHc8GexI7WN8T1TM2AUP2-qU/view|title=Curriculum vitae|access-date=2021-07-05|date=June 2018}}';
+        // drive.google.com file URLs must not get work=Google Docs added
+        $text = '{{citation|url=https://drive.google.com/file/d/example|title=Curriculum vitae|access-date=2021-07-05|date=June 2018}}';
         $template = $this->make_citation($text);
         $access_date = 0;
-        $url = 'https://drive.google.com/file/d/1eUpxcvPaDHc8GexI7WN8T1TM2AUP2-qU/view';
+        $url = 'https://drive.google.com/file/d/example';
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'Curriculum vitae', 'itemType' => 'webpage', 'publicationTitle' => 'Google Docs'];
         $zotero_response = json_encode($zotero_data);
