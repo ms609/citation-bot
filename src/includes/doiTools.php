@@ -268,7 +268,6 @@ function is_doi_works(string $doi): ?bool {
     // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
     $headers_test = get_headers_array($url);
     /** We trust previous failure, so fail and null are both false */
-    /** @phpstan-ignore identical.alwaysFalse */
     if ($headers_test === false) {
         return false;
     }
