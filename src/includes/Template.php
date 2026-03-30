@@ -3856,7 +3856,7 @@ final class Template
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
-                        if (str_equivalent($this->get('chapter'), $this->get('title'))) {
+                        if (str_equivalent($this->get('chapter'), $this->get('title')) && !$this->has('trans-chapter')) {
                             $this->forget('chapter');
                             return; // Nonsense to have both.
                         }
