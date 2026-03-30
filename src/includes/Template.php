@@ -6066,7 +6066,7 @@ final class Template
                 // Leave only one
                 if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
                     $this->forget('title');
-                } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
+                } elseif (($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') && !$this->has('trans-chapter')) {
                     $this->forget('chapter');
                 }
             }
