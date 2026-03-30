@@ -44,34 +44,37 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle msup (superscript): <msup><mi>x</mi><mn>2</mn></msup> -> x^{2}
+    // Also handles <mi> superscripts, e.g. <msup><mi>x</mi><mi>n</mi></msup> -> x^{n}
     $mathml = preg_replace_callback(
-        '~<msup>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*</msup>~s',
+        '~<msup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msup>~s',
         static function (array $matches): string {
-            $base = mb_trim($matches[1]);
-            $super = mb_trim($matches[2]);
+            $base = mb_trim($matches[2]);
+            $super = mb_trim($matches[4]);
             return $base . "^{" . $super . "}";
         },
         $mathml
     );
 
     // Handle msub (subscript): <msub><mi>H</mi><mn>2</mn></msub> -> H_{2}
+    // Also handles <mi> subscripts, e.g. <msub><mi>R</mi><mi>K</mi></msub> -> R_{K}
     $mathml = preg_replace_callback(
-        '~<msub>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*</msub>~s',
+        '~<msub>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msub>~s',
         static function (array $matches): string {
-            $base = mb_trim($matches[1]);
-            $sub = mb_trim($matches[2]);
+            $base = mb_trim($matches[2]);
+            $sub = mb_trim($matches[4]);
             return $base . "_{" . $sub . "}";
         },
         $mathml
     );
 
     // Handle msubsup (subscript and superscript): <msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup> -> x_{1}^{2}
+    // Also handles <mi> sub/superscripts for consistency with msub/msup, e.g. R_{K}^{*}
     $mathml = preg_replace_callback(
-        '~<msubsup>\s*<mi>(.*?)</mi>\s*<mn>(.*?)</mn>\s*<mn>(.*?)</mn>\s*</msubsup>~s',
+        '~<msubsup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*<(mi|mn)>(.*?)</\5>\s*</msubsup>~s',
         static function (array $matches): string {
-            $base = mb_trim($matches[1]);
-            $sub = mb_trim($matches[2]);
-            $super = mb_trim($matches[3]);
+            $base = mb_trim($matches[2]);
+            $sub = mb_trim($matches[4]);
+            $super = mb_trim($matches[6]);
             return $base . "_{" . $sub . "}^{" . $super . "}";
         },
         $mathml

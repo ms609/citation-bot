@@ -424,6 +424,32 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame($expected, wikify_external_text($text_mml));
     }
 
+    public function testMathTagSpacesAddedWhenMissing(): void {
+        // Regression test: CrossRef sometimes omits the spaces between math markup and surrounding
+        // text, e.g. "Using<math>...</math>Decays" instead of "Using <math>...</math> Decays".
+        $input = 'Something<math>X</math>follows';
+        $result = wikify_external_text($input);
+        $this->assertStringContainsString('<math>X</math> follows', $result);
+        $this->assertStringNotContainsString('<math>X</math>follows', $result);
+        $this->assertStringContainsString('something <math>', mb_strtolower($result));
+    }
+
+    public function testMathTagExistingSpacesPreserved(): void {
+        // Existing spaces around math tags must not be doubled.
+        $input = 'Something <math>X</math> follows';
+        $result = wikify_external_text($input);
+        $this->assertStringNotContainsString('  <math>', $result);
+        $this->assertStringNotContainsString('</math>  ', $result);
+    }
+
+    public function testMathTagNoSpaceBeforeDigit(): void {
+        // A digit immediately after </math> does not need a separating space.
+        // The closing-tag rule only applies to letters, so "math>2" stays unchanged.
+        $input = '<math>X</math>2';
+        $result = wikify_external_text($input);
+        $this->assertStringNotContainsString('</math> 2', $result);
+    }
+
     public function testURLInTitle(): void {
         $text = '[http://dfadfd]';
         $this->assertSame($text, sanitize_string($text));

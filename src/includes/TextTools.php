@@ -147,6 +147,11 @@ function wikify_external_text(string $title): string {
         $title = str_ireplace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
     }
 
+    // Ensure a space separates <math> tags from adjacent letters/digits, since some
+    // external sources (e.g. CrossRef) omit the spaces around inline math markup.
+    $title = safe_preg_replace('~([a-zA-Z0-9])<math~', '$1 <math', $title);
+    $title = safe_preg_replace('~</math>([a-zA-Z])~', '</math> $1', $title);
+
     foreach (['<mtable>', '<mtr>', '<mtd>'] as $mathy) {
         if (mb_strpos($title, $mathy) !== false) {
             return '<nowiki>' . $title . '</nowiki>';
