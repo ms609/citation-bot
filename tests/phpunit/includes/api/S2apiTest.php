@@ -25,7 +25,7 @@ final class S2apiTest extends testBaseClass {
 
     public function testS2CIDlicenseTrue2(): void {
         $this->sleep_S2();
-        $this->assertTrue(get_semanticscholar_license('256282907')); // arXiv:2301.10140 "The Semantic Scholar Open Data Platform"
+        $this->assertTrue(get_semanticscholar_license('73436496'));
     }
 
     public function testSemanticscholar2(): void {
