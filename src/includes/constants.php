@@ -14,6 +14,7 @@ require_once __DIR__ . '/constants/italics.php';
 require_once __DIR__ . '/constants/isbn.php';
 require_once __DIR__ . '/constants/null_good_doi.php';
 require_once __DIR__ . '/constants/null_bad_doi.php';
+require_once __DIR__ . '/constants/free_doi.php';
 require_once __DIR__ . '/constants/translations.php';
 // @codeCoverageIgnoreEnd
 
