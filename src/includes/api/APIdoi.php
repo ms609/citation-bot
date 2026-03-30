@@ -127,7 +127,12 @@ function expand_by_doi(Template $template, bool $force = false): void {
             $is_book_chapter = ($doi_type === 'book-chapter' || $doi_type === 'chapter' || $doi_type === 'book-section');
             if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book' || ($is_book_chapter && !in_array($template->wikiname(), NO_CHAPTER_ADD)))) {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
-                    $template->rename('title', 'chapter');
+                    // title= already holds the article title: rename it to chapter= for most templates,
+                    // but for cite encyclopedia/encyclopaedia prefer keeping title= and do not add a
+                    // duplicate chapter= — so we do nothing for those templates.
+                    if (!in_array($template->wikiname(), ['cite encyclopedia', 'cite encyclopaedia'], true)) {
+                        $template->rename('title', 'chapter');
+                    }
                 } else {
                     if ($new_title !== '' && $crossRef->article_title) {
                         $template->add_if_new('chapter', $new_title, 'crossref');
