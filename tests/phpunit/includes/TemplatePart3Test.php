@@ -1500,6 +1500,13 @@ EP - 999 }}';
         $this->assertSame('cite book', $template->wikiname());
     }
 
+    public function testTransChapterPreservesChapterInFinalTidy(): void {
+        $text = '{{cite journal|title=Same Title|chapter=Same Title|trans-chapter=Translated Title}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('Same Title', $template->get2('chapter')); // chapter must not be removed when trans-chapter exists
+    }
+
     public function testACMConfWithDash(): void {
         $text = '{{cite journal |title=Proceedings of the 1964 19th ACM national conference on - }}';
         $template = $this->process_citation($text);

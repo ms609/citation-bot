@@ -93,6 +93,13 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testTidy9TransChapter(): void {
+        $text = "{{cite book|title=XXX|chapter=XXX|trans-chapter=YYY}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('chapter');
+        $this->assertSame('XXX', $template->get2('chapter')); // chapter must not be removed when trans-chapter exists
+    }
+
     public function testTidy10(): void {
         $text = "{{cite web|doi=10.1267/science.040579197}}";
         $template = $this->make_citation($text);

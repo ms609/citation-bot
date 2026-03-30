@@ -3856,7 +3856,7 @@ final class Template
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
-                        if (str_equivalent($this->get('chapter'), $this->get('title'))) {
+                        if (str_equivalent($this->get('chapter'), $this->get('title')) && !$this->has('trans-chapter')) {
                             $this->forget('chapter');
                             return; // Nonsense to have both.
                         }
@@ -6066,7 +6066,7 @@ final class Template
                 // Leave only one
                 if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
                     $this->forget('title');
-                } elseif ($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') {
+                } elseif (($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') && !$this->has('trans-chapter')) {
                     $this->forget('chapter');
                 }
             }
