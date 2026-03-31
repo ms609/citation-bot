@@ -29,13 +29,6 @@ final class S2apiTest extends testBaseClass {
         if ($result === null) {
             $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
         }
-        if ($result === false) {
-            $this->sleep_S2();
-            $result = get_semanticscholar_license('73436496');
-            if ($result !== true) {
-                $this->markTestSkipped('Semantic Scholar API returned non-true result on retry (possible rate limit or OA status change)');
-            }
-        }
         $this->assertTrue($result);
     }
 
