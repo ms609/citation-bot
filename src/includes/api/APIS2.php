@@ -80,6 +80,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
         return null; // @codeCoverageIgnore
     }
     if (mb_stripos($response, 'Too Many Requests') !== false) {
+        sleep(1);
         return null; // @codeCoverageIgnore
     }
     if (mb_stripos($response, 'Paper not found') !== false) {
