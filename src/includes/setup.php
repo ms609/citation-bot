@@ -162,7 +162,7 @@ function check_blocked(): void {
         $the_page = (string) @$_REQUEST["page"] . (string) @$argv[1];
         if (isset($api) && mb_strpos($the_page, '|') === false) {
             $the_user = $api->get_the_user();
-            if (strpos($the_page, 'User:' . $the_user . '/') === 0) {
+            if (mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
                 define('EDIT_AS_USER', true);
                 unset($_REQUEST["ignore_block"]);
             }
