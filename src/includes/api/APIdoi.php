@@ -289,6 +289,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     }
     if (mb_strpos($doi, '10.2307') === 0 || // jstor API is better
         mb_strpos($doi, '10.24436') === 0 || // They have horrible meta-data
+        mb_strpos($doi, '10.3972') === 0 || // CNIC/WESTDC data DOIs - unreliable metadata (multiple authors combined in one field)
         mb_strpos($doi, '10.5284/1028203') === 0) { // database
         return;
     }
