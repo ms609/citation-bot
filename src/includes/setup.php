@@ -158,7 +158,16 @@ define("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_
 unset($nlm_email, $nlm_apikey, $nlm_tool);
 
 function check_blocked(): void {
+    global $argv;
     if (!WikipediaBot::is_valid_user('Citation_bot')) {
+        $the_page = (string) @$_REQUEST["page"] . (string) @$argv[1];
+        if (mb_strpos($the_page, '|') === false) {
+            $the_user = WikipediaBot::GetLastUser();
+            if ($the_user !== '' && mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
+                define('EDIT_AS_USER', true);
+                unset($_REQUEST["ignore_block"]);
+            }
+        }
         if (isset($_REQUEST["ignore_block"])) {
             report_warning("Running bot anyway, but it will fail to write.");
         } elseif (defined('EDIT_AS_USER')) {
