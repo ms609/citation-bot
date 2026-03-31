@@ -15,12 +15,20 @@ final class S2apiTest extends testBaseClass {
 
     public function testS2CIDlicenseFalse(): void {
         $this->sleep_S2();
-        $this->assertFalse(get_semanticscholar_license('94502986'));
+        $result = get_semanticscholar_license('94502986');
+        if ($result === null) {
+            $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
+        }
+        $this->assertFalse($result);
     }
 
     public function testS2CIDlicenseTrue(): void {
         $this->sleep_S2();
-        $this->assertFalse(get_semanticscholar_license('52813129'));
+        $result = get_semanticscholar_license('52813129');
+        if ($result === null) {
+            $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
+        }
+        $this->assertFalse($result);
     }
 
     public function testS2CIDlicenseTrue2(): void {
