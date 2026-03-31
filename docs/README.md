@@ -149,6 +149,8 @@ Example URL:
 
     https://citations.toolforge.org/process_page.php?page=Example&ignore_block=1
 
+Secondly, even when blocked, a user can run the bot on their own User: pages, but the bot will edit as the user.
+
 **Note:** In this mode all citation expansion runs normally, but the bot will fail when it attempts to write the results back to Wikipedia.  Use this only for debugging purposes.
 
 ## Submitting issues
