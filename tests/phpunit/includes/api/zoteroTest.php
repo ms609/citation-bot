@@ -1243,6 +1243,38 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    public function testPurgePubMedUrlWhenPmidPresent(): void {
+        $text = '{{cite journal|url=https://pubmed.ncbi.nlm.nih.gov/12345678|pmid=12345678}}';
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('12345678', $template->get2('pmid'));
+    }
+
+    public function testPurgePubMedUrlWithTrailingSlashWhenPmidPresent(): void {
+        $text = '{{cite journal|url=https://pubmed.ncbi.nlm.nih.gov/12345678/|pmid=12345678}}';
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('12345678', $template->get2('pmid'));
+    }
+
+    public function testPurgePubMedUrlNotRemovedWhenPmidMismatch(): void {
+        $text = '{{cite journal|url=https://pubmed.ncbi.nlm.nih.gov/12345678/|pmid=99999999}}';
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('99999999', $template->get2('pmid'));
+    }
+
+    public function testPurgePubMedUrlOclcException(): void {
+        $text = '{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/12345678/|pmid=12345678|work=OCLC}}';
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('12345678', $template->get2('pmid'));
+    }
+
     // Test for author numbering fix: ensure authors are numbered contiguously after filtering
     public function testAuthorNumberingAfterFiltering1(): void {
         // Test case: Two valid authors with a bad author in between should be numbered 1 and 2

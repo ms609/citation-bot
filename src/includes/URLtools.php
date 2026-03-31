@@ -1740,8 +1740,17 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     report_modification("Converting URL to PMID parameter");
                 }
                 if (!$url_sent) {
+                    $combined_fields_for_oclc_check = $template->get('work') . $template->get('website') . $template->get('publisher');
                     if ($template->has_good_free_copy()) {
                         $template->forget($url_type);
+                    } else {
+                        $has_pmid       = !$template->blank('pmid');
+                        $pmids_match    = ($match[1] === $template->get('pmid'));
+                        $is_not_oclc    = (mb_stripos($combined_fields_for_oclc_check, 'oclc') === false);
+                        if ($has_pmid && $pmids_match && $is_not_oclc) {
+                            report_forget("Existing PubMed URL resulting from equivalent PMID; dropping URL");
+                            $template->forget($url_type);
+                        }
                     }
                 }
                 if ($template->wikiname() === 'cite web') {
