@@ -1710,7 +1710,13 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
             } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=(\d+)$~', $url, $match)) {
                 $pos_pmid = $match[1];
                 $old_pmid = $template->get('pmid');
-                if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
+                if ($old_pmid === $pos_pmid) {
+                    if (!$url_sent) {
+                        report_forget("Existing PubMed URL resulting from equivalent PMID; dropping URL");
+                        $template->forget($url_type);
+                    }
+                    return true;
+                } elseif ($old_pmid === '') {
                     $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
                     $template->add_if_new('pmid', $pos_pmid);
                     return true;
