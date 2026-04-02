@@ -453,9 +453,7 @@ final class Zotero {
             unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
         }
         if (mb_stripos($url, 'digital.library.unt.edu') !== false) {
-            // UNT Digital Library: Zotero swaps firstName/lastName due to "Family, Given" catalog format.
-            // The catalog stores names as "Family, Given", so Zotero puts "Family," (with trailing comma)
-            // in firstName and "Given" in lastName.  We swap them and strip the trailing comma.
+            // UNT: "Family, Given" catalog format causes Zotero to swap firstName/lastName; swap back and strip trailing comma.
             if (isset($result->creators) && is_array($result->creators)) {
                 foreach ($result->creators as $i => $creator) {
                     if (isset($creator->firstName) && isset($creator->lastName) &&
