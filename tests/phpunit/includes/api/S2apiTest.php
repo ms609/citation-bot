@@ -50,12 +50,20 @@ final class S2apiTest extends testBaseClass {
             $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
         }
         $this->assertSame('11733879', $template->get2('s2cid'));
+        $s2cid = $template->get('s2cid');
 
         // Extra sleep between the two Semantic Scholar API calls to reduce rate-limiting
         $this->sleep_S2();
 
+        // Phase 2 probe: get_semanticscholar_license returns null ONLY on rate-limit/outage,
+        // not on "paper found but field missing", so it safely distinguishes a dead API from
+        // a live one before we assert the DOI.
+        if (get_semanticscholar_license($s2cid) === null) {
+            $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
+        }
+
         // Phase 2: expand the S2CID to retrieve the DOI and metadata (second API call)
-        $template = $this->process_citation('{{cite web|s2cid=' . $template->get('s2cid') . '}}');
+        $template = $this->process_citation('{{cite web|s2cid=' . $s2cid . '}}');
         $this->assertSame('10.1046/j.1365-2699.1999.00329.x', mb_strtolower($template->get('doi')));
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertNull($template->get2('s2cid-access'));
@@ -73,12 +81,20 @@ final class S2apiTest extends testBaseClass {
             $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
         }
         $this->assertSame('1090322', $template->get2('s2cid'));
+        $s2cid = $template->get('s2cid');
 
         // Extra sleep between the two Semantic Scholar API calls to reduce rate-limiting
         $this->sleep_S2();
 
+        // Phase 2 probe: get_semanticscholar_license returns null ONLY on rate-limit/outage,
+        // not on "paper found but field missing", so it safely distinguishes a dead API from
+        // a live one before we assert the DOI.
+        if (get_semanticscholar_license($s2cid) === null) {
+            $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
+        }
+
         // Phase 2: expand the S2CID to retrieve the DOI and metadata (second API call)
-        $template = $this->process_citation('{{cite web|s2cid=' . $template->get('s2cid') . '}}');
+        $template = $this->process_citation('{{cite web|s2cid=' . $s2cid . '}}');
         $this->assertSame('10.1007/978-3-540-78646-7_75', $template->get2('doi'));
         $this->assertSame('cite book', $template->wikiname());
         $this->assertNull($template->get2('s2cid-access'));
