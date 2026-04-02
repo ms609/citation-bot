@@ -453,8 +453,7 @@ final class Zotero {
             unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
         }
         if (mb_stripos($url, 'digital.library.unt.edu') !== false) {
-            // UNT Digital Library metadata lists names in "Family, Given" order but Zotero
-            // misparses them, placing the family name in firstName and the given name in lastName
+            // UNT Digital Library: Zotero swaps firstName/lastName due to "Family, Given" catalog format
             if (isset($result->creators) && is_array($result->creators)) {
                 foreach ($result->creators as $i => $creator) {
                     if (isset($creator->firstName) && isset($creator->lastName) &&

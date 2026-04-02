@@ -1478,18 +1478,13 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwap(): void {
-        // UNT Digital Library metadata provides names in "Family, Given" order but Zotero
-        // misparses them, placing the family name in firstName and the given name in lastName.
-        // See https://digital.library.unt.edu/ark:/67531/metadc19815/m1/ (John Gilliland)
-        // The bot must swap them so first1=John and last1=Gilliland, not first1=Gilliland and last1=John.
-
-        // Test via the author array path (webpage/document itemType)
+        // UNT Digital Library: Zotero swaps firstName/lastName; bot must correct it (author array path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $author = [];
-        $author[0] = [0 => 'Gilliland', 1 => 'John']; // Simulating Zotero's misparsed output: family name in [0] (should be in [1]), given name in [1] (should be in [0])
+        $author[0] = [0 => 'Gilliland', 1 => 'John']; // Zotero misparsed: family name in [0], given in [1]
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1499,15 +1494,13 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwapViaCreators(): void {
-        // UNT Digital Library metadata provides names in "Family, Given" order but Zotero
-        // misparses them, placing the family name in firstName and the given name in lastName.
-        // Test via the creators array path (report/thesis itemType)
+        // UNT Digital Library: Zotero swaps firstName/lastName; bot must correct it (creators path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $creators = [];
-        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland', 'lastName' => 'John']; // Simulating Zotero's misparsed output: family name in firstName (should be lastName), given name in lastName (should be firstName)
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland', 'lastName' => 'John']; // Zotero misparsed: family name in firstName, given in lastName
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'report', 'creators' => $creators];
         $zotero_response = json_encode($zotero_data);
