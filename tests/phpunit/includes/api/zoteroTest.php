@@ -1476,4 +1476,36 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertNull($template->get2('work'));
     }
+
+    public function testUntDigitalLibraryAuthorNameSwap(): void {
+        // UNT Digital Library: Zotero swaps firstName/lastName; bot must correct it (author array path)
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $author = [];
+        $author[0] = [0 => 'Gilliland', 1 => 'John']; // Zotero misparsed: family name in [0], given in [1]
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
+
+    public function testUntDigitalLibraryAuthorNameSwapViaCreators(): void {
+        // UNT Digital Library: Zotero swaps firstName/lastName; bot must correct it (creators path)
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland', 'lastName' => 'John']; // Zotero misparsed: family name in firstName, given in lastName
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'report', 'creators' => $creators];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
 }

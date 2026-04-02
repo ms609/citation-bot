@@ -452,6 +452,28 @@ final class Zotero {
             unset($result->creators);
             unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
         }
+        if (mb_stripos($url, 'digital.library.unt.edu') !== false) {
+            // UNT Digital Library: Zotero swaps firstName/lastName due to "Family, Given" catalog format
+            if (isset($result->creators) && is_array($result->creators)) {
+                foreach ($result->creators as $i => $creator) {
+                    if (isset($creator->firstName) && isset($creator->lastName) &&
+                        (string) $creator->firstName !== '' && (string) $creator->lastName !== '') {
+                        $temp_first = (string) $creator->firstName;
+                        $result->creators[$i]->firstName = $creator->lastName;
+                        $result->creators[$i]->lastName = $temp_first;
+                    }
+                }
+            }
+            if (isset($result->author) && is_array($result->author)) {
+                foreach ($result->author as $i => $auth) {
+                    if (is_array($auth) && isset($auth[0]) && isset($auth[1]) &&
+                        (string) $auth[0] !== '' && (string) $auth[1] !== '') {
+                        $result->author[$i][0] = (string) $auth[1];
+                        $result->author[$i][1] = (string) $auth[0];
+                    }
+                }
+            }
+        }
         if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);
         }
