@@ -1679,9 +1679,6 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                 if (preg_match("~\?term~i", $url)) {  // ALWAYS ADD new @$match[] below
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
-                if ($template->wikiname() === 'cite web') {
-                    $template->change_name_to('cite journal');
-                }
                 if ($template->blank('pmc')) {
                     report_modification("Converting URL to PMC parameter");
                 }
@@ -1704,6 +1701,9 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
                     if (mb_stripos(str_replace("printable", "", $url), "table") === false) {
                         $template->forget($url_type); // This is the same as PMC auto-link
                     }
+                }
+                if ($template->wikiname() === 'cite web') {
+                    $template->change_name_to('cite journal');
                 }
                 return $template->add_if_new('pmc', $new_pmc);
 
