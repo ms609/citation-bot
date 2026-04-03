@@ -473,10 +473,7 @@ final class Zotero {
                     }
                 }
             }
-            // Creators are only processed for specific itemTypes (journalArticle, report, etc.).
-            // For 'webpage', 'audioRecording', 'radioBroadcast', and other types, they are skipped.
-            // Copy swapped creators to the author array (after the author-swap block above) so the
-            // general author loop (which runs for all itemTypes) picks them up in the correct order.
+            // Copy swapped creators to author array so the general loop picks them up for all itemTypes.
             if (isset($result->creators) && is_array($result->creators) && empty($result->author)) {
                 foreach ($result->creators as $creator) {
                     if (isset($creator->creatorType) && (string) $creator->creatorType === 'author' &&
