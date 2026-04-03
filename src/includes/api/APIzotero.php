@@ -473,7 +473,7 @@ final class Zotero {
                     }
                 }
             }
-            // Copy swapped creators to author array so the general loop picks them up for all itemTypes.
+            // UNT only: copy swapped creators to author array for non-journal itemTypes (e.g. webpage) where $result->author is not populated.
             if (isset($result->creators) && is_array($result->creators) && empty($result->author)) {
                 foreach ($result->creators as $creator) {
                     if (isset($creator->creatorType) && (string) $creator->creatorType === 'author' &&
