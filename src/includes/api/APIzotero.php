@@ -478,7 +478,6 @@ final class Zotero {
             // Copy swapped creators to the author array (after the author-swap block above) so the
             // general author loop (which runs for all itemTypes) picks them up in the correct order.
             if (isset($result->creators) && is_array($result->creators) && empty($result->author)) {
-                $result->author = [];
                 foreach ($result->creators as $creator) {
                     if (isset($creator->creatorType) && (string) $creator->creatorType === 'author' &&
                         isset($creator->firstName) && isset($creator->lastName)) {
