@@ -73,6 +73,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     if ($ch === null) {
         $ch = bot_curl_init(0.5, HEADER_S2);
     }
+    /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=isOpenAccess';
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
