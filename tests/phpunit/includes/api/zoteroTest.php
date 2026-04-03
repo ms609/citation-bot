@@ -1540,4 +1540,21 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Gilliland', $template->get2('last1'));
         $this->assertSame('John', $template->get2('first1'));
     }
+
+    public function testUntDigitalLibraryAuthorAddedForWebpageItemType(): void {
+        // UNT: Citoid returns itemType='webpage' with creators; creators must still be added as authors.
+        // Regression test for bug where creators were silently ignored for non-journal itemTypes.
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|title=Show 47 - Sergeant Pepper at the Summit|publisher=Digital.library.unt.edu|access-date=2014-02-02}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // actual Zotero output
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Show 47 - Sergeant Pepper at the Summit', 'itemType' => 'webpage', 'creators' => $creators];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
 }
