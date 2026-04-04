@@ -778,8 +778,7 @@ final class Zotero {
             $template->add_if_new('isbn', $result->ISBN);
         }
         if ($access_date && isset($result->date) && mb_stripos($url, 'digital.library.unt.edu') === false) {
-            // UNT Digital Library is a permanent archive; its metadata date reflects the original document date,
-            // not a page-content change, so the date-change gate must not block author extraction there.
+            // UNT is a permanent archive; its date reflects the original document, not a content change.
             $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
             if ($new_date) { // can compare
                 if ($new_date > $access_date) {
