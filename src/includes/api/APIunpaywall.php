@@ -15,6 +15,9 @@ function get_unpaywall_url(Template $template, string $doi): string {
     $url = "https://api.unpaywall.org/v2/{$doi}?email=" . CROSSREFUSERNAME;
     curl_setopt($ch_oa, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch_oa);
+    if (curl_getinfo($ch_oa, CURLINFO_RESPONSE_CODE) === 429) {
+        return 'rate_limited';
+    }
     if ($json) {
         $oa = @json_decode($json);
         unset($json);
