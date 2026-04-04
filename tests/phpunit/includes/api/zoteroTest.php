@@ -1478,13 +1478,13 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwap(): void {
-        // UNT: bot swaps Zotero's reversed firstName/lastName (author array path)
+        // UNT reversed firstName/lastName is swapped back (author array path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $author = [];
-        $author[0] = [0 => 'Gilliland', 1 => 'John']; // family in [0], given in [1]
+        $author[0] = [0 => 'Gilliland', 1 => 'John']; // reversed: family in [0]
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1494,13 +1494,13 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwapWithTrailingComma(): void {
-        // UNT: trailing comma from "Family, Given" catalog format is stripped after swap (author array path)
+        // UNT trailing comma in the family-name slot is stripped after swap (author array path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $author = [];
-        $author[0] = [0 => 'Gilliland,', 1 => 'John']; // trailing comma in family-name slot
+        $author[0] = [0 => 'Gilliland,', 1 => 'John']; // trailing comma
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'webpage', 'author' => $author];
         $zotero_response = json_encode($zotero_data);
@@ -1510,13 +1510,13 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwapViaCreators(): void {
-        // UNT: bot swaps Zotero's reversed firstName/lastName (creators path)
+        // UNT reversed firstName/lastName is swapped back (creators path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $creators = [];
-        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland', 'lastName' => 'John']; // family in firstName, given in lastName
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland', 'lastName' => 'John']; // reversed: family in firstName
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'report', 'creators' => $creators];
         $zotero_response = json_encode($zotero_data);
@@ -1526,18 +1526,53 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testUntDigitalLibraryAuthorNameSwapViaCreatorsWithTrailingComma(): void {
-        // UNT: trailing comma from "Family, Given" catalog format is stripped after swap (creators path)
+        // UNT trailing comma in firstName is stripped after swap (creators path)
         $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|publisher=Digital.library.unt.edu|id=}}';
         $template = $this->make_citation($text);
         $access_date = 0;
         $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
         $creators = [];
-        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // actual Zotero output
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // trailing comma
         $zotero_data = [];
         $zotero_data[0] = (object) ['title' => 'History of Rock', 'itemType' => 'journalArticle', 'creators' => $creators];
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('Gilliland', $template->get2('last1'));
         $this->assertSame('John', $template->get2('first1'));
+    }
+
+    public function testUntDigitalLibraryAuthorAddedForWebpageItemType(): void {
+        // UNT creators must be added even when itemType='webpage'
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|title=Show 47 - Sergeant Pepper at the Summit|publisher=Digital.library.unt.edu|access-date=2014-02-02}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // trailing comma
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Show 47 - Sergeant Pepper at the Summit', 'itemType' => 'webpage', 'creators' => $creators];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
+
+    public function testUntDigitalLibraryMultipleAuthorsForWebpageItemType(): void {
+        // UNT multiple creators are all added in order for itemType='webpage'
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|publisher=Digital.library.unt.edu|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Smith,', 'lastName' => 'Alice'];
+        $creators[1] = (object) ['creatorType' => 'author', 'firstName' => 'Jones,', 'lastName' => 'Bob'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Test Article', 'itemType' => 'webpage', 'creators' => $creators];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('Alice', $template->get2('first1'));
+        $this->assertSame('Jones', $template->get2('last2'));
+        $this->assertSame('Bob', $template->get2('first2'));
     }
 }

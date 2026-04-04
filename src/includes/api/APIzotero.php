@@ -473,6 +473,18 @@ final class Zotero {
                     }
                 }
             }
+            // UNT only: copy swapped creators to author array for non-journal itemTypes (e.g. webpage) where $result->author is not populated.
+            if (isset($result->creators) && is_array($result->creators) && empty($result->author)) {
+                foreach ($result->creators as $creator) {
+                    if (isset($creator->creatorType) && (string) $creator->creatorType === 'author' &&
+                        isset($creator->firstName) && isset($creator->lastName)) {
+                        $result->author[] = [(string) $creator->firstName, (string) $creator->lastName];
+                    }
+                }
+                if (empty($result->author)) {
+                    unset($result->author);
+                }
+            }
         }
         if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);
