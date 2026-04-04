@@ -804,6 +804,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('isbn'));
     }
 
+    public function testTidy90(): void {
+        $text = "{{cite web|url=https://www-haaretz-co-il.wikipedialibrary.idm.oclc.org/gallery/2010-06-28/ty-article/0000017f-f85f-d47e-a37f-f97fac920000 |via = wiki stuff }}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('url');
+        $this->assertSame('https://www.haaretz.co.il/gallery/2010-06-28/ty-article/0000017f-f85f-d47e-a37f-f97fac920000', $template->get2('url'));
+        $this->assertNull($template->get2('via'));
+    }
+
     public function testIncomplete1a(): void {
         $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
         $template = $this->make_citation($text);

@@ -1129,7 +1129,10 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
     // idm.oclc.org Proxy
     if (mb_stripos($template->get($param), 'idm.oclc.org') !== false && mb_stripos($template->get($param), 'ancestryinstitution') === false) {
         $oclc_found = false;
-        if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
+        if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
+            $template->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '.' . $matches[4] . '/' . $matches[5]);
+            $oclc_found = true;
+        } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
             $template->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
             $oclc_found = true;
         } elseif (preg_match("~^https://([^\.\-\/]+)\.([^\.\-\/]+)\.com.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $template->get($param), $matches)) {
