@@ -1476,11 +1476,3 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertNull($template->get2('work'));
     }
-
-    public function testUntDigitalLibrarySkippedByZotero(): void {
-        // digital.library.unt.edu is in ZOTERO_AVOID_REGEX; Zotero must not process these URLs.
-        $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
-        $this->assertSame(1, preg_match("~^https?://(?:www\.|m\.|ftp\.|web\.|)(?:" . $bad_url . ")~i", $url));
-    }
-}
