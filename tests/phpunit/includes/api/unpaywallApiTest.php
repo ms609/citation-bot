@@ -44,8 +44,8 @@ final class unpaywallApiTest extends testBaseClass {
         $text = "{{cite journal|doi=10.1206/0003-0090(2004)286<0001:MPTASO>2.0.CO;2}}";
         $template = $this->make_citation($text);
         $result = get_unpaywall_url($template, $template->get('doi'));
-        if ($result === 'rate_limited') {
-            $this->markTestSkipped('Unpaywall API rate limited');
+        if ($result === 'rate_limited' || $result === 'url_unreachable') {
+            $this->markTestSkipped('Unpaywall API or BHL URL was unavailable (' . $result . ')');
         }
         $this->assertNotNull($template->get2('url'));
     }

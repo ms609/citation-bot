@@ -201,7 +201,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 if ($headers_test === "") {
                     $template->forget($url_type);
                     report_warning("Open access URL was unreachable from Unpaywall API for doi: " . echoable($doi));
-                    return 'nothing';
+                    return 'url_unreachable';
                 }
                 // @codeCoverageIgnoreEnd
                 $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
@@ -210,7 +210,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                       // Generally 400 and below are okay, includes redirects too though
                       $template->forget($url_type);
                       report_warning("Open access URL gave response code " . (string) $response_code . " from oiDOI API for doi: " . echoable($doi));
-                      return 'nothing';
+                      return 'url_unreachable';
                 }
                     // @codeCoverageIgnoreEnd
             }
