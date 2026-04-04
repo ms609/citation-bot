@@ -1195,12 +1195,6 @@ const NO_DATE_WEBSITES = [
     'thepracticalleader.com',
 ];
 
-// Permanent archives whose Zotero-returned date reflects the original document, not a page-content
-// change, so the date-change guard must not apply to them.
-const PERMANENT_ARCHIVE_DOMAINS = [
-    'digital.library.unt.edu',
-];
-
 const ZOTERO_AVOID_REGEX = [
     'ftp\.unicode\.org', // Zotero goes insane on titles
     'arkive\.org',
@@ -1208,6 +1202,7 @@ const ZOTERO_AVOID_REGEX = [
     'biodiversity\.org\.au', // gives bad data
     'bloomberg\.com/tosv2.html', // Junk
     'books\.google\.', // We have special google books code
+    'digital\.library\.unt\.edu', // Zotero cannot fetch these URLs
     'drive\.google\.com', // Google Drive file hosting; not a publication source, returns bad metadata
     'britishnewspaperarchive\.co\.uk', // Requires registration
     'cagematch\.net', // Fails 100%
