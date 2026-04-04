@@ -1476,3 +1476,4 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertNull($template->get2('work'));
     }
+}
