@@ -452,40 +452,6 @@ final class Zotero {
             unset($result->creators);
             unset($result->author); // EATCS Joomla CMS records the posting admin as "author", not a content creator
         }
-        if (mb_stripos($url, 'digital.library.unt.edu') !== false) {
-            // UNT: "Family, Given" catalog format causes Zotero to swap firstName/lastName; swap back and strip trailing comma.
-            if (isset($result->creators) && is_array($result->creators)) {
-                foreach ($result->creators as $i => $creator) {
-                    if (isset($creator->firstName) && isset($creator->lastName) &&
-                        (string) $creator->firstName !== '' && (string) $creator->lastName !== '') {
-                        $temp_first = (string) $creator->firstName;
-                        $result->creators[$i]->firstName = $creator->lastName;
-                        $result->creators[$i]->lastName = mb_rtrim($temp_first, ', ');
-                    }
-                }
-            }
-            if (isset($result->author) && is_array($result->author)) {
-                foreach ($result->author as $i => $auth) {
-                    if (is_array($auth) && isset($auth[0]) && isset($auth[1]) &&
-                        (string) $auth[0] !== '' && (string) $auth[1] !== '') {
-                        $result->author[$i][0] = (string) $auth[1];
-                        $result->author[$i][1] = mb_rtrim((string) $auth[0], ', ');
-                    }
-                }
-            }
-            // UNT only: copy swapped creators to author array for non-journal itemTypes (e.g. webpage) where $result->author is not populated.
-            if (isset($result->creators) && is_array($result->creators) && empty($result->author)) {
-                foreach ($result->creators as $creator) {
-                    if (isset($creator->creatorType) && (string) $creator->creatorType === 'author' &&
-                        isset($creator->firstName) && isset($creator->lastName)) {
-                        $result->author[] = [(string) $creator->firstName, (string) $creator->lastName];
-                    }
-                }
-                if (empty($result->author)) {
-                    unset($result->author);
-                }
-            }
-        }
         if (mb_stripos((string) @$result->publicationTitle, 'Extended Abstracts') !== false) { // https://research.vu.nl/en/publications/5a946ccf-5f5b-4cab-b47e-824508c4d709
             unset($result->publicationTitle);
         }
@@ -777,14 +743,7 @@ final class Zotero {
         if (isset($result->ISBN)) {
             $template->add_if_new('isbn', $result->ISBN);
         }
-        $is_permanent_archive = false;
-        foreach (PERMANENT_ARCHIVE_DOMAINS as $permanent_archive) {
-            if (mb_stripos($url, $permanent_archive) !== false) {
-                $is_permanent_archive = true;
-                break;
-            }
-        }
-        if ($access_date && isset($result->date) && !$is_permanent_archive) {
+        if ($access_date && isset($result->date)) {
             $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
             if ($new_date) { // can compare
                 if ($new_date > $access_date) {
