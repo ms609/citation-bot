@@ -1575,4 +1575,29 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Jones', $template->get2('last2'));
         $this->assertSame('Bob', $template->get2('first2'));
     }
+
+    public function testUntDigitalLibraryAuthorNotBlockedByDateChangeEarlyReturn(): void {
+        // Regression: when $access_date is non-zero (real bot usage) and the Zotero response
+        // contains a 'date' field newer than the citation's access-date, the generic date-change
+        // guard returned early BEFORE the author processing loop, silently dropping the author.
+        // UNT Digital Library is a permanent archive; its date reflects the original document,
+        // not a page-content change, so the guard must not apply.
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|title=Show 47 - Sergeant Pepper at the Summit|publisher=Digital.library.unt.edu|access-date=2014-02-02}}';
+        $template = $this->make_citation($text);
+        $access_date = (int) strtotime('2014-02-02'); // Non-zero: real bot sets this from the citation
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // UNT catalog "Family, Given": family in firstName, trailing comma; the swap corrects this
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Show 47 - Sergeant Pepper at the Summit',
+            'itemType' => 'webpage',
+            'creators' => $creators,
+            'date' => '2024-01-01', // Newer than access-date: would trigger early return without the fix
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
 }
