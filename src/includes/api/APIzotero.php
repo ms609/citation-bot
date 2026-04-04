@@ -777,7 +777,14 @@ final class Zotero {
         if (isset($result->ISBN)) {
             $template->add_if_new('isbn', $result->ISBN);
         }
-        if ($access_date && isset($result->date)) {
+        $is_permanent_archive = false;
+        foreach (PERMANENT_ARCHIVE_DOMAINS as $permanent_archive) {
+            if (mb_stripos($url, $permanent_archive) !== false) {
+                $is_permanent_archive = true;
+                break;
+            }
+        }
+        if ($access_date && isset($result->date) && !$is_permanent_archive) {
             $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
             if ($new_date) { // can compare
                 if ($new_date > $access_date) {

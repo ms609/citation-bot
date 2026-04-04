@@ -1575,4 +1575,26 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Jones', $template->get2('last2'));
         $this->assertSame('Bob', $template->get2('first2'));
     }
+
+    public function testUntDigitalLibraryAuthorNotBlockedByDateChangeEarlyReturn(): void {
+        // Regression: non-zero $access_date + Zotero date newer than access-date triggered an early
+        // return before the author loop. UNT is a permanent archive; the guard must not apply there.
+        $text = '{{cite web|url=https://digital.library.unt.edu/ark:/67531/metadc19815/m1/|title=Show 47 - Sergeant Pepper at the Summit|publisher=Digital.library.unt.edu|access-date=2014-02-02}}';
+        $template = $this->make_citation($text);
+        $access_date = (int) strtotime('2014-02-02'); // Non-zero: real bot usage
+        $url = 'https://digital.library.unt.edu/ark:/67531/metadc19815/m1/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gilliland,', 'lastName' => 'John']; // UNT "Family, Given" format; swap corrects firstName/lastName
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Show 47 - Sergeant Pepper at the Summit',
+            'itemType' => 'webpage',
+            'creators' => $creators,
+            'date' => '2024-01-01', // Newer than access-date: triggers early return without the fix
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Gilliland', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+    }
 }

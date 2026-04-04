@@ -1195,6 +1195,12 @@ const NO_DATE_WEBSITES = [
     'thepracticalleader.com',
 ];
 
+// Permanent archives whose Zotero-returned date reflects the original document, not a page-content
+// change, so the date-change guard must not apply to them.
+const PERMANENT_ARCHIVE_DOMAINS = [
+    'digital.library.unt.edu',
+];
+
 const ZOTERO_AVOID_REGEX = [
     'ftp\.unicode\.org', // Zotero goes insane on titles
     'arkive\.org',
