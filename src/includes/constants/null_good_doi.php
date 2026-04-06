@@ -6,6 +6,13 @@ declare(strict_types=1);
  * Note that a failed url on one computer does not mean it is gone, it might just be you. You can use hdl.handle.org to show you the final url - russia and other countries firewall. These need to be manually double checked once in a great while. We cannot add hdls to this list, since we need the final URL
  */
 const NULL_DOI_BUT_GOOD = [
+    '10.1525/esr.2017.37_38.1.135' => true,
+    '10.1525/esr.2017.37_38.1.5' => true,
+    '10.18520/cs/v113/i05/861-868' => true,
+    '10.2310/6620.2011.11017' => true,
+    '10.24310/abm.v16i.9153' => true,
+    '10.25009/urhsc.v0i14.1312' => true,
+    '10.54629/jli.v18i2.742' => true,
     '10.17706/IJCEE.2016.8.3.207-218' => true,
     '10.18565/cardio.2016.3.73-80' => true,
     '10.1000/100' => true,
