@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 /** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
 const COMMON_MISTAKES = [
+    'језик' => 'language',
+    'arxiv-class' => 'class',
     '_isbn' => 'isbn',
     '_pages' => 'pages',
     '–citeseerx' => 'citeseerx',
