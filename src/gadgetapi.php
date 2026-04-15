@@ -8,6 +8,11 @@ set_time_limit(120);
 try {
     @header('Access-Control-Allow-Origin: *'); // Needed for gadget to work right
     @header('Content-Type: application/json');
+    $origin = mb_strtolower((string) @$_SERVER['HTTP_ORIGIN']);
+    if ($origin !== 'mdwiki.org' && !str_ends_with($origin, '.wikipedia.org')) {
+        throw new Exception('not a wiki');    // @codeCoverageIgnore
+    }
+    unset($origin);
 
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
