@@ -7,7 +7,7 @@ set_time_limit(120);
 
 try {
     @header('Access-Control-Allow-Origin: *'); // Needed for gadget to work right
-    @header('Content-Type: text/json');
+    @header('Content-Type: application/json');
 
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
