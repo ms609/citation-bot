@@ -899,6 +899,7 @@ class Page {
             }
         }
         /** @phpstan-ignore function.alreadyNarrowedType */
+        // @phan-suppress-next-line PhanPossiblyUndeclaredVariable
         if ($preg_ok === false && is_string($regexp)) {
             // @codeCoverageIgnoreStart
             $regexp = str_replace('~su', '~s', $regexp);
