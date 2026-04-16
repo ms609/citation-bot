@@ -898,9 +898,8 @@ class Page {
                 $objects[] = $obj;
             }
         }
-        /** @phpstan-ignore function.alreadyNarrowedType */
-        // @phan-suppress-next-line PhanPossiblyUndeclaredVariable
-        if ($preg_ok === false && is_string($regexp)) {
+        /** @phpstan-ignore isset.variable, function.alreadyNarrowedType */
+        if ($preg_ok === false && isset($regexp) && is_string($regexp)) {
             // @codeCoverageIgnoreStart
             $regexp = str_replace('~su', '~s', $regexp);
             while ($preg_ok = preg_match($regexp, $text, $match)) { // try last most powerful REGEX without unicode
