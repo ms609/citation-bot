@@ -898,7 +898,7 @@ class Page {
                 $objects[] = $obj;
             }
         }
-        /** @phpstan-ignore function.alreadyNarrowedType */
+        /** @phpstan-ignore isset.variable, function.alreadyNarrowedType */
         if ($preg_ok === false && isset($regexp) && is_string($regexp)) {
             // @codeCoverageIgnoreStart
             $regexp = str_replace('~su', '~s', $regexp);
