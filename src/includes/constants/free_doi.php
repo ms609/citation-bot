@@ -291,42 +291,29 @@ const DOI_FREE_PREFIX = [
 
 /**
  * Conditional free DOI rules: DOIs that are free only under certain publication-date conditions.
- *
- * Supported rule types and their semantics:
- *   AFTER_YEAR    - free if pub year >  value  (strictly after, e.g. Hindawi content after 2006)
- *   FROM_YEAR     - free if pub year >= value  (from a given year onwards, e.g. EPJC from 2015)
- *   EMBARGO_YEARS - free if (pub year + value) < current year  (whole-year rolling embargo)
- *   EMBARGO_MONTHS - free if (pub date + value months) <= now  (month-precise rolling embargo;
- *                    when only a year is known the end of that year is used as a conservative estimate)
- *
- * The 'value' field is always a string.
- *   - For AFTER_YEAR / FROM_YEAR it is a four-digit year, e.g. '2015'.
- *   - For EMBARGO_YEARS / EMBARGO_MONTHS it is the number of years/months as a string, e.g. '1' or '36'.
- *
- * When no parseable publication date or year is present in the citation, no free tag is added.
- *
- * Existing unconditional entries in DOI_FREE_PREFIX take precedence; this list is evaluated afterwards.
- * To add a new rule, append a new array entry here — no Template.php changes required.
- *
+ * Rule types: AFTER_YEAR (year > value), FROM_YEAR (year >= value),
+ *   EMBARGO_YEARS (year + value < current year), EMBARGO_MONTHS (pub date + value months <= now;
+ *   falls back to end of year when only year is known).
+ * If no parseable date is present, no free tag is added.
  * @var array<array{prefix: string, type: string, value: string}>
  */
 const DOI_FREE_CONDITIONAL = [
-    [   // Hindawi journals became fully open-access; older Hindawi content is free for years after 2006
+    [   // Hindawi: free for years after 2006
         'prefix' => '10.1155/',
         'type'   => 'AFTER_YEAR',
         'value'  => '2006',
     ],
-    [   // PNAS: rolling embargo — free once at least 1 full year old (year-level precision)
+    [   // PNAS: 1-year rolling embargo
         'prefix' => '10.1073/pnas',
         'type'   => 'EMBARGO_YEARS',
         'value'  => '1',
     ],
-    [   // Limnology and Oceanography (Wiley): 3-year (36-month) rolling embargo, month-precise
+    [   // Limnology and Oceanography: 36-month rolling embargo, month-precise
         'prefix' => '10.1002/lno.',
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '36',
     ],
-    [   // European Physical Journal C: open-access from 2015 onwards (published after 31 Dec 2014)
+    [   // EPJC: open-access from 2015 onwards
         'prefix' => '10.1140/epjc',
         'type'   => 'FROM_YEAR',
         'value'  => '2015',
