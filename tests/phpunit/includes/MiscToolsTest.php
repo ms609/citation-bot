@@ -280,40 +280,31 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertEmpty($bad);
     }
 
-    // ======================== equivalent_parameters() ========================
-
     public function testEquivalentParametersAuthor(): void {
-        new TestPage();
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('author'));
     }
 
     public function testEquivalentParametersAuthors(): void {
-        new TestPage();
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('authors'));
     }
 
     public function testEquivalentParametersAuthor1(): void {
-        new TestPage();
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('author1'));
     }
 
     public function testEquivalentParametersLast1(): void {
-        new TestPage();
         $this->assertSame(FLATTENED_AUTHOR_PARAMETERS, equivalent_parameters('last1'));
     }
 
     public function testEquivalentParametersPmid(): void {
-        new TestPage();
         $this->assertSame(['pmc', 'pmid'], equivalent_parameters('pmid'));
     }
 
     public function testEquivalentParametersPmc(): void {
-        new TestPage();
         $this->assertSame(['pmc', 'pmid'], equivalent_parameters('pmc'));
     }
 
     public function testEquivalentParametersPagesGroup(): void {
-        new TestPage();
         $result = equivalent_parameters('pages');
         $this->assertContains('pages', $result);
         $this->assertContains('page', $result);
@@ -321,127 +312,101 @@ final class MiscToolsTest extends testBaseClass {
     }
 
     public function testEquivalentParametersPageGroup(): void {
-        new TestPage();
         $result = equivalent_parameters('page');
         $this->assertContains('page', $result);
         $this->assertContains('pages', $result);
     }
 
     public function testEquivalentParametersStartPage(): void {
-        new TestPage();
         $result = equivalent_parameters('start_page');
         $this->assertContains('start_page', $result);
         $this->assertContains('end_page', $result);
     }
 
     public function testEquivalentParametersEndPage(): void {
-        new TestPage();
         $result = equivalent_parameters('end_page');
         $this->assertContains('end_page', $result);
         $this->assertContains('pages', $result);
     }
 
     public function testEquivalentParametersPageRange(): void {
-        new TestPage();
         $result = equivalent_parameters('page_range');
         $this->assertContains('page_range', $result);
         $this->assertContains('pages', $result);
     }
 
     public function testEquivalentParametersDefaultReturnsSelf(): void {
-        new TestPage();
         $this->assertSame(['title'], equivalent_parameters('title'));
     }
 
     public function testEquivalentParametersDoiReturnsSelf(): void {
-        new TestPage();
         $this->assertSame(['doi'], equivalent_parameters('doi'));
     }
 
-    // ======================== string_is_book_series() ========================
-
     public function testStringIsBookSeriesJournalName(): void {
-        new TestPage();
         $this->assertFalse(string_is_book_series('Nature'));
     }
 
     public function testStringIsBookSeriesEmpty(): void {
-        new TestPage();
         $this->assertFalse(string_is_book_series(''));
     }
 
-    // ======================== should_url2chapter() ========================
-
     public function testShouldUrl2ChapterHasChapterUrl(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com |chapter=Test |chapter-url=http://example.com/ch1}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterHasChapterurlOld(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com |chapter=Test |chapterurl=http://example.com/ch1}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterHasTransChapter(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com |chapter=Test |trans-chapter=Test Trans}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterNoChapter(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterChapterHasBracket(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com |chapter=[Test]}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterGoogleWithoutPg(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://books.google.com/books?id=abc |chapter=Test}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterArchiveIsbn(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://archive.org/details/isbn_123 |chapter=Test}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterPageIdZero(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com?page_id=0 |chapter=Test}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterPA0(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com/PA0test |chapter=Test}}');
         $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterSpringerChapterUrl(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://link.springer.com/chapter/10.1007/test |chapter=Test}}');
         $this->assertTrue(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterForcedTrue(): void {
-        new TestPage();
         $template = $this->make_citation('{{cite book |url=http://example.com/page |chapter=Test}}');
         $this->assertTrue(should_url2chapter($template, true));
     }
 
-    // ======================== run_type_mods() ========================
-
     public function testRunTypeModsReturnsInt(): void {
-        new TestPage();
         $result = run_type_mods(-1, 10, 20, 30, 40);
         $this->assertIsInt($result);
     }

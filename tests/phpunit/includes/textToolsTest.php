@@ -977,249 +977,185 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('eJournal', $expanded->get2('journal'));
     }
 
-    // ======================== de_wikify() ========================
-
     public function testDeWikifyWikilink(): void {
-        new TestPage();
         $this->assertSame('test link', de_wikify('[[test link]]'));
     }
 
     public function testDeWikifyPipedWikilink(): void {
-        new TestPage();
         $this->assertSame('display text', de_wikify('[[target|display text]]'));
     }
 
     public function testDeWikifyBoldMarkup(): void {
-        new TestPage();
         $this->assertSame("'bold'", de_wikify("'''bold'''"));
     }
 
     public function testDeWikifyItalicMarkup(): void {
-        new TestPage();
         $this->assertSame("'italic'", de_wikify("''italic''"));
     }
 
     public function testDeWikifyAmpersandRemoved(): void {
-        new TestPage();
         $this->assertSame('', de_wikify('&'));
     }
 
     public function testDeWikifyPlainText(): void {
-        new TestPage();
         $this->assertSame('plain text', de_wikify('plain text'));
     }
 
-    // ======================== truncate_publisher() ========================
-
     public function testTruncatePublisherGroup(): void {
-        new TestPage();
         $this->assertSame('Penguin', truncate_publisher('Penguin Group'));
     }
 
     public function testTruncatePublisherInc(): void {
-        new TestPage();
         $this->assertSame('Company', truncate_publisher('Company Inc'));
     }
 
     public function testTruncatePublisherIncDot(): void {
-        new TestPage();
         $this->assertSame('Company', truncate_publisher('Company Inc.'));
     }
 
     public function testTruncatePublisherLtd(): void {
-        new TestPage();
         $this->assertSame('Company', truncate_publisher('Company Ltd'));
     }
 
     public function testTruncatePublisherPublishing(): void {
-        new TestPage();
         $this->assertSame('Oxford', truncate_publisher('Oxford Publishing'));
     }
 
     public function testTruncatePublisherNoSuffix(): void {
-        new TestPage();
         $this->assertSame('Random House', truncate_publisher('Random House'));
     }
 
-    // ======================== str_remove_irrelevant_bits() ========================
-
     public function testStrRemoveIrrelevantBitsEmpty(): void {
-        new TestPage();
         $this->assertSame('', str_remove_irrelevant_bits(''));
     }
 
     public function testStrRemoveIrrelevantBitsStripsLeadingThe(): void {
-        new TestPage();
         $result = str_remove_irrelevant_bits('The New York Times');
         $this->assertStringNotContainsString('The ', $result);
     }
 
     public function testStrRemoveIrrelevantBitsAmpersandToAnd(): void {
-        new TestPage();
         $result = str_remove_irrelevant_bits('Smith & Jones');
         $this->assertStringContainsString('and', $result);
     }
 
     public function testStrRemoveIrrelevantBitsWikilink(): void {
-        new TestPage();
         $result = str_remove_irrelevant_bits('[[Nature (journal)|Nature]]');
         $this->assertStringNotContainsString('[[', $result);
         $this->assertStringContainsString('Nature', $result);
     }
 
-    // ======================== mb_strrev() ========================
-
     public function testMbStrrevBasic(): void {
-        new TestPage();
         $this->assertSame('dcba', mb_strrev('abcd'));
     }
 
     public function testMbStrrevEmpty(): void {
-        new TestPage();
         $this->assertSame('', mb_strrev(''));
     }
 
     public function testMbStrrevSingleChar(): void {
-        new TestPage();
         $this->assertSame('a', mb_strrev('a'));
     }
 
     public function testMbStrrevPalindrome(): void {
-        new TestPage();
         $this->assertSame('racecar', mb_strrev('racecar'));
     }
 
-    // ======================== mb_ucwords() ========================
-
     public function testMbUcwordsLowercase(): void {
-        new TestPage();
         $this->assertSame('Hello World', mb_ucwords('hello world'));
     }
 
     public function testMbUcwordsSingleWord(): void {
-        new TestPage();
         $this->assertSame('Hello', mb_ucwords('hello'));
     }
 
     public function testMbUcwordsAlreadyUppercase(): void {
-        new TestPage();
         $this->assertSame('HELLO', mb_ucwords('HELLO'));
     }
 
-    // ======================== can_safely_modify_dashes() ========================
-
     public function testCanSafelyModifyDashesSimpleRange(): void {
-        new TestPage();
         $this->assertTrue(can_safely_modify_dashes('1-10'));
     }
 
     public function testCanSafelyModifyDashesWithHttp(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('http://example.com'));
     }
 
     public function testCanSafelyModifyDashesWithProtocolRelative(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('[//example.com]'));
     }
 
     public function testCanSafelyModifyDashesWithHtmlTag(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('<span>text</span>'));
     }
 
     public function testCanSafelyModifyDashesWithPlaceholder(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('CITATION_BOT_PLACEHOLDER'));
     }
 
     public function testCanSafelyModifyDashesWithParenthesis(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('1-(2)'));
     }
 
     public function testCanSafelyModifyDashesSpacesAndLetters(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('some text'));
     }
 
     public function testCanSafelyModifyDashesThreeOrMoreDashes(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('1-2-3-4'));
     }
 
     public function testCanSafelyModifyDashesAlphaNumericPattern(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('A3-5'));
     }
 
     public function testCanSafelyModifyDashesYearAlpha(): void {
-        new TestPage();
         $this->assertFalse(can_safely_modify_dashes('2005-A'));
     }
 
-    // ======================== doi_encode() ========================
-
     public function testDoiEncodePreservesSlash(): void {
-        new TestPage();
         $this->assertSame('10.1000/test', doi_encode('10.1000/test'));
     }
 
     public function testDoiEncodeEncodesSpace(): void {
-        new TestPage();
         $result = doi_encode('10.1000/test value');
         $this->assertStringNotContainsString(' ', $result);
         $this->assertStringContainsString('10.1000', $result);
     }
 
     public function testDoiEncodeMultipleSlashes(): void {
-        new TestPage();
         $this->assertSame('10.1000/path/to/doi', doi_encode('10.1000/path/to/doi'));
     }
 
-    // ======================== hdl_decode() ========================
-
     public function testHdlDecodeBasicHandle(): void {
-        new TestPage();
         $this->assertSame('2027/test', hdl_decode('2027/test'));
     }
 
     public function testHdlDecodeSemicolonEncoded(): void {
-        new TestPage();
         $this->assertSame('2027/test%3Bvalue', hdl_decode('2027/test;value'));
     }
 
     public function testHdlDecodeHashEncoded(): void {
-        new TestPage();
         $this->assertSame('2027/test%23value', hdl_decode('2027/test#value'));
     }
 
     public function testHdlDecodeSpaceEncoded(): void {
-        new TestPage();
         $this->assertSame('2027/test%20value', hdl_decode('2027/test value'));
     }
 
-    // ======================== safe_preg_replace() ========================
-
     public function testSafePregReplaceEmptyInput(): void {
-        new TestPage();
         $this->assertSame('', safe_preg_replace('~a~', 'b', ''));
     }
 
     public function testSafePregReplaceBasicSubstitution(): void {
-        new TestPage();
         $this->assertSame('hello world', safe_preg_replace('~test~', 'world', 'hello test'));
     }
 
     public function testSafePregReplaceNoMatch(): void {
-        new TestPage();
         $this->assertSame('hello', safe_preg_replace('~zzz~', 'x', 'hello'));
     }
 
-    // ======================== safe_preg_replace_callback() ========================
-
     public function testSafePregReplaceCallbackEmptyInput(): void {
-        new TestPage();
         $result = safe_preg_replace_callback('~a~', static function (array $_m): string {
             return 'b';
         }, '');
@@ -1227,88 +1163,67 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testSafePregReplaceCallbackDoubles(): void {
-        new TestPage();
         $result = safe_preg_replace_callback('~\d+~', static function (array $m): string {
             return (string) ((int) $m[0] * 2);
         }, 'test 5 here');
         $this->assertSame('test 10 here', $result);
     }
 
-    // ======================== wikifyURL() ========================
-
     public function testWikifyURLEncodesSpace(): void {
-        new TestPage();
         $this->assertSame('http://example.com/my%20page', wikifyURL('http://example.com/my page'));
     }
 
     public function testWikifyURLEncodesDoubleQuote(): void {
-        new TestPage();
         $this->assertSame('http://example.com/%22test%22', wikifyURL('http://example.com/"test"'));
     }
 
     public function testWikifyURLEncodesBrackets(): void {
-        new TestPage();
         $this->assertSame('http://example.com/%5Btest%5D', wikifyURL('http://example.com/[test]'));
     }
 
     public function testWikifyURLEncodesPipe(): void {
-        new TestPage();
         $this->assertSame('http://example.com/%7Ctest', wikifyURL('http://example.com/|test'));
     }
 
     public function testWikifyURLNoChangeNeeded(): void {
-        new TestPage();
         $this->assertSame('http://example.com/test', wikifyURL('http://example.com/test'));
     }
 
-    // ======================== echoable_doi() ========================
-
     public function testEchoableDoiPlain(): void {
-        new TestPage();
         $this->assertSame('10.1000/test', echoable_doi('10.1000/test'));
     }
 
     public function testEchoableDoiRestoresAngleBrackets(): void {
-        new TestPage();
         // echoable_doi reverses the &lt;/&gt; escaping so < and > appear in output
         $result = echoable_doi('10.1000/<test>');
         $this->assertStringContainsString('<test>', $result);
     }
 
-    // ======================== clean_volume() ========================
-
     public function testCleanVolumeStripsVolDot(): void {
-        new TestPage();
         $this->assertSame('5', clean_volume('Vol. 5'));
     }
 
     public function testCleanVolumeStripsVolume(): void {
-        new TestPage();
         $this->assertSame('10', clean_volume('Volume 10'));
     }
 
     public function testCleanVolumeStripsIssue(): void {
-        new TestPage();
         $this->assertSame('3', clean_volume('Issue 3'));
     }
 
     public function testCleanVolumeNumericOnly(): void {
-        new TestPage();
         $this->assertSame('42', clean_volume('42'));
     }
 
     public function testCleanVolumeParenthesisReturnsEmpty(): void {
-        new TestPage();
         $this->assertSame('', clean_volume('5(2)'));
     }
 
     public function testCleanVolumeNovemberReturnsEmpty(): void {
-        new TestPage();
         $this->assertSame('', clean_volume('november'));
     }
 
     public function testCleanVolumeNostradamusReturnsEmpty(): void {
-        new TestPage();
         $this->assertSame('', clean_volume('nostradamus'));
     }
 }
