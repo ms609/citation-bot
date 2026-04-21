@@ -1220,13 +1220,17 @@ final class textToolsTest extends testBaseClass {
 
     public function testSafePregReplaceCallbackEmptyInput(): void {
         new TestPage();
-        $result = safe_preg_replace_callback('~a~', static function (array $m): string { return 'b'; }, '');
+        $result = safe_preg_replace_callback('~a~', static function (array $_m): string {
+            return 'b';
+        }, '');
         $this->assertSame('', $result);
     }
 
     public function testSafePregReplaceCallbackDoubles(): void {
         new TestPage();
-        $result = safe_preg_replace_callback('~\d+~', static function (array $m): string { return (string) ((int) $m[0] * 2); }, 'test 5 here');
+        $result = safe_preg_replace_callback('~\d+~', static function (array $m): string {
+            return (string) ((int) $m[0] * 2);
+        }, 'test 5 here');
         $this->assertSame('test 10 here', $result);
     }
 
