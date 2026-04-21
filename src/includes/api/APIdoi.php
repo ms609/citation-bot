@@ -635,7 +635,7 @@ function get_doi_from_crossref(Template $template): void {
  *
  * @param string $doi DOI (10.1101/* or 10.64898/*)
  * @param string $server Server type: 'biorxiv' or 'medrxiv' (default: 'biorxiv')
- * @param string|null $api_status API status message (if present)
+ * @param string|null &$api_status API status message (if present)
  * @return string|null Published DOI or null
  */
 function get_biorxiv_published_doi(
