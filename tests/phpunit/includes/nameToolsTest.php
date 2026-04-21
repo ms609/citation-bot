@@ -303,4 +303,212 @@ final class nameToolsTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame('{{cite document |last1=Howlett |first1=Felicity|last2=Fred}}', $template->parsed_text());
     }
+
+    // ======================== author_is_human() ========================
+
+    public function testAuthorIsHumanNormalName(): void {
+        new TestPage();
+        $this->assertTrue(author_is_human('John Smith'));
+    }
+
+    public function testAuthorIsHumanSingleWord(): void {
+        new TestPage();
+        $this->assertTrue(author_is_human('Smith'));
+    }
+
+    public function testAuthorIsHumanWithColon(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Reuters: News Agency'));
+    }
+
+    public function testAuthorIsHumanTooManySpaces(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('A B C D E'));
+    }
+
+    public function testAuthorIsHumanTooLong(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Abcdefghijklmnopqrstuvwxyz12345678'));
+    }
+
+    public function testAuthorIsHumanStartsWithThe(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('The Associated Press'));
+    }
+
+    public function testAuthorIsHumanThreeUppercaseChars(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('ABC News'));
+    }
+
+    public function testAuthorIsHumanInc(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Company Inc'));
+    }
+
+    public function testAuthorIsHumanIncDot(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Company Inc.'));
+    }
+
+    public function testAuthorIsHumanLLC(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Company LLC'));
+    }
+
+    public function testAuthorIsHumanLLCDot(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Company LLC.'));
+    }
+
+    public function testAuthorIsHumanBooks(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Some Books'));
+    }
+
+    public function testAuthorIsHumanNyheter(): void {
+        new TestPage();
+        $this->assertFalse(author_is_human('Dagbladet Nyheter'));
+    }
+
+    // ======================== under_two_authors() ========================
+
+    public function testUnderTwoAuthorsSingleWord(): void {
+        new TestPage();
+        $this->assertTrue(under_two_authors('Smith'));
+    }
+
+    public function testUnderTwoAuthorsLastFirstFormat(): void {
+        new TestPage();
+        $this->assertTrue(under_two_authors('Smith, John'));
+    }
+
+    public function testUnderTwoAuthorsSemicolon(): void {
+        new TestPage();
+        $this->assertFalse(under_two_authors('Smith, John; Doe, Jane'));
+    }
+
+    public function testUnderTwoAuthorsMoreThanOneComma(): void {
+        new TestPage();
+        $this->assertFalse(under_two_authors('Smith, John, Doe'));
+    }
+
+    public function testUnderTwoAuthorsSpacesExceedCommas(): void {
+        new TestPage();
+        // "John Smith" has 1 space and 0 commas → spaces > commas → multiple authors
+        $this->assertFalse(under_two_authors('John Smith'));
+    }
+
+    // ======================== is_bad_author() ========================
+
+    public function testIsBadAuthorPipe(): void {
+        new TestPage();
+        $this->assertTrue(is_bad_author('|'));
+    }
+
+    public function testIsBadAuthorPublished(): void {
+        new TestPage();
+        $this->assertTrue(is_bad_author('Published'));
+    }
+
+    public function testIsBadAuthorNormalName(): void {
+        new TestPage();
+        $this->assertFalse(is_bad_author('John Smith'));
+    }
+
+    public function testIsBadAuthorEmpty(): void {
+        new TestPage();
+        $this->assertFalse(is_bad_author(''));
+    }
+
+    // ======================== split_author() ========================
+
+    public function testSplitAuthorOneComma(): void {
+        new TestPage();
+        $result = split_author('Smith, John');
+        $this->assertSame(['Smith', ' John'], $result);
+    }
+
+    public function testSplitAuthorNoComma(): void {
+        new TestPage();
+        $result = split_author('John Smith');
+        $this->assertSame([], $result);
+    }
+
+    public function testSplitAuthorMultipleCommas(): void {
+        new TestPage();
+        $result = split_author('Smith, John, Jr');
+        $this->assertSame([], $result);
+    }
+
+    // ======================== clean_up_full_names() ========================
+
+    public function testCleanUpFullNamesAndSemicolon(): void {
+        new TestPage();
+        $this->assertSame('name1; name2', clean_up_full_names('name1 and; name2'));
+    }
+
+    public function testCleanUpFullNamesDoubleSpace(): void {
+        new TestPage();
+        $this->assertSame('name1 name2', clean_up_full_names('name1  name2'));
+    }
+
+    public function testCleanUpFullNamesPlusRemoved(): void {
+        new TestPage();
+        $this->assertSame('name1name2', clean_up_full_names('name1+name2'));
+    }
+
+    public function testCleanUpFullNamesStarRemoved(): void {
+        new TestPage();
+        $this->assertSame('name1name2', clean_up_full_names('name1*name2'));
+    }
+
+    // ======================== clean_up_first_names() ========================
+
+    public function testCleanUpFirstNamesSingleCharGetsDot(): void {
+        new TestPage();
+        $this->assertSame('J.', clean_up_first_names('J'));
+    }
+
+    public function testCleanUpFirstNamesTwoInitialsGetDots(): void {
+        new TestPage();
+        $this->assertSame('F. M.', clean_up_first_names('F M'));
+    }
+
+    public function testCleanUpFirstNamesWordEndingInInitial(): void {
+        new TestPage();
+        $this->assertSame('Fred M.', clean_up_first_names('Fred M'));
+    }
+
+    public function testCleanUpFirstNamesDoubleSpaceCollapsed(): void {
+        new TestPage();
+        $this->assertSame('Fred Smith', clean_up_first_names('Fred  Smith'));
+    }
+
+    // ======================== format_surname_2() ========================
+
+    public function testFormatSurname2UpperToTitleCase(): void {
+        new TestPage();
+        $this->assertSame('Smith', format_surname_2('SMITH'));
+    }
+
+    public function testFormatSurname2VonLowercased(): void {
+        new TestPage();
+        $this->assertSame('von Neumann', format_surname_2('VON NEUMANN'));
+    }
+
+    public function testFormatSurname2DeLaLowercased(): void {
+        new TestPage();
+        $this->assertSame('de la Cruz', format_surname_2('DE LA CRUZ'));
+    }
+
+    public function testFormatSurname2HyphenWithSpaces(): void {
+        new TestPage();
+        $this->assertSame('Smith-Jones', format_surname_2('SMITH - JONES'));
+    }
+
+    public function testFormatSurname2UndLowercased(): void {
+        new TestPage();
+        $this->assertSame('Strauss und Torney', format_surname_2('STRAUSS UND TORNEY'));
+    }
 }
