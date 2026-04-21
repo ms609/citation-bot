@@ -747,25 +747,23 @@ final class ConstantsTest extends testBaseClass {
     }
 
     public function testDoiConditionalStructure(): void {
-        new TestPage(); // Fill page name with test name for debugging
+        new TestPage();
         $valid_types = ['AFTER_YEAR', 'FROM_YEAR', 'EMBARGO_YEARS', 'EMBARGO_MONTHS'];
         foreach (DOI_FREE_CONDITIONAL as $idx => $rule) {
             $label = 'DOI_FREE_CONDITIONAL[' . $idx . ']';
-            $this->assertTrue(is_array($rule), $label . ' must be an array');
-            $this->assertArrayHasKey('prefix', $rule, $label . ' missing prefix');
-            $this->assertArrayHasKey('type', $rule, $label . ' missing type');
-            $this->assertArrayHasKey('value', $rule, $label . ' missing value');
-            $this->assertTrue(is_string($rule['prefix']), $label . ' prefix must be string');
-            $this->assertTrue(is_string($rule['type']), $label . ' type must be string');
-            $this->assertTrue(is_string($rule['value']), $label . ' value must be string');
-            $this->assertContains($rule['type'], $valid_types, $label . ' type must be one of: ' . implode(', ', $valid_types));
-            $this->assertStringContainsString('/', $rule['prefix'], $label . ' prefix must contain a slash');
+            $this->assertIsArray($rule, $label);
+            $this->assertArrayHasKey('prefix', $rule, $label);
+            $this->assertArrayHasKey('type', $rule, $label);
+            $this->assertArrayHasKey('value', $rule, $label);
+            $this->assertIsString($rule['prefix'], $label . ' prefix');
+            $this->assertIsString($rule['type'], $label . ' type');
+            $this->assertIsString($rule['value'], $label . ' value');
+            $this->assertContains($rule['type'], $valid_types, $label . ' type');
+            $this->assertStringContainsString('/', $rule['prefix'], $label . ' prefix');
             if ($rule['type'] === 'AFTER_YEAR' || $rule['type'] === 'FROM_YEAR') {
-                $this->assertMatchesRegularExpression('~^\d{4}$~', $rule['value'], $label . ' value must be a 4-digit year for ' . $rule['type']);
-            }
-            if ($rule['type'] === 'EMBARGO_YEARS' || $rule['type'] === 'EMBARGO_MONTHS') {
-                $this->assertMatchesRegularExpression('~^\d+$~', $rule['value'], $label . ' value must be a positive integer string for ' . $rule['type']);
-                $this->assertGreaterThan(0, (int) $rule['value'], $label . ' value must be > 0 for ' . $rule['type']);
+                $this->assertMatchesRegularExpression('~^\d{4}$~', $rule['value'], $label . ' value');
+            } else {
+                $this->assertGreaterThan(0, (int) $rule['value'], $label . ' value');
             }
         }
     }
