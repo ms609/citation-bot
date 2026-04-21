@@ -635,9 +635,16 @@ function get_doi_from_crossref(Template $template): void {
  *
  * @param string $doi DOI (10.1101/* or 10.64898/*)
  * @param string $server Server type: 'biorxiv' or 'medrxiv' (default: 'biorxiv')
+ * @param string|null $api_status API status message (if present)
  * @return string|null Published DOI or null
  */
-function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?string {
+function get_biorxiv_published_doi(
+    string $doi,
+    string $server = 'biorxiv',
+    ?string &$api_status = null
+): ?string {
+    $api_status = null;
+
     if (mb_strpos($doi, '10.1101/') !== 0 && mb_strpos($doi, '10.64898/') !== 0) {
         return null;
     }
@@ -666,6 +673,17 @@ function get_biorxiv_published_doi(string $doi, string $server = 'biorxiv'): ?st
 
     if (!is_object($data)) {
         return null;
+    }
+    if (isset($data->messages) &&
+        is_array($data->messages) &&
+        count($data->messages) > 0 &&
+        is_object($data->messages[0]) &&
+        isset($data->messages[0]->status)
+    ) {
+        $status = mb_trim((string) $data->messages[0]->status);
+        if ($status !== '') {
+            $api_status = $status;
+        }
     }
 
     if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {

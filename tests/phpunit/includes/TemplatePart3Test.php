@@ -1866,29 +1866,13 @@ EP - 999 }}';
         // This is a verified conversion (Kutanan et al. 2016) from bioRxiv API
         $biorxiv_doi = '10.1101/063172';
         $expected_published_doi = '10.1007/s00439-016-1742-y';
+        $api_status = null;
 
-        $published_doi = get_biorxiv_published_doi($biorxiv_doi);
-        if ($published_doi === null) {
-            $url = "https://api.biorxiv.org/details/biorxiv/$biorxiv_doi/na/json";
-            $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-            curl_setopt($ch, CURLOPT_URL, $url);
-            $json = bot_curl_exec($ch);
-            $decoded = @json_decode($json);
-            $status = null;
-            if (is_object($decoded) &&
-                isset($decoded->messages) &&
-                is_array($decoded->messages) &&
-                count($decoded->messages) > 0 &&
-                is_object($decoded->messages[0]) &&
-                isset($decoded->messages[0]->status)
-            ) {
-                $status = mb_trim((string) $decoded->messages[0]->status);
-            }
-            if ($status === 'Not available at this time') {
-                $this->markTestSkipped(
-                    "bioRxiv API temporarily unavailable for DOI $biorxiv_doi: $status"
-                );
-            }
+        $published_doi = get_biorxiv_published_doi($biorxiv_doi, 'biorxiv', $api_status);
+        if ($published_doi === null && $api_status === 'Not available at this time') {
+            $this->markTestSkipped(
+                "bioRxiv API temporarily unavailable for DOI $biorxiv_doi: $api_status"
+            );
         }
 
         $this->assertNotNull(
