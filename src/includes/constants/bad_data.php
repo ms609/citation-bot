@@ -13120,6 +13120,7 @@ const SERIES_CORRECTIONS = [
 const ALWAYS_BAD_TITLES = [
     '{title}',
     'bloomberg - are you a robot?',
+    "making sure you're not a bot!",
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
     'dpg media privacy gate',

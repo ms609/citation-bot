@@ -1264,6 +1264,13 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testRejectsBotCheckTitle(): void {
+        $text = '{{cite journal}}';
+        $template = $this->make_citation($text);
+        $template->add_if_new('title', "Making sure you're not a bot!");
+        $this->assertSame($text, $template->parsed_text());
+    }
+
     public function testCleanBritArchive(): void {
         $text = '{{Cite web|title=Register {{!}} British Newspaper Archive|url=https://www.britishnewspaperarchive.co.uk/account/register?countrykey=0&showgiftvoucherclaimingoptions=false&gift=false&nextpage=%2faccount%2flogin%3freturnurl%3d%252fviewer%252fbl%252f0003125%252f18850804%252f069%252f0004&rememberme=false&cookietracking=false&partnershipkey=0&newsletter=false&offers=false&registerreason=none&showsubscriptionoptions=false&showcouponmessaging=false&showfreetrialmessaging=false&showregisteroptions=false&showloginoptions=false&isonlyupgradeable=false|access-date=2022-02-17|website=www.britishnewspaperarchive.co.uk}}';
         $template = $this->process_citation($text);
