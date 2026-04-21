@@ -1887,4 +1887,191 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template->final_tidy();
         $this->assertNull($template->get2('title'));
     }
+
+    // -----------------------------------------------------------------------
+    // Tests for DOI_FREE_CONDITIONAL: time-dependent doi-access tagging
+    // -----------------------------------------------------------------------
+
+    // --- AFTER_YEAR (10.1155/) ---
+
+    public function testDoiConditionalAfterYear_Free(): void {
+        // Year strictly after threshold (2006): must be tagged free
+        $text = '{{cite journal|doi=10.1155/2007/example|year=2007}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterYear_AtThreshold_NotFree(): void {
+        // Year equal to threshold: must NOT be tagged free (rule is strictly "after")
+        $text = '{{cite journal|doi=10.1155/2006/example|year=2006}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterYear_BelowThreshold_NotFree(): void {
+        // Year below threshold: must NOT be tagged free
+        $text = '{{cite journal|doi=10.1155/2005/example|year=2005}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterYear_NoYear_NotFree(): void {
+        // No year present: must NOT be tagged (safe default)
+        $text = '{{cite journal|doi=10.1155/example}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    // --- FROM_YEAR (10.1140/epjc) ---
+
+    public function testDoiConditionalFromYear_Free(): void {
+        // Year at or after threshold (2015): must be tagged free
+        $text = '{{cite journal|doi=10.1140/epjc/example|year=2015}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalFromYear_AfterThreshold_Free(): void {
+        // Year well after threshold: must be tagged free
+        $text = '{{cite journal|doi=10.1140/epjc/example|year=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalFromYear_BelowThreshold_NotFree(): void {
+        // Year strictly before threshold: must NOT be tagged free
+        $text = '{{cite journal|doi=10.1140/epjc/example|year=2014}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalFromYear_NoYear_NotFree(): void {
+        // No year present: must NOT be tagged (safe default)
+        $text = '{{cite journal|doi=10.1140/epjc/example}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalFromYear_DateField_Free(): void {
+        // Year extracted from full date field: must be tagged free
+        $text = '{{cite journal|doi=10.1140/epjc/example|date=March 2017}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    // --- EMBARGO_YEARS (10.1073/pnas) ---
+
+    public function testDoiConditionalEmbargoYears_OldArticle_Free(): void {
+        // Clearly old year: pub_year + 1 < current_year -> free
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|year=2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoYears_CurrentYear_NotFree(): void {
+        // Current year: embargo not expired
+        $current_year = (string) date('Y');
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|year=' . $current_year . '}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoYears_NoYear_NotFree(): void {
+        // No year: must NOT be tagged (safe default)
+        $text = '{{cite journal|doi=10.1073/pnas.0000000}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoYears_PublicationDateFallback_Free(): void {
+        // Year extracted from publication-date field as fallback
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|publication-date=2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    // --- EMBARGO_MONTHS (10.1002/lno.) ---
+
+    public function testDoiConditionalEmbargoMonths_ClearlyOldFullDate_Free(): void {
+        // Full date clearly more than 36 months ago: must be free
+        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_ClearlyNewFullDate_NotFree(): void {
+        // Full date clearly less than 36 months ago: must NOT be free
+        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2026}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_YearOnlyOldConservative_Free(): void {
+        // Year-only: uses end-of-year conservative fallback.
+        // Dec 31 2010 + 36 months = Dec 31 2013, which is clearly in the past -> free
+        $text = '{{cite journal|doi=10.1002/lno.example|year=2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_YearOnlyTooRecent_NotFree(): void {
+        // Year-only: Dec 31 of current year + 36 months is in the future -> NOT free
+        $current_year = (string) date('Y');
+        $text = '{{cite journal|doi=10.1002/lno.example|year=' . $current_year . '}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_NoDate_NotFree(): void {
+        // No date at all: must NOT be tagged (safe default)
+        $text = '{{cite journal|doi=10.1002/lno.example}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    // --- Existing doi-access preserved ---
+
+    public function testDoiConditionalExistingAccessPreserved(): void {
+        // If doi-access is already set to something, it must not be changed
+        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2010|doi-access=limited}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('limited', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalExistingFreeAccessPreserved(): void {
+        // doi-access=free already set: add_if_new must not duplicate it
+        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2010|doi-access=free}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    // --- Unconditional DOI_FREE_PREFIX still works ---
+
+    public function testDoiUnconditionalFreePrefixUnchanged(): void {
+        // A DOI in DOI_FREE_PREFIX must still be tagged without needing a date
+        $text = '{{cite journal|doi=10.1371/journal.pone.0000001}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
 }

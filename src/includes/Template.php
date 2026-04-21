@@ -4212,27 +4212,9 @@ final class Template
                             $this->add_if_new('doi-access', 'free');
                         }
                     }
-                    // Weird ones that are time dependent
-                    $year = $this->year_int(); // Will be zero if not set
-                    if (mb_strpos($doi, '10.1155/') === 0 && $year > 2006) {
-                        $this->add_if_new('doi-access', 'free');
-                    }
-                    unset($year);
+                    // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
+                    $this->doi_free_check_conditional($doi);
                     /** } */
-                    if (/** doi_works($doi) && */ mb_strpos($doi, '10.1073/pnas') === 0) {
-                        $template_year = $this->year();
-                        if ($template_year === '') {
-                            $template_year = $this->get('publication-date');
-                        }
-                        if ($template_year !== '') {
-                            $template_year = (int) $template_year;
-                            $year = (int) date("Y");
-                            if ($template_year + 1 < $year) {
-                                // At least one year old, up to three
-                                $this->add_if_new('doi-access', 'free');
-                            }
-                        }
-                    }
                     if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
                         if ($this->blank(ARXIV_ALIASES)) {
                             $this->rename('doi', 'eprint', $matches[1]);
@@ -6768,6 +6750,101 @@ final class Template
 
     private function year_int(): int {
         return intval($this->year());
+    }
+
+    /**
+     * Returns the publication year from date / year / publication-date fields, or 0 if unavailable.
+     * Extends year_int() by also consulting the publication-date field as a fallback.
+     */
+    private function pub_year_extended(): int {
+        $year = $this->year_int();
+        if ($year > 0) {
+            return $year;
+        }
+        if ($this->has('publication-date')) {
+            if (preg_match('~(\d{4})~', $this->get('publication-date'), $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Returns a Unix timestamp for the publication date only when month-level information is
+     * available in the date or publication-date fields.
+     * Returns null when only a year is known or when no date can be determined at all.
+     * Pure year strings (e.g. "2023") are explicitly skipped so callers can apply their own
+     * conservative year-level fallback if needed.
+     */
+    private function pub_exact_ts(): ?int {
+        foreach (['date', 'publication-date'] as $field) {
+            if ($this->has($field)) {
+                $date_val = $this->get($field);
+                if (preg_match('~^\d{4}$~', $date_val)) {
+                    continue; // Year-only string; no month available
+                }
+                $time = strtotime($date_val);
+                if ($time !== false && $time > 0) {
+                    return $time;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Evaluates all DOI_FREE_CONDITIONAL rules for the given DOI and calls add_if_new('doi-access', 'free')
+     * when the publication date satisfies the rule's condition.
+     * Called from tidy_parameter('doi') immediately after the unconditional DOI_FREE_PREFIX loop.
+     *
+     * Supported types (see free_doi.php for full documentation):
+     *   AFTER_YEAR    - free if pub year >  (int) value
+     *   FROM_YEAR     - free if pub year >= (int) value
+     *   EMBARGO_YEARS - free if pub year + (int) value < current year
+     *   EMBARGO_MONTHS - free if pub date + (int) value months <= now
+     *                   (uses end-of-year as conservative fallback when only year is known)
+     */
+    private function doi_free_check_conditional(string $doi): void {
+        foreach (DOI_FREE_CONDITIONAL as $rule) {
+            if (mb_stripos($doi, $rule['prefix']) !== 0) {
+                continue;
+            }
+            $rule_type  = $rule['type'];
+            $rule_value = $rule['value'];
+            if ($rule_type === 'AFTER_YEAR') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 0 && $pub_year > (int) $rule_value) {
+                    $this->add_if_new('doi-access', 'free');
+                }
+            } elseif ($rule_type === 'FROM_YEAR') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 0 && $pub_year >= (int) $rule_value) {
+                    $this->add_if_new('doi-access', 'free');
+                }
+            } elseif ($rule_type === 'EMBARGO_YEARS') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 0 && ($pub_year + (int) $rule_value) < (int) date('Y')) {
+                    $this->add_if_new('doi-access', 'free');
+                }
+            } elseif ($rule_type === 'EMBARGO_MONTHS') {
+                $pub_ts = $this->pub_exact_ts();
+                if ($pub_ts === null) {
+                    // No month available: fall back to end-of-year (conservative — the article
+                    // could have been published as late as 31 Dec of the known year, so the embargo
+                    // is assumed to expire no earlier than 31 Dec + N months).
+                    $pub_year = $this->pub_year_extended();
+                    if ($pub_year > 1000) {
+                        $pub_ts = mktime(0, 0, 0, 12, 31, $pub_year);
+                    }
+                }
+                if ($pub_ts !== null) {
+                    $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
+                    if ($free_after_ts !== false && time() >= $free_after_ts) {
+                        $this->add_if_new('doi-access', 'free');
+                    }
+                }
+            }
+        }
     }
 
     /** @return array<string> */
