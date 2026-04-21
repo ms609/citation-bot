@@ -759,9 +759,7 @@ final class ConstantsTest extends testBaseClass {
             $this->assertTrue(is_string($rule['type']), $label . ' type must be string');
             $this->assertTrue(is_string($rule['value']), $label . ' value must be string');
             $this->assertContains($rule['type'], $valid_types, $label . ' type must be one of: ' . implode(', ', $valid_types));
-            if (mb_strpos($rule['prefix'], '/') === false) {
-                $this->assertSame('This prefix needs a slash', $rule['prefix']);
-            }
+            $this->assertStringContainsString('/', $rule['prefix'], $label . ' prefix must contain a slash');
             if ($rule['type'] === 'AFTER_YEAR' || $rule['type'] === 'FROM_YEAR') {
                 $this->assertMatchesRegularExpression('~^\d{4}$~', $rule['value'], $label . ' value must be a 4-digit year for ' . $rule['type']);
             }

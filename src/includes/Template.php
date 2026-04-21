@@ -6806,7 +6806,7 @@ final class Template
      */
     private function doi_free_check_conditional(string $doi): void {
         foreach (DOI_FREE_CONDITIONAL as $rule) {
-            if (mb_stripos($doi, $rule['prefix']) !== 0) {
+            if (mb_stripos($doi, $rule['prefix']) !== 0) { // Case-insensitive, consistent with DOI_FREE_PREFIX loop above
                 continue;
             }
             $rule_type  = $rule['type'];
@@ -6833,7 +6833,7 @@ final class Template
                     // could have been published as late as 31 Dec of the known year, so the embargo
                     // is assumed to expire no earlier than 31 Dec + N months).
                     $pub_year = $this->pub_year_extended();
-                    if ($pub_year > 1000) {
+                    if ($pub_year > 1000) { // Sanity-check: publication year must be plausible (> year 1000)
                         $pub_ts = mktime(0, 0, 0, 12, 31, $pub_year);
                     }
                 }
