@@ -13125,6 +13125,7 @@ const ALWAYS_BAD_TITLES = [
     'dpg media privacy gate',
     'how to access research remotely',
     'log in - proquest',
+    'making sure you're not a bot!',
     'page not found',
     'pressreader.com - connecting people through news.',
     'pressreader.com - connecting people through news',
