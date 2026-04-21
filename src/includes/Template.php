@@ -6817,7 +6817,7 @@ final class Template
                 }
                 if ($pub_ts !== null) {
                     $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
-                    if ($free_after_ts !== false && time() >= $free_after_ts) {
+                    if (time() >= $free_after_ts) {
                         $this->add_if_new('doi-access', 'free');
                     }
                 }
