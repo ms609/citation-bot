@@ -1866,8 +1866,14 @@ EP - 999 }}';
         // This is a verified conversion (Kutanan et al. 2016) from bioRxiv API
         $biorxiv_doi = '10.1101/063172';
         $expected_published_doi = '10.1007/s00439-016-1742-y';
+        $api_status = null;
 
-        $published_doi = get_biorxiv_published_doi($biorxiv_doi);
+        $published_doi = get_biorxiv_published_doi($biorxiv_doi, 'biorxiv', $api_status);
+        if ($published_doi === null && $api_status === 'Not available at this time') {
+            $this->markTestSkipped(
+                "bioRxiv API temporarily unavailable for DOI $biorxiv_doi: $api_status"
+            );
+        }
 
         $this->assertNotNull(
             $published_doi,
