@@ -33,12 +33,15 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
 
     $page = new Page();
     $done = 0;
+    $pages_changed = 0;
+    $pages_unchanged = 0;
 
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
         $done++;
         if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
+            $pages_changed++;
             if (SAVETOFILES_MODE) {
                 // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                 // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
@@ -80,6 +83,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 }
             }
         } else {
+            $pages_unchanged++;
             report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
                 $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
         }
@@ -93,7 +97,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (!HTML_OUTPUT) {
             $final_edit_overview = '';
         }
-        echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
+        echo "\n Done all " . (string) $total . " pages: " . (string) $pages_changed . " changed, " . (string) $pages_unchanged . " unchanged. \n  # # # \n" . $final_edit_overview;
     } else {
         echo "\n Done with page.";
     }
