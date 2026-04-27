@@ -1958,6 +1958,20 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('limited', $template->get2('doi-access'));
     }
 
+    public function testDoiConditionalEmbargoMonths_LobOldDate_Free(): void {
+        $text = '{{cite journal|doi=10.1002/lob.example|date=January 2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_Lom3OldDate_Free(): void {
+        $text = '{{cite journal|doi=10.1002/lom3.example|date=January 2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
     public function testDoiUnconditionalFreePrefixUnchanged(): void {
         $text = '{{cite journal|doi=10.1371/journal.pone.0000001}}';
         $template = $this->make_citation($text);

@@ -313,6 +313,16 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '36',
     ],
+    [   // L&O Bulletin: 36-month rolling embargo
+        'prefix' => '10.1002/lob.',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '36',
+    ],
+    [   // L&O Methods: 36-month rolling embargo
+        'prefix' => '10.1002/lom3.',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '36',
+    ],
     [   // EPJC: open-access from 2015 onwards
         'prefix' => '10.1140/epjc',
         'type'   => 'FROM_YEAR',
