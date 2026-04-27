@@ -33,8 +33,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
 
     $page = new Page();
     $done = 0;
-    $pages_changed = 0;
-    $pages_unchanged = 0;
+    $pages_changed = 0;   // Pages where expand_text() returned true, meaning text was actually modified
+    $pages_unchanged = 0; // Pages where no edit was made: no changes needed, blank, protected, redirect, etc.
 
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
