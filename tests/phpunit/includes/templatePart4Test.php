@@ -1888,31 +1888,43 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('title'));
     }
 
-    public function testAnnualReviewBogusIssue(): void {
-        // issue=Volume N, YEAR is a bogus value inserted by Visual Editor for Annual Review journals
+    public function testAnnualReviewBogusIssueVolumePresent(): void {
+        // issue=Volume N, YEAR is a bogus value inserted by Visual Editor for Annual Review journals;
+        // when |volume= is already set the bogus issue should be dropped and volume left untouched
         $text = '{{Cite journal|volume=62|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('issue'));
-        $this->assertSame('62', $template->get2('volume')); // volume preserved
+        $this->assertSame('62', $template->get2('volume'));
+    }
 
-        // When volume is absent, the number should be moved into volume
+    public function testAnnualReviewBogusIssueVolumeAbsent(): void {
+        // When |volume= is absent the volume number embedded in the bogus issue value should be
+        // moved into |volume=
         $text = '{{Cite journal|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('issue'));
         $this->assertSame('62', $template->get2('volume'));
+    }
 
-        // Case-insensitive match
+    public function testAnnualReviewBogusIssueCaseInsensitive(): void {
+        // The match must be case-insensitive so that "volume 62, 2024" is treated the same as
+        // "Volume 62, 2024"
         $text = '{{Cite journal|volume=62|issue=volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('issue'));
+        $this->assertSame('62', $template->get2('volume'));
+    }
 
-        // Without comma: "Volume 62 2024"
+    public function testAnnualReviewBogusIssueNoComma(): void {
+        // The comma between volume number and year is optional: "Volume 62 2024" must also be
+        // recognised and cleaned up
         $text = '{{Cite journal|volume=62|issue=Volume 62 2024|journal=Annual Review of Astronomy and Astrophysics}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
         $this->assertNull($template->get2('issue'));
+        $this->assertSame('62', $template->get2('volume'));
     }
 }
