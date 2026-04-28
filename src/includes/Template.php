@@ -5706,7 +5706,7 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    if (preg_match('~^Volume\s+(\d+),?\s*\d{4}$~i', $value, $matches)) {
+                    if (preg_match('~^Volume\s+(\d+),?\s*(19|20)\d{2}$~i', $value, $matches)) {
                         if ($this->blank('volume')) {
                             $this->rename($param, 'volume', $matches[1]);
                         } else {

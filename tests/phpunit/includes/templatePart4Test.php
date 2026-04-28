@@ -1927,4 +1927,15 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('issue'));
         $this->assertSame('62', $template->get2('volume'));
     }
+
+    public function testAnnualReviewBogusIssueImplausibleYearNotRemoved(): void {
+        // The year component must look like a plausible publication year (1900-2099).
+        // A four-digit string that is not a valid year (e.g. "0001") must not trigger
+        // the Visual Editor clean-up rule and must be left untouched.
+        $text = '{{Cite journal|volume=62|issue=Volume 62, 0001|journal=Annual Review of Astronomy and Astrophysics}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('issue');
+        $this->assertSame('Volume 62, 0001', $template->get2('issue'));
+        $this->assertSame('62', $template->get2('volume'));
+    }
 }
