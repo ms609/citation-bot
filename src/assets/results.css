@@ -14,7 +14,8 @@ header, footer {
 
 form {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-  margin: 3em 1em 0;
+  margin: 0 1em 0;
+  padding-top: 1.5em;
   padding-bottom: 2em;
 }
 
@@ -38,18 +39,78 @@ input, select, button {
 
 input.error {
   background-color: #f1e545;
-  border-color: #e79f26;
+  border: 2px solid #9a7200;
 }
 
 header a, footer a { text-decoration: none; }
 
-a { color: #0773b3; }
+a { color: #0a5f8f; }
 
-span.added      { color: #02a074; font-weight: bold;}
-span.boring     { color: #bbb; }
-span.changed    { color: #5eb3e5; font-weight: bold;}
-span.reddish    { color: #cc79a7; }
-span.removed    { color: #e79f26; font-weight: bold;}
+span.added      { color: #008060; font-weight: bold;}
+span.boring     { color: #767676; }
+span.changed    { color: #0070a8; font-weight: bold;}
+span.reddish    { color: #8c3f6e; }
+span.removed    { color: #8a5800; font-weight: bold;}
 span.subitem    { color: #666; }
-span.subsubitem { color: #999; }
-span.warning    { color: #d36027; }
+span.subsubitem { color: #767676; }
+span.warning    { color: #b34700; }
+
+/* Visible focus outline for keyboard navigation (WCAG 2.4.7) */
+input:focus-visible,
+button:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid #0a5f8f;
+  outline-offset: 2px;
+}
+
+/* Skip navigation link – visible only on focus (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-link:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  left: auto;
+}
+
+/* Visually hidden but available to screen readers (WCAG 1.3.1) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Inline error message beneath invalid form fields (WCAG 3.3.1) */
+.field-error {
+  color: #b34700;
+  font-size: 0.875em;
+  display: block;
+  margin-top: 0.25em;
+}
+
+/* Fieldset grouping for mutually-exclusive form sections */
+fieldset {
+  border: 1px solid #767676;
+  border-radius: 4px;
+  padding: 0.75em 1em;
+  margin-bottom: 0.5em;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.25em;
+}

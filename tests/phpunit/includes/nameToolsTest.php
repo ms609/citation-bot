@@ -227,6 +227,27 @@ final class nameToolsTest extends testBaseClass {
         $this->assertSame("", $result[1]);
     }
 
+    public function testJunior8(): void {
+        $text = "Smith 2nd";
+        $result = junior_test($text);
+        $this->assertSame("Smith", $result[0]);
+        $this->assertSame(" 2nd", $result[1]);
+    }
+
+    public function testJunior9(): void {
+        $text = "Smith, 3rd";
+        $result = junior_test($text);
+        $this->assertSame("Smith", $result[0]);
+        $this->assertSame(" 3rd", $result[1]);
+    }
+
+    public function testJunior10(): void {
+        $text = "Jacob P 3rd";
+        $result = junior_test($text);
+        $this->assertSame("Jacob P", $result[0]);
+        $this->assertSame(" 3rd", $result[1]);
+    }
+
     /** Random extra code coverage tests */
     public function testFormat1(): void {
         $this->assertSame('& a. Johnson', format_surname('& A. Johnson'));

@@ -1888,39 +1888,59 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('title'));
     }
 
-    private function tidy_issue(string $text): Template {
+    public function testDoiConditionalAfterYear_Free(): void {
+        $text = '{{cite journal|doi=10.1155/2007/example|year=2007}}';
         $template = $this->make_citation($text);
-        $template->tidy_parameter('issue');
-        return $template;
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testAnnualReviewBogusIssueVolumePresent(): void {
-        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
-        $this->assertNull($t->get2('issue'));
-        $this->assertSame('62', $t->get2('volume'));
+    public function testDoiConditionalAfterYear_AtThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1155/2006/example|year=2006}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
     }
 
-    public function testAnnualReviewBogusIssueVolumeAbsent(): void {
-        $t = $this->tidy_issue('{{Cite journal|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
-        $this->assertNull($t->get2('issue'));
-        $this->assertSame('62', $t->get2('volume'));
+    public function testDoiConditionalEmbargoMonths_PnasOldArticle_Free(): void {
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|date=January 2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testAnnualReviewBogusIssueCaseInsensitive(): void {
-        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
-        $this->assertNull($t->get2('issue'));
-        $this->assertSame('62', $t->get2('volume'));
+    public function testDoiConditionalEmbargoMonths_PnasCurrentMonth_NotFree(): void {
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|date=' . date('F Y') . '}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
     }
 
-    public function testAnnualReviewBogusIssueNoComma(): void {
-        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62 2024|journal=Annual Review of Astronomy and Astrophysics}}');
-        $this->assertNull($t->get2('issue'));
-        $this->assertSame('62', $t->get2('volume'));
+    public function testDoiConditionalEmbargoMonths_YearOnlyOld_Free(): void {
+        $text = '{{cite journal|doi=10.1002/lno.example|year=2010}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testAnnualReviewBogusIssueImplausibleYearNotRemoved(): void {
-        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62, 0001|journal=Annual Review of Astronomy and Astrophysics}}');
-        $this->assertSame('Volume 62, 0001', $t->get2('issue'));
-        $this->assertSame('62', $t->get2('volume'));
+    public function testDoiConditionalNoDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/lno.example}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalExistingAccessPreserved(): void {
+        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2010|doi-access=limited}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('limited', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_UnresolvableDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/lno.example|date=forthcoming}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
     }
 }

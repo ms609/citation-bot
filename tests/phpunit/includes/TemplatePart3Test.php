@@ -1165,6 +1165,7 @@ EP - 999 }}';
     }
 
     public function testHandles1(): void {
+        unset(HandleCache::$cache_hdl_null['10125/20269']);
         $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////;jsessionid=dfasddsa|journal=X}}');
         $this->assertTrue($template->get_identifiers_from_url());
         $this->assertSame('10125/20269', $template->get2('hdl'));
@@ -1173,13 +1174,16 @@ EP - 999 }}';
     }
 
     public function testHandles2(): void {
+        unset(HandleCache::$cache_hdl_null['10125/20269']);
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
@@ -1196,6 +1200,7 @@ EP - 999 }}';
     }
 
     public function testHandles4(): void {
+        unset(HandleCache::$cache_hdl_null['10125/20269']);
         $template = $this->make_citation('{{Cite journal|url=https://scholarspace.manoa.hawaii.edu/handle/10125/20269}}');
         $template->get_identifiers_from_url();
         $this->assertSame('10125/20269', $template->get2('hdl'));
@@ -1203,9 +1208,11 @@ EP - 999 }}';
     }
 
     public function testHandles5(): void {
+        $expected_hdl = '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672';
+        unset(HandleCache::$cache_hdl_null[$expected_hdl]);
         $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
         $template->get_identifiers_from_url();
-        $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672', $template->get2('hdl'));
+        $this->assertSame($expected_hdl, $template->get2('hdl'));
         $this->assertNotNull($template->get2('url'));
     }
 
@@ -1903,5 +1910,18 @@ EP - 999 }}';
             'Title should be expanded from published article metadata');
         $this->assertNotEmpty($expanded->get2('journal'),
             'Journal name should be added from published article metadata');
+    }
+
+    public function testVancSuffixInVauthors(): void {
+        // Regression: ordinal and Jr suffixes must be preserved in Vancouver output.
+        foreach ([['Jacob', 'P 3rd', 'Jacob P 3rd'], ['Smith', 'P Jr', 'Smith P Jr']] as [$last, $first, $expected]) {
+            $text = "{{cite journal |title=Test Title |last1={$last} |first1={$first} }}";
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+            $template = $this->make_citation($text);
+            $template->initial_author_params_set([]);
+            $result = $template->parsed_text();
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+            $this->assertStringContainsString($expected, $result);
+        }
     }
 }

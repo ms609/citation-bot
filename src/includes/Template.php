@@ -3283,10 +3283,16 @@ final class Template
                         if ($v !== '') {
                             $v .= ', ';
                         }
-                        $v .= mb_trim($lv . ' ' . mb_substr($fv, 0, 1));
-                        $lve = explode(' ', $fv);
+                        $suffix_test = junior_test($fv);
+                        $fv_base = mb_trim($suffix_test[0]);
+                        $fv_suffix = $suffix_test[1];
+                        $v .= mb_trim($lv . ' ' . mb_substr($fv_base, 0, 1));
+                        $lve = explode(' ', $fv_base);
                         if (array_key_exists(1, $lve)) {
                             $v .= mb_substr($lve[1], 0, 1);
+                        }
+                        if ($fv_suffix !== '') {
+                            $v .= $fv_suffix;
                         }
                         $i++;
                     }
@@ -4212,27 +4218,9 @@ final class Template
                             $this->add_if_new('doi-access', 'free');
                         }
                     }
-                    // Weird ones that are time dependent
-                    $year = $this->year_int(); // Will be zero if not set
-                    if (mb_strpos($doi, '10.1155/') === 0 && $year > 2006) {
-                        $this->add_if_new('doi-access', 'free');
-                    }
-                    unset($year);
+                    // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
+                    $this->doi_free_check_conditional($doi);
                     /** } */
-                    if (/** doi_works($doi) && */ mb_strpos($doi, '10.1073/pnas') === 0) {
-                        $template_year = $this->year();
-                        if ($template_year === '') {
-                            $template_year = $this->get('publication-date');
-                        }
-                        if ($template_year !== '') {
-                            $template_year = (int) $template_year;
-                            $year = (int) date("Y");
-                            if ($template_year + 1 < $year) {
-                                // At least one year old, up to three
-                                $this->add_if_new('doi-access', 'free');
-                            }
-                        }
-                    }
                     if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
                         if ($this->blank(ARXIV_ALIASES)) {
                             $this->rename('doi', 'eprint', $matches[1]);
@@ -6776,6 +6764,71 @@ final class Template
 
     private function year_int(): int {
         return intval($this->year());
+    }
+
+    /** Returns pub year from year/date/publication-date fields, or 0. */
+    private function pub_year_extended(): int {
+        $year = $this->year_int();
+        if ($year > 0) {
+            return $year;
+        }
+        if ($this->has('publication-date')) {
+            if (preg_match('~(\d{4})~', $this->get('publication-date'), $matches)) {
+                return (int) $matches[1];
+            }
+        }
+        return 0;
+    }
+
+    /** Returns Unix timestamp when month-level date info is available; null for year-only or missing dates. */
+    private function pub_exact_ts(): ?int {
+        foreach (['date', 'publication-date'] as $field) {
+            if ($this->has($field)) {
+                $date_val = $this->get($field);
+                if (preg_match('~^\d{4}$~', $date_val)) {
+                    continue; // Year-only; no month available
+                }
+                $time = strtotime($date_val);
+                if ($time !== false && $time > 0) {
+                    return $time;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Applies DOI_FREE_CONDITIONAL rules; tags doi-access=free when pub date satisfies the rule. */
+    private function doi_free_check_conditional(string $doi): void {
+        foreach (DOI_FREE_CONDITIONAL as $rule) {
+            if (mb_stripos($doi, $rule['prefix']) !== 0) {
+                continue;
+            }
+            $rule_type  = $rule['type'];
+            $rule_value = $rule['value'];
+            if ($rule_type === 'AFTER_YEAR') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 0 && $pub_year > (int) $rule_value) {
+                    $this->add_if_new('doi-access', 'free');
+                }
+            } elseif ($rule_type === 'EMBARGO_MONTHS') {
+                $pub_ts = $this->pub_exact_ts();
+                if ($pub_ts === null) {
+                    // Dec 31: conservative year-only fallback
+                    $pub_year = $this->pub_year_extended();
+                    if ($pub_year > 1000) { // Sanity-check: must be a plausible year
+                        $pub_ts = mktime(0, 0, 0, 12, 31, $pub_year);
+                    }
+                }
+                if ($pub_ts !== null) {
+                    // end of month for safety
+                    $pub_ts = mktime(0, 0, 0, (int) date('n', $pub_ts), (int) date('t', $pub_ts), (int) date('Y', $pub_ts));
+                    $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
+                    if (time() >= $free_after_ts) {
+                        $this->add_if_new('doi-access', 'free');
+                    }
+                }
+            }
+        }
     }
 
     /** @return array<string> */

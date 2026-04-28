@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/constants.php';    // @codeCoverageIgnore
 
-/* junior_test - tests a name for a Junior appellation
+/* junior_test - tests a name for a Junior appellation or generational suffix
  * Input: $name - the name to be tested
- * Output: array ($name without Jr, if $name ends in Jr, Jr)
+ * Output: array ($name without suffix, generational suffix if present)
+ * Recognized suffixes: Jr, Jr., and ordinal numbers (2nd, 3rd, 4th, 5th, etc.)
  */
 
 /** @return array<string> */
@@ -18,6 +19,11 @@ function junior_test(string $name): array {
         $junior = mb_substr($name, -4) === " Jr." ? " Jr." : "";
         if ($junior) {
             $name = mb_substr($name, 0, -4);
+        } else {
+            if (preg_match('~ (\d{1,2}(?:st|nd|rd|th)\.?)$~i', $name, $matches)) {
+                $junior = ' ' . $matches[1];
+                $name = mb_substr($name, 0, -mb_strlen($junior));
+            }
         }
     }
     if (mb_substr($name, -1) === ",") {

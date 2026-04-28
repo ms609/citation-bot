@@ -120,4 +120,12 @@ final class pubmedTest extends testBaseClass {
         $this->assertFalse($result);
         $this->assertSame('123–130', $template->get2('pages'));
     }
+
+    public function testAuthorOrdinalSuffixStoredInFirstName(): void {
+        // Regression: ordinal suffix (e.g. '3rd') must land on the first-name side of the comma.
+        $template = $this->make_citation('{{cite journal}}');
+        $template->add_if_new('author1', 'Jacob,P 3rd', 'entrez');
+        $this->assertSame('Jacob', $template->get2('last1'));
+        $this->assertSame('P 3rd', $template->get2('first1'));
+    }
 }

@@ -99,16 +99,16 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                     } elseif (mb_strlen($subItem) > 100) {
                                         break;    // @codeCoverageIgnore
                                     } elseif (author_is_human($subItem)) {
-                                        $jr_test = junior_test($subItem);
-                                        $subItem = $jr_test[0];
-                                        $junior = $jr_test[1];
+                                        $suffix_test = junior_test($subItem);
+                                        $subItem = $suffix_test[0];
+                                        $junior = $suffix_test[1];
                                         if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                                             $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
                                             if (mb_strpos($first, '.') && mb_substr($first, -1) !== '.') {
                                                 $first .= '.';
                                             }
                                             $i++;
-                                            $this_template->add_if_new("author{$i}", $names[1] . $junior . ',' . $first, 'entrez');
+                                            $this_template->add_if_new("author{$i}", $names[1] . ',' . $first . $junior, 'entrez');
                                         }
                                     } else {
                                         // We probably have a committee or similar.    Just use 'author$i'.

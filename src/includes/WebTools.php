@@ -121,6 +121,7 @@ function bot_html_header(): void {
     '  <link rel="stylesheet" type="text/css" href="assets/results.css" />', "\n",
     ' </head>', "\n",
     ' <body>', "\n",
+    '  <a href="#main-content" class="skip-link">Skip to main content</a>', "\n",
     '  <header>', "\n",
     '   <p>Follow Citation bots progress below.</p>', "\n",
     '   <p>', "\n",
@@ -129,7 +130,9 @@ function bot_html_header(): void {
     '    <a href="https://github.com/ms609/citation-bot" target="_blank" rel="noopener noreferrer" title="GitHub repository"  aria-label="GitHub repository (opens new window)">Source&nbsp;code</a>', "\n",
     '   </p>', "\n",
     '  </header>', "\n",
-    '  <pre id="botOutput">', "\n";
+    '  <main id="main-content">', "\n",
+    '   <h1 class="sr-only">Citation Bot progress</h1>', "\n",
+    '  <pre id="botOutput" aria-label="Bot progress output">', "\n";
     if (ini_get('pcre.jit') === '0') {
         report_warning('PCRE JIT Disabled');
     }
@@ -140,7 +143,7 @@ function bot_html_header(): void {
  */
 function bot_html_footer(): void {
     if (HTML_OUTPUT) {
-        echo '</pre><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>?</footer></body></html>'; // @codeCoverageIgnore
+        echo '</pre></main><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>?</footer></body></html>'; // @codeCoverageIgnore
     }
     echo "\n";
 }

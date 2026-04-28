@@ -1,35 +1,57 @@
-function ValidateForm() {
+function setFieldError(input, errorId, message) {
+  input.classList.add("error");
+  input.setAttribute("aria-invalid", "true");
+  input.setAttribute("aria-describedby", errorId);
+  if (!document.getElementById(errorId)) {
+    var span = document.createElement("span");
+    span.id = errorId;
+    span.setAttribute("role", "alert");
+    span.className = "field-error";
+    span.textContent = message;
+    input.parentNode.insertBefore(span, input.nextSibling);
+  }
+}
+
+function clearFieldError(input, errorId) {
+  input.classList.remove("error");
+  input.removeAttribute("aria-invalid");
+  input.removeAttribute("aria-describedby");
+  var existing = document.getElementById(errorId);
+  if (existing) {
+    existing.parentNode.removeChild(existing);
+  }
+}
+
+function ValidateForm(event) {
   var botPage = document.getElementById("botPage");
   var botCat = document.getElementById("botCat");
   var botLinked = document.getElementById("botLinked");
-  var submitButton; // From StackOverflow user3126867
-  if (typeof event.explicitOriginalTarget !== "undefined") {
-    submitButton = event.explicitOriginalTarget;
-  } else if(typeof document.activeElement.value !== "undefined"){  // IE
-    submitButton = document.activeElement;
-  }
+  var submitButton = event.submitter;
 
   if (submitButton.id === "PageSubmit") {
     if (botPage.value.trim() === "") {
-      botPage.classList.add("error");
+      setFieldError(botPage, "botPage-error", "Page name is required");
       submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("PageSpinner").style.display = "inline-block";
+    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   } else if (submitButton.id === "CatSubmit") {
     if (botCat.value.trim() === "") {
-      botCat.classList.add("error");
+      setFieldError(botCat, "botCat-error", "Category name is required");
       submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("CatSpinner").style.display = "inline-block";
+    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   } else if (submitButton.id === "LinkedSubmit") {
     if (botLinked.value.trim() === "") {
-      botLinked.classList.add("error");
+      setFieldError(botLinked, "botLinked-error", "Initial page name is required");
       submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("LinkSpinner").style.display = "inline-block";
+    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   }
   document.getElementById("PageSubmit").disabled = "disabled";
   document.getElementById("CatSubmit").disabled = "disabled";
@@ -41,30 +63,30 @@ function ValidatePageName() {
   document.getElementById("PageSubmit").innerHTML = "Process page" +
     ((document.getElementById("botPage").value.indexOf("|") > -1) ? "s" : "");
   if (this.value.trim() === "") {
-    this.classList.add("error");
+    setFieldError(this, "botPage-error", "Page name is required");
     document.getElementById("PageSubmit").disabled = "disabled";
   } else {
-    this.classList.remove("error");
+    clearFieldError(this, "botPage-error");
     document.getElementById("PageSubmit").disabled = false;
   }
 }
 
 function ValidateCategory() {
   if (this.value.trim() === "") {
-    this.classList.add("error");
+    setFieldError(this, "botCat-error", "Category name is required");
     document.getElementById("CatSubmit").disabled = "disabled";
   } else {
-    this.classList.remove("error");
+    clearFieldError(this, "botCat-error");
     document.getElementById("CatSubmit").disabled = false;
   }
 }
 
 function ValidateLinked() {
   if (this.value.trim() === "") {
-    this.classList.add("error");
+    setFieldError(this, "botLinked-error", "Initial page name is required");
     document.getElementById("LinkedSubmit").disabled = "disabled";
   } else {
-    this.classList.remove("error");
+    clearFieldError(this, "botLinked-error");
     document.getElementById("LinkedSubmit").disabled = false;
   }
 }
@@ -80,22 +102,23 @@ function InitializeForm() {
   var pageSpinner = document.getElementById("PageSpinner");
   var catSpinner = document.getElementById("CatSpinner");
   var linkSpinner = document.getElementById("LinkSpinner");
+  var botStatus = document.getElementById("botStatus");
 
   if (botForm) botForm.onsubmit = ValidateForm;
   if (botPage) {
     botPage.oninput = ValidatePageName;
     botPage.value = "";
-    botPage.classList.remove("error");
+    clearFieldError(botPage, "botPage-error");
   }
   if (botCat) {
     botCat.oninput = ValidateCategory;
     botCat.value = "";
-    botCat.classList.remove("error");
+    clearFieldError(botCat, "botCat-error");
   }
   if (botLinked) {
     botLinked.oninput = ValidateLinked;
     botLinked.value = "";
-    botLinked.classList.remove("error");
+    clearFieldError(botLinked, "botLinked-error");
   }
   if (catSubmit) catSubmit.disabled = false;
   if (pageSubmit) pageSubmit.disabled = false;
@@ -103,6 +126,7 @@ function InitializeForm() {
   if (pageSpinner) pageSpinner.style.display = "none";
   if (catSpinner) catSpinner.style.display = "none";
   if (linkSpinner) linkSpinner.style.display = "none";
+  if (botStatus) botStatus.textContent = "";
 }
 
 window.onload = InitializeForm;
