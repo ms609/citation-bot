@@ -291,8 +291,7 @@ const DOI_FREE_PREFIX = [
 
 /**
  * Conditional free DOI rules: DOIs that are free only under certain publication-date conditions.
- * Rule types: AFTER_YEAR (year > value), EMBARGO_MONTHS (pub date + value months <= now;
- *   falls back to end of year when only year is known).
+ * Rule types: AFTER_YEAR (year > value), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
  * If no parseable date is present, no free tag is added.
  * @var array<array{prefix: string, type: string, value: string}>
  */
@@ -302,12 +301,12 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'AFTER_YEAR',
         'value'  => '2006',
     ],
-    [   // PNAS: 12-month rolling embargo, month-precise
+    [   // PNAS: 12-month rolling embargo
         'prefix' => '10.1073/pnas',
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '12',
     ],
-    [   // Limnology and Oceanography: 36-month rolling embargo, month-precise
+    [   // Limnology and Oceanography: 36-month rolling embargo
         'prefix' => '10.1002/lno.',
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '36',
@@ -322,7 +321,7 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '36',
     ],
-    [   // EPJC: open-access after 2014 (i.e. 2015 onwards)
+    [   // EPJC: open-access after 2014 
         'prefix' => '10.1140/epjc',
         'type'   => 'AFTER_YEAR',
         'value'  => '2014',
