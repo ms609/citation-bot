@@ -6786,7 +6786,7 @@ final class Template
     /** Applies DOI_FREE_CONDITIONAL rules; tags doi-access=free when pub date satisfies the rule. */
     private function doi_free_check_conditional(string $doi): void {
         foreach (DOI_FREE_CONDITIONAL as $rule) {
-            if (mb_stripos($doi, $rule['prefix']) !== 0) { // Case-insensitive, consistent with DOI_FREE_PREFIX loop above
+            if (mb_stripos($doi, $rule['prefix']) !== 0) {
                 continue;
             }
             $rule_type  = $rule['type'];
@@ -6799,14 +6799,14 @@ final class Template
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();
                 if ($pub_ts === null) {
-                    // Fall back to Dec 31 of the known year (conservative: embargo expires latest possible)
+                    // Dec 31: conservative year-only fallback
                     $pub_year = $this->pub_year_extended();
                     if ($pub_year > 1000) { // Sanity-check: must be a plausible year
                         $pub_ts = mktime(0, 0, 0, 12, 31, $pub_year);
                     }
                 }
                 if ($pub_ts !== null) {
-                    // Advance to end of the publication month for safety (e.g. "January 2010" → Jan 31)
+                    // end of month for safety
                     $pub_ts = mktime(0, 0, 0, (int) date('n', $pub_ts), (int) date('t', $pub_ts), (int) date('Y', $pub_ts));
                     $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
                     if (time() >= $free_after_ts) {

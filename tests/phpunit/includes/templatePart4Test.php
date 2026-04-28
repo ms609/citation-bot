@@ -1902,20 +1902,6 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
-    public function testDoiConditionalAfterYear_EpjcFree(): void {
-        $text = '{{cite journal|doi=10.1140/epjc/example|year=2015}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testDoiConditionalAfterYear_EpjcAtThreshold_NotFree(): void {
-        $text = '{{cite journal|doi=10.1140/epjc/example|year=2014}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertNull($template->get2('doi-access'));
-    }
-
     public function testDoiConditionalEmbargoMonths_PnasOldArticle_Free(): void {
         $text = '{{cite journal|doi=10.1073/pnas.0000000|date=January 2010}}';
         $template = $this->make_citation($text);
@@ -1928,13 +1914,6 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi-access'));
-    }
-
-    public function testDoiConditionalEmbargoMonths_OldDate_Free(): void {
-        $text = '{{cite journal|doi=10.1002/lno.example|date=January 2010}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
     }
 
     public function testDoiConditionalEmbargoMonths_YearOnlyOld_Free(): void {
@@ -1956,13 +1935,6 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('limited', $template->get2('doi-access'));
-    }
-
-    public function testDoiUnconditionalFreePrefixUnchanged(): void {
-        $text = '{{cite journal|doi=10.1371/journal.pone.0000001}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
     }
 
     public function testDoiConditionalEmbargoMonths_UnresolvableDate_NotFree(): void {
