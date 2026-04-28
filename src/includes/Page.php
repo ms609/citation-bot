@@ -984,8 +984,8 @@ class Page {
         html_echo("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title={$url_encoded_title}' style='font-weight:bold;'>"
                 . echoable($this->title)
                 . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
-                . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
-                . "&action=history' style='font-weight:bold;'>history</a> ",
+                . "&amp;action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title={$url_encoded_title}"
+                . "&amp;action=history' style='font-weight:bold;'>history</a> ",
                 "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
     }
 
