@@ -1168,10 +1168,12 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////;jsessionid=dfasddsa|journal=X}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
@@ -1184,10 +1186,12 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
@@ -1207,10 +1211,12 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite journal|url=https://scholarspace.manoa.hawaii.edu/handle/10125/20269}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '10125/20269') {
+            unset(HandleCache::$cache_hdl_null['10125/20269']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
@@ -1222,10 +1228,12 @@ EP - 999 }}';
         $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
         $template->get_identifiers_from_url();
         if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
+            unset(HandleCache::$cache_hdl_null['2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
         if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
+            unset(HandleCache::$cache_hdl_null['2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672']);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
