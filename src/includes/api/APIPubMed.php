@@ -108,7 +108,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                                 $first .= '.';
                                             }
                                             $i++;
-                                            $this_template->add_if_new("author{$i}", $names[1] . $junior . ',' . $first, 'entrez');
+                                            $this_template->add_if_new("author{$i}", $names[1] . ',' . $first . $junior, 'entrez');
                                         }
                                     } else {
                                         // We probably have a committee or similar.    Just use 'author$i'.

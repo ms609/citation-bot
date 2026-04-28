@@ -3283,10 +3283,16 @@ final class Template
                         if ($v !== '') {
                             $v .= ', ';
                         }
-                        $v .= mb_trim($lv . ' ' . mb_substr($fv, 0, 1));
-                        $lve = explode(' ', $fv);
+                        $jr_test = junior_test($fv);
+                        $fv_base = mb_trim($jr_test[0]);
+                        $fv_suffix = $jr_test[1];
+                        $v .= mb_trim($lv . ' ' . mb_substr($fv_base, 0, 1));
+                        $lve = explode(' ', $fv_base);
                         if (array_key_exists(1, $lve)) {
                             $v .= mb_substr($lve[1], 0, 1);
+                        }
+                        if ($fv_suffix !== '') {
+                            $v .= $fv_suffix;
                         }
                         $i++;
                     }
