@@ -303,10 +303,10 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'AFTER_YEAR',
         'value'  => '2006',
     ],
-    [   // PNAS: 1-year rolling embargo
+    [   // PNAS: 12-month rolling embargo, month-precise
         'prefix' => '10.1073/pnas',
-        'type'   => 'EMBARGO_YEARS',
-        'value'  => '1',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '12',
     ],
     [   // Limnology and Oceanography: 36-month rolling embargo, month-precise
         'prefix' => '10.1002/lno.',

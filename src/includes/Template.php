@@ -6816,6 +6816,8 @@ final class Template
                     }
                 }
                 if ($pub_ts !== null) {
+                    // Advance to end of the publication month for safety (e.g. "January 2010" → Jan 31)
+                    $pub_ts = mktime(0, 0, 0, (int) date('n', $pub_ts), (int) date('t', $pub_ts), (int) date('Y', $pub_ts));
                     $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
                     if (time() >= $free_after_ts) {
                         $this->add_if_new('doi-access', 'free');

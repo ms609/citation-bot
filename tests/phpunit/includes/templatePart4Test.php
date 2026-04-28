@@ -1916,15 +1916,15 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
-    public function testDoiConditionalEmbargoYears_OldArticle_Free(): void {
-        $text = '{{cite journal|doi=10.1073/pnas.0000000|year=2010}}';
+    public function testDoiConditionalEmbargoMonths_PnasOldArticle_Free(): void {
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|date=January 2010}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testDoiConditionalEmbargoYears_CurrentYear_NotFree(): void {
-        $text = '{{cite journal|doi=10.1073/pnas.0000000|year=' . date('Y') . '}}';
+    public function testDoiConditionalEmbargoMonths_PnasCurrentMonth_NotFree(): void {
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|date=' . date('F Y') . '}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi-access'));
