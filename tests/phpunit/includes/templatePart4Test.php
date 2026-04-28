@@ -1964,4 +1964,11 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template->tidy_parameter('doi');
         $this->assertSame('free', $template->get2('doi-access'));
     }
+
+    public function testDoiConditionalEmbargoMonths_UnresolvableDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/lno.example|date=forthcoming}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
 }
