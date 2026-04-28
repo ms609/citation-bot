@@ -22,16 +22,11 @@ function clearFieldError(input, errorId) {
   }
 }
 
-function ValidateForm() {
+function ValidateForm(event) {
   var botPage = document.getElementById("botPage");
   var botCat = document.getElementById("botCat");
   var botLinked = document.getElementById("botLinked");
-  var submitButton; // From StackOverflow user3126867
-  if (typeof event.explicitOriginalTarget !== "undefined") {
-    submitButton = event.explicitOriginalTarget;
-  } else if(typeof document.activeElement.value !== "undefined"){  // IE
-    submitButton = document.activeElement;
-  }
+  var submitButton = event.submitter;
 
   if (submitButton.id === "PageSubmit") {
     if (botPage.value.trim() === "") {

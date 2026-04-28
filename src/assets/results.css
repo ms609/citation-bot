@@ -39,28 +39,28 @@ input, select, button {
 
 input.error {
   background-color: #f1e545;
-  border: 2px solid #e79f26;
+  border: 2px solid #9a7200;
 }
 
 header a, footer a { text-decoration: none; }
 
-a { color: #0773b3; }
+a { color: #0a5f8f; }
 
-span.added      { color: #02a074; font-weight: bold;}
+span.added      { color: #008060; font-weight: bold;}
 span.boring     { color: #767676; }
-span.changed    { color: #5eb3e5; font-weight: bold;}
-span.reddish    { color: #cc79a7; }
-span.removed    { color: #e79f26; font-weight: bold;}
+span.changed    { color: #0070a8; font-weight: bold;}
+span.reddish    { color: #8c3f6e; }
+span.removed    { color: #8a5800; font-weight: bold;}
 span.subitem    { color: #666; }
 span.subsubitem { color: #767676; }
-span.warning    { color: #d36027; }
+span.warning    { color: #b34700; }
 
 /* Visible focus outline for keyboard navigation (WCAG 2.4.7) */
 input:focus-visible,
 button:focus-visible,
 select:focus-visible,
 a:focus-visible {
-  outline: 2px solid #0773b3;
+  outline: 2px solid #0a5f8f;
   outline-offset: 2px;
 }
 
@@ -96,7 +96,7 @@ a:focus-visible {
 
 /* Inline error message beneath invalid form fields (WCAG 3.3.1) */
 .field-error {
-  color: #d36027;
+  color: #b34700;
   font-size: 0.875em;
   display: block;
   margin-top: 0.25em;
@@ -104,7 +104,7 @@ a:focus-visible {
 
 /* Fieldset grouping for mutually-exclusive form sections */
 fieldset {
-  border: 1px solid #ccc;
+  border: 1px solid #767676;
   border-radius: 4px;
   padding: 0.75em 1em;
   margin-bottom: 0.5em;
