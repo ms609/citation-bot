@@ -79,6 +79,13 @@ final class pubmedTest extends testBaseClass {
         if ($expanded->get2('pmid') === null && $expanded->get2('pmc') === null) {
             $this->markTestSkipped('PubMed API did not respond (rate limit or outage)');
         }
+        if ($expanded->get2('pmc') === null) {
+            sleep(run_type_mods(-1, 5, 3, 2, 2));
+            $expanded = $this->process_citation($text);
+        }
+        if ($expanded->get2('pmc') === null) {
+            $this->markTestSkipped('PubMed PMC API did not respond (rate limit or outage)');
+        }
         $this->assertSame('11573006', $expanded->get2('pmid'));
         $this->assertSame('58796', $expanded->get2('pmc'));
     }
