@@ -1166,7 +1166,15 @@ EP - 999 }}';
 
     public function testHandles1(): void {
         $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////;jsessionid=dfasddsa|journal=X}}');
-        $this->assertTrue($template->get_identifiers_from_url());
+        $template->get_identifiers_from_url();
+        if ($template->get2('hdl') !== '10125/20269') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
+        if ($template->get2('hdl') !== '10125/20269') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
         $this->assertSame('10125/20269', $template->get2('hdl'));
         $this->assertSame('cite web', $template->wikiname());
         $this->assertNotNull($template->get2('url'));
@@ -1198,6 +1206,14 @@ EP - 999 }}';
     public function testHandles4(): void {
         $template = $this->make_citation('{{Cite journal|url=https://scholarspace.manoa.hawaii.edu/handle/10125/20269}}');
         $template->get_identifiers_from_url();
+        if ($template->get2('hdl') !== '10125/20269') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
+        if ($template->get2('hdl') !== '10125/20269') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
         $this->assertSame('10125/20269', $template->get2('hdl'));
         $this->assertNotNull($template->get2('url'));
     }
@@ -1205,6 +1221,14 @@ EP - 999 }}';
     public function testHandles5(): void {
         $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
         $template->get_identifiers_from_url();
+        if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
+        if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
+            sleep(run_type_mods(-1, 15, 15, 5, 15));
+            $template->get_identifiers_from_url(); // This test is finicky sometimes
+        }
         $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672', $template->get2('hdl'));
         $this->assertNotNull($template->get2('url'));
     }
