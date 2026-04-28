@@ -44,7 +44,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     #[\Override]
     protected function setUp(): void {
-        \HandleCache::free_memory();
+        HandleCache::free_memory();
         Zotero::create_ch_zotero();
         $wb = new WikipediaBot();
         unset($wb);

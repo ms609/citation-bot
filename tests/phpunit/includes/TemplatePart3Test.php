@@ -1225,19 +1225,20 @@ EP - 999 }}';
     }
 
     public function testHandles5(): void {
+        $expected_hdl = '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672';
         $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
         $template->get_identifiers_from_url();
-        if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
-            unset(HandleCache::$cache_hdl_null['2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672']);
+        if ($template->get2('hdl') !== $expected_hdl) {
+            unset(HandleCache::$cache_hdl_null[$expected_hdl]);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
-        if ($template->get2('hdl') !== '2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672') {
-            unset(HandleCache::$cache_hdl_null['2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672']);
+        if ($template->get2('hdl') !== $expected_hdl) {
+            unset(HandleCache::$cache_hdl_null[$expected_hdl]);
             sleep(run_type_mods(-1, 15, 15, 5, 15));
             $template->get_identifiers_from_url(); // This test is finicky sometimes
         }
-        $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672', $template->get2('hdl'));
+        $this->assertSame($expected_hdl, $template->get2('hdl'));
         $this->assertNotNull($template->get2('url'));
     }
 
