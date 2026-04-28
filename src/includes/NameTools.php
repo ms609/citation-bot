@@ -20,7 +20,7 @@ function junior_test(string $name): array {
         if ($junior) {
             $name = mb_substr($name, 0, -4);
         } else {
-            if (preg_match('~ (\d+(?:st|nd|rd|th)\.?)$~i', $name, $matches)) {
+            if (preg_match('~ (\d{1,2}(?:st|nd|rd|th)\.?)$~i', $name, $matches)) {
                 $junior = ' ' . $matches[1];
                 $name = mb_substr($name, 0, -mb_strlen($junior));
             }
