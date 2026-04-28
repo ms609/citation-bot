@@ -321,7 +321,7 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '36',
     ],
-    [   // EPJC: open-access after 2014 
+    [   // EPJC: open-access after 2014
         'prefix' => '10.1140/epjc',
         'type'   => 'AFTER_YEAR',
         'value'  => '2014',
