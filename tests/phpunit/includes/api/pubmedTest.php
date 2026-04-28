@@ -122,11 +122,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testAuthorOrdinalSuffixStoredInFirstName(): void {
-        // Regression test for the APIPubMed generational-suffix bug.
-        // Old broken code stored 'Jacob P,3rd' (suffix on last-name side of the comma),
-        // causing convert_to_vanc to produce 'Jacob P 3' instead of 'Jacob P 3rd'.
-        // Fixed code calls junior_test() first and stores 'Jacob,P 3rd' (suffix on
-        // first-name side), so last1/first1 split cleanly and Vancouver output is correct.
+        // Regression: ordinal suffix (e.g. '3rd') must land on the first-name side of the comma.
         $template = $this->make_citation('{{cite journal}}');
         $template->add_if_new('author1', 'Jacob,P 3rd', 'entrez');
         $this->assertSame('Jacob', $template->get2('last1'));
