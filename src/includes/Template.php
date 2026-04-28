@@ -6796,16 +6796,6 @@ final class Template
                 if ($pub_year > 0 && $pub_year > (int) $rule_value) {
                     $this->add_if_new('doi-access', 'free');
                 }
-            } elseif ($rule_type === 'FROM_YEAR') {
-                $pub_year = $this->pub_year_extended();
-                if ($pub_year > 0 && $pub_year >= (int) $rule_value) {
-                    $this->add_if_new('doi-access', 'free');
-                }
-            } elseif ($rule_type === 'EMBARGO_YEARS') {
-                $pub_year = $this->pub_year_extended();
-                if ($pub_year > 0 && ($pub_year + (int) $rule_value) < (int) date('Y')) {
-                    $this->add_if_new('doi-access', 'free');
-                }
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();
                 if ($pub_ts === null) {
