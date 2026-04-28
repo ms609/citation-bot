@@ -1902,14 +1902,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
-    public function testDoiConditionalFromYear_Free(): void {
+    public function testDoiConditionalAfterYear_EpjcFree(): void {
         $text = '{{cite journal|doi=10.1140/epjc/example|year=2015}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testDoiConditionalFromYear_BelowThreshold_NotFree(): void {
+    public function testDoiConditionalAfterYear_EpjcAtThreshold_NotFree(): void {
         $text = '{{cite journal|doi=10.1140/epjc/example|year=2014}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
