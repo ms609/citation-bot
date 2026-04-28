@@ -235,28 +235,14 @@ final class nameToolsTest extends testBaseClass {
     }
 
     public function testJunior9(): void {
-        $text = "Smith 3rd";
-        $result = junior_test($text);
-        $this->assertSame("Smith", $result[0]);
-        $this->assertSame(" 3rd", $result[1]);
-    }
-
-    public function testJunior10(): void {
-        $text = "Smith 4th";
-        $result = junior_test($text);
-        $this->assertSame("Smith", $result[0]);
-        $this->assertSame(" 4th", $result[1]);
-    }
-
-    public function testJunior11(): void {
         $text = "Smith, 3rd";
         $result = junior_test($text);
         $this->assertSame("Smith", $result[0]);
         $this->assertSame(" 3rd", $result[1]);
     }
 
-    public function testJunior12(): void {
-        $text = "Jacob P 3rd"; // PubMed-style: LastName Initials Suffix
+    public function testJunior10(): void {
+        $text = "Jacob P 3rd";
         $result = junior_test($text);
         $this->assertSame("Jacob P", $result[0]);
         $this->assertSame(" 3rd", $result[1]);

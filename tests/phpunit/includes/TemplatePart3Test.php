@@ -1905,28 +1905,16 @@ EP - 999 }}';
             'Journal name should be added from published article metadata');
     }
 
-    public function testVancGenerationalSuffixInVauthors(): void {
-        // Bug fix: bot was writing "Jacob p 3" instead of "Jacob P 3rd"
-        // When first1 contains a generational suffix like "P 3rd", convert_to_vanc
-        // must strip it, extract initials, then re-append the suffix.
-        $text = '{{cite journal |title=Test Title |last1=Jacob |first1=P 3rd }}';
-        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
-        $template = $this->make_citation($text);
-        $template->initial_author_params_set([]);
-        $result = $template->parsed_text();
-        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
-        $this->assertStringContainsString('Jacob P 3rd', $result);
-    }
-
-    public function testVancJrSuffixInVauthors(): void {
-        // Existing Jr suffix must also be handled correctly in convert_to_vanc
-        // when the suffix has been placed in the first name field (e.g., "P Jr").
-        $text = '{{cite journal |title=Test Title |last1=Smith |first1=P Jr }}';
-        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
-        $template = $this->make_citation($text);
-        $template->initial_author_params_set([]);
-        $result = $template->parsed_text();
-        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
-        $this->assertStringContainsString('Smith P Jr', $result);
+    public function testVancSuffixInVauthors(): void {
+        // Regression: ordinal and Jr suffixes must be preserved in Vancouver output.
+        foreach ([['Jacob', 'P 3rd', 'Jacob P 3rd'], ['Smith', 'P Jr', 'Smith P Jr']] as [$last, $first, $expected]) {
+            $text = "{{cite journal |title=Test Title |last1={$last} |first1={$first} }}";
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+            $template = $this->make_citation($text);
+            $template->initial_author_params_set([]);
+            $result = $template->parsed_text();
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+            $this->assertStringContainsString($expected, $result);
+        }
     }
 }
