@@ -3313,11 +3313,7 @@ final class Template
         if ($this->has('veditors')) {
             $this->had_initial_eds = true;
         }
-        // Wrap numeric ordinal suffixes (2nd, 3rd, 4th, etc.) in firstN / editor-firstN
-        // parameters with accept-as-written markup to suppress the CS1 maint: numeric names
-        // maintenance category.  Jr and Jr. are text suffixes and do not need wrapping.
-        // This runs after any first/last → vauthors conversion, so only params that remain
-        // in first/last format (i.e. non-Vancouver citations) are affected.
+        // Wrap numeric ordinal suffixes in firstN/editor-firstN with ((...)) to suppress CS1 maint: numeric names.
         foreach ($this->param as $p) {
             if (preg_match('~^(?:first|editor-first)\d*$~', $p->param) && $p->val !== '') {
                 if (mb_substr($p->val, 0, 2) !== '((') {
