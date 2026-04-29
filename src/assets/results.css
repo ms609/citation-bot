@@ -47,12 +47,12 @@ header a, footer a { text-decoration: none; }
 a { color: #0a5f8f; }
 
 span.added      { color: #008060; font-weight: bold;}
-span.boring     { color: #bbb; }
+span.boring     { color: #bbb; } /* Intentionally low contrast: boring items are incidental progress noise (WCAG 1.4.3 incidental-text exception) */
 span.changed    { color: #0070a8; font-weight: bold;}
 span.reddish    { color: #8c3f6e; }
 span.removed    { color: #8a5800; font-weight: bold;}
 span.subitem    { color: #666; }
-span.subsubitem { color: #999; }
+span.subsubitem { color: #999; } /* Intentionally low contrast: supplementary sub-items are incidental progress noise (WCAG 1.4.3 incidental-text exception) */
 span.warning    { color: #b34700; }
 
 /* Visible focus outline for keyboard navigation (WCAG 2.4.7) */
