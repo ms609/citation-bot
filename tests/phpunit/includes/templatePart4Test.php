@@ -1943,4 +1943,40 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template->tidy_parameter('doi');
         $this->assertNull($template->get2('doi-access'));
     }
+
+    private function tidy_issue(string $text): Template {
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('issue');
+        return $template;
+    }
+
+    public function testAnnualReviewBogusIssueVolumePresent(): void {
+        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
+        $this->assertNull($t->get2('issue'));
+        $this->assertSame('62', $t->get2('volume'));
+    }
+
+    public function testAnnualReviewBogusIssueVolumeAbsent(): void {
+        $t = $this->tidy_issue('{{Cite journal|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
+        $this->assertNull($t->get2('issue'));
+        $this->assertSame('62', $t->get2('volume'));
+    }
+
+    public function testAnnualReviewBogusIssueCaseInsensitive(): void {
+        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
+        $this->assertNull($t->get2('issue'));
+        $this->assertSame('62', $t->get2('volume'));
+    }
+
+    public function testAnnualReviewBogusIssueNoComma(): void {
+        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62 2024|journal=Annual Review of Astronomy and Astrophysics}}');
+        $this->assertNull($t->get2('issue'));
+        $this->assertSame('62', $t->get2('volume'));
+    }
+
+    public function testAnnualReviewBogusIssueImplausibleYearNotRemoved(): void {
+        $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62, 0001|journal=Annual Review of Astronomy and Astrophysics}}');
+        $this->assertSame('Volume 62, 0001', $t->get2('issue'));
+        $this->assertSame('62', $t->get2('volume'));
+    }
 }

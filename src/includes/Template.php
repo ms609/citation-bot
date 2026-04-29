@@ -5706,6 +5706,14 @@ final class Template
                         $this->forget($param);
                         return;
                     }
+                    if (preg_match('~^Volume\s+(\d+),?\s*(19|20)\d{2}$~i', $value, $matches)) {
+                        if ($this->blank('volume')) {
+                            $this->rename($param, 'volume', $matches[1]);
+                        } else {
+                            $this->forget($param);
+                        }
+                        return;
+                    }
                     if ($param === 'issue' || $param === 'number') {
                         if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.|№|№\.)\s*(\d+)$~iu', $value, $matches)) {
                             $value = $matches[1];
