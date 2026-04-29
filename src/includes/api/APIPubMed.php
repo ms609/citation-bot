@@ -104,7 +104,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         $junior = $suffix_test[1];
                                         if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                                             $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                                            if (mb_strpos($first, '.') && mb_substr($first, -1) !== '.') {
+                                            if ($first !== '' && mb_substr($first, -1) !== '.' && (mb_strpos($first, '.') !== false || $junior !== '')) {
                                                 $first .= '.';
                                             }
                                             $i++;
