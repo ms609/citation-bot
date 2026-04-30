@@ -130,8 +130,7 @@ final class pubmedTest extends testBaseClass {
     }
 
     public function testAuthorOrdinalSuffixWithPeriodOnInitial(): void {
-        // entrez_api now stores a period on the initial before appending the suffix,
-        // so the split yields first = "P. 3rd" (not "P 3rd" or "3rd").
+        // Period is appended to initial when suffix is present: "P. 3rd" not "P 3rd".
         $template = $this->make_citation('{{cite journal}}');
         $template->add_if_new('author1', 'Jacob,P. 3rd', 'entrez');
         $this->assertSame('Jacob', $template->get2('last1'));

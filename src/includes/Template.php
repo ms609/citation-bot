@@ -3313,6 +3313,18 @@ final class Template
         if ($this->has('veditors')) {
             $this->had_initial_eds = true;
         }
+        // Wrap numeric ordinal suffixes in firstN/editor-firstN with ((...)) to suppress CS1 maint: numeric names.
+        foreach ($this->param as $p) {
+            if (preg_match('~^(?:first|editor-first)\d*$~', $p->param) && $p->val !== '') {
+                if (mb_substr($p->val, 0, 2) !== '((') {
+                    $suffix_test = junior_test($p->val);
+                    $suffix = $suffix_test[1];
+                    if ($suffix !== '' && preg_match('~^ \d~', $suffix)) {
+                        $p->val = '((' . mb_trim($p->val) . '))';
+                    }
+                }
+            }
+        }
     }
 
     public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void {

@@ -1940,4 +1940,22 @@ EP - 999 }}';
             $this->assertStringContainsString($expected, $result);
         }
     }
+
+    public function testOrdinalSuffixWrappedInFirstNameNonVanc(): void {
+        // Non-Vancouver: numeric ordinal suffix in firstN must be wrapped in ((...)).
+        $text = '{{cite journal |title=Test Title |last1=Jacob |first1=P. 3rd }}';
+        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+        $template = $this->make_citation($text);
+        $result = $template->parsed_text();
+        $this->assertStringContainsString('((P. 3rd))', $result);
+    }
+
+    public function testJrSuffixNotWrappedInFirstName(): void {
+        // Text suffix Jr must not be wrapped.
+        $text = '{{cite journal |title=Test Title |last1=Smith |first1=P. Jr }}';
+        Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+        $template = $this->make_citation($text);
+        $result = $template->parsed_text();
+        $this->assertStringNotContainsString('((', $result);
+    }
 }
