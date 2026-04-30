@@ -114,3 +114,17 @@ legend {
   font-weight: bold;
   padding: 0 0.25em;
 }
+
+/* Reflow support for pre-formatted output area (WCAG 1.4.10) */
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* Respect user preference for reduced motion; hide animated spinners (WCAG 2.2.2) */
+@media (prefers-reduced-motion: reduce) {
+  img[id$="Spinner"] {
+    display: none !important;
+  }
+}

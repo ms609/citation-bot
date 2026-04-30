@@ -9,12 +9,12 @@ set_time_limit(120);
 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
-echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><main><pre>';
+echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><a href="#main-content" class="skip-link">Skip to main content</a><header><h1>Citation Bot – Generate Template</h1></header><main id="main-content"><h2>Generated citation template</h2><pre>';
 
 require_once __DIR__ . '/includes/setup.php';
 
 function die_in_template(string $err): never {
-    echo $err, '</pre></main></body></html>'; // @codeCoverageIgnore
+    echo $err, '</pre></main><footer><a href="./" title="Use Citation Bot">Back to Citation Bot</a></footer></body></html>'; // @codeCoverageIgnore
     exit(0); // @codeCoverageIgnore
 }
 
@@ -59,4 +59,4 @@ $page->expand_text();
 $text = $page->parsed_text();
 unset($page);
 
-echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n</pre></main></body></html>";
+echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n</pre></main><footer><a href=\"./\" title=\"Use Citation Bot\">Back to Citation Bot</a></footer></body></html>";
