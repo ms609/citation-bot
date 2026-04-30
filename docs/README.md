@@ -69,26 +69,39 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 Basic structure of a Citation bot script:
 
-- the `env.php` that defines configuration constants (you can create it from `env.php.example`)
-- the `setup.php` that sets up the functions needed (usually, you don't need to modify this file)
+- the `src/env.php` that defines configuration constants (you can create it from `src/env.php.example`)
+- the `src/includes/setup.php` that sets up the functions needed (usually, you don't need to modify this file)
 - the Page functions to fetch/expand/post the page's text
 
 A quick tour of the main files:
 
-- `constants.php`: constants defined
-- `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-- `NameTools.php`: defines name functions
-- `MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
-- `setup.php`: sets up needed functions, requires most of the other files listed here
-- `miscFns.php`: a variety of functions
-- `URLtools.php`: normalize urls and extract information from urls
-- `TextTools.php`: string manipulation functions including converting to wiki
-- `WebTools.php`: things unique to the web interface
-- `API*.php`: sets up needed functions for expanding pmid/doi/url/etc
-- `Page.php`: Represents an individual page to expand citations on. Key methods are `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
-- `Template.php`: most of the actual expansion happens here. `Template::add_if_new()` is generally (but not always) used to add parameters to the updated template; `Template::tidy()` cleans up the template, but may add parameters as well and have side effects.
-- `WikiThings.php`: Handles comments, nowiki, etc. tags
-- `Parameter.php`: contains information about template parameter names, values, and metadata, and methods to parse template parameters.
+Entry points (under `src/`):
+
+- `src/index.html`: web frontend
+- `src/process_page.php`: backend; POSTed page information triggers citation expansion
+- `src/gadgetapi.php`: PHP backend API for the on-wiki Citation Expander gadget
+- `src/generate_template.php`: creates a wiki reference given an identifier
+
+Includes (under `src/includes/`):
+
+- `src/includes/constants.php`: constants defined; further constants are split into files under `src/includes/constants/`
+- `src/includes/WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
+- `src/includes/NameTools.php`: defines name functions
+- `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
+- `src/includes/setup.php`: sets up needed functions, requires most of the other files listed here
+- `src/includes/miscTools.php`: a variety of functions
+- `src/includes/URLtools.php`: normalize urls and extract information from urls
+- `src/includes/TextTools.php`: string manipulation functions including converting to wiki
+- `src/includes/WebTools.php`: things unique to the web interface
+- `src/includes/bot_curl.php`: curl wrapper with bot-appropriate defaults and timeouts
+- `src/includes/user_messages.php`: functions for reporting bot activity to users
+- `src/includes/doiTools.php`: DOI-specific validation and normalization functions
+- `src/includes/big_jobs.php`: handling for large batch jobs
+- `src/includes/api/API*.php`: sets up needed functions for expanding pmid/doi/url/etc
+- `src/includes/Page.php`: Represents an individual page to expand citations on. Key methods are `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
+- `src/includes/Template.php`: most of the actual expansion happens here. `Template::add_if_new()` is generally (but not always) used to add parameters to the updated template; `Template::tidy()` cleans up the template, but may add parameters as well and have side effects.
+- `src/includes/WikiThings.php`: Handles comments, nowiki, etc. tags
+- `src/includes/Parameter.php`: contains information about template parameter names, values, and metadata, and methods to parse template parameters.
 
 ## Style and structure notes
 
@@ -102,7 +115,7 @@ A quick tour of the main files:
 
 The bot requires PHP >= 8.4.
 
-To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+To run the bot from a new environment, you will need to create an `src/env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `src/env.php.example` to `src/env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
     chmod go-rwx env.php
 
@@ -120,9 +133,9 @@ Before entering the k8s shell, it may be necessary to install phpunit (as wget i
 
 ## Running on the command line
 
-In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
+In order to run on the command line one needs OAuth tokens as documented in `src/env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `src/includes/setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
 
-    /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
+    /usr/bin/php ./src/process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
 
 The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
 
@@ -133,11 +146,11 @@ Command line parameters:
 
 ## Running in web browser locally
 
-One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit <https://localhost:8081>.
+One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit <http://localhost:8081>.
 
 To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
 
-To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See env.php.example in the root.
+To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See src/env.php.example in the src directory.
 
 ## Debugging when the bot is blocked
 
