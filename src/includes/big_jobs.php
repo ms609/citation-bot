@@ -56,6 +56,7 @@ function big_jobs_check_overused(int $page_count): void {
     }
     define('BIG_JOB_MODE', 'YES');
     register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
+    report_warning("Large job mode: running " . $page_count . " pages — detailed per-parameter output is suppressed to conserve memory.");
 }
 
 function big_jobs_check_killed(): void {
