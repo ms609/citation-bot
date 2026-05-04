@@ -708,8 +708,7 @@ EP - 999 }}';
         $expanded = $this->process_citation($text);
         $title = $expanded->get2('title');
         if ($title === null) {
-            $this->assertFaker(); // arXiv API did not respond
-            return;
+            $this->markTestSkipped('arXiv API did not respond (rate limit or outage)');
         }
         // For some reason we sometimes get the first one - probably just ARXIV
         $title1 = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
