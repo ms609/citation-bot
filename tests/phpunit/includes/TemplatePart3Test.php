@@ -1522,7 +1522,12 @@ EP - 999 }}';
         } else {
             $this->assertSame("''TESS'' discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136", $title);
         }
-        $this->assertSame('10.1093/mnras/stac1448', $template->get2('doi'));
+        $doi = $template->get2('doi');
+        if (is_null($doi)) {
+            $this->assertFaker(); // arXiv API did not respond
+        } else {
+            $this->assertSame('10.1093/mnras/stac1448', $doi);
+        }
     }
 
     public function testChapterCausesBookInFinal(): void {
