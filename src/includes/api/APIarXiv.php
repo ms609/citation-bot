@@ -41,10 +41,6 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
     curl_setopt($ch, CURLOPT_URL, $request);
     $response = bot_curl_exec($ch);
-    if ($response === '') {
-        sleep(2);
-        $response = bot_curl_exec($ch);
-    }
     if ($response) {
         $xml = @simplexml_load_string(
             preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
