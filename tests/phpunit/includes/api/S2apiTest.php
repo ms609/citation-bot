@@ -55,6 +55,9 @@ final class S2apiTest extends testBaseClass {
             $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
         }
         $template = $this->process_citation('{{cite web|s2cid=' . $s2cid . '}}');
+        if ($template->blank('doi')) {
+            $this->markTestSkipped('doi_works() did not confirm doi (rate limit or outage)');
+        }
         $this->assertSame('10.1046/j.1365-2699.1999.00329.x', mb_strtolower($template->get('doi')));
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertNull($template->get2('s2cid-access'));
@@ -77,6 +80,9 @@ final class S2apiTest extends testBaseClass {
             $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
         }
         $template = $this->process_citation('{{cite web|s2cid=' . $s2cid . '}}');
+        if ($template->blank('doi')) {
+            $this->markTestSkipped('doi_works() did not confirm doi (rate limit or outage)');
+        }
         $this->assertSame('10.1007/978-3-540-78646-7_75', $template->get2('doi'));
         $this->assertSame('cite book', $template->wikiname());
         $this->assertNull($template->get2('s2cid-access'));
