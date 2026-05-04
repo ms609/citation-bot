@@ -59,12 +59,11 @@ function ConvertS2CID_DOI(string $s2cid): string {
         return '';                                        // @codeCoverageIgnore
     }
     $doi = (string) $doi;
-    if (doi_works($doi)) {
-        return $doi;
-    } else {
+    if (doi_works($doi) === false) {
         report_info("non-functional doi found from semanticscholar: " . echoable_doi($doi));// @codeCoverageIgnore
         return '';                                                    // @codeCoverageIgnore
     }
+    return $doi;
 }
 
 /** https://api.semanticscholar.org/graph/v1/swagger.json */
