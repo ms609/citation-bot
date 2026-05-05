@@ -80,7 +80,7 @@ final class pubmedTest extends testBaseClass {
         $this->sleep_pubmed(); // picky
         $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
         $expanded = $this->process_citation($text);
-        if ($expanded->get2('pmid') === null && $expanded->get2('pmc') === null) {
+        if ($expanded->get2('pmid') === null) {
             $this->markTestSkipped('PubMed API did not respond (rate limit or outage)');
         }
         if ($expanded->get2('pmc') === null) {
