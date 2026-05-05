@@ -33,8 +33,15 @@ footer {
   min-height: 80px;
 }
 
+/* Minimum touch/click target size (WCAG 2.5.8) */
 input, select, button {
   max-width: 100%;
+  min-height: 24px;
+}
+
+input[type="checkbox"] {
+  min-width: 24px;
+  min-height: 24px;
 }
 
 input.error {
@@ -47,12 +54,18 @@ header a, footer a { text-decoration: none; }
 a { color: #0a5f8f; }
 
 span.added      { color: #008060; font-weight: bold;}
-span.boring     { color: #bbb; } /* Intentionally low contrast: boring items are incidental progress noise (WCAG 1.4.3 incidental-text exception) */
+/* DELIBERATE WCAG 1.4.3 NON-COMPLIANCE: .boring colour (#bbb, ~1.84:1 on white) does not meet the 4.5:1
+   AA ratio. This is an intentional design decision: these items are incidental progress noise that
+   users are not expected to read, and de-emphasising them reduces visual clutter. */
+span.boring     { color: #bbb; }
 span.changed    { color: #0070a8; font-weight: bold;}
 span.reddish    { color: #8c3f6e; }
 span.removed    { color: #8a5800; font-weight: bold;}
 span.subitem    { color: #666; }
-span.subsubitem { color: #999; } /* Intentionally low contrast: supplementary sub-items are incidental progress noise (WCAG 1.4.3 incidental-text exception) */
+/* DELIBERATE WCAG 1.4.3 NON-COMPLIANCE: .subsubitem colour (#999, ~2.77:1 on white) does not meet the
+   4.5:1 AA ratio. This is an intentional design decision: these items are supplementary sub-items
+   that represent incidental progress noise, and de-emphasising them reduces visual clutter. */
+span.subsubitem { color: #999; }
 span.warning    { color: #b34700; }
 
 /* Visible focus outline for keyboard navigation (WCAG 2.4.7) */
