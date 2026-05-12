@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 const DOI_FREE_PREFIX = [
     '10.1002/aelm',
+    '10.1002/cesm',
     '10.1002/leap',
     '10.1002/loe2.',
     '10.1002/lol2.',
