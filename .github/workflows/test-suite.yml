@@ -64,7 +64,7 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@v6.0.3
 
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
