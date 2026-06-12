@@ -382,6 +382,9 @@ When helping with this project:
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
 8. **See also:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines
+9. **API Stability:** Keep the external API stable - code on Wikipedia relies on this API, and that code is not part of this code base
+10. **No stubs:** Do not implement placeholders or simple implementations.  We want full implementations
+11. **Code reuse:** Never assume something is not implemented - search the code base first
 
 ## Project Philosophy
 
