@@ -150,13 +150,20 @@ chmod go-rwx env.php
 
 The project uses extensive automated testing:
 
-- **PHPUnit** - Unit tests
+- **PHPUnit** - Unit tests (via paratest for parallel execution)
 - **PHPStan** - Static analysis (strict mode)
-- **Psalm** - Static analysis with security checks
+- **Psalm** - Static analysis for coding quality
+- **Psalm (taint analysis)** - Security-focused taint data checks
 - **Phan** - PHP static analyzer
 - **PHP_CodeSniffer** - Code style enforcement
+- **PHPLint** - Basic PHP syntax check
+- **PHP Security Checker** - Known vulnerable dependency scan
+- **The PHP Security Checker** - Second vulnerable dependency scan
+- **DesignSecurity (progpilot)** - Tainted data / design security analysis
 - **CodeQL** - Security vulnerability scanning
 - **Trivy** - Container security scanning
+- **HTML5 and CSS Validator** - Validates HTML/CSS files
+- **Validate JSON, XML, and MD** - Validates JSON, XML, and Markdown files
 
 All tests must pass before merging.
 
@@ -402,5 +409,5 @@ The bot has reached a stable, feature-complete state. It reliably processes thou
 
 ---
 
-**Last updated:** January 2026
+**Last updated:** June 2026
 **Maintained by:** Citation Bot community
