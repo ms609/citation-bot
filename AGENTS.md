@@ -409,5 +409,5 @@ The bot has reached a stable, feature-complete state. It reliably processes thou
 
 ---
 
-**Last updated:** January 2026
+**Last updated:** June 2026
 **Maintained by:** Citation Bot community
