@@ -615,8 +615,11 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
-    /** Retry is_redirect up to two extra times with short back-off on transient failure (-2).
-     *  Returns -2 only when all attempts fail. */
+    /**
+     * Retry is_redirect up to two extra times with short back-off on transient failure (-2).
+     *
+     * Returns -2 only when all attempts fail.
+     */
     private function is_redirect_with_retry(string $tem): int {
         $backoff_delays = [2, 5]; // seconds to wait before each successive retry
         $status = WikipediaBot::is_redirect($tem);
