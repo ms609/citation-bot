@@ -107,7 +107,7 @@ if (file_exists(__DIR__ . '/../env.php')) {
     ob_end_clean();
 }
 
-if (mb_internal_encoding('UTF-8') !== true) {
+if (mb_internal_encoding('UTF-8') !== true) { /** @phpstan-ignore-line */
     echo 'Unable to set encoding';
     exit(0);
 }
