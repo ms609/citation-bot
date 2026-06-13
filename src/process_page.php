@@ -89,6 +89,17 @@ if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
 
 $pages_to_do = array_unique(explode('|', $pages));
 unset($pages);
+
+foreach ($pages_to_do as $a_page) {
+    if (mb_strlen($a_page) > 255) {
+        report_warning(
+            'Page name "' . echoable(mb_substr($a_page, 0, 80)) . '…" is too long.'
+        );
+        bot_html_footer();
+        exit(0);
+    }
+}
+
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 edit_a_list_of_pages($pages_to_do, $api, $edit_summary_end);
