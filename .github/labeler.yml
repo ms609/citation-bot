@@ -1,36 +1,50 @@
 core:
-  - src/includes/Template.php
-  - src/includes/Parameter.php
-  - src/includes/Page.php
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/Template.php
+      - src/includes/Parameter.php
+      - src/includes/Page.php
 
 api:
-  - src/includes/api/*
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/api/*
 
 tests:
-  - tests/**/*
+  - changed-files:
+    - any-glob-to-any-file:
+      - tests/**/*
 
 docs:
-  - docs/**/*
-  - '*.md'
+  - changed-files:
+    - any-glob-to-any-file:
+      - docs/**/*
+      - '*.md'
 
 ci:
-  - .github/workflows/*
-  - .github/dependabot.yml
-  - .github/labeler.yml
+  - changed-files:
+    - any-glob-to-any-file:
+      - .github/workflows/*
+      - .github/dependabot.yml
+      - .github/labeler.yml
 
 docker:
-  - Dockerfile
-  - docker-compose.yml
+  - changed-files:
+    - any-glob-to-any-file:
+      - Dockerfile
+      - docker-compose.yml
 
 config:
-  - phpunit.xml.dist
-  - composer.json
-  - composer.lock
-  - progpilot.yml
-  - progpilot.json
-  - .phpcs.xml
-  - .phplint.yml
-  - phpstan.neon
-  - psalm.xml
-  - .trivyignore
-  - .markdownlint-cli2.yaml
+  - changed-files:
+    - any-glob-to-any-file:
+      - phpunit.xml.dist
+      - composer.json
+      - composer.lock
+      - progpilot.yml
+      - progpilot.json
+      - .phpcs.xml
+      - .phplint.yml
+      - phpstan.neon
+      - psalm.xml
+      - .trivyignore
+      - .markdownlint-cli2.yaml
