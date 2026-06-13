@@ -24,13 +24,13 @@ header {
 }
 
 footer {
-  background: #eed url('Footer-decoration.png') no-repeat;
+  background: #eed url('CiteBot.png') no-repeat;
   background-position-x: 2px;
   background-position-y: 20px;
   border-top: 1px solid #335;
   box-shadow: 0 50vh 0 50vh #eed;
   margin-top: 3em;
-  min-height: 80px;
+  min-height: 155px;
 }
 
 /* Minimum touch/click target size (WCAG 2.5.8) */
