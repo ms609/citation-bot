@@ -27,7 +27,7 @@
 
 ## Overview
 
-Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references using metadata from authoritative sources.
+Citation Bot automatically expands and formats references on Wikipedia when requested by a user.
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
