@@ -107,7 +107,7 @@ if (file_exists(__DIR__ . '/../env.php')) {
     ob_end_clean();
 }
 
-if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
+if (!mb_internal_encoding('UTF-8')) { /** We are very paranoid */
     echo 'Unable to set encoding';
     exit(0);
 }
