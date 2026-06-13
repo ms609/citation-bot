@@ -722,15 +722,11 @@ function mb_strrev(string $string, string $encode = ''): string {
 }
 
 function mb_ucwords(string $string): string {
-    if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
-        $output = '';
-        while ($match = mb_ereg_search_regs()) {
-            $output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
-        }
-        return $output;
-    } else {
-        return $string;  // @codeCoverageIgnore
-    }
+    return preg_replace_callback('~(\S)(\S*\s*)|(\s+)~u',
+        static function (array $match): string {
+            return $match[3] ?? mb_strtoupper($match[1]) . $match[2];
+        },
+        $string) ?? $string;
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {

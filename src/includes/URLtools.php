@@ -1333,7 +1333,7 @@ function find_indentifiers_in_urls_INSIDE(Template $template, string $url, strin
         $ch_pmc = bot_curl_init($time, []);
     }
 
-    $update_url = function (string $url_type, string $url) use ($url_sent, $template) {
+    $update_url = function (string $url_type, string $url) use ($url_sent, $template): void {
         if (!$url_sent) {
             $template->set($url_type, $url);
         }

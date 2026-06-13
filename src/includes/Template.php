@@ -5814,10 +5814,10 @@ final class Template
                         $value = $matches[1];
                         $this->set($param, $value);
                     }
-                    if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value) && can_safely_modify_dashes($value) && $pmatch[1] !== 'page') {
+                    if (!preg_match("~^[A-Za-z ]+\-~", $value) && preg_match(REGEXP_TO_EN_DASH, $value) && can_safely_modify_dashes($value) && $pmatch[1] !== 'page') {
                         $this->mod_dashes = true;
                         report_modification("Upgrading to en-dash in " . echoable($param) . " parameter");
-                        $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
+                        $value = preg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
                         $this->set($param, $value);
                     }
                     if (
