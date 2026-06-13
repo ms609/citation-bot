@@ -1,0 +1,36 @@
+core:
+  - src/includes/Template.php
+  - src/includes/Parameter.php
+  - src/includes/Page.php
+
+api:
+  - src/includes/api/*
+
+tests:
+  - tests/**/*
+
+docs:
+  - docs/**/*
+  - '*.md'
+
+ci:
+  - .github/workflows/*
+  - .github/dependabot.yml
+  - .github/labeler.yml
+
+docker:
+  - Dockerfile
+  - docker-compose.yml
+
+config:
+  - phpunit.xml.dist
+  - composer.json
+  - composer.lock
+  - progpilot.yml
+  - progpilot.json
+  - .phpcs.xml
+  - .phplint.yml
+  - phpstan.neon
+  - psalm.xml
+  - .trivyignore
+  - .markdownlint-cli2.yaml
