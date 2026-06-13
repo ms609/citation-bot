@@ -96,7 +96,7 @@ function format_surname(string $surname): string {
     if (preg_match('~^\S\.?$~u', $surname)) {
         return mb_strtoupper($surname); // Just a single initial, with or without period
     }
-    $surname = mb_convert_case(mb_trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
+    $surname = mb_convert_case(mb_trim(preg_replace("/-/u", " - ", $surname)), MB_CASE_LOWER);
     if (mb_substr($surname, 0, 2) === "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
     }
@@ -113,7 +113,7 @@ function format_surname(string $surname): string {
 }
 
 function format_surname_2(string $surname): string {
-    $ret = mb_ereg_replace(" - ", "-", $surname);
+    $ret = str_replace(" - ", "-", $surname);
     $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
         static function (array $matches): string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
