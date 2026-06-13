@@ -24,7 +24,7 @@ header {
 }
 
 footer {
-  background: #eed url('Powered-by-Toolforge.png') no-repeat;
+  background: #eed url('Footer-decoration.png') no-repeat;
   background-position-x: 2px;
   background-position-y: 20px;
   border-top: 1px solid #335;
