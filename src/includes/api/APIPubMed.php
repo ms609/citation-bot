@@ -210,7 +210,7 @@ function find_pmid(Template $template): void {
             usleep(100000); // Wait 1/10 of a second since we just tried
             $xml = get_entrez_xml('pubmed', $results[0]);
             if ($xml === null || !is_object($xml->DocSum->Item)) {
-                report_inline("Unable to query pubmed."); // @codeCoverageIgnore
+                report_inline("Unable to query PubMed."); // @codeCoverageIgnore
                 return; // @codeCoverageIgnore
             }
             $Items = $xml->DocSum->Item;
@@ -224,7 +224,7 @@ function find_pmid(Template $template): void {
                         }
                     }
                     // @codeCoverageIgnoreStart
-                    report_inline("Similar matching pubmed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
+                    report_inline("Similar matching PubMed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
                     return;
                     // @codeCoverageIgnoreEnd
                 }
@@ -232,7 +232,7 @@ function find_pmid(Template $template): void {
         }
         $template->add_if_new('pmid', $results[0]);
     } else {
-        report_inline("nothing found.");
+        report_inline("Nothing found.");
     }
 }
 

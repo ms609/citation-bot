@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the most current version is supported and deployed
+Only the most current version is supported and deployed.
 
 | Version        | Supported          |
 | -------------- | ------------------ |

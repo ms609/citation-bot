@@ -2,7 +2,7 @@
 
 To run the tests for Parameter.php (for example), first check that PHP is installed and that the php directory is added to your system `PATH` environment variable. Then navigate to the root directory in which you have checked out the citation bot code, i.e. the folder containing setup.php.
 
-Then, run the following command from the command line :
+Then, run the following command from the command line:
 
     phpunit --bootstrap ./src/includes/setup.php tests/phpunit/gadgetapiTest.php
 

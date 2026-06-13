@@ -35,4 +35,4 @@ spec:
   providesApis:
     - citation-bot-gadget-api
     - citation-template-generator-api
-    - citation-bot-exapnder-api
+    - citation-bot-expander-api

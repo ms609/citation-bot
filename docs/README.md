@@ -94,14 +94,14 @@ Includes (under `src/includes/`):
 - `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
 - `src/includes/setup.php`: sets up needed functions, requires most of the other files listed here
 - `src/includes/miscTools.php`: a variety of functions
-- `src/includes/URLtools.php`: normalize urls and extract information from urls
+- `src/includes/URLtools.php`: normalize URLs and extract information from URLs
 - `src/includes/TextTools.php`: string manipulation functions including converting to wiki
 - `src/includes/WebTools.php`: things unique to the web interface
 - `src/includes/bot_curl.php`: curl wrapper with bot-appropriate defaults and timeouts
 - `src/includes/user_messages.php`: functions for reporting bot activity to users
 - `src/includes/doiTools.php`: DOI-specific validation and normalization functions
 - `src/includes/big_jobs.php`: handling for large batch jobs
-- `src/includes/api/API*.php`: sets up needed functions for expanding pmid/doi/url/etc
+- `src/includes/api/API*.php`: sets up needed functions for expanding PMID/DOI/URL/etc
 - `src/includes/Page.php`: Represents an individual page to expand citations on. Key methods are `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 - `src/includes/Template.php`: most of the actual expansion happens here. `Template::add_if_new()` is generally (but not always) used to add parameters to the updated template; `Template::tidy()` cleans up the template, but may add parameters as well and have side effects.
 - `src/includes/WikiThings.php`: Handles comments, nowiki, etc. tags
@@ -145,7 +145,7 @@ The command line tool will also accept `page_list.txt` and `page_list2.txt` as p
 
 Command line parameters:
 
-- `--slow` - retrieve bibcodes and expand urls
+- `--slow` - retrieve bibcodes and expand URLs
 - `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
 
 ## Running in web browser locally
@@ -172,4 +172,4 @@ Secondly, even when blocked, a user can run the bot on their own User: pages, bu
 
 ## Submitting issues
 
-Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers internal use.
+Where issues require consensus on Wikipedia policy, they are discussed on the [Citation Bot Talk Page](https://en.wikipedia.org/wiki/User_talk:Citation_bot). Most other issues should also be discussed there.  The issues on GitHub are primarily for the developers' internal use.
