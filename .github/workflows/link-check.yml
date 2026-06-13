@@ -19,4 +19,4 @@ jobs:
     - name: Check links
       uses: lycheeverse/lychee-action@v2.8.0
       with:
-        args: '--no-progress --exclude-mail "**/*.md" "**/*.html"'
+        args: '--no-progress --include-mail "**/*.md" "**/*.html"'
