@@ -12,7 +12,7 @@ const LOCK_DIR = 'git_pull.lock';
 clearstatcache(true, LOCK_DIR);
 
 if (($_GET['password'] ?? '') !== (string) @getenv('DEPLOY_PASSWORD') ) {
-    $git_hub = 'Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your .env file (DEPLOY_PASSWORD).';
+    $git_hub = 'Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your env.php file (DEPLOY_PASSWORD).';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
     /** @psalm-suppress ForbiddenCode */
     $git_hub = htmlspecialchars((string) shell_exec("(/usr/bin/git fetch  --all; /usr/bin/git reset --hard origin/master)  2>&1"), ENT_QUOTES); // phpcs:ignore

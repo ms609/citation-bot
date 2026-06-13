@@ -8,7 +8,7 @@ We use phpunit to test code; please write test case examples for new code you cr
 
 ## Quality verification
 
-All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests forthe validity of HTML, CSS, JSON, Markdown, and YAML.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, and YAML.
 
 ## Submitting changes
 
@@ -70,7 +70,7 @@ The bot reports its activity to users using:
 
 ## Defensive programming is necessary
 
-- External data sources that send unexpected data, including wikipedia - be defensive in your programming.
+- External data sources that send unexpected data, including Wikipedia - be defensive in your programming.
 - External data sources that suddenly change data - we need tests to detect this
-- CS1/CS2 sometimes changes and what was a good edit yesterday is bad edit today.  Thus the wikipedia talk page for the bot need to be monitored for bugs and suggestions.
+- CS1/CS2 sometimes changes and what was a good edit yesterday is a bad edit today.  Thus the Wikipedia talk page for the bot needs to be monitored for bugs and suggestions.
 - Do not merge changes without running the test suite. At a minimum, run the full test suite and ensure the non-static tests execute beyond initial startup before merging. “Minor changes” are frequently incorrect and must be validated by tests.  Trust us, we have failed.

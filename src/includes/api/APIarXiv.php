@@ -51,7 +51,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         return;                                      // @codeCoverageIgnore
     }
     if (!is_object($xml)) {
-        report_warning("No valid from arXiv.");        // @codeCoverageIgnore
+        report_warning("No valid response from arXiv.");        // @codeCoverageIgnore
         return;                                  // @codeCoverageIgnore
     }
     if ((string) $xml->entry->title === "Error") {

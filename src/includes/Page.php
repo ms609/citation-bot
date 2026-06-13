@@ -52,7 +52,7 @@ class Page {
         $this->construct_modifications_array();
         if (!self::$told_fast) {
             if (!SLOW_MODE) {
-                report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode"); // @codeCoverageIgnore
+                report_info("Will skip the search for new bibcodes and the expanding of URLs in non-slow mode"); // @codeCoverageIgnore
             }
             self::$told_fast = true;
         }

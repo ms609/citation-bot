@@ -13,7 +13,7 @@ date_default_timezone_set('UTC');
 
 if (file_exists('git_pull.lock')) {
     sleep(5);
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>GIT pull in progress - please retry again in a moment</h1></main></body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Git pull in progress - please retry in a moment</h1></main></body></html>';
     exit(0);
 }
 
@@ -48,7 +48,7 @@ if ($wiki_base === 'mdwiki') {
     define('API_ROOT', 'https://mdwiki.org/w/api.php');
     /** The wiki language code. For example, en, simple, or mdwiki. Note that mdwiki is non-standard */
     define('WIKI_BASE', 'mdwiki');
-    define('EDIT_AS_USER', true); // TODO - does this work?
+    define('EDIT_AS_USER', true); // TODO: does this work?
 } else {
     define('WIKI_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/index.php');
     define('API_ROOT', 'https://' . $wiki_base . '.wikipedia.org/w/api.php');
@@ -63,7 +63,7 @@ include_once __DIR__ . '/../../vendor/autoload.php';
 
 define('CI', (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 define('GITHUB_EVENT_NAME', (string) getenv('GITHUB_EVENT_NAME'));
-define('TRUST_DOI_GOOD', true); // TODO - this a bit too trusting
+define('TRUST_DOI_GOOD', true); // TODO: this is a bit too trusting
 
 if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
     define('EDIT_AS_USER', true);
