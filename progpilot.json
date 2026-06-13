@@ -55,12 +55,12 @@
     {
         "vuln_rule": "MUST_NOT_VERIFY_DEFINITION",
         "vuln_name": "security misconfiguration",
-        "vuln_line": 9,
-        "vuln_column": 129,
+        "vuln_line": 18,
+        "vuln_column": 467,
         "vuln_file": "src\/gadgetapi.php",
         "vuln_description": "CORS should not be allowed on all origins",
         "vuln_cwe": "CWE_346",
-        "vuln_id": "fe08183038499157970fd6a1a65a3585ebfb15be51b29909133c74ece3dc77c1",
+        "vuln_id": "c44cd39099281596281e5587205e9be86fdb11f9e9c307e2d2eff3f5e6470399",
         "vuln_type": "custom"
     }
 ]
