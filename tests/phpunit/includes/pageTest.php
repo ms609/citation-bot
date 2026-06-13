@@ -334,7 +334,8 @@ final class pageTest extends testBaseClass {
         $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
         $page = $this->process_page($text);
         $parsed = str_replace('| s2cid=9250632 ', '', $page->parsed_text());
-        if (mb_strpos($parsed, 'last1=Stoeckelhuber') === false) {
+        if (mb_strpos($parsed, 'last1=Stoeckelhuber') === false ||
+            mb_strpos($parsed, 'pmid=10861364') === false) {
             $this->markTestSkipped('CrossRef/PubMed API did not respond (rate limit or outage)');
         }
         $this->assertSame('<ref>{{cite journal | last1=Stoeckelhuber | first1=Mechthild | last2=Sliwa | first2=Alexander | last3=Welsch | first3=Ulrich | title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus) | journal=The Anatomical Record | date=2000 | volume=259 | issue=3 | pages=312–326 | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X | pmid=10861364 | url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full }}</ref>', $parsed);
