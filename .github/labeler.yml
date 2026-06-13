@@ -10,6 +10,51 @@ api:
     - any-glob-to-any-file:
       - src/includes/api/*
 
+tools:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/NameTools.php
+      - src/includes/URLtools.php
+      - src/includes/MathTools.php
+      - src/includes/WikiThings.php
+      - src/includes/TextTools.php
+      - src/includes/doiTools.php
+      - src/includes/miscTools.php
+
+infrastructure:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/WikipediaBot.php
+      - src/includes/WebTools.php
+      - src/includes/setup.php
+      - src/includes/bot_curl.php
+      - src/includes/big_jobs.php
+      - src/includes/user_messages.php
+      - src/includes/constants.php
+      - src/includes/constants/*
+      - src/authenticate.php
+
+entrypoints:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/process_page.php
+      - src/gadgetapi.php
+      - src/generate_template.php
+      - src/category.php
+      - src/gitpull.php
+      - src/kill_big_job.php
+      - src/linked_pages.php
+      - src/preview_results.php
+
+frontend:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/index.html
+      - src/preview.html
+      - src/assets/*
+      - src/robots.txt
+      - src/.user.ini
+
 tests:
   - changed-files:
     - any-glob-to-any-file:
@@ -20,6 +65,10 @@ docs:
     - any-glob-to-any-file:
       - docs/**/*
       - '*.md'
+      - CITATION.cff
+      - LICENSE
+      - AGENTS.md
+      - .gemini/GEMINI.md
 
 ci:
   - changed-files:
@@ -38,8 +87,6 @@ config:
   - changed-files:
     - any-glob-to-any-file:
       - phpunit.xml.dist
-      - composer.json
-      - composer.lock
       - progpilot.yml
       - progpilot.json
       - .phpcs.xml
@@ -48,3 +95,20 @@ config:
       - psalm.xml
       - .trivyignore
       - .markdownlint-cli2.yaml
+      - .lycheeignore
+      - .gitignore
+      - .aider.conf.yml
+      - .phan/config.php
+      - catalog-info.yaml
+
+deps:
+  - changed-files:
+    - any-glob-to-any-file:
+      - composer.json
+      - composer.lock
+
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/env.php.example
+      - src/authenticate.php
