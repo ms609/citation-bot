@@ -726,7 +726,7 @@ function mb_ucwords(string $string): string {
         static function (array $match): string {
             return $match[3] ?? mb_strtoupper($match[1]) . $match[2];
         },
-        $string);
+        $string) ?? $string;
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
