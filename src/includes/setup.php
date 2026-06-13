@@ -107,7 +107,7 @@ if (file_exists(__DIR__ . '/../env.php')) {
     ob_end_clean();
 }
 
-if (!mb_internal_encoding('UTF-8')) { /** We are very paranoid */
+if (mb_internal_encoding('UTF-8') !== true) {
     echo 'Unable to set encoding';
     exit(0);
 }
