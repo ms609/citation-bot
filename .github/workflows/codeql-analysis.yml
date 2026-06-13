@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript', 'actions' ]
+        language: [ 'javascript', 'actions', 'php' ]
         # Learn more, lokk at log files and see:
         # https://codeql.github.com/docs/codeql-overview/supported-languages-and-frameworks/
 
