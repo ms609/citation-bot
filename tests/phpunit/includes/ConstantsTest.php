@@ -615,10 +615,35 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
+    /**
+     * Retry is_redirect up to two extra times with short back-off on transient failure (-2).
+     *
+     * Returns -2 only when all attempts fail.
+     */
+    private function is_redirect_with_retry(string $tem): int {
+        $backoff_delays = [2, 5]; // seconds to wait before each successive retry
+        $status = WikipediaBot::is_redirect($tem);
+        foreach ($backoff_delays as $delay) {
+            if ($status !== -2) {
+                return $status;
+            }
+            sleep($delay);
+            $status = WikipediaBot::is_redirect($tem);
+        }
+        return $status;
+    }
+
     public function testConversionsGood(): void {
         WikipediaBot::make_ch();
         $page = new TestPage();
         $errors = "";
+        $upstream_failures = 0;
+        $skip_on_too_many_failures = function () use (&$upstream_failures): void {
+            $upstream_failures++;
+            if ($upstream_failures >= 3) {
+                $this->markTestSkipped('Wikipedia API unavailable after retries (rate limit or outage)');
+            }
+        };
         foreach (TEMPLATE_CONVERSIONS as $convert) {
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
@@ -627,7 +652,7 @@ final class ConstantsTest extends testBaseClass {
             /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
             $tem = 'Template:' . $convert[0];
             $tem = str_replace(' ', '_', $tem);
-            $status = WikipediaBot::is_redirect($tem); // Expect "1" or "-1"
+            $status = $this->is_redirect_with_retry($tem); // Expect "1" or "-1"
             if ($status === 0) {
                 usleep(250000); /* one quarter of a second */
                 $page->get_text_from($tem);
@@ -636,19 +661,19 @@ final class ConstantsTest extends testBaseClass {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
             } elseif ($status === -2) {
-                $errors = $errors . '   Could not get status:' . $convert[0];
+                $skip_on_too_many_failures();
             }
             $tem = 'Template:' . $convert[1];
             $tem = str_replace(' ', '_', $tem);
             if ($tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
                 $tem !== 'Template:LCCN' && $tem !== 'Template:PMC' && $tem !== 'Template:URN') { // We remove one layer of re-direct, but not both
-                $status = WikipediaBot::is_redirect($tem); // Expect "0"
+                $status = $this->is_redirect_with_retry($tem); // Expect "0"
                 if ($status === 1) {
                     $errors = $errors . '   Is now a redirect:' . $convert[1];
                 } elseif ($status === -1) {
                     $errors = $errors . '   Does not exist anymore:' . $convert[1];
                 } elseif ($status === -2) {
-                    $errors = $errors . '   Could not get status:' . $convert[1];
+                    $skip_on_too_many_failures();
                 }
             }
         }
