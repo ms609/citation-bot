@@ -27,7 +27,7 @@
 
 ## Overview
 
-This is some basic documentation about what this bot is and how some of the parts connect.
+Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references using metadata from authoritative sources.
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
@@ -106,7 +106,7 @@ Includes (under `src/includes/`):
 ## Style and structure notes
 
 - Constants and definitions should be provided in `constants.php`.
-- A good balance between splitting funcionality into single files and avoiding too many files should be maintained.
+- A good balance between splitting functionality into single files and avoiding too many files should be maintained.
 - The code is generally NOT written densely.
 - Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, and action taking place through method calls that take place in assignments or equality checks.
 - Also beware the difference between `else if` and `elseif`.
