@@ -76,6 +76,17 @@
                 <element key="trim" value="mb_trim"/>
                 <element key="ucfirst" value="mb_ucfirst"/>
                 <element key="ucwords" value="mb_ucwords"/>
+                <element key="mb_ereg_replaces" value="null"/>
+                <element key="mb_ereg" value="null"/>
+                <element key="mb_ereg_search_regs" value="null"/>
+                <element key="mb_ereg_search_init" value="null"/>
+                <element key="mb_ereg_replace_callback" value="null"/>
+                <element key="mb_eregi_replace" value="null"/>
+                <element key="mb_ereg_match" value="null"/>
+                <element key="mb_ereg_search_pos" value="null"/>
+                <element key="mb_ereg_search_getregs" value="null"/>
+                <element key="mb_ereg_search_getpos" value="null"/>
+                <element key="mb_ereg_search_getpos" value="null"/>
             </property>
         </properties>
     </rule>
