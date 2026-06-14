@@ -6647,7 +6647,7 @@ final class Template
                 $param_name = $p->param;
                 $value = $p->val;
                 if ($param_name && $value && $this->is_url_in_non_url_parameter($param_name, $value)) {
-                    report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value));
+                    report_warning("Found URL in non-URL parameter |" . echoable($param_name) . "=" . echoable($value) . " — Manual fix required");
                 }
             }
         }
