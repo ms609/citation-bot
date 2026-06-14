@@ -3148,6 +3148,13 @@ final class Template
                 $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
                 $p->param = preg_replace('~[\r\n]+~u', ' ', $p->param); // Have to be unicode safe
 
+                // Remove unsupported open-access parameter per bug report
+                if ($p->param === 'open-access') {
+                    report_forget("Removing unsupported open-access parameter");
+                    $this->quietly_forget($p->param);
+                    continue;
+                }
+
                 // Check the parameter list to find a likely replacement
                 $shortest = -1.0;
                 $closest = '';
