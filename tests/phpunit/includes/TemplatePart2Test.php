@@ -2436,4 +2436,47 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('website'));
     }
 
+    public function testTidyPagesVolSuffix(): void {
+        $text = '{{cite journal |volume=1 |pages=120–129 vol.1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('120–129', $template->get2('pages'));
+        $this->assertSame('1', $template->get2('volume'));
+    }
+
+    public function testTidyPagesVolSuffixCapitalized(): void {
+        $text = '{{cite journal |volume=1 |pages=120–129 Vol. 1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('120–129', $template->get2('pages'));
+    }
+
+    public function testTidyPagesVolumeSuffix(): void {
+        $text = '{{cite journal |volume=45 |pages=22 Volume 45}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('22', $template->get2('pages'));
+    }
+
+    public function testTidyPagesVolSuffixWithComma(): void {
+        $text = '{{cite journal |volume=1 |pages=120–129, vol. 1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('120–129', $template->get2('pages'));
+    }
+
+    public function testTidyPagesVolSuffixNoPeriod(): void {
+        $text = '{{cite journal |volume=1 |pages=120–129 Vol 1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('120–129', $template->get2('pages'));
+    }
+
+    public function testTidyPagesVolSuffixUppercase(): void {
+        $text = '{{cite journal |volume=1 |pages=120–129 VOL.1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('120–129', $template->get2('pages'));
+    }
+
 }

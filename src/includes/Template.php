@@ -5913,6 +5913,8 @@ final class Template
                     } else {
                         $this->set($param, safe_preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
                     }
+                    $value = preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
+                    $this->set($param, $value);
                     if (mb_substr($this->get($param), -4) === ' etc') {
                         $this->set($param, $this->get($param) . '.');
                     }
