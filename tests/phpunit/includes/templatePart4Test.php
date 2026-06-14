@@ -1944,6 +1944,19 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testOpenAccessRemoved(): void {
+        $text = '{{cite journal|title=Test|doi=10.1234/example|open-access=yes}}';
+        $template = $this->process_citation($text);
+        $this->assertNull($template->get2('open-access'));
+        $this->assertNull($template->get2('osti-access'));
+    }
+
+    public function testOpenAccessRemovedWithoutDoi(): void {
+        $text = '{{cite journal|title=Test|open-access=yes}}';
+        $template = $this->process_citation($text);
+        $this->assertNull($template->get2('open-access'));
+    }
+
     private function tidy_issue(string $text): Template {
         $template = $this->make_citation($text);
         $template->tidy_parameter('issue');
