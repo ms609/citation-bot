@@ -277,22 +277,6 @@ class Page {
             },
             $this->text
         );
-        // {{doi}} and {{doi-inline}} templates with doi-access=free check
-        $this->text = preg_replace_callback(
-            '/\{\{(doi|doi-inline)\s*\|\s*(10\.[^\|}]+)\s*(\|[^}]*)?\}\}/u',
-            function (array $matches): string {
-                $doi = trim($matches[2]);
-                $is_free = false;
-                foreach (DOI_FREE_PREFIX as $prefix) {
-                    if (mb_stripos($doi, $prefix) === 0) {
-                        $is_free = true;
-                        break;
-                    }
-                }
-                return '{{cite journal|doi=' . $doi . ($is_free ? '|doi-access=free' : '') . '}}';
-            },
-            $this->text
-        );
         // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
         $this->text = preg_replace_callback(
             // like <ref>{{doi|10.1244/abc}}</ref>

@@ -3182,13 +3182,6 @@ final class Template
                 $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
                 $p->param = preg_replace('~[\r\n]+~u', ' ', $p->param); // Have to be unicode safe
 
-                // Remove unsupported open-access parameter per bug report
-                if ($p->param === 'open-access') {
-                    report_forget("Removing unsupported open-access parameter");
-                    $this->quietly_forget($p->param);
-                    continue;
-                }
-
                 // Check the parameter list to find a likely replacement
                 $shortest = -1.0;
                 $closest = '';
@@ -5515,7 +5508,7 @@ final class Template
 
                 case 'work':
                     foreach (BAD_WORK_NAMES as $bad_name) {
-                        if (mb_strtolower(trim($this->get($param))) === $bad_name) {
+                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }
@@ -5945,7 +5938,7 @@ final class Template
                         return;
                     }
                     foreach (BAD_WORK_NAMES as $bad_name) {
-                        if (mb_strtolower(trim($this->get($param))) === $bad_name) {
+                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }

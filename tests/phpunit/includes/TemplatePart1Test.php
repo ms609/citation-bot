@@ -1565,6 +1565,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($result);
         $this->assertFalse($template->has('chapter'));
     }
+
     public function testNoDuplicateContributionChapter(): void {
         $text = '{{citation|chapter=My Chapter|chapter-url=https://example.com}}';
         $template = $this->make_citation($text);
@@ -1572,6 +1573,7 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($result);
         $this->assertFalse($template->has('contribution'));
     }
+
     public function testNoChapterWhenJournalInCitation(): void {
         $text = '{{citation|journal=Nature|title=Test Article}}';
         $template = $this->make_citation($text);

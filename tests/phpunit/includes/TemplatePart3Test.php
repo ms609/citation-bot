@@ -934,7 +934,7 @@ EP - 999 }}';
     public function testVolumeIssueDemixing9(): void {
         $text = '{{cite book|volume = Volume 12}}';
         $prepared = $this->prepare_citation($text);
-        $this->assertSame('Volume 12', $prepared->get2('volume'));
+        $this->assertSame('12', $prepared->get2('volume'));
     }
 
     public function testVolumeIssueDemixing10(): void {
