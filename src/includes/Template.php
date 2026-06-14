@@ -3182,6 +3182,13 @@ final class Template
                 $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
                 $p->param = preg_replace('~[\r\n]+~u', ' ', $p->param); // Have to be unicode safe
 
+                // Remove unsupported open-access parameter per bug report
+                if ($p->param === 'open-access') {
+                    report_forget("Removing unsupported open-access parameter");
+                    $this->quietly_forget($p->param);
+                    continue;
+                }
+
                 // Check the parameter list to find a likely replacement
                 $shortest = -1.0;
                 $closest = '';
@@ -5507,9 +5514,8 @@ final class Template
                     return;
 
                 case 'work':
-                    $tnt_values = ['PubMed', 'pubmed', 'Pubmed', 'PMC', 'pmc', 'NIH', 'National Institutes of Health', 'National Library of Medicine', 'PubMed Central'];
-                    foreach ($tnt_values as $tnt) {
-                        if (mb_strtolower(trim($this->get($param))) === mb_strtolower($tnt)) {
+                    foreach (BAD_WORK_NAMES as $bad_name) {
+                        if (mb_strtolower(trim($this->get($param))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }
@@ -5832,7 +5838,7 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    $value = preg_replace('~^(?i)pp?\.?\s*~u', '', $value);
+                    $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
                         $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD
@@ -5938,9 +5944,8 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    $tnt_values = ['PubMed', 'pubmed', 'Pubmed', 'PMC', 'pmc', 'NIH', 'National Institutes of Health', 'National Library of Medicine', 'PubMed Central'];
-                    foreach ($tnt_values as $tnt) {
-                        if (mb_strtolower(trim($this->get($param))) === mb_strtolower($tnt)) {
+                    foreach (BAD_WORK_NAMES as $bad_name) {
+                        if (mb_strtolower(trim($this->get($param))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }

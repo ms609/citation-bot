@@ -233,6 +233,11 @@ const NON_HUMAN_AUTHORS = [
     '試験所',
 ];
 
+// All values must be lowercase; comparison uses mb_strtolower()
+const BAD_WORK_NAMES = [
+    'pubmed', 'pmc', 'nih', 'national institutes of health', 'national library of medicine', 'pubmed central',
+];
+
 const BAD_PUBLISHERS = [
     'edinburgh',
     'edinburgi',
