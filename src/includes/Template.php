@@ -1523,7 +1523,41 @@ final class Template
                 return false;
 
             case 'chapter':
+                if ($this->has('contribution') || $this->has('contribution-url')) {
+                    return false;
+                }
+                if ($this->wikiname() === 'citation') {
+                    foreach (WORK_ALIASES as $work_alias) {
+                        if ($this->has($work_alias) && !$this->blank($work_alias)) {
+                            return false;
+                        }
+                    }
+                }
+                if (!$this->blank('book-title') && $this->has('title')) {
+                    return false;
+                }
+                $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
+                if ($this->blank(CHAPTER_ALIASES)) {
+                    return $this->add($param_name, wikify_external_text($value));
+                }
+                return false;
+
             case 'contribution':
+                if ($this->has('chapter') || $this->has('chapter-url')) {
+                    return false;
+                }
+                if (!$this->blank('book-title') && $this->has('title')) {
+                    return false;
+                }
+                if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') {
+                    return false;
+                } // TODO - check for things that should be swapped etc.
+                $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
+                if ($this->blank(CHAPTER_ALIASES)) {
+                    return $this->add($param_name, wikify_external_text($value));
+                }
+                return false;
+
             case 'article':
             case 'section': //  We do not add article/section, but sometimes found floating in a template
                 if (!$this->blank('book-title') && $this->has('title')) {
@@ -5297,6 +5331,10 @@ final class Template
                         }
                     }
                     if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
+                        $this->set('title', '');
+                        return;
+                    }
+                    if (in_array(mb_strtolower($title), ALWAYS_BAD_TITLES, true)) {
                         $this->set('title', '');
                         return;
                     }
