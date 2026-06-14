@@ -6986,7 +6986,9 @@ final class Template
             $this->rename('chapter-url-access', 'url-access');
             $this->rename('chapter-format', 'format');
         } elseif ($old_param === 'title' && $new_param === 'chapter') {
-            $this->rename('url', 'chapter-url');
+            if (!$this->has('contribution-url')) {
+                $this->rename('url', 'chapter-url');
+            }
         } elseif ($old_param === 'chapter' && $new_param === 'title') {
             $this->rename('chapter-url', 'url');
             $this->rename('chapterurl', 'url');

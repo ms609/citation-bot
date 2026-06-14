@@ -1311,6 +1311,17 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('Y', $template->get2('chapter-url'));
     }
 
+    public function testRenameTitleToChapterDoesNotDuplicateContributionUrl(): void {
+        $text = "{{citation|contribution-url=https://example.com/chapter|title=My Title|url=https://example.com}}";
+        $template = $this->make_citation($text);
+        $template->rename('title', 'chapter');
+        $this->assertNull($template->get2('title'));
+        $this->assertSame('My Title', $template->get2('chapter'));
+        $this->assertSame('https://example.com', $template->get2('url'));
+        $this->assertSame('https://example.com/chapter', $template->get2('contribution-url'));
+        $this->assertNull($template->get2('chapter-url'));
+    }
+
     public function testModificationsOdd(): void {
         $text = "{{cite web}}"; // param will be null to start
         $template = $this->make_citation($text);
