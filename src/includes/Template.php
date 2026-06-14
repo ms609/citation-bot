@@ -4447,7 +4447,13 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $this->get($param))) {
+                    foreach (BAD_WORK_NAMES as $bad_name) {
+                        if (mb_strtolower(mb_trim(str_replace(['[[', ']]'], '', $this->get($param)))) === $bad_name) {
+                            $this->forget($param);
+                            return;
+                        }
+                    }
+                    if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)*([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com|gov|edu)$~', $this->get($param))) {
                         $this->rename($param, 'website');
                         return;
                     }
@@ -5515,7 +5521,7 @@ final class Template
 
                 case 'work':
                     foreach (BAD_WORK_NAMES as $bad_name) {
-                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
+                        if (mb_strtolower(mb_trim(str_replace(['[[', ']]'], '', $this->get($param)))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }
@@ -5947,7 +5953,7 @@ final class Template
                         return;
                     }
                     foreach (BAD_WORK_NAMES as $bad_name) {
-                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
+                        if (mb_strtolower(mb_trim(str_replace(['[[', ']]'], '', $this->get($param)))) === $bad_name) {
                             $this->forget($param);
                             return;
                         }
