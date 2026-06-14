@@ -2415,4 +2415,25 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('title'));
     }
 
+    public function testFixOnlineFirstPages(): void {
+        $text = '{{cite journal|pages=Online First}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testFixNIHInWork(): void {
+        $text = '{{cite journal|work=NIH|pmid=1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testFixNationalLibraryOfMedicineInWebsite(): void {
+        $text = '{{cite journal|website=National Library of Medicine|pmid=1}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('website'));
+    }
+
 }

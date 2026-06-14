@@ -670,4 +670,11 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->expand_text());
     }
 
+    public function testFixCosmeticRenumberingOnly(): void {
+        $page = new TestPage();
+        $page->parse_text('{{cite web|url=https://example.com|title=Hi|last=Smith|first=J}}');
+        $page->overwrite_text('{{cite web|url=https://example.com|title=Hi|last1=Smith|first1=J}}');
+        $this->assertFalse($page->expand_text());
+    }
+
 }
