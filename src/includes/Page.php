@@ -45,6 +45,7 @@ class Page {
     private string $start_text = '';
     private int $lastrevid = 0;
     private bool $page_error = false;
+    private bool $cs2_mode = false;
     private static bool $told_fast = false;
     public static string $last_title = '';
 
@@ -208,6 +209,7 @@ class Page {
     public function expand_text(): bool {
         set_time_limit(120);
         $this->page_error = false;
+        $this->set_cs2_mode();
         $this->announce_page();
         if (!$this->text) {
             report_warning("No text retrieved.\n");
@@ -239,38 +241,55 @@ class Page {
             mb_substr_count($this->text, '{{Citation');
         $ref_count = mb_substr_count($this->text, '<ref') + mb_substr_count($this->text, '<Ref');
         // PLAIN URLS Converted to Templates
+        $template_type = $this->cs2_mode ? 'citation' : 'cite web';
         // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
         $this->text = preg_replace_callback(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-            static function (array $matches): string {
-                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            static function (array $matches) use ($template_type): string {
+                return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
             },
             $this->text
         );
         // Ones like <ref>http://www.../....{{Bare URL inline|date=April 2016}}</ref>
         $this->text = preg_replace_callback(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-            static function (array $matches): string {
-                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            static function (array $matches) use ($template_type): string {
+                return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
             },
             $this->text
         );
         // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>     Also, allow a trailing period, space+period, or comma
         $this->text = preg_replace_callback(
             "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-            static function (array $matches): string {
-                return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
+            static function (array $matches) use ($template_type): string {
+                return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[3]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[4];
             },
             $this->text
         );
         // Ones like <ref>[http://www... http://www...]</ref>
         $this->text = preg_replace_callback(
             "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
-            static function (array $matches): string {
+            static function (array $matches) use ($template_type): string {
                 if ($matches[4] === $matches[6]) {
-                    return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[8];
+                    return $matches[1] . '{{' . $template_type . ' | url=' . wikifyURL($matches[4]) . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[8];
                 }
                 return $matches[0];
+            },
+            $this->text
+        );
+        // {{doi}} and {{doi-inline}} templates with doi-access=free check
+        $this->text = preg_replace_callback(
+            '/\{\{(doi|doi-inline)\s*\|\s*(10\.[^\|}]+)\s*(\|[^}]*)?\}\}/u',
+            function (array $matches): string {
+                $doi = trim($matches[2]);
+                $is_free = false;
+                foreach (DOI_FREE_PREFIX as $prefix) {
+                    if (mb_stripos($doi, $prefix) === 0) {
+                        $is_free = true;
+                        break;
+                    }
+                }
+                return '{{cite journal|doi=' . $doi . ($is_free ? '|doi-access=free' : '') . '}}';
             },
             $this->text
         );
@@ -612,7 +631,7 @@ class Page {
 
         // we often just fix Journal caps, so must be case sensitive compare
         // Avoid minor edits - gadget API will make these changes, since it does not check return code
-        $caps_ok = ['isbn', '{{jstor', '{{youtube'];
+        $caps_ok = ['isbn', '{{jstor', '{{youtube', '{{cite biorxiv'];
         $last_first_in = [' last=', ' last =', '|last=', '|last =', ' first=', ' first =', '|first=', '|first =', 'ite newspaper', '|format=PDF', '|format = PDF', '|format =PDF', '|format= PDF', '| format=PDF', '| format = PDF', '| format =PDF', '| format= PDF', '|format=PDF ', '|format = PDF ', '|format =PDF ', '|format= PDF ', '| format=PDF ', '| format = PDF ', '| format =PDF ', '| format= PDF ', 'Cite ', 'cite ', 'ubscription required', 'newspaper', ' title=', ' title =', '|title=', '|title =', ' url=', ' url =', '|url=', '|url ='];
         $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'ite news', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', 'Cite', 'cite', 'ubscription', 'work', ' chapter=', ' chapter =', '|chapter=', '|chapter =', ' chapter-url=', ' chapter-url =', '|chapter-url=', '|chapter-url ='];
         // @codeCoverageIgnoreStart
@@ -621,8 +640,12 @@ class Page {
             $last_first_in = [];
             $last_first_out = [];
         } // @codeCoverageIgnoreEnd
-        return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
-                                    str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
+        $normalized_text = preg_replace('/\s+\}\}/u', '}}', $this->text);
+        $normalized_start = preg_replace('/\s+\}\}/u', '}}', $this->start_text);
+        $normalized_text = preg_replace('/\|\s*[\w-]+\s*=\s*(?=\||\}\})/u', '', $normalized_text);
+        $normalized_start = preg_replace('/\|\s*[\w-]+\s*=\s*(?=\||\}\})/u', '', $normalized_start);
+        return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_text)),
+                                    str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_start))) !== 0;
     }
 
     public function edit_summary(string $edit_summary_end = ''): string {
@@ -1022,6 +1045,15 @@ class Page {
             }
         }
         $this->name_list_style = $name_list_style;
+    }
+
+    private function set_cs2_mode(): void {
+        // get value of mode parameter in "cs1 config" templates such as {{cs1 config |mode=cs2 }}
+        $this->cs2_mode = false;
+        $pattern = '/{{\s*?cs1\s*?config[^}]*?mode\s*?=\s*?(cs2)\b[^}]*?}}/im';
+        if (preg_match($pattern, $this->text, $matches)) {
+            $this->cs2_mode = true;
+        }
     }
 
     private function set_date_pattern(): void {

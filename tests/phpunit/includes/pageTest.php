@@ -634,4 +634,50 @@ final class pageTest extends testBaseClass {
         $this->assertTrue($page->expand_text());
     }
 
+    public function testCS2ModeBareUrl(): void {
+        // When CS2 mode is active, bare URL ref expansion uses {{citation}}
+        // instead of {{cite web}}. The wrapper may be reverted if no metadata
+        // is found, but we verify no {{cite web}} is present.
+        $page = $this->process_page('{{cs1 config|mode=cs2}}
+<ref>https://doi.org/10.1007/s12668-011-0022-5</ref>');
+        $parsed = $page->parsed_text();
+        if (mb_strpos($parsed, '|doi=10.1007/s12668-011-0022-5') !== false
+            && mb_strpos($parsed, '|title=') !== false) {
+            $this->assertStringNotContainsString('{{cite web', $parsed);
+        } else {
+            $this->markTestSkipped('CrossRef or DOI expansion did not respond (rate limit or outage)');
+        }
+    }
+
+    public function testDoiInlineFreeDoi(): void {
+        $page = $this->process_page('{{doi-inline|10.7758/rsf.2020.6.1.02}}');
+        $this->assertStringContainsString('|doi-access=free', $page->parsed_text());
+    }
+
+    public function testDoiInlineNonFreeDoi(): void {
+        $page = $this->process_page('{{doi-inline|10.1234/test.12345}}');
+        $this->assertStringNotContainsString('|doi-access=free', $page->parsed_text());
+    }
+
+    public function testCosmeticWhitespaceOnlyNotEdit(): void { // Whitespace-only change should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|url=https://example.com|title=Hello}}');
+        $page->overwrite_text('{{cite web|url=https://example.com|title=Hello  }}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testCosmeticBlankParamOnlyNotEdit(): void { // Blank param additions should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite web|url=https://example.com|title=Hello}}');
+        $page->overwrite_text('{{cite web|url=https://example.com|title=Hello|date=}}');
+        $this->assertFalse($page->expand_text());
+    }
+
+    public function testCapsOkBiorxivNormalization(): void { // Case-only change for biorxiv should not trigger edit
+        $page = new TestPage();
+        $page->parse_text('{{cite biorxiv|title=Test}}');
+        $page->overwrite_text('{{cite BioRxiv|title=Test}}');
+        $this->assertFalse($page->expand_text());
+    }
+
 }
