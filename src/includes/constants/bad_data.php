@@ -233,6 +233,11 @@ const NON_HUMAN_AUTHORS = [
     '試験所',
 ];
 
+// All values must be lowercase; comparison uses mb_strtolower()
+const BAD_WORK_NAMES = [
+    'pubmed', 'pmc', 'nih', 'national institutes of health', 'national library of medicine', 'pubmed central',
+];
+
 const BAD_PUBLISHERS = [
     'edinburgh',
     'edinburgi',
@@ -13123,6 +13128,7 @@ const ALWAYS_BAD_TITLES = [
     "making sure you're not a bot!",
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
+    'cookieabsent',
     'dpg media privacy gate',
     'how to access research remotely',
     'log in - proquest',

@@ -1523,7 +1523,41 @@ final class Template
                 return false;
 
             case 'chapter':
+                if ($this->has('contribution') || $this->has('contribution-url')) {
+                    return false;
+                }
+                if ($this->wikiname() === 'citation') {
+                    foreach (WORK_ALIASES as $work_alias) {
+                        if ($this->has($work_alias) && !$this->blank($work_alias)) {
+                            return false;
+                        }
+                    }
+                }
+                if (!$this->blank('book-title') && $this->has('title')) {
+                    return false;
+                }
+                $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
+                if ($this->blank(CHAPTER_ALIASES)) {
+                    return $this->add($param_name, wikify_external_text($value));
+                }
+                return false;
+
             case 'contribution':
+                if ($this->has('chapter') || $this->has('chapter-url')) {
+                    return false;
+                }
+                if (!$this->blank('book-title') && $this->has('title')) {
+                    return false;
+                }
+                if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') {
+                    return false;
+                } // TODO - check for things that should be swapped etc.
+                $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
+                if ($this->blank(CHAPTER_ALIASES)) {
+                    return $this->add($param_name, wikify_external_text($value));
+                }
+                return false;
+
             case 'article':
             case 'section': //  We do not add article/section, but sometimes found floating in a template
                 if (!$this->blank('book-title') && $this->has('title')) {
@@ -4374,7 +4408,8 @@ final class Template
                         return;
                     }
                     $orig = $this->get($param);
-                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
+                    $new = str_replace(["\u{2011}", "\u{2013}", "\u{2014}"], '-', $orig); // normalize various hyphens
+                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $new); // existing dash normalization
                     $new = str_replace('x', 'X', $new);
                     if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
                         $new = $matches[1] . '-' . mb_strtoupper($matches[2]); // Add dash
@@ -5306,6 +5341,10 @@ final class Template
                         $this->set('title', '');
                         return;
                     }
+                    if (in_array(mb_strtolower($title), ALWAYS_BAD_TITLES, true)) {
+                        $this->forget('title');
+                        return;
+                    }
                     $title = straighten_quotes($title, false);
                     if ((mb_substr($title, 0, 1) === '"' && mb_substr($title, -1) === '"' && mb_substr_count($title, '"') === 2) || (mb_substr($title, 0, 1) === "'" && mb_substr($title, -1) === "'" && mb_substr_count($title, "'") === 2)) {
                         report_warning("The quotes around the title are most likely an editor's error: " . echoable(mb_substr($title, 1, -1)));
@@ -5475,6 +5514,12 @@ final class Template
                     return;
 
                 case 'work':
+                    foreach (BAD_WORK_NAMES as $bad_name) {
+                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
+                            $this->forget($param);
+                            return;
+                        }
+                    }
                     if (
                         $this->has('work') &&
                         (str_equivalent($this->get('work'), $this->get('series')) ||
@@ -5624,7 +5669,8 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    if ($this->get($param) === 'Online First') {
+                    $this->set($param, preg_replace('~^(?i)Vol(?:ume)?\.?\s*~u', '', $this->get($param)));
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
                     }
@@ -5709,7 +5755,7 @@ final class Template
                         return;
                     }
                     $value = $this->get($param);
-                    if ($value === 'Online First') {
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $value)) {
                         $this->forget($param);
                         return;
                     }
@@ -5788,6 +5834,12 @@ final class Template
                         $this->forget($param);
                         return;
                     }
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $value)) {
+                        $this->forget($param);
+                        return;
+                    }
+                    $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                    $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
                         $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD
                         return;
@@ -5891,6 +5943,12 @@ final class Template
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined' || $this->get($param) === 'myprivacy.dpgmedia.nl') {
                         $this->forget($param);
                         return;
+                    }
+                    foreach (BAD_WORK_NAMES as $bad_name) {
+                        if (mb_strtolower(mb_trim($this->get($param))) === $bad_name) {
+                            $this->forget($param);
+                            return;
+                        }
                     }
                     if ($this->wikiname() === 'cite book') {
                         if (str_i_same($this->get($param), 'google.com') ||

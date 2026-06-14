@@ -349,6 +349,9 @@ function should_url2chapter(Template $template, bool $force): bool {
     if (mb_strpos($url, 'www.sciencedirect.com/science/article')) {
         return true;
     }
+    if (mb_stripos($url, 'taylorfrancis.com/chapters/') !== false) {
+        return true;
+    }
     return false;
 }
 

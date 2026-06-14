@@ -1557,4 +1557,28 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($expanded->add_if_new('url', 'https://ci.nii.ac.jp/naid/123'));
         $this->assertNull($expanded->get2('url'));
     }
+
+    public function testNoDuplicateChapterContribution(): void {
+        $text = '{{citation|contribution=My Chapter|contribution-url=https://example.com}}';
+        $template = $this->make_citation($text);
+        $result = $template->add_if_new('chapter', 'Test Chapter');
+        $this->assertFalse($result);
+        $this->assertFalse($template->has('chapter'));
+    }
+
+    public function testNoDuplicateContributionChapter(): void {
+        $text = '{{citation|chapter=My Chapter|chapter-url=https://example.com}}';
+        $template = $this->make_citation($text);
+        $result = $template->add_if_new('contribution', 'Test Contribution');
+        $this->assertFalse($result);
+        $this->assertFalse($template->has('contribution'));
+    }
+
+    public function testNoChapterWhenJournalInCitation(): void {
+        $text = '{{citation|journal=Nature|title=Test Article}}';
+        $template = $this->make_citation($text);
+        $result = $template->add_if_new('chapter', 'Some Chapter');
+        $this->assertFalse($result);
+        $this->assertFalse($template->has('chapter'));
+    }
 }

@@ -406,6 +406,14 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertTrue(should_url2chapter($template, true));
     }
 
+    public function testShouldUrl2ChapterTaylorFrancis(): void {
+        $text = '{{cite book|chapter=Test Chapter|url=https://www.taylorfrancis.com/chapters/edit/10.4324/9781003000000-1/test}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('url'));
+        $this->assertTrue($template->has('chapter-url'));
+    }
+
     public function testRunTypeModsReturnsInt(): void {
         $result = run_type_mods(-1, 10, 20, 30, 40);
         $this->assertIsInt($result);
