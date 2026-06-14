@@ -4367,7 +4367,8 @@ final class Template
                         return;
                     }
                     $orig = $this->get($param);
-                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
+                    $new = str_replace(["\u{2011}", "\u{2013}", "\u{2014}"], '-', $orig); // normalize various hyphens
+                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $new); // existing dash normalization
                     $new = str_replace('x', 'X', $new);
                     if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
                         $new = $matches[1] . '-' . mb_strtoupper($matches[2]); // Add dash
@@ -5468,6 +5469,13 @@ final class Template
                     return;
 
                 case 'work':
+                    $tnt_values = ['PubMed', 'pubmed', 'Pubmed', 'PMC', 'pmc', 'NIH', 'National Institutes of Health', 'National Library of Medicine', 'PubMed Central'];
+                    foreach ($tnt_values as $tnt) {
+                        if (mb_strtolower(trim($this->get($param))) === mb_strtolower($tnt)) {
+                            $this->forget($param);
+                            return;
+                        }
+                    }
                     if (
                         $this->has('work') &&
                         (str_equivalent($this->get('work'), $this->get('series')) ||
@@ -5617,7 +5625,8 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    if ($this->get($param) === 'Online First') {
+                    $this->set($param, preg_replace('~^(?i)Vol(?:ume)?\.?\s*~u', '', $this->get($param)));
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
                     }
@@ -5702,7 +5711,7 @@ final class Template
                         return;
                     }
                     $value = $this->get($param);
-                    if ($value === 'Online First') {
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $value)) {
                         $this->forget($param);
                         return;
                     }
@@ -5781,6 +5790,12 @@ final class Template
                         $this->forget($param);
                         return;
                     }
+                    if (preg_match('~^\s*(?i)online\s*first\s*$~u', $value)) {
+                        $this->forget($param);
+                        return;
+                    }
+                    $value = preg_replace('~^(?i)pp?\.?\s*~u', '', $value);
+                    $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
                         $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD
                         return;
@@ -5884,6 +5899,13 @@ final class Template
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined' || $this->get($param) === 'myprivacy.dpgmedia.nl') {
                         $this->forget($param);
                         return;
+                    }
+                    $tnt_values = ['PubMed', 'pubmed', 'Pubmed', 'PMC', 'pmc', 'NIH', 'National Institutes of Health', 'National Library of Medicine', 'PubMed Central'];
+                    foreach ($tnt_values as $tnt) {
+                        if (mb_strtolower(trim($this->get($param))) === mb_strtolower($tnt)) {
+                            $this->forget($param);
+                            return;
+                        }
                     }
                     if ($this->wikiname() === 'cite book') {
                         if (str_i_same($this->get($param), 'google.com') ||

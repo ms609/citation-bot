@@ -2339,4 +2339,67 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Haldimand County', $template->get2('publisher'));
     }
 
+    public function testTidyVolumeVolPrefix(): void {
+        $text = '{{cite journal|volume=Vol. 123}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('123', $template->get('volume'));
+    }
+
+    public function testTidyVolumeFullVolumePrefix(): void {
+        $text = '{{cite journal|volume=Volume 45}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('45', $template->get('volume'));
+    }
+
+    public function testTidyPagesPpPrefix(): void {
+        $text = '{{cite journal|pages=pp. 251–254}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('251–254', $template->get('pages'));
+    }
+
+    public function testTidyPagesPPrefix(): void {
+        $text = '{{cite journal|pages=p. 42}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('42', $template->get('pages'));
+    }
+
+    public function testTidyOnlineFirstIssue(): void {
+        $text = '{{cite journal|issue=Online First}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('issue'));
+    }
+
+    public function testTidyOnlinefirstNoSpace(): void {
+        $text = '{{cite journal|volume=Onlinefirst}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('volume'));
+    }
+
+    public function testTidyPubMedWebsite(): void {
+        $text = '{{cite journal|website=PubMed|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('website'));
+    }
+
+    public function testTidyPMCWork(): void {
+        $text = '{{cite journal|work=PMC|pmc=PMC12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testTidyIssnNonBreakingHyphen(): void {
+        $text = "{{cite journal|issn=1234\u{2011}5678}}";
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('1234-5678', $template->get('issn'));
+    }
+
 }
