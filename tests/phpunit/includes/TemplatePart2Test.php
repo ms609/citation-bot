@@ -1211,21 +1211,27 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testZooKeys2(): void {
-        $text = '{{Cite journal|journal=[[Zookeys]]}}';
-        $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
+        $this->requires_secrets(function (): void {
+            $text = '{{Cite journal|journal=[[Zookeys]]}}';
+            $expanded = $this->process_citation($text);
+            $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
+        });
     }
 
     public function testRedirectFixing(): void {
-        $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
-        $template = $this->prepare_citation($text);
-        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
+        $this->requires_secrets(function (): void {
+            $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
+            $template = $this->prepare_citation($text);
+            $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
+        });
     }
 
     public function testRedirectFixing2(): void {
-        $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-        $template = $this->prepare_citation($text);
-        $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
+        $this->requires_secrets(function (): void {
+            $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+            $template = $this->prepare_citation($text);
+            $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
+        });
     }
 
     public function testFixURLinLocation1(): void {
