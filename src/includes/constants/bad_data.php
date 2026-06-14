@@ -13123,6 +13123,7 @@ const ALWAYS_BAD_TITLES = [
     "making sure you're not a bot!",
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com',
     'breaking news, analysis, politics, blogs, news photos, video, tech reviews',
+    'cookieabsent',
     'dpg media privacy gate',
     'how to access research remotely',
     'log in - proquest',

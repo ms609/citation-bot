@@ -2402,4 +2402,11 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('1234-5678', $template->get('issn'));
     }
 
+    public function testCookieAbsentTitle(): void {
+        $text = '{{cite journal|doi=10.1234/example|title=cookieAbsent}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('title'));
+    }
+
 }

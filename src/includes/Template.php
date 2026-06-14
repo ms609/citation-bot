@@ -5335,7 +5335,7 @@ final class Template
                         return;
                     }
                     if (in_array(mb_strtolower($title), ALWAYS_BAD_TITLES, true)) {
-                        $this->set('title', '');
+                        $this->forget('title');
                         return;
                     }
                     $title = straighten_quotes($title, false);
