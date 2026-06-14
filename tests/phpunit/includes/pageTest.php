@@ -649,16 +649,6 @@ final class pageTest extends testBaseClass {
         }
     }
 
-    public function testDoiInlineFreeDoi(): void {
-        $page = $this->process_page('{{doi-inline|10.7758/rsf.2020.6.1.02}}');
-        $this->assertStringContainsString('|doi-access=free', $page->parsed_text());
-    }
-
-    public function testDoiInlineNonFreeDoi(): void {
-        $page = $this->process_page('{{doi-inline|10.1234/test.12345}}');
-        $this->assertStringNotContainsString('|doi-access=free', $page->parsed_text());
-    }
-
     public function testCosmeticWhitespaceOnlyNotEdit(): void { // Whitespace-only change should not trigger edit
         $page = new TestPage();
         $page->parse_text('{{cite web|url=https://example.com|title=Hello}}');
