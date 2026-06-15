@@ -1915,9 +1915,9 @@ EP - 999 }}';
         $api_status = null;
 
         $published_doi = get_biorxiv_published_doi($biorxiv_doi, 'biorxiv', $api_status);
-        if ($published_doi === null && $api_status === 'Not available at this time') {
+        if ($published_doi === null) {
             $this->markTestSkipped(
-                "bioRxiv API temporarily unavailable for DOI $biorxiv_doi: $api_status"
+                "bioRxiv API did not return a published DOI for $biorxiv_doi (rate limit or outage)"
             );
         }
 
