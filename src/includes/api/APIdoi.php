@@ -131,7 +131,11 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     // but for cite encyclopedia/encyclopaedia prefer keeping title= and do not add a
                     // duplicate chapter= — so we do nothing for those templates.
                     if (!in_array($template->wikiname(), ['cite encyclopedia', 'cite encyclopaedia'], true)) {
-                        $template->rename('title', 'chapter');
+                        if ($template->has('contribution') || $template->has('contribution-url') || $template->has('article') || $template->has('entry') || $template->has('section')) {
+                            // a chapter alias already fills the role; skip rename to avoid CS1 alias conflict
+                        } else {
+                            $template->rename('title', 'chapter');
+                        }
                     }
                 } else {
                     if ($new_title !== '' && $crossRef->article_title) {

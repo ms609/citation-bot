@@ -2479,4 +2479,68 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('120–129', $template->get2('pages'));
     }
 
+    public function testTidyJournalPMC(): void {
+        $text = '{{cite journal|journal=PMC|pmc=9772900}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyJournalPubMed(): void {
+        $text = '{{cite journal|journal=PubMed|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyJournalWikiLinkedNIH(): void {
+        $text = '{{cite journal|journal=[[National Institutes of Health]]|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyJournalWikiLinkedNLM(): void {
+        $text = '{{cite journal|journal=[[National Library of Medicine]]|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyJournalPubMedCentral(): void {
+        $text = '{{cite journal|journal=PubMed Central|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyJournalPubmedDomainToWebsite(): void {
+        $text = '{{cite journal|journal=Pubmed.ncbi.NLM.nih.gov|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+        $this->assertSame('Pubmed.ncbi.NLM.nih.gov', $template->get2('website'));
+    }
+
+    public function testTidyJournalNIH(): void {
+        $text = '{{cite journal|journal=NIH|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('journal'));
+    }
+
+    public function testTidyWorkWikiLinkedPubMed(): void {
+        $text = '{{cite journal|work=[[PubMed]]|pmid=12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('work'));
+    }
+
+    public function testTidyWebsiteWikiLinkedPMC(): void {
+        $text = '{{cite journal|website=[[PMC]]|pmc=PMC12345}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('website'));
+    }
+
 }
