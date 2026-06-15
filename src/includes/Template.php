@@ -1532,6 +1532,11 @@ final class Template
                             return false;
                         }
                     }
+                    foreach (WORK_ALIASES as $work_alias) {
+                        if ($this->has('CITATION_BOT_PLACEHOLDER_' . $work_alias) && !$this->blank('CITATION_BOT_PLACEHOLDER_' . $work_alias)) {
+                            return false;
+                        }
+                    }
                 }
                 if (!$this->blank('book-title') && $this->has('title')) {
                     return false;
@@ -1549,8 +1554,15 @@ final class Template
                 if (!$this->blank('book-title') && $this->has('title')) {
                     return false;
                 }
-                if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') {
-                    return false;
+                if ($this->wikiname() === 'citation') {
+                    if (!$this->blank(WORK_ALIASES)) {
+                        return false;
+                    }
+                    foreach (WORK_ALIASES as $work_alias) {
+                        if ($this->has('CITATION_BOT_PLACEHOLDER_' . $work_alias) && !$this->blank('CITATION_BOT_PLACEHOLDER_' . $work_alias)) {
+                            return false;
+                        }
+                    }
                 } // TODO - check for things that should be swapped etc.
                 $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
                 if ($this->blank(CHAPTER_ALIASES)) {
@@ -1563,8 +1575,15 @@ final class Template
                 if (!$this->blank('book-title') && $this->has('title')) {
                     return false;
                 }
-                if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') {
-                    return false;
+                if ($this->wikiname() === 'citation') {
+                    if (!$this->blank(WORK_ALIASES)) {
+                        return false;
+                    }
+                    foreach (WORK_ALIASES as $work_alias) {
+                        if ($this->has('CITATION_BOT_PLACEHOLDER_' . $work_alias) && !$this->blank('CITATION_BOT_PLACEHOLDER_' . $work_alias)) {
+                            return false;
+                        }
+                    }
                 } // TODO - check for things that should be swapped etc.
                 $value = preg_replace('~^\[\d+\]\s*~', '', $value); // Remove chapter numbers
                 if ($this->blank(CHAPTER_ALIASES)) {
