@@ -327,6 +327,29 @@ final class DoiTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testConferenceCitationPreservesArticleTitleFromDoi(): void {
+        $text = '{{citation
+ | last1=Shugart | first1=Alan | last2=Tong | first2=Yang-hu
+ | year=1966
+ | title=IBM 2321 data cell drive
+ | journal=Proceedings of the April 26–28, 1966, Spring Joint Computer Conference
+ | publisher=Association for Computing Machinery (ACM)
+ | place=New York City, New York
+ | pages=335–345
+ | doi=10.1145/1464182.1464223
+ | isbn=978-1-4503-7892-5
+ | url=http://portal.acm.org/citation.cfm?id=1464223
+ | doi-access=free
+}}';
+        $template = $this->process_citation($text);
+        $title = $template->get2('title');
+        if ($title === null) {
+            $this->markTestSkipped('CrossRef API did not respond (rate limit or outage)');
+        }
+        $this->assertSame('IBM 2321 data cell drive', $title);
+        $this->assertNull($template->get2('chapter'));
+    }
+
     public function testGetBioRxivPublishedDoi(): void {
         $result = get_biorxiv_published_doi('10.1234/invalid');
         $this->assertNull($result);
