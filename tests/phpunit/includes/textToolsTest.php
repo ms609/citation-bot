@@ -538,6 +538,8 @@ final class textToolsTest extends testBaseClass {
     public function testCapitalization_lots_more2(): void {
         $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), true));
         $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), true));
+        $this->assertSame('X eFood', title_capitalization(title_case('X Efood'), true));
+        $this->assertSame('X eJHaem', title_capitalization(title_case('X Ejhaem'), true));
         $this->assertSame('X eNeuro', title_capitalization(title_case('X Eneuro'), true));
         $this->assertSame('X eVolo', title_capitalization(title_case('X EVolo'), true));
         $this->assertSame('X HannahArendt.net', title_capitalization(title_case('X hannaharendt.net'), true));
