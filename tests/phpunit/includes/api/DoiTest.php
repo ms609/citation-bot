@@ -158,6 +158,8 @@ final class DoiTest extends testBaseClass {
             $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get2('chapter'));
             $this->assertSame('Lecture Notes in Computer Science', $expanded->get2('series'));
             $this->assertSame('Automata, Languages, and Programming', $expanded->get2('title'));
+        } else {
+            $this->markTestSkipped('CrossRef API did not respond (rate limit or outage)');
         }
     }
 
