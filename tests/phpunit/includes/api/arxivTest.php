@@ -45,4 +45,35 @@ final class arxivTest extends testBaseClass {
         $this->assertSame('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $templates[3]->get2('title'));
     }
 
+    public function testArxivWithPmidConvertsToCiteJournal(): void {
+        $text = '{{cite arxiv |last1=TestAuthor |first1=Test |title=Test title for pmid conversion |date=2023 |arxiv=9999.99999}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('cite arxiv', $template->wikiname());
+        $this->assertTrue($template->add_if_new('pmid', '12345678'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('12345678', $template->get2('pmid'));
+    }
+
+    public function testArxivWithPmcConvertsToCiteJournal(): void {
+        $text = '{{cite arxiv |last1=TestAuthor |first1=Test |title=Test title for pmc conversion |date=2023 |arxiv=9999.99998}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('cite arxiv', $template->wikiname());
+        $this->assertTrue($template->add_if_new('pmc', '87654321'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('87654321', $template->get2('pmc'));
+    }
+
+    public function testArxivWithPmidStaysCiteJournalAfterFinalTidy(): void {
+        $text = '{{cite arxiv |last1=TestAuthor |first1=Test |title=Test title for final_tidy pmid |date=2023 |arxiv=9999.99997}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertTrue($template->add_if_new('pmid', '12345678'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $template->final_tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('12345678', $template->get2('pmid'));
+    }
+
 }
