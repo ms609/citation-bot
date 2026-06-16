@@ -5697,7 +5697,7 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $this->set($param, preg_replace('~^(?i)Vol(?:ume)?\.?\s*~u', '', $this->get($param)));
+                    $this->set($param, preg_replace('~^(?i)(?:Vol(?:ume)?|no)\.?\s*~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
