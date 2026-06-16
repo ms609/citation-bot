@@ -652,7 +652,7 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_journal = '';
             $bad_data = true;
         }
-        if ((mb_stripos($the_journal, 'arXiv:') === 0 || $the_journal === 'arXiv') && !$template->blank(ARXIV_ALIASES)) {
+        if ((mb_stripos($the_journal, 'arXiv:') === 0 || str_i_same($the_journal, 'arXiv')) && !$template->blank(ARXIV_ALIASES)) {
             $template->forget('journal');
             $the_journal = '';
             $bad_data = true;

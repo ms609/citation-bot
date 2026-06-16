@@ -6291,10 +6291,16 @@ final class Template
                     $this->tidy_parameter('publisher');
                 }
             }
-            if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES) && mb_stripos($this->initial_name, 'journal') === false) {
+            if ($this->wikiname() === 'cite journal' && mb_stripos($this->initial_name, 'journal') === false) {
                 if ($this->has('arxiv') || $this->has('eprint')) {
-                    $this->change_name_to('cite arxiv');
-                } else {
+                    $arxiv_journal = $this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') !== false;
+                    if ($this->blank(WORK_ALIASES) || $arxiv_journal) {
+                        if ($arxiv_journal) {
+                            $this->forget('journal');
+                        }
+                        $this->change_name_to('cite arxiv');
+                    }
+                } elseif ($this->blank(WORK_ALIASES)) {
                     $this->change_name_to($this->initial_name);
                 }
             }
