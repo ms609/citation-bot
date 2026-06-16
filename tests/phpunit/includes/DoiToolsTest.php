@@ -44,6 +44,12 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test/summary'));
     }
 
+    public function testSanitizeDoiTrailingBackslash(): void {
+        new TestPage(); // Fill page name with test name for debugging
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test\\')); // Trailing backslash
+        $this->assertSame('10.0001/Rubbish_bot_failure_test', sanitize_doi('10.0001/Rubbish_bot_failure_test')); // No backslash, unchanged
+    }
+
     public function testJstorInDoi(): void {
         $template = $this->prepare_citation('{{cite journal|jstor=|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code

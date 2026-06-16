@@ -359,6 +359,9 @@ function sanitize_doi(string $doi): string {
             $doi = $try_doi;
         }
     }
+    if (mb_substr($doi, -1) === '\\') {
+        $doi = mb_substr($doi, 0, -1); // Remove trailing backslash (LaTeX artifact)
+    }
     $doi = safe_preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
     $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
