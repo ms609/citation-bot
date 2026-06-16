@@ -21,6 +21,12 @@ tools:
       - src/includes/doiTools.php
       - src/includes/miscTools.php
 
+constants:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/constants.php
+      - src/includes/constants/*
+
 infrastructure:
   - changed-files:
     - any-glob-to-any-file:
@@ -30,8 +36,6 @@ infrastructure:
       - src/includes/bot_curl.php
       - src/includes/big_jobs.php
       - src/includes/user_messages.php
-      - src/includes/constants.php
-      - src/includes/constants/*
       - src/authenticate.php
 
 entrypoints:
