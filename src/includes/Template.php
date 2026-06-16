@@ -2068,7 +2068,7 @@ final class Template
                     return false;
                 } // Got PMID of zero once from pubmed
                 if ($this->blank($param_name)) {
-                    if ($this->wikiname() === 'cite web') {
+                    if ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite arxiv') {
                         $this->change_name_to('cite journal');
                     }
                     $this->add($param_name, sanitize_string($value));
@@ -2083,6 +2083,9 @@ final class Template
                     return false;
                 } // Got PMID of zero once from pubmed
                 if ($this->blank($param_name)) {
+                    if ($this->wikiname() === 'cite arxiv') {
+                        $this->change_name_to('cite journal');
+                    }
                     $this->add($param_name, sanitize_string($value));
                     if ($this->blank('pmid')) {
                         $this->expand_by_pubmed(true); // Almost always can get a PMID (it is rare not too)
@@ -6291,7 +6294,7 @@ final class Template
                     $this->tidy_parameter('publisher');
                 }
             }
-            if ($this->wikiname() === 'cite journal' && mb_stripos($this->initial_name, 'journal') === false) {
+            if ($this->wikiname() === 'cite journal' && mb_stripos($this->initial_name, 'journal') === false && $this->blank(['pmid', 'pmc'])) {
                 if ($this->has('arxiv') || $this->has('eprint')) {
                     $arxiv_journal = $this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') !== false;
                     if ($this->blank(WORK_ALIASES) || $arxiv_journal) {
@@ -6383,6 +6386,15 @@ final class Template
 
                 foreach ($params_to_remove as $param_name) {
                     $this->forget($param_name);
+                }
+            }
+
+            // Final cleanup for cite arxiv - remove parameters not supported by the template
+            if ($this->wikiname() === 'cite arxiv') {
+                foreach (['pmid', 'pmc', 'pmc-embargo-date', 'jstor', 'issn'] as $unsupported) {
+                    if ($this->has($unsupported)) {
+                        $this->forget($unsupported);
+                    }
                 }
             }
 
