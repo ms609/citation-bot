@@ -6,9 +6,9 @@ This file provides context for AI assistants working on the Citation Bot project
 
 - Language: PHP 8.4+
 - Main logic: Template.php
-- Test command: php process_page.php "Page"
+- Test command: php src/process_page.php "Page"
 - Code style: verbose, explicit, spaced-out, highly formatted style
-- First task: Read Template.php and Parameter.php
+- First task: Read src/includes/Template.php and src/includes/Parameter.php
 
 ## Project Overview
 
@@ -39,14 +39,14 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ## Key Classes
 
-- **`Page.php`** - Manages Wikipedia page content (fetch, process, write)
-- **`Template.php`** - Core citation expansion logic
-- **`Parameter.php`** - Template parameter handling
-- **`WikipediaBot.php`** - Wikipedia API client with OAuth
-- **`URLtools.php`** - URL normalization and metadata extraction
-- **`NameTools.php`** - Author name parsing and formatting
-- **`MathTools.php`** - MathML to LaTeX conversion
-- **`WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.)
+- **`src/includes/Page.php`** - Manages Wikipedia page content (fetch, process, write)
+- **`src/includes/Template.php`** - Core citation expansion logic
+- **`src/includes/Parameter.php`** - Template parameter handling
+- **`src/includes/WikipediaBot.php`** - Wikipedia API client with OAuth
+- **`src/includes/URLtools.php`** - URL normalization and metadata extraction
+- **`src/includes/NameTools.php`** - Author name parsing and formatting
+- **`src/includes/MathTools.php`** - MathML to LaTeX conversion
+- **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.)
 
 ## Code Style Guidelines
 
@@ -119,7 +119,7 @@ docker exec -it citation-bot-php-1 composer update
 ### Toolforge Deployment
 
 ```bash
-become citations
+become citations[-dev]
 webservice stop
 webservice --backend=kubernetes php8.4 start
 ```
@@ -127,12 +127,12 @@ webservice --backend=kubernetes php8.4 start
 ### Command Line Usage
 
 ```bash
-php process_page.php "PageName|Another Page" --slow --savetofiles
+php src/process_page.php "PageName|Another Page" --slow --savetofiles
 ```
 
 ## Configuration
 
-**Required:** Create `env.php` from `env.php.example`
+**Required:** Create `src/env.php` from `src/env.php.example`
 
 Must include:
 
@@ -143,7 +143,7 @@ Must include:
 **Security:**
 
 ```bash
-chmod go-rwx env.php
+chmod go-rwx src/env.php
 ```
 
 ## Testing & CI
@@ -215,23 +215,46 @@ The gadget MUST:
 
 ```text
 /
-├── src/                   # Source code directory
-├── tests/                 # PHPUnit tests
-├── .github/workflows/     # CI/CD workflows
-├── constants.php          # Application constants
-├── setup.php              # Bootstrap configuration
-├── env.php                # Configuration (not in repo)
-├── Page.php               # Page management
-├── Template.php           # Citation expansion core
-├── Parameter.php          # Parameter handling
-├── WikipediaBot.php       # Wikipedia API client
-├── URLtools.php           # URL utilities
-├── NameTools.php          # Name parsing
-├── API*.php               # External API integrations
-├── index.html             # Web interface
-├── process_page.php       # Main processor
-├── gadgetapi.php          # Gadget endpoint
-└── generate_template.php  # Single citation generator
+├── src/
+│   ├── index.html              # Web frontend
+│   ├── process_page.php        # Main processor
+│   ├── gadgetapi.php           # Gadget endpoint
+│   ├── generate_template.php   # Single citation generator
+│   ├── env.php.example         # Configuration template
+│   ├── authenticate.php        # OAuth authentication
+│   ├── category.php            # Category processing
+│   └── includes/
+│       ├── setup.php           # Bootstrap configuration
+│       ├── constants.php       # Application constants
+│       ├── Page.php            # Page management
+│       ├── Template.php        # Citation expansion core
+│       ├── Parameter.php       # Parameter handling
+│       ├── WikipediaBot.php    # Wikipedia API client
+│       ├── URLtools.php        # URL normalization & metadata
+│       ├── NameTools.php       # Author name parsing
+│       ├── MathTools.php       # MathML to LaTeX conversion
+│       ├── WikiThings.php      # Wiki markup handling
+│       ├── miscTools.php       # Miscellaneous utilities
+│       ├── TextTools.php       # String manipulation
+│       ├── WebTools.php        # Web interface helpers
+│       ├── bot_curl.php        # Curl wrapper with defaults
+│       ├── user_messages.php   # Bot activity reporting
+│       ├── doiTools.php        # DOI validation & normalization
+│       ├── big_jobs.php        # Large batch job handling
+│       ├── api/                # External API integrations
+│       └── constants/          # Sub-constant definitions
+├── tests/                      # PHPUnit tests
+├── .github/workflows/          # CI/CD workflows
+├── vendor/                     # Composer dependencies
+├── composer.json               # Dependency configuration
+├── docker-compose.yml          # Docker setup
+├── Dockerfile                  # Container definition
+├── phpunit.xml.dist            # PHPUnit configuration
+├── phpstan.neon                # PHPStan configuration
+├── psalm.xml                   # Psalm configuration
+├── .phpcs.xml                  # Code style configuration
+├── progpilot.yml               # Security analysis config
+└── ...other config files
 ```
 
 ## Debugging Tips
@@ -239,13 +262,13 @@ The gadget MUST:
 ### Testing Individual Pages
 
 ```bash
-php process_page.php "Article_Name" --savetofiles
+php src/process_page.php "Article_Name" --savetofiles
 # Check output in Article_Name.md
 ```
 
 ### Enabling Debug Output
 
-Check `setup.php` for debug flags and logging configuration.
+Check `src/includes/setup.php` for debug flags and logging configuration.
 
 ### Common Issues
 
@@ -327,7 +350,7 @@ php vendor/bin/psalm
 php vendor/bin/phpcs
 
 # Process single page locally
-php process_page.php "Wikipedia:Sandbox" --savetofiles
+php src/process_page.php "Wikipedia:Sandbox" --savetofiles
 
 # Update dependencies
 composer update
