@@ -4,7 +4,7 @@ To run the tests for Parameter.php (for example), first check that PHP is instal
 
 Then, run the following command from the command line:
 
-    phpunit --bootstrap ./src/includes/setup.php tests/phpunit/gadgetapiTest.php
+    php vendor/bin/phpunit --bootstrap src/includes/setup.php tests/phpunit/gadgetapiTest.php
 
 ## Running the Full Test Suite
 
@@ -29,6 +29,6 @@ To run the tests on Toolforge, first
 
 then install phpunit and then test:
 
-    php ../phpunit-9.phar --bootstrap [etc]
+    php ../phpunit-12.phar --bootstrap [etc]
 
 Use Ctrl-D to escape from Toolforge.
