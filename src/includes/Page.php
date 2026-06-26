@@ -62,7 +62,7 @@ class Page {
     public function get_text_from(string $title): bool {
         $this->construct_modifications_array(); // Could be new page
 
-        $details = WikipediaBot::ReadDetails($title);
+        $details = WikipediaBot::read_details($title);
 
         if (!isset($details->query->pages)) {
             // @codeCoverageIgnoreStart
@@ -121,7 +121,7 @@ class Page {
         self::$last_title = $this->title;
         $this->lastrevid = (int) $details->lastrevid;
 
-        $this->text = WikipediaBot::GetAPage($title);
+        $this->text = WikipediaBot::get_a_page($title);
 
         if ($this->text === '') {
             report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore

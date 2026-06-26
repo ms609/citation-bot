@@ -27,7 +27,7 @@ function bot_debug_log(string $log_this): void {
         }
         @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
         // Do all at once to avoid spreading over lines in file
-        file_put_contents(__DIR__ . '/DebugLog.txt', $base . ' :: ' . echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: " . echoable($log_this) . "\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/DebugLog.txt', $base . ' :: ' . echoable(WikipediaBot::get_last_user()) . " :: " . echoable(Page::$last_title) . " :: " . echoable($log_this) . "\n", FILE_APPEND);
     }
 }
 
@@ -162,7 +162,7 @@ function check_blocked(): void {
     if (!WikipediaBot::is_valid_user('Citation_bot')) {
         $the_page = (string) @$_REQUEST["page"] . (string) @$argv[1];
         if (mb_strpos($the_page, '|') === false) {
-            $the_user = WikipediaBot::GetLastUser();
+            $the_user = WikipediaBot::get_last_user();
             if ($the_user !== '' && mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
                 define('EDIT_AS_USER', true);
                 unset($_REQUEST["ignore_block"]);
@@ -180,7 +180,6 @@ function check_blocked(): void {
 }
 
 define("MAX_TRIES", 2);
-require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/bot_curl.php';
 require_once __DIR__ . '/WikiThings.php';
 require_once __DIR__ . '/user_messages.php';

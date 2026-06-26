@@ -189,7 +189,7 @@ final class ConstantsTest extends testBaseClass {
         $our_whitelist_sorted = $our_whitelist;
         sort($our_whitelist_sorted);
 
-        $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
+        $wikipedia_response = WikipediaBot::get_a_page('Module:Citation/CS1/Whitelist');
         preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~", $wikipedia_response, $matches);
         $their_whitelist = $matches[1];
         $patent_whitelist = ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
@@ -707,7 +707,7 @@ final class ConstantsTest extends testBaseClass {
     public function testForISBNListUpdates(): void {
         // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
         new TestPage(); // Fill page name with test name for debugging
-        $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
+        $wikipedia_response = WikipediaBot::get_a_page('Module:Format_ISBN/data');
         $this->assertSame(1, mb_substr_count($wikipedia_response, 'RangeMessage timestamp:'));
         $this->assertSame(1, mb_substr_count($wikipedia_response, ISBN_TIME_STAMP_USED));
     }

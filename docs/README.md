@@ -35,7 +35,7 @@ Citation Bot automatically expands and formats references on Wikipedia when requ
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-- Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. All activity takes place on Tool Labs. Single pages can be GETed.
+- Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. All activity takes place on Toolforge. Single pages can be GETed.
 - Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 - `generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
@@ -85,6 +85,8 @@ Entry points (under `src/`):
 - `src/process_page.php`: backend; POSTed page information triggers citation expansion
 - `src/gadgetapi.php`: PHP backend API for the on-wiki Citation Expander gadget
 - `src/generate_template.php`: creates a wiki reference given an identifier
+- `src/category.php`: processes all pages within a Wikipedia category
+- `src/linked_pages.php`: processes all pages that link to a given page
 
 Includes (under `src/includes/`):
 
