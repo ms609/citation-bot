@@ -12,7 +12,7 @@ This file provides context for AI assistants working on the Citation Bot project
 
 ## Project Overview
 
-Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR) and generates properly formatted Wikipedia citation templates.
+Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR, NASA ADS, Google Books, IEEE Xplore, and more) and generates properly formatted Wikipedia citation templates.
 
 **Key Facts:**
 
@@ -37,16 +37,16 @@ Wikipedia Page → Extract Templates → Query External APIs →
 Add Missing Metadata → Clean Formatting → Post to Wikipedia
 ```
 
-## Key Classes
+## Key Files
 
-- **`src/includes/Page.php`** - Manages Wikipedia page content (fetch, process, write)
-- **`src/includes/Template.php`** - Core citation expansion logic
-- **`src/includes/Parameter.php`** - Template parameter handling
-- **`src/includes/WikipediaBot.php`** - Wikipedia API client with OAuth
-- **`src/includes/URLtools.php`** - URL normalization and metadata extraction
-- **`src/includes/NameTools.php`** - Author name parsing and formatting
-- **`src/includes/MathTools.php`** - MathML to LaTeX conversion
-- **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.)
+- **`src/includes/Page.php`** - Page class - Manages Wikipedia page content (fetch, process, write)
+- **`src/includes/Template.php`** - Template class - Core citation expansion logic
+- **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
+- **`src/includes/WikipediaBot.php`** - WikipediaBot class - Wikipedia API client with OAuth
+- **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 8 concrete subclasses
+- **`src/includes/URLtools.php`** - URL normalization and metadata extraction (standalone functions, no class)
+- **`src/includes/NameTools.php`** - Author name parsing and formatting (standalone functions, no class)
+- **`src/includes/MathTools.php`** - MathML to LaTeX conversion (standalone function, no class)
 
 ## Code Style Guidelines
 
@@ -89,6 +89,15 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 | arXiv | arXiv ID | Scientific preprints |
 | JSTOR | JSTOR ID | Scholarly articles |
 | Zotero | URL | Generic URL metadata extraction |
+| NASA ADS | Bibcode | Astrophysical literature via SAO/NASA ADS |
+| Semantic Scholar | S2 ID / DOI | Paper metadata and citation data |
+| IEEE Xplore | IEEE ID | Engineering/technology publication metadata |
+| Google Books | ISBN / Google ID | Book metadata |
+| Unpaywall | DOI | Open-access location finder |
+| ISSN | ISSN | Journal metadata lookup |
+| Internet Archive | URL | Wayback Machine metadata |
+| PII | PII | Publisher Item Identifier to DOI conversion |
+| SICI | SICI | Serial Item and Contribution Identifier |
 
 ## Operating Modes
 
@@ -163,7 +172,7 @@ The project uses extensive automated testing:
 - **CodeQL** - Security vulnerability scanning
 - **Trivy** - Container security scanning
 - **HTML5 and CSS Validator** - Validates HTML/CSS files
-- **Validate JSON, XML, and MD** - Validates JSON, XML, and Markdown files
+- **Validate JSON, YAML, and MD** - Validates JSON, YAML, and Markdown files
 
 All tests must pass before merging.
 
@@ -223,6 +232,9 @@ The gadget MUST:
 │   ├── env.php.example         # Configuration template
 │   ├── authenticate.php        # OAuth authentication
 │   ├── category.php            # Category processing
+│   ├── linked_pages.php        # Processes pages linking to a given page
+│   ├── kill_big_job.php        # Kill large batch jobs
+│   ├── gitpull.php             # Deployment webhook
 │   └── includes/
 │       ├── setup.php           # Bootstrap configuration
 │       ├── constants.php       # Application constants

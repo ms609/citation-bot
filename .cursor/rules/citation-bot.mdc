@@ -1,0 +1,7 @@
+---
+description: Citation Bot project context and conventions
+globs: "*.php"
+---
+# Citation Bot
+
+Read AGENTS.md for full project context including architecture, code style, and development workflows.

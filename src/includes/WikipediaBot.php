@@ -320,7 +320,7 @@ final class WikipediaBot {
         ];
 
         do {
-            $res = self::QueryAPI($vars);
+            $res = self::query_api($vars);
             $res = @json_decode($res);
             if (isset($res->query->categorymembers)) {
                 foreach ($res->query->categorymembers as $page) {
@@ -354,7 +354,7 @@ final class WikipediaBot {
     }
 
     public static function get_last_revision(string $page): string {
-        $res = self::QueryAPI([
+        $res = self::query_api([
             "action" => "query",
             "prop" => "revisions",
             "titles" => $page,
@@ -370,7 +370,7 @@ final class WikipediaBot {
 
     /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
     public static function is_redirect(string $page): int {
-        $res = self::QueryAPI([
+        $res = self::query_api([
             "action" => "query",
             "prop" => "info",
             "titles" => $page,
@@ -378,7 +378,7 @@ final class WikipediaBot {
         $res = @json_decode($res);
         if (!isset($res->query->pages)) {
             sleep(5);
-            $res = self::QueryAPI([
+            $res = self::query_api([
                 "action" => "query",
                 "prop" => "info",
                 "titles" => $page,
@@ -394,7 +394,7 @@ final class WikipediaBot {
     }
 
     public static function redirect_target(string $page): ?string {
-        $res = self::QueryAPI([
+        $res = self::query_api([
             "action" => "query",
             "redirects" => "1",
             "titles" => $page,
@@ -408,7 +408,7 @@ final class WikipediaBot {
     }
 
     /** @param array<string> $params */
-    private static function QueryAPI(array $params): string {
+    private static function query_api(array $params): string {
         try {
             $params['format'] = 'json';
             curl_setopt_array(self::$ch_logout, [
@@ -439,8 +439,8 @@ final class WikipediaBot {
         // @codeCoverageIgnoreEnd
     }
 
-    public static function ReadDetails(string $title): object {
-        $details = self::QueryAPI([
+    public static function read_details(string $title): object {
+        $details = self::query_api([
             'action' => 'query',
             'prop' => 'info',
             'titles' => $title,
@@ -451,10 +451,10 @@ final class WikipediaBot {
     }
 
     public static function get_links(string $title): string {
-        return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+        return self::query_api(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
     }
 
-    public static function GetAPage(string $title): string {
+    public static function get_a_page(string $title): string {
         curl_setopt_array(self::$ch_logout,
                                 [CURLOPT_HTTPGET => true,
                                     CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' => 'raw',]),
@@ -479,14 +479,14 @@ final class WikipediaBot {
             "list" => "users",
             "ususers" => $user,
         ];
-        $response = self::QueryAPI($query);
+        $response = self::query_api($query);
         if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
             sleep(5);
-            $response = self::QueryAPI($query);
+            $response = self::query_api($query);
         }
         if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
             sleep(10);
-            $response = self::QueryAPI($query);
+            $response = self::query_api($query);
         }
         if ($response === '') {
             return false;  // @codeCoverageIgnore
@@ -501,7 +501,7 @@ final class WikipediaBot {
         return true;
     }
 
-    public static function NonStandardMode(): bool {
+    public static function non_standard_mode(): bool {
         return isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
     }
 
@@ -509,7 +509,7 @@ final class WikipediaBot {
         return $this->the_user;
     }
 
-    public static function GetLastUser(): string {
+    public static function get_last_user(): string {
         if (isset(self::$last_WikipediaBot)) {
             return self::$last_WikipediaBot->get_the_user_internal();
         }

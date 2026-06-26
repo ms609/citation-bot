@@ -1,4 +1,4 @@
-name: Validate JSON, XML, and MD
+name: Validate JSON, YAML, and MD
 on:
   push:
     branches:

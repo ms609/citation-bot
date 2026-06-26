@@ -68,7 +68,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testNonStandardMode(): void {
-        $this->assertFalse(WikipediaBot::NonStandardMode());
+        $this->assertFalse(WikipediaBot::non_standard_mode());
     }
 
     public function testIsValidUser1(): void {

@@ -86,7 +86,6 @@
                 <element key="mb_ereg_search_pos" value="null"/>
                 <element key="mb_ereg_search_getregs" value="null"/>
                 <element key="mb_ereg_search_getpos" value="null"/>
-                <element key="mb_ereg_search_getpos" value="null"/>
                 <element key="mb_regex_set_options" value="null"/>
             </property>
         </properties>

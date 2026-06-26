@@ -2446,7 +2446,7 @@ final class Template
 
     /** This is also called when adding a URL with add_if_new, in which case it looks for a parameter before adding the url. */
     public function get_identifiers_from_url(?string $url_sent = null): bool {
-        return find_indentifiers_in_urls($this, $url_sent);
+        return find_identifiers_in_urls($this, $url_sent);
     }
 
     private function get_doi_from_text(): void {
