@@ -68,6 +68,7 @@ ai:
   - changed-files:
     - any-glob-to-any-file:
       - AGENTS.md
+      - .gemini/GEMINI.md
 
 docs:
   - changed-files:
@@ -76,7 +77,6 @@ docs:
       - '*.md'
       - CITATION.cff
       - LICENSE
-      - .gemini/GEMINI.md
 
 ci:
   - changed-files:
