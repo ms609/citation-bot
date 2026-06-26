@@ -10,9 +10,10 @@
 
 ---
 
-### Workstream A: Documentation Fixes
+## Workstream A: Documentation Fixes
 
 **Files:**
+
 - `AGENTS.md`
 - `docs/README.md`
 - `.github/workflows/YamlJson.yml`
@@ -33,9 +34,10 @@
 
 ---
 
-### Workstream B: Simple Code Fixes
+## Workstream B: Simple Code Fixes
 
 **Files:**
+
 - `src/includes/setup.php`
 - `src/includes/URLtools.php`
 - `src/includes/Template.php`
@@ -49,9 +51,10 @@
 
 ---
 
-### Workstream C: WikipediaBot Naming Normalization
+## Workstream C: WikipediaBot Naming Normalization
 
 **Files:**
+
 - `src/includes/WikipediaBot.php`
 - `src/includes/Page.php`
 - `src/includes/setup.php`
@@ -75,7 +78,7 @@
 
 ---
 
-### Workstream D: Class Naming + phpcs Cleanup
+## Workstream D: Class Naming + phpcs Cleanup
 
 - [x] **Task D1: HandleCache → DoiTools rename** — Rename class across 4 files (32 call sites): `doiTools.php`, `miscTools.php` (1), `TemplatePart3Test.php` (4), `zzzLastTest.php` (1)
 
@@ -88,7 +91,7 @@
 
 ---
 
-### Items Explicitly Kept
+## Items Explicitly Kept
 
 - Dead code removal skipped (query_*_api dynamically called from Page.php; test-only class methods kept)
 - TextTools.php include cleanup skipped
@@ -96,7 +99,7 @@
 - phpcs exclusions kept: `AssignmentInControlStructures` (intentional style), `OneObjectStructurePerFile` (deferred), `ClassMatchesFilename` (partial fix, residual violations remain)
 - docs/README.md generate_template identifiers enumeration skipped
 
-### Verification
+## Verification
 
 ```bash
 # PHP syntax lint — all 47 modified files pass
