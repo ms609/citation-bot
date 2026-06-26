@@ -1,1 +1,4 @@
+# Citation Bot
+
 @../AGENTS.md
+
