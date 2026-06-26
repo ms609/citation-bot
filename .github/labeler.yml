@@ -64,6 +64,11 @@ tests:
     - any-glob-to-any-file:
       - tests/**/*
 
+ai:
+  - changed-files:
+    - any-glob-to-any-file:
+      - AGENTS.md
+
 docs:
   - changed-files:
     - any-glob-to-any-file:
@@ -71,7 +76,6 @@ docs:
       - '*.md'
       - CITATION.cff
       - LICENSE
-      - AGENTS.md
       - .gemini/GEMINI.md
 
 ci:
