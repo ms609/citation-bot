@@ -12,7 +12,7 @@ This file provides context for AI assistants working on the Citation Bot project
 
 ## Project Overview
 
-Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR, NASA ADS, Google Books, IEEE Xplore, and more) and generates properly formatted Wikipedia citation templates.
+Citation Bot is a Wikipedia maintenance tool that automatically expands and formats bibliographic references. It retrieves metadata from authoritative sources (CrossRef, PubMed, arXiv, JSTOR, NASA ADS, Google Books and more) and generates properly formatted Wikipedia citation templates.
 
 **Key Facts:**
 
@@ -91,7 +91,6 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 | Zotero | URL | Generic URL metadata extraction |
 | NASA ADS | Bibcode | Astrophysical literature via SAO/NASA ADS |
 | Semantic Scholar | S2 ID / DOI | Paper metadata and citation data |
-| IEEE Xplore | IEEE ID | Engineering/technology publication metadata |
 | Google Books | ISBN / Google ID | Book metadata |
 | Unpaywall | DOI | Open-access location finder |
 | ISSN | ISSN | Journal metadata lookup |
