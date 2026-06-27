@@ -35,7 +35,7 @@ footer {
 
 /* Narrow viewports: text wraps to multiple lines and collides with the
    logo, so stack the logo above the text instead of beside it */
-@media (max-width: 600px) {
+@media (max-width: 1000px) {
   footer {
     background-position: center 8px;
     padding-top: 160px; /* logo height (144px) + a little breathing room */
