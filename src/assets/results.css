@@ -33,6 +33,15 @@ footer {
   min-height: 155px;
 }
 
+/* Narrow viewports: text wraps to multiple lines and collides with the
+   logo, so stack the logo above the text instead of beside it */
+@media (max-width: 600px) {
+  footer {
+    background-position: center 8px;
+    padding-top: 160px; /* logo height (144px) + a little breathing room */
+  }
+}
+
 /* Minimum touch/click target size (WCAG 2.5.8) */
 input, select, button {
   max-width: 100%;
