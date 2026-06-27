@@ -27,7 +27,6 @@ require_once __DIR__ . '/URLtools.php';
 require_once __DIR__ . '/user_messages.php';
 require_once __DIR__ . '/api/APIzotero.php';
 require_once __DIR__ . '/api/APIpii.php';
-require_once __DIR__ . '/api/APIieee.php';
 require_once __DIR__ . '/api/APIissn.php'; // @codeCoverageIgnoreEnd
 
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
@@ -362,8 +361,6 @@ class Page {
         $our_templates_slight = [];
         /** @var array<Template> $our_templates_conferences */
         $our_templates_conferences = [];
-        /** @var array<Template> $our_templates_ieee */
-        $our_templates_ieee = [];
         report_phase('Remedial work to prepare citations');
         foreach ($all_templates as $this_template) {
             set_time_limit(120);
@@ -381,7 +378,6 @@ class Page {
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
-                $our_templates_ieee[] = $this_template;
             } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, true)) { // No capitalization of thesis, etc.
                 $our_templates_slight[] = $this_template;
                 clean_google_books($this_template);
@@ -460,8 +456,6 @@ class Page {
         $this->expand_templates_from_identifier('doi', $our_templates);
         expand_arxiv_templates($our_templates);
         $this->expand_templates_from_identifier('url', $our_templates);
-        query_ieee_webpages($our_templates_ieee);
-        query_ieee_webpages($our_templates);
 
         report_phase('Expand individual templates by API calls');
         foreach ($our_templates as $this_template) {
@@ -569,7 +563,6 @@ class Page {
         unset($our_templates);
         unset($our_templates_slight);
         unset($our_templates_conferences);
-        unset($our_templates_ieee);
 
         $this->replace_object($all_templates);
         // remove circular memory reference that makes garbage collection harder and reset
