@@ -172,6 +172,8 @@ The project uses extensive automated testing:
 - **Trivy** - Container security scanning
 - **HTML5 and CSS Validator** - Validates HTML/CSS files
 - **Validate JSON, YAML, and MD** - Validates JSON, YAML, and Markdown files
+- **Action Lint** - Validates GitHub Actions
+- **Link Checker** - Validates URLs in documentation and HTML - runs weekly
 
 All tests must pass before merging.
 
