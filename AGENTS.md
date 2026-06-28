@@ -269,18 +269,18 @@ The gadget MUST:
 │       │   ├── APIunpaywall.php # Unpaywall open-access lookup
 │       │   └── APIzotero.php    # Zotero URL metadata
 │       └── constants/          # Sub-constant definitions
-│           ├── bad_data.php             # Journals with no volume numbers
+│           ├── bad_data.php             # Incorrect data from outside sources
 │           ├── capitalization.php       # Title and name capitalization rules
 │           ├── free_doi.php             # Known open-access DOI prefixes
 │           ├── isbn.php                 # ISBN hyphenation and formatting data
-│           ├── italics.php              # Titles that should be italicized
+│           ├── italics.php              # Italics
 │           ├── math.php                 # MathML tag and entity definitions
-│           ├── mistakes.php             # Common parameter name misspellings
+│           ├── mistakes.php             # Common misspellings
 │           ├── null_bad_doi.php         # Confirmed dead/invalid DOIs
 │           ├── null_good_doi.php        # DOIs falsely reported as dead
 │           ├── parameters.php           # Citation template and parameter maps
-│           ├── regular_expressions.php  # Shared regular expression constants
-│           └── translations.php         # Multilingual interface messages
+│           ├── regular_expressions.php  # Regular expression constants
+│           └── translations.php         # Translations
 ├── tests/                      # PHPUnit tests
 ├── .github/workflows/          # CI/CD workflows
 ├── vendor/                     # Composer dependencies
