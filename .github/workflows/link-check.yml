@@ -15,8 +15,14 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v7.0.0
+    - name: Restore lychee cache
+      uses: actions/cache@v4
+      with:
+        path: .lycheecache
+        key: cache-lychee-${{ github.sha }}
+        restore-keys: cache-lychee-
 
     - name: Check links
       uses: lycheeverse/lychee-action@v2.8.0
       with:
-        args: '--no-progress --include-mail "**/*.md" "**/*.html"'
+        args: '--no-progress --include-mail "**/*.md" "**/*.html" --cache --max-cache-age 2d .'
