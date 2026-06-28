@@ -39,6 +39,8 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ## Key Files
 
+- **`src/includes/setup.php`** - Bootstrap configuration and initialization
+- **`src/includes/constants.php`** - Application-wide constants
 - **`src/includes/Page.php`** - Page class - Manages Wikipedia page content (fetch, process, write)
 - **`src/includes/Template.php`** - Template class - Core citation expansion logic
 - **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
@@ -255,7 +257,32 @@ The gadget MUST:
 │       ├── doiTools.php        # DOI validation & normalization
 │       ├── big_jobs.php        # Large batch job handling
 │       ├── api/                # External API integrations
+│       │   ├── APIarchives.php  # Internet Archive metadata
+│       │   ├── APIarXiv.php     # arXiv metadata
+│       │   ├── APIBibCode.php   # Bibcode metadata via NASA ADS
+│       │   ├── APIdoi.php       # DOI/CrossRef metadata
+│       │   ├── APIgoogle.php    # Google Books metadata
+│       │   ├── APIissn.php      # ISSN metadata
+│       │   ├── APIjstor.php     # JSTOR metadata
+│       │   ├── APIpii.php       # PII to DOI conversion
+│       │   ├── APIPubMed.php    # PubMed/PMC metadata
+│       │   ├── APIS2.php        # Semantic Scholar metadata
+│       │   ├── APIsici.php      # SICI parsing
+│       │   ├── APIunpaywall.php # Unpaywall open-access lookup
+│       │   └── APIzotero.php    # Zotero URL metadata
 │       └── constants/          # Sub-constant definitions
+│           ├── bad_data.php             # Incorrect data from outside sources
+│           ├── capitalization.php       # Title and name capitalization rules
+│           ├── free_doi.php             # Known open-access DOI prefixes
+│           ├── isbn.php                 # ISBN hyphenation and formatting data
+│           ├── italics.php              # Italics
+│           ├── math.php                 # MathML tag and entity definitions
+│           ├── mistakes.php             # Common misspellings
+│           ├── null_bad_doi.php         # Confirmed dead/invalid DOIs
+│           ├── null_good_doi.php        # DOIs falsely reported as dead
+│           ├── parameters.php           # Citation template and parameter maps
+│           ├── regular_expressions.php  # Regular expression constants
+│           └── translations.php         # Translations
 ├── tests/                      # PHPUnit tests
 ├── .github/workflows/          # CI/CD workflows
 ├── vendor/                     # Composer dependencies
