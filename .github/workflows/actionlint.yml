@@ -13,16 +13,11 @@ permissions:
 
 jobs:
   actionlint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v7.0.0
 
-    - name: Download actionlint v1.7.12
-      run: |
-        curl -sSLO https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz
-        tar xzf actionlint_1.7.12_linux_amd64.tar.gz
-
     - name: Run actionlint
-      run: ./actionlint -color
+      uses: raven-actions/actionlint@v2.2.0
