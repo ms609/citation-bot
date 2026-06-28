@@ -39,6 +39,8 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ## Key Files
 
+- **`src/includes/setup.php`** - Bootstrap configuration and initialization
+- **`src/includes/constants.php`** - Application-wide constants
 - **`src/includes/Page.php`** - Page class - Manages Wikipedia page content (fetch, process, write)
 - **`src/includes/Template.php`** - Template class - Core citation expansion logic
 - **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
@@ -253,7 +255,32 @@ The gadget MUST:
 │       ├── doiTools.php        # DOI validation & normalization
 │       ├── big_jobs.php        # Large batch job handling
 │       ├── api/                # External API integrations
+│       │   ├── APIarchives.php  # Internet Archive metadata
+│       │   ├── APIarXiv.php     # arXiv metadata
+│       │   ├── APIBibCode.php   # Bibcode metadata via NASA ADS
+│       │   ├── APIdoi.php       # DOI/CrossRef metadata
+│       │   ├── APIgoogle.php    # Google Books metadata
+│       │   ├── APIissn.php      # ISSN metadata
+│       │   ├── APIjstor.php     # JSTOR metadata
+│       │   ├── APIpii.php       # PII to DOI conversion
+│       │   ├── APIPubMed.php    # PubMed/PMC metadata
+│       │   ├── APIS2.php        # Semantic Scholar metadata
+│       │   ├── APIsici.php      # SICI parsing
+│       │   ├── APIunpaywall.php # Unpaywall open-access lookup
+│       │   └── APIzotero.php    # Zotero URL metadata
 │       └── constants/          # Sub-constant definitions
+│           ├── bad_data.php
+│           ├── capitalization.php
+│           ├── free_doi.php
+│           ├── isbn.php
+│           ├── italics.php
+│           ├── math.php
+│           ├── mistakes.php
+│           ├── null_bad_doi.php
+│           ├── null_good_doi.php
+│           ├── parameters.php
+│           ├── regular_expressions.php
+│           └── translations.php
 ├── tests/                      # PHPUnit tests
 ├── .github/workflows/          # CI/CD workflows
 ├── vendor/                     # Composer dependencies
