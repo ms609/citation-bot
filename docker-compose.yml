@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8081:80" # https://localhost:8081
+      - "8081:80" # http://localhost:8081
     volumes:
       - .:/var/www/html
     environment:
