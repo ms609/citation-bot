@@ -27,6 +27,14 @@ jobs:
         extensions: ast
         coverage: none
 
+    - name: Cache Composer dependencies
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
       run: composer validate
 

@@ -82,6 +82,14 @@ jobs:
         # - opcache.jit_buffer_size=0: Explicitly disable JIT (incompatible with pcov - both override zend_execute_ex)
         # These settings provide modest speedup while maintaining code coverage capabilities
 
+    - name: Cache Composer dependencies
+      id: composer-cache
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
       run: composer validate
 
