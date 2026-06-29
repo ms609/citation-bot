@@ -19,4 +19,4 @@ jobs:
     - name: Check links
       uses: lycheeverse/lychee-action@v2.8.0
       with:
-        args: '--no-progress --include-mail "**/*.md" "**/*.html" --timeout 60 --host-concurrency 2 --host-request-interval 1s --max-concurrency 16 --verbose'
+        args: '--no-progress --include-mail "**/*.md" "**/*.html" "catalog-info.yaml" "CITATION.cff" --timeout 60 --host-concurrency 2 --host-request-interval 1s --max-concurrency 16 --verbose'
