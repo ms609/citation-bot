@@ -589,6 +589,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('BioMedical Engineering OnLine', title_capitalization('Biomedical Engineering Online', true));
     }
 
+    public function testCapitalizationASEG(): void {
+        $this->assertSame('ASEG Extended Abstracts', title_capitalization(title_case('ASEG Extended Abstracts'), true));
+    }
+
     public function testRestorItalicsRegex1(): void {
         $text = "{{cite journal|doi=10.7717/peerj.7240 }}";
         $template = $this->process_citation($text);
