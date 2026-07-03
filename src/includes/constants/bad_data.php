@@ -94,6 +94,7 @@ const BAD_AUTHORS = [
     '- -.',
     '#author',
     '#author fullname}',
+    '#author.fullname}',
     '(:unav)',
     'about.com food',
     'all rights reserved',
