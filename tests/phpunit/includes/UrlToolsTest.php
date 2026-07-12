@@ -963,4 +963,23 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('1234232', $template->get2('ssrn'));
         $this->assertSame('cite web', $template->wikiname());
     }
+
+    /** PMC does not override cite ssrn template type */
+    public function testSrrnWithPmcKeepsTemplateName(): void {
+        $text = '{{cite ssrn|ssrn=936346|pmc=123456}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('936346', $prepared->get2('ssrn'));
+        $this->assertSame('123456', $prepared->get2('pmc'));
+        $this->assertSame('cite ssrn', $prepared->wikiname());
+    }
+
+    /** PMC and PMID together do not override cite ssrn template type */
+    public function testSrrnWithPmcAndPmidKeepsTemplateName(): void {
+        $text = '{{cite ssrn|ssrn=936346|pmc=123456|pmid=654321}}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('936346', $prepared->get2('ssrn'));
+        $this->assertSame('123456', $prepared->get2('pmc'));
+        $this->assertSame('654321', $prepared->get2('pmid'));
+        $this->assertSame('cite ssrn', $prepared->wikiname());
+    }
 }
