@@ -972,8 +972,7 @@ final class Zotero {
                 case 'conferencePaper':
                 case 'report': // ssrn uses this
                     if ($template->has('ssrn')) {
-                        if (($template->wikiname() === 'cite web' || $template->wikiname() === 'cite journal') &&
-                                (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url)) {
+                        if ($template->wikiname() === 'cite web' || $template->wikiname() === 'cite journal') {
                             $template->change_name_to('cite ssrn');
                         }
                     } elseif (($template->wikiname() === 'cite web') &&
