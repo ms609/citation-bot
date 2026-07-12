@@ -4598,8 +4598,7 @@ final class Template
                         }
                         return;
                     }
-                    if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && mb_stripos($this->get($param), 'arxiv') === false) {
-                        // Avoid renaming between cite journal and cite book
+                    if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && mb_stripos($this->get($param), 'arxiv') === false && $this->wikiname() !== 'cite ssrn') {
                         $this->change_name_to('cite journal');
                     }
 
@@ -4745,7 +4744,9 @@ final class Template
                     } elseif (preg_match('~^https?://www\.jstor\.org/stable/(.*)$~', $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     }
-                    $this->change_name_to('cite journal', false);
+                    if ($this->wikiname() !== 'cite ssrn') {
+                        $this->change_name_to('cite journal', false);
+                    }
                     return;
 
                 case 'magazine':
@@ -6433,7 +6434,7 @@ final class Template
                     $this->forget($alias);
                 }
             }
-            if ($this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') === false) {
+            if ($this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') === false && $this->wikiname() !== 'cite ssrn') {
                 // Do this at the very end of work in case we change type/etc during expansion
                 if ($this->blank(['chapter', 'isbn'])) {
                     // Avoid renaming between cite journal and cite book
