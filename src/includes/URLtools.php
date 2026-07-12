@@ -2047,7 +2047,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 if ($template->has_good_free_copy()) {
                     $template->forget($url_type);
                     if ($template->wikiname() === 'cite web') {
-                        $template->change_name_to('cite journal');
+                        $template->change_name_to('cite ssrn');
                     }
                 }
             }

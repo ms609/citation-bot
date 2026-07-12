@@ -719,6 +719,10 @@ final class Zotero {
                     $result->DOI = $matches[1];
             }
             $possible_doi = sanitize_doi($result->DOI);
+            // SSRN Zotero translator sometimes returns incomplete DOI like "10.2139/" missing the suffix
+            if ($template->has('ssrn') && !$template->blank('ssrn') && preg_match('~^10\.2139/?$~i', $possible_doi)) {
+                $possible_doi = '10.2139/ssrn.' . $template->get('ssrn');
+            }
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
                 expand_by_doi($template);
@@ -967,7 +971,12 @@ final class Zotero {
                 case 'journalArticle':
                 case 'conferencePaper':
                 case 'report': // ssrn uses this
-                    if (($template->wikiname() === 'cite web') &&
+                    if ($template->has('ssrn')) {
+                        if (($template->wikiname() === 'cite web') &&
+                                (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url)) {
+                            $template->change_name_to('cite ssrn');
+                        }
+                    } elseif (($template->wikiname() === 'cite web') &&
                             (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) &&
                             !$template->blank(WORK_ALIASES) &&
                             (str_ireplace('breakingnews', '', $url) === $url) &&
@@ -1088,9 +1097,20 @@ final class Zotero {
                                 if (is_bad_author((string) $result->creators[$i]->firstName)) {
                                     $result->creators[$i]->firstName = '';
                                 }
-                                $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                                isset($result->rights) ? (string) $result->rights : '', false);
-                                    // Break out if nothing added
+                                // SSRN Zotero translator puts names in wrong fields:
+                                // firstName gets the full comma-separated name minus the last fragment
+                                // lastName gets only the fragment (e.g. "F." or "Joseph")
+                                // Reconstruct the full name and let format_author parse it correctly
+                                // lastName fragments from broken Zotero SSRN output are always
+                                // under 6 characters (e.g. "F.", "Jr." for suffixes)
+                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false && mb_strlen(mb_trim((string) $result->creators[$i]->lastName)) < 6) {
+                                    $fullName = mb_trim((string) $result->creators[$i]->firstName, ', ') . ' ' . mb_trim((string) $result->creators[$i]->lastName);
+                                    $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
+                                } else {
+                                    $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+                                    isset($result->rights) ? (string) $result->rights : '', false);
+                                }
+                                // Break out if nothing added
                                 if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
                                     break;
                                 }
