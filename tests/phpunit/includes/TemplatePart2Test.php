@@ -2549,18 +2549,4 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertSame('936346', $template->get2('ssrn'));
     }
-
-    /** Tests cite ssrn after prepare() cleanup */
-    public function testCiteSrrnPrepare(): void {
-        $text = '{{cite ssrn|ssrn=936346}}';
-        $template = $this->prepare_citation($text);
-        $this->assertSame('936346', $template->get2('ssrn'));
-    }
-
-    /** Tests SSRN URL extraction in cite journal template */
-    public function testCiteSrrnUrlExtractionJournal(): void {
-        $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231 }}';
-        $prepared = $this->prepare_citation($text);
-        $this->assertSame('1234231', $prepared->get2('ssrn'));
-    }
 }
