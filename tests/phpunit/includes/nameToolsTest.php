@@ -480,4 +480,22 @@ final class nameToolsTest extends testBaseClass {
     public function testFormatSurname2UndLowercased(): void {
         $this->assertSame('Strauss und Torney', format_surname_2('STRAUSS UND TORNEY'));
     }
+
+    /** Tests format_author with SSRN-reconstructed names (comma-full format) */
+    public function testFormatAuthorSrrnAlesina(): void {
+        $result = format_author("Alesina, Alberto F.");
+        $this->assertSame('Alesina, Alberto F', $result);
+    }
+
+    /** Tests format_author with SSRN-reconstructed names (comma-trailing format) */
+    public function testFormatAuthorSrrnZeira(): void {
+        $result = format_author("Zeira, Joseph");
+        $this->assertSame('Zeira, Joseph', $result);
+    }
+
+    /** Tests format_author with SSRN-reconstructed multi-word surname */
+    public function testFormatAuthorSrrnMultiPartSurname(): void {
+        $result = format_author("van der Waals, Johannes");
+        $this->assertSame('Van Der Waals, Johannes', $result);
+    }
 }

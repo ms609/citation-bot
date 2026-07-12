@@ -793,4 +793,9 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
+    /** Verify cite ssrn is in TEMPLATES_WE_PROCESS and TEMPLATES_WE_RENAME */
+    public function testCiteSrrnInProcessingLists(): void {
+        $this->assertContains('cite ssrn', TEMPLATES_WE_PROCESS);
+        $this->assertContains('cite ssrn', TEMPLATES_WE_RENAME);
+    }
 }

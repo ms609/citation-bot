@@ -930,4 +930,38 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://www.bbc.com/news/articles/cwyw4x39jdwo', $template->get2('url'));
         $this->assertSame('https://web.archive.org/web/20251226110705/https://www.bbc.com/news/articles/cwyw4x39jdwo', $template->get2('archive-url'));
     }
+
+    /** SSRN URL in cite web extracts SSRN parameter */
+    public function testSrrnUrlCiteWeb(): void {
+        $text = '{{cite web | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=936346 }}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('936346', $prepared->get2('ssrn'));
+    }
+
+    /** SSRN URL alternate format (/abstract=N) extracts SSRN parameter */
+    public function testSrrnUrlAlternateFormat(): void {
+        $text = '{{cite web | url= https://papers.ssrn.com/abstract=936347 }}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('936347', $prepared->get2('ssrn'));
+    }
+
+    /** SSRN URL in cite web with PMC forgets URL and changes to cite ssrn */
+    public function testSrrnUrlForgottenWithGoodFreeCopy(): void {
+        $text = '{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('1234231', $template->get2('ssrn'));
+        $this->assertSame('cite ssrn', $template->wikiname());
+    }
+
+    /** SSRN URL in cite web without free copy keeps URL and stays as cite web */
+    public function testSrrnUrlStaysWithoutGoodFreeCopy(): void {
+        $text = '{{cite web | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234232 }}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertNotNull($template->get2('url'));
+        $this->assertSame('1234232', $template->get2('ssrn'));
+        $this->assertSame('cite web', $template->wikiname());
+    }
 }
