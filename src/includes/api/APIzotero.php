@@ -1098,13 +1098,12 @@ final class Zotero {
                                     $result->creators[$i]->firstName = '';
                                 }
                                 // SSRN Zotero translator puts names in wrong fields:
-                                // firstName gets the full comma-separated name minus the last fragment
-                                // lastName gets only the fragment (e.g. "F." or "Joseph")
-                                // Reconstruct the full name and let format_author parse it correctly
-                                // lastName fragments from broken Zotero SSRN output are always
-                                // under 6 characters (e.g. "F.", "Jr." for suffixes)
-                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false && mb_strlen(mb_trim((string) $result->creators[$i]->lastName)) < 6) {
-                                    $fullName = mb_trim((string) $result->creators[$i]->firstName, ', ') . ' ' . mb_trim((string) $result->creators[$i]->lastName);
+                                // firstName is always the comma-separated "last, first" or "last,"
+                                // lastName is the remaining fragment (e.g. "F.", "Joseph", "Zhou")
+                                // A comma in firstName is the reliable signal of this broken format.
+                                // Reconstruct the full name and let format_author parse it correctly.
+                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false) {
+                                    $fullName = mb_trim((string) $result->creators[$i]->firstName) . ' ' . mb_trim((string) $result->creators[$i]->lastName);
                                     $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
                                 } else {
                                     $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
