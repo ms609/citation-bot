@@ -948,11 +948,10 @@ final class UrlToolsTest extends testBaseClass {
     /** SSRN URL in cite web with PMC forgets URL and changes to cite ssrn */
     public function testSrrnUrlForgottenWithGoodFreeCopy(): void {
         $text = '{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}';
-        $template = $this->make_citation($text);
-        $this->assertTrue($template->get_identifiers_from_url());
-        $this->assertNull($template->get2('url'));
-        $this->assertSame('1234231', $template->get2('ssrn'));
-        $this->assertSame('cite ssrn', $template->wikiname());
+        $prepared = $this->prepare_citation($text);
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('1234231', $prepared->get2('ssrn'));
+        $this->assertSame('cite ssrn', $prepared->wikiname());
     }
 
     /** SSRN URL in cite web without free copy keeps URL and stays as cite web */
