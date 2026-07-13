@@ -129,6 +129,11 @@ final class Zotero {
                     self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
                 }
                 if ($template->has('ssrn')) {
+                    // Progressive backoff before SSRN Zotero calls to prevent rate limiting
+                    static $ssrn_calls = 0;
+                    $ssrn_calls++;
+                    sleep($ssrn_calls <= 1 ? 2 : 5);
+                    // Attempt Zotero expansion with retries if no metadata received
                     for ($attempt = 0; $attempt < 3; $attempt++) {
                         if ($attempt > 0) {
                             sleep($attempt === 1 ? 2 : 5);
@@ -138,9 +143,6 @@ final class Zotero {
                             break;
                         }
                     }
-                    static $ssrn_calls = 0;
-                    $ssrn_calls++;
-                    sleep($ssrn_calls <= 1 ? 2 : 5);
                 }
             }
             $doi = $template->get('doi'); // might have changed
