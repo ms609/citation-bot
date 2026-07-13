@@ -144,7 +144,7 @@ final class Zotero {
                         }
                     }
                     if (!$template->has('title')) {
-                        report_warning("SSRN metadata not available from Citoid for abstract_id=" . $template->get('ssrn'));
+                        report_warning("SSRN metadata not available from Citoid for abstract_id=" . echoable($template->get('ssrn')));
                     }
                 }
             }
