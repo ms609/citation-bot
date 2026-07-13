@@ -2035,9 +2035,6 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             if ($template->blank('mr')) {
                 report_modification("Converting URL to MR parameter");
             }
-            //if (!$url_sent) {
-            //    $template->forget($url_type); // This points to a review and not the article
-            //}
             return $template->add_if_new('mr', $match[1]);
         } elseif (preg_match("~^https?://(?:www\.|)papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
             if ($template->blank('ssrn')) {
