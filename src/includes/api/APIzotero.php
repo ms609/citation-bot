@@ -130,6 +130,9 @@ final class Zotero {
                 }
                 if ($template->has('ssrn')) {
                     self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+                    static $ssrn_calls = 0;
+                    $ssrn_calls++;
+                    sleep($ssrn_calls <= 1 ? 2 : 5);
                 }
             }
             $doi = $template->get('doi'); // might have changed
@@ -719,9 +722,10 @@ final class Zotero {
                     $result->DOI = $matches[1];
             }
             $possible_doi = sanitize_doi($result->DOI);
-            // SSRN Zotero translator sometimes returns incomplete DOI like "10.2139/" missing the suffix
+            // SSRN Zotero translator returns an incomplete DOI "10.2139/" — the ssrn= parameter
+            // is the canonical identifier; the DOI is redundant and {{cite SSRN}} doesn't support it.
             if ($template->has('ssrn') && !$template->blank('ssrn') && preg_match('~^10\.2139/?$~i', $possible_doi)) {
-                $possible_doi = '10.2139/ssrn.' . $template->get('ssrn');
+                $possible_doi = '';
             }
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
