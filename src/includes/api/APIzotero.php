@@ -129,7 +129,15 @@ final class Zotero {
                     self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
                 }
                 if ($template->has('ssrn')) {
-                    self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+                    for ($attempt = 0; $attempt < 3; $attempt++) {
+                        if ($attempt > 0) {
+                            sleep($attempt === 1 ? 2 : 5);
+                        }
+                        self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+                        if ($template->has('title')) {
+                            break;
+                        }
+                    }
                     static $ssrn_calls = 0;
                     $ssrn_calls++;
                     sleep($ssrn_calls <= 1 ? 2 : 5);
