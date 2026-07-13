@@ -1097,11 +1097,17 @@ final class Zotero {
                                 if (is_bad_author((string) $result->creators[$i]->firstName)) {
                                     $result->creators[$i]->firstName = '';
                                 }
-                                // SSRN Zotero translator puts names in wrong fields:
-                                // firstName is always the comma-separated "last, first" or "last,"
-                                // lastName is the remaining fragment (e.g. "F.", "Joseph", "Zhou")
+                                // SSRN Zotero translator (Citoid) returns names in wrong fields.
+                                // This is a known upstream translator bug:
+                                //   firstName contains the full comma-separated name (e.g. "Alesina, Alberto")
+                                //   lastName contains only the trailing fragment (e.g. "F.")
+                                // or for single-word names:
+                                //   firstName ends with a comma (e.g. "Zeira,")
+                                //   lastName is the given name (e.g. "Joseph")
                                 // A comma in firstName is the reliable signal of this broken format.
-                                // Reconstruct the full name and let format_author parse it correctly.
+                                // We reconstruct the full name by concatenating both fields,
+                                // producing e.g. "Alesina, Alberto F." or "Zeira, Joseph",
+                                // then let format_author() parse it correctly into last/first.
                                 if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false) {
                                     $fullName = mb_trim((string) $result->creators[$i]->firstName) . ' ' . mb_trim((string) $result->creators[$i]->lastName);
                                     $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
