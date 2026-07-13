@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 /**
- * Regression test suite for SSRN citation expansion.
+ * Test suite for SSRN citation expansion.
  * Covers URL extraction, prepare pipeline, name reconstruction,
  * DOI reconstruction, template type routing, and non-SSRN preservation.
  */
