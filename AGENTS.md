@@ -457,7 +457,6 @@ When helping with this project:
 9. **API Stability:** Keep the external API stable - code on Wikipedia relies on this API, and that code is not part of this codebase
 10. **No stubs:** Do not implement placeholders or simple implementations.  We want full implementations
 11. **Code reuse:** Never assume something is not implemented - search the code base first
-12. **SSRN:** SSRN metadata is fetched via Zotero (Citoid). The SSRN Zotero translator returns broken author names (`firstName` contains comma-separated "last, first" format, `lastName` is a fragment). The bot reconstructs full names via `format_author()`. `cite journal` with `ssrn=` stays `cite journal` per Wikipedia guidance. Tests are in `SSRNTest.php`, `UrlToolsTest.php`, and `nameToolsTest.php`.
 
 ## Project Philosophy
 
