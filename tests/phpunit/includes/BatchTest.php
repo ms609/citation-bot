@@ -126,8 +126,6 @@ final class BatchTest extends testBaseClass {
         $this->requires_zotero(function() {
             $ids = ['936346', '1000038', '4345678', '4861626',
                 '1032105', '1111624', '1381502', '1437163', '1699972', '1736283',
-                '1795122', '1926431', '1972779', '1995109', '2031979',
-                '214569', '2160199', '2212100', '2296881', '2358110',
             ];
             $tested = 0; $found = 0; $commaFound = 0; $incompleteDoi = 0;
             foreach ($ids as $ssrnId) {
@@ -138,13 +136,20 @@ final class BatchTest extends testBaseClass {
                 curl_setopt_array($ch, [
                     CURLOPT_URL => $apiUrl, CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_TIMEOUT => 10, CURLOPT_USERAGENT => 'CitationBotTest/1.0',
-                    CURLOPT_FOLLOWLOCATION => true, CURLOPT_HTTPHEADER => ['Accept: application/json'],
+                    CURLOPT_FOLLOWLOCATION => true, CURLOPT_SSL_VERIFYPEER => false,
+                    CURLOPT_HTTPHEADER => ['Accept: application/json'],
                 ]);
                 $response = curl_exec($ch);
                 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
                 
-                if ($httpCode !== 200 || empty($response)) { continue; }
+                if ($httpCode !== 200 || empty($response)) {
+                    if ($httpCode === 429) {
+                        echo "\n  Rate limited on $ssrnId, sleeping 60s...";
+                        sleep(60);
+                    }
+                    continue;
+                }
                 $found++;
                 $data = json_decode($response);
                 if (!$data || !isset($data[0])) { continue; }
@@ -172,6 +177,9 @@ final class BatchTest extends testBaseClass {
                     echo ", DOI='$item->DOI'";
                     if ($item->DOI === '10.2139/') { $incompleteDoi++; }
                 }
+                
+                echo "\n  Sleeping 60s between Zotero calls to avoid rate limiting...";
+                sleep(60);
             }
             echo "\n\nZotero results: $found/$tested found, $commaFound with comma in firstName, $incompleteDoi with incomplete DOI\n";
             $this->addToAssertionCount(1);
