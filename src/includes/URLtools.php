@@ -2044,11 +2044,10 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 report_modification("Converting URL to SSRN parameter");
             }
             if (!$url_sent) {
-                if ($template->has_good_free_copy()) {
-                    $template->forget($url_type);
-                    if ($template->wikiname() === 'cite web' || $template->wikiname() === 'cite journal') {
-                        $template->change_name_to('cite ssrn');
-                    }
+                $originalName = $template->wikiname();
+                $template->forget($url_type);
+                if ($originalName === 'cite web') {
+                    $template->change_name_to('cite ssrn');
                 }
             }
             return $template->add_if_new('ssrn', $match[1]);

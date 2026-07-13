@@ -971,8 +971,9 @@ final class Zotero {
                 case 'journalArticle':
                 case 'conferencePaper':
                 case 'report': // ssrn uses this
+                    $originalName = $template->wikiname();
                     if ($template->has('ssrn')) {
-                        if ($template->wikiname() === 'cite web' || $template->wikiname() === 'cite journal') {
+                        if ($originalName === 'cite web') {
                             $template->change_name_to('cite ssrn');
                         }
                     } elseif (($template->wikiname() === 'cite web') &&

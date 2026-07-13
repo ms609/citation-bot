@@ -861,7 +861,8 @@ final class UrlToolsTest extends testBaseClass {
         $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('1234231', $prepared->get2('ssrn'));
-        $this->assertNotNull($prepared->get2('url'));
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('cite journal', $prepared->wikiname());
     }
 
     public function testUrlConversionsB(): void {
@@ -931,18 +932,22 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20251226110705/https://www.bbc.com/news/articles/cwyw4x39jdwo', $template->get2('archive-url'));
     }
 
-    /** SSRN URL in cite web extracts SSRN parameter */
+    /** SSRN URL in cite web extracts SSRN parameter and converts */
     public function testSrrnUrlCiteWeb(): void {
         $text = '{{cite web | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=936346 }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('936346', $prepared->get2('ssrn'));
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('cite ssrn', $prepared->wikiname());
     }
 
-    /** SSRN URL alternate format (/abstract=N) extracts SSRN parameter */
+    /** SSRN URL alternate format extracts SSRN parameter and converts */
     public function testSrrnUrlAlternateFormat(): void {
         $text = '{{cite web | url= https://papers.ssrn.com/abstract=936347 }}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('936347', $prepared->get2('ssrn'));
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('cite ssrn', $prepared->wikiname());
     }
 
     /** SSRN URL in cite web with PMC forgets URL and changes to cite ssrn */
@@ -954,14 +959,14 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('cite ssrn', $prepared->wikiname());
     }
 
-    /** SSRN URL in cite web without free copy keeps URL and stays as cite web */
-    public function testSrrnUrlStaysWithoutGoodFreeCopy(): void {
+    /** SSRN URL without PMC still forgets URL and converts to cite ssrn */
+    public function testSrrnUrlConvertsWithoutGoodFreeCopy(): void {
         $text = '{{cite web | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234232 }}';
         $template = $this->make_citation($text);
         $this->assertTrue($template->get_identifiers_from_url());
-        $this->assertNotNull($template->get2('url'));
+        $this->assertNull($template->get2('url'));
         $this->assertSame('1234232', $template->get2('ssrn'));
-        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('cite ssrn', $template->wikiname());
     }
 
     /** PMC does not override cite ssrn template type */
@@ -981,5 +986,34 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('123456', $prepared->get2('pmc'));
         $this->assertSame('654321', $prepared->get2('pmid'));
         $this->assertSame('cite ssrn', $prepared->wikiname());
+    }
+
+    /** cite journal with SSRN URL stays cite journal (per Wikipedia guidance) */
+    public function testSrrnCiteJournalStaysCiteJournal(): void {
+        $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234233 }}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('1234233', $prepared->get2('ssrn'));
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('cite journal', $prepared->wikiname());
+    }
+
+    /** cite journal with SSRN URL + PMC stays cite journal (originalName survives PMC tidy) */
+    public function testSrrnCiteJournalWithPmcStaysCiteJournal(): void {
+        $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234234 | pmc=123456 }}';
+        $prepared = $this->prepare_citation($text);
+        $this->assertSame('1234234', $prepared->get2('ssrn'));
+        $this->assertSame('123456', $prepared->get2('pmc'));
+        $this->assertNull($prepared->get2('url'));
+        $this->assertSame('cite journal', $prepared->wikiname());
+    }
+
+    /** cite news with SSRN URL extracts SSRN and stays cite news (non-web templates unaffected) */
+    public function testSrrnCiteNewsStaysCiteNews(): void {
+        $text = '{{cite news | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234235 }}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('1234235', $template->get2('ssrn'));
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('cite news', $template->wikiname());
     }
 }

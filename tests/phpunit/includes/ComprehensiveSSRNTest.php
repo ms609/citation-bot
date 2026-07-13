@@ -15,7 +15,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
         $cases = [];
         for ($i = 0; $i < 10; $i++) {
             $id = 1000000 + $i;
-            $cases[] = ["cite_web_$i", "{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=$id}}", (string) $id, true, 'cite web'];
+            $cases[] = ["cite_web_$i", "{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=$id}}", (string) $id, false, 'cite ssrn'];
         }
         // Simulated URL patterns
         $urls = [
@@ -25,7 +25,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
             ['https://papers.ssrn.com/sol3/papers.cfm?abstract_id=936350/', '936350'],
         ];
         foreach ($urls as $i => $u) {
-            $cases[] = ["fmt_$i", "{{cite web|url=$u[0]}}", $u[1], true, 'cite web'];
+            $cases[] = ["fmt_$i", "{{cite web|url=$u[0]}}", $u[1], false, 'cite ssrn'];
         }
         foreach ($cases as $c) {
             $text = $c[1];
@@ -51,7 +51,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
         $cases[] = ['url_pmc', '{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0001/Rubbish_bot_failure_test|doi-access=free}}',
             ['ssrn' => '1234231', 'url' => null, 'wikiname' => 'cite ssrn']];
         $cases[] = ['url_no_pmc', '{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=936346}}',
-            ['ssrn' => '936346', 'wikiname' => 'cite web']];
+            ['ssrn' => '936346', 'url' => null, 'wikiname' => 'cite ssrn']];
         $cases[] = ['journal_param', '{{cite ssrn|ssrn=936346|journal=Test Journal}}',
             ['ssrn' => '936346', 'journal' => 'Test Journal', 'wikiname' => 'cite ssrn']];
         $cases[] = ['jstor_param', '{{cite ssrn|ssrn=936346|jstor=12345}}',
@@ -137,7 +137,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
     public function testSrrnTemplateTypeRouting(): void {
         $simulate = function(string $wikiname, bool $hasSrrn): string {
             if ($hasSrrn) {
-                if ($wikiname === 'cite web' || $wikiname === 'cite journal') {
+                if ($wikiname === 'cite web') {
                     return 'cite ssrn';
                 }
             } elseif ($wikiname === 'cite web') {
@@ -147,7 +147,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
         };
         $templates = ['cite web', 'cite journal', 'cite book', 'cite news', 'cite arxiv', 'cite biorxiv', 'cite medrxiv', 'citation', 'cite magazine', 'cite document'];
         foreach ($templates as $tmpl) {
-            $expected = ($tmpl === 'cite web' || $tmpl === 'cite journal') ? 'cite ssrn' : $tmpl;
+            $expected = ($tmpl === 'cite web') ? 'cite ssrn' : $tmpl;
             $this->assertSame($expected, $simulate($tmpl, true), "ssrn: $tmpl");
         }
         foreach ($templates as $tmpl) {
