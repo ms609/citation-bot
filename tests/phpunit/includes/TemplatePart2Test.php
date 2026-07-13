@@ -2543,4 +2543,10 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('website'));
     }
 
+    /** Tests basic cite ssrn template parsing */
+    public function testCiteSrrnBasic(): void {
+        $text = '{{cite ssrn|ssrn=936346}}';
+        $template = $this->make_citation($text);
+        $this->assertSame('936346', $template->get2('ssrn'));
+    }
 }

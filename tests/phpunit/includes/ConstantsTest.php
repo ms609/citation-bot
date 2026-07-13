@@ -792,5 +792,4 @@ final class ConstantsTest extends testBaseClass {
             }
         }
     }
-
 }

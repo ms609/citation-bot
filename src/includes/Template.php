@@ -2661,7 +2661,9 @@ final class Template
             $doi = extract_doi($dat);
             if ($doi[1] !== '') {
                 $this->add_if_new('doi', $doi[1]);
-                $this->change_name_to('cite journal');
+                if ($this->wikiname() !== 'cite ssrn') {
+                    $this->change_name_to('cite journal');
+                }
                 $dat = str_replace($doi[0], '', $dat);
             }
 
@@ -3487,6 +3489,7 @@ final class Template
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
             $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
+            $new_name_mapped = str_replace('ssrn', 'SSRN', $new_name_mapped); // Proper capitalization for SSRN
             if (ctype_upper(mb_substr($this->name, 0, 1))) {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
@@ -4269,7 +4272,7 @@ final class Template
                     if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
                         if (!in_array(mb_strtolower($doi), NON_JOURNAL_DOIS, true) && mb_strpos($doi, '10.14344/') === false && mb_stripos($doi, '10.7289/V') === false && mb_stripos($doi, '10.7282/') === false && mb_stripos($doi, '10.5962/bhl.title.') === false && mb_stripos($doi, '10.20944/preprints') === false) {
                             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
-                            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal && !$this->blank(WORK_ALIASES) && ($the_journal !== '' || doi_active($doi))) { // Be pickier with non-crossref DOIs
+                            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal && !$this->blank(WORK_ALIASES) && ($the_journal !== '' || doi_active($doi)) && $this->wikiname() !== 'cite ssrn') { // Be pickier with non-crossref DOIs
                                 $this->change_name_to('cite journal', false);
                             }
                         }
@@ -4597,8 +4600,7 @@ final class Template
                         }
                         return;
                     }
-                    if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && mb_stripos($this->get($param), 'arxiv') === false) {
-                        // Avoid renaming between cite journal and cite book
+                    if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && mb_stripos($this->get($param), 'arxiv') === false && $this->wikiname() !== 'cite ssrn') {
                         $this->change_name_to('cite journal');
                     }
 
@@ -4744,7 +4746,9 @@ final class Template
                     } elseif (preg_match('~^https?://www\.jstor\.org/stable/(.*)$~', $this->get($param), $matches)) {
                         $this->set($param, $matches[1]);
                     }
-                    $this->change_name_to('cite journal', false);
+                    if ($this->wikiname() !== 'cite ssrn') {
+                        $this->change_name_to('cite journal', false);
+                    }
                     return;
 
                 case 'magazine':
@@ -4812,7 +4816,9 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $this->change_name_to('cite journal', false);
+                    if ($this->wikiname() !== 'cite ssrn') {
+                        $this->change_name_to('cite journal', false);
+                    }
                     return;
 
                 case 'pmid':
@@ -4830,7 +4836,9 @@ final class Template
                     ) {
                         $this->forget('url');
                     }
-                    $this->change_name_to('cite journal', false);
+                    if ($this->wikiname() !== 'cite ssrn') {
+                        $this->change_name_to('cite journal', false);
+                    }
                     return;
 
                 case 'publisher':
@@ -6428,7 +6436,7 @@ final class Template
                     $this->forget($alias);
                 }
             }
-            if ($this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') === false) {
+            if ($this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') === false && $this->wikiname() !== 'cite ssrn') {
                 // Do this at the very end of work in case we change type/etc during expansion
                 if ($this->blank(['chapter', 'isbn'])) {
                     // Avoid renaming between cite journal and cite book

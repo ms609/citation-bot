@@ -719,6 +719,10 @@ final class Zotero {
                     $result->DOI = $matches[1];
             }
             $possible_doi = sanitize_doi($result->DOI);
+            // SSRN Zotero translator sometimes returns incomplete DOI like "10.2139/" missing the suffix
+            if ($template->has('ssrn') && !$template->blank('ssrn') && preg_match('~^10\.2139/?$~i', $possible_doi)) {
+                $possible_doi = '10.2139/ssrn.' . $template->get('ssrn');
+            }
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
                 expand_by_doi($template);
@@ -967,7 +971,12 @@ final class Zotero {
                 case 'journalArticle':
                 case 'conferencePaper':
                 case 'report': // ssrn uses this
-                    if (($template->wikiname() === 'cite web') &&
+                    $originalName = $template->wikiname();
+                    if ($template->has('ssrn')) {
+                        if ($originalName === 'cite web') {
+                            $template->change_name_to('cite ssrn');
+                        }
+                    } elseif (($template->wikiname() === 'cite web') &&
                             (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) &&
                             !$template->blank(WORK_ALIASES) &&
                             (str_ireplace('breakingnews', '', $url) === $url) &&
@@ -1088,9 +1097,25 @@ final class Zotero {
                                 if (is_bad_author((string) $result->creators[$i]->firstName)) {
                                     $result->creators[$i]->firstName = '';
                                 }
-                                $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                                isset($result->rights) ? (string) $result->rights : '', false);
-                                    // Break out if nothing added
+                                // SSRN Zotero translator (Citoid) returns names in wrong fields.
+                                // This is a known upstream translator bug:
+                                //   firstName contains the full comma-separated name (e.g. "Alesina, Alberto")
+                                //   lastName contains only the trailing fragment (e.g. "F.")
+                                // or for single-word names:
+                                //   firstName ends with a comma (e.g. "Zeira,")
+                                //   lastName is the given name (e.g. "Joseph")
+                                // A comma in firstName is the reliable signal of this broken format.
+                                // We reconstruct the full name by concatenating both fields,
+                                // producing e.g. "Alesina, Alberto F." or "Zeira, Joseph",
+                                // then let format_author() parse it correctly into last/first.
+                                if ($template->has('ssrn') && mb_strpos((string) $result->creators[$i]->firstName, ',') !== false) {
+                                    $fullName = mb_trim((string) $result->creators[$i]->firstName) . ' ' . mb_trim((string) $result->creators[$i]->lastName);
+                                    $template->validate_and_add($authorParam, $fullName, '', isset($result->rights) ? (string) $result->rights : '', false);
+                                } else {
+                                    $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+                                    isset($result->rights) ? (string) $result->rights : '', false);
+                                }
+                                // Break out if nothing added
                                 if ((mb_strpos($authorParam, 'author') === 0) && $template->blank(['author' . (string) ($author_i), 'first' . (string) ($author_i), 'last' . (string) ($author_i)])) {
                                     break;
                                 }

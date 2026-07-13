@@ -2039,16 +2039,15 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             //    $template->forget($url_type); // This points to a review and not the article
             //}
             return $template->add_if_new('mr', $match[1]);
-        } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
+        } elseif (preg_match("~^https?://(?:www\.|)papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
             if ($template->blank('ssrn')) {
                 report_modification("Converting URL to SSRN parameter");
             }
             if (!$url_sent) {
-                if ($template->has_good_free_copy()) {
-                    $template->forget($url_type);
-                    if ($template->wikiname() === 'cite web') {
-                        $template->change_name_to('cite journal');
-                    }
+                $originalName = $template->wikiname();
+                $template->forget($url_type);
+                if ($originalName === 'cite web') {
+                    $template->change_name_to('cite ssrn');
                 }
             }
             return $template->add_if_new('ssrn', $match[1]);

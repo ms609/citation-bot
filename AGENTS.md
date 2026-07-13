@@ -91,6 +91,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 | arXiv | arXiv ID | Scientific preprints |
 | JSTOR | JSTOR ID | Scholarly articles |
 | Zotero | URL | Generic URL metadata extraction |
+| SSRN (via Zotero) | SSRN ID | Social Science Research Network metadata |
 | NASA ADS | Bibcode | Astrophysical literature via SAO/NASA ADS |
 | Semantic Scholar | S2 ID / DOI | Paper metadata and citation data |
 | Google Books | ISBN / Google ID | Book metadata |
@@ -423,6 +424,7 @@ The bot supports all standard Wikipedia citation templates:
 | `pmid` | PubMed ID |
 | `pmc` | PubMed Central ID |
 | `arxiv`, `eprint` | arXiv identifier |
+| `ssrn` | SSRN identifier (Social Science Research Network) |
 | `isbn` | Book identifier |
 | `url` | Web URL |
 | `access-date` | Date URL accessed |
