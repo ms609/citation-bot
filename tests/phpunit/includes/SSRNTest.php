@@ -4,12 +4,13 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 /**
- * Comprehensive regression test suite for SSRN changes.
- * Tests 100 SSRN reference scenarios + 100 non-SSRN citation scenarios.
+ * Regression test suite for SSRN citation expansion.
+ * Covers URL extraction, prepare pipeline, name reconstruction,
+ * DOI reconstruction, template type routing, and non-SSRN preservation.
  */
-final class ComprehensiveSSRNTest extends testBaseClass {
+final class SSRNTest extends testBaseClass {
 
-    // ============= PART 1: 100 SSRN Reference Tests =============
+    // ============= SSRN Reference Tests =============
 
     public function testSrrnUrlExtraction(): void {
         $cases = [];
@@ -157,7 +158,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
         $this->addToAssertionCount(20);
     }
 
-    // ============= PART 2: Non-SSRN Citation Tests =============
+    // ============= Non-SSRN Citation Tests =============
 
     public function testNonSrrnTemplatePreservation(): void {
         $cases = [
