@@ -143,6 +143,9 @@ final class Zotero {
                             break;
                         }
                     }
+                    if (!$template->has('title')) {
+                        report_warning("SSRN metadata not available from Citoid for abstract_id=" . $template->get('ssrn'));
+                    }
                 }
             }
             $doi = $template->get('doi'); // might have changed
