@@ -78,9 +78,9 @@ final class ComprehensiveSSRNTest extends testBaseClass {
     }
 
     public function testSrrnNameReconstruction(): void {
-        $simulateFix = function(string $firstName, string $lastName): string {
+        $simulateFix = static function (string $firstName, string $lastName): string {
             if (mb_strpos($firstName, ',') !== false) {
-                return format_author(trim($firstName) . ' ' . trim($lastName));
+                return format_author(mb_trim($firstName) . ' ' . mb_trim($lastName));
             }
             return format_author($lastName . ($firstName ? ", {$firstName}" : ''));
         };
@@ -120,7 +120,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
     }
 
     public function testSrrnDoiReconstruction(): void {
-        $simulateFix = function(string $doi): string {
+        $simulateFix = static function (string $doi): string {
             if (preg_match('~^10\.2139/?$~i', $doi)) {
                 return '10.2139/ssrn.936346';
             }
@@ -135,7 +135,7 @@ final class ComprehensiveSSRNTest extends testBaseClass {
     }
 
     public function testSrrnTemplateTypeRouting(): void {
-        $simulate = function(string $wikiname, bool $hasSrrn): string {
+        $simulate = static function (string $wikiname, bool $hasSrrn): string {
             if ($hasSrrn) {
                 if ($wikiname === 'cite web') {
                     return 'cite ssrn';
