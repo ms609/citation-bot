@@ -129,10 +129,23 @@ final class Zotero {
                     self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
                 }
                 if ($template->has('ssrn')) {
-                    self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+                    // Progressive backoff before SSRN Zotero calls to prevent rate limiting
                     static $ssrn_calls = 0;
                     $ssrn_calls++;
                     sleep($ssrn_calls <= 1 ? 2 : 5);
+                    // Attempt Zotero expansion with retries if no metadata received
+                    for ($attempt = 0; $attempt < 3; $attempt++) {
+                        if ($attempt > 0) {
+                            sleep($attempt === 1 ? 2 : 5);
+                        }
+                        self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+                        if ($template->has('title')) {
+                            break;
+                        }
+                    }
+                    if (!$template->has('title')) {
+                        report_warning("SSRN metadata not available from Citoid for abstract_id=" . echoable($template->get('ssrn')));
+                    }
                 }
             }
             $doi = $template->get('doi'); // might have changed
