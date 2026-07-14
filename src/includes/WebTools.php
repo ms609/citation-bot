@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
+
 /**
  * Only on webpage
  */

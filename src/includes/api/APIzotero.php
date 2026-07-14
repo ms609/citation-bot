@@ -725,9 +725,6 @@ final class Zotero {
                 $result->extra = mb_trim(str_replace(mb_trim($matches[0]), '', $result->extra));      // @codeCoverageIgnore
             }
             $result->extra = mb_trim($result->extra);
-            if ($result->extra !== '') {
-                // TODO - check back later on report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));     // @codeCoverageIgnore
-            }
         }
 
         if (isset($result->DOI) && $template->blank('doi')) {

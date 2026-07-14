@@ -2351,9 +2351,6 @@ final class Template
                 // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
                 // @codeCoverageIgnoreStart
                 report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
-                // if ($this->blank($param_name)) {
-                //  return $this->add($param_name, sanitize_string($value));
-                // }
                 return false;
             // @codeCoverageIgnoreEnd
         }
@@ -6550,19 +6547,6 @@ final class Template
                         $this->forget($worky);
                     }
                 }
-                /*
-                // If one and only one work alias is set, the move it to publisher
-                if ($this->blank('publisher')) {
-                    $counting = 0;
-                    foreach (WORK_ALIASES as $worky) {
-                    if ($this->has($worky)) $counting = $counting + 1;
-                }
-                if ($counting === 1) {
-                    foreach (WORK_ALIASES as $worky) {
-                        //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
-                    }
-                }
-                */
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
                     if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
