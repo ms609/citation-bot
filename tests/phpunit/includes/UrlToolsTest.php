@@ -1016,4 +1016,18 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertSame('cite news', $template->wikiname());
     }
+
+    public function testJstorStableToIdentifier(): void {
+        $text = '{{cite journal|url=https://www.jstor.org/stable/3347357|title=X}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('3347357', $template->get2('jstor'));
+    }
+
+    public function testJstorStableKeepsExistingDifferent(): void {
+        $text = '{{cite journal|url=https://www.jstor.org/stable/3347357|jstor=999999|title=X}}';
+        $template = $this->make_citation($text);
+        $template->get_identifiers_from_url();
+        $this->assertSame('999999', $template->get2('jstor'));
+    }
 }

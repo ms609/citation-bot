@@ -419,6 +419,21 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertTrue(should_url2chapter($template, false));
     }
 
+    public function testShouldUrl2ChapterWileyChapter(): void {
+        $template = $this->make_citation('{{cite book |chapter=Test |url=https://onlinelibrary.wiley.com/doi/10.1002/9781119999999.ch23}}');
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterWileyJournal(): void {
+        $template = $this->make_citation('{{cite book |chapter=Test |url=https://onlinelibrary.wiley.com/doi/10.1002/j.1460-244X.1963.tb00217.x}}');
+        $this->assertFalse(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterWileySubdomain(): void {
+        $template = $this->make_citation('{{cite book |chapter=Test |url=https://onlinelibrary.wiley.com/doi/book/10.1002/0470845015.ch1}}');
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
     public function testRunTypeModsReturnsInt(): void {
         $result = run_type_mods(-1, 10, 20, 30, 40);
         $this->assertIsInt($result);
