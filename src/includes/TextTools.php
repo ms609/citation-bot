@@ -19,6 +19,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
  * This function converts formatting from external sources into wiki style
  */
 function wikify_external_text(string $title): string {
+    $title = str_replace(["\r\n", "\n", "\r"], ' ', $title);
     $replacement = [];
     $placeholder = [];
     $title = safe_preg_replace_callback('~(?:\$\$)([^\$]+)(?:\$\$)~iu',

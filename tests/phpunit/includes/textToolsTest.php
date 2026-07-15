@@ -1232,4 +1232,17 @@ final class textToolsTest extends testBaseClass {
     public function testCleanVolumeNostradamusReturnsEmpty(): void {
         $this->assertSame('', clean_volume('nostradamus'));
     }
+
+    public function testWikifyExternalTextNewlineToSpace(): void {
+        $this->assertSame('Lax monad something else', wikify_external_text("Lax monad\nsomething else"));
+    }
+
+    public function testWikifyExternalTextCRLFToSpace(): void {
+        $this->assertSame('Line one Line two', wikify_external_text("Line one\r\nLine two"));
+    }
+
+    public function testWikifyExternalTextNewlineWithMath(): void {
+        $result = wikify_external_text("x\n$$ y $$");
+        $this->assertStringNotContainsString("\n", $result);
+    }
 }

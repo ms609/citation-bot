@@ -1496,6 +1496,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             return false;
         }
     } // JSTOR
+    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(\d{3,})$~i', $url, $matches) && $template->blank('jstor')) {
+        $template->add_if_new('jstor', $matches[1]);
+    }
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
         $template->add_if_new('jstor', $matches[1]);
         if (!$url_sent) {

@@ -355,6 +355,9 @@ function should_url2chapter(Template $template, bool $force): bool {
     if ((mb_stripos($url, 'emerald.com') !== false || mb_stripos($url, 'emeraldinsight.com') !== false) && mb_stripos($url, '/chapter-') !== false) {
         return true;
     }
+    if (mb_stripos($url, 'wiley.com') !== false && preg_match('~\.ch\d+$~i', $url)) {
+        return true;
+    }
     return false;
 }
 
