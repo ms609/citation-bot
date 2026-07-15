@@ -1494,4 +1494,28 @@ final class zoteroTest extends testBaseClass {
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertNull($template->get2('work'));
     }
+
+    public function testUfffcStrippedFromTitle(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => "Clean Title\u{fffc} with Object Replacement Character", 'itemType' => 'webpage'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Clean Title with Object Replacement Character', $template->get2('title'));
+    }
+
+    public function testControlCharsStrippedFromTitle(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => "Title\x00with\x01control\x08chars", 'itemType' => 'webpage'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Titlewithcontrolchars', $template->get2('title'));
+    }
 }
