@@ -397,6 +397,10 @@ final class Zotero {
         unset($result->nameOfAct);
         unset($result->language);
         unset($result->source);
+        // Strip non-printable characters from title (e.g. U+FFFC from URL percent-encoding)
+        if (isset($result->title)) {
+            $result->title = safe_preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\x{FFFC}]/u', '', (string) $result->title);
+        }
         /* Different API endpoints */
         if (isset($result->identifiers->doi) && empty($result->DOI)) {
             $result->DOI = $result->identifiers->doi;
