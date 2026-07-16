@@ -365,6 +365,8 @@ final class Zotero {
                 report_info("ISBN data not found for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmcid') !== false) {
                 report_info("PMC data not found for URL " . $the_url);
+            } elseif (mb_strpos($zotero_response, 'reset reason: connection timeout') !== false) {
+                report_info("Connection timeout for URL" . $the_url);
             } elseif (mb_strpos($zotero_response, 'Invalid URL encoding in request parameters') !== false) {
                 report_minor_error("This URL cannot be encoded for the Zotero endpoint: " . $the_url); /* See Islam in New Zealand on en.  Also note the wiki output formats work, but give different output.  https://phabricator.wikimedia.org/T413651  TODO: fix it if they do not */
             } else {
