@@ -466,7 +466,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('chapter', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
         $try_to_add_it('publisher', @$json['publisher']);
-    } elseif ($type === 'other') {
+    } elseif ($type === 'other' || $type === 'software') {
         if (isset($json['container-title'])) {
             $try_to_add_it('title', @$json['container-title']);
             $try_to_add_it('chapter', @$json['title']);
