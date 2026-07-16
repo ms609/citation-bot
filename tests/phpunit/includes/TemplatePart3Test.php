@@ -1984,4 +1984,11 @@ EP - 999 }}';
         $result = $template->parsed_text();
         $this->assertStringNotContainsString('((', $result);
     }
+
+    public function testResearchGateGuardBlocksBookConversion(): void {
+        $text = '{{cite journal | doi=10.13140/RG.2.1.1002.9609 }}';
+        $template = $this->make_citation($text);
+        $template->change_name_to('cite book');
+        $this->assertSame('cite journal', $template->wikiname());
+    }
 }

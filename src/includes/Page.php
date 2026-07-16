@@ -40,6 +40,7 @@ class Page {
     private bool $odnb_sub_removed = false;
     private DateStyle $date_style = DateStyle::DATES_WHATEVER;
     private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+    private string $page_display_authors = '';
     private string $read_at = '';
     private string $start_text = '';
     private int $lastrevid = 0;
@@ -129,6 +130,7 @@ class Page {
         $this->start_text = $this->text;
         $this->set_date_pattern();
         $this->set_name_list_style();
+        $this->set_page_display_authors();
 
         if (preg_match('~\#redirect *\[\[~i', $this->text)) {
             report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
@@ -350,6 +352,7 @@ class Page {
         Template::$all_templates = &$all_templates; // Pointer to save memory
         Template::$date_style = $this->date_style;
         Template::$name_list_style = $this->name_list_style;
+        Template::$page_display_authors = $this->page_display_authors;
         foreach ($all_templates as $this_template) {
             if ($this_template->wikiname() === 'void') {
                 $this_template->block_modifications();
@@ -569,6 +572,7 @@ class Page {
         Template::$all_templates = [];
         Template::$date_style = DateStyle::DATES_WHATEVER;
         Template::$name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+        Template::$page_display_authors = '';
         unset($all_templates);
 
         $old_text = $this->text;
@@ -1022,6 +1026,13 @@ class Page {
             }
         }
         $this->name_list_style = $name_list_style;
+    }
+
+    private function set_page_display_authors(): void {
+        $pattern = '/{{\s*?cs1\s*?config[^}]*?display-authors\s*?=\s*?(\w+)\b[^}]*?}}/im';
+        if (preg_match($pattern, $this->text, $matches)) {
+            $this->page_display_authors = mb_strtolower($matches[1]);
+        }
     }
 
     private function set_cs2_mode(): void {
