@@ -1030,4 +1030,25 @@ final class UrlToolsTest extends testBaseClass {
         $template->get_identifiers_from_url();
         $this->assertSame('999999', $template->get2('jstor'));
     }
+
+    public function testJstorBookIdExtraction(): void {
+        $text = '{{cite journal|url=https://www.jstor.org/stable/j.ctt802dw|title=X}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('j.ctt802dw', $template->get2('jstor'));
+    }
+
+    public function testJstorCleanQueryParams(): void {
+        $text = '{{cite journal|url=https://www.jstor.org/stable/j.ctt802dw?turn_away=true&refreqid=fastly-default:xxx|title=X}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('j.ctt802dw', $template->get2('jstor'));
+    }
+
+    public function testJstorPdfExtensionStripped(): void {
+        $text = '{{cite journal|url=https://www.jstor.org/stable/3347357.pdf|title=X}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->get_identifiers_from_url());
+        $this->assertSame('3347357', $template->get2('jstor'));
+    }
 }

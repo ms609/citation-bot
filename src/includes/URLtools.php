@@ -1461,6 +1461,12 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             $url = 'https://www.jstor.org/stable/' . $matches[1];
             $update_url($url_type, $url);
         }
+        if (preg_match('~^(https?://(?:www\.|)jstor\.org/stable/[^?]+)\?~i', $url, $matches)) {
+            if ($matches[1] !== $url) {
+                $url = $matches[1];
+                $update_url($url_type, $url);
+            }
+        }
 
         if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
             preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
@@ -1496,7 +1502,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             return false;
         }
     } // JSTOR
-    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(\d{3,})$~i', $url, $matches) && $template->blank('jstor')) {
+    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/([\w.]+?)(?:\.pdf)?$~i', $url, $matches) && $template->blank('jstor')) {
         $template->add_if_new('jstor', $matches[1]);
     }
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
