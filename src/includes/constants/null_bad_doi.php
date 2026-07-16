@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 /** TODO: Manually check these from time to time. Last Check 15 July 2026 */
 const NULL_DOI_ANNOYING = [
-    '10.1616/1476-2137.13938' => true, // No longer hosted
     '10.1001/jama.229.4.462' => true, // 404
     '10.1001/jama.245.20.2021' => true, // 404
     '10.1001/jama.246.2.150' => true, // 404
@@ -879,6 +878,7 @@ const NULL_DOI_ANNOYING = [
     '10.1603/ICE.2016.94268' => true, // bad gateway
     '10.1603/ice.2016.94635' => true, // bad gateway
     '10.1603/me09132' => true, // not found
+    '10.1616/1476-2137.13938' => true, // No longer hosted
     '10.1642/0004-8038(2002)119[1187:BADSAT]2.0.CO;2' => true, //not found
     '10.1642/0004-8038(2003)120[0550:ACCOTT]2.0.CO;2' => true, //not found
     '10.1642/0004-8038(2004)121[0652:FAAFS]2.0.CO;2' => true, //not found
