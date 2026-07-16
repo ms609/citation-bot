@@ -438,6 +438,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             $type === 'article' ||
             $type === 'proceedings-article' ||
             $type === 'conference-paper' ||
+            $type === 'paper-conference' ||
             $type === 'entry' ||
             ($type === '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
         $try_to_add_it('journal', @$json['container-title']);
