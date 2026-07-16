@@ -3393,6 +3393,9 @@ final class Template
         if (mb_strpos($this->get('doi'), '10.1093') !== false && $this->wikiname() !== 'cite web') {
             return;
         }
+        if (mb_strpos($this->get('doi'), '10.13140') !== false) {
+            return;
+        }
         if ($new_name === 'cite document' && $this->blank('publisher')) {
             return;
         }
