@@ -2003,4 +2003,30 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('Volume 62, 0001', $t->get2('issue'));
         $this->assertSame('62', $t->get2('volume'));
     }
+
+    public function testPageDisplayAuthorsPreventsRogueEtal(): void {
+        Template::$page_display_authors = '3';
+        $text = '{{cite journal |last1=Smith |last2=et al. }}';
+        $template = $this->make_citation($text);
+        $template->fix_rogue_etal();
+        $this->assertNull($template->get2('display-authors'));
+        Template::$page_display_authors = '';
+    }
+
+    public function testPageDisplayAuthorsPreventsHandleEtal(): void {
+        Template::$page_display_authors = '3';
+        $text = '{{cite web|authors=Joe et al.}}';
+        $template = $this->make_citation($text);
+        $template->handle_et_al();
+        $this->assertNull($template->get2('display-authors'));
+        Template::$page_display_authors = '';
+    }
+
+    public function testPageDisplayAuthorsUnsetStillSetsEtal(): void {
+        Template::$page_display_authors = '';
+        $text = '{{cite web|authors=Joe et al.}}';
+        $template = $this->make_citation($text);
+        $template->handle_et_al();
+        $this->assertSame('etal', $template->get2('display-authors'));
+    }
 }

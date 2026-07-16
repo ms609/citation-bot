@@ -28,6 +28,7 @@ final class Template
     public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
     public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
     public static VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+    public static string $page_display_authors = '';
     /** @psalm-suppress PropertyNotSetInConstructor */
     private string $rawtext; // Must start out as unset
     public string $last_searched_doi = '';
@@ -456,7 +457,7 @@ final class Template
     }
 
     public function fix_rogue_etal(): void {
-        if ($this->blank(DISPLAY_AUTHORS)) {
+        if ($this->blank(DISPLAY_AUTHORS) && self::$page_display_authors === '') {
             $i = 2;
             while (!$this->blank(['author' . (string) $i, 'last' . (string) $i])) {
                 $i++;
@@ -818,7 +819,9 @@ final class Template
                 if ((int) mb_substr($param_name, -4) > 0 || (int) mb_substr($param_name, -3) > 0 || (int) mb_substr($param_name, -2) > 30) {
                     // Stop at 30 authors - or page codes will become cluttered!
                     if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) {
-                        $this->add_if_new('display-authors', '1');
+                        if (self::$page_display_authors === '') {
+                            $this->add_if_new('display-authors', '1');
+                        }
                     }
                     return false;
                 }
@@ -6788,7 +6791,9 @@ final class Template
                     if (mb_trim($val_base) === "") {
                         $this->forget($param);
                     }
-                    $this->add_if_new('display-authors', 'etal');
+                    if (self::$page_display_authors === '') {
+                        $this->add_if_new('display-authors', 'etal');
+                    }
                 }
             }
         }
