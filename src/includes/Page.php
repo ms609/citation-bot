@@ -151,6 +151,7 @@ class Page {
         $this->start_text = $this->text;
         $this->set_date_pattern();
         $this->set_name_list_style();
+        $this->set_page_display_authors();
         $this->title = '';
         self::$last_title = '';
         $this->read_at = '';
