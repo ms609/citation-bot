@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /** TODO: Manually check these from time to time. Last Check 15 January 2026 */
 const NULL_DOI_ANNOYING = [
+    '10.1616/1476-2137.13938' => true, // No longer hosted
     '10.1001/jama.229.4.462' => true, // 404
     '10.1001/jama.245.20.2021' => true, // 404
     '10.1001/jama.246.2.150' => true, // 404
@@ -3754,7 +3755,7 @@ const NULL_DOI_LIST = [
     '10.1603/me09132' => true, // not found
     '10.1606/1044-3894.1499' => true,
     '10.1615/atoz.d.dispersed_flow' => true,
-    '10.1616/1476-2137.13938' => true,
+    '10.1616/1476-2137.13938' => true, // No longer hosted
     '10.1631/jzus.2004.0897' => true,
     '10.1631/jzus.2005.B0991' => true,
     '10.1642/0004-8038(2002)119[1187:BADSAT]2.0.CO;2' => true, //not found
@@ -4705,7 +4706,6 @@ const NULL_DOI_LIST = [
     '10.32388/ab6qgw' => true,
     '10.32466/eufv-rel2022.9.709' => true,
     '10.32488/harmoni.v17i2.319' => true,
-    '10.32598/bcn.2021.2785.1' => true,
     '10.32729/edukasi.v10i1.147' => true, // 404
     '10.32743/2658-6509.2019.3.4.96' => true,
     '10.3275/7800' => true,
