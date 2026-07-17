@@ -178,4 +178,43 @@ final class WikiThingsTest extends testBaseClass {
         $comment->parse_text('');
         $this->assertSame('', $comment->parsed_text());
     }
+
+    public function testSyntaxHighlightParseAndReturn(): void {
+        $sh = new SyntaxHighlight();
+        $sh->parse_text('<syntaxhighlight lang="wikitext">{{doi|10.1080/xxx}}</syntaxhighlight>');
+        $this->assertSame('<syntaxhighlight lang="wikitext">{{doi|10.1080/xxx}}</syntaxhighlight>', $sh->parsed_text());
+    }
+
+    public function testSyntaxHighlightPlaceholderContainsKey(): void {
+        $this->assertStringContainsString('CITATION_BOT_PLACEHOLDER_SYNTAXHIGHLIGHT', SyntaxHighlight::PLACEHOLDER_TEXT);
+    }
+
+    public function testSyntaxHighlightRegexpMatchesBasic(): void {
+        $text = '<syntaxhighlight>code example</syntaxhighlight>';
+        $this->assertMatchesRegularExpression(SyntaxHighlight::REGEXP[0], $text);
+    }
+
+    public function testSyntaxHighlightRegexpMatchesWithAttrs(): void {
+        $text = '<syntaxhighlight lang="wikitext" inline="1">{{doi|10.1080/xxx}}</syntaxhighlight>';
+        $this->assertMatchesRegularExpression(SyntaxHighlight::REGEXP[0], $text);
+    }
+
+    public function testSyntaxHighlightBlocksTemplateExtraction(): void {
+        $text = 'before <syntaxhighlight lang="wikitext">{{doi|10.1080/xxx}}</syntaxhighlight> after';
+        $page = new Page();
+        $page->parse_text($text);
+        // Extract SyntaxHighlights — this replaces them with placeholders
+        $syntaxhighlights = $page->extract_object('SyntaxHighlight');
+        $this->assertCount(1, $syntaxhighlights);
+        // After extracting SyntaxHighlights, the text should no longer contain the raw tag
+        $ref = new ReflectionClass($page);
+        $textProp = $ref->getProperty('text');
+        $protectedText = $textProp->getValue($page);
+        $this->assertStringNotContainsString('<syntaxhighlight', $protectedText);
+        // Extract Templates — the {{doi|...}} inside syntaxhighlight should NOT be extracted
+        Template::$all_templates = [];
+        $templates = $page->extract_object('Template');
+        $this->assertCount(0, $templates, 'No templates should be extracted from inside syntaxhighlight blocks');
+        Template::$all_templates = [];
+    }
 }
