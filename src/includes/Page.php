@@ -231,7 +231,8 @@ class Page {
         $musicality = $this->extract_object('Musicscores');
         /** @var array<Preformated> $preformated */
         $preformated = $this->extract_object('Preformated');
-        $this->extract_object('SyntaxHighlight');
+        /** @var array<SyntaxHighlight> $syntaxhighlights */
+        $syntaxhighlights = $this->extract_object('SyntaxHighlight');
         set_time_limit(120);
         if (!$this->allow_bots()) {
             report_warning("Page marked with {{nobots}} template.    Skipping.");
@@ -591,6 +592,8 @@ class Page {
         unset($triplebrack);
         $this->replace_object($preformated);
         unset($preformated);
+        $this->replace_object($syntaxhighlights);
+        unset($syntaxhighlights);
         $this->replace_object($musicality);
         unset($musicality);
         $this->replace_object($mathematics);
