@@ -1960,6 +1960,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y}}');
         $doi_t->set_free_doi_access();
         $this->assertSame('free', $doi_t->get2('doi-access'));
+        $this->assertStringContainsString('10.1186/s12915-020-00940-y| doi-access=free', $doi_t->parsed_text());
     }
 
     public function testDoiInlineFreePrefixDetected(): void {
@@ -1967,6 +1968,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $doi_t->parse_text('{{doi-inline|10.1186/s12915-020-00940-y|Title}}');
         $doi_t->set_free_doi_access();
         $this->assertSame('free', $doi_t->get2('doi-access'));
+        $this->assertStringContainsString('10.1186/s12915-020-00940-y|Title| doi-access=free', $doi_t->parsed_text());
     }
 
     public function testDoiNonFreePrefixNotDetected(): void {
