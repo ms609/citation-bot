@@ -1565,6 +1565,9 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860
 
 /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above. */
 const NULL_DOI_LIST = [
+    '10.1097/00005392-199508000-00082' => true,
+    '10.1097/00005392-200111000-00031' => true,
+    '10.1097/00006454-198203000-00005' => true,
     '10.1057/9781137268747.0013' => true,
     '10.1057/9781137313157.0007' => true,
     '10.1057/9781137323521.0006' => true,
