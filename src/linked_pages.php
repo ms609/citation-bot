@@ -30,7 +30,7 @@ if ($page_name === '') {
     report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
     bot_html_footer();
     exit(0);
-} elseif (mb_substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
+} elseif (mb_substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan', 'Redalert2fan'], true)) { // Do not let people run willy-nilly
     report_warning('API only intended for User generated pages for fixing specific issues ');
     bot_html_footer();
     exit(0);
