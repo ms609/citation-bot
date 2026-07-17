@@ -7107,9 +7107,11 @@ final class Template
             foreach (DOI_FREE_PREFIX as $prefix) {
                 if (mb_stripos($doi, $prefix) === 0) {
                     $p = new Parameter();
-                    $p->parse_text(' |doi-access=free');
+                    $p->pre = $this->param[0]->pre;
                     $p->param = 'doi-access';
+                    $p->eq = '=';
                     $p->val = 'free';
+                    $p->post = '';
                     $this->param[] = $p;
                     report_add(echoable("Adding doi-access: free"));
                     break;
