@@ -209,7 +209,6 @@ final class WikiThingsTest extends testBaseClass {
         // After extracting SyntaxHighlights, the text should no longer contain the raw tag
         $ref = new ReflectionClass($page);
         $textProp = $ref->getProperty('text');
-        $textProp->setAccessible(true);
         $protectedText = $textProp->getValue($page);
         $this->assertStringNotContainsString('<syntaxhighlight', $protectedText);
         // Extract Templates — the {{doi|...}} inside syntaxhighlight should NOT be extracted
