@@ -1955,6 +1955,27 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiFreePrefixDetected(): void {
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y}}');
+        $doi_t->set_free_doi_access();
+        $this->assertSame('free', $doi_t->get2('doi-access'));
+    }
+
+    public function testDoiInlineFreePrefixDetected(): void {
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi-inline|10.1186/s12915-020-00940-y|Title}}');
+        $doi_t->set_free_doi_access();
+        $this->assertSame('free', $doi_t->get2('doi-access'));
+    }
+
+    public function testDoiNonFreePrefixNotDetected(): void {
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi|10.1234/nonfree-example}}');
+        $doi_t->set_free_doi_access();
+        $this->assertNull($doi_t->get2('doi-access'));
+    }
+
     public function testOpenAccessRemoved(): void {
         $text = '{{cite journal|title=Test|doi=10.1234/example|open-access=yes}}';
         $template = $this->process_citation($text);

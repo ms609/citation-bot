@@ -365,6 +365,12 @@ class Page {
         $our_templates_slight = [];
         /** @var array<Template> $our_templates_conferences */
         $our_templates_conferences = [];
+        // Tag standalone {{doi}} and {{doi-inline}} templates with free-DOI access
+        foreach ($all_templates as $this_template) {
+            if (in_array($this_template->wikiname(), ['doi', 'doi-inline'], true)) {
+                $this_template->set_free_doi_access();
+            }
+        }
         report_phase('Remedial work to prepare citations');
         foreach ($all_templates as $this_template) {
             set_time_limit(120);
