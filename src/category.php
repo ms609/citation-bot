@@ -27,6 +27,8 @@ const GET_IS_OKAY = [
     'CS1 errors: extra text: volume',
     'CS1 errors: chapter ignored',
     'CS1 errors: invisible characters',
+    'CS1 maint: missing class',
+    'Unflagged free DOI',
 ];
 
 $category = '';
