@@ -112,6 +112,8 @@ const MK_TRANS = [
     'Linked from' => 'Поврзано од',
     '[[Category:' => '[[Категорија:',
     'Whitelisted category ' => 'Категорија на белата листа ',
+    'Converted page numbers to article numbers. ' => 'Конвертирани страници во броеви на статии. ',
+    'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Конвертиран депрециран параметар за страници во article-number во cite IUCN. ',
 ];
 
 const RU_TRANS = [
@@ -140,6 +142,8 @@ const RU_TRANS = [
     'Linked from' => 'Ссылки с',
     '[[Category:' => '[[Категория:',
     'Whitelisted category ' => 'Категория из белого списка ',
+    'Converted page numbers to article numbers. ' => 'Номера страниц преобразованы в номера статей. ',
+    'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Устаревший параметр page преобразован в article-number в cite IUCN. ',
 ];
 
 const SR_TRANS = [
@@ -168,6 +172,8 @@ const SR_TRANS = [
     'Linked from' => 'Повезано од',
     '[[Category:' => '[[Категорија:',
     'Whitelisted category ' => 'Категорија са беле листе ',
+    'Converted page numbers to article numbers. ' => 'Конвертоване странице у бројеве чланака. ',
+    'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Застарели параметар page конвертован у article-number у cite IUCN. ',
 ];
 
 const VI_TRANS = [
@@ -196,4 +202,6 @@ const VI_TRANS = [
     'Linked from' => 'Liên kết từ',
     '[[Category:' => '[[Thể loại:',
     'Whitelisted category ' => 'Danh mục được cho phép ',
+    'Converted page numbers to article numbers. ' => 'Đã chuyển đổi số trang thành số bài viết. ',
+    'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Tham số page không còn được dùng đã chuyển đổi thành article-number trong cite IUCN. ',
 ];
