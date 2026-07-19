@@ -20,6 +20,7 @@ const GET_IS_OKAY = [
     'CS1 errors: extra text: pages',
     'CS1 errors: extra text: volume',
     'CS1 errors: invisible characters',
+    'CS1 maint: article number as page number',
     'CS1 maint: bibcode',
     'CS1 maint: date format',
     'CS1 maint: extra punctuation',
