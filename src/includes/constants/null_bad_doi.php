@@ -1565,6 +1565,12 @@ const BAD_DOI_EXAMPLES = ['10.2277/0521826179', '10.3149/csm.0302.160', '10.5860
 
 /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above. */
 const NULL_DOI_LIST = [
+    '10.3138/ctr.111.009' => true,
+    '10.3184/147020606783438759' => true,
+    '10.3733/ucanr.8156' => true,
+    '10.3779/j.issn.1009-3419.2009.01.001' => true,
+    '10.3949/ccjm.71.5.433' => true,
+    '10.3949/ccjm.70.10.841' => true,
     '10.1386/seci.3.3.211_1' => true,
     '10.1560/VUTP-RNR5-UU08-Y7WT' => true,
     '10.2307/146631' => true,
