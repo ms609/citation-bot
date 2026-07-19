@@ -32,6 +32,11 @@ const GET_IS_OKAY = [
     'Unflagged free DOI',
 ];
 
+const DEV_USERS = [
+    'AManWithNoPlan',
+    'Redalert2fan',
+];
+
 $category = '';
 $from_get = false;
 if (is_string(@$_POST["cat"])) {
@@ -72,6 +77,12 @@ bot_html_header();
 $api = new WikipediaBot();
 check_blocked();
 
+$dev_user_run = false;
+if (!defined('MAX_PAGES_OVERRIDE') && in_array($api->get_the_user(), DEV_USERS, true)) {
+    define('MAX_PAGES_OVERRIDE', 1000000);
+    $dev_user_run = true;
+}
+
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
 shuffle($pages_in_category);
 $total = count($pages_in_category);
@@ -97,6 +108,10 @@ if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
 if (defined('MAX_PAGES_OVERRIDE')) {
-    $edit_summary_end .= "| Whitelisted category ";
+    if ($dev_user_run) {
+        $edit_summary_end .= "| Developer - max category limit override ";
+    } else {
+        $edit_summary_end .= "| Whitelisted category ";
+    }
 }
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
