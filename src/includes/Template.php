@@ -6708,10 +6708,20 @@ final class Template
         if ($name === 'cite iucn') {
             $page_val = $this->get('page') ?: $this->get('pages');
             if ($page_val !== '' && preg_match('/^e\./i', $page_val)) {
-                if ($this->has('page')) {
-                    $this->rename('page', 'article-number');
-                } else {
-                    $this->rename('pages', 'article-number');
+                $iucn_param = $this->has('page') ? 'page' : 'pages';
+                foreach ($this->param as $p) {
+                    if (mb_strtolower($p->param) === $iucn_param) {
+                        $p->param = 'article-number';
+                        $this->tidy_parameter('article-number');
+                        break;
+                    }
+                }
+                foreach ($this->initial_param as $key => $val) {
+                    if (mb_strtolower($key) === $iucn_param) {
+                        $this->initial_param['article-number'] = $val;
+                        unset($this->initial_param[$key]);
+                        break;
+                    }
                 }
                 $this->mod_article_number_iucn = true;
                 report_action("Converted page to article-number in cite IUCN template");
@@ -6820,8 +6830,21 @@ final class Template
                 $this->forget('issue');
             }
 
-            // Rename page or pages to article-number
-            $this->rename($page_param, 'article-number');
+            // Direct param rename without triggering mod_names or diff entries
+            foreach ($this->param as $p) {
+                if (mb_strtolower($p->param) === $page_param) {
+                    $p->param = 'article-number';
+                    $this->tidy_parameter('article-number');
+                    break;
+                }
+            }
+            foreach ($this->initial_param as $key => $val) {
+                if (mb_strtolower($key) === $page_param) {
+                    $this->initial_param['article-number'] = $val;
+                    unset($this->initial_param[$key]);
+                    break;
+                }
+            }
             $this->mod_article_number = true;
             report_action("Potential article number detected — renamed \"$page_param\" to \"article-number\"");
             return true;
