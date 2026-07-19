@@ -2549,4 +2549,152 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->make_citation($text);
         $this->assertSame('936346', $template->get2('ssrn'));
     }
+
+    public function testDetectArticleNumberDigitDirect(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|pages=100393|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('100393', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberEightDigit(): void {
+        $text = "{{cite journal|doi=10.1098/rsbl.2017.0301|pages=20170301|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('20170301', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberAlphaDirect(): void {
+        $text = "{{cite journal|doi=10.1002/14651858.CD004052|pages=CD004052|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('CD004052', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberEPrefix(): void {
+        $text = "{{cite journal|doi=10.1126/sciadv.adl0822|pages=eadl0822|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('eadl0822', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberCDPub(): void {
+        $text = "{{cite journal|doi=10.1002/14651858.CD005216.pub2|pages=CD005216|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('CD005216', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberEPrefixSkipNonAlpha(): void {
+        // Lua requires entire value to match e[alphanumeric]+ — dots should prevent match
+        $text = "{{cite journal|doi=10.1126/sciadv.adl0822|pages=e.adl0822|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('e.adl0822', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberSkipComma(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|pages=100,393|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('100,393', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberSkipDash(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|pages=100393-100400|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('100393-100400', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberSkipURL(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|pages=https://example.com|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+    }
+
+    public function testDetectArticleNumberSkipZootaxa(): void {
+        // Both doi and page contain "zootaxa" — should skip (false positive)
+        $text = "{{cite journal|doi=10.11646/zootaxa.53401.1.5|pages=zootaxa53401|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('zootaxa53401', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberSkipUnder10000(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.9999|pages=9999|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('9999', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberIUCN(): void {
+        $text = "{{cite IUCN|page=e.123|title=Test Species|year=2020}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('e.123', $template->get2('article-number'));
+        $this->assertNull($template->get2('page'));
+    }
+
+    public function testDetectArticleNumberDeleteIssue(): void {
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|pages=100393|issue=100393|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('100393', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+        $this->assertNull($template->get2('issue'));
+    }
+
+    public function testDetectArticleNumberSkipCiteBook(): void {
+        $text = "{{cite book|doi=10.1016/j.gfs.2020.100393|pages=100393|title=Test Book}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('100393', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberSkipCitationWithoutJournal(): void {
+        $text = "{{citation|doi=10.1016/j.gfs.2020.100393|pages=100393}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertNull($template->get2('article-number'));
+        $this->assertSame('100393', $template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberCitationWithJournal(): void {
+        $text = "{{citation|doi=10.1016/j.gfs.2020.100393|pages=100393|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('100393', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
+
+    public function testDetectArticleNumberPageParam(): void {
+        // Test using singular |page= (not |pages=) to exercise the has('page') branch
+        $text = "{{cite journal|doi=10.1016/j.gfs.2020.100393|page=100393|journal=Test Journal}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('100393', $template->get2('article-number'));
+        $this->assertNull($template->get2('page'));
+    }
+
+    public function testDetectArticleNumberCitationWithWork(): void {
+        // Citation template with |work= instead of |journal= should also be eligible
+        $text = "{{citation|doi=10.1016/j.gfs.2020.100393|pages=100393|work=Test Work}}";
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('100393', $template->get2('article-number'));
+        $this->assertNull($template->get2('pages'));
+    }
 }

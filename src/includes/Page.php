@@ -767,6 +767,12 @@ class Page {
         if ($this->modifications["issue_citebook"]) {
             $auto_summary .= 'Removed unsupported issue parameter from cite book. ';
         }
+        if ($this->modifications["article_number"]) {
+            $auto_summary .= 'Converted page numbers to article numbers. ';
+        }
+        if ($this->modifications["article_number_iucn"]) {
+            $auto_summary .= 'Converted deprecated page parameter to article-number in cite IUCN. ';
+        }
         if ($this->odnb_sub_removed) {
             $auto_summary .= 'Removed ODNBsub template. ';
         }
@@ -1092,5 +1098,7 @@ class Page {
         $this->modifications['ref'] = false;
         $this->modifications['na'] = false;
         $this->modifications['issue_citebook'] = false;
+        $this->modifications['article_number'] = false;
+        $this->modifications['article_number_iucn'] = false;
     }
 }

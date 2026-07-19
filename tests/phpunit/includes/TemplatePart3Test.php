@@ -1474,7 +1474,9 @@ EP - 999 }}';
                             'names' => false,
                             'ref' => false,
                             'na' => false,
-                            'issue_citebook' => false];
+                            'issue_citebook' => false,
+                            'article_number' => false,
+                            'article_number_iucn' => false];
         $this->assertEqualsCanonicalizing($expected, $array);
         $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
     }
@@ -1483,7 +1485,7 @@ EP - 999 }}';
         $text = '{{new cambridge medieval history|ed10=That Guy}}';
         $template = $this->prepare_citation($text);
         $array = $template->modifications();
-        $expected = ['modifications' => [], 'additions' => [], 'deletions' => [], 'changeonly' => [], 'dashes' => false, 'names' => false, 'ref' => false, 'na' => false, 'issue_citebook' => false];
+        $expected = ['modifications' => [], 'additions' => [], 'deletions' => [], 'changeonly' => [], 'dashes' => false, 'names' => false, 'ref' => false, 'na' => false, 'issue_citebook' => false, 'article_number' => false, 'article_number_iucn' => false];
         $this->assertEqualsCanonicalizing($expected, $array);
     }
 

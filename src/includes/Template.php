@@ -49,6 +49,8 @@ final class Template
     private bool $mod_ref = false;
     private bool $mod_na = false;
     private bool $mod_issue_citebook = false;
+    private bool $mod_article_number = false;
+    private bool $mod_article_number_iucn = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -6173,6 +6175,9 @@ final class Template
 
     public function final_tidy(): void {
         set_time_limit(120);
+        // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
+        // but its page->article-number rename still needs to run via detect_article_number()
+        $this->detect_article_number();
         if ($this->should_be_processed()) {
             if ($this->initial_name !== $this->name) {
                 $this->tidy();
@@ -6694,6 +6699,135 @@ final class Template
                 }
             }
         }
+    }
+
+    private function detect_article_number(): bool {
+        $name = $this->wikiname();
+
+        // Handle cite IUCN special case
+        if ($name === 'cite iucn') {
+            $page_val = $this->get('page') ?: $this->get('pages');
+            if ($page_val !== '' && preg_match('/^e\./i', $page_val)) {
+                if ($this->has('page')) {
+                    $this->rename('page', 'article-number');
+                } else {
+                    $this->rename('pages', 'article-number');
+                }
+                $this->mod_article_number_iucn = true;
+                report_action("Converted page to article-number in cite IUCN template");
+                return true;
+            }
+            return false;
+        }
+
+        // Only apply to cite journal, cite conference, or citation with journal/work
+        if (!in_array($name, ['cite journal', 'cite conference', 'citation'], true)) {
+            return false;
+        }
+        if ($name === 'citation' && $this->blank(['journal', 'work'])) {
+            return false;
+        }
+
+        // Need both page(s) and doi
+        if ($this->has('page') && !$this->blank('page')) {
+            $page_param = 'page';
+            $pages_value = $this->get('page');
+        } elseif ($this->has('pages') && !$this->blank('pages')) {
+            $page_param = 'pages';
+            $pages_value = $this->get('pages');
+        } else {
+            return false;
+        }
+        if ($this->blank('doi')) {
+            return false;
+        }
+
+        $pages_value = mb_trim($pages_value);
+        $doi_value = mb_trim($this->get('doi'));
+
+        // Skip if pages contains range/list characters
+        if (preg_match('/[,;_−–—‒%-]/u', $pages_value)) {
+            return false;
+        }
+
+        // Skip if pages contains URL
+        if (preg_match('/https?:\/\//i', $pages_value)) {
+            return false;
+        }
+
+        $doi_lower = mb_strtolower($doi_value);
+        $pages_lower = mb_strtolower($pages_value);
+
+        // Skip zootaxa false positive
+        if (str_contains($doi_lower, 'zootaxa') && str_contains($pages_lower, 'zootaxa')) {
+            return false;
+        }
+
+        // Skip DDI (Digital Document Identifier) false positive:
+        // Some DOIs contain "ddi" in their suffix which can match DDI-like page values
+        if (str_contains($doi_lower, 'ddi') && str_contains($pages_lower, 'ddi')) {
+            return false;
+        }
+
+        $match_found = false;
+        $issue_value = $this->get('issue');
+
+        if (ctype_digit($pages_value)) {
+            // Digit-only
+            if ((int) $pages_value < 10000) {
+                return false;
+            }
+
+            // Direct DOI suffix match
+            if (str_ends_with($doi_lower, $pages_value)) {
+                $match_found = true;
+            }
+
+            // 8-digit with dot insertion
+            if (!$match_found && mb_strlen($pages_value) === 8) {
+                $dot_pages = mb_substr($pages_value, 0, 4) . '.' . mb_substr($pages_value, 4, 4);
+                if (str_ends_with($doi_lower, $dot_pages)) {
+                    $match_found = true;
+                }
+            }
+        } else {
+            // Alpha-numeric
+
+            // Direct 5+ char DOI suffix match
+            if (mb_strlen($pages_value) > 4 && str_ends_with($doi_lower, $pages_lower)) {
+                $match_found = true;
+            }
+
+            // 'e' prefix: strip leading 'e', match remainder
+            if (!$match_found && preg_match('/^e([a-z\d]+)$/i', $pages_value, $m)) {
+                $epage = mb_strtolower($m[1]);
+                if (str_ends_with($doi_lower, $epage)) {
+                    $match_found = true;
+                }
+            }
+
+            // 'CD' prefix + digits: match with .pub\d suffix
+            if (!$match_found && preg_match('/^cd\d+$/i', $pages_value)) {
+                if (preg_match('/' . preg_quote($pages_lower, '/') . '\.pub\d$/i', $doi_lower)) {
+                    $match_found = true;
+                }
+            }
+        }
+
+        if ($match_found) {
+            // Delete issue if it has the same value
+            if ($issue_value !== '' && $issue_value === $pages_value) {
+                $this->forget('issue');
+            }
+
+            // Rename page or pages to article-number
+            $this->rename($page_param, 'article-number');
+            $this->mod_article_number = true;
+            report_action("Potential article number detected — renamed \"$page_param\" to \"article-number\"");
+            return true;
+        }
+
+        return false;
     }
 
     public function verify_doi(): bool {
@@ -7423,6 +7557,8 @@ final class Template
         $ret['ref'] = $this->mod_ref;
         $ret['na'] = $this->mod_na;
         $ret['issue_citebook'] = $this->mod_issue_citebook;
+        $ret['article_number'] = $this->mod_article_number;
+        $ret['article_number_iucn'] = $this->mod_article_number_iucn;
         return $ret;
     }
 
