@@ -231,6 +231,19 @@ function get_open_access_url(Template $template): void {
     if (mb_strpos($doi, '10.1093/') === 0) {
         return;
     }
+    // Skip Unpaywall HTTP call if template already has an OA identifier
+    if ($template->has('pmc') || $template->has('arxiv') || $template->has('eprint') ||
+        $template->has('citeseerx') || $template->has('biorxiv') || $template->has('medrxiv') ||
+        $template->has('rfc')) {
+        return;
+    }
+    if (($template->has('doi') && $template->get('doi-access') === 'free') ||
+        ($template->has('jstor') && $template->get('jstor-access') === 'free') ||
+        ($template->has('osti') && $template->get('osti-access') === 'free') ||
+        ($template->has('hdl') && $template->get('hdl-access') === 'free') ||
+        ($template->has('ol') && $template->get('ol-access') === 'free')) {
+        return;
+    }
     $return = get_unpaywall_url($template, $doi);
     if (in_array($return, GOOD_FREE, true)) {
         return;

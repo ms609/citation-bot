@@ -532,6 +532,8 @@ function query_crossref_newapi(string $doi): object {
 
     if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
         $result = $json->message;
+        HandleCache::$cache_active[$doi] = true;
+        HandleCache::check_memory_use();
     } else {
         sleep(2);  // @codeCoverageIgnore
         return new stdClass(); // @codeCoverageIgnore

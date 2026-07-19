@@ -155,6 +155,13 @@ function expand_by_adsabs(Template $template): void {
     if (mb_strpos($template->get('doi'), '10.1093/') === 0) {
         return;
     }
+    // If CrossRef already provided core metadata, skip ADS HTTP call.
+    // The cache-only bibcode mapping (no HTTP) already ran above at lines 108-116.
+    if ($template->has('title') && $template->has('journal') &&
+        ($template->has('year') || $template->has('date'))) {
+        $template->record_api_usage('adsabs', 'bibcode');
+        return;
+    }
     report_action("Checking AdsAbs database");
     if ($template->has('doi') && preg_match(REGEXP_DOI, $template->get_without_comments_and_placeholders('doi'), $doi)) {
         $result = query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"')); // In DOI we trust
