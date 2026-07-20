@@ -110,7 +110,7 @@ if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] | #UCB_Category ";
 if (defined('MAX_PAGES_OVERRIDE')) {
     if ($dev_user_run) {
-        $edit_summary_end .= "| Developer - max category limit override ";
+        $edit_summary_end .= "| Developer - max category limit override enabled ";
     } else {
         $edit_summary_end .= "| Whitelisted category ";
     }
