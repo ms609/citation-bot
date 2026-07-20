@@ -738,9 +738,11 @@ final class Zotero {
                     $result->DOI = $matches[1];
             }
             $possible_doi = sanitize_doi($result->DOI);
-            // SSRN Zotero translator returns an incomplete DOI "10.2139/" — the ssrn= parameter
-            // is the canonical identifier; the DOI is redundant and {{cite SSRN}} doesn't support it.
-            if ($template->has('ssrn') && !$template->blank('ssrn') && preg_match('~^10\.2139/?$~i', $possible_doi)) {
+            // SSRN Zotero translator returns DOIs under the SSRN prefix (10.2139/...).
+            // The ssrn= parameter is the canonical identifier; the DOI is redundant,
+            // and {{cite SSRN}} doesn't support the doi parameter.
+            if (($template->has('ssrn') && !$template->blank('ssrn') && preg_match('~^10\.2139~i', $possible_doi)) ||
+                $template->wikiname() === 'cite ssrn') {
                 $possible_doi = '';
             }
             if (doi_works($possible_doi)) {

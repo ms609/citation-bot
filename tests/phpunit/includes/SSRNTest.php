@@ -43,6 +43,25 @@ final class SSRNTest extends testBaseClass {
         $this->addToAssertionCount(count($cases) * 4);
     }
 
+    /** Verify that Zotero returning a complete SSRN DOI does not add it to cite ssrn template */
+    public function testSrrnZoteroDoesNotAddDoi(): void {
+        $text = '{{cite ssrn|ssrn=3724000|title=Test}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Test',
+            'itemType' => 'report',
+            'DOI' => '10.2139/ssrn.3724000',
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('doi'));
+        $this->assertSame('cite ssrn', $template->wikiname());
+        $this->assertSame('3724000', $template->get2('ssrn'));
+    }
+
     public function testSrrnPrepareFull(): void {
         $cases = [];
         $cases[] = ['pmc', '{{cite ssrn|ssrn=936346|pmc=123456}}',
