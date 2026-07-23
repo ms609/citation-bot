@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v7.0.0
+      uses: actions/checkout@v7.0.1
 
     - name: Run actionlint
       uses: raven-actions/actionlint@v2.2.0
