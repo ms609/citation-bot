@@ -258,6 +258,12 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame("{{Citation}}", $expanded->parsed_text());
     }
 
+    public function testLowercasePmidTemplateNameIsPreserved(): void {
+        $text = '{{pmid|15896339}}';
+        $page = $this->process_page($text);
+        $this->assertSame($text, $page->parsed_text());
+    }
+
     public function testCleanUpTemplates2(): void {
         $text = "{{Citeweb|page=2}}";
         $expanded = $this->process_citation($text);

@@ -1854,7 +1854,6 @@ const TEMPLATE_CONVERSIONS = [
     ['youtube', 'YouTube'],
     ['Youtube', 'YouTube'],
     ['pmc', 'PMC'],
-    ['pmid', 'PMID'],
     ['jstor', 'JSTOR'],
     ['lccn', 'LCCN'],
     ['Pmc', 'PMC'],
