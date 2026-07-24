@@ -1,92 +1,51 @@
-core:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/includes/Template.php
-      - src/includes/Parameter.php
-      - src/includes/Page.php
-
-api:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/includes/api/*
-
-tools:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/includes/NameTools.php
-      - src/includes/URLtools.php
-      - src/includes/MathTools.php
-      - src/includes/WikiThings.php
-      - src/includes/TextTools.php
-      - src/includes/doiTools.php
-      - src/includes/miscTools.php
-
-constants:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/includes/constants.php
-      - src/includes/constants/*
-
-infrastructure:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/includes/WikipediaBot.php
-      - src/includes/WebTools.php
-      - src/includes/setup.php
-      - src/includes/bot_curl.php
-      - src/includes/big_jobs.php
-      - src/includes/user_messages.php
-      - src/authenticate.php
-
-entrypoints:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/process_page.php
-      - src/gadgetapi.php
-      - src/generate_template.php
-      - src/category.php
-      - src/gitpull.php
-      - src/kill_big_job.php
-      - src/linked_pages.php
-      - src/preview_results.php
-
-frontend:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/index.html
-      - src/preview.html
-      - src/assets/*
-      - src/robots.txt
-      - src/.user.ini
-
-tests:
-  - changed-files:
-    - any-glob-to-any-file:
-      - tests/**/*
-
 ai:
   - changed-files:
     - any-glob-to-any-file:
       - AGENTS.md
-      - .gemini/GEMINI.md
-      - .claude/**
-      - .cursor/**
       - .github/copilot-instructions.md
+      - .aider.conf.yml
+      - .gemini/GEMINI.md
 
-docs:
+api:
   - changed-files:
     - any-glob-to-any-file:
-      - docs/**/*
-      - '*.md'
-      - CITATION.cff
-      - LICENSE
+      - src/includes/api/**
 
 ci:
   - changed-files:
     - any-glob-to-any-file:
-      - .github/workflows/*
-      - .github/dependabot.yml
-      - .github/labeler.yml
+      - .github/workflows/**
+
+config:
+  - changed-files:
+    - any-glob-to-any-file:
+      - composer.json
+      - composer.lock
+      - phpunit.xml.dist
+      - phpstan.neon
+      - psalm.xml
+      - .phpcs.xml
+      - progpilot.yml
+      - .phplint.yml
+      - .markdownlint-cli2.yaml
+      - src/env.php.example
+      - CITATION.cff
+      - catalog-info.yaml
+
+constants:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/constants/**
+      - src/includes/constants.php
+
+core:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/Template.php
+      - src/includes/Page.php
+      - src/includes/Parameter.php
+      - src/includes/WikiThings.php
+      - src/includes/WikipediaBot.php
 
 docker:
   - changed-files:
@@ -94,32 +53,48 @@ docker:
       - Dockerfile
       - docker-compose.yml
 
-config:
+docs:
   - changed-files:
     - any-glob-to-any-file:
+      - docs/**
+      - '**/README.md'
+      - AGENTS.md
+      - CITATION.cff
+      - .github/copilot-instructions.md
+
+entrypoints:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/*.php
+      - src/index.html
+
+infrastructure:
+  - changed-files:
+    - any-glob-to-any-file:
+      - src/includes/setup.php
+      - src/includes/bot_curl.php
+      - src/includes/user_messages.php
+      - src/includes/miscTools.php
+      - src/includes/WebTools.php
+      - src/includes/big_jobs.php
+
+php:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.php'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - tests/**
       - phpunit.xml.dist
-      - progpilot.yml
-      - progpilot.json
-      - .phpcs.xml
-      - .phplint.yml
-      - phpstan.neon
-      - psalm.xml
-      - .trivyignore
-      - .markdownlint-cli2.yaml
-      - .lycheeignore
-      - .gitignore
-      - .aider.conf.yml
-      - .phan/config.php
-      - catalog-info.yaml
 
-deps:
+tools:
   - changed-files:
     - any-glob-to-any-file:
-      - composer.json
-      - composer.lock
-
-security:
-  - changed-files:
-    - any-glob-to-any-file:
-      - src/env.php.example
-      - src/authenticate.php
+      - src/includes/NameTools.php
+      - src/includes/TextTools.php
+      - src/includes/URLtools.php
+      - src/includes/doiTools.php
+      - src/includes/MathTools.php
+      - src/robots.txt
