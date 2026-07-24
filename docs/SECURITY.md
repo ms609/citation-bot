@@ -2,11 +2,11 @@
 
 ## Supported Versions
 
-Only the most current version is supported and deployed.
+Only the current deployed revision of `master` is supported.
 
 | Version        | Supported          |
 | -------------- | ------------------ |
-| Master Branch  | :white_check_mark: |
+| `master`       | :white_check_mark: |
 | All Others     | :x:                |
 
 ## Reporting a Vulnerability

@@ -31,6 +31,9 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+# Required runtime extensions
+RUN docker-php-ext-install curl mbstring xml simplexml
+
 # Needed for PHPUnit time limit options (e.g. --enforce-time-limit --default-time-limit 13000)
 RUN docker-php-ext-install pcntl
 

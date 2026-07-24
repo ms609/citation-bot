@@ -35,9 +35,9 @@ Citation Bot automatically expands and formats references on Wikipedia when requ
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-- Citation Bot, found in `index.html` (web frontend) and `process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. All activity takes place on Toolforge. Single pages can be GETed.
-- Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-- `generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+- Citation Bot, found in `src/index.html` (web frontend) and `src/process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. The public production deployment runs on Toolforge. Single pages can be requested via GET, which requires prior web authorization (a `CiteBot` cookie); use the web form (POST) or CLI for multiple pages.
+- Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `src/gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
+- `src/generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_talk:Citation_bot>.
 
@@ -45,16 +45,16 @@ Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_
 
 The Citation Bot has two main user-facing interfaces with different performance characteristics:
 
-### Web Interface (`index.html` + `process_page.php`)
+### Web Interface (`src/index.html` + `src/process_page.php`)
 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
-- **Timeout limit**: Typically completes for all pages, even if the web interface times out
+- **Timeout limit**: Request-level processing continues as long as the HTTP connection holds, but individual page lists are subject to internal size caps (see "Structure" below)
 
-### Citation Expander Gadget (`gadgetapi.php`)
+### Citation Expander Gadget (`src/gadgetapi.php`)
 
-- **Default mode**: Fast mode only (slow mode is always disabled)
+- **Default mode**: Fast mode (slow mode is not requested by the on-wiki gadget)
 - **Operations performed**:
   - ✓ Expands PMIDs, DOIs, arXiv, JSTOR IDs to full citations
   - ✓ Adds missing citation parameters (authors, title, journal, date, pages, etc.)
@@ -88,6 +88,12 @@ Entry points (under `src/`):
 - `src/category.php`: processes all pages within a Wikipedia category
 - `src/linked_pages.php`: processes all pages that link to a given page
 
+Operational/support endpoints:
+
+- `src/authenticate.php`: OAuth authorization flow for web users
+- `src/gitpull.php`: password-protected deployment/update endpoint
+- `src/kill_big_job.php`: lets users kill their own long-running batch jobs
+
 Includes (under `src/includes/`):
 
 - `src/includes/constants.php`: constants defined; further constants are split into files under `src/includes/constants/`
@@ -103,7 +109,7 @@ Includes (under `src/includes/`):
 - `src/includes/user_messages.php`: functions for reporting bot activity to users
 - `src/includes/doiTools.php`: DOI-specific validation and normalization functions
 - `src/includes/big_jobs.php`: handling for large batch jobs
-- `src/includes/api/API*.php`: sets up needed functions for expanding PMID/DOI/URL/etc
+- `src/includes/api/API*.php`: sets up needed functions for expanding PMID/DOI/URL/etc. Note: `APIissn.php` and `APIsici.php` are loaded indirectly by `Page.php` and `Template.php` rather than through `setup.php`.
 - `src/includes/Page.php`: Represents an individual page to expand citations on. Key methods are `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 - `src/includes/Template.php`: most of the actual expansion happens here. `Template::add_if_new()` is generally (but not always) used to add parameters to the updated template; `Template::tidy()` cleans up the template, but may add parameters as well and have side effects.
 - `src/includes/WikiThings.php`: Handles comments, nowiki, etc. tags
@@ -123,7 +129,7 @@ The bot requires PHP >= 8.4.
 
 To run the bot from a new environment, you will need to create an `src/env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `src/env.php.example` to `src/env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
-    chmod go-rwx env.php
+    chmod go-rwx src/env.php
 
  To run the bot as a webservice from WM Toolforge:
 
@@ -135,26 +141,30 @@ Or for testing in the shell:
 
     webservice --backend=kubernetes php8.4 shell
 
-Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
-
 ## Running on the command line
 
-In order to run on the command line one needs OAuth tokens as documented in `src/env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `src/includes/setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:2.3.0`.  Then the bot can be run such as:
+In order to run on the command line one needs OAuth tokens as documented in `src/env.php.example` (there are additional API keys that are needed to run some functions).  The bot's User-Agent strings (`BOT_USER_AGENT` and `BOT_CROSSREF_USER_AGENT`) are defined in `src/includes/constants.php`. Use Composer to install dependencies:
+
+    composer install
+
+Then the bot can be run such as:
 
     /usr/bin/php ./src/process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
 
-The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with optional packages included: php84-mbstring php84-sockets php84-opcache php84-openssl php84-xmlrpc php84-gettext php84-curl php84-intl php84-iconv
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expects a file of such name to contain a single line of | separated page names.  This code requires PHP 8.4 with the following extensions installed: curl, mbstring, xml (SimpleXML). Additional extensions may be needed for development tools and test coverage.
 
 Command line parameters:
 
 - `--slow` - retrieve bibcodes and expand URLs
-- `--savetofiles` - save processed pages as files (with .md extension) instead of submitting them to Wikipedia
+- `--savetofiles` - write changed page text only to sanitized `.md` filenames in the current working directory instead of submitting them to Wikipedia
 
 ## Running in web browser locally
 
-One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit <http://localhost:8081>.
+One way to set up a localhost that runs in your web browser is to use Docker. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) on your computer, open a shell, `cd` to the root directory of this repo, type `docker compose up -d`, then visit <http://localhost:8081/src/>.
 
-To install Composer dependencies, start the container as noted above, then type `docker exec -it citation-bot-php-1 composer update`.
+To install Composer dependencies, start the container as noted above, then type:
+
+    docker compose exec php composer install
 
 To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See src/env.php.example in the src directory.
 

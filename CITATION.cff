@@ -22,4 +22,4 @@ abstract: >-
   Wikipedia. It retrieves citation data from a variety of
   sources including CrossRef (DOI), PMID, PMC and JSTOR, and
   returns a formatted citation.
-license: AGPL-3.0
+license: GPL-3.0-or-later

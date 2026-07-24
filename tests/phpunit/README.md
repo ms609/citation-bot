@@ -1,10 +1,11 @@
 # Tests for Citation Bot classes
 
-To run the tests for Parameter.php (for example), first check that PHP is installed and that the php directory is added to your system `PATH` environment variable. Then navigate to the root directory in which you have checked out the citation bot code, i.e. the folder containing setup.php.
+To run the tests for Parameter.php (for example), first check that PHP is installed.
+Then navigate to the repository root (the directory containing `composer.json`).
 
-Then, run the following command from the command line:
+Then, run the following command:
 
-    php vendor/bin/phpunit --bootstrap src/includes/setup.php tests/phpunit/gadgetapiTest.php
+    php vendor/bin/phpunit tests/phpunit/includes/parameterTest.php
 
 ## Running the Full Test Suite
 
@@ -14,21 +15,27 @@ The recommended way to run all tests is:
 
 This uses ParaTest for parallel test execution:
 
-- `--processes=auto`: Automatically uses all available CPU cores
-- `--runner=WrapperRunner`: PHPUnit 12 compatibility
-- `--coverage-clover coverage.xml`: Code coverage reports
-- `--verbose`: Shows individual test execution times in console output
+- `--processes=auto`: Automatically selects worker count based on CPU cores
+- `--runner=WrapperRunner`: ParaTest's default wrapper runner
+- `--coverage-clover coverage.xml`: Combined Clover coverage output
+- `--log-junit=junit.xml`: Records per-test results and durations
+- `tests/parse_junit.php`: Prints durations sorted slowest-first
+- `--verbose`: Prints additional ParaTest worker/debug information
 
-ParaTest provides 2-4x speedup by distributing tests across multiple processes. Required because PHPUnit 12 removed native parallel execution support.
+Parallel execution can reduce runtime, depending on CPU count, network-bound tests,
+and external API limits.
 
-The verbose output displays timing information for each test, making it easy to identify slow tests and monitor performance.
+**Prerequisites:** The Composer test script is designed for Linux, Docker, or WSL.
+It requires PCOV or Xdebug coverage support, `pcntl`, and Composer dependencies
+installed. For a portable focused test during development, use:
 
-To run the tests on Toolforge, first
+    php vendor/bin/phpunit path/to/Test.php
+
+To run the tests on Toolforge, first:
 
     webservice --backend=kubernetes php8.4 shell
 
-then install phpunit and then test:
+Then install dependencies and run:
 
-    php ../phpunit-12.phar --bootstrap [etc]
-
-Use Ctrl-D to escape from Toolforge.
+    composer install
+    php vendor/bin/phpunit tests/phpunit/includes/parameterTest.php

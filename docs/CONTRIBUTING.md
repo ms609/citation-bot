@@ -4,15 +4,26 @@ Thanks for contributing to the maintenance of Citation Bot.
 
 ## Testing
 
-We use phpunit to test code; please write test case examples for new code you create. It is helpful if each test case example describes the specific function that it is trying to test.
+We use PHPUnit to test code; please write test case examples for new code you create. It is helpful if each test case example describes the specific function that it is trying to test.
 
 ## Quality verification
 
 All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, and YAML.
 
+| Tool | Purpose | Composer script |
+|------|---------|----------------|
+| PHPUnit + ParaTest | Test suite | `composer run test` |
+| PHPLint | Syntax check | `composer run phplint` |
+| PHP CodeSniffer | Code style | `composer run phpcs` |
+| PHPStan (level 6) | Static analysis | `composer run phpstan` |
+| Psalm | Static analysis | `composer run psalm` |
+| Psalm (taint) | Security taint analysis | `composer run psalm-taint` |
+| Phan | Static analysis | `composer run phan` |
+| Progpilot | Security analysis | `composer run progpilot` |
+
 ## Submitting changes
 
-Please send a GitHub Pull Request with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)). Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
@@ -24,7 +35,7 @@ $ git commit -m "A brief summary of the commit
 
 ## API keys
 
-The test suite detects missing keys and skips tests.  A developer should consider getting their own keys set up for development.
+Tests can run without private credentials, but credential-dependent sections may be bypassed and reported as passing rather than skipped. For fuller coverage, copy `src/env.php.example` to `src/env.php` and configure your own development credentials; never commit that file.
 
 ## Coding conventions
 
@@ -73,4 +84,4 @@ The bot reports its activity to users using:
 - External data sources that send unexpected data, including Wikipedia - be defensive in your programming.
 - External data sources that suddenly change data - we need tests to detect this
 - CS1/CS2 sometimes changes and what was a good edit yesterday is a bad edit today.  Thus the Wikipedia talk page for the bot needs to be monitored for bugs and suggestions.
-- Do not merge changes without running the test suite. At a minimum, run the full test suite and ensure the non-static tests execute beyond initial startup before merging. “Minor changes” are frequently incorrect and must be validated by tests.  Trust us, we have failed.
+- Do not merge changes without running the test suite. At a minimum, run the full test suite and ensure the non-static tests execute beyond initial startup before merging. "Minor changes" are frequently incorrect and must be validated by tests.  Trust us, we have failed.
