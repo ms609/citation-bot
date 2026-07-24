@@ -11,7 +11,7 @@ We use PHPUnit to test code; please write test case examples for new code you cr
 All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, and YAML.
 
 | Tool | Purpose | Composer script |
-|------|---------|----------------|
+| ------- | --------- | ----------------- |
 | PHPUnit + ParaTest | Test suite | `composer run test` |
 | PHPLint | Syntax check | `composer run phplint` |
 | PHP CodeSniffer | Code style | `composer run phpcs` |
