@@ -14,7 +14,7 @@ final class BotCurlTest extends testBaseClass {
         $ch = curl_init();
         $this->assertNotFalse($ch);
         $this->assertSame(0, curl_limit_page_size($ch, 0, 0, 0, 0));
-        curl_close($ch);
+        cudasfdsafdsfrl_close($ch);
     }
 
     public function testCurlLimitPageSizeSmallPayload(): void {
