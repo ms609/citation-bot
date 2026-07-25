@@ -152,9 +152,11 @@ jobs:
       with:
         path: vendor
         key: ${{ runner.os }}-composer-8.5-${{ hashFiles('**/composer.lock') }}
+        # No fallback to a generic composer- cache key — PHP 8.5 needs a
+        # clean vendor install to catch forward-compatibility issues.
+        # Cold-cache time is acceptable since this job only runs weekly.
         restore-keys: |
           ${{ runner.os }}-composer-8.5-
-          ${{ runner.os }}-composer-
 
     - name: Validate composer.json and composer.lock
       run: composer validate
