@@ -1212,6 +1212,9 @@ final class TemplatePart2Test extends testBaseClass {
 
     public function testZooKeys2(): void {
         $this->requires_secrets(function (): void {
+            if (WikipediaBot::is_redirect('Zookeys') === -2) {
+                $this->markTestSkipped('Skipping because Wikipedia API is unavailable');
+            }
             $text = '{{Cite journal|journal=[[Zookeys]]}}';
             $expanded = $this->process_citation($text);
             $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
