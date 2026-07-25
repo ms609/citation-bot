@@ -81,7 +81,7 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@2.37.2
       with:
-        php-version: '8.4'
+        php-version: '8.6'
         ini-values: pcov.directory=., opcache.enable=1, opcache.enable_cli=1, opcache.jit_buffer_size=0
         coverage: pcov
         extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml, pcntl
@@ -100,7 +100,7 @@ jobs:
           ${{ runner.os }}-composer-8.4-
           ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
-      run: composer validate
+      run: composer update --no-install && composer validate
 
     - name: Install dependencies
       run: composer install -vvv --no-progress
