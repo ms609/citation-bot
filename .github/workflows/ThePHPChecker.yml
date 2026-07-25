@@ -27,7 +27,7 @@ jobs:
         coverage: none
 
     - name: Validate composer.json and composer.lock
-      run: omposer update --no-install && omposer validate
+      run: omposer update --no-install && composer validate
 
     - name: The PHP Security Checker
       uses: symfonycorp/security-checker-action@v5
