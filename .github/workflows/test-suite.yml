@@ -154,6 +154,7 @@ jobs:
         key: ${{ runner.os }}-composer-8.5-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-8.5-
+          ${{ runner.os }}-composer-
 
     - name: Validate composer.json and composer.lock
       run: composer validate
