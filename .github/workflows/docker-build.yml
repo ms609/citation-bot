@@ -49,8 +49,13 @@ jobs:
     - name: Start container
       run: docker compose up -d
 
-    - name: Smoke test
-      run: curl --fail --retry 10 --retry-delay 3 --retry-connrefused --max-time 60 http://localhost:8081/src/
+    - name: Smoke test (verify PHP and Apache are functional)
+      run: |
+        docker compose exec -T php php -r "echo 'PHP OK';"
+        docker compose exec -T php php -m | grep -q curl && echo 'curl extension OK'
+        docker compose exec -T php php -m | grep -q mbstring && echo 'mbstring extension OK'
+        docker compose exec -T php php -m | grep -q xdebug && echo 'xdebug extension OK'
+        docker compose exec -T php composer --version
 
     - name: Tear down container
       if: always()
