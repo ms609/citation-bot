@@ -1766,7 +1766,7 @@ final class Template
                 }
                 $pages_value = $this->get('pages');
                 $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
-                $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
+                $en_dash = ["\u{2013}", chr(150), chr(226), '-', '&ndash;'];
                 $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
                 if (
                     mb_stripos($all_page_values, 'see ') !== false || // Someone is pointing to a specific part
