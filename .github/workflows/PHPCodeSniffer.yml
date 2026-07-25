@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@2.37.2
       with:
-        php-version: '8.4'
+        php-version: '8.6'
         coverage: none
 
     - name: Cache Composer dependencies
@@ -32,7 +32,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
-      run: composer validate
+      run: omposer update --no-install && omposer validate
 
     - name: Install composer packages
       run: composer install -vvv --no-progress
