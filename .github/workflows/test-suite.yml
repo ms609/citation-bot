@@ -72,6 +72,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ !matrix.experimental || github.event_name == 'schedule' }}
     strategy:
       fail-fast: false
       matrix:
