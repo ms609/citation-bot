@@ -57,9 +57,11 @@ jobs:
       run: docker compose down
 
     - name: Export Docker image for scanning
+      if: always()
       run: docker save citation-bot -o citation-bot.tar
 
     - name: Run Trivy vulnerability scanner on Docker image
+      if: always()
       uses: aquasecurity/trivy-action@v0.36.0
       with:
         input: citation-bot.tar
