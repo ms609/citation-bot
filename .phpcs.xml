@@ -33,6 +33,9 @@
         <exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch"/>
         <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps"/>
     </rule>
+    <rule ref="PSR2.ControlStructures.ElseIfDeclaration.NotElseIf">
+        <type>error</type>
+    </rule>
     <file>./src</file>
     <file>./tests</file>
 	<arg name="bootstrap" value="./vendor/mediawiki/mediawiki-codesniffer/utils/bootstrap-ci.php"/>
@@ -87,6 +90,7 @@
                 <element key="mb_ereg_search_getregs" value="null"/>
                 <element key="mb_ereg_search_getpos" value="null"/>
                 <element key="mb_regex_set_options" value="null"/>
+                <element key="curl_close" value="null"/>
             </property>
         </properties>
     </rule>
