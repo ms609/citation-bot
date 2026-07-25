@@ -17,7 +17,6 @@
         "php": ">=8.6"
     },
     "require-dev": {
-        "brianium/paratest": "^7",
         "designsecurity/progpilot": "^1",
         "mediawiki/mediawiki-codesniffer": "^51.0.0",
         "overtrue/phplint": "^9",
