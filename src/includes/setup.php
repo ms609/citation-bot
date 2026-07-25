@@ -13,7 +13,7 @@ date_default_timezone_set('UTC');
 
 if (file_exists('git_pull.lock')) {
     sleep(5);
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="apple-touch-icon" href="https://en.wikipedia.org/static/apple-touch-icon.png" /><title>Citation Bot is updating</title></head><body>Citation bot is updating. Please try again in a few moments.</body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Git pull in progress - please retry in a moment</h1></main></body></html>';
     exit(0);
 }
 
@@ -37,7 +37,7 @@ function bot_debug_log(string $log_this): void {
 if (isset($_REQUEST["wiki_base"])) {
     $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
-        echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Error</title></head><body>Error: wiki_base not recognized.</body></html>';
+        echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Unsupported wiki requested - aborting</h1></main></body></html>';
         exit(0);
     }
 } else {
@@ -62,10 +62,10 @@ ini_set("user_agent", BOT_USER_AGENT);
 include_once __DIR__ . '/../../vendor/autoload.php';
 
 define('CI', (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
-define('GITHUB_EVENT_NAME', getenv('GITHUB_EVENT_NAME') ?? '');
+define('GITHUB_EVENT_NAME', (string) getenv('GITHUB_EVENT_NAME'));
 define('TRUST_DOI_GOOD', true); // TODO: this is a bit too trusting
 
-if (((string) @$_REQUEST["page"] ?? '') . ((string) @$argv[1] ?? '') === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
+if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
     define('EDIT_AS_USER', true);
 }
 
@@ -173,7 +173,7 @@ function check_blocked(): void {
         } elseif (defined('EDIT_AS_USER')) {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction - so BE CAREFUL.</h1></div><pre>';
         } else {
-            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki.</h1></div><pre>';
+            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
             exit(0);
         }
     }
