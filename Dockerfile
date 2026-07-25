@@ -29,7 +29,7 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
     && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_port=9007" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    && echo "xdebug.start_with_request=trigger" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 # Install system packages required to build PHP extensions + composer dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -48,8 +48,12 @@ RUN docker-php-ext-install curl mbstring xml
 RUN docker-php-ext-install pcntl
 
 # Install composer. Once the container is built and running, you can do `composer install` with the following shell command: `docker exec -it citation-bot-php-1 composer install`
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer
+RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && EXPECTED_SIGNATURE=$(curl -sS https://composer.github.io/installer.sig) \
+    && ACTUAL_SIGNATURE=$(php -r "echo hash_file('sha384', 'composer-setup.php');") \
+    && if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]; then echo 'ERROR: Invalid installer signature' >&2; rm composer-setup.php; exit 1; fi \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && rm composer-setup.php
 
 # Allow directory listings. Not a security issue since this is a test environment. Makes it easier to navigate.
 RUN a2enmod autoindex

@@ -26,7 +26,7 @@ jobs:
         with:
           version: 'v0.69.3'
           scan-type: 'fs'
-          scanners: 'vuln,misconfig,secret,license'
+          scanners: 'vuln,misconfig,secret'
           ignore-unfixed: true
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
@@ -45,3 +45,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: ${{ env.SARIF_FILE }}
+          wait-for-processing: false

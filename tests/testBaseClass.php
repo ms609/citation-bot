@@ -70,8 +70,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function requires_secrets(callable $function): void {
         if ($this->testing_skip_wiki) {
-            bot_debug_log('Skipping part/all of a test because of no wiki secrets');
-            $this->assertFaker();
+            $this->markTestSkipped('Skipping part/all of a test because of no wiki secrets');
         } else {
             $function();
         }
@@ -80,12 +79,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     /** Only routines that absolutely need bibcode access since we are limited */
     protected function requires_bibcode(callable $function): void {
         if ($this->testing_skip_bibcode) {
-            bot_debug_log('Skipping part/all of a test because of no bibcode key');
             AdsAbsControl::big_back_on();
             AdsAbsControl::big_give_up();
             AdsAbsControl::small_back_on();
             AdsAbsControl::small_give_up();
-            $this->assertFaker();
+            $this->markTestSkipped('Skipping part/all of a test because of no bibcode key');
         } else {
             try {
                 AdsAbsControl::big_back_on();
@@ -211,7 +209,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     protected function assertFaker(): void {
-        $this->assertTrue(true);
+        $this->markTestSkipped('Skipped — requires manual verification');
     }
 
     protected function assertFailure(): void {

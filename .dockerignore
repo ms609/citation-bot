@@ -1,0 +1,15 @@
+.git/
+vendor/
+coverage/
+.phpunit.cache/
+junit.xml
+coverage.xml
+*.md
+docs/
+tests/
+.phan/
+.graphify/
+.claude/
+.cursor/
+.gemini/
+.aider*

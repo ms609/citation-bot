@@ -3,13 +3,34 @@ name: Docker build
 on:
   push:
     branches: [ master ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'src/**'
+      - '.trivyignore'
   pull_request:
     branches: [ master ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.dockerignore'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'src/**'
+      - '.trivyignore'
   schedule:
-    - cron: '25 17 * * 1'
+    - cron: '40 17 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
+  security-events: write
 
 jobs:
   docker:
@@ -21,3 +42,42 @@ jobs:
 
     - name: Build Docker image
       run: docker build -t citation-bot .
+
+    - name: Validate compose file
+      run: docker compose config --quiet
+
+    - name: Start container
+      run: docker compose up -d
+
+    - name: Smoke test (verify PHP and Apache are functional)
+      run: |
+        docker compose exec -T php php -r "echo 'PHP OK';"
+        docker compose exec -T php php -m | grep -q curl && echo 'curl extension OK'
+        docker compose exec -T php php -m | grep -q mbstring && echo 'mbstring extension OK'
+        docker compose exec -T php php -m | grep -q xdebug && echo 'xdebug extension OK'
+        docker compose exec -T php composer --version
+
+    - name: Tear down container
+      if: always()
+      run: docker compose down
+
+    - name: Export Docker image for scanning
+      if: always()
+      run: docker save citation-bot -o citation-bot.tar
+
+    - name: Run Trivy vulnerability scanner on Docker image
+      if: always()
+      uses: aquasecurity/trivy-action@v0.36.0
+      with:
+        input: citation-bot.tar
+        format: 'sarif'
+        output: 'trivy-image-results.sarif'
+        severity: 'CRITICAL,HIGH'
+        trivyignores: '.trivyignore'
+
+    - name: Upload Trivy image scan results to Security tab
+      if: always()
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: 'trivy-image-results.sarif'
+        wait-for-processing: false

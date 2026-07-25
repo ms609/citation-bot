@@ -15,7 +15,6 @@ on:
       - '.github/workflows/phpstan.yml'
       - '.github/workflows/psalm-security.yml'
       - '.github/workflows/psalm.yml'
-      - '.github/workflows/size-limit.yml'
       - '.github/workflows/ThePHPChecker.yml'
       - '.github/workflows/trivy-analysis.yml'
       - '.github/workflows/YamlJson.yml'
@@ -62,7 +61,7 @@ on:
       - '.lycheeignore'
 
   schedule:
-    - cron: '25 17 * * 1'
+    - cron: '30 18 * * 1'
 
 permissions:
   contents: read
@@ -72,8 +71,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-
+  test-8-4:
     runs-on: ubuntu-24.04
 
     steps:
@@ -81,7 +79,7 @@ jobs:
       uses: actions/checkout@v7.0.1
 
     - name: Setup PHP with PCOV
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@2.37.2
       with:
         php-version: '8.4'
         ini-values: pcov.directory=., opcache.enable=1, opcache.enable_cli=1, opcache.jit_buffer_size=0
@@ -94,11 +92,12 @@ jobs:
 
     - name: Cache Composer dependencies
       id: composer-cache
-      uses: actions/cache@v6
+      uses: actions/cache@v6.1.0
       with:
         path: vendor
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        key: ${{ runner.os }}-composer-8.4-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
+          ${{ runner.os }}-composer-8.4-
           ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -129,4 +128,51 @@ jobs:
       uses: codecov/codecov-action@v7.0.0
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-8-5:
+    if: github.event_name == 'schedule'
+    continue-on-error: true
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v7.0.1
+
+    - name: Setup PHP with PCOV
+      uses: shivammathur/setup-php@2.37.2
+      with:
+        php-version: '8.5'
+        ini-values: pcov.directory=.
+        coverage: pcov
+        extensions: mbstring, intl, sockets, openssl, curl, iconv
+
+    - name: Cache Composer dependencies
+      id: composer-cache
+      uses: actions/cache@v6.1.0
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-8.5-${{ hashFiles('**/composer.lock') }}
+        # No fallback to a generic composer- cache key — PHP 8.5 needs a
+        # clean vendor install to catch forward-compatibility issues.
+        # Cold-cache time is acceptable since this job only runs weekly.
+        restore-keys: |
+          ${{ runner.os }}-composer-8.5-
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install --no-progress
+
+    - name: Full test with PHP
+      env:
+         PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
+         PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
+         PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
+         PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
+         PHP_OAUTH_ACCESS_SECRET: ${{ secrets.PHP_OAUTH_ACCESS_SECRET }}
+         PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
+         PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
+         PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
+      run: composer run test
 

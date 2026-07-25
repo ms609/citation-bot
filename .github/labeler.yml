@@ -75,7 +75,6 @@ docs:
     - any-glob-to-any-file:
       - docs/**/*
       - tests/phpunit/README.md
-      - '**/*.md'
       - CITATION.cff
       - LICENSE
       - .github/copilot-instructions.md
@@ -92,6 +91,7 @@ docker:
     - any-glob-to-any-file:
       - Dockerfile
       - docker-compose.yml
+      - .dockerignore
 
 config:
   - changed-files:
