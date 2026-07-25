@@ -159,7 +159,7 @@ jobs:
           ${{ runner.os }}-composer-8.5-
 
     - name: Validate composer.json and composer.lock
-      run: composer validate
+      run: composer update --no-install && composer validate
 
     - name: Install dependencies
       run: composer install --no-progress
