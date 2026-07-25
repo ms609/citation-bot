@@ -27,7 +27,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@2.37.2
       with:
-        php-version: '8.5'
+        php-version: '8.6'
         extensions: ast
         coverage: none
 
