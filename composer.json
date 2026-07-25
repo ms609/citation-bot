@@ -13,7 +13,7 @@
         "preferred-install": "dist"
     },
     "require": {
-        "mediawiki/oauthclient": "2.3.0",
+        "mediawiki/oauthclient": "dev-master",
         "php": ">=8.4"
     },
     "require-dev": {
