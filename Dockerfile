@@ -31,12 +31,23 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+# Install system packages required to build PHP extensions + composer dependencies
+RUN apt-get update && apt-get install --no-install-recommends -y \
+        libcurl4-openssl-dev \
+        libonig-dev \
+        libxml2-dev \
+        git \
+        zip \
+        unzip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Required runtime extensions (simplexml is built into the php:8.4-apache image)
+RUN docker-php-ext-install curl mbstring xml
+
 # Needed for PHPUnit time limit options (e.g. --enforce-time-limit --default-time-limit 13000)
 RUN docker-php-ext-install pcntl
 
-# Install composer. Once the container is built and running, you can do `composer update` with the following shell command: `docker exec -it citation-bot-php-1 composer update`
-RUN apt-get update && apt-get install --no-install-recommends -y git zip unzip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Install composer. Once the container is built and running, you can do `composer install` with the following shell command: `docker exec -it citation-bot-php-1 composer install`
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer
 

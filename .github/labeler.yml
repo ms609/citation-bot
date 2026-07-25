@@ -4,6 +4,7 @@ core:
       - src/includes/Template.php
       - src/includes/Parameter.php
       - src/includes/Page.php
+      - src/includes/WikiThings.php
 
 api:
   - changed-files:
@@ -16,7 +17,6 @@ tools:
       - src/includes/NameTools.php
       - src/includes/URLtools.php
       - src/includes/MathTools.php
-      - src/includes/WikiThings.php
       - src/includes/TextTools.php
       - src/includes/doiTools.php
       - src/includes/miscTools.php
@@ -49,10 +49,6 @@ entrypoints:
       - src/kill_big_job.php
       - src/linked_pages.php
       - src/preview_results.php
-
-frontend:
-  - changed-files:
-    - any-glob-to-any-file:
       - src/index.html
       - src/preview.html
       - src/assets/*
@@ -72,14 +68,17 @@ ai:
       - .claude/**
       - .cursor/**
       - .github/copilot-instructions.md
+      - .aider.conf.yml
 
 docs:
   - changed-files:
     - any-glob-to-any-file:
       - docs/**/*
-      - '*.md'
+      - tests/phpunit/README.md
+      - '**/*.md'
       - CITATION.cff
       - LICENSE
+      - .github/copilot-instructions.md
 
 ci:
   - changed-files:
@@ -108,18 +107,19 @@ config:
       - .markdownlint-cli2.yaml
       - .lycheeignore
       - .gitignore
-      - .aider.conf.yml
       - .phan/config.php
       - catalog-info.yaml
+      - src/env.php.example
+      - composer.json
+      - composer.lock
 
-deps:
+dependencies:
   - changed-files:
     - any-glob-to-any-file:
       - composer.json
       - composer.lock
 
-security:
+github_actions:
   - changed-files:
     - any-glob-to-any-file:
-      - src/env.php.example
-      - src/authenticate.php
+      - .github/workflows/*

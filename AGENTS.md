@@ -6,9 +6,10 @@ This file provides context for AI assistants working on the Citation Bot project
 
 - Language: PHP 8.4+
 - Main logic: Template.php
-- Test command: php src/process_page.php "Page"
+- Test command: composer run test
+- CLI smoke-test (requires credentials, use --savetofiles to avoid writing to Wikipedia): php src/process_page.php "Page" --savetofiles
 - Code style: verbose, explicit, spaced-out, highly formatted style
-- First task: Read src/includes/Template.php and src/includes/Parameter.php
+- First task: Read src/includes/Template.php, src/includes/Parameter.php, and src/includes/constants/parameters.php
 
 ## Project Overview
 
@@ -17,18 +18,19 @@ Citation Bot is a Wikipedia maintenance tool that automatically expands and form
 **Key Facts:**
 
 - **Language:** PHP 8.4+
-- **License:** GPL-3.0
-- **Status:** Stable/Inactive (maintenance mode)
+- **License:** GPL-3.0-or-later
+- **Status:** Production service is active; repository is classified as stable/inactive (maintenance mode)
 - **Repository:** <https://github.com/ms609/citation-bot>
 - **Production:** <https://citations.toolforge.org>
 - **Platform:** Wikimedia Toolforge (Kubernetes)
 
 ## Architecture
 
-The system has two main components:
+The system has three main components:
 
-1. **Web Interface** (`index.html` + `process_page.php`) - Batch processes entire Wikipedia pages
-2. **Gadget API** (`gadgetapi.php`) - Real-time in-browser citation expansion during editing
+1. **Web Interface** (`src/index.html` + `src/process_page.php`) - Batch processes entire Wikipedia pages
+2. **Gadget API** (`src/gadgetapi.php`) - Real-time in-browser citation expansion during editing
+3. **Template Generator** (`src/generate_template.php`) - Creates a single wiki citation from an identifier
 
 ### Core Processing Flow
 
@@ -45,7 +47,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - **`src/includes/Template.php`** - Template class - Core citation expansion logic
 - **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
 - **`src/includes/WikipediaBot.php`** - WikipediaBot class - Wikipedia API client with OAuth
-- **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 8 concrete subclasses
+- **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 9 concrete subclasses
 - **`src/includes/URLtools.php`** - URL normalization and metadata extraction (standalone functions, no class)
 - **`src/includes/NameTools.php`** - Author name parsing and formatting (standalone functions, no class)
 - **`src/includes/MathTools.php`** - MathML to LaTeX conversion (standalone function, no class)
@@ -55,7 +57,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 **Important characteristics of this codebase:**
 
 - Uses a verbose, explicit, spaced-out, highly formatted style
-- Assignments within conditionals are common
+- Assignments within conditionals are common (to note possible side effects)
 - Multi-line if/foreach/else statements (with braces)
 - Method calls that modify state often occur within assignments
 - Do not use `else if` but do use `elseif` (they behave differently)
@@ -66,8 +68,9 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ```php
 if ($doi = $template->get('doi')) {
-  if ($metadata = CrossRef::query($doi)) {
-    $template->add_if_new('title', $metadata->title);
+  $crossRef = query_crossref($doi);
+  if ($crossRef) {
+    $template->add_if_new('title', $crossRef->title);
   }
 }
 ```
@@ -75,11 +78,11 @@ if ($doi = $template->get('doi')) {
 **Avoid (too compact for this project):**
 
 ```php
-if ($doi = $template->get('doi') && $metadata = CrossRef::query($doi))
-  $template->add_if_new('title', $metadata->title);
+if ($doi = $template->get('doi') && $crossRef = query_crossref($doi))
+  $template->add_if_new('title', $crossRef->title);
 ```
 
-## External API Integration
+## Metadata Sources and Identifier Processors
 
 The bot integrates with multiple external services.  Sometimes these APIs will fail:
 
@@ -90,16 +93,16 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 | PubMed Central | PMC | Open access articles |
 | arXiv | arXiv ID | Scientific preprints |
 | JSTOR | JSTOR ID | Scholarly articles |
-| Zotero | URL | Generic URL metadata extraction |
+| Zotero (via Citoid) | URL | Generic URL metadata extraction via Wikimedia's Citoid endpoint |
 | SSRN (via Zotero) | SSRN ID | Social Science Research Network metadata |
 | NASA ADS | Bibcode | Astrophysical literature via SAO/NASA ADS |
-| Semantic Scholar | S2 ID / DOI | Paper metadata and citation data |
+| Semantic Scholar | S2 ID / DOI | Identifier mapping and open-access status lookup |
 | Google Books | ISBN / Google ID | Book metadata |
 | Unpaywall | DOI | Open-access location finder |
-| ISSN | ISSN | Journal metadata lookup |
-| Internet Archive | URL | Wayback Machine metadata |
+| ISSN (local) | ISSN | Hardcoded ISSN-to-newspaper mapping (no live API) |
+| Internet Archive | URL | Archive-hosted page title retrieval (Wayback Machine, Ghostarchive) |
 | PII | PII | Publisher Item Identifier to DOI conversion |
-| SICI | SICI | Serial Item and Contribution Identifier |
+| SICI (local) | SICI | Serial Item and Contribution Identifier (local parsing, no external API) |
 
 ## Operating Modes
 
@@ -109,7 +112,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 - Adds missing parameters
 - Cleans formatting
 - **Excludes:** bibcode searches, URL expansion
-- **Reason:** Must complete within browser timeout
+- **Reason:** Must complete within the 120-second configured time limit
 
 ### Slow Mode (Web Interface Default)
 
@@ -123,8 +126,8 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 
 ```bash
 docker compose up -d
-# Access at http://localhost:8081
-docker exec -it citation-bot-php-1 composer update
+# Access at http://localhost:8081/src/
+docker exec -it citation-bot-php-1 composer install
 ```
 
 ### Toolforge Deployment
@@ -147,9 +150,9 @@ php src/process_page.php "PageName|Another Page" --slow --savetofiles
 
 Must include:
 
-- OAuth tokens (consumer token/secret, access token/secret)
-- Bot username
-- API keys (CrossRef, JSTOR, etc.)
+- OAuth tokens: `PHP_OAUTH_CONSUMER_TOKEN`, `PHP_OAUTH_CONSUMER_SECRET`, `PHP_OAUTH_ACCESS_TOKEN`, `PHP_OAUTH_ACCESS_SECRET` (required for CLI)
+- Web user OAuth: `PHP_WP_OAUTH_CONSUMER`, `PHP_WP_OAUTH_SECRET` (required for web interface)
+- Optional: `PHP_ADSABSAPIKEY` (ADS), `PHP_S2APIKEY` (Semantic Scholar), `NLM_APIKEY`/`NLM_EMAIL` (NCBI), `DEPLOY_PASSWORD` (deployment endpoint)
 
 **Security:**
 
@@ -162,7 +165,7 @@ chmod go-rwx src/env.php
 The project uses extensive automated testing:
 
 - **PHPUnit** - Unit tests (via paratest for parallel execution)
-- **PHPStan** - Static analysis (strict mode)
+- **PHPStan (level 6)** - Static analysis
 - **Psalm** - Static analysis for coding quality
 - **Psalm (taint analysis)** - Security-focused taint data checks
 - **Phan** - PHP static analyzer
@@ -200,7 +203,7 @@ All tests must pass before merging.
 
 ### Adding New Template Parameters
 
-1. Update parameter mapping in `Parameter.php`
+1. Update the relevant constants or aliases in `src/includes/constants/parameters.php`
 2. Add extraction logic in relevant `API*.php` files
 3. Update `Template.php` if parameter needs special handling
 4. Add validation rules if needed
@@ -211,7 +214,7 @@ All tests must pass before merging.
 
 The gadget MUST:
 
-- Complete within 60 seconds
+- Complete within the 120-second configured time limit
 - Not perform slow operations (bibcode search, URL expansion)
 - Handle browser timeout gracefully
 - Provide useful partial results if API calls fail
@@ -221,7 +224,7 @@ The gadget MUST:
 - Respect rate limits
 - Use OAuth authentication
 - Include proper User-Agent
-- Implement retry with exponential backoff
+- Implement retry with bounded backoff and honor Retry-After headers
 - Never post if page hasn't changed
 
 ## File Organization
@@ -238,7 +241,7 @@ The gadget MUST:
 │   ├── category.php            # Category processing
 │   ├── linked_pages.php        # Processes pages linking to a given page
 │   ├── kill_big_job.php        # Kill large batch jobs
-│   ├── gitpull.php             # Deployment webhook
+│   ├── gitpull.php             # Password-protected deployment/update endpoint
 │   └── includes/
 │       ├── setup.php           # Bootstrap configuration
 │       ├── constants.php       # Application constants
@@ -334,10 +337,10 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
 
 ## Performance Considerations
 
-- Each external API call adds latency (100-500ms)
+- (Historical observation; unverified) Each external API call adds latency (100-500ms)
 - Wikipedia API calls are rate-limited
-- Slow mode can take 30-120 seconds for large pages
-- Fast mode targets < 10 seconds
+- (Historical observation; unverified) Slow mode can take 30-120 seconds for large pages
+- (Historical observation; unverified) Fast mode targets < 10 seconds
 - Batch processing is more efficient than individual pages
 
 ## Security Best Practices
@@ -399,14 +402,12 @@ composer update
 
 ## Wikipedia Citation Template Reference
 
-The bot supports all standard Wikipedia citation templates:
+The bot recognizes many CS1/CS2 citation templates and processes them at different levels of depth. See `src/includes/constants/parameters.php` for the authoritative lists of fully, slightly, and barely processed templates. Examples include:
 
 - `{{cite journal}}` - Academic journals
 - `{{cite book}}` - Books
 - `{{cite web}}` - Websites
 - `{{cite news}}` - News articles
-- `{{cite conference}}` - Conference papers
-- `{{cite thesis}}` - Theses and dissertations
 - `{{citation}}` - Any reference
 - And many more...
 
@@ -431,7 +432,7 @@ The bot supports all standard Wikipedia citation templates:
 
 ## Project Status & Maintenance
 
-- **Status:** Inactive/stable - not under active development
+- **Status:** Production service active; repository classified as stable/inactive (maintenance mode)
 - **Maintenance:** Provided as time allows
 - **Community:** Open source contributions welcome
 - **Response time:** May vary due to volunteer nature
@@ -446,8 +447,8 @@ The bot supports all standard Wikipedia citation templates:
 
 When helping with this project:
 
-1. **Remember:** Avoid dense code style with inline assignments
-2. **Test:** Always test with real Wikipedia pages
+1. **Remember:** Avoid dense compound conditionals; assignments in clearly separated conditions are common in this codebase
+2. **Test:** For behavior that depends on real wikitext or APIs, additionally smoke-test a representative page with `--savetofiles`; never rely on this instead of the automated suite
 3. **Security:** Never expose OAuth tokens or API keys
 4. **Performance:** Consider gadget timeout constraints
 5. **Standards:** Follow existing patterns in the codebase
@@ -470,9 +471,9 @@ The project prioritizes readability and maintainability over compactness. With 1
 
 ### Why Maintenance Mode?
 
-The bot has reached a stable, feature-complete state. It reliably processes thousands of Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
+The bot has reached a stable, feature-complete state. It reliably processes Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
 
 ---
 
-**Last updated:** June 2026
+**Last updated:** July 2026
 **Maintained by:** Citation Bot community
