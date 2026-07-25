@@ -32,7 +32,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
-      run: omposer update --no-install && omposer validate
+      run: composer update --no-install && composer validate
 
     - name: Install composer packages
       run: composer install -vvv --no-progress
