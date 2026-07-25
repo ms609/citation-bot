@@ -2,7 +2,7 @@ name: Link checker
 
 on:
   schedule:
-    - cron: '25 17 * * 1'
+    - cron: '50 17 * * 1'
   workflow_dispatch:
 
 permissions:

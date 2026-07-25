@@ -15,7 +15,6 @@ on:
       - '.github/workflows/phpstan.yml'
       - '.github/workflows/psalm-security.yml'
       - '.github/workflows/psalm.yml'
-      - '.github/workflows/size-limit.yml'
       - '.github/workflows/ThePHPChecker.yml'
       - '.github/workflows/trivy-analysis.yml'
       - '.github/workflows/YamlJson.yml'
@@ -62,7 +61,7 @@ on:
       - '.lycheeignore'
 
   schedule:
-    - cron: '25 17 * * 1'
+    - cron: '30 18 * * 1'
 
 permissions:
   contents: read
@@ -73,7 +72,16 @@ concurrency:
 
 jobs:
   build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php-version: '8.4'
+            experimental: false
+          - php-version: '8.5'
+            experimental: true
 
+    continue-on-error: ${{ matrix.experimental }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -81,9 +89,9 @@ jobs:
       uses: actions/checkout@v7.0.1
 
     - name: Setup PHP with PCOV
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@2.37.2
       with:
-        php-version: '8.4'
+        php-version: ${{ matrix.php-version }}
         ini-values: pcov.directory=., opcache.enable=1, opcache.enable_cli=1, opcache.jit_buffer_size=0
         coverage: pcov
         extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml, pcntl
@@ -94,11 +102,12 @@ jobs:
 
     - name: Cache Composer dependencies
       id: composer-cache
-      uses: actions/cache@v6
+      uses: actions/cache@v6.1.0
       with:
         path: vendor
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        key: ${{ runner.os }}-composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
+          ${{ runner.os }}-composer-${{ matrix.php-version }}-
           ${{ runner.os }}-composer-
     - name: Validate composer.json and composer.lock
       run: composer validate
