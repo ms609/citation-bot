@@ -27,7 +27,7 @@ jobs:
         coverage: none
 
     - name: Validate composer.json and composer.lock
-      run: composer validate
+      run: composer update --no-install && composer validate
 
     - name: PHP Security Checker
       uses: StephaneBour/actions-php-security-checker@1.2
