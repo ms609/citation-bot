@@ -65,7 +65,8 @@ jobs:
         severity: 'CRITICAL,HIGH'
         trivyignores: '.trivyignore'
 
-    - name: Upload Trivy image scan results
+    - name: Upload Trivy image scan results to Security tab
+      if: always()
       uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'trivy-image-results.sarif'
