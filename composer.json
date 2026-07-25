@@ -6,7 +6,7 @@
         "allow-plugins": true,
         "prefer-stable": true,
         "minimum-stability": "dev",
-        "preferred-install": "dist"
+        "preferred-install": "dist",
         "platform": {
             "php": "8.5.0"
         }
