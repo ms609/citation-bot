@@ -1,7 +1,5 @@
 .phplint.cache/*
 .phpunit.cache/*
-*.lock
-**/private*
 clover.xml
 core
 coverage
