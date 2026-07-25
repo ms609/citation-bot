@@ -50,7 +50,7 @@ jobs:
       run: docker compose up -d
 
     - name: Smoke test
-      run: curl --fail --retry 5 --retry-delay 2 --max-time 30 http://localhost:8081/src/
+      run: curl --fail --retry 10 --retry-delay 3 --retry-connrefused --max-time 60 http://localhost:8081/src/
 
     - name: Tear down container
       if: always()
