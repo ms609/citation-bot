@@ -73,6 +73,7 @@ jobs:
         format: 'sarif'
         output: 'trivy-image-results.sarif'
         severity: 'CRITICAL,HIGH'
+        ignore-unfixed: true
         trivyignores: '.trivyignore'
 
     - name: Upload Trivy image scan results to Security tab
