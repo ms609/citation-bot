@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 const DOI_FREE_PREFIX = [
+    '10.1001/jamanetworkopen',
     '10.1002/1878-0261',
     '10.1002/2056-4538',
     '10.1002/2211-5463',
@@ -307,6 +308,7 @@ const DOI_FREE_PREFIX = [
     '10.1016/j.euros',
     '10.1016/j.finr',
     '10.1016/j.fraope',
+    '10.1016/j.fob',
     '10.1016/j.gimo',
     '10.1016/j.gpb',
     '10.1016/j.heliyon',
@@ -536,6 +538,7 @@ const DOI_FREE_PREFIX = [
     '10.15302/vr.',
     '10.15347/',
     '10.15412/',
+    '10.1542/pedsos',
     '10.15446/abc',
     '10.15458/',
     '10.15560/',
