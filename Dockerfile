@@ -31,8 +31,9 @@ RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ex
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request=trigger" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# Install system packages required to build PHP extensions + composer dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y \
+# Apply OS security patches and install system packages required to build PHP extensions + composer dependencies
+RUN apt-get update && apt-get upgrade -y \
+    && apt-get install --no-install-recommends -y \
         libcurl4-openssl-dev \
         libonig-dev \
         libxml2-dev \
