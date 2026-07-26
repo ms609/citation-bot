@@ -24,14 +24,15 @@ FROM php:8.4-apache
 # 	]
 # }
 RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
-RUN echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && docker-php-ext-enable xdebug \
+    && echo "xdebug.mode=debug,coverage" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.client_port=9007" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
     && echo "xdebug.start_with_request=trigger" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# Apply OS security patches and install system packages required to build PHP extensions + composer dependencies
+# Apply OS security patches, install system packages, PHP extensions, and composer in one layer
+# to minimize layer count where OS package vulnerabilities (e.g. perl) are reported
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y \
         libcurl4-openssl-dev \
@@ -40,25 +41,18 @@ RUN apt-get update && apt-get upgrade -y \
         git \
         zip \
         unzip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Required runtime extensions (simplexml is built into the php:8.4-apache image)
-RUN docker-php-ext-install curl mbstring xml
-
-# Needed for PHPUnit time limit options (e.g. --enforce-time-limit --default-time-limit 13000)
-RUN docker-php-ext-install pcntl
-
-# Install composer. Once the container is built and running, you can do `composer install` with the following shell command: `docker exec -it citation-bot-php-1 composer install`
-RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install curl mbstring xml pcntl \
+    && curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && EXPECTED_SIGNATURE=$(curl -sS https://composer.github.io/installer.sig) \
     && ACTUAL_SIGNATURE=$(php -r "echo hash_file('sha384', 'composer-setup.php');") \
     && if [ "$EXPECTED_SIGNATURE" != "$ACTUAL_SIGNATURE" ]; then echo 'ERROR: Invalid installer signature' >&2; rm composer-setup.php; exit 1; fi \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && rm composer-setup.php
 
-# Allow directory listings. Not a security issue since this is a test environment. Makes it easier to navigate.
-RUN a2enmod autoindex
-RUN echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
+# Allow directory listings. Not a security issue since this is a test environment.
+RUN a2enmod autoindex \
+    && echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
     && a2enconf directory-listing
 
 # If ever deployed into production instead of just for testing, then two things need done:
