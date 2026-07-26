@@ -4,6 +4,8 @@ AVD-DS-0002
 # No impact to missing HEALTHCHECK
 AVD-DS-0026
 
+# --- Docker image scan only (OS packages, not applicable to filesystem scan) ---
+
 # Perl CVEs - no fix available in Debian bookworm (no DSA planned or postponed)
 CVE-2026-8376
 CVE-2026-57433
