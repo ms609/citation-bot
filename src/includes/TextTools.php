@@ -1164,7 +1164,11 @@ function changeisbn10Toisbn13(string $isbn10, int $year): string {
 }
 
 function echoable_doi(string $doi): string {
-    return str_ireplace(['&lt;', '&gt;'], ['<', '>'], echoable($doi));
+    $out = echoable($doi);
+    if (mb_stripos($out, 'script') === false) {   // If doi has <script> in it, that migth be a security issue
+        $out = str_ireplace(['&lt;', '&gt;'], ['<', '>'], $out);
+    }
+    return $out;
 }
 
 function clean_volume(string $volume): string {
