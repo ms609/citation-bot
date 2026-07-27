@@ -35,7 +35,7 @@ Citation Bot automatically expands and formats references on Wikipedia when requ
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-- Citation Bot, found in `src/index.html` (web frontend) and `src/process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. The public production deployment runs on Toolforge. Single pages can be requested via GET, which requires prior web authorization (a `CiteBot` cookie); use the web form (POST) or CLI for multiple pages.
+- Citation Bot, found in `src/index.php` (web frontend) and `src/process_page.php` (information is POSTed to this and it does the citation expansion; backend). This automatically posts a new page revision with expanded citations and thus requires a bot account. The public production deployment runs on Toolforge. Single pages can be requested via GET, which requires prior web authorization (a `CiteBot` cookie); use the web form (POST) or CLI for multiple pages.
 - Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `src/gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 - `src/generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
@@ -45,7 +45,7 @@ Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_
 
 The Citation Bot has two main user-facing interfaces with different performance characteristics:
 
-### Web Interface (`src/index.html` + `src/process_page.php`)
+### Web Interface (`src/index.php` + `src/process_page.php`)
 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
@@ -81,7 +81,7 @@ A quick tour of the main files:
 
 Entry points (under `src/`):
 
-- `src/index.html`: web frontend
+- `src/index.php`: web frontend
 - `src/process_page.php`: backend; POSTed page information triggers citation expansion
 - `src/gadgetapi.php`: PHP backend API for the on-wiki Citation Expander gadget
 - `src/generate_template.php`: creates a wiki reference given an identifier
