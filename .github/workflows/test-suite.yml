@@ -51,7 +51,7 @@ on:
       - 'src/assets/spinner_18_18.gif'
       - '.aider.conf.yml'
       - '.gemini/GEMINI.md'
-      - 'src/index.html'
+      - 'src/index.php'
       - '.claude'
       - '.claude/CLAUDE.md'
       - '.cursor'
