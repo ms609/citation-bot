@@ -62,7 +62,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
     if (doi_works($doi)) {
         return $doi;
     } else {
-        report_info("non-functional doi found from semanticscholar: " . echoable_doi($doi));// @codeCoverageIgnore
+        report_info("non-functional doi found from semanticscholar: " . echoable($doi));// @codeCoverageIgnore
         return '';                                                    // @codeCoverageIgnore
     }
 }
