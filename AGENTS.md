@@ -28,7 +28,7 @@ Citation Bot is a Wikipedia maintenance tool that automatically expands and form
 
 The system has three main components:
 
-1. **Web Interface** (`src/index.html` + `src/process_page.php`) - Batch processes entire Wikipedia pages
+1. **Web Interface** (`src/index.php` + `src/process_page.php`) - Batch processes entire Wikipedia pages
 2. **Gadget API** (`src/gadgetapi.php`) - Real-time in-browser citation expansion during editing
 3. **Template Generator** (`src/generate_template.php`) - Creates a single wiki citation from an identifier
 
@@ -231,7 +231,7 @@ The gadget MUST:
 ```text
 /
 ├── src/
-│   ├── index.html              # Web frontend
+│   ├── index.php               # Web frontend
 │   ├── process_page.php        # Main processor
 │   ├── gadgetapi.php           # Gadget endpoint
 │   ├── generate_template.php   # Single citation generator
