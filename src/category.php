@@ -37,7 +37,7 @@ const DEV_USERS = [
     'Redalert2fan',
 ];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         report_error('Invalid CSRF token.');
     }
