@@ -10,7 +10,7 @@ use MediaWiki\OAuthClient\Token;
 
 /** The two ways we leave this script */
 function death_time(string $err): never {
-    unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
+    unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['csrf_token']);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Authentication System Failure</title></head><body><main>', $err, '</main></body></html>';
     exit(0);
 }
@@ -32,6 +32,9 @@ if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
 }
 
 session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
 require_once __DIR__ . '/includes/setup.php';
 
