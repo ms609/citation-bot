@@ -21,6 +21,8 @@ require_once __DIR__ . '/constants/translations.php';
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 
+const SAFE_HOSTINGS = ['citations.toolforge.org'];
+
 //Common replacements
 const HTML_DECODE = ["[", "]", "<", ">", " "];
 const HTML_ENCODE = ["&#x5B;", "&#x5D;", "&#60;", "&#62;", "+"];
