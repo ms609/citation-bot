@@ -32,7 +32,7 @@ function bot_debug_log(string $log_this): void {
 }
 
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
-// Should add all these to index.html web interface
+// Should add all these to index.php web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
 if (isset($_REQUEST["wiki_base"])) {
     $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
