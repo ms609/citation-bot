@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 set_time_limit(120);
 session_start(['read_and_close' => true]);
+@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 
 require_once __DIR__ . '/includes/big_jobs.php';
 
