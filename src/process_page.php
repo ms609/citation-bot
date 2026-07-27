@@ -52,6 +52,12 @@ session_start(['read_and_close' => true]);
 
 bot_html_header();
 
+if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        report_error('Invalid CSRF token.');
+    }
+}
+
 $api = new WikipediaBot();
 
 if (HTML_OUTPUT) {
