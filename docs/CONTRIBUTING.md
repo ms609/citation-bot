@@ -43,7 +43,6 @@ Tests can run without private credentials, but credential-dependent sections may
 - Constants are named using CAPITALS, functions and variables using under_scores()
 - We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
 - Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
-- We prefer `elseif` to `else if`
 - We prefer `===` and `!==` to `==` and `!=`
 - We prefer `bool` to `boolean`, and other such deprecated aliases
 - We prefer `curl` to `file_get_contents` and `get_headers` for easier debugging and greater control.  The curl header size is in bytes not multibyte character length.
