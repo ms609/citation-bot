@@ -24,7 +24,8 @@ jobs:
       with:
         find: '<\?php[\s\S]*?\?>'
         replace: ''
-        include: index.php
+        regex: true
+        include: 'index.php'
 
     - name: Run validator
       uses: Cyb3r-Jak3/html5validator-action@v8.0.0
@@ -32,4 +33,4 @@ jobs:
         root: src/
         css: true
         log_level: INFO
-        extra: --match *.html *.htm *.css
+        extra: --match *.html *.htm *.css index.php
