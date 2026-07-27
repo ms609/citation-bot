@@ -29,7 +29,6 @@ on:
       - '.phan/config.php'
       - 'docker-compose.yml'
       - 'Dockerfile'
-      - 'index.html'
       - 'LICENSE'
       - 'phpstan.neon'
       - 'progpilot.json'
