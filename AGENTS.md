@@ -60,7 +60,6 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - Assignments within conditionals are common (to note possible side effects)
 - Multi-line if/foreach/else statements (with braces)
 - Method calls that modify state often occur within assignments
-- Do not use `else if` but do use `elseif` (they behave differently)
 - Action can happen through method calls in equality checks
 - String operations need to be multi-byte versions
 
@@ -363,7 +362,6 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
 7. Submit pull request with clear description
 8. **Common Pitfalls:**
 
-   - Using `else if` instead of `elseif`
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
    - Violating the verbose code style with compact one-liners
@@ -451,13 +449,14 @@ When helping with this project:
 2. **Test:** For behavior that depends on real wikitext or APIs, additionally smoke-test a representative page with `--savetofiles`; never rely on this instead of the automated suite
 3. **Security:** Never expose OAuth tokens or API keys
 4. **Performance:** Consider gadget timeout constraints
-5. **Standards:** Follow existing patterns in the codebase
+5. **Standards:** Follow existing patterns in the codebase.
 6. **Testing:** Run full test suite before submitting changes
 7. **Documentation:** Update relevant docs with any changes
 8. **See also:** [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for detailed contribution guidelines
 9. **API Stability:** Keep the external API stable - code on Wikipedia relies on this API, and that code is not part of this codebase
 10. **No stubs:** Do not implement placeholders or simple implementations.  We want full implementations
 11. **Code reuse:** Never assume something is not implemented - search the code base first
+12. **Code consistency:**  Before changing behavior, identify the existing pattern elsewhere in the repository and follow it. Do not modernize existing code unless requested.  Avoid unnecessary refactoring.
 
 ## Project Philosophy
 
