@@ -23,6 +23,13 @@ session_start(['read_and_close' => true]);
 $api = new WikipediaBot();
 
 bot_html_header();
+
+if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        report_error('Invalid CSRF token.');
+    }
+}
+
 check_blocked();
 
 $page_name = str_replace(' ', '_', mb_trim($page_name));
