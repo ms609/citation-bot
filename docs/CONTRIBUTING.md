@@ -48,7 +48,7 @@ Tests can run without private credentials, but credential-dependent sections may
 - We prefer `curl` to `file_get_contents` and `get_headers` for easier debugging and greater control.  The curl header size is in bytes not multibyte character length.
 - We use `echo` and `exit(0)` instead of `print` and `die`
 - `echo` should use commas instead of dots to avoid concatenation overhead
-- All code must be valid PHP 8.4
+- All code must be both valid PHP 8.4 and valid PHP 8.5
 - We prefer [] to array()
 - in_array should always pass the strict parameter
 - Directly comparing strings to integer with comparison operators is different in PHP 7 and 8, so they should not be used
