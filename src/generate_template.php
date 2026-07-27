@@ -5,7 +5,7 @@ declare(strict_types=1);
 const VALID_PARAMS = ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'];
 set_time_limit(120);
 
-@header("Access-Control-Allow-Origin: null"); // This should not be set, this API is for humans
+@header("Access-Control-Allow-Origin: https://citations.toolforge.org");
 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
 
