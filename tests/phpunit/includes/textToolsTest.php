@@ -1210,7 +1210,7 @@ final class textToolsTest extends testBaseClass {
         $result = echoable_doi('10.1000/&lt;test&gt;');
         $this->assertStringContainsString('<test>', $result);
         $result = echoable_doi('10.1000/sdfs&lt;test&gt;script');
-        $this->assertStringContainsString('sdfss&lt;test&gt;script', $result);
+        $this->assertStringContainsString('sdfs&lt;test&gt;script', $result);
     }
 
     public function testCleanVolumeStripsVolDot(): void {
