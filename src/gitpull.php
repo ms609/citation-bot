@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
+
 /** @psalm-suppress MissingFile */
 require_once __DIR__ . '/env.php';
 
