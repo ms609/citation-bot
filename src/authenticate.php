@@ -25,6 +25,8 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/'): n
 
 set_time_limit(120);
 
+@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
+
 if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
     return_to_sender();
 }
