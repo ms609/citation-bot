@@ -19,6 +19,9 @@ if ($deployPassword !== false && !hash_equals($_GET['password'] ?? '', (string) 
     /** @psalm-suppress ForbiddenCode */
     $git_hub = htmlspecialchars((string) shell_exec("(/usr/bin/git fetch  --all; /usr/bin/git reset --hard origin/master)  2>&1"), ENT_QUOTES); // phpcs:ignore
     rmdir(LOCK_DIR);
+    if ($deployPassword === false) {
+        $git_hub = $git_hub . '\nWarning: No DEPLOY_PASSWORD was required.';
+    }
 } else {
     $git_hub = "Please try again - lock file found";
 }
