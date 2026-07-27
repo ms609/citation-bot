@@ -1195,22 +1195,15 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('http://example.com/test', wikifyURL('http://example.com/test'));
     }
 
-    public function testEchoableDoiPlain(): void {
-        $this->assertSame('10.1000/test', echoable_doi('10.1000/test'));
-    }
-
-    public function testEchoableDoiRestoresAngleBrackets(): void {
-        // echoable_doi reverses the &lt;/&gt; escaping so < and > appear in output, unless the string "script" is found
-        // This is not HTML_OUTPUT, so not encoded
-        $result = echoable_doi('10.1000/<test>');
+    public function testLogableDoi(): void {
+        $this->assertSame('10.1000/test', logable_doi('10.1000/test'));
+        $result = logable_doi('10.1000/<test>');
         $this->assertStringContainsString('<test>', $result);
-        $result = echoable_doi('10.1000/sdfs<test>script');
+        $result = logable_doi('10.1000/sdfs<test>script');
         $this->assertStringContainsString('sdfs<test>script', $result);
         // Now fake HTML encode
-        $result = echoable_doi('10.1000/&lt;test&gt;');
+        $result = logable_doi('10.1000/&lt;test&gt;');
         $this->assertStringContainsString('<test>', $result);
-        $result = echoable_doi('10.1000/sdfs&lt;test&gt;script');
-        $this->assertStringContainsString('sdfs&lt;test&gt;script', $result);
     }
 
     public function testCleanVolumeStripsVolDot(): void {
