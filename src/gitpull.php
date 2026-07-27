@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-header("Access-Control-Allow-Origin: null");
-
 /** @psalm-suppress MissingFile */
 require_once __DIR__ . '/env.php';
 
