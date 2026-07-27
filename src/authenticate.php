@@ -102,8 +102,9 @@ try {
     if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
         throw new Exception('Webserver URL variables not set');
     }
-    if (!in_array($_SERVER['HTTP_HOST'], SAFE_HOSTINGS, true)) {
-        throw new Exception('Webserver URL has invalid hostname');
+    $allowed_host = getenv('SAFE_HTTP_HOST');
+    if ($allowed_host !== false && $_SERVER['HTTP_HOST'] !== $allowed_host) {
+        throw new Exception('URL has wrong HTTP_HOST');
     }
     $newcallback = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $client->setCallback($newcallback);
