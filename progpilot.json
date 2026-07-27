@@ -48,9 +48,8 @@
         "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "332d6945c6c79d623984189cfd8d6cdcd43d6478da1962c6d62e3e1eed39b563",
+        "vuln_id": "bc14c42f45fa81b9b165033a102ebc650c787db089224f7a481ac41d47af8cd0",
         "vuln_type": "taint-style"
-
     }
 ,
     {
