@@ -527,8 +527,8 @@ final class WikipediaBot {
             is_string($_SESSION['citation_bot_user_id']) &&
             self::is_valid_user($_SESSION['citation_bot_user_id'])) {
             $this->the_user = $_SESSION['citation_bot_user_id'];
-            session_regenerate_id(true);
             $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+            session_regenerate_id(true);
             return;
         }
         if (mb_strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
