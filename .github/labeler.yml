@@ -49,7 +49,7 @@ entrypoints:
       - src/kill_big_job.php
       - src/linked_pages.php
       - src/preview_results.php
-      - src/index.html
+      - src/index.php
       - src/preview.html
       - src/assets/*
       - src/robots.txt
