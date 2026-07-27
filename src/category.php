@@ -66,7 +66,6 @@ if (!$category) {
     bot_html_footer();
     exit(0);
 }
-unset($_GET, $_POST, $_REQUEST); // Memory minimize
 if ($from_get) {
     define('MAX_PAGES_OVERRIDE', 1000000); // Match CLI limit (see setup.php) for whitelisted GET categories
 }
@@ -119,4 +118,5 @@ if (defined('MAX_PAGES_OVERRIDE')) {
         $edit_summary_end .= "| Whitelisted category ";
     }
 }
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
