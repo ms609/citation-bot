@@ -13,12 +13,6 @@ if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
 
 require_once __DIR__ . '/includes/setup.php';
 
-if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        report_error('Invalid CSRF token.');
-    }
-}
-
 if (isset($argv[1])) {
     $pages = $argv[1];
     if (in_array($pages, ['page_list.txt', 'page_list2.txt'], true)) {
