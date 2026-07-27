@@ -113,7 +113,7 @@ function doi_works(string $doi): ?bool {
     }
     if ($works === false) {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
-            bot_debug_log('Got bad for good HDL: ' . echoable_doi($doi));
+            bot_debug_log('Got bad for good HDL: ' . logable_doi($doi));
             return true; // We log these and see if they have changed
         }
         HandleCache::$cache_hdl_bad[$doi] = true;
@@ -121,7 +121,7 @@ function doi_works(string $doi): ?bool {
     }
     HandleCache::$cache_good[$doi] = true;
     if (isset(NULL_DOI_LIST[$doi])) {
-        bot_debug_log('Got good for bad HDL: ' . echoable_doi($doi));
+        bot_debug_log('Got good for bad HDL: ' . logable_doi($doi));
     }
     return true;
 }
@@ -169,9 +169,8 @@ function is_doi_active(string $doi): ?bool {
     if ($response_code === 404) { // @codeCoverageIgnoreStart
         return false;
     }
-    $err = "CrossRef server error loading headers for DOI " . echoable_doi($doi) . " : " . echoable((string) $response_code);
-    bot_debug_log($err);
-    report_warning($err);
+    bot_debug_log("CrossRef server error loading headers for DOI " . logable_doi($doi) . " : " . echoable((string) $response_code));
+    report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . " : " . echoable((string) $response_code));
     return null;                  // @codeCoverageIgnoreEnd
 }
 
@@ -249,7 +248,7 @@ function is_doi_works(string $doi): ?bool {
             return true;     // @codeCoverageIgnoreStart
         }
         $headers_test = get_headers_array($url);
-        bot_debug_log('Got null for HDL: ' . echoable_doi($doi));     // @codeCoverageIgnoreEnd
+        bot_debug_log('Got null for HDL: ' . logable_doi($doi));     // @codeCoverageIgnoreEnd
     }
     if ($headers_test === false) {
         $headers_test = get_headers_array($url);     // @codeCoverageIgnore
@@ -293,7 +292,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
             return true;
         }
-        bot_debug_log('Got weird stuff for HDL: ' . echoable_doi($doi));
+        bot_debug_log('Got weird stuff for HDL: ' . logable_doi($doi));
         return null;
     }
     if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '503') !== false && $resp2 === '') {
@@ -303,7 +302,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
             return true;
         }
-        bot_debug_log('Got two bad hops for HDL: ' . echoable_doi($doi));
+        bot_debug_log('Got two bad hops for HDL: ' . logable_doi($doi));
         return null;
     }
     if (mb_stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || mb_stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
