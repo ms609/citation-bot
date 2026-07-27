@@ -1203,6 +1203,9 @@ final class textToolsTest extends testBaseClass {
         // echoable_doi reverses the &lt;/&gt; escaping so < and > appear in output
         $result = echoable_doi('10.1000/<test>');
         $this->assertStringContainsString('<test>', $result);
+        // If the string "script" appears anywhere then we do not do that.  Case insensitive.
+        $result = echoable_doi('10.1000/sdfs<test>dsfascRipt');
+        $this->assertStringContainsString('10.1000/sdfs&lt;test&gt;dsfascRip', $result);
     }
 
     public function testCleanVolumeStripsVolDot(): void {
