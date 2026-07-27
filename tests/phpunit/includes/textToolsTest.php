@@ -1200,12 +1200,17 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testEchoableDoiRestoresAngleBrackets(): void {
-        // echoable_doi reverses the &lt;/&gt; escaping so < and > appear in output
+        // echoable_doi reverses the &lt;/&gt; escaping so < and > appear in output, unless the string "script" is found
+        // This is not HTML_OUTPUT, so not encoded
         $result = echoable_doi('10.1000/<test>');
         $this->assertStringContainsString('<test>', $result);
-        // If the string "script" appears anywhere then we do not do that.  Case insensitive.
-        $result = echoable_doi('10.1000/sdfs<test>dsfascRipt');
-        $this->assertStringContainsString('10.1000/sdfs&lt;test&gt;dsfascRip', $result);
+        $result = echoable_doi('10.1000/sdfs<test>script');
+        $this->assertStringContainsString('sdfs<test>script', $result);
+        // Now fake HTML encode
+        $result = echoable_doi('10.1000/&lt;test&gt;');
+        $this->assertStringContainsString('<test>', $result);
+        $result = echoable_doi('10.1000/sdfs&lt;test&gt;script');
+        $this->assertStringContainsString('sdfss&lt;test&gt;script', $result);
     }
 
     public function testCleanVolumeStripsVolDot(): void {
