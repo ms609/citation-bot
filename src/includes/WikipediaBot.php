@@ -536,6 +536,9 @@ final class WikipediaBot {
             exit(0);
         }
         @session_start(); // Need write access
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
         unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
         if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
             try {

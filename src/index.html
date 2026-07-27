@@ -17,7 +17,8 @@
     <p>Populates empty fields in {{cite journal}} family templates, and fixes other citation issues.</p>
   </header>
   <main id="main-form">
-  <form id="botForm" action="process_page.php" method="post">
+  <form id="botForm" action="SubmitJob" method="post">
+    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
     <p>
       <input type="checkbox" name="slow" id="slow" checked />
       <label for="slow">Thorough mode – a slower but more exhaustive search. Finds bibcodes and expands URLs.</label>

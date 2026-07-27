@@ -8,6 +8,12 @@ set_time_limit(120);
 
 require_once __DIR__ . '/includes/setup.php';
 
+if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        report_error('Invalid CSRF token.');
+    }
+}
+
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];
 } else {
