@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v7.0.1
 
     - name: Convert index.php to HTML
-      uses: jacobtomlinson/gha-find-replace@v3.0.5
+      uses: jacobtomlinson/gha-find-replace@v3
       with:
         find: '<\?php[\s\S]*?\?>'
         replace: ''
