@@ -16,7 +16,6 @@ if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     bot_html_footer();
     exit(0);
 }
-unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 session_start(['read_and_close' => true]);
 
@@ -73,6 +72,7 @@ foreach ($links as $link) {
     }
 }
 unset($links);
+unset($_GET, $_POST, $_REQUEST); // Memory minimize
 $pages_in_category = array_unique($pages_in_category);
 
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
