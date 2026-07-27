@@ -25,3 +25,4 @@ jobs:
         root: src/
         css: true
         log_level: INFO
+        extra: --match *.html *.htm index.php *.css *.js
