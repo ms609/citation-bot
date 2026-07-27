@@ -1,3 +1,11 @@
+<?php
+declare(strict_types=1);
+session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+session_write_close();
+?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
  <head>
@@ -18,6 +26,7 @@
   </header>
   <main id="main-form">
   <form id="botForm" action="process_page.php" method="post">
+    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
     <p>
       <input type="checkbox" name="slow" id="slow" checked />
       <label for="slow">Thorough mode – a slower but more exhaustive search. Finds bibcodes and expands URLs.</label>
