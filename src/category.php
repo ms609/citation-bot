@@ -5,7 +5,6 @@ declare(strict_types=1);
 set_time_limit(120);
 
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
-@header('Access-Control-Allow-Origin: null');
 
 require_once __DIR__ . '/includes/setup.php';
 
