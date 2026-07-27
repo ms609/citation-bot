@@ -19,10 +19,17 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v7.0.1
 
+    - name: Convert index.php to HTML
+      uses: jacobtomlinson/gha-find-replace@v3.0.5
+      with:
+        find: '<\?php[\s\S]*?\?>'
+        replace: ''
+        include: index.php
+
     - name: Run validator
       uses: Cyb3r-Jak3/html5validator-action@v8.0.0
       with:
         root: src/
         css: true
         log_level: INFO
-        extra: --match *.html *.htm index.php *.css
+        extra: --match *.html *.htm *.css
