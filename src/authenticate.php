@@ -102,6 +102,10 @@ try {
     if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
         throw new Exception('Webserver URL variables not set');
     }
+    if (!isset( || !isset($_SERVER['REQUEST_URI'])) {
+        in_array($_SERVER['HTTP_HOST']), SAFE_HOSTINGS, true)
+        throw new Exception('Webserver URL has invalid hostname');
+    }
     $newcallback = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $client->setCallback($newcallback);
     [$authUrl, $token] = $client->initiate();
