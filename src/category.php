@@ -57,9 +57,9 @@ if (!$category) {
     if (isset($_POST["cat"])) {
         report_warning("Invalid category on the webform.");
     } elseif (is_string(@$_GET["cat"])) {
-        report_warning("You must specify this category using the webform.  Got: " . echoable($_GET["cat"]));
+        report_warning("You must specify this category using the webform, not a cat= URL");
     } elseif (isset($_GET["cat"])) {
-        report_warning("You must specify your single category as a string using the webform. "); // Get array if multiple cat's are sent
+        report_warning("Invalid category passed via cat= URL. I suggest using the webform.");
     } else {
         report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
     }
