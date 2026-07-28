@@ -53,8 +53,10 @@ session_start(['read_and_close' => true]);
 bot_html_header();
 
 if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        report_error('Invalid CSRF token.');
+    if (!isset($_POST['csrf_token']) || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $_POST['csrf_token'])) {
+        report_warning('Invalid CSRF token.');
+        bot_html_footer();
+        exit(0);
     }
 }
 
