@@ -39,8 +39,8 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         CURLOPT_COOKIEJAR => COOKIE_FILE_PATH,
         CURLOPT_COOKIEFILE => COOKIE_FILE_PATH,
         // 2 - Default Time by ratio
-        CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
-        CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time,
+        CURLOPT_TIMEOUT => ceil(BOT_HTTP_TIMEOUT * $time),
+        CURLOPT_CONNECTTIMEOUT => ceil(BOT_CONNECTION_TIMEOUT * $time),
     ]);
     // 3 - Specific options and overrides of defaults
     curl_setopt_array($ch, $ops);
