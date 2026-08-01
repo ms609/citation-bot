@@ -91,6 +91,16 @@ final class pageTest extends testBaseClass {
         $this->assertSame('Removed unsupported issue parameter from cite book. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
+    public function testModificationsMergeAcrossTemplates(): void {
+        // Two templates each produce modifications; the merged result must
+        // combine array-typed keys (changeonly/additions/deletions) and
+        // bool-typed keys (dashes) without a TypeError.
+        $page = $this->process_page('{{cite journal|pages=44-55}}{{cite journal|title=X}}');
+        $summary = $page->edit_summary();
+        $this->assertStringContainsString('Altered pages', $summary);
+        $this->assertStringContainsString('dashes', $summary);
+    }
+
     public function testBotReadblocked(): void {
         $page = new TestPage();
         $page->get_text_from('User:Blocked Testing Account/readtest');

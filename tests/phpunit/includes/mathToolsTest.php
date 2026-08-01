@@ -19,6 +19,22 @@ final class mathToolsTest extends testBaseClass {
         $this->assertSame($expected, wikify_external_text($text_mml));
     }
 
+    public function testMathMLIsotopeWithoutNoneTag(): void {
+        // mmultiscripts with a prescript but no <none/> tag should not be
+        // treated as a left-superscript: falls through to the base element.
+        $text_mml = '<math><mmultiscripts>Ni<mprescripts/>67</mmultiscripts></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertSame('<math>Ni</math>', $result);
+    }
+
+    public function testMathMLIsotopeWithNoneOnRight(): void {
+        // <none/> on the right (mass number) side must not be treated as a
+        // left superscript: preg_split count is 2 but first part is non-empty.
+        $text_mml = '<math><mmultiscripts>Ni<mprescripts/>67<none/></mmultiscripts></math>';
+        $result = wikify_external_text($text_mml);
+        $this->assertSame('<math>Ni</math>', $result);
+    }
+
     public function testMathMLSuperscript(): void {
         // Test simple superscript: x^{2}
         $text_mml = '<math><msup><mi>x</mi><mn>2</mn></msup></math>';

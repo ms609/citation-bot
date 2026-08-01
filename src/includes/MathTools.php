@@ -26,6 +26,9 @@ function convert_mathml_to_latex(string $mathml): string {
 
             // Handle <none/> tags - they represent empty positions
             $parts = preg_split('~<none/>~', $prescripts);
+            if ($parts === false) {
+                $parts = []; // preg_split only fails on regex compile error; fall back to no split
+            }
 
             // For isotope notation: <none/>number means superscript on left (mass number)
             if (count($parts) === 2 && mb_trim($parts[0]) === '') {
