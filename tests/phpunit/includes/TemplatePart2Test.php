@@ -1193,6 +1193,69 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Advances in Enzymology and Related Areas of Molecular Biology', $template->get2('series'));
     }
 
+    public function testAntibioticsAndChemotherapyWithoutDoiRemainsJournal(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapyWithBlankDoiRemainsJournal(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapyRussianDoiRemainsJournal(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=10.37489/0235-2990-2021-66-3-4-82-98}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapy24411DoiRemainsJournal(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=10.24411/0235-2990-2019-100012}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapyUnknownDoiRemainsJournal(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=10.99999/example}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapyRussianDoiRemainsJournalAfterFinalTidy(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=10.37489/0235-2990-2021-66-3-4-82-98}}');
+        $template->final_tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('journal'));
+        $this->assertNull($template->get2('series'));
+    }
+
+    public function testAntibioticsAndChemotherapyKargerDoiRemainsBookSeries(): void {
+        $template = $this->make_citation('{{cite journal|journal=Antibiotics and Chemotherapy|doi=10.1159/000395442}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertNull($template->get2('journal'));
+        $this->assertSame('Antibiotics and Chemotherapy', $template->get2('series'));
+    }
+
+    public function testOtherBookSeriesClassificationIsUnchanged(): void {
+        $template = $this->make_citation('{{cite journal|journal=Methods of Molecular Biology}}');
+        $template->tidy_parameter('journal');
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('Methods of Molecular Biology', $template->get2('series'));
+    }
+
     public function testNameStuff(): void {
         $text = '{{cite journal|author1=[[Robert Jay Charlson|Charlson]] |first1=R. J.}}';
         $template = $this->process_citation($text);
