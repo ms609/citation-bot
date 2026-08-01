@@ -4674,7 +4674,7 @@ final class Template
                     if ($this->wikiname() === 'cite arxiv') {
                         $this->change_name_to('cite journal');
                     }
-                    if ($this->is_book_series($param)) {
+                    if ($this->is_book_series_for_journal($param)) {
                         $this->change_name_to('cite book');
                         if ($this->blank('series')) {
                             $this->rename($param, 'series');
@@ -7759,6 +7759,22 @@ final class Template
 
     public function is_book_series(string $param): bool {
         return string_is_book_series($this->get($param));
+    }
+
+    private function is_book_series_for_journal(string $param): bool {
+        if (!$this->is_book_series($param)) {
+            return false;
+        }
+        if ($param !== 'journal') {
+            return true;
+        }
+        $journal = str_replace(['[[', ']]'], '', $this->get($param));
+        $journal = (string) preg_replace('~\s+~u', ' ', $journal);
+        $journal = mb_strtolower(mb_trim($journal));
+        if ($journal !== 'antibiotics and chemotherapy') {
+            return true;
+        }
+        return mb_stripos($this->get('doi'), '10.1159/') === 0;
     }
 
     public function has_good_free_copy(): bool {
