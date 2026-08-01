@@ -642,7 +642,13 @@ class Page {
 
     public function edit_summary(string $edit_summary_end = ''): string {
         $auto_summary = "";
-        $altered_list = $this->modifications["changeonly"];
+        /** @var array<string> $changeonly */
+        $changeonly = $this->modifications["changeonly"];
+        $altered_list = $changeonly;
+        /** @var array<string> $additions */
+        $additions = $this->modifications["additions"];
+        /** @var array<string> $deletions */
+        $deletions = $this->modifications["deletions"];
         if (count($altered_list) !== 0) {
             if (count($altered_list) === 1) {
                 $op = "Altered";
@@ -653,10 +659,10 @@ class Page {
             unset($op);
         }
         unset($altered_list);
-        if (mb_strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== false) {
+        if (mb_strpos(implode(" ", $changeonly), 'url') !== false) {
             $auto_summary .= "URLs might have been anonymized. ";
         }
-        if (count($this->modifications['additions']) !== 0) {
+        if (count($additions) !== 0) {
             /** @var array<string> $addns */
             $addns = $this->modifications["additions"];
             if (count($addns) === 1) {
@@ -700,38 +706,38 @@ class Page {
             }
         }
 
-        if (count($this->modifications["deletions"]) !== 0) {
-            $pos1 = array_search('url', $this->modifications["deletions"]);
+        if (count($deletions) !== 0) {
+            $pos1 = array_search('url', $deletions);
             if ($pos1 !== false) {
-                unset($this->modifications["deletions"][$pos1]);
+                unset($deletions[$pos1]);
             }
-            $pos2 = array_search('chapter-url', $this->modifications["deletions"]);
+            $pos2 = array_search('chapter-url', $deletions);
             if ($pos2 !== false) {
-                unset($this->modifications["deletions"][$pos2]);
+                unset($deletions[$pos2]);
             }
-            $pos3 = array_search('chapterurl', $this->modifications["deletions"]);
+            $pos3 = array_search('chapterurl', $deletions);
             if ($pos3 !== false) {
-                unset($this->modifications["deletions"][$pos3]);
+                unset($deletions[$pos3]);
             }
-            $pos4 = array_search('accessdate', $this->modifications["deletions"]);
+            $pos4 = array_search('accessdate', $deletions);
             if ($pos4 !== false) {
-                unset($this->modifications["deletions"][$pos4]);
+                unset($deletions[$pos4]);
             }
-            $pos5 = array_search('access-date', $this->modifications["deletions"]);
+            $pos5 = array_search('access-date', $deletions);
             if ($pos5 !== false) {
-                unset($this->modifications["deletions"][$pos5]);
+                unset($deletions[$pos5]);
             }
-            $pos6 = array_search(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"]);
+            $pos6 = array_search(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $deletions);
             if ($pos6 !== false) {
-                unset($this->modifications["deletions"][$pos6]);
+                unset($deletions[$pos6]);
             }
-            $pos7 = array_search('ref', $this->modifications["deletions"]);
+            $pos7 = array_search('ref', $deletions);
             if ($pos7 !== false && $this->modifications["ref"]) {
-                unset($this->modifications["deletions"][$pos7]);
+                unset($deletions[$pos7]);
             }
-            $pos8 = array_search('issue', $this->modifications["deletions"]);
+            $pos8 = array_search('issue', $deletions);
             if ($pos8 !== false && $this->modifications["issue_citebook"]) {
-                unset($this->modifications["deletions"][$pos8]);
+                unset($deletions[$pos8]);
             }
             if ($pos1 !== false || $pos2 !== false || $pos3 !== false) {
                 if (mb_strpos($auto_summary, 'chapter-url') !== false) {
@@ -747,13 +753,13 @@ class Page {
                 $auto_summary .= "Changed bare reference to CS1/2. ";
             }
         }
-        $auto_summary .= ((count($this->modifications["deletions"]) !== 0)
+        $auto_summary .= ((count($deletions) !== 0)
             ? "Removed parameters. "
             : ""
             ) . (($this->modifications["dashes"])
             ? "Formatted [[WP:ENDASH|dashes]]. "
             : "");
-        if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
+        if (count($deletions) !== 0 && count($additions) !== 0 && $this->modifications["names"]) {
             $auto_summary .= 'Some additions/deletions were parameter name changes. ';
         } elseif ($this->modifications["names"]) {
             $auto_summary .= 'Normalized parameter names. ';
