@@ -1,0 +1,23 @@
+name: Semgrep OSS Scan
+
+on:
+  push:
+    branches: ["master"]
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  semgrep-oss:
+    name: Semgrep OSS Scan
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep Scan
+        # This scans using general security and code quality rulesets
+        run: semgrep scan --config=p/security-audit --config=p/default --error
