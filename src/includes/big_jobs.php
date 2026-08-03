@@ -10,10 +10,6 @@ function hard_touch(string $file): void {
     @fclose(@fopen($file, 'a')); // Do something else to file
 }
 
-function hard_unlink(string $file): void {
-    @unlink($file);
-}
-
 function big_jobs_name(): string { // NEVER save this string. Always use this function so that clearstatcache is called
     $version = "_1"; // So we can reset everyone, and we are 100% sure we do not get just the directory name
     $start = "/dev/shm/"; // Avoid .nfs*** files, and auto-delete when container dies
@@ -31,7 +27,7 @@ function big_jobs_name(): string { // NEVER save this string. Always use this fu
 /** @param resource $lock_file */
 function big_jobs_we_died($lock_file): void {
     @fclose($lock_file);
-    hard_unlink(big_jobs_name());
+    @unlink(big_jobs_name());
 }
 
 function big_jobs_check_overused(int $page_count): void {
@@ -41,7 +37,7 @@ function big_jobs_check_overused(int $page_count): void {
     }
     $fn = big_jobs_name();
     if (file_exists($fn) && fileatime($fn) < (time() - 3600)) { // More than an hour
-        hard_unlink($fn);
+        @unlink($fn);
     }
     if (file_exists($fn)) {
         echo '<div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div>';
@@ -66,7 +62,7 @@ function big_jobs_check_killed(): void {
     $lfile = big_jobs_name();
     $kfile = $lfile . '_kill_job';
     if (file_exists($kfile)) {
-        hard_unlink($kfile);
+        @unlink($kfile);
         echo '<div style="text-align:center"><h1>Run killed as requested.</h1></div>';
         bot_html_footer();
         exit(0); // Shutdown will close and delete lockfile
