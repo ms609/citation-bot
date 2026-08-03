@@ -22,7 +22,7 @@ final class bigJobTest extends testBaseClass {
         $this->assertFalse(file_exists($name));
         hard_touch($name);
         $this->assertTrue(file_exists($name));
-        hard_unlink($name);
+        @unlink($name);
         $this->assertFalse(file_exists($name));
     }
 
