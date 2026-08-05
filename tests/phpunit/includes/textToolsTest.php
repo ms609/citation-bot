@@ -586,6 +586,7 @@ final class textToolsTest extends testBaseClass {
     public function testCapitalization_lots_more7(): void {
         $this->assertSame('AIDS', title_capitalization('Aids', true));
         $this->assertSame('BioScience', title_capitalization('Bioscience', true));
+        $this->assertSame('BioResources', title_capitalization('Bioresources', true));
         $this->assertSame('BioMedical Engineering OnLine', title_capitalization('Biomedical Engineering Online', true));
     }
 
