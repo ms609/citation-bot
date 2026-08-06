@@ -230,7 +230,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
     return;
 }
 
-function query_crossref(string $doi): ?object {
+function query_crossref(string $doi): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
@@ -335,10 +335,10 @@ function expand_doi_with_dx(Template $template, string $doi): void {
 /**
  * @param Template $template
  * @param string $doi
- * @param array<string|int|array<string|int|array<string|int|array<string|int|array<string|int>>>>> $json
+ * @param array<mixed> $json
  */
 function process_doi_json(Template $template, string $doi, array $json): void {
-    /** @param array|string|int|null $data */
+    /** @param mixed $data */
     $try_to_add_it = static function (string $name, $data) use($template): void {
         if ($template->has($name)) {
             return; // Not worth updating based upon DX
