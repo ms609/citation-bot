@@ -257,7 +257,9 @@ function is_doi_works(string $doi): ?bool {
         return null;     // @codeCoverageIgnore
     }
     if (mb_stripos($doi, '10.1126/scidip.') === 0) {
-        if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') {  // https://doi.org/10.1126/scidip.ado5059
+        /** @var string $resp1 */
+        $resp1 = @$headers_test['1'];
+        if ($resp1 === 'HTTP/1.1 404 Forbidden') {  // https://doi.org/10.1126/scidip.ado5059
             unset($headers_test['1']); // @codeCoverageIgnore
         }
     }
@@ -279,11 +281,14 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         return false; // leads nowhere
     }
     /** @psalm-suppress InvalidArrayOffset */
-    $resp0 = (string) @$headers_test['0'];
+    /** @var string $resp0 */
+    $resp0 = @$headers_test['0'];
     /** @psalm-suppress InvalidArrayOffset */
-    $resp1 = (string) @$headers_test['1'];
+    /** @var string $resp1 */
+    $resp1 = @$headers_test['1'];
     /** @psalm-suppress InvalidArrayOffset */
-    $resp2 = (string) @$headers_test['2'];
+    /** @var string $resp2 */
+    $resp2 = @$headers_test['2'];
 
     if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '301') !== false && mb_strpos($resp2, '404') !== false) {
         if (isset(NULL_DOI_LIST[$doi])) {
@@ -338,9 +343,13 @@ function get_loc_from_hdl_header(array $headers_test): ?string {
     } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
         return (string) $headers_test['location'][0];    // @codeCoverageIgnore
     } elseif (isset($headers_test['location'])) {
-        return (string) $headers_test['location'];
+        /** @var string $location */
+        $location = @$headers_test['location'];
+        return $location;
     } elseif (isset($headers_test['Location'])) {        // @codeCoverageIgnore
-        return (string) $headers_test['Location'];       // @codeCoverageIgnore
+        /** @var string $location */                       // @codeCoverageIgnore
+        $location = @$headers_test['Location'];            // @codeCoverageIgnore
+        return $location;                                  // @codeCoverageIgnore
     } else { // @codeCoverageIgnoreStart
         bot_debug_log("Got weird header from a handle");    // Have NEVER seen this - do not log/print since probably crazy text
         return null;
