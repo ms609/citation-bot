@@ -7263,14 +7263,18 @@ final class Template
         if ($doi !== '') {
             foreach (DOI_FREE_PREFIX as $prefix) {
                 if (mb_stripos($doi, $prefix) === 0) {
-                    $p = new Parameter();
-                    $p->pre = $this->param[0]->pre;
-                    $p->param = 'doi-access';
-                    $p->eq = '=';
-                    $p->val = 'free';
-                    $p->post = '';
-                    $this->param[] = $p;
-                    report_add(echoable("Adding doi-access: free"));
+                    if ($this->has_but_maybe_blank('doi-access')) {
+                        $this->set('doi-access', 'free');
+                    } else {
+                        $p = new Parameter();
+                        $p->pre = $this->param[0]->pre;
+                        $p->param = 'doi-access';
+                        $p->eq = '=';
+                        $p->val = 'free';
+                        $p->post = '';
+                        $this->param[] = $p;
+                        report_add(echoable("Adding doi-access: free"));
+                    }
                     break;
                 }
             }
