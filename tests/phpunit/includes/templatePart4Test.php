@@ -1979,6 +1979,22 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertStringContainsString('10.1186/s12915-020-00940-y| doi-access=free', $doi_t->parsed_text());
     }
 
+    public function testDoiFreePrefixDoesNotDuplicateExistingAccess(): void {
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y|doi-access=free}}');
+        $doi_t->set_free_doi_access();
+        $this->assertSame(1, substr_count($doi_t->parsed_text(), 'doi-access=free'));
+        $this->assertSame('free', $doi_t->get2('doi-access'));
+    }
+
+    public function testDoiFreePrefixUpgradesExistingRestrictedAccess(): void {
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y|doi-access=limited}}');
+        $doi_t->set_free_doi_access();
+        $this->assertSame('free', $doi_t->get2('doi-access'));
+        $this->assertSame(1, substr_count($doi_t->parsed_text(), 'doi-access='));
+    }
+
     public function testDoiNonFreePrefixNotDetected(): void {
         $doi_t = new Template();
         $doi_t->parse_text('{{doi|10.1234/nonfree-example}}');
