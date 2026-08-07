@@ -844,6 +844,7 @@ final class Template
         switch ($param_name) {
             // EDITORS
             case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match):
+                /** @var array{non-falsy-string, numeric-string} $match */
                 if ($this->had_initial_editor()) {
                     return false;
                 }
@@ -860,6 +861,7 @@ final class Template
                 return false;
 
             case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match):
+                /** @var array{non-falsy-string, numeric-string} $match */
                 if ($this->had_initial_editor()) {
                     return false;
                 }
@@ -876,6 +878,7 @@ final class Template
                 return false;
 
             case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match):
+                /** @var array{non-falsy-string, numeric-string} $match */
                 if ($this->had_initial_editor()) {
                     return false;
                 }
@@ -892,6 +895,7 @@ final class Template
                 return false;
 
             case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match):
+                /** @var array{non-falsy-string, numeric-string} $match */
                 if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) {
                     return false;
                 } // Existing incompatible data
@@ -7100,12 +7104,14 @@ final class Template
                         $pub_ts = mktime(0, 0, 0, 12, 31, $pub_year);
                     }
                 }
-                if ($pub_ts !== null) {
+                if ($pub_ts !== null && $pub_ts !== false) {
                     // end of month for safety
-                    $pub_ts = mktime(0, 0, 0, (int) date('n', $pub_ts), (int) date('t', $pub_ts), (int) date('Y', $pub_ts));
-                    $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $pub_ts);
-                    if (time() >= $free_after_ts) {
-                        $this->add_if_new('doi-access', 'free');
+                    $end_of_month = mktime(0, 0, 0, (int) date('n', $pub_ts), (int) date('t', $pub_ts), (int) date('Y', $pub_ts));
+                    if ($end_of_month !== false) {
+                        $free_after_ts = strtotime('+' . (int) $rule_value . ' months', $end_of_month);
+                        if (time() >= $free_after_ts) {
+                            $this->add_if_new('doi-access', 'free');
+                        }
                     }
                 }
             }
