@@ -92,6 +92,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
             $this_template = next($templates);
             continue;
         }
+        if ($this_template === false) { // @codeCoverageIgnore
+            report_error('Had more data than Templates in arxiv_api()');  // @codeCoverageIgnore
+        }
         $i = 0;
         report_info("Found match for arXiv " . echoable($ids[$i]));
         if ($this_template->add_if_new("doi", (string) @$entry->arxivdoi, 'arxiv')) {
