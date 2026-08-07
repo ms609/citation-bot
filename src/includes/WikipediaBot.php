@@ -250,7 +250,7 @@ final class WikipediaBot {
         return true;
     }
 
-    public static function response2page(?object $response): ?object {
+    public static function response2page(?object $response): ?stdClass {
         if ($response === null) {
             report_warning("Write request failed");
             return null;
@@ -411,10 +411,13 @@ final class WikipediaBot {
     private static function query_api(array $params): string {
         try {
             $params['format'] = 'json';
+            /** @psalm-suppress UnnecessaryVarAnnotation */
+            /** @var non-empty-string $api_root */
+            $api_root = API_ROOT;
             curl_setopt_array(self::$ch_logout, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_URL => API_ROOT,
+            CURLOPT_URL => $api_root,
             ]);
 
             $data = @curl_exec(self::$ch_logout);
@@ -520,7 +523,11 @@ final class WikipediaBot {
      * @codeCoverageIgnore
      */
     private function authenticate_user(): void {
-        @setcookie(session_name(), session_id(), time() + (7 * 24 * 3600), "", "", true, true); // 7 days
+        $session_name = session_name();
+        $session_id = session_id();
+        if ($session_name !== false && $session_id !== false) {
+            @setcookie($session_name, $session_id, time() + (7 * 24 * 3600), "", "", true, true); // 7 days
+        }
         if (isset($_SESSION['citation_bot_user_id']) &&
             isset($_SESSION['access_key']) &&
             isset($_SESSION['access_secret']) &&
@@ -576,7 +583,7 @@ final class WikipediaBot {
         exit(0);
     }
 
-    private static function reset(object &$obj): object { // We use old php 7 style reset, so emulate
+    private static function reset(object &$obj): stdClass { // We use old php 7 style reset, so emulate
         $arr = (array) $obj;
         return (object) reset($arr);
     }
