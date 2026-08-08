@@ -125,17 +125,22 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                     switch ($subItem["Name"]) {
                                         case "pubmed":
                                         case "pmid":
-                                            preg_match("~\d+~", (string) $subItem, $match);
-                                            $this_template->add_if_new("pmid", $match[0], 'entrez');
+                                            if (preg_match("~\d+~", (string) $subItem, $match)) {
+                                                $this_template->add_if_new("pmid", $match[0], 'entrez');
+                                            }
                                             break;
                                         case "pmc":
-                                            preg_match("~\d+~", (string) $subItem, $match);
-                                            $this_template->add_if_new('pmc', $match[0], 'entrez');
+                                            if (preg_match("~\d+~", (string) $subItem, $match)) {
+                                                $this_template->add_if_new('pmc', $match[0], 'entrez');
+                                            }
                                             break;
                                         case "pmcid":
                                             if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
-                                                    $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1])); // @codeCoverageIgnore
-                                                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                              // @codeCoverageIgnore
+                                                $embargo_ts = mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]); // @codeCoverageIgnore
+                                                if ($embargo_ts !== false) {                                                 // @codeCoverageIgnore
+                                                    $date_emb = date("F j, Y", $embargo_ts);                                  // @codeCoverageIgnore
+                                                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');      // @codeCoverageIgnore
+                                                }                                                                              // @codeCoverageIgnore
                                             }
                                             break;
                                         case "doi":
@@ -175,6 +180,7 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
 
 /**
  * Must use post in order to get DOIs with <, >, [, and ] in them and other problems
+ * @param non-empty-string $url
  */
 function xml_post(string $url, string $post): ?SimpleXMLElement {
     static $ch = null;
