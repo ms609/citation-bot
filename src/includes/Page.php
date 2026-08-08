@@ -879,7 +879,7 @@ class Page {
     }
 
     /**
-     * @param class-string $class
+     * @param class-string<Template|WikiThings> $class
      * @return array<WikiThings|Template>
      */
     public function extract_object(string $class): array {
@@ -906,7 +906,6 @@ class Page {
         $preg_ok = true;
         foreach ($regexp_in as $regexp) {
             while ($preg_ok = preg_match($regexp, $text, $match)) {
-                /** @var WikiThings|Template $obj */
                 $obj = new $class();
                 try {
                     $obj->parse_text($match[0]);
@@ -998,7 +997,7 @@ class Page {
             $reverse = array_reverse($objects);
             foreach ($reverse as $obj) {
                 --$i;
-                $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, $i), $obj->parsed_text(), $this->text); // Case insensitive, since placeholder might get title case, etc.
+                $this->text = str_ireplace(sprintf(constant($obj::class . '::PLACEHOLDER_TEXT'), $i), $obj->parsed_text(), $this->text); // Case insensitive, since placeholder might get title case, etc.
             }
         }
     }

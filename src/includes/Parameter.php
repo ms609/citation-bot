@@ -40,6 +40,7 @@ final class Parameter {
             if (preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq) === false) { // Try non-unicode if this fails
                 preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);  // @codeCoverageIgnore
             }
+            /** @var array{string, string, string, string} $post_eq */
             if (count($pre_eq) === 0) {
                 $this->eq = $split[0] . '=' . $post_eq[1];
             } else {
