@@ -464,7 +464,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
 /**
  * @param string $options should be a series of field names, colons (optionally urlencoded), and  URL-ENCODED search strings, separated by (unencoded) ampersands. Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
  */
-function query_adsabs(string $options): object {
+function query_adsabs(string $options): stdClass {
     set_time_limit(120);
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/API_documentation_UNIXshell/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) {
@@ -486,7 +486,7 @@ function query_adsabs(string $options): object {
 }
 
 /** @param array<string|bool|array<string>> $curl_opts */
-function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): object {
+function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdClass {
     try {
         $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
         $return = bot_curl_exec($ch);
