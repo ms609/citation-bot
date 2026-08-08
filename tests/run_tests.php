@@ -7,9 +7,6 @@ declare(strict_types=1);
  *
  * Runs the PHPUnit test suite via paratest, then generates a JUnit
  * timing report, and finally exits with paratest's exit code.
- *
- * Replaces the previous bash-only composer script, which relied on
- * `sync` and `$?` syntax that is not available on Windows.
  */
 
 $paratest_command = PHP_BINARY . ' -d memory_limit=1G vendor/bin/paratest'
