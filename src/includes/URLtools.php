@@ -909,7 +909,11 @@ function url_simplify(string $url): string {
     $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
                                             ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
     $url = mb_substr($url, 0, -1); // Remove the ending slash we added
-    $url = (string) preg_split("~[\?\#]~", $url, 2)[0];
+    $url_parts = preg_split("~[\?\#]~", $url, 2);
+    if ($url_parts === false) {
+        return $url; // @codeCoverageIgnore
+    }
+    $url = $url_parts[0];
     return str_ireplace('https', 'http', $url);
 }
 
@@ -1694,9 +1698,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 if ($template->blank('pmc')) {
                     report_modification("Converting URL to PMC parameter");
                 }
-                $new_pmc = (string) @$match[1] . @$match[2] . @$match[3];
+                $new_pmc = $match[1] . ($match[2] ?? '') . ($match[3] ?? '');
                 // php stan does not understand that this could because of the insanity of regex and 8-bit characters and PHP bugs end up being empty
-                if ($new_pmc === '') { // @phpstan-ignore-line
+                if ($new_pmc === '') {
                     bot_debug_log("PMC oops");
                     return false;
                 }
