@@ -7,7 +7,10 @@ declare(strict_types=1);
 /** "hard" as in "try hard" and ignore errors */
 function hard_touch(string $file): void {
     touch($file);
-    @fclose(@fopen($file, 'a')); // Do something else to file
+    $handle = @fopen($file, 'a'); // Do something else to file
+    if ($handle !== false) {
+        @fclose($handle);
+    }
 }
 
 function big_jobs_name(): string { // NEVER save this string. Always use this function so that clearstatcache is called
