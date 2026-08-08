@@ -24,11 +24,13 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         report_error("curl_init failure"); // @codeCoverageIgnore
     }
     // 1 - Global Defaults
+    /** @var non-empty-string $user_agent */
+    $user_agent = BOT_USER_AGENT;
     curl_setopt_array($ch, [
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-        CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_USERAGENT => $user_agent,
         CURLOPT_AUTOREFERER => true,
         CURLOPT_REFERER => "https://en.wikipedia.org",
         CURLOPT_COOKIESESSION => true,

@@ -99,7 +99,9 @@ if (file_exists(__DIR__ . '/../env.php')) {
     ob_start();
     /** @psalm-suppress MissingFile */
     include_once __DIR__ . '/../env.php';
-    $env_output = mb_trim(ob_get_contents());
+    $env_output_contents = ob_get_contents();
+    $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
+    unset($env_output_contents);
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
     }

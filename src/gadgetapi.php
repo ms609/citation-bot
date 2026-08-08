@@ -21,8 +21,8 @@ try {
     if (!is_string(@$_POST['text']) || !is_string(@$_POST['summary'])) {
         throw new Exception('not a string');    // @codeCoverageIgnore
     }
-    $originalText = $_POST['text'];
-    $editSummary = $_POST['summary'];
+    $originalText = (string) $_POST['text'];
+    $editSummary = (string) $_POST['summary'];
     unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
     if (mb_strlen($originalText) < 6) {
