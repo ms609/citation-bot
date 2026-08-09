@@ -46,6 +46,8 @@
     <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakIndent"/>
     <!-- Forbidden functions, for security and UTF-8 reasons -->
     <rule ref="Generic.PHP.ForbiddenFunctions">
+        <!-- tests/run_tests.php legitimately spawns paratest as a subprocess -->
+        <exclude-pattern>tests/run_tests.php</exclude-pattern>
         <properties>
             <property name="forbiddenFunctions" type="array">
                 <element key="assert" value="null"/>
