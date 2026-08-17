@@ -1039,6 +1039,8 @@ class Page {
             $s = mb_strtolower($matches[1]); // We ONLY deal with first one
             if ($s === 'default' || $s === 'none' || $s === 'serial' || $s === 'and' ) {
                 $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+            } elseif ($s === 'serial' || $s === 'and' ) {
+                $name_list_style = VancStyle::NAME_LIST_STYLE_AND;
             } elseif ($s === 'vanc') {
                 $name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
             } elseif ($s === 'amp' || $s === '&' || $s === 'ampersand') {
