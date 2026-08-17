@@ -369,6 +369,8 @@ final class Zotero {
                 report_info("Connection timeout for URL" . $the_url);
             } elseif (mb_strpos($zotero_response, 'Invalid URL encoding in request parameters') !== false) {
                 report_minor_error("This URL cannot be encoded for the Zotero endpoint: " . $the_url); /* See Islam in New Zealand on en.  Also note the wiki output formats work, but give different output.  https://phabricator.wikimedia.org/T413651  TODO: fix it if they do not */
+            } elseif (mb_strpos($zotero_response, 'Invalid URL') !== false) {
+                report_minor_error("This URL (or where it redirected to) was Invalid: " . $the_url);
             } else {
                 report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL " . $the_url); // Odd Error
             }
