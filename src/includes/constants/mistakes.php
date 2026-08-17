@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 /** Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence */
 const COMMON_MISTAKES = [
+    'show-authors' => 'display-authors',
+    'show-editors' => 'display-editors',
     'title-translated' => 'trans-title',
     'oriy-year' => 'orig-year',
     'језик' => 'language',
