@@ -3946,6 +3946,12 @@ final class Template
                     }
                     return;
 
+                case 'citeseerx':
+                    if ($this->blank($param)) {
+                        $this->forget($param);
+                    }
+                    return;
+
                 case 'chapter':
                     if ($this->has('chapter')) {
                         if (str_equivalent($this->get($param), $this->get('work'))) {
