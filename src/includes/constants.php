@@ -43,6 +43,7 @@ enum DateStyle {
 enum VancStyle
 {
     case NAME_LIST_STYLE_DEFAULT;
+    case NAME_LIST_STYLE_AND;
     case NAME_LIST_STYLE_AMP;
     case NAME_LIST_STYLE_VANC;
 }
