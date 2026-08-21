@@ -1,0 +1,54 @@
+name: Harden Runner audit
+
+# This workflow is an audit/rollout workflow. It discovers the outbound
+# endpoints needed for a normal Citation Bot Composer setup.
+#
+# After reviewing the StepSecurity egress report, add the same Harden Runner
+# step as the FIRST step of the existing jobs that handle secrets (especially
+# the full-test job). A standalone workflow cannot harden another job's runner.
+
+on:
+  pull_request:
+    paths:
+      - "composer.json"
+      - "composer.lock"
+      - ".github/workflows/**"
+  push:
+    branches:
+      - master
+    paths:
+      - "composer.json"
+      - "composer.lock"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  audit-runner:
+    name: Audit runner egress during dependency setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden runner (audit outbound calls)
+        uses: step-security/harden-runner@b09bb98e06d4d774595224525879c09bc6e98c40 # v2.20.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.4"
+          coverage: none
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
