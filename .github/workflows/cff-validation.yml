@@ -1,0 +1,37 @@
+name: Validate CITATION.cff
+
+on:
+  pull_request:
+    paths:
+      - "CITATION.cff"
+  push:
+    branches:
+      - master
+    paths:
+      - "CITATION.cff"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  validate-cff:
+    name: Validate Citation File Format metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # cffconvert 2.0.0 validates CFF 1.2.0 and bundles the corresponding
+      # JSON schema. Using the CLI here avoids introducing another GitHub
+      # Action dependency solely for schema validation.
+      - name: Install cffconvert
+        run: python3 -m pip install --disable-pip-version-check "cffconvert==2.0.0"
+
+      - name: Validate CITATION.cff
+        run: cffconvert --validate --infile CITATION.cff
