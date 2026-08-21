@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v7.0.1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Setup PHP
-      uses: shivammathur/setup-php@2.37.2
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
       with:
         php-version: '8.4'
         coverage: none
@@ -30,4 +30,4 @@ jobs:
       run: composer validate
 
     - name: PHP Security Checker
-      uses: StephaneBour/actions-php-security-checker@1.2
+      uses: StephaneBour/actions-php-security-checker@625e87650b4709fa61746bfa890d1b55ae6d7067 # 1.2
