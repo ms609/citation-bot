@@ -38,7 +38,7 @@ jobs:
 
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v7.0.1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Build Docker image
       run: docker build -t citation-bot .
@@ -67,7 +67,7 @@ jobs:
 
     - name: Run Trivy vulnerability scanner on Docker image
       if: always()
-      uses: aquasecurity/trivy-action@v0.36.0
+      uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         input: citation-bot.tar
         format: 'sarif'
@@ -78,7 +78,7 @@ jobs:
 
     - name: Upload Trivy image scan results to Security tab
       if: always()
-      uses: github/codeql-action/upload-sarif@v4
+      uses: github/codeql-action/upload-sarif@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
       with:
         sarif_file: 'trivy-image-results.sarif'
         wait-for-processing: false
