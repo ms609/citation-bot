@@ -13,14 +13,14 @@ jobs:
   json-yaml-md-validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: json-yaml-validate
         id: json-yaml-validate
-        uses: GrantBirki/json-yaml-validate@v5.0.0
+        uses: GrantBirki/json-yaml-validate@3ff75979f3b21171f2e8a44705f0ff4bed30bbc0 # v5.0.0
 
       - name: markdown-validate
         id: markdown-validate
-        uses: DavidAnson/markdownlint-cli2-action@v24.2.0
+        uses: DavidAnson/markdownlint-cli2-action@21c1be1b93ad9ed58fa840aacc3f279cde2a72ff # v24.2.0
         with:
           globs: '**/*.md'
