@@ -23,10 +23,13 @@ function query_url_api(array $_ids, array &$templates): void { // Pointer to sav
 final class Zotero {
     private const int ZOTERO_GIVE_UP = 5;
     private const int ZOTERO_SKIPS = 100;
+    private const int ZOTERO_BASE_DELAY_MICROSECONDS = 100000;
+    private const int ZOTERO_MAX_DELAY_MICROSECONDS = 10000000;
     private const string ERROR_DONE = 'ERROR_DONE';
     private static int $zotero_announced = 0;
     private static CurlHandle $zotero_ch;
     private static int $zotero_failures_count = 0;
+    private static int $zotero_retry_after_microseconds = 0;
 
     /**
      * @codeCoverageIgnore
@@ -50,10 +53,25 @@ final class Zotero {
 
     public static function block_zotero(): void {
         self::$zotero_failures_count = 1000000;
+        self::$zotero_retry_after_microseconds = 0;
     }
 
     public static function unblock_zotero(): void {
         self::$zotero_failures_count = 0;
+        self::$zotero_retry_after_microseconds = 0;
+    }
+
+    public static function retry_delay_microseconds(int $failure_count): int {
+        $bounded_failure_count = min(max($failure_count, 0), 9);
+        return self::ZOTERO_BASE_DELAY_MICROSECONDS * (1 + $bounded_failure_count);
+    }
+
+    private static function record_zotero_failure(): void {
+        self::$zotero_failures_count += 1;
+        if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+            report_warning("Giving up on URL expansion for a while");
+            self::$zotero_failures_count += self::ZOTERO_SKIPS;
+        }
     }
 
     /**
@@ -181,26 +199,36 @@ final class Zotero {
             return self::ERROR_DONE;
         }
 
-        $delay = max(min(100000 * (1 + self::$zotero_failures_count), 10), 0); // 0.10 seconds delay, with paranoid bounds checks
+        $delay = max(self::retry_delay_microseconds(self::$zotero_failures_count), self::$zotero_retry_after_microseconds);
+        $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
+        self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
         $zotero_response = bot_curl_exec(self::$zotero_ch);
-        if ($zotero_response === '') {
+        $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE);
+        if ($zotero_response === '' && $response_code !== 429 && $response_code < 500) {
             sleep(2); // @codeCoverageIgnore
             $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
+            $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE); // @codeCoverageIgnore
+        }
+        if ($response_code === 429 || $response_code >= 500) {
+            // @codeCoverageIgnoreStart
+            if (defined('CURLINFO_RETRY_AFTER')) {
+                $retry_after = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RETRY_AFTER);
+                self::$zotero_retry_after_microseconds = min(max($retry_after, 0) * 1000000, self::ZOTERO_MAX_DELAY_MICROSECONDS);
+            }
+            report_warning("Citoid returned HTTP " . (string) $response_code . " for URL: " . echoable($url));
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+            // @codeCoverageIgnoreEnd
         }
         if ($zotero_response === '') {
             // @codeCoverageIgnoreStart
             report_warning(curl_error(self::$zotero_ch) . "  For URL: " . echoable($url));
-            if (mb_strpos(curl_error(self::$zotero_ch), 'timed out after') !== false) {
-                self::$zotero_failures_count += 1;
-                if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
-                    report_warning("Giving up on URL expansion for a while");
-                    self::$zotero_failures_count += self::ZOTERO_SKIPS;
-                }
-            }
-            $zotero_response = self::ERROR_DONE;
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
             // @codeCoverageIgnoreEnd
         }
+        self::$zotero_failures_count = 0;
         return $zotero_response;
     }
 

@@ -8,6 +8,13 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../testBaseClass.php';
 final class zoteroTest extends testBaseClass {
 
+    public function testZoteroRetryDelayUsesBoundedBackoff(): void {
+        $this->assertSame(100000, Zotero::retry_delay_microseconds(-1));
+        $this->assertSame(100000, Zotero::retry_delay_microseconds(0));
+        $this->assertSame(600000, Zotero::retry_delay_microseconds(5));
+        $this->assertSame(1000000, Zotero::retry_delay_microseconds(100));
+    }
+
     public function testZoteroExpansion_biorxiv1(): void {
         $text = '{{Cite journal| biorxiv=326363 }}';
         $expanded = $this->process_citation($text);
