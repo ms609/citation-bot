@@ -739,10 +739,13 @@ function citationLooksLikeBook(Template $template): bool {
     }
 
     $book_score = 0;
-    foreach (['publisher', 'location', 'oclc', 'series'] as $weak_book_field) {
+    foreach (['publisher', 'oclc', 'series'] as $weak_book_field) {
         if ($template->has($weak_book_field)) {
             $book_score += 1;
         }
+    }
+    if (!$template->blank(LOCATIONS_AND_SUCH)) {
+        $book_score += 1;
     }
     foreach (['isbn', 'chapter', 'lccn', 'edition', 'asin'] as $strong_book_field) {
         if ($template->has($strong_book_field)) {
