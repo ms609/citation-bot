@@ -3,8 +3,20 @@ name: PHPStan
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phan/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phan/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
   schedule:
     - cron: '10 18 * * 1'
 
