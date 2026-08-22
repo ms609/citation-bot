@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * @param array<array-key, mixed>|null &$session
+ * @param-out array<array-key, mixed> $session
  */
 function ensure_session_csrf_token(?array &$session): string {
     $token = ($session ??= [])['csrf_token'] ?? null;
