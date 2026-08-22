@@ -12,7 +12,7 @@
             855
         ],
         "source_file": [
-            "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/authenticate.php"
+            "src\/authenticate.php"
         ],
         "tainted_flow": [
             [
@@ -20,90 +20,90 @@
                     "flow_name": "$where",
                     "flow_line": 88,
                     "flow_column": 3570,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/authenticate.php"
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
                     "flow_line": 88,
                     "flow_column": 3579,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/authenticate.php"
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$mb_trim_param0_line88_column3579_progpilot",
                     "flow_line": 88,
                     "flow_column": 3579,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/authenticate.php"
+                    "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
                     "flow_line": 88,
                     "flow_column": 3587,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/authenticate.php"
+                    "flow_file": "src\/authenticate.php"
                 }
             ]
                     "flow_column": 1398,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                    "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$category",
                     "flow_line": 47,
                     "flow_column": 1209,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
                     "flow_line": 47,
                     "flow_column": 1221,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_param0_line47_column1221_progpilot",
                     "flow_line": 47,
                     "flow_column": 1221,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_substr_return",
                     "flow_line": 47,
                     "flow_column": 1229,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_substr_param0_line47_column1229_progpilot",
                     "flow_line": 47,
                     "flow_column": 1229,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$category",
                     "flow_line": 44,
                     "flow_column": 1102,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
                     "flow_line": 44,
                     "flow_column": 1114,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_param0_line44_column1114_progpilot",
                     "flow_line": 44,
                     "flow_column": 1114,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 },
                 {
                     "flow_name": "$_POST[\"cat\"]",
                     "flow_line": 44,
                     "flow_column": 1122,
-                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                    "flow_file": "src\/category.php"
                 }
             ]
         ],
         "sink_name": "echo",
         "sink_line": 86,
         "sink_column": 2426,
-        "sink_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php",
+        "sink_file": "src\/category.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
         "vuln_id": "6a494181079cef9f01e5ba6686415870d8ed16616f46baff2002d5fca4f33b8d",
