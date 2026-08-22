@@ -3129,8 +3129,8 @@ final class Template
 
         foreach ($this->param as $p) {
             if (mb_strlen($p->param) > 0) {
-                $mistake_id = array_search($p->param, $mistake_keys);
-                if ($mistake_id) {
+                $mistake_id = array_search($p->param, $mistake_keys, true);
+                if ($mistake_id !== false) {
                     $new = $mistake_corrections[$mistake_id];
                     if ($this->blank($new)) {
                         $old = $p->param;
@@ -3199,8 +3199,8 @@ final class Template
                 } else {
                     report_modification("Unrecognized parameter " . echoable($p->param) . " ");
                 }
-                $mistake_id = array_search($p->param, $mistake_keys);
-                if ($mistake_id) {
+                $mistake_id = array_search($p->param, $mistake_keys, true);
+                if ($mistake_id !== false) {
                     // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
                     $p->param = $mistake_corrections[$mistake_id];
                     report_modification('replaced with ' . echoable($mistake_corrections[$mistake_id]) . ' (common mistakes list)');
