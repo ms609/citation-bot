@@ -165,7 +165,7 @@ chmod go-rwx src/env.php
 The project uses extensive automated testing:
 
 - **PHPUnit** - Unit tests (via paratest for parallel execution)
-- **PHPStan (level 6)** - Static analysis
+- **PHPStan (level 7)** - Static analysis
 - **Psalm** - Static analysis for coding quality
 - **Psalm (taint analysis)** - Security-focused taint data checks
 - **Phan** - PHP static analyzer
@@ -180,6 +180,12 @@ The project uses extensive automated testing:
 - **Validate JSON, YAML, and MD** - Validates JSON, YAML, and Markdown files
 - **Action Lint** - Validates GitHub Actions
 - **Link Checker** - Validates URLs in documentation and HTML - runs weekly
+- **Composer audit** - Checks Composer dependencies for known vulnerabilities
+- **Dependency Review** - Checks dependency changes for known vulnerabilities
+- **Harden Runner** - Audits GitHub Actions runner behavior
+- **OpenSSF Scorecard** - Evaluates repository security practices
+- **Zizmor** - Analyzes GitHub Actions workflows for security issues
+- **CITATION.cff validation** - Validates citation metadata
 
 All tests must pass before merging.
 
@@ -475,5 +481,5 @@ The bot has reached a stable, feature-complete state. It reliably processes Wiki
 
 ---
 
-**Last updated:** July 2026
+**Last updated:** August 2026
 **Maintained by:** Citation Bot community

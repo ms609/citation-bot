@@ -25,9 +25,9 @@ This uses ParaTest for parallel test execution:
 Parallel execution can reduce runtime, depending on CPU count, network-bound tests,
 and external API limits.
 
-**Prerequisites:** The Composer test script is designed for Linux, Docker, or WSL.
-It requires PCOV or Xdebug coverage support, `pcntl`, and Composer dependencies
-installed. For a portable focused test during development, use:
+**Prerequisites:** The Composer test script is cross-platform and runs on supported
+PHP CLI environments, including Windows. It requires PCOV or Xdebug coverage support
+and Composer dependencies installed. For a focused test during development, use:
 
     php vendor/bin/phpunit path/to/Test.php
 
