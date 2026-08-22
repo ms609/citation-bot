@@ -36,6 +36,8 @@ infrastructure:
       - src/includes/bot_curl.php
       - src/includes/big_jobs.php
       - src/includes/user_messages.php
+      - src/includes/PublicConfig.php
+      - src/includes/request_security.php
       - src/authenticate.php
 
 entrypoints:
