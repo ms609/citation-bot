@@ -730,51 +730,56 @@ function expand_book_adsabs(Template $template, object $record): void {
     return;
 }
 
-function looksLikeBookReview(Template $template, object $record): bool {
-    if ($template->wikiname() === 'cite book' || $template->wikiname() === 'citation') {
-        $book_count = 0;
-        if ($template->has('publisher')) {
-            $book_count += 1;
-        }
-        if ($template->has('isbn')) {
-            $book_count += 2;
-        }
-        if ($template->has('location')) {
-            $book_count += 1;
-        }
-        if ($template->has('chapter')) {
-            $book_count += 2;
-        }
-        if ($template->has('oclc')) {
-            $book_count += 1;
-        }
-        if ($template->has('lccn')) {
-            $book_count += 2;
-        }
-        if ($template->has('journal')) {
-            $book_count -= 2;
-        }
-        if ($template->has('series')) {
-            $book_count += 1;
-        }
-        if ($template->has('edition')) {
-            $book_count += 2;
-        }
-        if ($template->has('asin')) {
-            $book_count += 2;
-        }
-        if (mb_stripos($template->get('url'), 'google') !== false && mb_stripos($template->get('url'), 'book') !== false) {
-            $book_count += 2;
-        }
-        if (isset($record->year) && $template->year() && (int) $record->year !== (int) $template->year()) {
-            $book_count += 1;
-        }
-        if ($template->wikiname() === 'cite book') {
-            $book_count += 3;
-        }
-        if ($book_count > 3) {
-            return true;
+function citationLooksLikeBook(Template $template): bool {
+    if ($template->wikiname() !== 'cite book' && $template->wikiname() !== 'citation') {
+        return false;
+    }
+    if ($template->wikiname() === 'cite book') {
+        return true;
+    }
+
+    $book_score = 0;
+    foreach (['publisher', 'location', 'oclc', 'series'] as $weak_book_field) {
+        if ($template->has($weak_book_field)) {
+            $book_score += 1;
         }
     }
-    return false;
+    foreach (['isbn', 'chapter', 'lccn', 'edition', 'asin'] as $strong_book_field) {
+        if ($template->has($strong_book_field)) {
+            $book_score += 2;
+        }
+    }
+    if (mb_stripos($template->get('url'), 'google') !== false && mb_stripos($template->get('url'), 'book') !== false) {
+        $book_score += 2;
+    }
+    return $book_score >= 2;
+}
+
+function adsRecordLooksLikeReview(object $record): bool {
+    if (isset($record->bibcode) && is_string($record->bibcode) && is_a_book_bibcode($record->bibcode)) {
+        return false;
+    }
+
+    $doctype = isset($record->doctype) && is_string($record->doctype) ? mb_strtolower($record->doctype) : '';
+    if (in_array($doctype, ['book', 'inbook', 'proceedings', 'inproceedings', 'catalog', 'eprint', 'abstract', 'phdthesis', 'mastersthesis'], true)) {
+        return false;
+    }
+
+    $title = '';
+    if (isset($record->title) && is_array($record->title) && isset($record->title[0]) && is_string($record->title[0])) {
+        $title = $record->title[0];
+    }
+    if (preg_match('~\b(?:book review|review of)\b~i', $title)) {
+        return true;
+    }
+
+    if (in_array($doctype, ['article', 'editorial', 'letter'], true)) {
+        return true;
+    }
+
+    return isset($record->pub) && (isset($record->doi) || isset($record->volume) || isset($record->page));
+}
+
+function looksLikeBookReview(Template $template, object $record): bool {
+    return citationLooksLikeBook($template) && adsRecordLooksLikeReview($record);
 }

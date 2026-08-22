@@ -1344,23 +1344,44 @@ EP - 999 }}';
     public function testlooksLikeBookReview(): void {
         $text = '{{cite journal|journal=X|url=book}}';
         $template = $this->make_citation($text);
-        $record = (object) null;
+        $record = (object) ['doctype' => 'article'];
+        $this->assertFalse(citationLooksLikeBook($template));
         $this->assertFalse(looksLikeBookReview($template, $record));
     }
 
     public function testlooksLikeBookReview2(): void {
         $text = '{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
-        $record = (object) null;
-        $record->year = '2000';
+        $record = (object) ['doctype' => 'article'];
         $this->assertFalse(looksLikeBookReview($template, $record));
     }
 
     public function testlooksLikeBookReview3(): void {
         $text = '{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
         $template = $this->make_citation($text);
-        $record = (object) null;
-        $record->year = '2000';
+        $record = (object) ['doctype' => 'article'];
+        $this->assertTrue(looksLikeBookReview($template, $record));
+    }
+
+    public function testCitationBookMatchedToAdsBookIsNotReview(): void {
+        $template = $this->make_citation('{{cite book|title=Combinatory Analysis}}');
+        $record = (object) ['doctype' => 'book', 'bibcode' => '1915cana.book.....M'];
+        $this->assertTrue(citationLooksLikeBook($template));
+        $this->assertFalse(adsRecordLooksLikeReview($record));
+        $this->assertFalse(looksLikeBookReview($template, $record));
+    }
+
+    public function testCitationBookMatchedToAdsArticleIsReview(): void {
+        $template = $this->make_citation('{{citation|title=Combinatory Analysis|publisher=Cambridge University Press|location=London|year=1915}}');
+        $record = (object) [
+            'doctype' => 'article',
+            'bibcode' => '1915Natur..96Q.478.',
+            'doi' => ['10.1038/096478a0'],
+            'pub' => 'Nature',
+            'title' => ['Combinatory Analysis'],
+        ];
+        $this->assertTrue(citationLooksLikeBook($template));
+        $this->assertTrue(adsRecordLooksLikeReview($record));
         $this->assertTrue(looksLikeBookReview($template, $record));
     }
 
