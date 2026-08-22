@@ -65,6 +65,7 @@ session_write_close();
         <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="Loading" aria-hidden="true" />
         <br />
       </p>
+      <p>Only user pages (<code>User:...</code>) can be used with this feature.</p>
     </fieldset>
     <p>
     </p>
