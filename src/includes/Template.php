@@ -7104,6 +7104,12 @@ final class Template
                 if ($pub_year > 0 && $pub_year > (int) $rule_value) {
                     $this->add_if_new('doi-access', 'free');
                 }
+            } elseif ($rule_type === 'AFTER_DATE') {
+                $pub_ts = $this->pub_exact_ts();
+                $free_after_ts = strtotime($rule_value);
+                if ($pub_ts !== null && $free_after_ts !== false && $pub_ts >= $free_after_ts) {
+                    $this->add_if_new('doi-access', 'free');
+                }
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();
                 if ($pub_ts === null) {
