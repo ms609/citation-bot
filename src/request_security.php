@@ -21,7 +21,12 @@ function request_has_valid_post_csrf(array $server, array $post, array $session)
     return hash_equals($session_token, $posted_token);
 }
 
-/** @param array<string, string> $fields */
+/**
+ * @param string $action
+ * @param array<string, string> $fields
+ * @param string $csrf_token
+ * @param string $button_text
+ */
 function post_confirmation_form(string $action, array $fields, string $csrf_token, string $button_text): string {
     $escape = static function (string $value): string {
         return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
