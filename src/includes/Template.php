@@ -422,14 +422,6 @@ final class Template
                         !preg_match('~^https?://[^/]+/?$~', $url) && // Ignore just a hostname
                         preg_match(REGEXP_IS_URL, $url) === 1
                     ) {
-                        if (
-                            $possible === 'citeseerx' &&
-                            preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]+)(?:&.+)?~", $url, $match)
-                        ) {
-                            report_modification("CiteSeerX parameter contains a URL; retaining only the identifier.");
-                            $this->set('citeseerx', urldecode($match[1]));
-                            continue;
-                        }
                         $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
                         $this->get_identifiers_from_url($url);
                         if ($this->has($possible)) {
