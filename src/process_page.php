@@ -12,12 +12,23 @@ if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
 }
 
 require_once __DIR__ . '/includes/setup.php';
+require_once __DIR__ . '/includes/request_security.php';
 
 if (isset($argv[1])) {
     $pages = $argv[1];
     if (in_array($pages, ['page_list.txt', 'page_list2.txt'], true)) {
         $pages = mb_trim((string) file_get_contents($pages));
     }
+    $from_get = false;
+} elseif (isset($_POST["page"])) {
+    $pages = $_POST["page"];
+    if (!is_string($pages)) {
+        bot_html_header();
+        report_warning('Non-string found in POST for page.');
+        bot_html_footer();
+        exit(0);
+    }
+    $from_get = false;
 } elseif (isset($_GET["page"])) {
     $pages = $_GET["page"];
     if (!is_string($pages)) {
@@ -32,14 +43,7 @@ if (isset($argv[1])) {
         bot_html_footer();
         exit(0);
     }
-} elseif (isset($_POST["page"])) {
-    $pages = $_POST["page"];
-    if (!is_string($pages)) {
-        bot_html_header();
-        report_warning('Non-string found in POST for page.');
-        bot_html_footer();
-        exit(0);
-    }
+    $from_get = true;
 } else {
     bot_html_header();
     report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
@@ -52,12 +56,27 @@ session_start(['read_and_close' => true]);
 
 bot_html_header();
 
-if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $_POST['csrf_token'])) {
-        report_warning('Invalid CSRF token.');
-        bot_html_footer();
-        exit(0);
+if ($from_get) {
+    $fields = ['page' => $pages];
+    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
+        if (isset($_GET[$name]) && is_string($_GET[$name])) {
+            $fields[$name] = $_GET[$name];
+        }
     }
+    if (isset($_GET['slow'])) {
+        $fields['slow'] = '1';
+    }
+    echo post_confirmation_form('process_page.php', $fields, (string) ($_SESSION['csrf_token'] ?? ''), 'Process page');
+    bot_html_footer();
+    exit(0);
+}
+unset($from_get);
+
+if (!isset($argv[1]) && !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
+    http_response_code(403);
+    report_warning('A POST request with a valid CSRF token is required.');
+    bot_html_footer();
+    exit(0);
 }
 
 $api = new WikipediaBot();
