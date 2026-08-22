@@ -618,6 +618,11 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
     }
 
+    public function testSmartDecodeNormalizesUppercaseIsoEncoding(): void {
+        $encoded = urldecode('Fran%E7ois');
+        $this->assertSame('François', smart_decode($encoded, 'ISO-8859-1', ''));
+    }
+
     public function testVariousEncodes1(): void {
         $input = "\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\x83\xe3\x83\x94\xe3\x83\xb3\xe3\x82\xb0";
         $sample = 'ショッピング';
