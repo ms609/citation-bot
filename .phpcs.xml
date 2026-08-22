@@ -63,6 +63,7 @@
                 <element key="is_double" value="null"/>
                 <element key="is_integer" value="null"/>
                 <element key="is_long" value="null"/>
+                <element key="lcg_value" value="null"/>
                 <element key="ltrim" value="mb_ltrim"/>
                 <element key="mb_ereg_match" value="null"/>
                 <element key="mb_ereg_replace_callback" value="null"/>
@@ -77,6 +78,9 @@
                 <element key="mb_regex_set_options" value="null"/>
                 <element key="mysqli_execute" value="null"/>
                 <element key="mysqli_get_charset" value="null"/>
+                <element key="mysqli_kill" value="null"/>
+                <element key="mysqli_ping" value="null"/>
+                <element key="mysqli_refresh" value="null"/>
                 <element key="mysqli_stmt_init" value="null"/>
                 <element key="passthru" value="null"/>
                 <element key="popen" value="null"/>
