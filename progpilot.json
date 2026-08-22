@@ -39,10 +39,6 @@
                     "flow_line": 88,
                     "flow_column": 3587,
                     "flow_file": "src\/authenticate.php"
-                }
-            ]
-                    "flow_column": 1398,
-                    "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$category",
