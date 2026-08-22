@@ -7,11 +7,23 @@ session_start(['read_and_close' => true]);
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 
 require_once __DIR__ . '/includes/big_jobs.php';
+require_once __DIR__ . '/includes/request_security.php';
 
 ob_implicit_flush(true);
 
 if (!isset($_SESSION['citation_bot_user_id'])) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Killing the big job</title></head><body><main><pre>You are not logged in</pre></main></body></html>';
+} elseif (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Killing the big job</title></head><body><main><pre>';
+    echo post_confirmation_form('kill_big_job.php', [], (string) ($_SESSION['csrf_token'] ?? ''), 'Stop large job');
+    echo '</pre></main></body></html>';
+} elseif (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    http_response_code(405);
+    header('Allow: GET, POST');
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Killing the big job</title></head><body><main><pre>Only GET and POST requests are supported</pre></main></body></html>';
+} elseif (!request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
+    http_response_code(403);
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Killing the big job</title></head><body><main><pre>Invalid CSRF token</pre></main></body></html>';
 } elseif (!big_jobs_kill()) {
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Killing the big job</title></head><body><main><pre>No existing large job found</pre></main></body></html>';
 } else {
