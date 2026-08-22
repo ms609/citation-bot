@@ -14,8 +14,10 @@ final class gadgetapiTest extends testBaseClass {
         ob_start();
         $_POST['text'] = '{{cite journal|doi=10.1021/acs.jpca.4c00688 |pmid=<!-- --> |arxiv=<!-- --> |pmc=<!-- --> |url=<!-- --> }}';
         $_POST['summary'] = 'Something Nice';
+        $_SERVER['HTTP_ORIGIN'] = 'https://en.wikipedia.org';
         // Note: gadgetapi.php runs in fast mode by default to prevent timeouts
         require(__DIR__ . '/../../src/gadgetapi.php');
+        unset($_SERVER['HTTP_ORIGIN']);
         $json_text = ob_get_contents();
         ob_end_clean();
         while (ob_get_level()) {

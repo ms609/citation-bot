@@ -3,8 +3,14 @@
 declare(strict_types=1);
 
 set_time_limit(120);
+if (file_exists(__DIR__ . '/env.php')) {
+    /** @psalm-suppress MissingFile */
+    include_once __DIR__ . '/env.php';
+}
+require_once __DIR__ . '/includes/PublicConfig.php';
+enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 session_start(['read_and_close' => true]);
-@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 
 require_once __DIR__ . '/includes/big_jobs.php';
 require_once __DIR__ . '/includes/request_security.php';

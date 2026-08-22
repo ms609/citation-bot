@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
-
 require_once __DIR__ . '/includes/setup.php';
 require_once __DIR__ . '/includes/request_security.php';
+
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
 const GET_IS_OKAY = [
     'Articles with missing Cite arXiv inputs',

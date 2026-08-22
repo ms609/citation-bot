@@ -9,5 +9,8 @@ services:
       - .:/var/www/html
     environment:
       PHP_IDE_CONFIG: "serverName=Docker"
+      PUBLIC_BASE_URL: "http://localhost:8081/src"
+      ALLOWED_HOSTS: "localhost:8081"
+      ALLOWED_ORIGINS: "http://localhost:8081,https://mdwiki.org,https://*.wikipedia.org"
     extra_hosts:
       - "host.docker.internal:host-gateway"  # Required for Xdebug to connect back to host (requires Docker 20.10+)

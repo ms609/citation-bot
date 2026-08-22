@@ -92,7 +92,7 @@ Entry points (under `src/`):
 - `src/gadgetapi.php`: PHP backend API for the on-wiki Citation Expander gadget
 - `src/generate_template.php`: creates a wiki reference given an identifier
 - `src/category.php`: processes all pages within a Wikipedia category
-- `src/linked_pages.php`: processes all pages that link to a given page
+- `src/linked_pages.php`: processes all pages that are linked from a given `User:` page
 
 Operational/support endpoints:
 
@@ -136,6 +136,8 @@ The bot requires PHP >= 8.4.
 To run the bot from a new environment, you will need to create an `src/env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `src/env.php.example` to `src/env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
     chmod go-rwx src/env.php
+
+Every deployment must configure `PUBLIC_BASE_URL`, the canonical externally visible URL (including any deployment path) used for OAuth callbacks, redirects, HTTP referers, and User-Agent identification. Web deployments must also configure `ALLOWED_HOSTS` and `ALLOWED_ORIGINS`. `ALLOWED_HOSTS` is a comma-separated list of exact HTTP Host values, including ports where applicable. `ALLOWED_ORIGINS` is a comma-separated CORS allowlist; entries are origins without paths, and a left-most wildcard such as `https://*.wikipedia.org` is supported. The host from `PUBLIC_BASE_URL` must also appear in `ALLOWED_HOSTS`.
 
  To run the bot as a webservice from WM Toolforge:
 

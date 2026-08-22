@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/PublicConfig.php';
+
 // @codeCoverageIgnoreStart
 // all new constant files needed listed here
 require_once __DIR__ . '/constants/bad_data.php';
@@ -52,8 +54,8 @@ const COMMONUSERNAME = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME = 'martins+pubmed@gmail.com';
 
-const BOT_CROSSREF_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . CROSSREFUSERNAME . "; +https://citations.toolforge.org/)";
-const BOT_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:" . COMMONUSERNAME . "; +https://citations.toolforge.org/)";
+define('BOT_CROSSREF_USER_AGENT', "Mozilla/5.0 (compatible; Citation_bot; mailto:" . CROSSREFUSERNAME . "; +" . public_url('/') . ")");
+define('BOT_USER_AGENT', "Mozilla/5.0 (compatible; Citation_bot; mailto:" . COMMONUSERNAME . "; +" . public_url('/') . ")");
 
 const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;

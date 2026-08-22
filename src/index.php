@@ -1,5 +1,11 @@
 <?php
 declare(strict_types=1);
+if (file_exists(__DIR__ . '/env.php')) {
+    /** @psalm-suppress MissingFile */
+    include_once __DIR__ . '/env.php';
+}
+require_once __DIR__ . '/includes/PublicConfig.php';
+enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 session_start();
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -65,6 +71,7 @@ session_write_close();
         <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="Loading" aria-hidden="true" />
         <br />
       </p>
+      <p>Only user pages (<code>User:...</code>) can be used with this feature.</p>
     </fieldset>
     <p>
     </p>

@@ -11,6 +11,7 @@ use MediaWiki\OAuthClient\Token;
 
 require_once __DIR__ . '/user_messages.php';  // @codeCoverageIgnore
 require_once __DIR__ . '/constants.php';      // @codeCoverageIgnore
+require_once __DIR__ . '/PublicConfig.php';   // @codeCoverageIgnore
 
 final class WikipediaBot {
     private Consumer $bot_consumer;
@@ -29,15 +30,17 @@ final class WikipediaBot {
             return;
         }
         $init_done = true;
+        $referer = public_url('/');
         // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         self::$ch_write = bot_curl_init(1.0,
                 [CURLOPT_FAILONERROR => true,
                     CURLOPT_POST => true,
-                    CURLOPT_REFERER => "https://citations.toolforge.org/",
+                    CURLOPT_REFERER => $referer,
                     CURLOPT_URL => API_ROOT,
                 ]);
         self::$ch_logout = bot_curl_init(1.0,
-                [CURLOPT_REFERER => "https://citations.toolforge.org/", CURLOPT_FAILONERROR => true ]);
+                [CURLOPT_REFERER => $referer, CURLOPT_FAILONERROR => true ]);
+        unset($referer);
     }
 
     public function __construct() {
@@ -578,7 +581,7 @@ final class WikipediaBot {
             }
             /** @psalm-taint-escape header */
             $return = urlencode($return);
-            header("Location: authenticate.php?return=" . $return);
+            header("Location: " . public_url('/authenticate.php') . "?return=" . $return);
         }
         exit(0);
     }
