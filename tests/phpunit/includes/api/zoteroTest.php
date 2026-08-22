@@ -15,6 +15,13 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame(1000000, Zotero::retry_delay_microseconds(100));
     }
 
+    public function testZoteroUrlEncodingPreservesAuthority(): void {
+        $this->assertSame(
+            'https%3A%2F%2Fexample-domain.test%2Fpath%252Dsegment%3Fquery%252Dkey%3Dquery%252Dvalue',
+            Zotero::encode_url_for_zotero('https://example-domain.test/path-segment?query-key=query-value')
+        );
+    }
+
     public function testZoteroExpansion_biorxiv1(): void {
         $text = '{{Cite journal| biorxiv=326363 }}';
         $expanded = $this->process_citation($text);

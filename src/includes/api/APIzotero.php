@@ -66,6 +66,17 @@ final class Zotero {
         return self::ZOTERO_BASE_DELAY_MICROSECONDS * (1 + $bounded_failure_count);
     }
 
+    /**
+     * Work around https://phabricator.wikimedia.org/T413651 without changing
+     * the URL authority, where percent-encoded hyphens make a host invalid.
+     */
+    public static function encode_url_for_zotero(string $url): string {
+        if (preg_match('~^(https?://[^/?#]+)(.*)$~i', $url, $matches) === 1) {
+            $url = $matches[1] . str_replace('-', '%2D', $matches[2]);
+        }
+        return urlencode($url);
+    }
+
     private static function record_zotero_failure(): void {
         self::$zotero_failures_count += 1;
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
@@ -191,10 +202,8 @@ final class Zotero {
             }
         }
 
-        /** Deal with https://phabricator.wikimedia.org/T413651 bug in zotero */
-        $url = str_replace("-", "%2D", $url);
         /** @psalm-taint-escape ssrf */
-        $the_url = CITOID_ZOTERO . urlencode($url);
+        $the_url = CITOID_ZOTERO . self::encode_url_for_zotero($url);
         curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
 
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
