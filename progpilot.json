@@ -232,7 +232,7 @@
         "sink_file": "src\/category.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "db9ed7a548ada02b62ce52268b305f7c5c33e359c4724a6d83d2dfc1990ecdd2",
+        "vuln_id": "015a048e666e609b3275ec7eb19d9c51863a8fb1c04705146ae5e7bddfcd8058",
         "vuln_type": "taint-style"
     },
     {
@@ -360,7 +360,7 @@
         "sink_file": "src\/process_page.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "cb26831686b47035b5b3d9194d8b1a1a3686c894a415fa10cde7ce8e82ee36a2",
+        "vuln_id": "b53d65588e473bff49081d85680a8116cbc6dd1ef6ee04ba96c2a4f7ebcbd4ca",
         "vuln_type": "taint-style"
     }
 ]
