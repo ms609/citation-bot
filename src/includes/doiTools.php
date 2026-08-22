@@ -482,7 +482,7 @@ function not_bad_10_1093_doi(string $url): bool { // We assume DOIs are bad, unl
         return true;
     }
     $test = mb_strtolower($match[1]);
-    // March 2019 Good list
+    // Current OUP Good list, with legacy entries retained for historical DOIs
     if (in_array($test, GOOD_10_1093_DOIS, true)) {
         return true;
     }
