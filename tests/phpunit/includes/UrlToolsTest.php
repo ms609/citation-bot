@@ -1055,4 +1055,3 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('3347357', $template->get2('jstor'));
     }
 }
-
