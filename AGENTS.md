@@ -171,8 +171,6 @@ The project uses extensive automated testing:
 - **Phan** - PHP static analyzer
 - **PHP_CodeSniffer** - Code style enforcement
 - **PHPLint** - Basic PHP syntax check
-- **PHP Security Checker** - Known vulnerable dependency scan
-- **The PHP Security Checker** - Second vulnerable dependency scan
 - **DesignSecurity (progpilot)** - Tainted data / design security analysis
 - **CodeQL** - Security vulnerability scanning
 - **Trivy** - Container security scanning

@@ -3,8 +3,14 @@ name: Actionlint
 on:
   push:
     branches: [ master ]
+    paths:
+      - '.github/actions/**'
+      - '.github/workflows/**'
   pull_request:
     branches: [ master ]
+    paths:
+      - '.github/actions/**'
+      - '.github/workflows/**'
   schedule:
     - cron: '25 17 * * 1'
 

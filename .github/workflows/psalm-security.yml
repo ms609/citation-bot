@@ -3,8 +3,18 @@ name: PHP psalm security check
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'psalm.xml'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'psalm.xml'
   schedule:
     - cron: '20 18 * * 1'
 

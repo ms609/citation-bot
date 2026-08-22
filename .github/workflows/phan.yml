@@ -3,8 +3,18 @@ name: PHP phan
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phan/**'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phan/**'
+      - 'composer.json'
+      - 'composer.lock'
   schedule:
     - cron: '5 18 * * 1'
 
