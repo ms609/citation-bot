@@ -16,3 +16,4 @@ parameters:
         - BOT_USER_AGENT
         - WIKI_BASE
         - TRUST_DOI_GOOD
+        - PUBLIC_BASE_URL
