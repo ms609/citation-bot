@@ -920,7 +920,7 @@ const DOI_FREE_PREFIX = [
 
 /**
  * Conditional free DOI rules: DOIs that are free only under certain publication-date conditions.
- * Rule types: AFTER_YEAR (year > value), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
+ * Rule types: AFTER_YEAR (year > value), AFTER_DATE (publication date >= value), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
  * If no parseable date is present, no free tag is added.
  * @var array<array{prefix: string, type: string, value: string}>
  */
@@ -954,5 +954,10 @@ const DOI_FREE_CONDITIONAL = [
         'prefix' => '10.1140/epjc',
         'type'   => 'AFTER_YEAR',
         'value'  => '2014',
+    ],
+    [   // IEEE Transactions on Neural Systems and Rehabilitation Engineering: free since 1 July 2020
+        'prefix' => '10.1109/tnsre.',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-07-01',
     ],
 ];

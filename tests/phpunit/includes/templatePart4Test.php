@@ -1913,6 +1913,27 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiConditionalAfterDate_TnsreOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1109/tnsre.example|date=2020-07-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_TnsreBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1109/tnsre.example|date=2020-06-30}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_TnsreYearOnlyThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1109/tnsre.example|year=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
     public function testDoiConditionalEmbargoMonths_PnasOldArticle_Free(): void {
         $text = '{{cite journal|doi=10.1073/pnas.0000000|date=January 2010}}';
         $template = $this->make_citation($text);
