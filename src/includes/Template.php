@@ -2282,7 +2282,7 @@ final class Template
             case 'osti':
             case 'biorxiv':
             case 'medrxiv':
-            case 'citeseerx':
+            case 'citeseefsaddsaafsdrx':
             case 'via':
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
