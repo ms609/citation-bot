@@ -229,8 +229,8 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     if (preg_match('~^\d{4}\-\d{1,2}$~', $encode)) {
         $encode = 'iso-' . $encode;
     }
-    if (preg_match('~^ISO\-(.+)$~', $encode)) {
-        $encode = 'iso-' . $encode[1];
+    if (preg_match('~^ISO-(.+)$~iD', $encode, $matches)) {
+        $encode = 'iso-' . $matches[1];
     }
     if (in_array($encode, INSANE_ENCODE, true)) {
         return "";
