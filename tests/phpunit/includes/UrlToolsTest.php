@@ -765,8 +765,9 @@ final class UrlToolsTest extends testBaseClass {
     public function testConversionOfURL8(): void {
         $text = '{{cite web|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892|title=Xyz|pmc=341322|doi-access=free|doi=10.0001/Rubbish_bot_failure_test}}';
         $template = $this->make_citation($text);
-        $this->assertTrue($template->get_identifiers_from_url());
-        $this->assertNull($template->get2('url'));
+        $this->assertFalse($template->get_identifiers_from_url());
+        $this->assertSame('https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892', $template->get2('url'));
+        $this->assertNull($template->get2('citeseerx'));
     }
 
     public function testConversionOfURL9(): void {
@@ -896,10 +897,12 @@ final class UrlToolsTest extends testBaseClass {
     public function testUrlConversionsF(): void {
         $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf}}';
         $prepared = $this->prepare_citation($text);
-        $this->assertSame('10.1.1.923.345', $prepared->get2('citeseerx'));
+        $this->assertNull($prepared->get2('citeseerx'));
+        $this->assertSame('http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.923.345&rep=rep1&type=pdf', $prepared->get2('url'));
         $text = '{{cite journal |url=http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.923.345}}';
         $prepared = $this->prepare_citation($text);
-        $this->assertSame('10.1.1.923.345', $prepared->get2('citeseerx'));
+        $this->assertNull($prepared->get2('citeseerx'));
+        $this->assertSame('http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.923.345', $prepared->get2('url'));
     }
 
     public function testUrlConversionsG(): void {
@@ -1052,3 +1055,4 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertSame('3347357', $template->get2('jstor'));
     }
 }
+
