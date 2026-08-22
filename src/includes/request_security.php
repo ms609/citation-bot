@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * @param array<array-key, mixed> &$session
+ * @param array<array-key, mixed>|null &$session
  */
-function ensure_session_csrf_token(array &$session): string {
-    $token = $session['csrf_token'] ?? null;
+function ensure_session_csrf_token(?array &$session): string {
+    $token = ($session ??= [])['csrf_token'] ?? null;
     if (!is_string($token) || $token === '') {
         $token = bin2hex(random_bytes(32));
         $session['csrf_token'] = $token;
