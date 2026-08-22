@@ -2,6 +2,94 @@
 
 declare(strict_types=1);
 
+const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
+
+/** @var list<string> */
+const ARCHIVE_FETCH_HOSTS = [
+    'archive-it.org',
+    'archive.fo',
+    'archive.is',
+    'archive.md',
+    'archive.org',
+    'archive.ph',
+    'archive.today',
+    'archive.wikiwix.com',
+    'ghostarchive.org',
+    'perma-archives.org',
+    'perma.cc',
+    'wayback.archive-it.org',
+    'waybackmachine.org',
+    'web.archive.bibalex.org',
+    'web.archive.org',
+    'web.petabox.bibalex.org',
+    'webarchive.loc.gov',
+    'webarchive.nla.gov.au',
+    'webarchive.org.uk',
+    'webarchive.proni.gov.uk',
+    'webcitation.org',
+    'webharvest.gov',
+    'www.archive.org',
+    'www.archive-it.org',
+    'www.webarchive.org.uk',
+    'www.webcitation.org',
+];
+
+/**
+ * Limit server-side title lookups to the archival services that this feature supports.
+ */
+function archive_url_is_allowed(string $url): bool {
+    if ($url === '' || $url !== mb_trim($url) || preg_match('~[\x00-\x20\x7f\\\\]~', $url)) {
+        return false;
+    }
+
+    $parts = parse_url($url);
+    if (!is_array($parts) || !isset($parts['scheme'], $parts['host']) ||
+        !is_string($parts['scheme']) || !is_string($parts['host']) ||
+        isset($parts['user']) || isset($parts['pass'])) {
+        return false;
+    }
+
+    $scheme = mb_strtolower($parts['scheme']);
+    if (!in_array($scheme, ['http', 'https'], true)) {
+        return false;
+    }
+
+    if (isset($parts['port']) && (($scheme === 'http' && $parts['port'] !== 80) || ($scheme === 'https' && $parts['port'] !== 443))) {
+        return false;
+    }
+
+    return in_array(mb_strtolower($parts['host']), ARCHIVE_FETCH_HOSTS, true);
+}
+
+/**
+ * Follow redirects explicitly so that every destination passes the same allow-list check.
+ */
+function fetch_archive_page(CurlHandle $ch, string $url): string {
+    for ($redirects = 0; $redirects <= ARCHIVE_FETCH_MAX_REDIRECTS; $redirects++) {
+        if (!archive_url_is_allowed($url)) {
+            return '';
+        }
+
+        throttle_archive();
+        /** @psalm-taint-escape ssrf */
+        $safe_url = $url;
+        curl_setopt($ch, CURLOPT_URL, $safe_url);
+        $raw_html = bot_curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        if (!is_int($status) || $status < 300 || $status >= 400) {
+            return $raw_html;
+        }
+
+        $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        if (!is_string($redirect_url) || $redirect_url === '') {
+            return '';
+        }
+        $url = $redirect_url;
+    }
+
+    return '';
+}
+
 function archive_throttle_delay(float $now, float $last, float $minimum_interval = 1.0): int {
     if ($last <= 0.0 || $minimum_interval <= 0.0) {
         return 0;
@@ -32,7 +120,10 @@ function expand_templates_from_archives(array &$templates): void { // This is do
     static $ch = null;
     set_time_limit(120);
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, [CURLOPT_HEADER => true]);
+        $ch = bot_curl_init(0.5, [
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_HEADER => true,
+        ]);
     }
     foreach ($templates as $template) {
         set_time_limit(120);
@@ -60,13 +151,10 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             mb_substr_count($template->get('title'), '') > 0 ||
             mb_substr_count($template->get('title'), '') > 0 ||
             mb_substr_count($template->get('title'), '�') > 0 )) {
-            /** @psalm-taint-escape ssrf */
             $archive_url = $template->get('archive-url') . $template->get('archiveurl');
-            if (mb_stripos($archive_url, 'archive') !== false && mb_stripos($archive_url, '.pdf') === false) {
+            if (archive_url_is_allowed($archive_url) && mb_stripos($archive_url, '.pdf') === false) {
                 set_time_limit(120);
-                throttle_archive();
-                curl_setopt($ch, CURLOPT_URL, $archive_url);
-                $raw_html = bot_curl_exec($ch);
+                $raw_html = fetch_archive_page($ch, $archive_url);
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                     '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
