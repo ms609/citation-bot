@@ -773,7 +773,7 @@ final class ConstantsTest extends testBaseClass {
 
     public function testDoiConditionalStructure(): void {
         new TestPage();
-        $valid_types = ['AFTER_YEAR', 'EMBARGO_MONTHS'];
+        $valid_types = ['AFTER_YEAR', 'AFTER_DATE', 'EMBARGO_MONTHS'];
         foreach (DOI_FREE_CONDITIONAL as $idx => $rule) {
             $label = 'DOI_FREE_CONDITIONAL[' . $idx . ']';
             $this->assertIsArray($rule, $label);
@@ -787,6 +787,8 @@ final class ConstantsTest extends testBaseClass {
             $this->assertStringContainsString('/', $rule['prefix'], $label . ' prefix');
             if ($rule['type'] === 'AFTER_YEAR') {
                 $this->assertMatchesRegularExpression('~^\d{4}$~', $rule['value'], $label . ' value');
+            } elseif ($rule['type'] === 'AFTER_DATE') {
+                $this->assertMatchesRegularExpression('~^\d{4}-\d{2}-\d{2}$~', $rule['value'], $label . ' value');
             } else {
                 $this->assertGreaterThan(0, (int) $rule['value'], $label . ' value');
             }

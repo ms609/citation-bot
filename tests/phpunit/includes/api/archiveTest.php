@@ -5,6 +5,23 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class archiveTest extends testBaseClass {
 
+    public function testArchiveUrlAllowListAcceptsKnownServices(): void {
+        $this->assertTrue(archive_url_is_allowed('https://web.archive.org/web/20200101000000/https://example.com/'));
+        $this->assertTrue(archive_url_is_allowed('http://www.archive.org/index.php'));
+        $this->assertTrue(archive_url_is_allowed('https://wayback.archive-it.org/4554/20190521084631/https://example.com/'));
+        $this->assertTrue(archive_url_is_allowed('https://archive.today/example'));
+    }
+
+    public function testArchiveUrlAllowListRejectsSsrfInputs(): void {
+        $this->assertFalse(archive_url_is_allowed('http://127.0.0.1/archive'));
+        $this->assertFalse(archive_url_is_allowed('http://[::1]/archive'));
+        $this->assertFalse(archive_url_is_allowed('file:///etc/passwd'));
+        $this->assertFalse(archive_url_is_allowed('https://example.com/archive'));
+        $this->assertFalse(archive_url_is_allowed('https://web.archive.org.evil.example/archive'));
+        $this->assertFalse(archive_url_is_allowed('https://web.archive.org@127.0.0.1/archive'));
+        $this->assertFalse(archive_url_is_allowed('https://web.archive.org:8443/archive'));
+    }
+
     public function testArchiveThrottleDelayUsesSecondsAndReturnsMicroseconds(): void {
         $this->assertSame(0, archive_throttle_delay(100.0, 0.0));
         $this->assertSame(750000, archive_throttle_delay(100.25, 100.0));
