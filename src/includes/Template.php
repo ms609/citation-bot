@@ -2282,11 +2282,14 @@ final class Template
             case 'osti':
             case 'biorxiv':
             case 'medrxiv':
-            case 'citeseerx':
             case 'via':
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
+                return false;
+
+            case 'citeseerx':
+                // Existing values remain supported, but CS1 no longer accepts new CiteSeerX identifiers.
                 return false;
 
             case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
@@ -2865,7 +2868,7 @@ final class Template
             $this->forget('id');
             return;
         }
-        while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+        while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
             $the_type = mb_strtolower($match[1]);
             $the_data = $match[2];
             $the_all = $match[0];
