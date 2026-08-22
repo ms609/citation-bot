@@ -53,6 +53,8 @@ if (isset($_GET['return'])) {
     if (!is_string($_GET['return']) || !is_valid_local_return_path($_GET['return'])) {
         death_time('Invalid Access URL');
     }
+    /** The value is safe for a Location header after is_valid_local_return_path(). */
+    /** @psalm-taint-escape header */
     $return_path = $_GET['return'];
 }
 
@@ -101,8 +103,6 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
         if ($return_path !== null) {
-            // This could only be tainted input if OAuth server itself was hacked, so flag as safe
-            /** @psalm-taint-escape header */
             return_to_sender($return_path);
         }
         return_to_sender();

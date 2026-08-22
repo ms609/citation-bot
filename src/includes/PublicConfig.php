@@ -10,7 +10,6 @@ function normalize_public_host(string $host): ?string {
         return null;
     }
 
-    $port = '';
     if (mb_substr($host, 0, 1) === '[') {
         if (!preg_match('~^\[([0-9a-fA-F:.]+)\](?::([0-9]{1,5}))?$~D', $host, $matches)) {
             return null;
