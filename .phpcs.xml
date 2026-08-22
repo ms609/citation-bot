@@ -52,10 +52,22 @@
             <property name="forbiddenFunctions" type="array">
                 <element key="assert" value="null"/>
                 <element key="create_function" value="null"/>
+                <element key="curl_close" value="null"/>
                 <element key="die" value="exit"/>
                 <element key="eval" value="null"/>
                 <element key="exec" value="null"/>
                 <element key="ltrim" value="mb_ltrim"/>
+                <element key="mb_ereg_match" value="null"/>
+                <element key="mb_ereg_replace_callback" value="null"/>
+                <element key="mb_ereg_replaces" value="null"/>
+                <element key="mb_ereg_search_getpos" value="null"/>
+                <element key="mb_ereg_search_getregs" value="null"/>
+                <element key="mb_ereg_search_init" value="null"/>
+                <element key="mb_ereg_search_pos" value="null"/>
+                <element key="mb_ereg_search_regs" value="null"/>
+                <element key="mb_ereg" value="null"/>
+                <element key="mb_eregi_replace" value="null"/>
+                <element key="mb_regex_set_options" value="null"/>
                 <element key="passthru" value="null"/>
                 <element key="popen" value="null"/>
                 <element key="print" value="echo"/>
@@ -81,18 +93,6 @@
                 <element key="trim" value="mb_trim"/>
                 <element key="ucfirst" value="mb_ucfirst"/>
                 <element key="ucwords" value="mb_ucwords"/>
-                <element key="mb_ereg_replaces" value="null"/>
-                <element key="mb_ereg" value="null"/>
-                <element key="mb_ereg_search_regs" value="null"/>
-                <element key="mb_ereg_search_init" value="null"/>
-                <element key="mb_ereg_replace_callback" value="null"/>
-                <element key="mb_eregi_replace" value="null"/>
-                <element key="mb_ereg_match" value="null"/>
-                <element key="mb_ereg_search_pos" value="null"/>
-                <element key="mb_ereg_search_getregs" value="null"/>
-                <element key="mb_ereg_search_getpos" value="null"/>
-                <element key="mb_regex_set_options" value="null"/>
-                <element key="curl_close" value="null"/>
             </property>
         </properties>
     </rule>
