@@ -23,7 +23,7 @@ All code is run through several tests.  The primary test is a suite of example p
 
 ## Submitting changes
 
-Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
