@@ -44,7 +44,6 @@ function archive_url_is_allowed(string $url): bool {
 
     $parts = parse_url($url);
     if (!is_array($parts) || !isset($parts['scheme'], $parts['host']) ||
-        !is_string($parts['scheme']) || !is_string($parts['host']) ||
         isset($parts['user']) || isset($parts['pass'])) {
         return false;
     }
@@ -66,7 +65,7 @@ function archive_url_is_allowed(string $url): bool {
  */
 function fetch_archive_page(CurlHandle $ch, string $url): string {
     for ($redirects = 0; $redirects <= ARCHIVE_FETCH_MAX_REDIRECTS; $redirects++) {
-        if (!archive_url_is_allowed($url)) {
+        if ($url === '' || !archive_url_is_allowed($url)) {
             return '';
         }
 
@@ -76,7 +75,7 @@ function fetch_archive_page(CurlHandle $ch, string $url): string {
         curl_setopt($ch, CURLOPT_URL, $safe_url);
         $raw_html = bot_curl_exec($ch);
         $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        if (!is_int($status) || $status < 300 || $status >= 400) {
+        if ($status < 300 || $status >= 400) {
             return $raw_html;
         }
 
