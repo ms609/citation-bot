@@ -191,6 +191,8 @@ final class Zotero {
             }
         }
 
+        /** Deal with https://phabricator.wikimedia.org/T413651 bug in zotero */
+        $url=str_replace("-", "%2D", $url);
         /** @psalm-taint-escape ssrf */
         $the_url = CITOID_ZOTERO . urlencode($url);
         curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
