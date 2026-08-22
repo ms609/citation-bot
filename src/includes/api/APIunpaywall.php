@@ -191,9 +191,6 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 $ch = bot_curl_init(1.5, [
                     CURLOPT_HEADER => true,
                     CURLOPT_NOBODY => true,
-                    CURLOPT_SSL_VERIFYHOST => false,
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYSTATUS => false,
                     CURLOPT_URL => $the_url,
                 ]);
                 $headers_test = bot_curl_exec($ch);
@@ -206,8 +203,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 // @codeCoverageIgnoreEnd
                 $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
                 // @codeCoverageIgnoreStart
-                if ($response_code > 400) {
-                      // Generally 400 and below are okay, includes redirects too though
+                if ($response_code < 200 || $response_code >= 400) {
                       $template->forget($url_type);
                       report_warning("Open access URL gave response code " . (string) $response_code . " from oiDOI API for doi: " . echoable($doi));
                       return 'url_unreachable';
