@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * @param array<string, mixed> $server
- * @param array<string, mixed> $post
- * @param array<string, mixed> $session
+ * @param array<array-key, mixed> $server
+ * @param array<array-key, mixed> $post
+ * @param array<array-key, mixed> $session
  */
 function request_has_valid_post_csrf(array $server, array $post, array $session): bool {
     if (($server['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -28,16 +28,22 @@ function request_has_valid_post_csrf(array $server, array $post, array $session)
  * @param string $button_text
  */
 function post_confirmation_form(string $action, array $fields, string $csrf_token, string $button_text): string {
-    $escape = static function (string $value): string {
-        return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-    };
-
-    $html = '</pre><form action="' . $escape($action) . '" method="post">';
-    $html .= '<input type="hidden" name="csrf_token" value="' . $escape($csrf_token) . '" />';
+    $html = '</pre><form action="';
+    $html .= htmlspecialchars($action, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= '" method="post">';
+    $html .= '<input type="hidden" name="csrf_token" value="';
+    $html .= htmlspecialchars($csrf_token, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= '" />';
     foreach ($fields as $name => $value) {
-        $html .= '<input type="hidden" name="' . $escape($name) . '" value="' . $escape($value) . '" />';
+        $html .= '<input type="hidden" name="';
+        $html .= htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $html .= '" value="';
+        $html .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $html .= '" />';
     }
-    $html .= '<p>Requested action: <strong>' . $escape($button_text) . '</strong></p>';
+    $html .= '<p>Requested action: <strong>';
+    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= '</strong></p>';
 
     $display_fields = [
         'page' => 'Page',
@@ -51,7 +57,11 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
     foreach ($display_fields as $name => $label) {
         if (array_key_exists($name, $fields)) {
             $value = $name === 'slow' ? 'enabled' : $fields[$name];
-            $details .= '<dt>' . $escape($label) . '</dt><dd>' . $escape($value) . '</dd>';
+            $details .= '<dt>';
+            $details .= htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $details .= '</dt><dd>';
+            $details .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $details .= '</dd>';
         }
     }
     if ($details !== '') {
@@ -59,6 +69,8 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
     }
 
     $html .= '<p>No changes have been made. Confirm to continue.</p>';
-    $html .= '<button type="submit">' . $escape($button_text) . '</button></form><pre>';
+    $html .= '<button type="submit">';
+    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= '</button></form><pre>';
     return $html;
 }
