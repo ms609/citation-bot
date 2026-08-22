@@ -92,7 +92,7 @@ Entry points (under `src/`):
 - `src/gadgetapi.php`: PHP backend API for the on-wiki Citation Expander gadget
 - `src/generate_template.php`: creates a wiki reference given an identifier
 - `src/category.php`: processes all pages within a Wikipedia category
-- `src/linked_pages.php`: processes all pages that link to a given `User:` page
+- `src/linked_pages.php`: processes all pages that are linked from a given `User:` page
 
 Operational/support endpoints:
 
