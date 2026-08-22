@@ -3,65 +3,139 @@
 [
     {
         "source_name": [
-            "$where"
+            "$post_confirmation_form_return"
         ],
         "source_line": [
-            18
+            75
         ],
         "source_column": [
-            855
+            2693
         ],
         "source_file": [
-            "src\/authenticate.php"
+            "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
         ],
         "tainted_flow": [
             [
                 {
-                    "flow_name": "$where",
-                    "flow_line": 88,
-                    "flow_column": 3570,
-                    "flow_file": "src\/authenticate.php"
+                    "flow_name": "$html",
+                    "flow_line": 74,
+                    "flow_column": 2655,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 73,
+                    "flow_column": 2572,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 72,
+                    "flow_column": 2533,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 71,
+                    "flow_column": 2462,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 68,
+                    "flow_column": 2389,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 46,
+                    "flow_column": 1626,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 45,
+                    "flow_column": 1543,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 44,
+                    "flow_column": 1497,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 42,
+                    "flow_column": 1470,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 41,
+                    "flow_column": 1389,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_return",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/category.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_param0_line41_column1398_progpilot",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$value",
+                    "flow_line": 41,
+                    "flow_name": "$htmlspecialchars_param0_line41_column1398_progpilot",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$value",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$pages",
+                    "flow_line": 20,
+                    "flow_column": 921,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/process_page.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
-                    "flow_line": 88,
-                    "flow_column": 3579,
-                    "flow_file": "src\/authenticate.php"
+                    "flow_line": 20,
+                    "flow_column": 930,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/process_page.php"
                 },
                 {
-                    "flow_name": "$mb_trim_param0_line88_column3579_progpilot",
-                    "flow_line": 88,
-                    "flow_column": 3579,
-                    "flow_file": "src\/authenticate.php"
+                    "flow_name": "$mb_trim_param0_line20_column930_progpilot",
+                    "flow_line": 20,
+                    "flow_column": 930,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/process_page.php"
                 },
                 {
-                    "flow_name": "$_GET[\"return\"]",
-                    "flow_line": 88,
-                    "flow_column": 3587,
-                    "flow_file": "src\/authenticate.php"
+                    "flow_name": "$file_get_contents_return",
+                    "flow_line": 20,
+                    "flow_column": 947,
+                    "flow_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/process_page.php"
                 }
             ]
         ],
-        "sink_name": "header",
-        "sink_line": 22,
-        "sink_column": 1014,
-        "sink_file": "src\/authenticate.php",
-        "vuln_name": "header_injection",
-        "vuln_cwe": "CWE_601",
-        "vuln_id": "bc14c42f45fa81b9b165033a102ebc650c787db089224f7a481ac41d47af8cd0",
+        "sink_name": "echo",
+        "sink_line": 69,
+        "sink_column": 2286,
+        "sink_file": "\/home\/runner\/work\/citation-bot\/citation-bot\/src\/process_page.php",
+        "vuln_name": "xss",
+        "vuln_cwe": "CWE_79",
+        "vuln_id": "a1e12810f0184b0979fdaff00d95fe940608933f0acdd98f0d57bfe692d4cad1",
         "vuln_type": "taint-style"
-    }
-,
-    {
-        "vuln_rule": "MUST_NOT_VERIFY_DEFINITION",
-        "vuln_name": "security misconfiguration",
-        "vuln_line": 18,
-        "vuln_column": 467,
-        "vuln_file": "src\/gadgetapi.php",
-        "vuln_description": "CORS should not be allowed on all origins",
-        "vuln_cwe": "CWE_346",
-        "vuln_id": "c44cd39099281596281e5587205e9be86fdb11f9e9c307e2d2eff3f5e6470399",
-        "vuln_type": "custom"
     }
 ]
 }
