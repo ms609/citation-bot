@@ -58,7 +58,7 @@ function public_base_url(): string {
     }
 
     $parts = parse_url($configured);
-    if (!is_array($parts) || !isset($parts['scheme'], $parts['host']) || !is_string($parts['scheme']) || !is_string($parts['host'])) {
+    if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
         throw new RuntimeException('PUBLIC_BASE_URL must be an absolute URL');
     }
     $scheme = mb_strtolower($parts['scheme']);
@@ -72,7 +72,7 @@ function public_base_url(): string {
     }
 
     $path = $parts['path'] ?? '';
-    if (!is_string($path) || ($path !== '' && mb_substr($path, 0, 1) !== '/') || preg_match('~[\x00-\x20\x7f\\\\]~', $path)) {
+    if (($path !== '' && mb_substr($path, 0, 1) !== '/') || preg_match('~[\x00-\x20\x7f\\\\]~', $path)) {
         throw new RuntimeException('PUBLIC_BASE_URL contains an invalid path');
     }
     $path = mb_rtrim($path, '/');
@@ -145,7 +145,7 @@ function normalize_cors_origin(string $origin): ?string {
         return null;
     }
     $parts = parse_url($origin);
-    if (!is_array($parts) || !isset($parts['scheme'], $parts['host']) || !is_string($parts['scheme']) || !is_string($parts['host'])) {
+    if (!is_array($parts) || !isset($parts['scheme'], $parts['host'])) {
         return null;
     }
     $scheme = mb_strtolower($parts['scheme']);
