@@ -136,7 +136,7 @@ function wikify_external_text(string $title): string {
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
-    if (mb_strlen($title) === mb_strlen($title)) {
+    if (mb_strlen($title, '8bit') === mb_strlen($title)) {
         $title = mb_trim($title, " \t\n\r\0\x0B\xc2\xa0");
     } else {
         $title = mb_trim($title, " \t\n\r\0");
@@ -804,12 +804,12 @@ function tidy_date_inside(string $string): string {
         }
     }
     // Huge amount of character cleaning
-    if (mb_strlen($string) !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
+    if (mb_strlen($string, '8bit') !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
         $cleaned = '';
         $the_str_length = mb_strlen($string);
         for ($i = 0; $i < $the_str_length; $i++) {
             $char = mb_substr($string, $i, 1);
-            if (mb_strlen($char) === mb_strlen($char)) {
+            if (mb_strlen($char, '8bit') === mb_strlen($char)) {
                 $cleaned .= $char;
             } else {
                 $cleaned .= '-';

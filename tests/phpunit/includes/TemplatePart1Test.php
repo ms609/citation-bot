@@ -626,6 +626,12 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($template->add_if_new('id', 'Another description of this'));
     }
 
+    public function testNonAsciiTypeIsNotAdded(): void {
+        $template = $this->make_citation('{{cite book}}');
+        $this->assertFalse($template->add_if_new('type', 'データ'));
+        $this->assertNull($template->get2('type'));
+    }
+
     public function testHDLasDOIThing1(): void {
         $text = '{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->make_citation($text);
