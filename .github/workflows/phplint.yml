@@ -3,8 +3,18 @@ name: PHPLint (Basic PHP syntax check)
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phplint.yml'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phplint.yml'
+      - 'composer.json'
+      - 'composer.lock'
   schedule:
     - cron: '0 18 * * 1'
 
