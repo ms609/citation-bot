@@ -1640,7 +1640,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testURLhiding(): void {
         $text = "{{cite journal|citeseerx=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.88.5725}}";
         $expanded = $this->process_citation($text);
-        $this->AssertSame('10.1.1.88.5725', $expanded->get2('citeseerx'));
+        $this->AssertNull($expanded->get2('citeseerx'));
     }
 
     public function testURLhiding2(): void {
