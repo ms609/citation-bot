@@ -24,7 +24,6 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         report_error("curl_init failure"); // @codeCoverageIgnore
     }
     // 1 - Global Defaults
-    /** @var non-empty-string $user_agent */
     $user_agent = BOT_USER_AGENT;
     curl_setopt_array($ch, [
         CURLOPT_FOLLOWLOCATION => true,
