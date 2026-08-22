@@ -1848,19 +1848,8 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             }
             return false;
         } elseif (mb_stripos($url, 'citeseerx') !== false) {
-            if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
-                if ($template->blank('citeseerx')) {
-                    report_modification("URL is hard-coded citeseerx; converting to use citeseerx parameter.");
-                }
-                if (!$url_sent) {
-                    if ($template->has_good_free_copy()) {
-                        $template->forget($url_type);
-                        if ($template->wikiname() === 'cite web') {
-                            $template->change_name_to('cite journal');
-                        }
-                    }
-                }
-                return $template->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
+            if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=[0-9.]*(?:&.+)?~", $url)) {
+                report_info("Leaving CiteSeerX URL unchanged because the citeseerx parameter is deprecated.");
             }
             return false;
 
