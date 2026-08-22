@@ -31,6 +31,24 @@ function bot_debug_log(string $log_this): void {
     }
 }
 
+if (file_exists(__DIR__ . '/../env.php')) {
+    // Set the environment variables with putenv(). Remember to set permissions (not readable!)
+    ob_start();
+    /** @psalm-suppress MissingFile */
+    include_once __DIR__ . '/../env.php';
+    $env_output_contents = ob_get_contents();
+    $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
+    unset($env_output_contents);
+    if ($env_output) {
+        bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
+    }
+    unset($env_output);
+    ob_end_clean();
+}
+
+require_once __DIR__ . '/PublicConfig.php';
+enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
+
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
 // Should add all these to index.php web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
@@ -92,21 +110,6 @@ if (isset($argv) && in_array('--savetofiles', $argv, true)) {
     define("SAVETOFILES_MODE", true);
 } else {
     define("SAVETOFILES_MODE", false);
-}
-
-if (file_exists(__DIR__ . '/../env.php')) {
-    // Set the environment variables with putenv(). Remember to set permissions (not readable!)
-    ob_start();
-    /** @psalm-suppress MissingFile */
-    include_once __DIR__ . '/../env.php';
-    $env_output_contents = ob_get_contents();
-    $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
-    unset($env_output_contents);
-    if ($env_output) {
-        bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
-    }
-    unset($env_output);
-    ob_end_clean();
 }
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */

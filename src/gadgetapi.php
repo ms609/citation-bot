@@ -9,12 +9,12 @@ try {
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
 
-    $origin = mb_strtolower((string) @$_SERVER['HTTP_ORIGIN']);
-    if ((!CI && $origin !== 'https://mdwiki.org' && !str_ends_with($origin, '.wikipedia.org')) || (preg_match('~[\;\,\s]~', $origin))) {
+    $origin = allowed_cors_origin(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
+    if ($origin === null) {
         throw new Exception('not a wiki');    // @codeCoverageIgnore
     }
 
-    @header('Access-Control-Allow-Origin: ' . $origin);
+    send_configured_cors_header($origin);
     @header('Content-Type: application/json');
     unset($origin);
 

@@ -5,13 +5,12 @@ declare(strict_types=1);
 const VALID_PARAMS = ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'];
 set_time_limit(120);
 
-@header("Access-Control-Allow-Origin: https://citations.toolforge.org");
+require_once __DIR__ . '/includes/setup.php';
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
-// usage: https://citations.toolforge.org/generate_template.php?doi=<DOI> and such
+// usage: PUBLIC_BASE_URL/generate_template.php?doi=<DOI> and such
 
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><a href="#main-content" class="skip-link">Skip to main content</a><header><h1>Citation Bot – Generate Template</h1></header><main id="main-content"><h2>Generated citation template</h2><pre>';
-
-require_once __DIR__ . '/includes/setup.php';
 
 function die_in_template(string $err): never {
     echo $err, '</pre></main><footer><a href="./" title="Use Citation Bot">Back to Citation Bot</a></footer></body></html>'; // @codeCoverageIgnore

@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
-
 /** @psalm-suppress MissingFile */
 require_once __DIR__ . '/env.php';
+
+require_once __DIR__ . '/includes/PublicConfig.php';
+
+enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
 const LOCK_DIR = 'git_pull.lock';
 

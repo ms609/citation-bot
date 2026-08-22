@@ -8,6 +8,12 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 
+if (file_exists(__DIR__ . '/env.php')) {
+    /** @psalm-suppress MissingFile */
+    include_once __DIR__ . '/env.php';
+}
+require_once __DIR__ . '/includes/PublicConfig.php';
+
 /** The two ways we leave this script */
 function death_time(string $err): never {
     unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['csrf_token']);
@@ -15,7 +21,10 @@ function death_time(string $err): never {
     exit(0);
 }
 
-function return_to_sender(string $where = 'https://citations.toolforge.org/'): never {
+function return_to_sender(?string $where = null): never {
+    if ($where === null) {
+        $where = public_url('/');
+    }
     if (preg_match('~\s+~', $where)) {
         death_time('Error in return_to_sender');
     }
@@ -25,9 +34,10 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/'): n
 
 set_time_limit(120);
 
-@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
+enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
-if (@$_SERVER['REQUEST_URI'] === '/authenticate.php') {
+if (@$_SERVER['REQUEST_URI'] === public_url_path('/authenticate.php')) {
     return_to_sender();
 }
 
@@ -37,6 +47,14 @@ if (empty($_SESSION['csrf_token'])) {
 }
 
 require_once __DIR__ . '/includes/setup.php';
+
+$return_path = null;
+if (isset($_GET['return'])) {
+    if (!is_string($_GET['return']) || !is_valid_local_return_path($_GET['return'])) {
+        death_time('Invalid Access URL');
+    }
+    $return_path = $_GET['return'];
+}
 
 if (getenv('PHP_WP_OAUTH_CONSUMER') === false || getenv('PHP_WP_OAUTH_SECRET') === false) {
     death_time("Citation Bot's authorization tokens not configured");
@@ -63,7 +81,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
         $token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
         $auth_url = 'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json';
         $client->makeOAuthCall($token, $auth_url);
-        return_to_sender();
+        return_to_sender($return_path);
     } catch (Throwable) {
         /** fall through */
     }
@@ -82,14 +100,10 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
-        if (is_string(@$_GET['return'])) {
+        if ($return_path !== null) {
             // This could only be tainted input if OAuth server itself was hacked, so flag as safe
             /** @psalm-taint-escape header */
-            $where = mb_trim($_GET['return']);
-            if (mb_substr($where, 0, 1) !== '/' || mb_substr($where, 0, 2) === '//' || preg_match('~\s+~', $where)) {
-                death_time('Invalid Access URL');
-            }
-            return_to_sender($where);
+            return_to_sender($return_path);
         }
         return_to_sender();
     } catch (Throwable) {
@@ -98,17 +112,17 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
     death_time("Incoming authorization tokens did not work - try again please");
 }
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
+
+try {
+    $newcallback = oauth_callback_url($return_path);
+} catch (Throwable) {
+    death_time('Invalid public URL configuration');
+}
+unset($return_path);
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 // Nothing found.  Needs an access grant from scratch
 try {
-    if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) {
-        throw new Exception('Webserver URL variables not set');
-    }
-    if ($_SERVER['HTTP_HOST'] !== 'citations.toolforge.org') {
-        throw new Exception('URL has wrong HTTP_HOST');
-    }
-    $newcallback = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
     $client->setCallback($newcallback);
     [$authUrl, $token] = $client->initiate();
     $_SESSION['request_key'] = $token->key;

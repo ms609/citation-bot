@@ -149,6 +149,7 @@ php src/process_page.php "PageName|Another Page" --slow --savetofiles
 
 Must include:
 
+- Public URL and web-request configuration: `PUBLIC_BASE_URL`, `ALLOWED_HOSTS`, `ALLOWED_ORIGINS`
 - OAuth tokens: `PHP_OAUTH_CONSUMER_TOKEN`, `PHP_OAUTH_CONSUMER_SECRET`, `PHP_OAUTH_ACCESS_TOKEN`, `PHP_OAUTH_ACCESS_SECRET` (required for CLI)
 - Web user OAuth: `PHP_WP_OAUTH_CONSUMER`, `PHP_WP_OAUTH_SECRET` (required for web interface)
 - Optional: `PHP_ADSABSAPIKEY` (ADS), `PHP_S2APIKEY` (Semantic Scholar), `NLM_APIKEY`/`NLM_EMAIL` (NCBI), `DEPLOY_PASSWORD` (deployment endpoint)

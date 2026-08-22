@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 set_time_limit(120);
 
-@header('Access-Control-Allow-Origin: https://citations.toolforge.org');
-
 require_once __DIR__ . '/includes/setup.php';
+send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     $page_name = $_POST['linkpage'];
