@@ -7,6 +7,7 @@ set_time_limit(120);
 @header('Access-Control-Allow-Origin: https://citations.toolforge.org');
 
 require_once __DIR__ . '/includes/setup.php';
+require_once __DIR__ . '/includes/request_security.php';
 
 const GET_IS_OKAY = [
     'Articles with missing Cite arXiv inputs',
@@ -66,19 +67,36 @@ if (!$category) {
     bot_html_footer();
     exit(0);
 }
+session_start(['read_and_close' => true]);
+bot_html_header();
+
 if ($from_get) {
-    define('MAX_PAGES_OVERRIDE', 1000000); // Match CLI limit (see setup.php) for whitelisted GET categories
+    $fields = [
+        'cat' => $category,
+        'extended_limit' => '1',
+    ];
+    foreach (['wiki_base', 'pcre'] as $name) {
+        if (isset($_GET[$name]) && is_string($_GET[$name])) {
+            $fields[$name] = $_GET[$name];
+        }
+    }
+    if (isset($_GET['slow'])) {
+        $fields['slow'] = '1';
+    }
+    echo post_confirmation_form('category.php', $fields, (string) ($_SESSION['csrf_token'] ?? ''), 'Process category');
+    bot_html_footer();
+    exit(0);
 }
 unset($from_get);
 
-session_start(['read_and_close' => true]);
-bot_html_header();
-if (@$_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_POST['csrf_token']) || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $_POST['csrf_token'])) {
-        report_warning('Invalid CSRF token.');
-        bot_html_footer();
-        exit(0);
-    }
+if (!request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
+    http_response_code(403);
+    report_warning('A POST request with a valid CSRF token is required.');
+    bot_html_footer();
+    exit(0);
+}
+if (($_POST['extended_limit'] ?? '') === '1' && in_array($category, GET_IS_OKAY, true)) {
+    define('MAX_PAGES_OVERRIDE', 1000000); // Match the historical whitelisted-link limit
 }
 $api = new WikipediaBot();
 check_blocked();
