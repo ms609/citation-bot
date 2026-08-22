@@ -1372,7 +1372,7 @@ EP - 999 }}';
     }
 
     public function testCitationBookMatchedToAdsArticleIsReview(): void {
-        $template = $this->make_citation('{{citation|title=Combinatory Analysis|publisher=Cambridge University Press|location=London|year=1915}}');
+        $template = $this->make_citation('{{citation|title=Combinatory Analysis|publisher=Cambridge University Press|place=London|year=1915}}');
         $record = (object) [
             'doctype' => 'article',
             'bibcode' => '1915Natur..96Q.478.',
