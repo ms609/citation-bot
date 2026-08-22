@@ -3,6 +3,82 @@
 [
     {
         "source_name": [
+            "$where"
+        ],
+        "source_line": [
+            24
+        ],
+        "source_column": [
+            1030
+        ],
+        "source_file": [
+            "\src\/authenticate.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$return_path",
+                    "flow_line": 58,
+                    "flow_column": 2091,
+                    "flow_file": "\src\/authenticate.php"
+                },
+                {
+                    "flow_name": "$_GET[\"return\"]",
+                    "flow_line": 58,
+                    "flow_column": 2106,
+                    "flow_file": "\src\/authenticate.php"
+                }
+            ]
+        ],
+        "sink_name": "header",
+        "sink_line": 31,
+        "sink_column": 1227,
+        "sink_file": "\src\/authenticate.php",
+        "vuln_name": "header_injection",
+        "vuln_cwe": "CWE_601",
+        "vuln_id": "ea8a7fdfbc870ab3c4e8ec3ce065d64cd7982a7d2985936156057252451b7a7f",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$where"
+        ],
+        "source_line": [
+            24
+        ],
+        "source_column": [
+            1030
+        ],
+        "source_file": [
+            "\src\/authenticate.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$return_path",
+                    "flow_line": 58,
+                    "flow_column": 2091,
+                    "flow_file": "\src\/authenticate.php"
+                },
+                {
+                    "flow_name": "$_GET[\"return\"]",
+                    "flow_line": 58,
+                    "flow_column": 2106,
+                    "flow_file": "\src\/authenticate.php"
+                }
+            ]
+        ],
+        "sink_name": "header",
+        "sink_line": 31,
+        "sink_column": 1227,
+        "sink_file": "\src\/authenticate.php",
+        "vuln_name": "header_injection",
+        "vuln_cwe": "CWE_601",
+        "vuln_id": "2ebf8f01cc3544d0758c786d890399065e60621f97b30647998413c5e3b51341",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
             "$post_confirmation_form_return"
         ],
         "source_line": [
@@ -12,7 +88,7 @@
             2693
         ],
         "source_file": [
-            "src\/includes\/request_security.php"
+            "\src\/includes\/request_security.php"
         ],
         "tainted_flow": [
             [
@@ -20,143 +96,271 @@
                     "flow_name": "$html",
                     "flow_line": 74,
                     "flow_column": 2655,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 73,
                     "flow_column": 2572,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 72,
                     "flow_column": 2533,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 71,
                     "flow_column": 2462,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 68,
                     "flow_column": 2389,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 46,
                     "flow_column": 1626,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 45,
                     "flow_column": 1543,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 44,
                     "flow_column": 1497,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 42,
                     "flow_column": 1470,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 41,
                     "flow_column": 1389,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$htmlspecialchars_return",
                     "flow_line": 41,
                     "flow_column": 1398,
-                    "flow_file": "src\/category.php"
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$htmlspecialchars_param0_line41_column1398_progpilot",
                     "flow_line": 41,
                     "flow_column": 1398,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$value",
                     "flow_line": 41,
                     "flow_column": 1398,
-                    "flow_file": "src\/includes\/request_security.php"
+                    "flow_file": "\src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$category",
                     "flow_line": 47,
-                    "flow_column": 1209,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1242,
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
                     "flow_line": 47,
-                    "flow_column": 1221,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1254,
+                    "flow_file": "\src\/category.php"
                 },
                 {
-                    "flow_name": "$mb_trim_param0_line47_column1221_progpilot",
+                    "flow_name": "$mb_trim_param0_line47_column1254_progpilot",
                     "flow_line": 47,
-                    "flow_column": 1221,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1254,
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$mb_substr_return",
                     "flow_line": 47,
-                    "flow_column": 1229,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1262,
+                    "flow_file": "\src\/category.php"
                 },
                 {
-                    "flow_name": "$mb_substr_param0_line47_column1229_progpilot",
+                    "flow_name": "$mb_substr_param0_line47_column1262_progpilot",
                     "flow_line": 47,
-                    "flow_column": 1229,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1262,
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$category",
                     "flow_line": 44,
-                    "flow_column": 1102,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1135,
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$mb_trim_return",
                     "flow_line": 44,
-                    "flow_column": 1114,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1147,
+                    "flow_file": "\src\/category.php"
                 },
                 {
-                    "flow_name": "$mb_trim_param0_line44_column1114_progpilot",
+                    "flow_name": "$mb_trim_param0_line44_column1147_progpilot",
                     "flow_line": 44,
-                    "flow_column": 1114,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1147,
+                    "flow_file": "\src\/category.php"
                 },
                 {
                     "flow_name": "$_POST[\"cat\"]",
                     "flow_line": 44,
-                    "flow_column": 1122,
-                    "flow_file": "src\/category.php"
+                    "flow_column": 1155,
+                    "flow_file": "\src\/category.php"
                 }
             ]
         ],
         "sink_name": "echo",
         "sink_line": 86,
-        "sink_column": 2426,
-        "sink_file": "src\/category.php",
+        "sink_column": 2459,
+        "sink_file": "\src\/category.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "6a494181079cef9f01e5ba6686415870d8ed16616f46baff2002d5fca4f33b8d",
+        "vuln_id": "de150efdcd940e29507615fca1306c9d459f12ec324047cfc7422d551d471d40",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$post_confirmation_form_return"
+        ],
+        "source_line": [
+            75
+        ],
+        "source_column": [
+            2693
+        ],
+        "source_file": [
+            "\src\/includes\/request_security.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$html",
+                    "flow_line": 74,
+                    "flow_column": 2655,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 73,
+                    "flow_column": 2572,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 72,
+                    "flow_column": 2533,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 71,
+                    "flow_column": 2462,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 68,
+                    "flow_column": 2389,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 46,
+                    "flow_column": 1626,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 45,
+                    "flow_column": 1543,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 44,
+                    "flow_column": 1497,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 42,
+                    "flow_column": 1470,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$html",
+                    "flow_line": 41,
+                    "flow_column": 1389,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_return",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\src\/process_page.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_param0_line41_column1398_progpilot",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$value",
+                    "flow_line": 41,
+                    "flow_column": 1398,
+                    "flow_file": "\src\/includes\/request_security.php"
+                },
+                {
+                    "flow_name": "$pages",
+                    "flow_line": 26,
+                    "flow_column": 1239,
+                    "flow_file": "\src\/process_page.php"
+                },
+                {
+                    "flow_name": "$mb_trim_return",
+                    "flow_line": 26,
+                    "flow_column": 1248,
+                    "flow_file": "\src\/process_page.php"
+                },
+                {
+                    "flow_name": "$mb_trim_param0_line26_column1248_progpilot",
+                    "flow_line": 26,
+                    "flow_column": 1248,
+                    "flow_file": "\src\/process_page.php"
+                },
+                {
+                    "flow_name": "$file_get_contents_return",
+                    "flow_line": 26,
+                    "flow_column": 1265,
+                    "flow_file": "\src\/process_page.php"
+                }
+            ]
+        ],
+        "sink_name": "echo",
+        "sink_line": 75,
+        "sink_column": 2604,
+        "sink_file": "\src\/process_page.php",
+        "vuln_name": "xss",
+        "vuln_cwe": "CWE_79",
+        "vuln_id": "aef96f7bcfdd6926c029279b50fb0dc47ef6a6c684576189914f23784452972b",
         "vuln_type": "taint-style"
     }
 ]
