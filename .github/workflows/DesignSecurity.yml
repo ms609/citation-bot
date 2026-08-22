@@ -3,6 +3,7 @@ name: PHP DesignSecurity
 on:
   push:
     branches: [ master ]
+    dfssda
   pull_request:
     branches: [ master ]
   schedule:
