@@ -3,7 +3,17 @@ on:
   push:
     branches:
       - master
+    paths:
+      - '**/*.json'
+      - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
   pull_request:
+    paths:
+      - '**/*.json'
+      - '**/*.md'
+      - '**/*.yml'
+      - '**/*.yaml'
   workflow_dispatch:
 
 permissions:

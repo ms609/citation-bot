@@ -3,8 +3,18 @@ name: PHP CodeSniffer
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phpcs.xml'
+      - 'composer.json'
+      - 'composer.lock'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - '.phpcs.xml'
+      - 'composer.json'
+      - 'composer.lock'
 
 permissions:
   contents: read

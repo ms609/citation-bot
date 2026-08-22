@@ -3,8 +3,20 @@ name: PHP DesignSecurity
 on:
   push:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'progpilot.json'
+      - 'progpilot.yml'
   pull_request:
     branches: [ master ]
+    paths:
+      - '**/*.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'progpilot.json'
+      - 'progpilot.yml'
   schedule:
     - cron: '35 17 * * 1'
 

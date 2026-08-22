@@ -3,8 +3,16 @@ name: HTML5 and CSS Validator
 on:
     push:
         branches: [ master ]
+        paths:
+            - 'src/index.php'
+            - 'src/preview.html'
+            - 'src/assets/**'
     pull_request:
         branches: [ master ]
+        paths:
+            - 'src/index.php'
+            - 'src/preview.html'
+            - 'src/assets/**'
     schedule:
         - cron: '45 17 * * 1'
 
