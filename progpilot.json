@@ -18,14 +18,14 @@
             [
                 {
                     "flow_name": "$return_path",
-                    "flow_line": 56,
-                    "flow_column": 1966,
+                    "flow_line": 58,
+                    "flow_column": 2091,
                     "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
-                    "flow_line": 56,
-                    "flow_column": 1981,
+                    "flow_line": 58,
+                    "flow_column": 2106,
                     "flow_file": "src\/authenticate.php"
                 }
             ]
@@ -36,10 +36,9 @@
         "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "9928d98f544936ee4feaba8e361baf11727eb15e0501ba602da4b84607baf060",
+        "vuln_id": "ea8a7fdfbc870ab3c4e8ec3ce065d64cd7982a7d2985936156057252451b7a7f",
         "vuln_type": "taint-style"
-    }
-,
+    },
     {
         "source_name": [
             "$where"
@@ -57,14 +56,14 @@
             [
                 {
                     "flow_name": "$return_path",
-                    "flow_line": 56,
-                    "flow_column": 1966,
+                    "flow_line": 58,
+                    "flow_column": 2091,
                     "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
-                    "flow_line": 56,
-                    "flow_column": 1981,
+                    "flow_line": 58,
+                    "flow_column": 2106,
                     "flow_file": "src\/authenticate.php"
                 }
             ]
@@ -75,20 +74,8 @@
         "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "e729fcae158870cc6e5a3a74c9c96de6bea59b8b9c88a2d817f6b1c9cb3386d7",
+        "vuln_id": "2ebf8f01cc3544d0758c786d890399065e60621f97b30647998413c5e3b51341",
         "vuln_type": "taint-style"
-    }
-,
-    {
-        "vuln_rule": "MUST_NOT_VERIFY_DEFINITION",
-        "vuln_name": "security misconfiguration",
-        "vuln_line": 18,
-        "vuln_column": 467,
-        "vuln_file": "src\/gadgetapi.php",
-        "vuln_description": "CORS should not be allowed on all origins",
-        "vuln_cwe": "CWE_346",
-        "vuln_id": "c44cd39099281596281e5587205e9be86fdb11f9e9c307e2d2eff3f5e6470399",
-        "vuln_type": "custom"
     }
 ]
 }
