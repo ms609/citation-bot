@@ -9,6 +9,13 @@ require_once __DIR__ . '/../../testBaseClass.php';
 
 final class TemplatePart1Test extends testBaseClass {
 
+    public function testFirstCommonMistakeIsCorrected(): void {
+        $template = $this->make_citation('{{cite journal|show-authors=3}}');
+        $template->correct_param_mistakes();
+        $this->assertSame('3', $template->get2('display-authors'));
+        $this->assertNull($template->get2('show-authors'));
+    }
+
     public function testLotsOfFloaters2(): void {
         $text_in = '{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}';
         $text_out = '{{cite journal| journal=L Dog | series=Not mine today |isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe }}';
@@ -624,6 +631,12 @@ final class TemplatePart1Test extends testBaseClass {
 
         $this->assertTrue($template->add_if_new('id', 'A description of this thing'));
         $this->assertFalse($template->add_if_new('id', 'Another description of this'));
+    }
+
+    public function testNonAsciiTypeIsNotAdded(): void {
+        $template = $this->make_citation('{{cite book}}');
+        $this->assertFalse($template->add_if_new('type', 'データ'));
+        $this->assertNull($template->get2('type'));
     }
 
     public function testHDLasDOIThing1(): void {

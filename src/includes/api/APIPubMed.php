@@ -267,7 +267,7 @@ function query_pubmed(Template $template): array {
             return $results;
         }
     }
-    $is_book = looksLikeBookReview($template, (object) []);
+    $is_book = citationLooksLikeBook($template);
     if ($template->has('title') && $template->first_surname() && !$is_book) {
         $results = do_pumbed_query($template, ["title", "surname", "year", "volume"]);
         if ($results[1] === 1) {

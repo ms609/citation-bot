@@ -1649,6 +1649,12 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertSame($text, $expanded->parsed_text());
     }
 
+    public function testDeprecatedCiteseerxParameterIsNotAdded(): void {
+        $template = $this->make_citation('{{cite journal}}');
+        $this->AssertFalse($template->add_if_new('citeseerx', '10.1.1.88.5725'));
+        $this->AssertNull($template->get2('citeseerx'));
+    }
+
     public function testCleanArxivDOI1(): void {
         $text = "{{cite journal|doi=10.48550/arXiv.1234.56789|pmid=<!-- -->|pmc=<!-- -->}}";
         $expanded = $this->make_citation($text);

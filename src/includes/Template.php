@@ -2238,7 +2238,7 @@ final class Template
                 if (
                     $this->blank($param_name) &&
                     !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
-                    mb_strlen($value) === mb_strlen($value) &&
+                    mb_strlen($value, '8bit') === mb_strlen($value) &&
                     mb_strpos($value, 'purl.org') === false &&
                     mb_strpos($value, 'dcmitype') === false &&
                     mb_strpos($value, 'http') === false
@@ -2282,11 +2282,14 @@ final class Template
             case 'osti':
             case 'biorxiv':
             case 'medrxiv':
-            case 'citeseefsaddsaafsdrx':
             case 'via':
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
+                return false;
+
+            case 'citeseerx':
+                // Existing values remain supported, but CS1 no longer accepts new CiteSeerX identifiers.
                 return false;
 
             case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
@@ -2865,7 +2868,7 @@ final class Template
             $this->forget('id');
             return;
         }
-        while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+        while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
             $the_type = mb_strtolower($match[1]);
             $the_data = $match[2];
             $the_all = $match[0];
@@ -3129,8 +3132,8 @@ final class Template
 
         foreach ($this->param as $p) {
             if (mb_strlen($p->param) > 0) {
-                $mistake_id = array_search($p->param, $mistake_keys);
-                if ($mistake_id) {
+                $mistake_id = array_search($p->param, $mistake_keys, true);
+                if ($mistake_id !== false) {
                     $new = $mistake_corrections[$mistake_id];
                     if ($this->blank($new)) {
                         $old = $p->param;
@@ -3199,8 +3202,8 @@ final class Template
                 } else {
                     report_modification("Unrecognized parameter " . echoable($p->param) . " ");
                 }
-                $mistake_id = array_search($p->param, $mistake_keys);
-                if ($mistake_id) {
+                $mistake_id = array_search($p->param, $mistake_keys, true);
+                if ($mistake_id !== false) {
                     // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
                     $p->param = $mistake_corrections[$mistake_id];
                     report_modification('replaced with ' . echoable($mistake_corrections[$mistake_id]) . ' (common mistakes list)');
@@ -4632,7 +4635,7 @@ final class Template
                     }
                     $periodical = mb_trim($this->get($param));
                     if (mb_substr($periodical, 0, 1) !== "[" && mb_substr($periodical, -1) !== "]") {
-                        if (mb_strlen($periodical) - mb_strlen($periodical) < 9) {
+                        if (mb_strlen($periodical, '8bit') - mb_strlen($periodical) < 9) {
                             // eight or fewer UTF-8 stuff
                             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' && strip_diacritics($periodical) === $periodical) {
                                 $periodical = mb_ucwords($periodical); // Found NO foreign words/phrase
