@@ -2238,7 +2238,7 @@ final class Template
                 if (
                     $this->blank($param_name) &&
                     !in_array(mb_strtolower($value), ['text', 'data set'], true) &&
-                    mb_strlen($value) === mb_strlen($value) &&
+                    mb_strlen($value, '8bit') === mb_strlen($value) &&
                     mb_strpos($value, 'purl.org') === false &&
                     mb_strpos($value, 'dcmitype') === false &&
                     mb_strpos($value, 'http') === false
@@ -4632,7 +4632,7 @@ final class Template
                     }
                     $periodical = mb_trim($this->get($param));
                     if (mb_substr($periodical, 0, 1) !== "[" && mb_substr($periodical, -1) !== "]") {
-                        if (mb_strlen($periodical) - mb_strlen($periodical) < 9) {
+                        if (mb_strlen($periodical, '8bit') - mb_strlen($periodical) < 9) {
                             // eight or fewer UTF-8 stuff
                             if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' && strip_diacritics($periodical) === $periodical) {
                                 $periodical = mb_ucwords($periodical); // Found NO foreign words/phrase
