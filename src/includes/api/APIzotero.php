@@ -319,13 +319,13 @@ final class Zotero {
         }
         $zotero_data = @json_decode($zotero_response, false);
         if (!isset($zotero_data)) {
-            report_warning("Could not parse JSON for URL " . echoable($url) . ": " . $zotero_response);
+            report_warning("Could not parse JSON for URL " . echoable($url) . ": " . echoable(mb_substr($zotero_response, 0, 500)));
             return;
         } elseif (!is_array($zotero_data)) {
             if (is_object($zotero_data)) {
                 $zotero_data = (array) $zotero_data;
             } else {
-                report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . $zotero_response);
+                report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . echoable(mb_substr($zotero_response, 0, 500)));
                 return;
             }
         }
@@ -372,7 +372,7 @@ final class Zotero {
             } elseif (mb_strpos($zotero_response, 'Invalid URL') !== false) {
                 report_minor_error("This URL (or where it redirected to) was Invalid: " . $the_url);
             } else {
-                report_minor_error("For some odd reason (" . $zotero_response . ") we did not get a title for URL " . $the_url); // Odd Error
+                report_minor_error("For some odd reason (" . echoable(mb_substr($zotero_response, 0, 500)) . ") we did not get a title for URL " . $the_url); // Odd Error
             }
             return;  // @codeCoverageIgnoreEnd
         }
