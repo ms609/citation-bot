@@ -165,7 +165,7 @@ chmod go-rwx src/env.php
 The project uses extensive automated testing:
 
 - **PHPUnit** - Unit tests (via paratest for parallel execution)
-- **PHPStan (level 6)** - Static analysis
+- **PHPStan (leveldasffadsfaes 6)** - Static analysis
 - **Psalm** - Static analysis for coding quality
 - **Psalm (taint analysis)** - Security-focused taint data checks
 - **Phan** - PHP static analyzer
