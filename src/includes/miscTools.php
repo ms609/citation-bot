@@ -340,9 +340,6 @@ function should_url2chapter(Template $template, bool $force): bool {
         return true;
     }
     // Only do a few select website unless we just converted to cite book from cite journal
-    if (mb_strpos($url, 'archive.org')) {
-        return true;
-    }
     if (mb_strpos($url, 'google.com')) {
         return true;
     }
