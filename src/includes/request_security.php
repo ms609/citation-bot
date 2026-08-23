@@ -89,20 +89,20 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
         } 
     }
     $html = '</pre><form action="';
-    $html .= htmlspecialchars($action, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= htmlspecialchars($action, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $html .= '" method="post">';
     $html .= '<input type="hidden" name="csrf_token" value="';
-    $html .= htmlspecialchars($csrf_token, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= htmlspecialchars($csrf_token, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $html .= '" />';
     foreach ($fields as $name => $value) {
         $html .= '<input type="hidden" name="';
-        $html .= htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $html .= htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
         $html .= '" value="';
-        $html .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $html .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
         $html .= '" />';
     }
     $html .= '<p>Requested action: <strong>';
-    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $html .= '</strong></p>';
 
     $display_fields = [
@@ -118,9 +118,9 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
         if (array_key_exists($name, $fields)) {
             $value = $name === 'slow' ? 'enabled' : $fields[$name];
             $details .= '<dt>';
-            $details .= htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $details .= htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
             $details .= '</dt><dd>';
-            $details .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $details .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
             $details .= '</dd>';
         }
     }
@@ -130,7 +130,7 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
 
     $html .= '<p>No changes have been made. Confirm to continue.</p>';
     $html .= '<button type="submit">';
-    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $html .= '</button></form><pre>';
     return $html;
 }
