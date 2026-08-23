@@ -170,6 +170,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $post = [];
         foreach ($inputs as $input) {
             $this->assertInstanceOf(DOMElement::class, $input);
+            /** @var \DOMElement $input */
             $post[$input->getAttribute('name')] = $input->getAttribute('value');
         }
 
