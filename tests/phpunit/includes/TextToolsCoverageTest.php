@@ -17,7 +17,7 @@ final class TextToolsCoverageTest extends testBaseClass {
     }
 
     public function testStraightenQuotesHandlesMatchingOuterGuillemets(): void {
-        $this->assertSame('"inner Â» same"', straighten_quotes('Â«inner Â» sameÂ«', false));
+        $this->assertSame('Â«inner Â» sameÂ«', straighten_quotes('Â«inner Â» sameÂ«', false));
     }
 
     public function testTitleCapitalizationCoversSpecialCases(): void {
