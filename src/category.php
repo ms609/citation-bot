@@ -67,10 +67,16 @@ if (!$category) {
     bot_html_footer();
     exit(0);
 }
-session_start(['read_and_close' => true]);
-bot_html_header();
+session_start();
+$csrf_token = ensure_session_csrf_token($_SESSION);
+session_write_close();
 
 if ($from_get) {
+    // Authenticate while REQUEST_URI still contains the GET action. OAuth can then return here
+    // before the action is converted to a confirmed POST.
+    $api = new WikipediaBot();
+    unset($api);
+    bot_html_header();
     $fields = [
         'cat' => $category,
         'extended_limit' => '1',
@@ -83,11 +89,13 @@ if ($from_get) {
     if (isset($_GET['slow'])) {
         $fields['slow'] = '1';
     }
-    echo post_confirmation_form('category.php', $fields, (string) ($_SESSION['csrf_token'] ?? ''), 'Process category');
+    echo post_confirmation_form('category.php', $fields, $csrf_token, 'Process category');
     bot_html_footer();
     exit(0);
 }
 unset($from_get);
+
+bot_html_header();
 
 if (!request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
     http_response_code(403);

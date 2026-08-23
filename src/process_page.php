@@ -12,11 +12,6 @@ require_once __DIR__ . '/includes/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
-if (isset($_GET["page"]) && empty($_COOKIE['CiteBot'])) {
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>You need to run the bot using the <a href="/">web interface</a> first to get permission tokens</h1></main></body></html>'; // Quit fast, do not even include setup.php
-    exit(0);
-}
-
 require_once __DIR__ . '/includes/setup.php';
 require_once __DIR__ . '/includes/request_security.php';
 
@@ -58,11 +53,16 @@ if (isset($argv[1])) {
 }
 
 // Do not open session until we know we have good data
-session_start(['read_and_close' => true]);
-
-bot_html_header();
+session_start();
+$csrf_token = ensure_session_csrf_token($_SESSION);
+session_write_close();
 
 if ($from_get) {
+    // Authenticate while REQUEST_URI still contains the GET action. OAuth can then return here
+    // before the action is converted to a confirmed POST.
+    $api = new WikipediaBot();
+    unset($api);
+    bot_html_header();
     $fields = ['page' => $pages];
     foreach (['edit', 'wiki_base', 'pcre'] as $name) {
         if (isset($_GET[$name]) && is_string($_GET[$name])) {
@@ -72,11 +72,13 @@ if ($from_get) {
     if (isset($_GET['slow'])) {
         $fields['slow'] = '1';
     }
-    echo post_confirmation_form('process_page.php', $fields, (string) ($_SESSION['csrf_token'] ?? ''), 'Process page');
+    echo post_confirmation_form('process_page.php', $fields, $csrf_token, 'Process page');
     bot_html_footer();
     exit(0);
 }
 unset($from_get);
+
+bot_html_header();
 
 if (!isset($argv[1]) && !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
     http_response_code(403);

@@ -6,6 +6,21 @@ require_once __DIR__ . '/../../../src/includes/request_security.php';
 
 final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
 
+    public function testCsrfTokenInitializationCreatesAStoredRandomToken(): void {
+        $session = [];
+        $token = ensure_session_csrf_token($session);
+
+        $this->assertMatchesRegularExpression('~^[a-f0-9]{64}$~D', $token);
+        $this->assertSame($token, $session['csrf_token']);
+    }
+
+    public function testCsrfTokenInitializationPreservesAnExistingToken(): void {
+        $session = ['csrf_token' => 'existing-token'];
+
+        $this->assertSame('existing-token', ensure_session_csrf_token($session));
+        $this->assertSame('existing-token', $session['csrf_token']);
+    }
+
     public function testCsrfValidationRequiresPost(): void {
         $this->assertFalse(request_has_valid_post_csrf(['REQUEST_METHOD' => 'GET'], ['csrf_token' => 'token'], ['csrf_token' => 'token']));
     }
