@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class MiscToolsTest extends testBaseClass {
     public function testcheck_memory_usage(): void {
@@ -439,4 +440,222 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertIsInt($result);
     }
 
+    #[DataProvider('shouldUrl2ChapterProvider')]
+    public function testShouldUrl2Chapter(
+        string $citation,
+        bool $force,
+        bool $expected
+    ): void {
+        $template = $this->make_citation($citation);
+
+        $this->assertSame(
+            $expected,
+            should_url2chapter($template, $force)
+        );
+    }
+
+    /**
+     * @return array<string, array{string, bool, bool}>
+     */
+    public static function shouldUrl2ChapterProvider(): array {
+        return [
+            // Existing chapter URL information prevents moving the URL.
+            'chapterurl already present' => [
+                '{{Cite book|chapter=X|chapterurl=https://example.com/chapter|url=https://example.com/book}}',
+                false,
+                false,
+            ],
+            'chapter-url already present' => [
+                '{{Cite book|chapter=X|chapter-url=https://example.com/chapter|url=https://example.com/book}}',
+                false,
+                false,
+            ],
+            'translated chapter present' => [
+                '{{Cite book|chapter=X|trans-chapter=Translated X|url=https://example.com/book}}',
+                false,
+                false,
+            ],
+
+            // Chapter-content checks.
+            'blank chapter' => [
+                '{{Cite book|chapter=|url=https://example.com/book}}',
+                false,
+                false,
+            ],
+            'linked chapter' => [
+                '{{Cite book|chapter=[[Example chapter]]|url=https://example.com/book}}',
+                false,
+                false,
+            ],
+
+            // Google Books.
+            'google book without page' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC}}',
+                false,
+                false,
+            ],
+            'google book with real page' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PA12}}',
+                false,
+                true,
+            ],
+            'google PA1 is front matter' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PA1}}',
+                false,
+                false,
+            ],
+            'google PA0 is front matter' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PA0}}',
+                false,
+                false,
+            ],
+            'google PP1 is front matter' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PP1}}',
+                false,
+                false,
+            ],
+            'google PP12 is usable' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PP12}}',
+                false,
+                true,
+            ],
+            'google PP0 is front matter' => [
+                '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC&pg=PP0}}',
+                false,
+                false,
+            ],
+
+            // Archive.org.
+            'archive isbn landing page' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/isbn_9780123456789/page/n30}}',
+                false,
+                false,
+            ],
+            'archive details landing page' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/examplebook}}',
+                false,
+                false,
+            ],
+            'archive early page n15' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/page/n15}}',
+                false,
+                false,
+            ],
+            'archive page n16' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/page/n16}}',
+                false,
+                true,
+            ],
+            'archive ordinary page' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/page/n200}}',
+                false,
+                true,
+            ],
+            'archive chapter URL' => [
+                '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/chapter/4}}',
+                false,
+                true,
+            ],
+
+            // Generic page-zero/front-matter indicators.
+            'wordpress page id zero' => [
+                '{{Cite book|chapter=X|url=https://example.com/?page_id=0}}',
+                false,
+                false,
+            ],
+            'page zero parameter' => [
+                '{{Cite book|chapter=X|url=https://example.com/?page=0}}',
+                false,
+                false,
+            ],
+            'underscore zero suffix' => [
+                '{{Cite book|chapter=X|url=https://example.com/book_0}}',
+                false,
+                false,
+            ],
+
+            // WordPress heuristics.
+            'wordpress chapter' => [
+                '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/book-chapter-3.pdf}}',
+                false,
+                true,
+            ],
+            'wordpress section' => [
+                '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/book-section-3.pdf}}',
+                false,
+                true,
+            ],
+            'wordpress later page range' => [
+                '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/pages-22-35.pdf}}',
+                false,
+                true,
+            ],
+            'wordpress page range beginning at one' => [
+                '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/pages-1-35.pdf}}',
+                false,
+                false,
+            ],
+            'wordpress unrelated file' => [
+                '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/book.pdf}}',
+                false,
+                false,
+            ],
+
+            // Springer / Palgrave chapter URLs.
+            'springer chapter URL' => [
+                '{{Cite book|chapter=X|url=https://link.springer.com/chapter/10.1007/978-3-030-12345-6_7}}',
+                false,
+                true,
+            ],
+            'springer DOI-shaped URL' => [
+                '{{Cite book|chapter=X|url=https://example.com/10.1007/978-3-030-12345-6_7}}',
+                false,
+                true,
+            ],
+            'palgrave DOI-shaped URL' => [
+                '{{Cite book|chapter=X|url=https://example.com/10.1057/978-1-137-12345-6_7}}',
+                false,
+                true,
+            ],
+
+            // Other recognized publishers.
+            'science direct article' => [
+                '{{Cite book|chapter=X|url=https://www.sciencedirect.com/science/article/pii/S123456789}}',
+                false,
+                true,
+            ],
+            'taylor and francis chapter' => [
+                '{{Cite book|chapter=X|url=https://www.taylorfrancis.com/chapters/edit/10.4324/example}}',
+                false,
+                true,
+            ],
+            'emerald chapter' => [
+                '{{Cite book|chapter=X|url=https://www.emerald.com/insight/content/doi/10.1108/example/full/html/chapter-2}}',
+                false,
+                true,
+            ],
+            'emerald insight chapter' => [
+                '{{Cite book|chapter=X|url=https://www.emeraldinsight.com/example/chapter-4}}',
+                false,
+                true,
+            ],
+            'wiley chapter suffix' => [
+                '{{Cite book|chapter=X|url=https://onlinelibrary.wiley.com/doi/10.1002/9781111111111.ch12}}',
+                false,
+                true,
+            ],
+
+            // Generic fallback.
+            'unknown site defaults false' => [
+                '{{Cite book|chapter=X|url=https://example.com/book/chapter/4}}',
+                false,
+                false,
+            ],
+            'force overrides unknown site' => [
+                '{{Cite book|chapter=X|url=https://example.com/book/chapter/4}}',
+                true,
+                true,
+            ],
+        ];
+    }
 }
