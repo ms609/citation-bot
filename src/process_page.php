@@ -60,10 +60,27 @@ session_write_close();
 if ($from_get) {
     // Authenticate while REQUEST_URI still contains the GET action. OAuth can then return here
     // before the action is converted to a confirmed POST.
+    $request_uri = is_string($_SERVER['REQUEST_URI'] ?? null) ? $_SERVER['REQUEST_URI'] : null;
+    $automated_tools_request = WikipediaBot::is_automated_tools_request($request_uri);
+    if ($automated_tools_request) {
+        // This authentication path renders a warning instead of redirecting, so it needs
+        // the document header before WikipediaBot can emit its warning and footer.
+        bot_html_header();
+    }
     $api = new WikipediaBot();
     unset($api);
-    bot_html_header();
-    $fields = process_page_confirmation_fields($pages, $_GET);
+    if (!$automated_tools_request) {
+        bot_html_header();
+    }
+    $fields = ['page' => $pages];
+    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
+        if (isset($_GET[$name]) && is_string($_GET[$name])) {
+            $fields[$name] = $_GET[$name];
+        }
+    }
+    if (isset($_GET['slow'])) {
+        $fields['slow'] = '1';
+    }
     echo post_confirmation_form('process_page.php', $fields, $csrf_token, 'Process page');
     bot_html_footer();
     exit(0);

@@ -522,6 +522,10 @@ final class WikipediaBot {
         return '';  // @codeCoverageIgnore
     }
 
+    public static function is_automated_tools_request(?string $request_uri): bool {
+        return $request_uri !== null && mb_strpos($request_uri, 'automated_tools') !== false;
+    }
+
     /**
      * @codeCoverageIgnore
      */
@@ -540,7 +544,8 @@ final class WikipediaBot {
             $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
             return;
         }
-        if (mb_strpos((string) @$_SERVER['REQUEST_URI'], 'automated_tools') !== false) {
+        $request_uri = is_string($_SERVER['REQUEST_URI'] ?? null) ? $_SERVER['REQUEST_URI'] : null;
+        if (self::is_automated_tools_request($request_uri)) {
             report_warning('You need to run the bot on a page normally first to get permission tokens');
             bot_html_footer();
             exit(0);

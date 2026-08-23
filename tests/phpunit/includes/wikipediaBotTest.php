@@ -71,6 +71,13 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertFalse(WikipediaBot::non_standard_mode());
     }
 
+    public function testAutomatedToolsRequestDetection(): void {
+        $request_uri = '/process_page.php?page=Example&edit=automated_tools';
+        $this->assertTrue(WikipediaBot::is_automated_tools_request($request_uri));
+        $this->assertFalse(WikipediaBot::is_automated_tools_request('/process_page.php?page=Example&edit=toolbar'));
+        $this->assertFalse(WikipediaBot::is_automated_tools_request(null));
+    }
+
     public function testIsValidUser1(): void {
         new TestPage(); // Fill page name with test name for debugging
         $result = WikipediaBot::is_valid_user('Smith609');
