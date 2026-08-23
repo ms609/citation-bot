@@ -159,6 +159,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $forms = $xpath->query('//form[@method="post"]');
         $this->assertNotFalse($forms);
         $this->assertCount(1, $forms);
+        /** @var DOMElement $posted_from */
         $posted_form = $forms->item(0);
         $this->assertInstanceOf(DOMElement::class, $posted_form);
         $this->assertSame($action, $posted_form->getAttribute('action'));
