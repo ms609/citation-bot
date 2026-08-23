@@ -45,9 +45,9 @@ function wikify_external_text(string $title): string {
         $title = mb_substr($title, 0, -10);
     }
     // Sometimes stuff is encoded more than once
-    $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-    $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-    $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+    $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6); // @codeCoverageIgnore
@@ -316,10 +316,10 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = strip_diacritics($inTitle);
     $dbTitle = strip_diacritics($dbTitle);
     // always decode new data
-    $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle)));
+    $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
     $inTitle2 = titles_simple($inTitle);
-    $inTitle = titles_simple(htmlspecialchars(html_entity_decode($inTitle)));
+    $inTitle = titles_simple(htmlspecialchars(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
     $inTitle2 = strip_diacritics($inTitle2);
