@@ -316,10 +316,10 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = strip_diacritics($inTitle);
     $dbTitle = strip_diacritics($dbTitle);
     // always decode new data
-    $dbTitle = titles_simple(htmlentities(html_entity_decode($dbTitle)));
+    $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle)));
     // old data both decoded and not
     $inTitle2 = titles_simple($inTitle);
-    $inTitle = titles_simple(htmlentities(html_entity_decode($inTitle)));
+    $inTitle = titles_simple(htmlspecialchars(html_entity_decode($inTitle)));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
     $inTitle2 = strip_diacritics($inTitle2);
