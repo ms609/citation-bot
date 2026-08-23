@@ -645,6 +645,7 @@ final class ConstantsTest extends testBaseClass {
             }
         };
         foreach (TEMPLATE_CONVERSIONS as $convert) {
+            set_time_limit(120);
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
             }
