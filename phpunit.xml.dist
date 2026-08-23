@@ -26,6 +26,7 @@
       <file>./src/kill_big_job.php</file>
       <file>./src/linked_pages.php</file>
       <file>./src/process_page.php</file>
+      <file>./src/index.php</file>
     </exclude>
   </source>
   <testsuites>
