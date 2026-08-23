@@ -63,15 +63,7 @@ if ($from_get) {
     $api = new WikipediaBot();
     unset($api);
     bot_html_header();
-    $fields = ['page' => $pages];
-    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
-        if (isset($_GET[$name]) && is_string($_GET[$name])) {
-            $fields[$name] = $_GET[$name];
-        }
-    }
-    if (isset($_GET['slow'])) {
-        $fields['slow'] = '1';
-    }
+    $fields = process_page_confirmation_fields($pages, $_GET);
     echo post_confirmation_form('process_page.php', $fields, $csrf_token, 'Process page');
     bot_html_footer();
     exit(0);
