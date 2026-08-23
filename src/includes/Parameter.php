@@ -24,13 +24,8 @@ final class Parameter {
      */
     public function parse_text(string $text): void {
         if ($this->pre . $this->param . $this->eq . $this->val . $this->post !== '') {
-            report_minor_error("BUGGY " . $this->pre . $this->param . $this->eq . $this->val . $this->post);
+            report_error("Critical Error in parse_text");
         }
-        $this->pre = '';
-        $this->param = '';
-        $this->eq = '';
-        $this->val = '';
-        $this->post = '';
         $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
         $split = explode('=', $text, 2);
         // Split the text before the '=' into constituent parts:
