@@ -11,11 +11,11 @@ require_once __DIR__ . '/user_messages.php';  // @codeCoverageIgnore
 require_once __DIR__ . '/constants.php';      // @codeCoverageIgnore
 
 final class Parameter {
-    public string $pre = '';
-    public string $param = '';
-    public string $eq = '';
-    public string $val = '';
-    public string $post = '';
+    private string $pre = '';
+    private string $param = '';
+    private string $eq = '';
+    private string $val = '';
+    private string $post = '';
 
     /**
      * Breaks a citation template down to component parts.
