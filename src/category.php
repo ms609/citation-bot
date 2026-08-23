@@ -77,18 +77,7 @@ if ($from_get) {
     $api = new WikipediaBot();
     unset($api);
     bot_html_header();
-    $fields = [
-        'cat' => $category,
-        'extended_limit' => '1',
-    ];
-    foreach (['wiki_base', 'pcre'] as $name) {
-        if (isset($_GET[$name]) && is_string($_GET[$name])) {
-            $fields[$name] = $_GET[$name];
-        }
-    }
-    if (isset($_GET['slow'])) {
-        $fields['slow'] = '1';
-    }
+    $fields = category_confirmation_fields($category, $_GET);
     echo post_confirmation_form('category.php', $fields, $csrf_token, 'Process category');
     bot_html_footer();
     exit(0);

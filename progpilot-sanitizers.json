@@ -1,0 +1,11 @@
+{
+    "sanitizers": [
+        {
+            "name": "post_confirmation_form",
+            "language": "php",
+            "prevent": [
+                "xss"
+            ]
+        }
+    ]
+}

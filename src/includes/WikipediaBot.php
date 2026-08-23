@@ -585,8 +585,8 @@ final class WikipediaBot {
                 report_error('Invalid URL passes to internal API');
             }
             /** @psalm-taint-escape header */
-            $return = urlencode($return);
-            header("Location: " . public_url('/authenticate.php') . "?return=" . $return);
+            $authentication_url = oauth_authentication_url($return);
+            header("Location: " . $authentication_url);
         }
         exit(0);
     }

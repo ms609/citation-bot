@@ -242,15 +242,18 @@ function is_valid_local_return_path(string $path): bool {
         !preg_match('~[\x00-\x20\x7f\\\\]~', $path);
 }
 
-function oauth_callback_url(?string $return_path): string {
-    $callback = public_url('/authenticate.php');
-    if ($return_path === null) {
-        return $callback;
-    }
+function oauth_authentication_url(string $return_path): string {
     if (!is_valid_local_return_path($return_path)) {
         throw new InvalidArgumentException('OAuth return path is invalid');
     }
-    return $callback . '?' . http_build_query(['return' => $return_path], '', '&', PHP_QUERY_RFC3986);
+    return public_url('/authenticate.php') . '?' . http_build_query(['return' => $return_path], '', '&', PHP_QUERY_RFC3986);
+}
+
+function oauth_callback_url(?string $return_path): string {
+    if ($return_path === null) {
+        return public_url('/authenticate.php');
+    }
+    return oauth_authentication_url($return_path);
 }
 
 function public_request_configuration_is_valid(?string $request_host): bool {

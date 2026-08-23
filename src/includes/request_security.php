@@ -35,6 +35,45 @@ function request_has_valid_post_csrf(array $server, array $post, array $session)
 }
 
 /**
+ * @param string $page
+ * @param array<array-key, mixed> $query
+ * @return array<string, string>
+ */
+function process_page_confirmation_fields(string $page, array $query): array {
+    $fields = ['page' => $page];
+    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
+        if (isset($query[$name]) && is_string($query[$name])) {
+            $fields[$name] = $query[$name];
+        }
+    }
+    if (isset($query['slow'])) {
+        $fields['slow'] = '1';
+    }
+    return $fields;
+}
+
+/**
+ * @param string $category
+ * @param array<array-key, mixed> $query
+ * @return array<string, string>
+ */
+function category_confirmation_fields(string $category, array $query): array {
+    $fields = [
+        'cat' => $category,
+        'extended_limit' => '1',
+    ];
+    foreach (['wiki_base', 'pcre'] as $name) {
+        if (isset($query[$name]) && is_string($query[$name])) {
+            $fields[$name] = $query[$name];
+        }
+    }
+    if (isset($query['slow'])) {
+        $fields['slow'] = '1';
+    }
+    return $fields;
+}
+
+/**
  * @param string $action
  * @param array<string, string> $fields
  * @param string $csrf_token

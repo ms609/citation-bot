@@ -11,7 +11,8 @@ inputs:
       config_files:  ~
     sanitizers:
       keep_defaults: true
-      config_files:  ~
+      config_files:
+        - "progpilot-sanitizers.json"
     customrules:
       keep_defaults: true
       config_files:  ~
