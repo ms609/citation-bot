@@ -59,7 +59,7 @@ function expand_by_jstor(Template $template): void {
     }
     if ($template->has('title')) {
         $bad_data = true;
-        $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
+        $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
         foreach ($ris as $ris_line) {
             $ris_part = explode(" - ", $ris_line . " ", 2);
             if (!isset($ris_part[1])) {
@@ -153,7 +153,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     $bad_EP = false;
     $bad_SP = false;
     // Convert &#x__; to characters
-    $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
+    $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
     $ris_authors = 0;
 
     if (preg_match('~(?:T[I1]).*-(.*)$~m', $dat, $match)) {
