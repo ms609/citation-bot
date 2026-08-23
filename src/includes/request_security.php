@@ -80,14 +80,6 @@ function category_confirmation_fields(string $category, array $query): array {
  * @param string $button_text
  */
 function post_confirmation_form(string $action, array $fields, string $csrf_token, string $button_text): string {
-    if (!in_array($action, ['process_page.php', 'category.php', 'kill_big_job.php'], true)) {
-        report_error('Invalid action in post_confirmation_form: ' . echoable($action));
-    }
-    foreach ($fields as $name => $value) {
-        if (!in_array($name, ['slow', 'page', 'wiki_base', 'pcre'], true)) {
-            report_error('Invalid action in post_confirmation_form: ' . echoable($action));
-        } 
-    }
     $html = '</pre><form action="';
     $html .= htmlspecialchars($action, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     $html .= '" method="post">';
