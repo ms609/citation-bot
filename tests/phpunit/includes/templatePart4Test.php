@@ -1934,6 +1934,41 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiConditionalAfterDate_WsbOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1002/wsb.example|date=2023-03-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WsbBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/wsb.example|date=2023-02-28}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WsbYearOnlyThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/wsb.example|year=2023}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WsbNoDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/wsb.example}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WsbExistingAccessPreserved(): void {
+        $text = '{{cite journal|doi=10.1002/wsb.example|date=2023-06-01|doi-access=limited}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('limited', $template->get2('doi-access'));
+    }
+
     public function testDoiConditionalEmbargoMonths_PnasOldArticle_Free(): void {
         $text = '{{cite journal|doi=10.1073/pnas.0000000|date=January 2010}}';
         $template = $this->make_citation($text);

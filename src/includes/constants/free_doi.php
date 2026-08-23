@@ -285,7 +285,6 @@ const DOI_FREE_PREFIX = [
     '10.1002/wjo2.',
     '10.1002/wlb3.',
     '10.1002/wll2.',
-    '10.1002/wsb.',
     '10.1007/s12543',
     '10.1007/s40565',
     '10.1016/j.aace',
@@ -960,5 +959,10 @@ const DOI_FREE_CONDITIONAL = [
         'prefix' => '10.1109/tnsre.',
         'type'   => 'AFTER_DATE',
         'value'  => '2020-07-01',
+    ],
+    [   // Wildlife Society Bulletin: free since Volume 47, Issue 1, March 2023
+        'prefix' => '10.1002/wsb.',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2023-03-01',
     ],
 ];
