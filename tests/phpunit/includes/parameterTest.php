@@ -188,4 +188,153 @@ final class parameterTest extends testBaseClass {
         $template = $this->process_citation($text);
         $this->assertSame($text, $template->parsed_text());
     }
+
+    public function testWhitespaceOnlyWithoutEqualsUsesRawValueFallback(): void {
+        // No non-whitespace content means the pre-equals regex cannot match,
+        // exercising the final fallback branch.
+        $text = " \t\n";
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('', $parameter->eq);
+        $this->assertSame($text, $parameter->val);
+        $this->assertSame('', $parameter->post);
+    }
+
+    public function testEmptyStringUsesRawValueFallback(): void {
+        $parameter = $this->parameter_parse_text_helper('');
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('', $parameter->eq);
+        $this->assertSame('', $parameter->val);
+        $this->assertSame('', $parameter->post);
+    }
+
+    public function testBlankValueWithoutLineEnding(): void {
+        // val and post are both blank, so the line-feed cleanup block is entered,
+        // but its inner regexp does not match.
+        $parameter = $this->parameter_parse_text_helper('param=');
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('param', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame('param=', $parameter->parsed_text());
+    }
+
+    public function testEmptyParameterNameWithValue(): void {
+        // Explicitly exercises count($pre_eq) === 0.
+        $parameter = $this->parameter_parse_text_helper('=value');
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame('=value', $parameter->parsed_text());
+    }
+
+    public function testWhitespaceOnlyParameterNameWithValue(): void {
+        $text = '   = value';
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('   = ', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testOnlyFirstEqualsSignSplitsParameter(): void {
+        // explode(..., 2) must preserve additional equals signs in the value.
+        $text = 'url=https://example.com/?a=b=c';
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('url', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('https://example.com/?a=b=c', $parameter->val);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testBlankValueWithCarriageReturnOnly(): void {
+        $text = "param=\r";
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('param', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('', $parameter->val);
+        $this->assertSame("\r", $parameter->post);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testBlankValueWithCrLf(): void {
+        $text = "param=\r\n";
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('param', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('', $parameter->val);
+        $this->assertSame("\r\n", $parameter->post);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testInvalidUtf8InParameterNameUsesFallbackParser(): void {
+        $text = "\xFFname = value";
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame("\xFFname", $parameter->param);
+        $this->assertSame(' = ', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('', $parameter->post);
+    }
+
+    public function testInvalidUtf8InValueUsesFallbackParser(): void {
+        $text = "name = \xFFvalue";
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('name', $parameter->param);
+        $this->assertSame(' = ', $parameter->eq);
+        $this->assertSame("\xFFvalue", $parameter->val);
+        $this->assertSame('', $parameter->post);
+    }
+
+    public function testParsedTextNormalizesAdditionalUnicodeSpaces(): void {
+        $spaces = [
+            "\u{1680}", // Ogham space mark
+            "\u{2000}", // en quad
+            "\u{2001}", // em quad
+            "\u{2002}", // en space
+            "\u{2003}", // em space
+            "\u{2004}",
+            "\u{2005}",
+            "\u{2006}",
+            "\u{2008}",
+            "\u{2009}",
+            "\u{200A}", // hair space
+            "\u{205F}", // medium mathematical space
+            "\u{3000}", // ideographic space
+        ];
+
+        foreach ($spaces as $space) {
+            $parameter = new Parameter();
+            $parameter->pre = $space;
+            $parameter->param = 'title';
+            $parameter->eq = $space . '=' . $space;
+            $parameter->val = 'Example';
+            $parameter->post = $space;
+
+            $this->assertSame(
+                ' title = Example ',
+                $parameter->parsed_text(),
+                'Failed to normalize U+' .
+                    strtoupper(str_pad(dechex(mb_ord($space)), 4, '0', STR_PAD_LEFT))
+            );
+        }
+    }
 }
