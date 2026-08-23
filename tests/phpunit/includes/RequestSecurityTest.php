@@ -111,6 +111,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
+     * @param string $script
      * @param array<string, string> $query
      * @return array<string, string>
      */
@@ -144,7 +145,11 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         return $return_path;
     }
 
-    /** @param array<string, string> $fields */
+    /**
+     * @param string $action
+     * @param array<string, string> $fields
+     * @param string $button_text
+     */
     private function assert_confirmation_posts_fields(string $action, array $fields, string $button_text): void {
         $session = ['csrf_token' => 'known-token'];
         $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
@@ -163,9 +168,8 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
 
         $post = [];
         foreach ($inputs as $input) {
-            if ($input instanceof DOMElement) {
-                $post[$input->getAttribute('name')] = $input->getAttribute('value');
-            }
+            $this->assertInstanceOf(DOMElement::class, $input);
+            $post[$input->getAttribute('name')] = $input->getAttribute('value');
         }
 
         $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
