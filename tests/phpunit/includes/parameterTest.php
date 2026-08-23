@@ -6,6 +6,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class parameterTest extends testBaseClass {
 
@@ -336,5 +337,269 @@ final class parameterTest extends testBaseClass {
                     mb_strtoupper(mb_str_pad(dechex(mb_ord($space)), 4, '0', STR_PAD_LEFT))
             );
         }
+    }
+
+    #[DataProvider('parameterBoundaryProvider')]
+    public function testParameterBoundaryCases(
+        string $text,
+        string $expectedPre,
+        string $expectedParam,
+        string $expectedEq,
+        string $expectedVal,
+        string $expectedPost
+    ): void {
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame($expectedPre, $parameter->pre);
+        $this->assertSame($expectedParam, $parameter->param);
+        $this->assertSame($expectedEq, $parameter->eq);
+        $this->assertSame($expectedVal, $parameter->val);
+        $this->assertSame($expectedPost, $parameter->post);
+
+        // For ordinary ASCII input parsing should be lossless.
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    /**
+     * @return array<string, array{string, string, string, string, string, string}>
+     */
+    public static function parameterBoundaryProvider(): array {
+        return [
+            'simple positional parameter' => [
+                'positional',
+                '',
+                '',
+                '',
+                'positional',
+                '',
+            ],
+
+            'positional parameter with surrounding whitespace' => [
+                "\tpositional value\r\n",
+                "\t",
+                '',
+                '',
+                'positional value',
+                "\r\n",
+            ],
+
+            'only equals sign' => [
+                '=',
+                '',
+                '',
+                '=',
+                '',
+                '',
+            ],
+
+            'equals sign as value' => [
+                '==',
+                '',
+                '',
+                '=',
+                '=',
+                '',
+            ],
+
+            'blank name and blank value with spaces' => [
+                ' = ',
+                '',
+                '',
+                ' = ',
+                '',
+                '',
+            ],
+
+            'blank name with value' => [
+                "  =\tvalue",
+                '',
+                '',
+                "  =\t",
+                'value',
+                '',
+            ],
+
+            'newline before nonblank value belongs to eq' => [
+                "param=\nvalue",
+                '',
+                'param',
+                "=\n",
+                'value',
+                '',
+            ],
+
+            'multiple blank lines after equals moved to post' => [
+                "param= \n  \n",
+                '',
+                'param',
+                '= ',
+                '',
+                "\n  \n",
+            ],
+
+            'tabs around every component' => [
+                "\tname\t=\tvalue\t",
+                "\t",
+                'name',
+                "\t=\t",
+                'value',
+                "\t",
+            ],
+
+            'crlf after nonblank value' => [
+                "name=value\r\n",
+                '',
+                'name',
+                '=',
+                'value',
+                "\r\n",
+            ],
+
+            'mixed trailing whitespace after value' => [
+                "name= value \n\t",
+                '',
+                'name',
+                '= ',
+                'value',
+                " \n\t",
+            ],
+        ];
+    }
+
+    public function testMultipleAdjacentLeadingCommentsAreExtractedInOrder(): void {
+        $comment1 = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # #';
+        $comment2 = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # #';
+
+        $text = $comment1 . $comment2 . 'title=value';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame($comment1 . $comment2, $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testMultipleAdjacentTrailingCommentsAreExtractedInOrder(): void {
+        $comment1 = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # #';
+        $comment2 = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # #';
+
+        $text = 'title' . $comment1 . $comment2 . '=value';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame($comment1 . $comment2 . '=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testCommentPlaceholderMatchingIsCaseInsensitive(): void {
+        $comment = '# # # citation_bot_placeholder_comment 42 # # #';
+        $text = $comment . 'title=value';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame($comment, $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testNonNumericCommentPlaceholderIsNotExtracted(): void {
+        $fakeComment = '# # # CITATION_BOT_PLACEHOLDER_COMMENT X # # #';
+        $text = 'title' . $fakeComment . '=value';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('title' . $fakeComment, $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame($text, $parameter->parsed_text());
+    }
+
+    public function testPipePlaceholderInPositionalValue(): void {
+        $text = 'left' . PIPE_PLACEHOLDER . 'right';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('', $parameter->eq);
+        $this->assertSame('left|right', $parameter->val);
+        $this->assertSame('left|right', $parameter->parsed_text());
+    }
+
+    public function testMultiplePipePlaceholdersAreRestored(): void {
+        $text = 'title=a' . PIPE_PLACEHOLDER . 'b' . PIPE_PLACEHOLDER . 'c';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('a|b|c', $parameter->val);
+        $this->assertSame('title=a|b|c', $parameter->parsed_text());
+    }
+
+    public function testPipePlaceholderInParameterNameIsRestored(): void {
+        $text = 'na' . PIPE_PLACEHOLDER . 'me=value';
+
+        $parameter = $this->parameter_parse_text_helper($text);
+
+        $this->assertSame('na|me', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+        $this->assertSame('na|me=value', $parameter->parsed_text());
+    }
+
+    public function testParsedTextDoesNotNormalizeUnicodeSpacesInsideNameOrValue(): void {
+        $space = "\u{00A0}";
+
+        $parameter = new Parameter();
+        $parameter->pre = $space;
+        $parameter->param = 'ti' . $space . 'tle';
+        $parameter->eq = $space . '=' . $space;
+        $parameter->val = 'Example' . $space . 'Value';
+        $parameter->post = $space;
+
+        $this->assertSame(
+            ' ti' . $space . 'tle = Example' . $space . 'Value ',
+            $parameter->parsed_text()
+        );
+    }
+
+    public function testParsedTextPreservesAsciiFormattingWhitespace(): void {
+        $parameter = new Parameter();
+        $parameter->pre = "\t";
+        $parameter->param = 'title';
+        $parameter->eq = "\t=\t";
+        $parameter->val = 'Example';
+        $parameter->post = "\r\n";
+
+        $this->assertSame(
+            "\ttitle\t=\tExample\r\n",
+            $parameter->parsed_text()
+        );
+    }
+
+    public function testParsedTextDoesNotNormalizeZeroWidthSpace(): void {
+        // U+200B is immediately outside the normalized U+2000-U+200A range.
+        $space = "\u{200B}";
+
+        $parameter = new Parameter();
+        $parameter->pre = $space;
+        $parameter->param = 'title';
+        $parameter->eq = '=';
+        $parameter->val = 'Example';
+
+        $this->assertSame(
+            $space . 'title=Example',
+            $parameter->parsed_text()
+        );
     }
 }
