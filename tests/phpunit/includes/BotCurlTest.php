@@ -80,7 +80,6 @@ final class BotCurlTest extends testBaseClass {
                 bot_curl_exec($ch)
             );
         } finally {
-            curl_close($ch);
             @unlink($filename);
         }
     }
