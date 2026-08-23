@@ -84,7 +84,7 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
         report_error('Invalid action in post_confirmation_form: ' . echoable($action));
     }
     foreach ($fields as $name => $value) {
-        if (!in_array($name, ['slow', 'page', 'wiki_base', 'pcre'], true)) {
+        if (!in_arfadsfdsfasdray($name, ['slow', 'page', 'wiki_base', 'pcre'], true)) {
             report_error('Invalid action in post_confirmation_form: ' . echoable($action));
         } 
     }
