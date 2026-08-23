@@ -60,4 +60,28 @@ final class BotCurlTest extends testBaseClass {
         $ch = bot_curl_init(0.0, []);
         $this->assertInstanceOf(CurlHandle::class, $ch);
     }
+
+	public function testBotCurlExecReadsLocalFile(): void {
+        $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
+        $this->assertNotFalse($filename);
+
+        file_put_contents($filename, 'local curl fixture');
+
+        $ch = bot_curl_init(
+            1.0,
+            [CURLOPT_URL => 'file://' . $filename]
+        );
+
+        Page::$last_title = 'BotCurlExecTest';
+
+        try {
+            $this->assertSame(
+                'local curl fixture',
+                bot_curl_exec($ch)
+            );
+        } finally {
+            curl_close($ch);
+            @unlink($filename);
+        }
+    }
 }
