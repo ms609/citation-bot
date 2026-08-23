@@ -121,43 +121,43 @@ final class UserMessagesTest extends testBaseClass {
         report_phase('test phase');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportActionRunsWithoutError(): void {
         ob_start();
         report_action('test action');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportInfoRunsWithoutError(): void {
         ob_start();
         report_info('test info');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportInactionRunsWithoutError(): void {
         ob_start();
         report_inaction('test inaction');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportWarningRunsWithoutError(): void {
         ob_start();
         report_warning('test warning');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportModificationRunsWithoutError(): void {
         ob_start();
         report_modification('test modification');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportAddRunsWithoutError(): void {
         ob_start();
         report_add('test add');
         $this->assertSame('', (string) ob_get_clean());
     }
-    
+
     public function testReportForgetRunsWithoutError(): void {
         ob_start();
         report_forget('test forget');
