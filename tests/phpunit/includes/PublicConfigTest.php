@@ -49,6 +49,8 @@ final class PublicConfigTest extends PHPUnit\Framework\TestCase {
             'https://user@public.example',
             'https://public.example/?debug=1',
             'https://public.example/#fragment',
+            'https://999.999.999.999',
+            'https://public.example:0',
             "https://public.example\r\n.invalid",
         ] as $invalid) {
             putenv('PUBLIC_BASE_URL=' . $invalid);
@@ -59,6 +61,58 @@ final class PublicConfigTest extends PHPUnit\Framework\TestCase {
                 $this->addToAssertionCount(1);
             }
         }
+    }
+
+    public function testHostNormalizationHandlesIpv6AndRejectsMalformedAuthorities(): void {
+        $this->assertSame('public.example:443', normalize_public_host('Public.Example:443'));
+        $this->assertSame('[2001:db8::1]', normalize_public_host('[2001:DB8::1]'));
+        $this->assertSame('[2001:db8::1]:8443', normalize_public_host('[2001:DB8::1]:8443'));
+
+        foreach ([
+            ' public.example',
+            'public.example ',
+            'public.example/path',
+            'public.example:0',
+            'public.example:65536',
+            'public.example:invalid',
+            '999.999.999.999',
+            '.public.example',
+            'public.example.',
+            '-public.example',
+            'public-.example',
+            'public..example',
+            '[2001:db8::invalid]',
+            '[127.0.0.1]',
+            '[2001:db8::1]:65536',
+            str_repeat('a', 64) . '.example',
+            str_repeat('a', 254),
+        ] as $invalid) {
+            $this->assertNull(normalize_public_host($invalid), 'Host should be rejected: ' . $invalid);
+        }
+    }
+
+    public function testConfiguredHostsAreNormalizedAndDeduplicated(): void {
+        putenv('ALLOWED_HOSTS=Public.Example, public.example, [2001:DB8::1]:8443');
+        $this->assertSame(
+            ['public.example', '[2001:db8::1]:8443'],
+            configured_allowed_hosts()
+        );
+        $this->assertFalse(request_host_is_allowed(null));
+        $this->assertFalse(request_host_is_allowed('bad host'));
+    }
+
+    public function testConfiguredHostsAreRequiredAndMustBeValid(): void {
+        putenv('ALLOWED_HOSTS');
+        try {
+            configured_allowed_hosts();
+            $this->fail('A missing ALLOWED_HOSTS value was accepted');
+        } catch (RuntimeException) {
+            $this->addToAssertionCount(1);
+        }
+
+        putenv('ALLOWED_HOSTS=public.example, bad host');
+        $this->expectException(RuntimeException::class);
+        configured_allowed_hosts();
     }
 
     public function testHostsAreExactAndIncludePorts(): void {
@@ -93,6 +147,51 @@ final class PublicConfigTest extends PHPUnit\Framework\TestCase {
         $this->assertNull(allowed_cors_origin('https://en.wikipedia.org,https://evil.test'));
     }
 
+    public function testCorsOriginNormalizationHandlesPatternsAndRejectsUnsafeValues(): void {
+        $this->assertSame('https://public.example:8443', normalize_cors_origin('HTTPS://Public.Example:8443'));
+        $this->assertSame('https://*.wikipedia.org:8443', normalize_cors_origin_pattern('HTTPS://*.Wikipedia.ORG:8443'));
+
+        foreach ([
+            '',
+            ' https://public.example',
+            'https://user@public.example',
+            'https://public.example/path',
+            'https://public.example?debug=1',
+            'https://public.example#fragment',
+            'https://public.example;https://evil.example',
+            'https://*.127.0.0.1',
+            'https://*.-wikipedia.org',
+        ] as $invalid) {
+            $this->assertNull(normalize_cors_origin_pattern($invalid), 'Origin should be rejected: ' . $invalid);
+        }
+    }
+
+    public function testConfiguredOriginsAreDeduplicatedAndWildcardPortsMustMatch(): void {
+        putenv('ALLOWED_ORIGINS=https://Public.Example, https://public.example, https://*.wikipedia.org:8443');
+        $this->assertSame(
+            ['https://public.example', 'https://*.wikipedia.org:8443'],
+            configured_allowed_origins()
+        );
+        $this->assertSame('https://en.wikipedia.org:8443', allowed_cors_origin('https://en.wikipedia.org:8443'));
+        $this->assertNull(allowed_cors_origin('https://en.wikipedia.org'));
+        $this->assertNull(allowed_cors_origin('https://wikipedia.org:8443'));
+        $this->assertNull(allowed_cors_origin(null));
+    }
+
+    public function testConfiguredOriginsAreRequiredAndMustBeValid(): void {
+        putenv('ALLOWED_ORIGINS');
+        try {
+            configured_allowed_origins();
+            $this->fail('A missing ALLOWED_ORIGINS value was accepted');
+        } catch (RuntimeException) {
+            $this->addToAssertionCount(1);
+        }
+
+        putenv('ALLOWED_ORIGINS=https://public.example, https://user@invalid.example');
+        $this->expectException(RuntimeException::class);
+        configured_allowed_origins();
+    }
+
     public function testOAuthCallbackNeverUsesTheRequestHost(): void {
         putenv('PUBLIC_BASE_URL=https://public.example/tools');
         $_SERVER['HTTP_HOST'] = 'attacker.example';
@@ -107,5 +206,45 @@ final class PublicConfigTest extends PHPUnit\Framework\TestCase {
         putenv('PUBLIC_BASE_URL=https://public.example');
         $this->expectException(InvalidArgumentException::class);
         oauth_callback_url('//attacker.example/callback');
+    }
+
+    public function testPublicUrlHelpersRejectUnsafePaths(): void {
+        putenv('PUBLIC_BASE_URL=https://public.example');
+        $this->assertSame('/authenticate.php', public_url_path('/authenticate.php'));
+
+        foreach (['relative', '//attacker.example', "/line\nbreak", '/back\\slash'] as $invalid) {
+            foreach ([
+                static fn (string $path): string => public_url($path),
+                static fn (string $path): string => public_url_path($path),
+            ] as $url_builder) {
+                try {
+                    $url_builder($invalid);
+                    $this->fail('An unsafe public path was accepted: ' . $invalid);
+                } catch (InvalidArgumentException) {
+                    $this->addToAssertionCount(1);
+                }
+            }
+        }
+    }
+
+    public function testOauthCallbackWithoutReturnPathUsesConfiguredEndpoint(): void {
+        putenv('PUBLIC_BASE_URL=https://public.example/tools/');
+        $this->assertSame('https://public.example/tools/authenticate.php', oauth_callback_url(null));
+        $this->assertTrue(is_valid_local_return_path('/process_page.php?page=Example'));
+        $this->assertFalse(is_valid_local_return_path(''));
+        $this->assertFalse(is_valid_local_return_path(' process_page.php'));
+        $this->assertFalse(is_valid_local_return_path('//attacker.example'));
+        $this->assertFalse(is_valid_local_return_path("/line\nbreak"));
+    }
+
+    public function testInvalidPublicRequestConfigurationsReturnFalse(): void {
+        putenv('PUBLIC_BASE_URL=https://public.example');
+        putenv('ALLOWED_HOSTS=public.example');
+        putenv('ALLOWED_ORIGINS');
+        $this->assertFalse(public_request_configuration_is_valid('public.example'));
+
+        putenv('ALLOWED_ORIGINS=https://public.example');
+        $this->assertFalse(public_request_configuration_is_valid(null));
+        $this->assertFalse(public_request_configuration_is_valid('bad host'));
     }
 }

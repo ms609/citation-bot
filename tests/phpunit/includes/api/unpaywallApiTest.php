@@ -5,6 +5,41 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class unpaywallApiTest extends testBaseClass {
 
+    public function testKnownBadOpenAccessDoiIsRejectedWithoutARequest(): void {
+        $template = $this->make_citation('{{cite journal|doi=' . BAD_OA_URL[0] . '}}');
+        $this->assertSame('wrong', get_unpaywall_url($template, BAD_OA_URL[0]));
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testOpenAccessLookupSkipsCitationsThatAlreadyHaveEnoughInformation(): void {
+        $citations = [
+            'missing DOI' => '{{cite journal|title=No DOI}}',
+            'broken DOI' => '{{cite journal|doi=10.1000/broken|doi-broken-date=2020}}',
+            'Oxford DOI' => '{{cite journal|doi=10.1093/example}}',
+            'PMC' => '{{cite journal|doi=10.1000/example|pmc=123}}',
+            'arXiv' => '{{cite journal|doi=10.1000/example|arxiv=2401.00001}}',
+            'eprint' => '{{cite journal|doi=10.1000/example|eprint=2401.00001}}',
+            'CiteSeerX' => '{{cite journal|doi=10.1000/example|citeseerx=10.1.1.1.1}}',
+            'bioRxiv' => '{{cite journal|doi=10.1000/example|biorxiv=2024.01.01.123456}}',
+            'medRxiv' => '{{cite journal|doi=10.1000/example|medrxiv=2024.01.01.123456}}',
+            'RFC' => '{{cite journal|doi=10.1000/example|rfc=1234}}',
+            'free DOI' => '{{cite journal|doi=10.1000/example|doi-access=free}}',
+            'free JSTOR' => '{{cite journal|doi=10.1000/example|jstor=123|jstor-access=free}}',
+            'free OSTI' => '{{cite journal|doi=10.1000/example|osti=123|osti-access=free}}',
+            'free Handle' => '{{cite journal|doi=10.1000/example|hdl=123/456|hdl-access=free}}',
+            'free Open Library' => '{{cite journal|doi=10.1000/example|ol=OL123M|ol-access=free}}',
+        ];
+
+        foreach ($citations as $description => $citation) {
+            $template = $this->make_citation($citation);
+            $before = $template->parsed_text();
+            get_open_access_url($template);
+            $this->assertSame($before, $template->parsed_text(), 'Citation changed for case: ' . $description);
+            $this->assertNull($template->get2('url'), 'URL added for case: ' . $description);
+            $this->assertNull($template->get2('chapter-url'), 'Chapter URL added for case: ' . $description);
+        }
+    }
+
     public function testOpenAccessLookup1(): void {
         $this->assertNull(null);
         /* TODO - find an example of a DOI that is free on PMC, but not DOI

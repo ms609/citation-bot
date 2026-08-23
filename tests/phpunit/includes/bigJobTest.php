@@ -11,10 +11,14 @@ final class bigJobTest extends testBaseClass {
         $this->assertSame('/dev/shm/_1', $job);
     }
 
-    public function testFuncsExists(): void {
+    public function testSmallJobsDoNotCreateALock(): void {
+        $lock_name = big_jobs_name();
+        @unlink($lock_name);
+        @unlink($lock_name . '_kill_job');
         big_jobs_check_overused(33);
         big_jobs_check_killed();
-        $this->assertFaker();
+        $this->assertFileDoesNotExist($lock_name);
+        $this->assertFileDoesNotExist($lock_name . '_kill_job');
     }
 
     public function testFiles(): void {
@@ -27,12 +31,13 @@ final class bigJobTest extends testBaseClass {
     }
 
     public function testWeDied(): void {
-        $name = 'testFiles2';
-        touch(big_jobs_name());
-        $lock_file = fopen($name, 'x+');
+        $lock_name = big_jobs_name();
+        touch($lock_name);
+        $lock_file = tmpfile();
+        $this->assertIsResource($lock_file);
         big_jobs_we_died($lock_file);
-        unlink($name);
-        $this->assertFaker();
+        $this->assertFalse(is_resource($lock_file));
+        $this->assertFileDoesNotExist($lock_name);
     }
 
     public function testWeKill(): void {

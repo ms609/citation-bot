@@ -35,6 +35,11 @@ final class mathToolsTest extends testBaseClass {
         $this->assertSame('<math>Ni</math>', $result);
     }
 
+    public function testMathMLIsotopeWithNonChemicalBase(): void {
+        $mathml = '<mmultiscripts>XYZ<mprescripts/><none/>67</mmultiscripts>';
+        $this->assertSame('^{67}XYZ', convert_mathml_to_latex($mathml));
+    }
+
     public function testMathMLSuperscript(): void {
         // Test simple superscript: x^{2}
         $text_mml = '<math><msup><mi>x</mi><mn>2</mn></msup></math>';
@@ -71,6 +76,31 @@ final class mathToolsTest extends testBaseClass {
         $this->assertStringContainsString('sqrt', $result);
         $this->assertStringContainsString('x', $result);
         $this->assertStringContainsString('3', $result);
+    }
+
+    public function testMathMLFraction(): void {
+        $mathml = '<mfrac><mn>1</mn><mn>2</mn></mfrac>';
+        $this->assertSame('\\frac{1}{2}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMathMLUnderWithExpression(): void {
+        $mathml = '<munder><mo>lim</mo><mrow><mi>x</mi><mo>→</mo><mn>0</mn></mrow></munder>';
+        $this->assertSame('\\underset{x\\rightarrow{}0}{lim}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMathMLUnderWithoutExpressionReturnsBase(): void {
+        $mathml = '<munder><mo>lim</mo></munder>';
+        $this->assertSame('lim', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMathMLUnderFallbackStripsUnknownMarkup(): void {
+        $mathml = '<munder><semantics>limit</semantics></munder>';
+        $this->assertSame('limit', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMathMLUnderOverFallbackPreservesAvailableTerms(): void {
+        $mathml = '<munderover><mo>∑</mo><mn>0</mn></munderover>';
+        $this->assertSame('\\sum0', convert_mathml_to_latex($mathml));
     }
 
     public function testMathMLUnderOver(): void {
