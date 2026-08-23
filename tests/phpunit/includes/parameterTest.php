@@ -333,7 +333,7 @@ final class parameterTest extends testBaseClass {
                 ' title = Example ',
                 $parameter->parsed_text(),
                 'Failed to normalize U+' .
-                    strtoupper(str_pad(dechex(mb_ord($space)), 4, '0', STR_PAD_LEFT))
+                    mb_strtoupper(mb_str_pad(dechex(mb_ord($space)), 4, '0', STR_PAD_LEFT))
             );
         }
     }
