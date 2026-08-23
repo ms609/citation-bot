@@ -35,6 +35,7 @@ function request_has_valid_post_csrf(array $server, array $post, array $session)
 }
 
 /**
+ * @param string $page
  * @param array<array-key, mixed> $query
  * @return array<string, string>
  */
@@ -52,6 +53,7 @@ function process_page_confirmation_fields(string $page, array $query): array {
 }
 
 /**
+ * @param string $category
  * @param array<array-key, mixed> $query
  * @return array<string, string>
  */
