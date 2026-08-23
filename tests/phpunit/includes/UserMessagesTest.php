@@ -115,4 +115,52 @@ final class UserMessagesTest extends testBaseClass {
         // In CI mode HTML is suppressed completely
         $this->assertSame('', $output);
     }
+
+    public function testReportPhaseRunsWithoutError2(): void {
+        ob_start();
+        report_phase('test phase');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportActionRunsWithoutError2(): void {
+        ob_start();
+        report_action('test action');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportInfoRunsWithoutError2(): void {
+        ob_start();
+        report_info('test info');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportInactionRunsWithoutError2(): void {
+        ob_start();
+        report_inaction('test inaction');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportWarningRunsWithoutError2(): void {
+        ob_start();
+        report_warning('test warning');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportModificationRunsWithoutError2(): void {
+        ob_start();
+        report_modification('test modification');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportAddRunsWithoutError2(): void {
+        ob_start();
+        report_add('test add');
+        $this->assertSame('', (string) ob_get_clean());
+    }
+
+    public function testReportForgetRunsWithoutError2(): void {
+        ob_start();
+        report_forget('test forget');
+        $this->assertSame('', (string) ob_get_clean());
+    }
 }
