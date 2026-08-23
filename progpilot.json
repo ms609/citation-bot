@@ -85,7 +85,7 @@
             127
         ],
         "source_column": [
-            4099
+            4195
         ],
         "source_file": [
             "src\/includes\/request_security.php"
@@ -95,79 +95,79 @@
                 {
                     "flow_name": "$html",
                     "flow_line": 126,
-                    "flow_column": 4061,
+                    "flow_column": 4157,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 125,
-                    "flow_column": 3978,
+                    "flow_column": 4062,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 124,
-                    "flow_column": 3939,
+                    "flow_column": 4023,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 123,
-                    "flow_column": 3868,
+                    "flow_column": 3952,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 120,
-                    "flow_column": 3795,
+                    "flow_column": 3879,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 98,
-                    "flow_column": 3032,
+                    "flow_column": 3092,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 97,
-                    "flow_column": 2949,
+                    "flow_column": 2997,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 96,
-                    "flow_column": 2903,
+                    "flow_column": 2951,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 94,
-                    "flow_column": 2876,
+                    "flow_column": 2924,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 93,
-                    "flow_column": 2795,
+                    "flow_column": 2831,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$htmlspecialchars_return",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/category.php"
                 },
                 {
-                    "flow_name": "$htmlspecialchars_param0_line93_column2804_progpilot",
+                    "flow_name": "$htmlspecialchars_param0_line93_column2840_progpilot",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$value",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
@@ -238,7 +238,81 @@
         "sink_file": "src\/category.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "6516dd49a0202792be4bea8bb8e521dd04cd02555902e335482ca555263da0ca",
+        "vuln_id": "f94acbf7ff320b79734c5a876ef2c6829595203deda5edfe553f93b7eb58aa20",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$git_hub",
+            "$git_hub"
+        ],
+        "source_line": [
+            26,
+            23
+        ],
+        "source_column": [
+            1073,
+            822
+        ],
+        "source_file": [
+            "src\/gitpull.php",
+            "src\/gitpull.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$git_hub",
+                    "flow_line": 23,
+                    "flow_column": 822,
+                    "flow_file": "src\/gitpull.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_return",
+                    "flow_line": 23,
+                    "flow_column": 833,
+                    "flow_file": "src\/gitpull.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_param0_line23_column833_progpilot",
+                    "flow_line": 23,
+                    "flow_column": 833,
+                    "flow_file": "src\/gitpull.php"
+                },
+                {
+                    "flow_name": "$shell_exec_return",
+                    "flow_line": 23,
+                    "flow_column": 859,
+                    "flow_file": "src\/gitpull.php"
+                }
+            ],
+            [
+                {
+                    "flow_name": "$htmlspecialchars_return",
+                    "flow_line": 23,
+                    "flow_column": 833,
+                    "flow_file": "src\/gitpull.php"
+                },
+                {
+                    "flow_name": "$htmlspecialchars_param0_line23_column833_progpilot",
+                    "flow_line": 23,
+                    "flow_column": 833,
+                    "flow_file": "src\/gitpull.php"
+                },
+                {
+                    "flow_name": "$shell_exec_return",
+                    "flow_line": 23,
+                    "flow_column": 859,
+                    "flow_file": "src\/gitpull.php"
+                }
+            ]
+        ],
+        "sink_name": "echo",
+        "sink_line": 31,
+        "sink_column": 1456,
+        "sink_file": "src\/gitpull.php",
+        "vuln_name": "xss",
+        "vuln_cwe": "CWE_79",
+        "vuln_id": "9642211dd3615c88e3455eb29d7ed996b5523ec468ee3f4effa993e2f1b56940",
         "vuln_type": "taint-style"
     },
     {
@@ -249,7 +323,7 @@
             127
         ],
         "source_column": [
-            4099
+            4195
         ],
         "source_file": [
             "src\/includes\/request_security.php"
@@ -259,79 +333,79 @@
                 {
                     "flow_name": "$html",
                     "flow_line": 126,
-                    "flow_column": 4061,
+                    "flow_column": 4157,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 125,
-                    "flow_column": 3978,
+                    "flow_column": 4062,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 124,
-                    "flow_column": 3939,
+                    "flow_column": 4023,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 123,
-                    "flow_column": 3868,
+                    "flow_column": 3952,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 120,
-                    "flow_column": 3795,
+                    "flow_column": 3879,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 98,
-                    "flow_column": 3032,
+                    "flow_column": 3092,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 97,
-                    "flow_column": 2949,
+                    "flow_column": 2997,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 96,
-                    "flow_column": 2903,
+                    "flow_column": 2951,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 94,
-                    "flow_column": 2876,
+                    "flow_column": 2924,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$html",
                     "flow_line": 93,
-                    "flow_column": 2795,
+                    "flow_column": 2831,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$htmlspecialchars_return",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/process_page.php"
                 },
                 {
-                    "flow_name": "$htmlspecialchars_param0_line93_column2804_progpilot",
+                    "flow_name": "$htmlspecialchars_param0_line93_column2840_progpilot",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
                     "flow_name": "$value",
                     "flow_line": 93,
-                    "flow_column": 2804,
+                    "flow_column": 2840,
                     "flow_file": "src\/includes\/request_security.php"
                 },
                 {
@@ -366,7 +440,7 @@
         "sink_file": "src\/process_page.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "7a71c414bb3e8f36263959650388ef8caf2f87324177e0d4d6609f0af5c84a0b",
+        "vuln_id": "f2a18d98154aa27f2c6e922229419c5f52dad5da7c026b8d56d76730e888751f",
         "vuln_type": "taint-style"
     }
 ]
