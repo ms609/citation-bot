@@ -447,13 +447,13 @@ final class MiscToolsTest extends testBaseClass {
         bool $expected
     ): void {
         $template = $this->make_citation($citation);
-    
+
         $this->assertSame(
             $expected,
             should_url2chapter($template, $force)
         );
     }
-    
+
     /**
      * @return array<string, array{string, bool, bool}>
      */
@@ -475,7 +475,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 false,
             ],
-    
+
             // Chapter-content checks.
             'blank chapter' => [
                 '{{Cite book|chapter=|url=https://example.com/book}}',
@@ -487,7 +487,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 false,
             ],
-    
+
             // Google Books.
             'google book without page' => [
                 '{{Cite book|chapter=X|url=https://books.google.com/books?id=ABC}}',
@@ -524,7 +524,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 false,
             ],
-    
+
             // Archive.org.
             'archive isbn landing page' => [
                 '{{Cite book|chapter=X|url=https://archive.org/details/isbn_9780123456789/page/n30}}',
@@ -556,7 +556,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 true,
             ],
-    
+
             // Generic page-zero/front-matter indicators.
             'wordpress page id zero' => [
                 '{{Cite book|chapter=X|url=https://example.com/?page_id=0}}',
@@ -573,7 +573,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 false,
             ],
-    
+
             // WordPress heuristics.
             'wordpress chapter' => [
                 '{{Cite book|chapter=X|url=https://example.com/wp-content/uploads/book-chapter-3.pdf}}',
@@ -600,7 +600,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 false,
             ],
-    
+
             // Springer / Palgrave chapter URLs.
             'springer chapter URL' => [
                 '{{Cite book|chapter=X|url=https://link.springer.com/chapter/10.1007/978-3-030-12345-6_7}}',
@@ -617,7 +617,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 true,
             ],
-    
+
             // Other recognized publishers.
             'science direct article' => [
                 '{{Cite book|chapter=X|url=https://www.sciencedirect.com/science/article/pii/S123456789}}',
@@ -644,7 +644,7 @@ final class MiscToolsTest extends testBaseClass {
                 false,
                 true,
             ],
-    
+
             // Generic fallback.
             'unknown site defaults false' => [
                 '{{Cite book|chapter=X|url=https://example.com/book/chapter/4}}',
