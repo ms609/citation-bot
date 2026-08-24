@@ -47,7 +47,7 @@ class Page {
     private bool $page_error = false;
     private bool $cs2_mode = false;
     private static bool $told_fast = false;
-    public static string $last_title = '';
+    protected static string $last_title = '';
 
     public function __construct() {
         $this->construct_modifications_array();
@@ -1107,5 +1107,9 @@ class Page {
         $this->modifications['issue_citebook'] = false;
         $this->modifications['article_number'] = false;
         $this->modifications['article_number_iucn'] = false;
+    }
+
+    public static function get_last_title(): string {
+        return self::$last_title;
     }
 }
