@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
-
+/* @phan-suppress-begin PhanParamSuspiciousOrder */
 final class WikiThingsCoverageTest extends testBaseClass {
 
     public function testBaseClassRoundTripsParsedText(): void {
@@ -103,3 +103,4 @@ final class WikiThingsCoverageTest extends testBaseClass {
         $this->assertFalse(Mathematics::TREAT_IDENTICAL_SEPARATELY);
     }
 }
+/* @phan-suppress-end PhanParamSuspiciousOrder */
