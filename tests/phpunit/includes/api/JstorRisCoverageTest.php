@@ -101,7 +101,7 @@ RIS;
         [$template] = $this->parseRis($ris);
 
         $this->assertSame(
-            'Journal From BT',
+            'Journal From Bt',
             $template->get2('journal')
         );
     }
@@ -116,7 +116,7 @@ RIS;
         [$template] = $this->parseRis($ris);
 
         $this->assertSame(
-            'Journal From JO',
+            'Journal From Jo',
             $template->get2('journal')
         );
     }
@@ -145,16 +145,28 @@ RIS;
         [$template] = $this->parseRis($ris);
 
         $this->assertSame(
-            'Smith, John',
-            $template->get2('author1')
+            'Smith',
+            $template->get2('last1')
         );
         $this->assertSame(
-            'Jones, Alice',
-            $template->get2('author2')
+            'Jones',
+            $template->get2('last2')
         );
         $this->assertSame(
-            'Brown, Robert',
-            $template->get2('author3')
+            'Brown',
+            $template->get2('last3')
+        );
+        $this->assertSame(
+            'John',
+            $template->get2('first1')
+        );
+        $this->assertSame(
+            'Alice',
+            $template->get2('first2')
+        );
+        $this->assertSame(
+            'Robert',
+            $template->get2('first3')
         );
     }
 
@@ -365,7 +377,7 @@ RIS;
         );
     }
 
-    public function testSingleStartPageBecomesPages(): void {
+    public function testSingleStartPageBecomesPage(): void {
         $ris = <<<RIS
 TY - JOUR
 SP - 42
@@ -374,7 +386,7 @@ RIS;
 
         [$template] = $this->parseRis($ris);
 
-        $this->assertSame('42', $template->get2('pages'));
+        $this->assertSame('42', $template->get2('page'));
     }
 
     public function testEqualStartAndEndPageBecomesSinglePage(): void {
@@ -387,7 +399,7 @@ RIS;
 
         [$template] = $this->parseRis($ris);
 
-        $this->assertSame('42', $template->get2('pages'));
+        $this->assertSame('42', $template->get2('page'));
     }
 
     public function testEndPageMayAppearBeforeStartPage(): void {
