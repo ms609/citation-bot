@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
-    
+
 final class pageTest extends testBaseClass {
 
     public function testPageChangeSummary1(): void {
