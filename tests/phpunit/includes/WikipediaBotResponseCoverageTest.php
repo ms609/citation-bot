@@ -116,6 +116,9 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
 
         $pages = (array) $response->query->pages;
         $page = reset($pages);
+        if ($page === false) {
+            $page = new stdClass();
+        }
 
         switch ($property) {
             case 'lastrevid':
@@ -338,5 +341,41 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         $this->assertTrue(
             WikipediaBot::resultsGood($result)
         );
+    }
+
+    #[DataProvider('recoverableWikipediaErrorProvider')]
+    public function testRetOkayRejectsRecoverableErrors(
+        string $info
+    ): void {
+        $response = (object) [
+            'error' => (object) [
+                'code' => 'test',
+                'info' => $info,
+            ],
+        ];
+
+        $this->assertFalse(
+            WikipediaBot::ret_okay($response)
+        );
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function recoverableWikipediaErrorProvider(): array {
+        return [
+            'invalid csrf' => [
+                'Invalid CSRF token',
+            ],
+            'bad title' => [
+                'Bad title',
+            ],
+            'page nonexistent' => [
+                'The page you specified does not exist',
+            ],
+            'alternate nonexistent wording' => [
+                "The page you specified doesn't exist",
+            ],
+        ];
     }
 }
