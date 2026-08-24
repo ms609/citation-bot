@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class DoiToolsTest extends testBaseClass {
 
