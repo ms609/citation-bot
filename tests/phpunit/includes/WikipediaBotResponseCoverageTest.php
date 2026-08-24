@@ -116,6 +116,9 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
 
         $pages = (array) $response->query->pages;
         $page = reset($pages);
+        if ($page === false) {
+            $page = new stdClass();
+        }
 
         switch ($property) {
             case 'lastrevid':
