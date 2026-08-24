@@ -197,7 +197,6 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame("", $changes);
     }
 
-    #[DoesNotPerformAssertions]
     public function testHostIsGoneDOILoop(): void {
         new TestPage(); // Fill page name with test name for debugging
         $changes = "";
