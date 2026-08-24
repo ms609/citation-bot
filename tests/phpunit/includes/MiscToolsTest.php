@@ -660,4 +660,220 @@ final class MiscToolsTest extends testBaseClass {
             ],
         ];
     }
+
+    public function testEquivalentParametersAuthorAliases(): void {
+        $expected = FLATTENED_AUTHOR_PARAMETERS;
+
+        $this->assertSame($expected, equivalent_parameters('author'));
+        $this->assertSame($expected, equivalent_parameters('authors'));
+        $this->assertSame($expected, equivalent_parameters('author1'));
+        $this->assertSame($expected, equivalent_parameters('last1'));
+    }
+
+    public function testEquivalentParametersPubmedPair(): void {
+        $this->assertSame(['pmc', 'pmid'], equivalent_parameters('pmid'));
+        $this->assertSame(['pmc', 'pmid'], equivalent_parameters('pmc'));
+    }
+
+    public function testEquivalentParametersPageAliases(): void {
+        $expected = ['page_range', 'pages', 'page', 'end_page', 'start_page'];
+
+        foreach (['page_range', 'start_page', 'end_page', 'pages', 'page'] as $parameter) {
+            $this->assertSame($expected, equivalent_parameters($parameter));
+        }
+    }
+
+    public function testEquivalentParametersUnknownParameterReturnsItself(): void {
+        $this->assertSame(['custom-parameter'], equivalent_parameters('custom-parameter'));
+    }
+
+    public function testStringIsBookSeriesNormalizesPunctuationAndCase(): void {
+        if (JOURNAL_IS_BOOK_SERIES === []) {
+            $this->markTestSkipped('JOURNAL_IS_BOOK_SERIES is empty');
+        }
+
+        $series = (string) JOURNAL_IS_BOOK_SERIES[0];
+        $variant = mb_strtoupper(str_replace(' ', ' - ', $series));
+
+        $this->assertTrue(string_is_book_series($series));
+
+        // Only assert a normalized variant when the source value actually contains spaces.
+        if (mb_strpos($series, ' ') !== false) {
+            $this->assertTrue(string_is_book_series($variant));
+        }
+    }
+
+    public function testStringIsBookSeriesRejectsUnrelatedText(): void {
+        $this->assertFalse(string_is_book_series('Citation Bot Imaginary Journal 987654321'));
+    }
+
+    public function testShouldUrl2ChapterRejectsExistingChapterUrlAlias(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://example.com/book/page/20|chapterurl=https://example.com/chapter}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsExistingHyphenatedChapterUrl(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://example.com/book/page/20|chapter-url=https://example.com/chapter}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsTranslatedChapter(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|trans-chapter=Translated|url=https://example.com/book/page/20}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsBlankChapter(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=|url=https://example.com/book/page/20}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsLinkedChapter(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=[[Example]]|url=https://example.com/book/page/20}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsGoogleBooksWithoutPageParameter(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://books.google.com/books?id=abc}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterAllowsGoogleBooksWithPageParameter(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://books.google.com/books?id=abc&pg=PA20}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterRejectsArchiveIsbnLandingPage(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://archive.org/details/isbn_9780000000000}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsZeroPageIdentifiers(): void {
+        foreach ([
+            'https://example.com/book?page_id=0',
+            'https://example.com/book?page=0',
+            'https://example.com/book_0',
+        ] as $url) {
+            $template = $this->make_citation('{{cite book|chapter=Example|url=' . $url . '}}');
+            $this->assertFalse(should_url2chapter($template, true), $url);
+        }
+    }
+
+    public function testShouldUrl2ChapterRejectsArchiveDetailsLandingPage(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://archive.org/details/examplebook}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterRejectsEarlyArchivePage(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://archive.org/details/examplebook/page/n15}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, true));
+    }
+
+    public function testShouldUrl2ChapterAcceptsLaterArchivePage(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://archive.org/details/examplebook/page/n16}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterAcceptsArchiveChapterPath(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://archive.org/details/examplebook/chapter/4}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterRejectsArchivePageRootAndPageOne(): void {
+        foreach ([
+            'https://archive.org/details/examplebook/page',
+            'https://archive.org/details/examplebook/page/0',
+            'https://archive.org/details/examplebook/page/1',
+        ] as $url) {
+            $template = $this->make_citation('{{cite book|chapter=Example|url=' . $url . '}}');
+            $this->assertFalse(should_url2chapter($template, false), $url);
+        }
+    }
+
+    public function testShouldUrl2ChapterAcceptsWordpressChapterAndSectionPaths(): void {
+        foreach ([
+            'https://example.com/wp-content/book/chapter-2',
+            'https://example.com/wp-content/book/section-2',
+        ] as $url) {
+            $template = $this->make_citation('{{cite book|chapter=Example|url=' . $url . '}}');
+            $this->assertTrue(should_url2chapter($template, false), $url);
+        }
+    }
+
+    public function testShouldUrl2ChapterRejectsGenericWordpressAsset(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://example.com/wp-content/uploads/book.pdf}}'
+        );
+
+        $this->assertFalse(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterAcceptsSpringerChapterUrl(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://link.springer.com/chapter/10.1007/978-3-030-00000-0_2}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterAcceptsTaylorFrancisChapterUrl(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://www.taylorfrancis.com/chapters/edit/10.4324/example}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testShouldUrl2ChapterAcceptsEmeraldChapterUrl(): void {
+        foreach ([
+            'https://www.emerald.com/insight/content/doi/10.1108/example/chapter-2/full/html',
+            'https://www.emeraldinsight.com/example/chapter-3',
+        ] as $url) {
+            $template = $this->make_citation('{{cite book|chapter=Example|url=' . $url . '}}');
+            $this->assertTrue(should_url2chapter($template, false), $url);
+        }
+    }
+
+    public function testShouldUrl2ChapterAcceptsWileyChapterSuffix(): void {
+        $template = $this->make_citation(
+            '{{cite book|chapter=Example|url=https://onlinelibrary.wiley.com/doi/10.1002/example.ch12}}'
+        );
+
+        $this->assertTrue(should_url2chapter($template, false));
+    }
 }

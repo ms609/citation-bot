@@ -153,4 +153,254 @@ final class mathToolsTest extends testBaseClass {
         $result = wikify_external_text($text);
         $this->assertSame('<math>x^{n}</math>', $result);
     }
+
+    public function testMultiscriptFallbackReturnsTrimmedBaseWhenPrescriptShapeIsUnsupported(): void {
+        $mathml = '<mmultiscripts>  Carbon  <mprescripts/>12<none/></mmultiscripts>';
+
+        $this->assertSame('Carbon', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMultiscriptChemicalElementWithNestedMassTag(): void {
+        $mathml = '<mmultiscripts>U<mprescripts/><none/><mn>238</mn></mmultiscripts>';
+
+        $this->assertSame('^{238}\\mathrm{U}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMultiscriptNonChemicalBaseWithNestedMassTag(): void {
+        $mathml = '<mmultiscripts>particle<mprescripts/><none/><mn>7</mn></mmultiscripts>';
+
+        $this->assertSame('^{7}particle', convert_mathml_to_latex($mathml));
+    }
+
+    public function testSuperscriptTrimsInnerWhitespace(): void {
+        $mathml = "<msup>\n<mi> x </mi>\n<mn>  10 </mn>\n</msup>";
+
+        $this->assertSame('x^{10}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testSubscriptTrimsInnerWhitespace(): void {
+        $mathml = "<msub>\n<mi> H </mi>\n<mi> aq </mi>\n</msub>";
+
+        $this->assertSame('H_{aq}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testSubSuperscriptSupportsMixedMiAndMnChildren(): void {
+        $mathml = '<msubsup><mi>A</mi><mn>1</mn><mi>prime</mi></msubsup>';
+
+        $this->assertSame('A_{1}^{prime}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testFractionTrimsNumeratorAndDenominator(): void {
+        $mathml = "<mfrac>\n<mi> a + b </mi>\n<mn> 2 </mn>\n</mfrac>";
+
+        $this->assertSame('\\frac{a + b}{2}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testRootTrimsRadicandAndIndex(): void {
+        $mathml = "<mroot>\n<mi> x + 1 </mi>\n<mn> 4 </mn>\n</mroot>";
+
+        $this->assertSame('\\sqrt[4]{x + 1}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderExtractsBaseFromTextBeforeFirstMathElement(): void {
+        $mathml = '<munder>pre<mo>lim</mo><mrow><mi>x</mi><mo>→</mo><mn>∞</mn></mrow></munder>';
+
+        $this->assertSame(
+            '\\underset{x\\rightarrow{}\\infty}{prelim}',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testUnderWithEmptyTrailingContentReturnsBaseOnly(): void {
+        $mathml = '<munder>prefix<mi>x</mi></munder>';
+
+        $this->assertSame('prefixx', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderFallbackPreservesPlainTextFromNestedUnknownTags(): void {
+        $mathml = '<munder><foo>alpha</foo><bar>beta</bar></munder>';
+
+        $this->assertSame('alphabeta', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderOverSupportsThreeIdentifierChildren(): void {
+        $mathml = '<munderover><mi>f</mi><mi>a</mi><mi>b</mi></munderover>';
+
+        $this->assertSame('f_{a}^{b}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderOverTrimsEachComponent(): void {
+        $mathml = '<munderover><mo> ∫ </mo><mn> 0 </mn><mi> ∞ </mi></munderover>';
+
+        $this->assertSame('\\int_{0}^{\\infty}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderOverWithFourMathChildrenFallsBackToFlattenedText(): void {
+        $mathml = '<munderover><mi>a</mi><mi>b</mi><mi>c</mi><mi>d</mi></munderover>';
+
+        $this->assertSame('abcd', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderOverWithOneMathChildFallsBackToFlattenedText(): void {
+        $mathml = '<munderover><mi>x</mi></munderover>';
+
+        $this->assertSame('x', convert_mathml_to_latex($mathml));
+    }
+
+    public function testSimpleSquareRootTagConversion(): void {
+        $mathml = '<msqrt><mi>x</mi><mo>+</mo><mn>1</mn></msqrt>';
+
+        $this->assertSame('\\sqrt{x+1}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testFencedTagConversion(): void {
+        $mathml = '<mfenced><mi>x</mi><mo>+</mo><mi>y</mi></mfenced>';
+
+        $this->assertSame('\\left(x+y\\right)', convert_mathml_to_latex($mathml));
+    }
+
+    public function testBothSupportedMspaceSpellings(): void {
+        $this->assertSame(
+            'a\\,b\\,c',
+            convert_mathml_to_latex('<mi>a</mi><mspace/><mi>b</mi><mspace /><mi>c</mi>')
+        );
+    }
+
+    public function testInvisibleTimesEntityIsRemoved(): void {
+        $mathml = '<mi>x</mi><mo>&InvisibleTimes;</mo><mi>y</mi>';
+
+        $this->assertSame('xy', convert_mathml_to_latex($mathml));
+    }
+
+    public function testNamedArrowEntityKeepsCommandBoundary(): void {
+        $mathml = '<mi>x</mi><mo>&rarr;</mo><mi>speed</mi>';
+
+        $this->assertSame('x\\rightarrow{}speed', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnicodeMinusAndMultiplicationAreConverted(): void {
+        $mathml = '<mrow><mn>5</mn><mo>−</mo><mn>2</mn><mo>×</mo><mi>x</mi></mrow>';
+
+        $this->assertSame('5-2\\timesx', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnicodeSetSymbolsAreConverted(): void {
+        $mathml = '<mrow><mi>A</mi><mo>⊂</mo><mi>ℝ</mi><mo>∩</mo><mi>ℤ</mi></mrow>';
+
+        $this->assertSame(
+            'A\\subset\\mathbb{R}\\cap\\mathbb{Z}',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testUnicodeIntegralAndInfinityAreConverted(): void {
+        $mathml = '<mrow><mo>∫</mo><mn>0</mn><mo>→</mo><mo>∞</mo></mrow>';
+
+        $this->assertSame(
+            '\\int0\\rightarrow{}\\infty',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testResidualMathRowTagsAreStripped(): void {
+        $mathml = '<mrow><mrow><mi>x</mi></mrow><mo>+</mo><mrow><mi>y</mi></mrow></mrow>';
+
+        $this->assertSame('x+y', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnknownXmlLikeTagsAreStrippedAfterKnownReplacements(): void {
+        $mathml = '<foo><mi>x</mi></foo><bar><mo>+</mo><mi>y</mi></bar>';
+
+        $this->assertSame('x+y', convert_mathml_to_latex($mathml));
+    }
+
+    public function testEmptyInputReturnsEmptyString(): void {
+        $this->assertSame('', convert_mathml_to_latex(''));
+    }
+
+    public function testNamespacePrefixesAreRemovedBeforeConversion(): void {
+        $mathml = '<mml:msup><mml:mi>x</mml:mi><mml:mn>2</mml:mn></mml:msup>';
+
+        $this->assertSame('x^{2}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testMultiscriptTrimsChemicalBaseAndMassNumber(): void {
+        $mathml = '<mmultiscripts> Fe <mprescripts/><none/><mn> 56 </mn></mmultiscripts>';
+
+        $this->assertSame('^{56}\\mathrm{Fe}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testScriptElementsAcceptNumericBasesAndIdentifierScripts(): void {
+        $this->assertSame(
+            '2^{n}',
+            convert_mathml_to_latex('<msup><mn>2</mn><mi>n</mi></msup>')
+        );
+        $this->assertSame(
+            '2_{i}',
+            convert_mathml_to_latex('<msub><mn>2</mn><mi>i</mi></msub>')
+        );
+        $this->assertSame(
+            '2_{i}^{n}',
+            convert_mathml_to_latex('<msubsup><mn>2</mn><mi>i</mi><mi>n</mi></msubsup>')
+        );
+    }
+
+    public function testFractionAcceptsOperatorAndIdentifierChildren(): void {
+        $mathml = '<mfrac><mo>∑</mo><mi>n</mi></mfrac>';
+
+        $this->assertSame('\\frac{\\sum}{n}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testRootAcceptsOperatorRadicandAndIdentifierIndex(): void {
+        $mathml = '<mroot><mo>∑</mo><mi>n</mi></mroot>';
+
+        $this->assertSame('\\sqrt[n]{\\sum}', convert_mathml_to_latex($mathml));
+    }
+
+    public function testUnderOverWithoutRecognizedMathChildrenFallsBackToText(): void {
+        $mathml = '<munderover><semantics><annotation>range</annotation></semantics></munderover>';
+
+        $this->assertSame('range', convert_mathml_to_latex($mathml));
+    }
+
+    public function testSimpleMathMLTagsAreConverted(): void {
+        $mathml = '<mtext>velocity</mtext><mspace/><msqrt><mi>x</mi></msqrt>'
+            . '<mfenced><mi>y</mi></mfenced>';
+
+        $this->assertSame(
+            '\\text{velocity}\\,\\sqrt{x}\\left(y\\right)',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testNamedMathEntitiesAreConverted(): void {
+        $mathml = '<mi>&alpha;</mi><mo>&times;</mo><mi>&beta;</mi><mo>&equals;</mo><mn>2</mn>';
+
+        $this->assertSame(
+            '\\alpha\\times\\beta\\Relbar2',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testUnknownMathMLTagsAreRemovedButTheirTextIsPreserved(): void {
+        $mathml = '<semantics><annotation>note:</annotation><mi>x</mi></semantics>';
+
+        $this->assertSame('note:x', convert_mathml_to_latex($mathml));
+    }
+
+    public function testRawUnicodeMathSymbolsAreConvertedAfterTagProcessing(): void {
+        $mathml = '<mrow><mi>ℤ</mi><mo>∪</mo><mi>ℝ</mi><mo>→</mo><mi>α</mi></mrow>';
+
+        $this->assertSame(
+            '\\mathbb{Z}\\cup\\mathbb{R}\\rightarrow{}\\alpha',
+            convert_mathml_to_latex($mathml)
+        );
+    }
+
+    public function testPlainTextWithoutMathMarkupIsUnchanged(): void {
+        $this->assertSame(
+            'ordinary text 123',
+            convert_mathml_to_latex('ordinary text 123')
+        );
+    }
 }

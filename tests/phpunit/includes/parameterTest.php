@@ -602,4 +602,102 @@ final class parameterTest extends testBaseClass {
             $parameter->parsed_text()
         );
     }
+
+    public function testParseNamedParameterPreservesFormatting(): void {
+        $parameter = new Parameter();
+
+        $parameter->parse_text("  title \t=  Example title  \n");
+
+        $this->assertSame('  ', $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame(" \t=  ", $parameter->eq);
+        $this->assertSame('Example title', $parameter->val);
+        $this->assertSame("  \n", $parameter->post);
+        $this->assertSame("  title \t=  Example title  \n", $parameter->parsed_text());
+    }
+
+    public function testParseNamedParameterWithoutSurroundingWhitespace(): void {
+        $parameter = new Parameter();
+
+        $parameter->parse_text('doi=10.1000/example');
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('doi', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
+        $this->assertSame('10.1000/example', $parameter->val);
+        $this->assertSame('', $parameter->post);
+        $this->assertSame('doi=10.1000/example', $parameter->parsed_text());
+    }
+
+    public function testParseUnnamedParameter(): void {
+        $parameter = new Parameter();
+
+        $parameter->parse_text(" \n Example value \t");
+
+        $this->assertSame(" \n ", $parameter->pre);
+        $this->assertSame('', $parameter->param);
+        $this->assertSame('', $parameter->eq);
+        $this->assertSame('Example value', $parameter->val);
+        $this->assertSame(" \t", $parameter->post);
+        $this->assertSame(" \n Example value \t", $parameter->parsed_text());
+    }
+
+    public function testParseRestoresPipePlaceholderInValue(): void {
+        $parameter = new Parameter();
+
+        $parameter->parse_text('title=left' . PIPE_PLACEHOLDER . 'right');
+
+        $this->assertSame('left|right', $parameter->val);
+        $this->assertSame('title=left|right', $parameter->parsed_text());
+    }
+
+    public function testCommentsBeforeParameterNameMoveToPrefix(): void {
+        $parameter = new Parameter();
+        $comment = '# # # CITATION_BOT_PLACEHOLDER_COMMENT 12 # # # ';
+
+        $parameter->parse_text($comment . 'title = value');
+
+        $this->assertSame($comment, $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame(' = ', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+    }
+
+    public function testCommentsAfterParameterNameMoveBeforeEquals(): void {
+        $parameter = new Parameter();
+        $comment = ' # # # CITATION_BOT_PLACEHOLDER_COMMENT 7 # # #';
+
+        $parameter->parse_text('title' . $comment . ' = value');
+
+        $this->assertSame('', $parameter->pre);
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame($comment . ' = ', $parameter->eq);
+        $this->assertSame('value', $parameter->val);
+    }
+
+    public function testEmptyValueMovesTrailingLineBreakToPost(): void {
+        $parameter = new Parameter();
+
+        $parameter->parse_text("title = \n  ");
+
+        $this->assertSame('title', $parameter->param);
+        $this->assertSame(' = ', $parameter->eq);
+        $this->assertSame('', $parameter->val);
+        $this->assertSame("\n  ", $parameter->post);
+        $this->assertSame("title = \n  ", $parameter->parsed_text());
+    }
+
+    public function testParsedTextNormalizesUnicodeSpacingOutsideValue(): void {
+        $parameter = new Parameter();
+        $nonBreakingSpace = "\u{00A0}";
+        $thinSpace = "\u{2009}";
+
+        $parameter->pre = $nonBreakingSpace;
+        $parameter->param = 'title';
+        $parameter->eq = $thinSpace . '=' . $nonBreakingSpace;
+        $parameter->val = 'value' . $thinSpace;
+        $parameter->post = $nonBreakingSpace;
+
+        $this->assertSame(' title = value' . $thinSpace . ' ', $parameter->parsed_text());
+    }
 }
