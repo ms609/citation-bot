@@ -17,7 +17,7 @@ final class Parameter {
     public string $val = '';
     public string $post = '';
     private bool $parsed = false;
-    
+
     /**
      * Breaks a citation template down to component parts.
      * Expects that any instances of "|" in $text will have been replaced with
