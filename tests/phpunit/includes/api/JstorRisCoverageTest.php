@@ -101,7 +101,7 @@ RIS;
         [$template] = $this->parseRis($ris);
 
         $this->assertSame(
-            'Journal From Bt',
+            'Journal from Bt',
             $template->get2('journal')
         );
     }
@@ -116,7 +116,7 @@ RIS;
         [$template] = $this->parseRis($ris);
 
         $this->assertSame(
-            'Journal From Jo',
+            'Journal from Jo',
             $template->get2('journal')
         );
     }
