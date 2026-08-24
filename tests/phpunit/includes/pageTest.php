@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class pageTest extends testBaseClass {
 
@@ -119,6 +120,7 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
     }
 
+    #[DoesNotPerformAssertions]
     public function testDontCrashOnDates(): void { // See zotero test testRespectDates for actually making sure that it is used
         $text = '{{Use dmy dates}}{{cite web}}';
         $this->process_page($text);
@@ -132,9 +134,9 @@ final class pageTest extends testBaseClass {
         $this->process_page($text);
         $text = '{{mdy}}{{dmy}}{{cite web}}';
         $this->process_page($text);
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testDontCrashOnVanNames(): void { // Goofy ones too
         $text = '{{cs1 config |name-list-style=vanc }}{{cite web}}';
         $this->process_page($text);
@@ -148,7 +150,6 @@ final class pageTest extends testBaseClass {
         $this->process_page($text);
         $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
         $this->process_page($text);
-        $this->assertFaker();
     }
 
     public function testVancNames1(): void {

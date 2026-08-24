@@ -6,13 +6,14 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class zzzLastTest extends testBaseClass {
 
+    #[DoesNotPerformAssertions]
     public function testFlushCacheAtEnd(): void {
         new TestPage(); // Fill page name with test name for debugging
         HandleCache::free_memory();
         AdsAbsControl::free_memory();
-        $this->assertFaker();
     }
 }
