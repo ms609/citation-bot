@@ -622,8 +622,8 @@ final class parameterTest extends testBaseClass {
         $parameter->parse_text('doi=10.1000/example');
 
         $this->assertSame('', $parameter->pre);
-        $this->assertSame('', $parameter->param);
-        $this->assertSame('doi=', $parameter->eq);
+        $this->assertSame('doi', $parameter->param);
+        $this->assertSame('=', $parameter->eq);
         $this->assertSame('10.1000/example', $parameter->val);
         $this->assertSame('', $parameter->post);
         $this->assertSame('doi=10.1000/example', $parameter->parsed_text());
