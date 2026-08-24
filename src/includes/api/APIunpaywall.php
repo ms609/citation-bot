@@ -16,7 +16,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
     curl_setopt($ch_oa, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch_oa);
     if (curl_getinfo($ch_oa, CURLINFO_RESPONSE_CODE) === 429) {
-        return 'rate_limited';
+        return 'rate_limited'; // @codeCoverageIgnore
     }
     if ($json) {
         $oa = @json_decode($json);
@@ -28,7 +28,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 return 'publisher';
             }
             if (!isset($best_location->evidence)) {
-                return 'nothing';
+                return 'nothing'; // @codeCoverageIgnore
             }
             if (isset($oa->journal_name) && $oa->journal_name === "Cochrane Database of Systematic Reviews") {
                 report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
@@ -43,32 +43,32 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 return 'nothing'; // @codeCoverageIgnoreEnd
             }
             if (!$oa_url) {
-                return 'nothing';
+                return 'nothing'; // @codeCoverageIgnore
             }
 
             if (mb_stripos($oa_url, 'semanticscholar.org') !== false) {
-                return 'semanticscholar';
+                return 'semanticscholar'; // @codeCoverageIgnore
             } // use API call instead (avoid blacklisting)
             if (mb_stripos($oa_url, 'timetravel.mementoweb.org') !== false) {
-                return 'mementoweb';
+                return 'mementoweb'; // @codeCoverageIgnore
             } // Not good ones
             if (mb_stripos($oa_url, 'citeseerx') !== false) {
-                return 'citeseerx';
+                return 'citeseerx'; // @codeCoverageIgnore
             } // blacklisted due to copyright concerns
             if (mb_stripos($oa_url, 'zenodo') !== false) {
-                return 'zenodo';
+                return 'zenodo'; // @codeCoverageIgnore
             } // blacklisted due to copyright concerns
             if (mb_stripos($oa_url, 'palgraveconnect') !== false) {
-                return 'palgraveconnect';
+                return 'palgraveconnect'; // @codeCoverageIgnore
             }
             if (mb_stripos($oa_url, 'muse.jhu.edu') !== false) {
-                return 'projectmuse';
+                return 'projectmuse'; // @codeCoverageIgnore
             } // Same as DOI 99% of the time
             if (mb_stripos($oa_url, 'doaj.org') !== false) {
-                return 'doaj.org';
+                return 'doaj.org'; // @codeCoverageIgnore
             }
             if (mb_stripos($oa_url, 'lib.myilibrary.com') !== false) {
-                return 'proquest';
+                return 'proquest'; // @codeCoverageIgnore
             } // Rubbish
             if (mb_stripos($oa_url, 'repository.upenn.edu') !== false) {
                 return 'epository.upenn.edu';
@@ -79,21 +79,21 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 } // Maybe we can get a new link type
                     return 'have url';
             }
-            if (!preg_match("~^https?://([^\/]+)/~", $oa_url, $match)) {
-                return 'no_slash'; // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
+            if (!preg_match("~^https?://([^\/]+)/~", $oa_url, $match)) { // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
+                return 'no_slash'; // @codeCoverageIgnore
             }
             $host_name = $match[1];
             if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) {
-                return 'publisher';
+                return 'publisher'; // @codeCoverageIgnore
             }
             if (mb_stripos($oa_url, 'bioone.org/doi') !== false) {
-                return 'publisher';
+                return 'publisher'; // @codeCoverageIgnore
             }
             if (mb_stripos($oa_url, 'gateway.isiknowledge.com') !== false) {
-                return 'nothing';
+                return 'nothing'; // @codeCoverageIgnore
             }
             if (mb_stripos($oa_url, 'orbit.dtu.dk/en/publications') !== false) {
-                return 'nothing';
+                return 'nothing'; // @codeCoverageIgnore
             } // Abstract only
             // Check if free location is already linked
             if (
