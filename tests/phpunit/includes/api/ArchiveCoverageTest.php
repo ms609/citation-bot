@@ -514,31 +514,12 @@ final class ArchiveCoverageTest extends testBaseClass {
 
     public function testFetchArchivePageRejectsEmptyUrlBeforeCurl(): void {
         $ch = curl_init();
-
-        try {
-            $this->assertSame(
-                '',
-                fetch_archive_page($ch, '')
-            );
-        } finally {
-            ;
-        }
+        $this->assertSame('', fetch_archive_page($ch, ''));
     }
 
     public function testFetchArchivePageRejectsNonArchiveHostBeforeCurl(): void {
         $ch = curl_init();
-
-        try {
-            $this->assertSame(
-                '',
-                fetch_archive_page(
-                    $ch,
-                    'https://example.com/archive'
-                )
-            );
-        } finally {
-            ;
-        }
+        $this->assertSame('', fetch_archive_page($ch, 'https://example.com/archive'));
     }
 
     #[DataProvider('placeholderArchiveTitleProvider')]
