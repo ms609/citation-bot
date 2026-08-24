@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
-/* @phan-suppress-begin PhanParamSuspiciousOrder */
+
 final class WikiThingsCoverageTest extends testBaseClass {
 
     public function testBaseClassRoundTripsParsedText(): void {
@@ -22,6 +22,8 @@ final class WikiThingsCoverageTest extends testBaseClass {
         $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #', SingleBracket::PLACEHOLDER_TEXT);
         $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_TRIPLE_BRACKET %s # # #', TripleBracket::PLACEHOLDER_TEXT);
     }
+
+    /** @phan-suppress-begin PhanParamSuspiciousOrder */
 
     public function testCommentFastRegexpMatchesSimpleComment(): void {
         $this->assertSame(1, preg_match(Comment::REGEXP[0], '<!-- simple comment -->'));
@@ -102,5 +104,8 @@ final class WikiThingsCoverageTest extends testBaseClass {
         $this->assertFalse(Nowiki::TREAT_IDENTICAL_SEPARATELY);
         $this->assertFalse(Mathematics::TREAT_IDENTICAL_SEPARATELY);
     }
+
+    /** @phan-suppress-end PhanParamSuspiciousOrder */
+
 }
-/* @phan-suppress-end PhanParamSuspiciousOrder */
+
