@@ -9,9 +9,9 @@ require_once __DIR__ . '/../../testBaseClass.php';
 
 final class wikipediaBotTest extends testBaseClass {
 
+    #[DoesNotPerformAssertions]
     public function testCoverageFixer(): void {
         WikipediaBot::make_ch();
-        $this->assertFaker();
     }
 
     private function category_members_with_retry(string $category): array {
