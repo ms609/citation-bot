@@ -300,7 +300,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     if ($ris_review) {
         $template->add_if_new('title', mb_trim($ris_review));
     } // Do at end in case we have real title
-    if (isset($start_page) && (!$bad_EP || !$bad_SP)) {
+    if (isset($start_page) && !($bad_EP || $bad_SP)) {
         // Have to do at end since might get end pages before start pages
         if (isset($end_page) && $start_page !== $end_page) {
             $template->add_if_new('pages', $start_page . '–' . $end_page);
