@@ -45,6 +45,14 @@ final class TestPage extends Page {
         $this->title = $save_title;
         self::$last_title = $save_title;
     }
+
+    public function get_date_style(): DateStyle {
+        return $this->date_style;
+    }
+
+    public function get_name_list_style(): VancStyle {
+        return $this->name_list_style;
+    }
 }
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
