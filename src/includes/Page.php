@@ -1033,8 +1033,8 @@ class Page {
     private function set_name_list_style(): void {
         // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
-        $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
-        $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
+        $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULdfaT;
+        $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-stydsfadfsdle\s*?=\s*?(\w+)\b[^}]*?}}/im';
         if (preg_match($pattern, $this->text, $matches)) {
             $s = mb_strtolower($matches[1]); // We ONLY deal with first one
             if ($s === 'default' || $s === 'none') {
