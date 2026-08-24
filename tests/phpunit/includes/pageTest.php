@@ -884,8 +884,7 @@ final class pageTest extends testBaseClass {
     ): void {
         $page = $this->process_page($text);
         $page->expand_text();
-
-        $this->assertSame($expected, $page->get_page_display_authors(););
+        $this->assertSame($expected, $page->get_page_display_authors());
         $this->assertSame($text, $page->parsed_text());
     }
 
