@@ -68,44 +68,44 @@ final class UserMessagesTest extends testBaseClass {
         $this->assertStringContainsString('Test Article', $result);
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportPhaseRunsWithoutError(): void {
         report_phase('test phase');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportActionRunsWithoutError(): void {
         report_action('test action');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportInfoRunsWithoutError(): void {
         report_info('test info');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportInactionRunsWithoutError(): void {
         report_inaction('test inaction');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportWarningRunsWithoutError(): void {
         report_warning('test warning');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportModificationRunsWithoutError(): void {
         report_modification('test modification');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportAddRunsWithoutError(): void {
         report_add('test add');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testReportForgetRunsWithoutError(): void {
         report_forget('test forget');
-        $this->assertFaker();
     }
 
     public function testHtmlEchoCiProducesNoOutput(): void {
