@@ -6,7 +6,8 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../testBaseClass.php';
-
+use PHPUnit\Framework\Attributes\DataProvider;
+    
 final class pageTest extends testBaseClass {
 
     public function testPageChangeSummary1(): void {
@@ -690,4 +691,227 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->expand_text());
     }
 
+    #[DataProvider('dateStyleProvider')]
+    public function testPageDateStyleConfiguration(
+        string $text,
+        DateStyle $expected
+    ): void {
+        $page = $this->process_page($text);
+
+        $this->assertSame($expected, Template::$date_style);
+        $this->assertSame($text, $page->parsed_text());
+    }
+
+    /**
+     * @return array<string, array{string, DateStyle}>
+     */
+    public static function dateStyleProvider(): array {
+        return [
+            'use dmy dates' => [
+                '{{Use dmy dates}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'use mdy dates' => [
+                '{{Use mdy dates}}{{cite web}}',
+                DateStyle::DATES_MDY,
+            ],
+            'short dmy template' => [
+                '{{dmy}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'short mdy template' => [
+                '{{mdy}}{{cite web}}',
+                DateStyle::DATES_MDY,
+            ],
+            'use dmy alias' => [
+                '{{Use dmy}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'use mdy alias' => [
+                '{{Use mdy}}{{cite web}}',
+                DateStyle::DATES_MDY,
+            ],
+
+            // set_date_pattern() checks MDY first, then DMY,
+            // so DMY wins when both forms are present.
+            'mdy followed by dmy' => [
+                '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'dmy followed by mdy still resolves dmy' => [
+                '{{Use dmy dates}}{{Use mdy dates}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'short mdy followed by short dmy' => [
+                '{{mdy}}{{dmy}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+            'short dmy followed by short mdy' => [
+                '{{dmy}}{{mdy}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+
+            'case insensitive mdy' => [
+                '{{USE MDY DATES}}{{cite web}}',
+                DateStyle::DATES_MDY,
+            ],
+            'case insensitive dmy' => [
+                '{{USE DMY DATES}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+
+            'mdy with parameter' => [
+                '{{Use mdy dates|date=August 2026}}{{cite web}}',
+                DateStyle::DATES_MDY,
+            ],
+            'dmy with parameter' => [
+                '{{Use dmy dates|date=August 2026}}{{cite web}}',
+                DateStyle::DATES_DMY,
+            ],
+
+            'no date configuration' => [
+                '{{cite web}}',
+                DateStyle::DATES_WHATEVER,
+            ],
+            'unrelated date-like template' => [
+                '{{date|2026-08-23}}{{cite web}}',
+                DateStyle::DATES_WHATEVER,
+            ],
+        ];
+    }
+
+    #[DataProvider('nameListStyleProvider')]
+    public function testPageNameListStyleConfiguration(
+        string $text,
+        VancStyle $expected
+    ): void {
+        $page = $this->process_page($text);
+
+        $this->assertSame($expected, Template::$name_list_style);
+        $this->assertSame($text, $page->parsed_text());
+    }
+
+    /**
+     * @return array<string, array{string, VancStyle}>
+     */
+    public static function nameListStyleProvider(): array {
+        return [
+            'vancouver' => [
+                '{{cs1 config |name-list-style=vanc }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_VANC,
+            ],
+            'default' => [
+                '{{cs1 config |name-list-style=default }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+            'none' => [
+                '{{cs1 config |name-list-style=none }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+            'serial' => [
+                '{{cs1 config |name-list-style=serial }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_AND,
+            ],
+            'and' => [
+                '{{cs1 config |name-list-style=and }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_AND,
+            ],
+            'amp' => [
+                '{{cs1 config |name-list-style=amp }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_AMP,
+            ],
+            'ampersand' => [
+                '{{cs1 config |name-list-style=ampersand }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_AMP,
+            ],
+
+            'case insensitive vanc' => [
+                '{{CS1 CONFIG |NAME-LIST-STYLE=VANC }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_VANC,
+            ],
+            'spacing variations' => [
+                '{{ cs1 config    | name-list-style = vanc }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_VANC,
+            ],
+
+            'unknown value falls back to default' => [
+                '{{cs1 config |name-list-style=doggiesandcats }}{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+            'no cs1 config' => [
+                '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+
+            // Only the first matching cs1 config is used.
+            'unknown first then unknown' => [
+                '{{cs1 config |name-list-style=doggiesandcats }}'
+                . '{{cs1 config |name-list-style=fries }}'
+                . '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+            'unknown first then vanc' => [
+                '{{cs1 config |name-list-style=doggiesandcats }}'
+                . '{{cs1 config |name-list-style=vanc }}'
+                . '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_DEFAULT,
+            ],
+            'vanc first then unknown' => [
+                '{{cs1 config |name-list-style=vanc }}'
+                . '{{cs1 config |name-list-style=fries }}'
+                . '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_VANC,
+            ],
+            'vanc first then amp' => [
+                '{{cs1 config |name-list-style=vanc }}'
+                . '{{cs1 config |name-list-style=amp }}'
+                . '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_VANC,
+            ],
+            'amp first then vanc' => [
+                '{{cs1 config |name-list-style=amp }}'
+                . '{{cs1 config |name-list-style=vanc }}'
+                . '{{cite web}}',
+                VancStyle::NAME_LIST_STYLE_AMP,
+            ],
+        ];
+    }
+
+    #[DataProvider('pageDisplayAuthorsProvider')]
+    public function testPageDisplayAuthorsConfiguration(
+        string $text,
+        string $expected
+    ): void {
+        $page = $this->process_page($text);
+
+        $this->assertSame(
+            $expected,
+            Template::$page_display_authors
+        );
+        $this->assertSame($text, $page->parsed_text());
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function pageDisplayAuthorsProvider(): array {
+        return [
+            'etal' => [
+                '{{cs1 config |display-authors=etal }}{{cite web}}',
+                'etal',
+            ],
+            'numeric' => [
+                '{{cs1 config |display-authors=5 }}{{cite web}}',
+                '5',
+            ],
+            'uppercase normalized' => [
+                '{{cs1 config |display-authors=ETAL }}{{cite web}}',
+                'etal',
+            ],
+            'missing setting' => [
+                '{{cite web}}',
+                '',
+            ],
+        ];
+    }
 }
