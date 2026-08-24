@@ -521,7 +521,7 @@ final class ArchiveCoverageTest extends testBaseClass {
                 fetch_archive_page($ch, '')
             );
         } finally {
-            curl_close($ch);
+            ;
         }
     }
 
@@ -537,7 +537,7 @@ final class ArchiveCoverageTest extends testBaseClass {
                 )
             );
         } finally {
-            curl_close($ch);
+            ;
         }
     }
 
