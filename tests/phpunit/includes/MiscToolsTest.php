@@ -3,20 +3,22 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class MiscToolsTest extends testBaseClass {
+
+    #[DoesNotPerformAssertions]
     public function testcheck_memory_usage(): void {
         new TestPage(); // Fill page name with test name for debugging
         check_memory_usage('testcheck_memory_usage');
-        $this->assertFaker();
     }
 
+    #[DoesNotPerformAssertions]
     public function testThrottle(): void { // Just runs over the code and basically does nothing
         $do_it = run_type_mods(-1, 25, 25, 1, 1);
         for ($x = 0; $x <= $do_it; $x++) {
             throttle();
         }
-        $this->assertFaker();
     }
 
     public function testCovertUrl2Chapter1(): void {

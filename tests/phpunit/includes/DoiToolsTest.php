@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class DoiToolsTest extends testBaseClass {
 
@@ -217,14 +218,12 @@ final class DoiToolsTest extends testBaseClass {
                 $changes = $changes . "Flagged as null: " . $doi . "             ";
             }
         }
-        if ($changes === '') {
-            $this->assertFaker();
-        } else {
+        if ($changes !== '') {
             bot_debug_log($changes);
-            $this->assertFaker(); // We just have to manually look at this EVERY time
         }
     }
 
+    #[DoesNotPerformAssertions]
     public function testHostIsGoneDOIHosts(): void {
         new TestPage(); // Fill page name with test name for debugging
         $changes = "";
@@ -243,11 +242,8 @@ final class DoiToolsTest extends testBaseClass {
                 $changes = $changes . "NULL_DOI_STARTS_BAD flagged as good: " . $doi . "             ";
             }
         }
-        if ($changes === '') {
-            $this->assertFaker();
-        } else {
+        if ($changes !== '') {
             bot_debug_log($changes);
-            $this->assertFaker(); // We just have to manually look at this EVERY time.  This used to cause the test to fail.
         }
     }
 
