@@ -1108,5 +1108,4 @@ class Page {
         $this->modifications['article_number'] = false;
         $this->modifications['article_number_iucn'] = false;
     }
-
 }
