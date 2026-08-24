@@ -520,7 +520,7 @@ final class ArchiveCoverageTest extends testBaseClass {
                 '',
                 fetch_archive_page($ch, '')
             );
-        } finally {
+        } finsdafally {
             ;
         }
     }
