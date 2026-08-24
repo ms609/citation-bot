@@ -16,13 +16,18 @@ final class Parameter {
     public string $eq = '';
     public string $val = '';
     public string $post = '';
-
+    private bool $parsed = false;
+    
     /**
      * Breaks a citation template down to component parts.
      * Expects that any instances of "|" in $text will have been replaced with
      * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
      */
     public function parse_text(string $text): void {
+        if ($this->parsed) {
+            report_error('Parameter::parse_text() called more than once on the same Parameter instance');
+        }
+        $this->parsed = true;
         $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
         $split = explode('=', $text, 2);
         // Split the text before the '=' into constituent parts:
