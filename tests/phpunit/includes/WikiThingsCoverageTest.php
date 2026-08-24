@@ -51,7 +51,7 @@ final class WikiThingsCoverageTest extends testBaseClass {
     }
 
     public function testMathematicsRegexpMatchesPlainMath(): void {
-        $this->assertSame(1 , preg_match(Mathematics::REGEXP[0], '<math>x^2</math>'));
+        $this->assertSame(1, preg_match(Mathematics::REGEXP[0], '<math>x^2</math>'));
     }
 
     public function testMathematicsRegexpMatchesMathChemVariant(): void {
