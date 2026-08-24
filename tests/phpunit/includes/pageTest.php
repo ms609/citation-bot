@@ -698,7 +698,7 @@ final class pageTest extends testBaseClass {
     ): void {
         $page = $this->process_page($text);
 
-        $this->assertSame($expected, Template::$date_style);
+        $this->assertSame($expected, $page->get_date_style());
         $this->assertSame($text, $page->parsed_text());
     }
 
