@@ -62,6 +62,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testBotCurlExecReadsLocalFile(): void {
+        $tp = new TestPage(); // Fill page name with test name for debugging
         $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
         $this->assertNotFalse($filename);
 
@@ -71,8 +72,6 @@ final class BotCurlTest extends testBaseClass {
             1.0,
             [CURLOPT_URL => 'file://' . $filename]
         );
-
-        Page::$last_title = 'BotCurlExecTest';
 
         try {
             $this->assertSame(
