@@ -55,7 +55,7 @@
                 <element key="curl_close" value="null"/>
                 <element key="curl_share_close" value="null"/>
                 <element key="die" value="exit"/>
-                <element key="doubleval" value="null"/>
+                <element key="doubleval" value="floatval"/>
                 <element key="eval" value="null"/>
                 <element key="exec" value="null"/>
                 <element key="finfo_close" value="null"/>
@@ -112,6 +112,7 @@
                 <element key="ucfirst" value="mb_ucfirst"/>
                 <element key="ucwords" value="mb_ucwords"/>
                 <element key="xml_parser_free" value="null"/>
+                <element key="_" value="gettext"/>
             </property>
         </properties>
     </rule>
