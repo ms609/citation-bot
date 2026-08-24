@@ -154,7 +154,6 @@ final class mathToolsTest extends testBaseClass {
         $this->assertSame('<math>x^{n}</math>', $result);
     }
 
-
     public function testMultiscriptFallbackReturnsTrimmedBaseWhenPrescriptShapeIsUnsupported(): void {
         $mathml = '<mmultiscripts>  Carbon  <mprescripts/>12<none/></mmultiscripts>';
 
