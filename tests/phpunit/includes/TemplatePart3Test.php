@@ -6,7 +6,6 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../testBaseClass.php';
-use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class TemplatePart3Test extends testBaseClass {
     public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.
