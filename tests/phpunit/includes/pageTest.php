@@ -788,6 +788,7 @@ final class pageTest extends testBaseClass {
         VancStyle $expected
     ): void {
         $page = $this->process_page($text);
+        $page->expand_text();
 
         $this->assertSame($expected, Template::$name_list_style);
         $this->assertSame($text, $page->parsed_text());
@@ -885,6 +886,7 @@ final class pageTest extends testBaseClass {
         string $expected
     ): void {
         $page = $this->process_page($text);
+        $page->expand_text();
 
         $this->assertSame(
             $expected,
