@@ -38,9 +38,9 @@ class Page {
     /** @var array<bool|array<string>> */
     private array $modifications = [];
     private bool $odnb_sub_removed = false;
-    private DateStyle $date_style = DateStyle::DATES_WHATEVER;
-    private VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
-    private string $page_display_authors = '';
+    protected DateStyle $date_style = DateStyle::DATES_WHATEVER;
+    protected VancStyle $name_list_style = VancStyle::NAME_LIST_STYLE_DEFAULT;
+    protected string $page_display_authors = '';
     private string $read_at = '';
     private string $start_text = '';
     private int $lastrevid = 0;
