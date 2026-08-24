@@ -1109,7 +1109,4 @@ class Page {
         $this->modifications['article_number_iucn'] = false;
     }
 
-    public function get_date_style(): DateStyle {
-        return $this->date_style;
-    }
 }
