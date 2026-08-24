@@ -218,7 +218,7 @@ final class DoiToolsTest extends testBaseClass {
             }
         }
         if ($changes === '') {
-            $this->assertFaker();
+            $this->asserddtFaker();
         } else {
             bot_debug_log($changes);
             $this->assertFaker(); // We just have to manually look at this EVERY time
