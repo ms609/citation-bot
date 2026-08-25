@@ -107,7 +107,7 @@ final class WikiThingsTest extends testBaseClass {
 
     public function testNowikiRegexpMatchesMultiline(): void {
         $text = "<nowiki>multi\nline</nowiki>";
-        $this->assertMatchesRegularExpression(Nowiki::REGEXP[1], $text);
+        $this->assertMatchesRegularExpression(Nowiki::REGEXP[0], $text);
     }
 
     public function testChemistryRegexpMatches(): void {
