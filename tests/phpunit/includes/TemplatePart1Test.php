@@ -24,9 +24,9 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testLotsOfFloaters3(): void {
-        $text_in = "{{cite journal| 123-4567-890-123 }}";
+        $text_in = "{{cite journal| 123-4567-890-128 }}";
         $prepared = $this->prepare_citation($text_in);
-        $this->assertSame('123-4567-890-123', $prepared->get2('isbn'));
+        $this->assertSame('123-4567-890-128', $prepared->get2('isbn'));
     }
 
     public function testLotsOfFloaters4(): void {
@@ -1019,9 +1019,9 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testId2Param1(): void {
-        $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.0001/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+        $text = '{{cite book |id=ISBN 978-0-306-40615-7, DOI 10.0001/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('978-1234-9583-068', $expanded->get2('isbn'));
+        $this->assertSame('978-0-306-40615-7', $expanded->get2('isbn'));
         $this->assertSame('1234.5678', $expanded->get2('arxiv'));
         $this->assertSame('10.0001/Rubbish_bot_failure_test', $expanded->get2('doi'));
         $this->assertSame('1234', $expanded->get2('oclc'));

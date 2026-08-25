@@ -163,10 +163,10 @@ EP - 999 }}';
         $code_coverage2 = '{{Citation |
 %0 Book
 %T This Title
-%@ 000-000-000-0X}}';
+%@ 0-306-40615-2}}';
         $prepared = $this->process_citation($code_coverage2);
         $this->assertSame('This Title', $prepared->get2('title'));
-        $this->assertSame('000-000-000-0X', $prepared->get2('isbn'));
+        $this->assertSame('0-306-40615-2', $prepared->get2('isbn'));
     }
 
     public function testConvertingISBN10Dashes(): void {
