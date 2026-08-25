@@ -18,6 +18,11 @@
 # When updating, pin every package with ==, keep the hashes in sync with PyPI
 # (regenerate this file on a Linux/CPython 3.12 host), and make sure every
 # version constraint of every package remains satisfied.
+#
+# setuptools is pinned to 84.0.0 (not the minimum jsonschema allows) because
+# all older releases are affected by one or more published GitHub advisories:
+# GHSA-cx63-2mw6-8hw5 (fixed >=70.0.0), GHSA-5rjg-fvgr-3xxf (fixed >=78.1.1)
+# and GHSA-h35f-9h28-mq5c (fixed >=83.0.0).
 
 cffconvert==2.0.0 \
     --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
@@ -51,5 +56,5 @@ attrs==23.2.0 \
     --hash=sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1
 pyrsistent==0.20.0 \
     --hash=sha256:b14decb628fac50db5e02ee5a35a9c0772d20277824cfe845c8a8b717c15daa3
-setuptools==69.2.0 \
-    --hash=sha256:c21c49fb1042386df081cb5d86759792ab89efca84cf114889191cd09aacc80c
+setuptools==84.0.0 \
+    --hash=sha256:51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670
