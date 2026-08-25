@@ -1609,4 +1609,13 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertFalse($result);
         $this->assertFalse($template->has('chapter'));
     }
+
+    public function testAddIfNewRejectsBadCheckDigitIsbn(): void {
+        $text = '{{cite book | title = T | date = 2010 }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('isbn', '978-0-306-40615-8'));
+        $this->assertNull($template->get2('isbn'));
+        $this->assertTrue($template->add_if_new('isbn', '978-0-306-40615-7'));
+        $this->assertSame('978-0-306-40615-7', $template->get2('isbn'));
+    }
 }

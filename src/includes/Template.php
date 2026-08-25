@@ -2140,6 +2140,10 @@ final class Template
                 if (in_array($value, BAD_ISBN, true)) {
                     return false;
                 }
+                if (!isbn_valid($value)) {
+                    // Reject ISBNs with an invalid check digit (or bad length)
+                    return false;
+                }
                 $year = $this->year_int();
                 $today = intval(date("Y")) + 2; // padding
                 if ($year !== 0) {
@@ -3526,12 +3530,17 @@ final class Template
                 $this->forget('url');
             } // otherwise they are different urls
 
-            // If there is work=/title= pair and we are converting the template to a cite book
-            // we need to convert them to use the chapter=/title= pair instead as required by CS1
+            // If there is a work=/title= pair while converting to cite book, map to the
+            // CS1 chapter=/title=/series= set. A work that names a book series must
+            // go into series=, not title=.
             if ( $this->has( 'work' ) && $this->has( 'title' ) ) {
-                $tmp = $this->get( 'work' );
-                $this->rename( 'title', 'chapter' );
-                $this->add('title', $tmp);
+                if ( $this->is_book_series( 'work' ) || str_equivalent( $this->get( 'work' ), $this->get( 'series' ) ) ) {
+                    $this->rename( 'work', 'series' );
+                } else {
+                    $tmp = $this->get( 'work' );
+                    $this->rename( 'title', 'chapter' );
+                    $this->add('title', $tmp);
+                }
             }
 
             // Remove blank unsupported parameters when converting to cite book
@@ -4103,6 +4112,23 @@ final class Template
                 case 'doi-access':
                     if ($this->blank('doi') && $this->has('doi-access')) {
                         $this->forget('doi-access');
+                    }
+                    return;
+
+                case 'url-access':
+                case 'chapter-url-access':
+                case 'contribution-url-access':
+                case 'article-url-access':
+                case 'entry-url-access':
+                case 'section-url-access':
+                case 'event-url-access':
+                case 'lay-url-access':
+                case 'transcript-url-access':
+                case 'map-url-access':
+                    // Remove an access parameter whose base url parameter is absent
+                    $base_url_param = str_replace('-access', '', $param);
+                    if ($this->blank($base_url_param) && $this->has($param)) {
+                        $this->forget($param);
                     }
                     return;
 

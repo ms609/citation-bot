@@ -1128,6 +1128,28 @@ function addISBNdashes(string $isbn): string {
     }
 }
 
+function isbn_valid(string $isbn): bool {
+    $digits = str_replace(['-', ' '], '', $isbn);
+    if (preg_match('~^[0-9]{9}[0-9X]$~', $digits) === 1) {
+        // ISBN-10: each digit weighted by 10..1 (X = 10); valid if the sum is a multiple of 11
+        $sum = 0;
+        for ($i = 0; $i < 10; $i++) {
+            $digit = $digits[$i] === 'X' ? 10 : (int) $digits[$i];
+            $sum = $sum + $digit * (10 - $i);
+        }
+        return $sum % 11 === 0;
+    }
+    if (preg_match('~^[0-9]{13}$~', $digits) === 1) {
+        // ISBN-13: digits weighted alternately by 1 and 3; valid if the sum is a multiple of 10
+        $sum = 0;
+        for ($i = 0; $i < 13; $i++) {
+            $sum = $sum + (int) $digits[$i] * ($i % 2 ? 3 : 1);
+        }
+        return $sum % 10 === 0;
+    }
+    return false;
+}
+
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
