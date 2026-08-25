@@ -229,6 +229,7 @@ final class WikiThingsTest extends testBaseClass {
     }
 
     public function testNowikiRegexpAcceptsSelfClosingTag(): void {
+        // @phan-suppress-next-line PhanParamSuspiciousOrder
         $this->assertSame(1, preg_match(Nowiki::REGEXP[0], '<nowiki />'));
     }
 
