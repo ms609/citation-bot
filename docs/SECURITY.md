@@ -29,9 +29,9 @@ When reporting, please include:
 
 ## Disclosure and Response Timeline
 
-- **Acknowledgment:** we will acknowledge receipt within **7 business days**.
+- **Acknowledgment:** we will aim to acknowledge receipt within **7 business days**.
 - **Triage:** the report is assessed for validity and severity within **4 weeks**.
 - **Fix and disclosure:** for valid reports, we aim to ship a fix and publish a
   coordinated disclosure (GitHub Security Advisory and/or release note) as soon
   as a fix is available, typically within **90 days** for high-severity issues.
-- **Declined reports:** if a report is not accepted, we will explain why.
+- **Declined reports:** if a report is not accepted, we will try to explain why.
