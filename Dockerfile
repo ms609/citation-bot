@@ -1,7 +1,7 @@
 # If you make any changes to this file, don't forget to rebuild the Docker image using the --build flag:
 # docker-compose up --build -d
 
-FROM php:8.5-apache
+FROM php:8.5-apache@sha256:ae83253bb4d8b8b9715e0846ac915dae15d19818947f0a27cbcf88f4711a76fa
 
 # Install PHP XDebug, for step debugging and for PHPUnit code coverage report.
 # You can leave port 9007 for all your Docker containers. It doesn't conflict across containers like the localhost port does.
