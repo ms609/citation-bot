@@ -159,14 +159,7 @@ final class WikipediaBot {
             $data = (string) $data;
             $ret = @json_decode($data);
             unset($data);
-            if (($ret === null) || ($ret === false) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
-                (string) $ret->error->code === 'assertuserfailed' ||
-                (string) $ret->error->code === 'blocked' ||
-                mb_stripos((string) $ret->error->info, 'The database has been automatically locked') !== false ||
-                mb_stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== false ||
-                mb_stripos((string) $ret->error->info, 'protected') !== false ||
-                mb_stripos((string) $ret->error->info, 'Nonce already used') !== false))
-            ) {
+            if (self::fetch_response_is_retryable($ret)) {
                 unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
                 return $this->fetch($params, $depth + 1);
 
@@ -594,5 +587,29 @@ final class WikipediaBot {
     private static function reset(object &$obj): stdClass { // We use old php 7 style reset, so emulate
         $arr = (array) $obj;
         return (object) reset($arr);
+    }
+
+    public static function fetch_response_is_retryable(mixed $response): bool {
+        if (!is_object($response)) {
+            return true;
+        }
+        if (!isset($response->error)) {
+            return false;
+        }
+
+        $error_code = (string) @$response->error->code;
+        $response_info = (string) @$response->error->info;
+
+        if (in_array($error_code, ['maxlag', 'ratelimited', 'readonly'], true)) {
+            return true;
+        }
+        if (mb_strpos($response_info, 'The database has been automatically locked') !== false) {
+            return true;
+        }
+        if (mb_strpos($response_info, 'Nonce already used') !== false) {
+            return true;
+        }
+
+        return false;
     }
 }
