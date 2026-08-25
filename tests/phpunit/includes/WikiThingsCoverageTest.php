@@ -47,7 +47,7 @@ final class WikiThingsCoverageTest extends testBaseClass {
     public function testNowikiFallbackRegexpMatchesNestedAngleBrackets(): void {
         $text = '<nowiki><ref>{{cite web}}</ref></nowiki>';
         // @phan-suppress-next-line PhanParamSuspiciousOrder
-        $this->assertSame(1, preg_match(Nowiki::REGEXP[1], $text));
+        $this->assertSame(1, preg_match(Nowiki::REGEXP[0], $text));
     }
 
     public function testChemistryRegexpMatchesMultilineContent(): void {
