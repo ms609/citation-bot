@@ -28,27 +28,27 @@ final class Comment extends WikiThings {
 
 final class Nowiki extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
-    public const array REGEXP = ['~<nowiki>[^\<\>]*?</nowiki>~us', '~<nowiki>[\s\S]*?</nowiki>~us'];
+    public const array REGEXP = ['~<nowiki(?:\s[^>]*)?\s*/>|<nowiki(?:\s[^>]*)?>(?:[\s\S]*?</nowiki\s*>|[\s\S]*\z)~usi'];
 }
 
 final class Chemistry extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
-    public const array REGEXP = ['~<chem>[\s\S]*?</chem>~us'];
+    public const array REGEXP = ['~<chem(?:\s[^>]*)?>[\s\S]*?</chem\s*>~usi'];
 }
 
 final class Mathematics extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-    public const array REGEXP = ['~<math(?:| chem)(?:| display=.inline.| display=.block.)>[\s\S]*?</math>~us'];
+    public const array REGEXP = ['~<math(?:| chem)(?:| display=.inline.| display=.block.)\s*>[\s\S]*?</math\s*>~usi'];
 }
 
 final class Musicscores extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
-    public const array REGEXP = ['~<score>[\s\S]*?</score>~us'];
+    public const array REGEXP = ['~<score(?:\s[^>]*)?>[\s\S]*?</score\s*>~usi'];
 }
 
 final class Preformated extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
-    public const array REGEXP = ['~<pre>[\s\S]*?</pre>~us'];
+    public const array REGEXP = ['~<pre(?:\s[^>]*)?>[\s\S]*?</pre\s*>~usi'];
 }
 
 final class SyntaxHighlight extends WikiThings {
