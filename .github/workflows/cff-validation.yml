@@ -42,5 +42,12 @@ jobs:
           --no-cache-dir
           -r .github/cffconvert-requirements.txt
 
+      # Verify the installed closure satisfies every package's declared
+      # constraints (e.g. cffconvert's jsonschema <4). Hash-checking mode does
+      # not re-check constraints, so this guards against a dependency bump that
+      # still installs but violates the closure.
+      - name: Check installed package constraints
+        run: python3 -m pip check
+
       - name: Validate CITATION.cff
         run: cffconvert --validate --infile CITATION.cff
