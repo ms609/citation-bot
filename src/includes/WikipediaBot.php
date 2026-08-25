@@ -126,11 +126,11 @@ final class WikipediaBot {
      */
     private function fetch(array $params, int $depth = 1): ?object { // The $params array is strings only.  No bools or ints, since http_build_query() turns everything into strings
         set_time_limit(120);
-        if ($depth > 1) {
-            sleep($depth + 2); // @codeCoverageIgnore
-        }
         if ($depth > 4) {
             return null;  // @codeCoverageIgnore
+        }
+        if ($depth > 1) {
+            sleep($depth + 2); // @codeCoverageIgnore
         }
         $params['format'] = 'json';
 
