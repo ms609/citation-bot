@@ -29,6 +29,10 @@
 # GHSA-pq67-6m6q-mj2v and GHSA-48p4-8xcf-vxj5 (fixed >=2.5.0), GHSA-gm62-xv2j-4w53
 # and GHSA-2xpw-w6gg-jr37 (fixed >=2.6.0), GHSA-38jv-5279-wg99 (fixed >=2.6.3)
 # and GHSA-qccp-gfcp-xxvc (fixed >=2.7.0).
+#
+# idna is pinned to 3.19 (the latest release) to clear both published DoS
+# advisories for crafted idna.encode() inputs: GHSA-jjg7-2v4v-x38h
+# (fixed >=3.7) and GHSA-65pc-fj4g-8rjx (fixed >=3.15).
 
 cffconvert==2.0.0 \
     --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
@@ -38,8 +42,8 @@ requests==2.31.0 \
     --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f
 charset-normalizer==3.3.2 \
     --hash=sha256:90d558489962fd4918143277a773316e56c72da56ec7aa3dc3dbbe20fdfed15b
-idna==3.6 \
-    --hash=sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f
+idna==3.19 \
+    --hash=sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4
 urllib3==2.7.0 \
     --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
 certifi==2024.2.2 \
