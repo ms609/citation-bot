@@ -1,76 +1,58 @@
 # Fully pinned, hash-verified dependency closure of cffconvert 2.0.0 for the
 # "Validate CITATION.cff" workflow (pip install --require-hashes).
 #
-# cffconvert 2.0.0 is the latest release that validates CITATION.cff against
-# the CFF 1.2.0 schema bundled with it. Its runtime dependencies (and their
-# transitive dependencies) are pinned here because pip hash-checking mode
-# requires a hash for every package it installs.
+# Every package below is pinned to the exact version pip resolves when
+# cffconvert 2.0.0 is installed on the workflow target (ubuntu-latest:
+# CPython 3.12, glibc, x86_64): the newest release that satisfies every
+# version constraint in the transitive closure. cffconvert 2.0.0 is itself the
+# latest release, and it is the version that validates CITATION.cff against the
+# CFF 1.2.0 schema it bundles.
 #
-# Each line pins a distribution by an exact version and the sha256 digest of
-# the file that pip selects when resolving natively on the workflow's target
-# platform (ubuntu-latest: CPython 3.12, glibc, x86_64). The digests were
-# computed from the files downloaded by `pip download` on that platform, so
-# they are guaranteed to match the wheels pip actually installs in CI. Note
-# that pip normalizes dashes in wheel filenames to underscores and chooses the
-# best-matching wheel for the target; hashes here are for those exact files.
-# docopt 0.6.2 publishes no wheel, so its sdist is pinned and built instead.
+# pip hash-checking mode (--require-hashes) requires a hash for every package
+# it installs, so this file lists the sha256 digest of exactly the file pip
+# selects on that target. pip normalizes dashes and dots in wheel filenames to
+# underscores and chooses the best-matching wheel for the platform; the digests
+# here are for those exact files. docopt 0.6.2 publishes no wheel, so its sdist
+# is pinned and built instead.
 #
-# When updating, pin every package with ==, keep the hashes in sync with PyPI
-# (regenerate this file on a Linux/CPython 3.12 host), and make sure every
-# version constraint of every package remains satisfied.
+# The versions are the latest as of regeneration and the whole closure was
+# scanned against the GitHub Advisory Database / OSV (pip-audit): no known
+# vulnerabilities.
 #
-# setuptools is pinned to 84.0.0 (not the minimum jsonschema allows) because
-# all older releases are affected by one or more published GitHub advisories:
-# GHSA-cx63-2mw6-8hw5 (fixed >=70.0.0), GHSA-5rjg-fvgr-3xxf (fixed >=78.1.1)
-# and GHSA-h35f-9h28-mq5c (fixed >=83.0.0).
-#
-# urllib3 is pinned to 2.7.0 (the latest release, and above every advisory
-# floor in the transitive closure): GHSA-34jh-p97f-mpxf (fixed >=2.2.2),
-# GHSA-pq67-6m6q-mj2v and GHSA-48p4-8xcf-vxj5 (fixed >=2.5.0), GHSA-gm62-xv2j-4w53
-# and GHSA-2xpw-w6gg-jr37 (fixed >=2.6.0), GHSA-38jv-5279-wg99 (fixed >=2.6.3)
-# and GHSA-qccp-gfcp-xxvc (fixed >=2.7.0).
-#
-# idna is pinned to 3.19 (the latest release) to clear both published DoS
-# advisories for crafted idna.encode() inputs: GHSA-jjg7-2v4v-x38h
-# (fixed >=3.7) and GHSA-65pc-fj4g-8rjx (fixed >=3.15).
-#
-# click, requests, and certifi are also pinned to their latest releases to
-# clear every vulnerability found by dependency scanning (pip-audit/OSV):
-#   - click    8.4.2  (fixes PYSEC-2026-2132)
-#   - requests 2.34.2 (fixes PYSEC-2026-1873, PYSEC-2026-1872, PYSEC-2026-2275)
-#   - certifi  2026.7.22 (fixes PYSEC-2024-230)
+# To update this file, on Linux/CPython 3.12: install cffconvert==2.0.0 in a
+# fresh venv, run `pip freeze` to capture the resolved closure, re-download
+# each pinned distribution with `pip download --no-deps`, recompute its sha256,
+# then re-run pip-audit and the workflow's validation before committing.
 
-cffconvert==2.0.0 \
-    --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
-click==8.4.2 \
-    --hash=sha256:e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76
-requests==2.34.2 \
-    --hash=sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0
-charset-normalizer==3.3.2 \
-    --hash=sha256:90d558489962fd4918143277a773316e56c72da56ec7aa3dc3dbbe20fdfed15b
-idna==3.19 \
-    --hash=sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4
-urllib3==2.7.0 \
-    --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
+attrs==26.1.0 \
+    --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
 certifi==2026.7.22 \
     --hash=sha256:62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775
-ruamel.yaml==0.18.6 \
-    --hash=sha256:57b53ba33def16c4f3d807c0ccbc00f8a6081827e81ba2491691b76882d0c636
-ruamel.yaml.clib==0.2.8 \
-    --hash=sha256:d176b57452ab5b7028ac47e7b3cf644bcfdc8cacfecf7e71759f7f51a59e5c92
-pykwalify==1.8.0 \
-    --hash=sha256:731dfa87338cca9f559d1fca2bdea37299116e3139b73f78ca90a543722d6651
+cffconvert==2.0.0 \
+    --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
+charset-normalizer==3.5.1 \
+    --hash=sha256:b9af956078716df40d985fb0dfeb2c2120c5ca92ba4ff4b388acfd01cdc14d08
+click==8.4.2 \
+    --hash=sha256:e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76
 docopt==0.6.2 \
     --hash=sha256:49b3a825280bd66b3aa83585ef59c4a8c82f2c8a522dbe754a8bc8d08c85c491
-python-dateutil==2.9.0.post0 \
-    --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
-six==1.16.0 \
-    --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
+idna==3.19 \
+    --hash=sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4
 jsonschema==3.2.0 \
     --hash=sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163
-attrs==23.2.0 \
-    --hash=sha256:99b87a485a5820b23b879f04c2305b44b951b502fd64be915879d77a7e8fc6f1
+pykwalify==1.8.0 \
+    --hash=sha256:731dfa87338cca9f559d1fca2bdea37299116e3139b73f78ca90a543722d6651
 pyrsistent==0.20.0 \
     --hash=sha256:b14decb628fac50db5e02ee5a35a9c0772d20277824cfe845c8a8b717c15daa3
+python-dateutil==2.9.0.post0 \
+    --hash=sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427
+requests==2.34.2 \
+    --hash=sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0
+ruamel.yaml==0.19.1 \
+    --hash=sha256:27592957fedf6e0b62f281e96effd28043345e0e66001f97683aa9a40c667c93
 setuptools==84.0.0 \
     --hash=sha256:51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670
+six==1.17.0 \
+    --hash=sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274
+urllib3==2.7.0 \
+    --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
