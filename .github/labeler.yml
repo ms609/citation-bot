@@ -87,6 +87,7 @@ ci:
       - .github/workflows/*
       - .github/dependabot.yml
       - .github/labeler.yml
+      - .github/cffconvert-requirements.txt
 
 docker:
   - changed-files:
@@ -120,6 +121,7 @@ dependencies:
     - any-glob-to-any-file:
       - composer.json
       - composer.lock
+      - .github/cffconvert-requirements.txt
 
 github_actions:
   - changed-files:
