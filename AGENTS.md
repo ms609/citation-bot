@@ -179,11 +179,12 @@ The project uses extensive automated testing:
 - **Action Lint** - Validates GitHub Actions
 - **Link Checker** - Validates URLs in documentation and HTML - runs weekly
 - **Composer audit** - Checks Composer dependencies for known vulnerabilities
+- **Dependabot** - Automated dependency updates for Composer, GitHub Actions, and pip (cffconvert lockfile)
 - **Dependency Review** - Checks dependency changes for known vulnerabilities
 - **Harden Runner** - Audits GitHub Actions runner behavior
 - **OpenSSF Scorecard** - Evaluates repository security practices
 - **Zizmor** - Analyzes GitHub Actions workflows for security issues
-- **CITATION.cff validation** - Validates citation metadata
+- **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
 
 All tests must pass before merging.
 
@@ -293,6 +294,8 @@ The gadget MUST:
 │           └── translations.php         # Translations
 ├── tests/                      # PHPUnit tests
 ├── .github/workflows/          # CI/CD workflows
+├── .github/dependabot.yml      # Automated dependency update configuration
+├── .github/cffconvert-requirements.txt  # Hash-pinned cffconvert closure for CITATION.cff validation
 ├── vendor/                     # Composer dependencies
 ├── composer.json               # Dependency configuration
 ├── docker-compose.yml          # Docker setup

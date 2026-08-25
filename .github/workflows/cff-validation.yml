@@ -30,8 +30,15 @@ jobs:
       # cffconvert 2.0.0 validates CFF 1.2.0 and bundles the corresponding
       # JSON schema. Using the CLI here avoids introducing another GitHub
       # Action dependency solely for schema validation.
+      # The requirements file pins cffconvert and its full transitive
+      # dependency closure by hash; pip runs in --require-hashes mode, which
+      # OpenSSF Scorecard's Pinned-Dependencies check requires for pipCommand.
       - name: Install cffconvert
-        run: python3 -m pip install --disable-pip-version-check "cffconvert==2.0.0"
+        run: >-
+          python3 -m pip install --disable-pip-version-check
+          --require-hashes
+          --no-cache-dir
+          -r .github/cffconvert-requirements.txt
 
       - name: Validate CITATION.cff
         run: cffconvert --validate --infile CITATION.cff
