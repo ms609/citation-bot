@@ -88,6 +88,7 @@ ci:
       - .github/dependabot.yml
       - .github/labeler.yml
       - .github/cffconvert-requirements.txt
+      - tools/update_cffconvert_lock.sh
 
 docker:
   - changed-files:
@@ -122,6 +123,7 @@ dependencies:
       - composer.json
       - composer.lock
       - .github/cffconvert-requirements.txt
+      - tools/update_cffconvert_lock.sh
 
 github_actions:
   - changed-files:

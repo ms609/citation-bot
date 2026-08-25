@@ -297,6 +297,7 @@ The gadget MUST:
 ├── .github/workflows/          # CI/CD workflows
 ├── .github/dependabot.yml      # Automated dependency update configuration
 ├── .github/cffconvert-requirements.txt  # Hash-pinned cffconvert closure for CITATION.cff validation
+├── tools/update_cffconvert_lock.sh      # Regenerates the hash-pinned cffconvert closure
 ├── vendor/                     # Composer dependencies
 ├── composer.json               # Dependency configuration
 ├── docker-compose.yml          # Docker setup
