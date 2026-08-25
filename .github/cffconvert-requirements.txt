@@ -19,10 +19,9 @@
 # scanned against the GitHub Advisory Database / OSV (pip-audit): no known
 # vulnerabilities.
 #
-# To update this file, on Linux/CPython 3.12: install cffconvert==2.0.0 in a
-# fresh venv, run `pip freeze` to capture the resolved closure, re-download
-# each pinned distribution with `pip download --no-deps`, recompute its sha256,
-# then re-run pip-audit and the workflow's validation before committing.
+# To update this file, run `bash tools/update_cffconvert_lock.sh` on
+# Linux/CPython 3.12, then re-run pip-audit and the workflow's validation
+# before committing.
 
 attrs==26.1.0 \
     --hash=sha256:c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309
