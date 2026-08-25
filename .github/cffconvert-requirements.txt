@@ -33,21 +33,27 @@
 # idna is pinned to 3.19 (the latest release) to clear both published DoS
 # advisories for crafted idna.encode() inputs: GHSA-jjg7-2v4v-x38h
 # (fixed >=3.7) and GHSA-65pc-fj4g-8rjx (fixed >=3.15).
+#
+# click, requests, and certifi are also pinned to their latest releases to
+# clear every vulnerability found by dependency scanning (pip-audit/OSV):
+#   - click    8.4.2  (fixes PYSEC-2026-2132)
+#   - requests 2.34.2 (fixes PYSEC-2026-1873, PYSEC-2026-1872, PYSEC-2026-2275)
+#   - certifi  2026.7.22 (fixes PYSEC-2024-230)
 
 cffconvert==2.0.0 \
     --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
-click==8.1.7 \
-    --hash=sha256:ae74fb96c20a0277a1d615f1e4d73c8414f5a98db8b799a7931d1582f3390c28
-requests==2.31.0 \
-    --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f
+click==8.4.2 \
+    --hash=sha256:e6f9f66136c816745b9d65817da91d61d957fb16e02e4dcd0552553c5a197b76
+requests==2.34.2 \
+    --hash=sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0
 charset-normalizer==3.3.2 \
     --hash=sha256:90d558489962fd4918143277a773316e56c72da56ec7aa3dc3dbbe20fdfed15b
 idna==3.19 \
     --hash=sha256:815e7be7a7806d54abb586dc943addc79e8b2ee16915059658cbeff4b1b43bf4
 urllib3==2.7.0 \
     --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
-certifi==2024.2.2 \
-    --hash=sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1
+certifi==2026.7.22 \
+    --hash=sha256:62f22742b58a1a33014a2b6b706588a8d7e2a88ae7bd1a6ebe8c992928483775
 ruamel.yaml==0.18.6 \
     --hash=sha256:57b53ba33def16c4f3d807c0ccbc00f8a6081827e81ba2491691b76882d0c636
 ruamel.yaml.clib==0.2.8 \
