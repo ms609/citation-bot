@@ -177,6 +177,7 @@ The project uses extensive automated testing:
 - **HTML5 and CSS Validator** - Validates HTML/CSS files
 - **Validate JSON, YAML, and MD** - Validates JSON, YAML, and Markdown files
 - **Action Lint** - Validates GitHub Actions
+- **Shellcheck** - Lints shell scripts (e.g. `tools/update_cffconvert_lock.sh`)
 - **Link Checker** - Validates URLs in documentation and HTML - runs weekly
 - **Composer audit** - Checks Composer dependencies for known vulnerabilities
 - **Dependabot** - Automated dependency updates for Composer, GitHub Actions, and pip (cffconvert lockfile)
