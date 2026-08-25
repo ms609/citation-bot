@@ -23,6 +23,12 @@
 # all older releases are affected by one or more published GitHub advisories:
 # GHSA-cx63-2mw6-8hw5 (fixed >=70.0.0), GHSA-5rjg-fvgr-3xxf (fixed >=78.1.1)
 # and GHSA-h35f-9h28-mq5c (fixed >=83.0.0).
+#
+# urllib3 is pinned to 2.7.0 (the latest release, and above every advisory
+# floor in the transitive closure): GHSA-34jh-p97f-mpxf (fixed >=2.2.2),
+# GHSA-pq67-6m6q-mj2v and GHSA-48p4-8xcf-vxj5 (fixed >=2.5.0), GHSA-gm62-xv2j-4w53
+# and GHSA-2xpw-w6gg-jr37 (fixed >=2.6.0), GHSA-38jv-5279-wg99 (fixed >=2.6.3)
+# and GHSA-qccp-gfcp-xxvc (fixed >=2.7.0).
 
 cffconvert==2.0.0 \
     --hash=sha256:573c825e4e16173d99396dc956bd22ff5d4f84215cc16b6ab05299124f5373bb
@@ -34,8 +40,8 @@ charset-normalizer==3.3.2 \
     --hash=sha256:90d558489962fd4918143277a773316e56c72da56ec7aa3dc3dbbe20fdfed15b
 idna==3.6 \
     --hash=sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f
-urllib3==2.2.1 \
-    --hash=sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d
+urllib3==2.7.0 \
+    --hash=sha256:9fb4c81ebbb1ce9531cce37674bbc6f1360472bc18ca9a553ede278ef7276897
 certifi==2024.2.2 \
     --hash=sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1
 ruamel.yaml==0.18.6 \
