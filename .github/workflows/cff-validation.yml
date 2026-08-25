@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - "CITATION.cff"
+      - ".github/cffconvert-requirements.txt"
   push:
     branches:
       - master
     paths:
       - "CITATION.cff"
+      - ".github/cffconvert-requirements.txt"
   workflow_dispatch:
 
 permissions: {}

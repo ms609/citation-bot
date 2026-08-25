@@ -25,3 +25,11 @@ updates:
       interval: "weekly"
     cooldown:
       default-days: 7
+    # These packages are pinned by hard constraints in the cffconvert 2.0.0
+    # closure (e.g. jsonschema <4, pykwalify >=1.6) and must not be bumped
+    # independently, or the --require-hashes install becomes unresolvable.
+    ignore:
+      - dependency-name: "cffconvert"
+      - dependency-name: "pykwalify"
+      - dependency-name: "jsonschema"
+      - dependency-name: "docopt"
