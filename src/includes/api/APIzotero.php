@@ -72,7 +72,7 @@ final class Zotero {
      */
     public static function encode_url_for_zotero(string $url): string {
         if (preg_match('~^(https?://[^/?#]+)(.*)$~i', $url, $matches) === 1) {
-            $url = $matches[1] . str_replace('-', '%2D', $matches[2]);
+            return urlencode($matches[1]) . str_replace('-', '%2D', urlencode($matches[2]));
         }
         return urlencode($url);
     }
