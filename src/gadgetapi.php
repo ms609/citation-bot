@@ -24,6 +24,42 @@ function gadget_api_error(string $error_name, int $http_status): void {
     );
 }
 
+/**
+ * @param array<array-key, mixed> $post
+ * @return array{0: string, 1: string}
+ */
+function gadget_api_validate_request(array $post): array {
+    if (!isset($post['text'], $post['summary']) ||
+        !is_string($post['text']) ||
+        !is_string($post['summary'])
+    ) {
+        throw new GadgetApiRequestException('invalid_parameters', 400);
+    }
+
+    $originalText = $post['text'];
+    $editSummary = $post['summary'];
+
+    if (!mb_check_encoding($originalText, 'UTF-8') ||
+        !mb_check_encoding($editSummary, 'UTF-8')
+    ) {
+        throw new GadgetApiRequestException('invalid_utf8', 400);
+    }
+
+    if (mb_strlen($originalText) < 6) {
+        throw new GadgetApiRequestException('page_too_small', 400);
+    }
+
+    if (mb_strlen($originalText) > 150000) {
+        throw new GadgetApiRequestException('page_too_large', 400);
+    }
+
+    if (mb_strlen($editSummary) > 1000) {
+        throw new GadgetApiRequestException('summary_too_large', 400);
+    }
+
+    return [$originalText, $editSummary];
+}
+
 try {
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
@@ -37,24 +73,8 @@ try {
     @header('Content-Type: application/json; charset=utf-8');
     unset($origin);
 
-    if (!is_string(@$_POST['text']) || !is_string(@$_POST['summary'])) {
-        throw new GadgetApiRequestException('invalid_parameters', 400);
-    }
-    $originalText = (string) $_POST['text'];
-    $editSummary = (string) $_POST['summary'];
+    [$originalText, $editSummary] = gadget_api_validate_request($_POST);
     unset($_GET, $_POST, $_REQUEST); // Memory minimize
-
-    if (!mb_check_encoding($originalText, 'UTF-8') || !mb_check_encoding($editSummary, 'UTF-8')) {
-        throw new GadgetApiRequestException('invalid_utf8', 400);
-    }
-
-    if (mb_strlen($originalText) < 6) {
-        throw new GadgetApiRequestException('page_too_small', 400);
-    } elseif (mb_strlen($originalText) > 150000) { // will probably time-out otherwise, see https://en.wikipedia.org/wiki/Special:LongPages
-        throw new GadgetApiRequestException('page_too_large', 400);
-    } elseif (mb_strlen($editSummary) > 1000) { // see https://en.wikipedia.org/wiki/Help:Edit_summary#The_500-character_limit
-        throw new GadgetApiRequestException('summary_too_large', 400);
-    }
 
     //Expand text from postvars
     $page = new Page();
