@@ -74,6 +74,12 @@ final class BotCurlTest extends testBaseClass {
         );
 
         try {
+            $this->assertFalse(bot_curl_exec($ch));
+
+            curl_setopt_array($ch, [
+                CURLOPT_PROTOCOLS => CURLPROTO_FILE,
+                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_FILE,
+            ]);
             $this->assertSame(
                 'local curl fixture',
                 bot_curl_exec($ch)
