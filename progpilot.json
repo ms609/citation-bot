@@ -79,6 +79,44 @@
     },
     {
         "source_name": [
+            "$where"
+        ],
+        "source_line": [
+            24
+        ],
+        "source_column": [
+            1030
+        ],
+        "source_file": [
+            "src\/authenticate.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$return_path",
+                    "flow_line": 58,
+                    "flow_column": 2091,
+                    "flow_file": "src\/authenticate.php"
+                },
+                {
+                    "flow_name": "$_GET[\"return\"]",
+                    "flow_line": 58,
+                    "flow_column": 2106,
+                    "flow_file": "src\/authenticate.php"
+                }
+            ]
+        ],
+        "sink_name": "header",
+        "sink_line": 31,
+        "sink_column": 1227,
+        "sink_file": "src\/authenticate.php",
+        "vuln_name": "header_injection",
+        "vuln_cwe": "CWE_601",
+        "vuln_id": "29d993623ea0bfaabe2f24b23cd9c4a3d1443d197c154ec4dc3dfcd31ee1d36e",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
             "$post_confirmation_form_return"
         ],
         "source_line": [
