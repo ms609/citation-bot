@@ -38,7 +38,7 @@ final class Chemistry extends WikiThings {
 
 final class Mathematics extends WikiThings {
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-    public const array REGEXP = ['~<math(?:| chem)(?:| display=.inline.| display=.block.)\s*>[\s\S]*?</math\s*>~usi'];
+    public const array REGEXP = ['~<math(?:| chem)(?:| display=[\"\']inline[\"\']| display=[\"\']block[\"\']| chem class=[\"\'][^\s><\"\']+[\"\'])*\s*>[\s\S]*?</math\s*>~usi'];
 }
 
 final class Musicscores extends WikiThings {
