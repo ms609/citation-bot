@@ -2142,6 +2142,7 @@ final class Template
                 }
                 if (!isbn_valid($value)) {
                     // Reject ISBNs with an invalid check digit (or bad length)
+                    report_inaction("Not adding ISBN with invalid check digit: " . echoable($value));
                     return false;
                 }
                 $year = $this->year_int();
@@ -3534,7 +3535,9 @@ final class Template
             // CS1 chapter=/title=/series= set. A work that names a book series must
             // go into series=, not title=.
             if ( $this->has( 'work' ) && $this->has( 'title' ) ) {
-                if ( $this->is_book_series( 'work' ) || str_equivalent( $this->get( 'work' ), $this->get( 'series' ) ) ) {
+                // Only route a work into series= when series is blank or already
+                // equivalent; otherwise renaming would destroy an existing series.
+                if ( str_equivalent( $this->get( 'work' ), $this->get( 'series' ) ) || ( $this->is_book_series( 'work' ) && $this->blank( 'series' ) ) ) {
                     $this->rename( 'work', 'series' );
                 } else {
                     $tmp = $this->get( 'work' );
@@ -4125,9 +4128,13 @@ final class Template
                 case 'lay-url-access':
                 case 'transcript-url-access':
                 case 'map-url-access':
-                    // Remove an access parameter whose base url parameter is absent
+                    // Remove an access parameter whose base url parameter is
+                    // absent, checking both the hyphenated and alias base names
+                    // (e.g. contribution-url-access pairs with either
+                    // contribution-url or contributionurl).
                     $base_url_param = str_replace('-access', '', $param);
-                    if ($this->blank($base_url_param) && $this->has($param)) {
+                    $alias_url_param = str_replace('-url', 'url', $base_url_param);
+                    if ($this->blank([$base_url_param, $alias_url_param]) && $this->has($param)) {
                         $this->forget($param);
                     }
                     return;

@@ -2814,4 +2814,22 @@ final class TemplatePart2Test extends testBaseClass {
         $template->tidy();
         $this->assertNull($template->get2('url-access'));
     }
+
+    public function testTidyKeepsAccessWhenAliasBasePresent(): void {
+        // The base url param may use its non-hyphenated alias (contributionurl),
+        // so an access param must not be dropped when that alias is present.
+        $text = '{{cite book |title=T |contributionurl=https://example.com/c |contribution-url-access=subscription}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('subscription', $template->get2('contribution-url-access'));
+    }
+
+    public function testWorkSeriesDoesNotClobberExistingSeries(): void {
+        // If series= is already set to a different value, routing work into
+        // series= must not destroy the user-provided series.
+        $text = '{{cite web |title=Some paper |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014}}';
+        $expanded = $this->make_citation($text);
+        $expanded->change_name_to('cite book');
+        $this->assertSame('Special Series Name', $expanded->get2('series'));
+    }
 }

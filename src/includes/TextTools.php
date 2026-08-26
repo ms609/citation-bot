@@ -1129,7 +1129,9 @@ function addISBNdashes(string $isbn): string {
 }
 
 function isbn_valid(string $isbn): bool {
-    $digits = str_replace(['-', ' '], '', $isbn);
+    $digits = str_replace('x', 'X', $isbn);
+    $digits = str_replace(['–', '—', '−', '‐'], '-', $digits);
+    $digits = str_replace(['-', ' '], '', $digits);
     if (preg_match('~^[0-9]{9}[0-9X]$~', $digits) === 1) {
         // ISBN-10: each digit weighted by 10..1 (X = 10); valid if the sum is a multiple of 11
         $sum = 0;
