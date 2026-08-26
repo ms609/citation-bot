@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../../testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
 final class zoteroTest extends testBaseClass {
 
