@@ -42,6 +42,10 @@ if (@$_SERVER['REQUEST_URI'] === public_url_path('/authenticate.php')) {
 }
 
 session_start();
+/** Regenerate the CSRF token after authentication because the security context has changed */
+if (!session_regenerate_id(true)) {
+    throw new RuntimeException('Unable to regenerate authenticated session');
+}
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
@@ -99,9 +103,20 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         if (empty($accessToken->key) || empty($accessToken->secret)) {
             throw new Exception('OAuth complete() call failed');
         }
+
+        /*
+         * Authentication changes the privilege level of this session.
+         * Rotate the session identifier before storing the authenticated
+         * credentials to prevent session fixation.
+         */
+        if (!session_regenerate_id(true)) {
+            throw new RuntimeException('Unable to regenerate authenticated session');
+        }
+
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
+
         if ($return_path !== null) {
             return_to_sender($return_path);
         }
