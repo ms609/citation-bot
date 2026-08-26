@@ -107,7 +107,7 @@ final class WikiThingsTest extends testBaseClass {
 
     public function testNowikiRegexpMatchesMultiline(): void {
         $text = "<nowiki>multi\nline</nowiki>";
-        $this->assertMatchesRegularExpression(Nowiki::REGEXP[1], $text);
+        $this->assertMatchesRegularExpression(Nowiki::REGEXP[0], $text);
     }
 
     public function testChemistryRegexpMatches(): void {
@@ -216,5 +216,36 @@ final class WikiThingsTest extends testBaseClass {
         $templates = $page->extract_object('Template');
         $this->assertCount(0, $templates, 'No templates should be extracted from inside syntaxhighlight blocks');
         Template::$all_templates = [];
+    }
+
+    public function testNowikiRegexpIsCaseInsensitiveAndAcceptsAttributes(): void {
+        $text = '<NOWIKI class="example">{{cite web|url=https://example.test}}</NOWIKI>';
+        $this->assertSame(1, preg_match(Nowiki::REGEXP[0], $text));
+    }
+
+    public function testNowikiRegexpProtectsUnclosedRegionThroughEndOfInput(): void {
+        $text = '<nowiki>{{cite web|url=https://example.test}}';
+        $this->assertSame(1, preg_match(Nowiki::REGEXP[0], $text));
+    }
+
+    public function testNowikiRegexpAcceptsSelfClosingTag(): void {
+        // @phan-suppress-next-line PhanParamSuspiciousOrder
+        $this->assertSame(1, preg_match(Nowiki::REGEXP[0], '<nowiki />'));
+    }
+
+    public function testPageLeavesCitationInsideNowikiUntouched(): void {
+        $text = '<NOWIKI class="example">{{cite web|url=https://example.test}}</NOWIKI>';
+        $page = $this->process_page($text);
+        $this->assertSame($text, $page->parsed_text());
+    }
+
+    public function testMathematicsRegexpAcceptsCombinedAttributes(): void {
+        $text = '<MATH display="block" chem class="example">H_2O</MATH>';
+        $this->assertSame(1, preg_match(Mathematics::REGEXP[0], $text));
+    }
+
+    public function testPreformattedRegexpAcceptsAttributesAndMixedCase(): void {
+        $text = '<PRE class="code">{{cite journal|doi=10.1000/example}}</PRE>';
+        $this->assertSame(1, preg_match(Preformated::REGEXP[0], $text));
     }
 }
