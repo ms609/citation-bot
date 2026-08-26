@@ -151,5 +151,5 @@ final class gadgetapiTest extends testBaseClass {
 
         $this->assertSame('normal text', $text);
         $this->assertSame(1000, mb_strlen($summary));
-    } 
+    }
 }
