@@ -99,7 +99,7 @@ try {
     @ob_end_clean();
     // Above is paranoid panic code.    So paranoid that we even empty buffers two extra times
     if (function_exists('bot_debug_log')) {
-        bot_debug_log(
+        bot_debug_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());
     } else {
         error_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());
     }
