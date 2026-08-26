@@ -45,6 +45,13 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
     ]);
     // 3 - Specific options and overrides of defaults
     curl_setopt_array($ch, $ops);
+    // 4 - Security restrictions. These must be applied after caller-supplied
+    // options so callers cannot accidentally enable unsafe protocols.
+    curl_setopt_array($ch, [
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+    ]);
+
     return $ch;
 }
 
