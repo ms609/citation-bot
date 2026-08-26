@@ -6,6 +6,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
+require_once __DIR__ . '/../../src/includes/GadgetApi.php';
 
 final class gadgetapiTest extends testBaseClass {
 
