@@ -11,7 +11,6 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testLargeJobPathReplacesStaleLockAndRefreshesActiveLock(): void {
-
         try {
             uopz_redefine('HTML_OUTPUT', true);
             uopz_set_return('report_warning',
