@@ -65,19 +65,15 @@ final class BotCurlTest extends testBaseClass {
         new TestPage(); // Fill page name with test name for debugging
         $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
         $this->assertNotFalse($filename);
-        file_put_contents($filename, 'local curl fixture');
+        flush();
+        clearstatcache(true, $filename);
+        file_put_contents($filename, 'local curl fixture', FILE_APPEND);
+        flush();
+        clearstatcache(true, $filename);
 
         $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
         $out = bot_curl_exec($ch);
         $this->assertSame('', $out);
-
-        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
-        curl_setopt_array($ch, [
-            CURLOPT_PROTOCOLS => CURLPROTO_ALL,
-            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
-        ]);
-        $out = bot_curl_exec($ch);
-        $this->assertSame('local curl fixture', $out);
 
         $ch = bot_curl_init(
             1.0,
@@ -89,6 +85,15 @@ final class BotCurlTest extends testBaseClass {
         );
         $out = bot_curl_exec($ch);
         $this->assertSame('', $out);
+
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
+        curl_setopt_array($ch, [
+            CURLOPT_PROTOCOLS => CURLPROTO_ALL,
+            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
+        ]);
+        $out = bot_curl_exec($ch);
+        $this->assertSame('local curl fixture', $out);
+
         @unlink($filename);
     }
 
