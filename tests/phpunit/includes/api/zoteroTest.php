@@ -6,6 +6,9 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
 final class zoteroTest extends testBaseClass {
 
     public function testZoteroRetryDelayUsesBoundedBackoff(): void {
@@ -1531,5 +1534,189 @@ final class zoteroTest extends testBaseClass {
         $zotero_response = json_encode($zotero_data);
         Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
         $this->assertSame('Titlewithcontrolchars', $template->get2('title'));
+    }
+
+    #[DataProvider('urlProvider')]
+    public function testEncodeUrlForZotero(
+        string $input,
+        string $expected
+    ): void {
+        $this->assertSame(
+            $expected,
+            YourClass::encode_url_for_zotero($input)
+        );
+    }
+
+    public static function urlProvider(): array
+    {
+        return [
+            'simple URL with hyphen in path' => [
+                'https://example.com/foo-bar',
+                'https%3A%2F%2Fexample.com%2Ffoo%2Dbar',
+            ],
+
+            'hyphen in hostname is not specially encoded' => [
+                'https://example-domain.com/foo-bar',
+                'https%3A%2F%2Fexample-domain.com%2Ffoo%2Dbar',
+            ],
+
+            'multiple hyphens in hostname remain unchanged' => [
+                'https://sub-domain.example-domain.com/foo-bar',
+                'https%3A%2F%2Fsub-domain.example-domain.com%2Ffoo%2Dbar',
+            ],
+
+            'multiple hyphens in path are encoded' => [
+                'https://example.com/a-b-c',
+                'https%3A%2F%2Fexample.com%2Fa%2Db%2Dc',
+            ],
+
+            'consecutive hyphens in path are encoded' => [
+                'https://example.com/foo--bar',
+                'https%3A%2F%2Fexample.com%2Ffoo%2D%2Dbar',
+            ],
+
+            'hyphen at beginning of path segment' => [
+                'https://example.com/-foo',
+                'https%3A%2F%2Fexample.com%2F%2Dfoo',
+            ],
+
+            'hyphen at end of path segment' => [
+                'https://example.com/foo-',
+                'https%3A%2F%2Fexample.com%2Ffoo%2D',
+            ],
+
+            'hyphens in several path segments' => [
+                'https://example.com/foo-bar/baz-qux',
+                'https%3A%2F%2Fexample.com%2Ffoo%2Dbar%2Fbaz%2Dqux',
+            ],
+
+            'hyphen in query parameter value' => [
+                'https://example.com/foo?bar=baz-qux',
+                'https%3A%2F%2Fexample.com%2Ffoo%3Fbar%3Dbaz%2Dqux',
+            ],
+
+            'hyphen in query parameter name' => [
+                'https://example.com/foo?foo-bar=baz',
+                'https%3A%2F%2Fexample.com%2Ffoo%3Ffoo%2Dbar%3Dbaz',
+            ],
+
+            'hyphens in multiple query parameters' => [
+                'https://example.com/foo?a-b=c-d&e-f=g-h',
+                'https%3A%2F%2Fexample.com%2Ffoo%3Fa%2Db%3Dc%2Dd%26e%2Df%3Dg%2Dh',
+            ],
+
+            'hyphen in fragment' => [
+                'https://example.com/foo#section-one',
+                'https%3A%2F%2Fexample.com%2Ffoo%23section%2Done',
+            ],
+
+            'hyphens in path query and fragment' => [
+                'http://example.com/a-b?x=y-z#frag-ment',
+                'http%3A%2F%2Fexample.com%2Fa%2Db%3Fx%3Dy%2Dz%23frag%2Dment',
+            ],
+
+            'URL without path' => [
+                'https://example.com',
+                'https%3A%2F%2Fexample.com',
+            ],
+
+            'URL with root path only' => [
+                'https://example.com/',
+                'https%3A%2F%2Fexample.com%2F',
+            ],
+
+            'HTTP URL' => [
+                'http://example.com/foo-bar',
+                'http%3A%2F%2Fexample.com%2Ffoo%2Dbar',
+            ],
+
+            'uppercase HTTPS scheme' => [
+                'HTTPS://example.com/foo-bar',
+                'HTTPS%3A%2F%2Fexample.com%2Ffoo%2Dbar',
+            ],
+
+            'URL with port number' => [
+                'https://example-domain.com:8080/foo-bar',
+                'https%3A%2F%2Fexample-domain.com%3A8080%2Ffoo%2Dbar',
+            ],
+
+            'space uses urlencode plus encoding' => [
+                'https://example.com/foo bar-baz',
+                'https%3A%2F%2Fexample.com%2Ffoo+bar%2Dbaz',
+            ],
+
+            'underscores and periods remain unencoded' => [
+                'https://example.com/a_b-c.d',
+                'https%3A%2F%2Fexample.com%2Fa_b%2Dc.d',
+            ],
+
+            'existing percent encoded hyphen is encoded as percent data' => [
+                'https://example.com/foo%2Dbar',
+                'https%3A%2F%2Fexample.com%2Ffoo%252Dbar',
+            ],
+
+            'hyphen in hostname only' => [
+                'https://foo-bar.example.com/',
+                'https%3A%2F%2Ffoo-bar.example.com%2F',
+            ],
+
+            'hyphen in path only' => [
+                'https://foobar.example.com/foo-bar',
+                'https%3A%2F%2Ffoobar.example.com%2Ffoo%2Dbar',
+            ],
+
+            'hyphens in both hostname and path' => [
+                'https://foo-bar.example.com/foo-bar',
+                'https%3A%2F%2Ffoo-bar.example.com%2Ffoo%2Dbar',
+            ],
+
+            'query without path' => [
+                'https://example.com?foo-bar=baz-qux',
+                'https%3A%2F%2Fexample.com%3Ffoo%2Dbar%3Dbaz%2Dqux',
+            ],
+
+            'fragment without path' => [
+                'https://example.com#foo-bar',
+                'https%3A%2F%2Fexample.com%23foo%2Dbar',
+            ],
+
+            'non-http URL uses normal urlencode behavior' => [
+                'ftp://example.com/foo-bar',
+                'ftp%3A%2F%2Fexample.com%2Ffoo-bar',
+            ],
+
+            'plain string uses normal urlencode behavior' => [
+                'not-a-url',
+                'not-a-url',
+            ],
+
+            'plain string with spaces' => [
+                'not a url',
+                'not+a+url',
+            ],
+
+            'plain string with slash' => [
+                'foo/bar-baz',
+                'foo%2Fbar-baz',
+            ],
+
+            'empty string' => [
+                '',
+                '',
+            ],
+        ];
+    }
+
+    public function testHyphenIsNotDoubleEncoded(): void {
+        $result = YourClass::encode_url_for_zotero(
+            'https://example.com/foo-bar'
+        );
+
+        $this->assertSame(
+            'https%3A%2F%2Fexample.com%2Ffoo%2Dbar',
+            $result
+        );
+
+        $this->assertStringNotContainsString('%252D', $result);
     }
 }
