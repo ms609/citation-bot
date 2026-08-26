@@ -1252,4 +1252,22 @@ final class textToolsTest extends testBaseClass {
         $result = wikify_external_text("x\n$$ y $$");
         $this->assertStringNotContainsString("\n", $result);
     }
+
+    public function testIsbnValidAcceptsCorrectCheckDigits(): void {
+        $this->assertTrue(isbn_valid('0-306-40615-2'));      // ISBN-10, check digit 2
+        $this->assertTrue(isbn_valid('978-0-306-40615-7'));  // ISBN-13, check digit 7
+        $this->assertTrue(isbn_valid('0306406152'));         // no separators
+    }
+
+    public function testIsbnValidRejectsWrongCheckDigits(): void {
+        $this->assertFalse(isbn_valid('0-306-40615-3'));     // ISBN-10 wrong check digit
+        $this->assertFalse(isbn_valid('978-0-306-40615-8')); // ISBN-13 wrong check digit
+        $this->assertFalse(isbn_valid('978030640615'));      // too short
+        $this->assertFalse(isbn_valid('abcdefghij'));        // non-digit
+    }
+
+    public function testIsbnValidRejectsInvalidPrefix(): void {
+        $this->assertFalse(isbn_valid('123-4567-890-128')); // valid check digit, prefix not 978/979
+        $this->assertFalse(isbn_valid('979-0123456785'));   // 9790 group reserved for ISMN
+    }
 }

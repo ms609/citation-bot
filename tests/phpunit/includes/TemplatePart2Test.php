@@ -2769,4 +2769,76 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('100393', $template->get2('article-number'));
         $this->assertNull($template->get2('pages'));
     }
+
+    public function testWorkSeriesBecomesSeriesNotTitle(): void {
+        // Erxleben-style: title = paper, work = a book series.
+        // On cite book conversion the series must land in series=, not title=.
+        $text = '{{cite web |title=Introducing Wikidata to the Linked Data Web |work=Lecture Notes in Computer Science |date=2014}}';
+        $expanded = $this->make_citation($text);
+        $expanded->change_name_to('cite book');
+        $this->assertNull($expanded->get2('work'));
+        $this->assertSame('Lecture Notes in Computer Science', $expanded->get2('series'));
+        $this->assertNotSame('Lecture Notes in Computer Science', $expanded->get2('title'));
+        $this->assertNotNull($expanded->get2('title'));
+    }
+
+    public function testWorkSeriesKeepsTitle(): void {
+        // Najman-style: title = book title, work = a book series.
+        // The title must stay in title= and the series in series=.
+        $text = '{{cite web |title=Modern approaches to discrete curvature |work=Lecture notes in mathematics |date=2017}}';
+        $expanded = $this->make_citation($text);
+        $expanded->change_name_to('cite book');
+        $this->assertNull($expanded->get2('work'));
+        $this->assertSame('Lecture notes in mathematics', $expanded->get2('series'));
+        $this->assertSame('Modern approaches to discrete curvature', $expanded->get2('title'));
+    }
+
+    public function testForgetUrlRemovesCoupledParams(): void {
+        $text = '{{cite web |url=https://example.com |access-date=2024-01-01 |url-access=subscription |archive-url=https://web.archive.org/web/20240101000000/https://example.com |archive-date=2024-01-01 |format=PDF}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('access-date'));
+        $this->assertNull($template->get2('url-access'));
+        $this->assertNull($template->get2('archive-url'));
+        $this->assertNull($template->get2('archive-date'));
+        $this->assertNull($template->get2('format'));
+    }
+
+    public function testTidyRemovesOrphanedUrlAccess(): void {
+        // A citation that arrives with url= already gone but url-access= left behind
+        // (e.g. a human TNT'd the url) must be cleaned up, not left with the CS1
+        // "|url-access= requires |url=" error.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |url-access=subscription}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('url-access'));
+    }
+
+    public function testTidyKeepsAccessWhenAliasBasePresent(): void {
+        // The base url param may use its non-hyphenated alias (contributionurl),
+        // so an access param must not be dropped when that alias is present.
+        $text = '{{cite book |title=T |contributionurl=https://example.com/c |contribution-url-access=subscription}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('subscription', $template->get2('contribution-url-access'));
+    }
+
+    public function testTidyKeepsAccessWithUppercaseUrlBase(): void {
+        // The base url param may be written in uppercase (URL), which must still
+        // keep url-access.
+        $text = '{{cite web |URL=https://example.com |url-access=subscription |title=T}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('subscription', $template->get2('url-access'));
+    }
+
+    public function testWorkSeriesDoesNotClobberExistingSeries(): void {
+        // If series= is already set to a different value, routing work into
+        // series= must not destroy the user-provided series.
+        $text = '{{cite web |title=Some paper |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014}}';
+        $expanded = $this->make_citation($text);
+        $expanded->change_name_to('cite book');
+        $this->assertSame('Special Series Name', $expanded->get2('series'));
+    }
 }

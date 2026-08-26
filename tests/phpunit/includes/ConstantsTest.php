@@ -258,7 +258,8 @@ final class ConstantsTest extends testBaseClass {
                 $text
             ); // Stuff that gets "fixed"
             $text = str_replace([
-                '| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z ', '| arşivengelli = Z123Z ', '| open-access = Z123Z '],
+                '| doi-access = Z123Z ', '| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z ', '| pmc-embargo-date = Z123Z ', '| embargo = Z123Z ', '| arşivengelli = Z123Z ', '| open-access = Z123Z ',
+                '| url-access = Z123Z ', '| chapter-url-access = Z123Z ', '| contribution-url-access = Z123Z ', '| article-url-access = Z123Z ', '| entry-url-access = Z123Z ', '| section-url-access = Z123Z ', '| event-url-access = Z123Z ', '| lay-url-access = Z123Z ', '| transcript-url-access = Z123Z ', '| map-url-access = Z123Z '],
                 '',
                 $text
             );
