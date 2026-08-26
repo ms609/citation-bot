@@ -91,7 +91,7 @@ final class BotCurlTest extends testBaseClass {
             @unlink($filename);
         }
     }
-    
+
     public function testCallerCannotReenableFileProtocol(): void {
         new TestPage(); // Fill page name with test name for debugging
         $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
