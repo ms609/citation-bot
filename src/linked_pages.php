@@ -22,7 +22,7 @@ $api = new WikipediaBot();
 
 bot_html_header();
 
-if (!isset($_POST['csrf_token']) || !hash_equals((string) ($_SESSION['csrf_token'] ?? ''), $_POST['csrf_token'])) {
+if (!isset($_POST['csrf_token']) || !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
     report_warning('Invalid CSRF token.');
     bot_html_footer();
     exit(0);
