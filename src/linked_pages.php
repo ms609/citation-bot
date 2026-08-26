@@ -5,6 +5,7 @@ declare(strict_types=1);
 set_time_limit(120);
 
 require_once __DIR__ . '/includes/setup.php';
+require_once __DIR__ . '/includes/request_security.php';
 send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
 if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
