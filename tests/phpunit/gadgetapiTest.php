@@ -9,6 +9,20 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class gadgetapiTest extends testBaseClass {
 
+    private function assertGadgetRequestFailure(
+        array $post,
+        string $expected_error,
+        int $expected_status
+    ): void {
+        try {
+            gadget_api_validate_request($post);
+            $this->fail('Expected GadgetApiRequestException');
+        } catch (GadgetApiRequestException $exception) {
+            $this->assertSame($expected_error, $exception->error_name);
+            $this->assertSame($expected_status, $exception->http_status);
+        }
+    }
+
     public function testGadget(): void {
         new TestPage(); // Fill page name with test name for debugging
         ob_start();
@@ -44,4 +58,98 @@ final class gadgetapiTest extends testBaseClass {
             json_decode($json_text, true, 512, JSON_THROW_ON_ERROR)
         );
     }
+
+    public function testGadgetRejectsMissingText(): void {
+        $this->assertGadgetRequestFailure(
+            ['summary' => 'test'],
+            'invalid_parameters',
+            400
+        );
+    }
+
+    public function testGadgetRejectsArrayText(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => ['not', 'a', 'string'],
+                'summary' => 'test',
+            ],
+            'invalid_parameters',
+            400
+        );
+    }
+
+    public function testGadgetRejectsArraySummary(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => 'normal text',
+                'summary' => ['bad'],
+            ],
+            'invalid_parameters',
+            400
+        );
+    }
+
+    public function testGadgetRejectsTinyPage(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => '12345',
+                'summary' => '',
+            ],
+            'page_too_small',
+            400
+        );
+    }
+
+    public function testGadgetRejectsHugePage(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => str_repeat('x', 150001),
+                'summary' => '',
+            ],
+            'page_too_large',
+            400
+        );
+    }
+
+    public function testGadgetRejectsHugeSummary(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => 'normal text',
+                'summary' => str_repeat('x', 1001),
+            ],
+            'summary_too_large',
+            400
+        );
+    }
+
+    public function testGadgetRejectsInvalidUtf8(): void {
+        $this->assertGadgetRequestFailure(
+            [
+                'text' => "normal\xFFtext",
+                'summary' => '',
+            ],
+            'invalid_utf8',
+            400
+        );
+    }
+
+    public function testGadgetAcceptsMinimumPageSize(): void {
+        [$text, $summary] = gadget_api_validate_request([
+            'text' => '123456',
+            'summary' => '',
+        ]);
+
+        $this->assertSame('123456', $text);
+        $this->assertSame('', $summary);
+    }
+
+    public function testGadgetAcceptsMaximumSummarySize(): void {
+        [$text, $summary] = gadget_api_validate_request([
+            'text' => 'normal text',
+            'summary' => str_repeat('x', 1000),
+        ]);
+
+        $this->assertSame('normal text', $text);
+        $this->assertSame(1000, mb_strlen($summary));
+    } 
 }
