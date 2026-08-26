@@ -147,27 +147,27 @@ final class BotCurlTest extends testBaseClass {
         $this->assertFalse(bot_curl_ip_is_public('0.0.0.0'));
     }
 
-    public function testEvenMoreRejectedIP2(): void {  
+    public function testEvenMoreRejectedIP2(): void {
         $this->assertFalse(bot_curl_ip_is_public('100.64.0.1'));    // CGNAT
     }
 
-    public function testEvenMoreRejectedIP3(): void {  
+    public function testEvenMoreRejectedIP3(): void {
         $this->assertFalse(bot_curl_ip_is_public('192.0.2.1'));     // documentation
     }
 
-    public function testEvenMoreRejectedIP4(): void {  
+    public function testEvenMoreRejectedIP4(): void {
         $this->assertFalse(bot_curl_ip_is_public('224.0.0.1'));     // multicast
     }
 
-    public function testEvenMoreRejectedIP5(): void {  
+    public function testEvenMoreRejectedIP5(): void {
         $this->assertFalse(bot_curl_ip_is_public('255.255.255.255'));
     }
 
-    public function testEvenMoreRejectedIP6(): void {  
+    public function testEvenMoreRejectedIP6(): void {
         $this->assertFalse(bot_curl_ip_is_public('fc00::1'));       // IPv6 ULA
     }
 
-    public function testEvenMoreRejectedIP7(): void {  
+    public function testEvenMoreRejectedIP7(): void {
         $this->assertFalse(bot_curl_ip_is_public('ff02::1'));       // IPv6 multicast
     }
 }
