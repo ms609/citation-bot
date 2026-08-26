@@ -5,10 +5,65 @@ declare(strict_types=1);
  * Tests for gadgetapi.php
  */
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+
 require_once __DIR__ . '/../testBaseClass.php';
 require_once __DIR__ . '/../../src/includes/GadgetApi.php';
 
 final class gadgetapiTest extends testBaseClass {
+
+    /**
+     * Execute the real gadgetapi.php endpoint and return its status and body.
+     *
+     * gadgetapi.php deliberately clears several output buffers while handling
+     * errors, so create enough private buffers that its cleanup does not
+     * consume PHPUnit's own output buffering.
+     *
+     * @param array<array-key, mixed> $post
+     * @return array{status: int, body: string}
+     */
+    private function runGadgetEndpoint(array $post, ?string $origin): array {
+        $_POST = $post;
+        $_REQUEST = $post;
+
+        if ($origin === null) {
+            unset($_SERVER['HTTP_ORIGIN']);
+        } else {
+            $_SERVER['HTTP_ORIGIN'] = $origin;
+        }
+
+        $original_buffer_level = ob_get_level();
+
+        /*
+         * The endpoint's exception handlers call ob_end_clean() three times.
+         * Four buffers leave one under our control for capturing the JSON.
+         */
+        ob_start();
+        ob_start();
+        ob_start();
+        ob_start();
+
+        require __DIR__ . '/../../src/gadgetapi.php';
+
+        $body = ob_get_contents();
+        $this->assertIsString($body);
+
+        while (ob_get_level() > $original_buffer_level) {
+            ob_end_clean();
+        }
+
+        $status = http_response_code();
+        $this->assertIsInt($status);
+
+        unset($_SERVER['HTTP_ORIGIN']);
+        unset($_POST, $_REQUEST);
+
+        return [
+            'status' => $status,
+            'body' => $body,
+        ];
+    }
 
     private function assertGadgetRequestFailure(
         array $post,
@@ -152,5 +207,110 @@ final class gadgetapiTest extends testBaseClass {
 
         $this->assertSame('normal text', $text);
         $this->assertSame(1000, mb_strlen($summary));
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsMissingText(): void {
+        $response = $this->runGadgetEndpoint(
+            ['summary' => 'test'],
+            'https://en.wikipedia.org'
+        );
+
+        $this->assertSame(400, $response['status']);
+        $this->assertSame(
+            ['error' => 'invalid_parameters'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsArrayText(): void {
+        $response = $this->runGadgetEndpoint(
+            [
+                'text' => ['bad'],
+                'summary' => 'test',
+            ],
+            'https://en.wikipedia.org'
+        );
+
+        $this->assertSame(400, $response['status']);
+        $this->assertSame(
+            ['error' => 'invalid_parameters'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsTinyPage(): void {
+        $response = $this->runGadgetEndpoint(
+            [
+                'text' => '12345',
+                'summary' => '',
+            ],
+            'https://en.wikipedia.org'
+        );
+
+        $this->assertSame(400, $response['status']);
+        $this->assertSame(
+            ['error' => 'page_too_small'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsInvalidUtf8(): void {
+        $response = $this->runGadgetEndpoint(
+            [
+                'text' => "normal\xFFtext",
+                'summary' => '',
+            ],
+            'https://en.wikipedia.org'
+        );
+
+        $this->assertSame(400, $response['status']);
+        $this->assertSame(
+            ['error' => 'invalid_utf8'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsInvalidOrigin(): void {
+        $response = $this->runGadgetEndpoint(
+            [
+                'text' => 'normal text',
+                'summary' => '',
+            ],
+            'https://attacker.example'
+        );
+
+        $this->assertSame(403, $response['status']);
+        $this->assertSame(
+            ['error' => 'invalid_origin'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointRejectsMissingOrigin(): void {
+        $response = $this->runGadgetEndpoint(
+            [
+                'text' => 'normal text',
+                'summary' => '',
+            ],
+            null
+        );
+
+        $this->assertSame(403, $response['status']);
+        $this->assertSame(
+            ['error' => 'invalid_origin'],
+            json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+        );
     }
 }
