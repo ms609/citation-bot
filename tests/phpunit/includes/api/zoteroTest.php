@@ -1543,7 +1543,7 @@ final class zoteroTest extends testBaseClass {
     ): void {
         $this->assertSame(
             $expected,
-            YourClass::encode_url_for_zotero($input)
+            Zotero::encode_url_for_zotero($input)
         );
     }
 
@@ -1708,7 +1708,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testHyphenIsNotDoubleEncoded(): void {
-        $result = YourClass::encode_url_for_zotero(
+        $result = Zotero::encode_url_for_zotero(
             'https://example.com/foo-bar'
         );
 
