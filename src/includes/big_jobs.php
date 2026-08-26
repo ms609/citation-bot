@@ -53,6 +53,7 @@ function big_jobs_check_overused(int $page_count): void {
         bot_html_footer();
         exit(0);
     }
+    @unlink($fn . '_kill_job'); // Clean up any left over files - could be a race condition
     define('BIG_JOB_MODE', 'YES');
     register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
     report_warning("Large job mode: running " . $page_count . " pages — detailed per-parameter output is suppressed to conserve memory.");
