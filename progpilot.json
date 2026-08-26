@@ -247,12 +247,12 @@
             "$git_hub"
         ],
         "source_line": [
-            26,
-            23
+            30,
+            27
         ],
         "source_column": [
-            1073,
-            822
+            1182,
+            931
         ],
         "source_file": [
             "src\/gitpull.php",
@@ -262,57 +262,57 @@
             [
                 {
                     "flow_name": "$git_hub",
-                    "flow_line": 23,
-                    "flow_column": 822,
+                    "flow_line": 27,
+                    "flow_column": 931,
                     "flow_file": "src\/gitpull.php"
                 },
                 {
                     "flow_name": "$htmlspecialchars_return",
-                    "flow_line": 23,
-                    "flow_column": 833,
+                    "flow_line": 27,
+                    "flow_column": 942,
                     "flow_file": "src\/gitpull.php"
                 },
                 {
-                    "flow_name": "$htmlspecialchars_param0_line23_column833_progpilot",
-                    "flow_line": 23,
-                    "flow_column": 833,
+                    "flow_name": "$htmlspecialchars_param0_line27_column942_progpilot",
+                    "flow_line": 27,
+                    "flow_column": 942,
                     "flow_file": "src\/gitpull.php"
                 },
                 {
                     "flow_name": "$shell_exec_return",
-                    "flow_line": 23,
-                    "flow_column": 859,
+                    "flow_line": 27,
+                    "flow_column": 968,
                     "flow_file": "src\/gitpull.php"
                 }
             ],
             [
                 {
                     "flow_name": "$htmlspecialchars_return",
-                    "flow_line": 23,
-                    "flow_column": 833,
+                    "flow_line": 27,
+                    "flow_column": 942,
                     "flow_file": "src\/gitpull.php"
                 },
                 {
-                    "flow_name": "$htmlspecialchars_param0_line23_column833_progpilot",
-                    "flow_line": 23,
-                    "flow_column": 833,
+                    "flow_name": "$htmlspecialchars_param0_line27_column942_progpilot",
+                    "flow_line": 27,
+                    "flow_column": 942,
                     "flow_file": "src\/gitpull.php"
                 },
                 {
                     "flow_name": "$shell_exec_return",
-                    "flow_line": 23,
-                    "flow_column": 859,
+                    "flow_line": 27,
+                    "flow_column": 968,
                     "flow_file": "src\/gitpull.php"
                 }
             ]
         ],
         "sink_name": "echo",
-        "sink_line": 31,
-        "sink_column": 1456,
+        "sink_line": 35,
+        "sink_column": 1565,
         "sink_file": "src\/gitpull.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
-        "vuln_id": "9642211dd3615c88e3455eb29d7ed996b5523ec468ee3f4effa993e2f1b56940",
+        "vuln_id": "7ae7f759865e8a4c51597727c338df1ae270b63a2df9c1d932a459a79ca5eb06",
         "vuln_type": "taint-style"
     },
     {
