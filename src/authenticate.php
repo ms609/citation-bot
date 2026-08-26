@@ -108,7 +108,7 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
         if (!session_regenerate_id(true)) {
             throw new RuntimeException('Unable to regenerate authenticated session');
         }
-
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
