@@ -1265,4 +1265,9 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(isbn_valid('978030640615'));      // too short
         $this->assertFalse(isbn_valid('abcdefghij'));        // non-digit
     }
+
+    public function testIsbnValidRejectsInvalidPrefix(): void {
+        $this->assertFalse(isbn_valid('123-4567-890-128')); // valid check digit, prefix not 978/979
+        $this->assertFalse(isbn_valid('979-0123456785'));   // 9790 group reserved for ISMN
+    }
 }

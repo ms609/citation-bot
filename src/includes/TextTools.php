@@ -1141,7 +1141,11 @@ function isbn_valid(string $isbn): bool {
         }
         return $sum % 11 === 0;
     }
-    if (preg_match('~^[0-9]{13}$~', $digits) === 1) {
+    if (preg_match('~^(978|979)[0-9]{10}$~', $digits) === 1) {
+        // ISBN-13 must begin 978/979; the 9790 prefix is reserved for ISMN
+        if (mb_substr($digits, 0, 4) === '9790') {
+            return false;
+        }
         // ISBN-13: digits weighted alternately by 1 and 3; valid if the sum is a multiple of 10
         $sum = 0;
         for ($i = 0; $i < 13; $i++) {

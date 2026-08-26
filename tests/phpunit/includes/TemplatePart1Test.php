@@ -24,9 +24,9 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testLotsOfFloaters3(): void {
-        $text_in = "{{cite journal| 123-4567-890-128 }}";
+        $text_in = "{{cite journal| 978-0-306-40615-7 }}";
         $prepared = $this->prepare_citation($text_in);
-        $this->assertSame('123-4567-890-128', $prepared->get2('isbn'));
+        $this->assertSame('978-0-306-40615-7', $prepared->get2('isbn'));
     }
 
     public function testLotsOfFloaters4(): void {
