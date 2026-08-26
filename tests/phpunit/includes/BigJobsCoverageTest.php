@@ -15,8 +15,8 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
 
         try {
             uopz_set_return('report_warning',
-                function (string $message): void {
-                $GLOBALS['big_jobs_coverage_warning'] = $message;
+                    function (string $message): void {
+                    $GLOBALS['big_jobs_coverage_warning'] = $message;
             }, true);
 
             require_once __DIR__ . '/../../../src/includes/big_jobs.php';
