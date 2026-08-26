@@ -61,4 +61,5 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
         } finally {
             uopz_unset_return('report_warning');
         }
+    }
 }
