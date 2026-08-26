@@ -535,6 +535,20 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), true));
     }
 
+    public function testCapitalizationAAAIACMAcronym(): void {
+        // Journal title supplied in ALL CAPS should keep the AAAI/ACM acronyms
+        $this->assertSame(
+            'Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society',
+            title_capitalization('PROCEEDINGS OF THE AAAI/ACM CONFERENCE ON AI, ETHICS, AND SOCIETY', false)
+        );
+        // Production path: title_case() mangles the acronym, title_capitalization() must restore it
+        $mangled = title_case('Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society');
+        $this->assertSame(
+            'Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society',
+            title_capitalization($mangled, true)
+        );
+    }
+
     public function testCapitalization_lots_more2(): void {
         $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), true));
         $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), true));
