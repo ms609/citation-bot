@@ -1546,8 +1546,7 @@ final class zoteroTest extends testBaseClass {
         );
     }
 
-    public static function urlProvider(): array
-    {
+    public static function urlProvider(): array {
         return [
             'simple URL with hyphen in path' => [
                 'https://example.com/foo-bar',
