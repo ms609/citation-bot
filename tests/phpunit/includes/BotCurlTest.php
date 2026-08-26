@@ -65,15 +65,13 @@ final class BotCurlTest extends testBaseClass {
         new TestPage(); // Fill page name with test name for debugging
         $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
         $this->assertNotFalse($filename);
-
-        file_put_contents($filename, 'local curl fixture');
-
-        $ch = bot_curl_init(
-            1.0,
-            [CURLOPT_URL => 'file://' . $filename]
-        );
+        $ch = bot_curl_init(1.0);
 
         try {
+            curl_setopt_array($ch, [
+                CURLOPT_URL => 'file://' . $filename,
+            ]);
+            file_put_contents($filename, 'local curl fixture');
             $this->assertSame(
                 '',
                 bot_curl_exec($ch)
@@ -82,6 +80,7 @@ final class BotCurlTest extends testBaseClass {
             curl_setopt_array($ch, [
                 CURLOPT_PROTOCOLS => CURLPROTO_FILE,
                 CURLOPT_REDIR_PROTOCOLS => CURLPROTO_FILE,
+                CURLOPT_URL => 'file://' . $filename,
             ]);
             $this->assertSame(
                 'local curl fixture',
