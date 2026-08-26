@@ -165,4 +165,14 @@ final class BotCurlTest extends testBaseClass {
     public function testIpv4MappedIpv6LoopbackRejected(): void {
         $this->assertFalse(bot_curl_ip_is_public('::ffff:127.0.0.1'));
     }
+
+    public function testEvenMoreRejectedIP(): void {
+        $this->assertFalse(bot_curl_ip_is_public('0.0.0.0'));
+        $this->assertFalse(bot_curl_ip_is_public('100.64.0.1'));    // CGNAT
+        $this->assertFalse(bot_curl_ip_is_public('192.0.2.1'));     // documentation
+        $this->assertFalse(bot_curl_ip_is_public('224.0.0.1'));     // multicast
+        $this->assertFalse(bot_curl_ip_is_public('255.255.255.255'));
+        $this->assertFalse(bot_curl_ip_is_public('fc00::1'));       // IPv6 ULA
+        $this->assertFalse(bot_curl_ip_is_public('ff02::1'));       // IPv6 multicast
+    }
 }
