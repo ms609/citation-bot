@@ -4,6 +4,45 @@ declare(strict_types=1);
 
 const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
 
+/**
+ * Return true only for globally routable IP addresses.
+ */
+function bot_curl_ip_is_public(string $ip): bool {
+    /*
+     * Normalize IPv4-mapped IPv6 addresses before applying the IPv4 rules.
+     * Otherwise ::ffff:127.0.0.1 and similar addresses can evade simplistic
+     * IPv6-only range checks.
+     */
+    if (preg_match('~^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$~iD', $ip, $matches)) {
+        $ip = $matches[1];
+    }
+
+    return filter_var(
+        $ip,
+        FILTER_VALIDATE_IP,
+        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    ) !== false;
+}
+
+/**
+ * Abort cURL before it sends a request to a private, loopback, link-local,
+ * reserved, or otherwise non-public address.
+ */
+function bot_curl_check_destination(
+    CurlHandle $_ch,
+    string $destination_ip,
+    string $_local_ip,
+    int $_destination_port,
+    int $_local_port
+): int {
+    if (!bot_curl_ip_is_public($destination_ip)) {
+        bot_debug_log('Blocked cURL request to non-public address: ' . $destination_ip);
+        return CURL_PREREQFUNC_ABORT;
+    }
+
+    return CURL_PREREQFUNC_OK;
+}
+
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0): int {
     // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
     // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
@@ -48,9 +87,13 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
     // 4 - Security restrictions. These must be applied after caller-supplied
     // options so callers cannot accidentally enable unsafe protocols.
     // Some malformed DOI's redirect to file:// URLs
+    //
+    // CURLOPT_PREREQFUNCTION protects redirected requests and DNS
+    // rebinding by inspecting the actual connected destination address.
     curl_setopt_array($ch, [
         CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
         CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
     ]);
 
     return $ch;
