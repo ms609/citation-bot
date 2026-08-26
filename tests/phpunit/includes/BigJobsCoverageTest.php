@@ -11,6 +11,8 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
     public function testLargeJobPathReplacesStaleLockAndRefreshesActiveLock(): void {
         define('HTML_OUTPUT', true);
 
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions
+        // @phan-suppress-next-line PhanRedefineFunction
         function report_warning(string $message): void {
             $GLOBALS['big_jobs_coverage_warning'] = $message;
         }
