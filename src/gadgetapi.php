@@ -98,7 +98,10 @@ try {
     @ob_end_clean();
     @ob_end_clean();
     // Above is paranoid panic code.    So paranoid that we even empty buffers two extra times
-
-    bot_debug_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());
+    if (function_exists('bot_debug_log')) {
+        bot_debug_log(
+    } else {
+        error_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());
+    }
     gadget_api_error('internal_error', 500);
 }
