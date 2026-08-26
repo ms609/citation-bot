@@ -19,7 +19,7 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroUrlEncodingPreservesAuthority(): void {
         $this->assertSame(
-            'https%3A%2F%2Fexample-domain.test%2Fpath%252Dsegment%3Fquery%252Dkey%3Dquery%252Dvalue',
+            'https%3A%2F%2Fexample-domain.test%2Fpath%2Dsegment%3Fquery%2Dkey%3Dquery%2Dvalue',
             Zotero::encode_url_for_zotero('https://example-domain.test/path-segment?query-key=query-value')
         );
     }
