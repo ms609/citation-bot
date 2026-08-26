@@ -74,7 +74,10 @@ final class BotCurlTest extends testBaseClass {
         );
 
         try {
-            $this->assertFalse(bot_curl_exec($ch));
+            $this->assertSame(
+                '',
+                bot_curl_exec($ch)
+            );
 
             curl_setopt_array($ch, [
                 CURLOPT_PROTOCOLS => CURLPROTO_FILE,
