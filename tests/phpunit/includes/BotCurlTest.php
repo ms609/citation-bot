@@ -91,4 +91,27 @@ final class BotCurlTest extends testBaseClass {
             @unlink($filename);
         }
     }
+    
+    public function testCallerCannotReenableFileProtocol(): void {
+        new TestPage(); // Fill page name with test name for debugging
+        $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
+        $this->assertNotFalse($filename);
+
+        file_put_contents($filename, 'local curl fixture');
+
+        $ch = bot_curl_init(
+            1.0,
+            [
+                CURLOPT_URL => 'file://' . $filename,
+                CURLOPT_PROTOCOLS => CURLPROTO_ALL,
+                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
+            ]
+        );
+
+        try {
+            $this->assertSame('', bot_curl_exec($ch));
+        } finally {
+            @unlink($filename);
+        }
+    }
 }
