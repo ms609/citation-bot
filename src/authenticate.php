@@ -42,10 +42,6 @@ if (@$_SERVER['REQUEST_URI'] === public_url_path('/authenticate.php')) {
 }
 
 session_start();
-/** Regenerate the CSRF token after authentication because the security context has changed */
-if (!session_regenerate_id(true)) {
-    throw new RuntimeException('Unable to regenerate authenticated session');
-}
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
