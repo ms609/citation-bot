@@ -118,7 +118,7 @@ final class BotCurlTest extends testBaseClass {
     public function testPublicCurlDestinationAccepted(): void {
         $ch = curl_init();
         $this->assertNotFalse($ch);
- 
+
         $this->assertSame(
             CURL_PREREQFUNC_OK,
             bot_curl_check_destination(
@@ -130,11 +130,11 @@ final class BotCurlTest extends testBaseClass {
             )
         );
     }
- 
+
     public function testLoopbackCurlDestinationRejected(): void {
         $ch = curl_init();
         $this->assertNotFalse($ch);
- 
+
         $this->assertSame(
             CURL_PREREQFUNC_ABORT,
             bot_curl_check_destination(
@@ -146,22 +146,22 @@ final class BotCurlTest extends testBaseClass {
             )
         );
     }
- 
+
     public function testPrivateCurlDestinationRejected(): void {
         $this->assertFalse(bot_curl_ip_is_public('10.0.0.1'));
         $this->assertFalse(bot_curl_ip_is_public('172.16.0.1'));
         $this->assertFalse(bot_curl_ip_is_public('192.168.0.1'));
     }
- 
+
     public function testLinkLocalCurlDestinationRejected(): void {
         $this->assertFalse(bot_curl_ip_is_public('169.254.169.254'));
         $this->assertFalse(bot_curl_ip_is_public('fe80::1'));
     }
- 
+
     public function testIpv6LoopbackCurlDestinationRejected(): void {
         $this->assertFalse(bot_curl_ip_is_public('::1'));
     }
- 
+
     public function testIpv4MappedIpv6LoopbackRejected(): void {
         $this->assertFalse(bot_curl_ip_is_public('::ffff:127.0.0.1'));
     }
