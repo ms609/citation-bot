@@ -2824,6 +2824,15 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('subscription', $template->get2('contribution-url-access'));
     }
 
+    public function testTidyKeepsAccessWithUppercaseUrlBase(): void {
+        // The base url param may be written in uppercase (URL), which must still
+        // keep url-access.
+        $text = '{{cite web |URL=https://example.com |url-access=subscription |title=T}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('subscription', $template->get2('url-access'));
+    }
+
     public function testWorkSeriesDoesNotClobberExistingSeries(): void {
         // If series= is already set to a different value, routing work into
         // series= must not destroy the user-provided series.

@@ -4129,12 +4129,14 @@ final class Template
                 case 'transcript-url-access':
                 case 'map-url-access':
                     // Remove an access parameter whose base url parameter is
-                    // absent, checking both the hyphenated and alias base names
-                    // (e.g. contribution-url-access pairs with either
-                    // contribution-url or contributionurl).
+                    // absent, checking the hyphenated, alias, and case-variant
+                    // base names (e.g. contribution-url-access pairs with
+                    // contribution-url or contributionurl; url-access with url
+                    // or URL).
                     $base_url_param = str_replace('-access', '', $param);
                     $alias_url_param = str_replace('-url', 'url', $base_url_param);
-                    if ($this->blank([$base_url_param, $alias_url_param]) && $this->has($param)) {
+                    $base_forms = [$base_url_param, $alias_url_param, mb_strtoupper($base_url_param)];
+                    if ($this->blank($base_forms) && $this->has($param)) {
                         $this->forget($param);
                     }
                     return;
