@@ -65,38 +65,19 @@ final class BotCurlTest extends testBaseClass {
         new TestPage(); // Fill page name with test name for debugging
         $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
         $this->assertNotFalse($filename);
-        $ch = bot_curl_init(1.0);
-
-        try {
-            curl_setopt_array($ch, [
-                CURLOPT_URL => 'file://' . $filename,
-            ]);
-            file_put_contents($filename, 'local curl fixture');
-            $this->assertSame(
-                '',
-                bot_curl_exec($ch)
-            );
-
-            curl_setopt_array($ch, [
-                CURLOPT_PROTOCOLS => CURLPROTO_FILE,
-                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_FILE,
-                CURLOPT_URL => 'file://' . $filename,
-            ]);
-            $this->assertSame(
-                'local curl fixture',
-                bot_curl_exec($ch)
-            );
-        } finally {
-            @unlink($filename);
-        }
-    }
-
-    public function testCallerCannotReenableFileProtocol(): void {
-        new TestPage(); // Fill page name with test name for debugging
-        $filename = tempnam(sys_get_temp_dir(), 'citation-bot-curl-');
-        $this->assertNotFalse($filename);
-
         file_put_contents($filename, 'local curl fixture');
+
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
+        $out = bot_curl_exec($ch);
+        $this->assertSame('', $out);
+
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
+        curl_setopt_array($ch, [
+            CURLOPT_PROTOCOLS => CURLPROTO_ALL,
+            CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
+        ]);
+        $out = bot_curl_exec($ch);
+        $this->assertSame('local curl fixture', $out);
 
         $ch = bot_curl_init(
             1.0,
@@ -106,12 +87,9 @@ final class BotCurlTest extends testBaseClass {
                 CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
             ]
         );
-
-        try {
-            $this->assertSame('', bot_curl_exec($ch));
-        } finally {
-            @unlink($filename);
-        }
+        $out = bot_curl_exec($ch);
+        $this->assertSame('', $out);
+        @unlink($filename);
     }
 
     public function testPublicCurlDestinationAccepted(): void {
