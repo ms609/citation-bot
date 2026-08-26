@@ -16,7 +16,11 @@ clearstatcache(true, LOCK_DIR);
 
 $deployPassword = @getenv('DEPLOY_PASSWORD');
 
-if ($deployPassword !== false && !hash_equals($_GET['password'] ?? '', (string) $deployPassword)) {
+$password_in = $_GET['password'] ?? '';
+
+if (!is_string($password_in)) {
+    $git_hub = 'Invalid password type.';
+} elseif ($deployPassword !== false && !hash_equals($password_in, (string) $deployPassword)) {
     $git_hub = 'Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your env.php file (DEPLOY_PASSWORD).';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
     /** @psalm-suppress ForbiddenCode */
