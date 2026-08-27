@@ -267,38 +267,17 @@ final class WikipediaBot {
             return null;
         }
 
-        if (
-            !isset($response->query) ||
-            !is_object($response->query) ||
-            !isset($response->query->pages) ||
-            !is_object($response->query->pages)
-        ) {
+        if (!isset($response->query->pages)) {
             report_warning("Pages list is non-existent.  Aborting.");
             return null;
         }
         $myPage = self::reset($response->query->pages);
 
-        if (
-            !isset($myPage->lastrevid) ||
-            !is_scalar($myPage->lastrevid) ||
-            !isset($myPage->title) ||
-            !is_scalar($myPage->title) ||
-            !isset($myPage->revisions) ||
-            !is_array($myPage->revisions) ||
-            !isset($myPage->revisions[0]) ||
-            !is_object($myPage->revisions[0]) ||
-            !isset($myPage->revisions[0]->timestamp) ||
-            !is_scalar($myPage->revisions[0]->timestamp)
-        ) {
+        if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
             report_warning("Page seems not to exist. Aborting.");
             return null;
         }
-        if (
-            !isset($response->query->tokens) ||
-            !is_object($response->query->tokens) ||
-            !isset($response->query->tokens->csrftoken) ||
-            !is_scalar($response->query->tokens->csrftoken)
-        ) {
+        if (!isset($response->query->tokens->csrftoken)) {
             report_warning("Response object lacked tokens.  Aborting. ");
             return null;
         }
@@ -306,46 +285,93 @@ final class WikipediaBot {
     }
 
     public static function resultsGood(?object $result): bool {
-        if ($result === null) {
-            report_warning("Unhandled write error. No response was returned.");
-            return false;
-        }
         if (isset($result->error)) {
-            if (!is_object($result->error)) {
-                report_warning("Write error response was malformed.");
-                return false;
-            }
-            $code = $result->error->code ?? '';
-            $info = $result->error->info ?? '';
-            if (!is_scalar($code) || !is_scalar($info)) {
-                report_warning("Write error response was malformed.");
-                return false;
-            }
             report_warning("Write error: " .
-                           echoable(mb_strtoupper((string) $code)) . ": " .
+                           echoable(mb_strtoupper($result->error->code)) . ": " .
                            str_replace(["You ", " have "], ["This bot ", " has "],
-                           echoable((string) $info)));
+                           echoable((string) @$result->error->info)));
             return false;
-        }
-        if (!isset($result->edit) || !is_object($result->edit)) {
-            report_warning("Unhandled write error. Write response was malformed.");
-            return false;
-        }
-        if (isset($result->edit->captcha)) {
+        } elseif (isset($result->edit->captcha)) {
             report_error("Write error: We encountered a captcha, so the bot cannot be properly logged in.");  // @codeCoverageIgnore
-        }
-        if (!isset($result->edit->result) || !is_string($result->edit->result) || $result->edit->result === '') {
+        } elseif (empty($result->edit->result)) { // Includes results === null
             report_warning("Unhandled write error.  Please copy this output and " .
                            "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                            "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
             sleep(5);
             return false;
-        }
-        if ($result->edit->result !== "Success") {
+        } elseif ($result->edit->result !== "Success") {
             report_warning('Attempt to write page returned error: ' . echoable($result->edit->result));
             return false;
         }
         return true;
+    }
+
+    /**
+     * Extract usable category-member titles from a decoded MediaWiki response.
+     *
+     * @return array<string>|null
+     */
+    public static function category_member_titles_from_response(mixed $response): ?array {
+        if (
+            !is_object($response) ||
+            !isset($response->query) ||
+            !is_object($response->query) ||
+            !isset($response->query->categorymembers) ||
+            !is_array($response->query->categorymembers)
+        ) {
+            return null;
+        }
+
+        $list = [];
+        foreach ($response->query->categorymembers as $page) {
+            if (!is_object($page) || !isset($page->title) || !is_string($page->title)) {
+                continue;
+            }
+            $title = $page->title;
+            if (mb_stripos($title, 'talk:') === false &&
+                mb_stripos($title, 'Special:') === false &&
+                mb_stripos($title, '/doc') === false &&
+                mb_stripos($title, 'Template:') === false &&
+                mb_stripos($title, 'Mediawiki:') === false &&
+                mb_stripos($title, 'help:') === false &&
+                mb_stripos($title, 'Gadget:') === false &&
+                mb_stripos($title, 'Portal:') === false &&
+                mb_stripos($title, 'timedtext:') === false &&
+                mb_stripos($title, 'module:') === false &&
+                mb_stripos($title, 'category:') === false &&
+                mb_stripos($title, 'Wikipedia:') === false &&
+                mb_stripos($title, 'Gadget definition:') === false &&
+                mb_stripos($title, 'Topic:') === false &&
+                mb_stripos($title, 'Education Program:') === false &&
+                mb_stripos($title, 'Book:') === false) {
+                $list[] = $title;
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * Normalize existing article links from a MediaWiki parse response.
+     *
+     * @return array<array{ns: int, title: string}>|null
+     */
+    public static function parse_links_response(string $json): ?array {
+        $response = json_decode($json, true);
+        if (!is_array($response) || !isset($response['parse']) || !is_array($response['parse']) ||
+            !isset($response['parse']['links']) || !is_array($response['parse']['links'])) {
+            return null;
+        }
+
+        $links = [];
+        foreach ($response['parse']['links'] as $link) {
+            if (!is_array($link) || !array_key_exists('exists', $link) ||
+                !isset($link['ns']) || !is_int($link['ns']) ||
+                !isset($link['*']) || !is_string($link['*']) || $link['*'] === '') {
+                continue;
+            }
+            $links[] = ['ns' => $link['ns'], 'title' => $link['*']];
+        }
+        return $links;
     }
 
     /** @return array<string> */
@@ -361,33 +387,14 @@ final class WikipediaBot {
         do {
             $res = self::query_api($vars);
             $res = @json_decode($res);
-            if (isset($res->query->categorymembers)) {
-                foreach ($res->query->categorymembers as $page) {
-                    // We probably only want to visit pages in the main namespace
-                    if (mb_stripos($page->title, 'talk:') === false &&
-                            mb_stripos($page->title, 'Special:') === false &&
-                            mb_stripos($page->title, '/doc') === false &&
-                            mb_stripos($page->title, 'Template:') === false &&
-                            mb_stripos($page->title, 'Mediawiki:') === false &&
-                            mb_stripos($page->title, 'help:') === false &&
-                            mb_stripos($page->title, 'Gadget:') === false &&
-                            mb_stripos($page->title, 'Portal:') === false &&
-                            mb_stripos($page->title, 'timedtext:') === false &&
-                            mb_stripos($page->title, 'module:') === false &&
-                            mb_stripos($page->title, 'category:') === false &&
-                            mb_stripos($page->title, 'Wikipedia:') === false &&
-                            mb_stripos($page->title, 'Gadget definition:') === false &&
-                            mb_stripos($page->title, 'Topic:') === false &&
-                            mb_stripos($page->title, 'Education Program:') === false &&
-                            mb_stripos($page->title, 'Book:') === false) {
-                        $list[] = $page->title;
-                    }
-                }
-            } else {
+            $titles = self::category_member_titles_from_response($res);
+            if ($titles === null) {
                 report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
                 return [];                                                                     // @codeCoverageIgnore
             }
-            $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : false;
+            array_push($list, ...$titles);
+            $continue = $res->continue->cmcontinue ?? null;
+            $vars["cmcontinue"] = is_string($continue) && $continue !== '' ? $continue : false;
         } while ($vars["cmcontinue"]);
         return $list;
     }
