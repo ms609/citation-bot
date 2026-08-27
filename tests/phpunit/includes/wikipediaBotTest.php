@@ -26,19 +26,19 @@ final class wikipediaBotTest extends testBaseClass {
         $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
         $this->assertIsString($source);
 
-        $fetch_start = strpos($source, 'private function fetch(');
+        $fetch_start = mb_strpos($source, 'private function fetch(');
         if ($fetch_start === false) {
             $this->fail('Could not locate WikipediaBot::fetch()');
         }
-        $fetch_end = strpos($source, 'public function write_page(', $fetch_start);
+        $fetch_end = mb_strpos($source, 'public function write_page(', $fetch_start);
         if ($fetch_end === false) {
             $this->fail('Could not locate WikipediaBot::write_page()');
         }
 
-        $fetch_source = substr($source, $fetch_start, $fetch_end - $fetch_start);
-        $try_position = strpos($fetch_source, 'try {');
-        $request_position = strpos($fetch_source, 'Request::fromConsumerAndToken');
-        $sign_position = strpos($fetch_source, 'signRequest(');
+        $fetch_source = mb_substr($source, $fetch_start, $fetch_end - $fetch_start);
+        $try_position = mb_strpos($fetch_source, 'try {');
+        $request_position = mb_strpos($fetch_source, 'Request::fromConsumerAndToken');
+        $sign_position = mb_strpos($fetch_source, 'signRequest(');
 
         $this->assertNotFalse($try_position);
         $this->assertNotFalse($request_position);
