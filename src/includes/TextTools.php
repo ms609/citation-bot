@@ -1153,19 +1153,19 @@ function isbn_valid(string $isbn): bool {
 }
 
 /**
- * Validate an arXiv identifier against CS1's structural rules:
- * the old (pre-2007) archive/number form or the new YYMM.NNNNN form,
- * each with an optional lowercase version suffix.
+ * Validate an arXiv identifier.  Mirrors the bot's own URL-extraction
+ * patterns (URLtools.php): the old archive/number form or the new YYMM.NNNNN
+ * form, each with an optional lowercase version suffix.  CS1 additionally
+ * constrains the year/month ranges and the digit count by year; we
+ * deliberately do not enforce those so values the URL path accepts are never
+ * rejected here (defense in depth, not strict CS1 fidelity).
  */
 function arxiv_id_valid(string $value): bool {
-    if (preg_match('~^[a-zA-Z][a-zA-Z.\-]+/[0-9][0-9][01][0-9][0-9][0-9][0-9](v[0-9]+)?$~', $value) === 1) {
+    if (preg_match('~^[a-zA-Z][a-zA-Z.\-]+/\d{7}(v\d+)?$~', $value) === 1) {
         return true; // old style: e.g. hep-th/9901001
     }
-    if (preg_match('~^(0[7-9]|1[0-4])(0[1-9]|1[0-2])\.\d{4}(v\d+)?$~', $value) === 1) {
-        return true; // new style 0704-1412: four-digit number, e.g. 0704.1234
-    }
-    if (preg_match('~^(1[5-9]|[2-9]\d)(0[1-9]|1[0-2])\.\d{5}(v\d+)?$~', $value) === 1) {
-        return true; // new style 1501-: five-digit number, e.g. 1706.05013
+    if (preg_match('~^\d{4}\.\d{4,5}(v\d+)?$~', $value) === 1) {
+        return true; // new style: e.g. 1706.05013 or 1706.05013v2
     }
     return false;
 }
@@ -1212,21 +1212,21 @@ function rxiv_id_valid(string $value): bool {
 }
 
 /**
- * Validate a bibcode: exactly 19 characters whose first four digits form a
- * plausible year, with only letters, digits, underscores, ampersands, and dots
- * elsewhere.  This mirrors the shape used by REGEXP_BIBCODE and CS1's own
- * length/year tests (CS1 additionally requires a letter at position five,
- * which we deliberately do not enforce so existing numeric bibcodes are kept).
+ * Validate a bibcode: exactly 19 characters whose first four characters form
+ * a year beginning with 1 or 2 (matching REGEXP_BIBCODE), with only letters,
+ * digits, underscores, ampersands, and dots elsewhere.  CS1 additionally
+ * requires a letter at position five and a year within 1000..next year; we
+ * deliberately do not enforce those so values the URL path accepts are never
+ * rejected here (defense in depth, not strict CS1 fidelity).
  */
 function bibcode_valid(string $value): bool {
     if (mb_strlen($value) !== 19) {
         return false;
     }
-    if (preg_match('~^(\d{4})[\w&.]{15}$~', $value, $match) !== 1) {
+    if (preg_match('~^[12]\d{3}[\w&.]{15}$~', $value) !== 1) {
         return false;
     }
-    $year = intval($match[1]);
-    return $year >= 1000 && $year <= intval(date('Y')) + 1;
+    return true;
 }
 
 function changeisbn10Toisbn13(string $isbn10, int $year): string {

@@ -1297,11 +1297,11 @@ final class textToolsTest extends testBaseClass {
     public function testArxivIdValid(): void {
         $this->assertTrue(arxiv_id_valid('1706.05013'));          // new style
         $this->assertTrue(arxiv_id_valid('1706.05013v2'));        // new style with version
+        $this->assertTrue(arxiv_id_valid('1234.5678'));           // any YYMM.NNNN accepted (matches URLtools)
         $this->assertTrue(arxiv_id_valid('hep-th/9901001'));      // old style
         $this->assertTrue(arxiv_id_valid('math.GT/0309136'));     // old style with class
         $this->assertFalse(arxiv_id_valid('bogus'));
-        $this->assertFalse(arxiv_id_valid('1706.0501'));          // too few digits
-        $this->assertFalse(arxiv_id_valid('9913.12345'));         // impossible month
+        $this->assertFalse(arxiv_id_valid('1706.05013x'));        // bad version character
         $this->assertFalse(arxiv_id_valid(''));
     }
 
@@ -1340,9 +1340,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(bibcode_valid('2015arXiv151206696F'));
         $this->assertTrue(bibcode_valid('2005A&A...430.1063G'));
         $this->assertTrue(bibcode_valid('1234567890123456789')); // numeric bibcodes accepted (matches REGEXP_BIBCODE)
+        $this->assertTrue(bibcode_valid('2222NatSR...814768S')); // year 1xxx/2xxx accepted (matches REGEXP_BIBCODE)
         $this->assertFalse(bibcode_valid('xyz'));                 // too short
         $this->assertFalse(bibcode_valid('12345'));               // too short
-        $this->assertFalse(bibcode_valid('9999PhRvD..89h4022A')); // year out of range
+        $this->assertFalse(bibcode_valid('9999PhRvD..89h4022A')); // year must begin with 1 or 2
         $this->assertFalse(bibcode_valid(''));
     }
 }

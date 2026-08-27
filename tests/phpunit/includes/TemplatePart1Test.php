@@ -1037,22 +1037,22 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testId2Param3(): void {
-        $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
+        $text = '{{cite book | id={{arxiv|hep-th|9901001}} }}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
+        $this->assertSame('hep-th/9901001', $expanded->get2('arxiv'));
     }
 
     public function testId2Param4(): void {
-        $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
+        $text = '{{cite book | id={{arxiv|hep-th|9901001}} {{arxiv|hep-th|9901001}} }}'; // Two of the same thing
         $expanded = $this->process_citation($text);
-        $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
-        $this->assertSame('{{cite book | arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
+        $this->assertSame('hep-th/9901001', $expanded->get2('arxiv'));
+        $this->assertSame('{{cite book | arxiv=hep-th/9901001 }}', $expanded->parsed_text());
     }
 
     public function testId2Param5(): void {
-        $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different templates
+        $text = '{{cite book|pages=1–2|id={{arxiv|hep-th|9901001}}}}{{cite book|pages=1–3|id={{arxiv|hep-th|9901001}}}}'; // Two of the same sub-template, but in different templates
         $expanded = $this->process_page($text);
-        $this->assertSame('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678 }}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
+        $this->assertSame('{{cite book|pages=1–2|arxiv=hep-th/9901001 }}{{cite book|pages=1–3|arxiv=hep-th/9901001 }}', $expanded->parsed_text());
     }
 
     public function testNestedTemplates1(): void {
