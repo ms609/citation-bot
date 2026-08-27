@@ -4,6 +4,30 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class DoiTest extends testBaseClass {
+    public function testCrossRefNewApiParserAcceptsObjectMessage(): void {
+        $result = parse_crossref_newapi_response(
+            '{"status":"ok","message":{"title":["Expected title"]}}'
+        );
+
+        $this->assertNotNull($result);
+        $this->assertSame(['Expected title'], $result->title);
+    }
+
+    public function testCrossRefNewApiParserRejectsNonObjectMessage(): void {
+        foreach (['[]', 'null', '"metadata"', '42', 'true'] as $message) {
+            $result = parse_crossref_newapi_response(
+                '{"status":"ok","message":' . $message . '}'
+            );
+            $this->assertNull($result);
+        }
+    }
+
+    public function testCrossRefNewApiParserRejectsInvalidEnvelope(): void {
+        $this->assertNull(parse_crossref_newapi_response('not json'));
+        $this->assertNull(parse_crossref_newapi_response('{"status":"error","message":{}}'));
+        $this->assertNull(parse_crossref_newapi_response('{"status":[],"message":{}}'));
+    }
+
     public function testExpansion_doi_not_from_crossrefRG(): void {
         $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);

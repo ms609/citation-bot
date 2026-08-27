@@ -516,6 +516,20 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     return;
 }
 
+function parse_crossref_newapi_response(string $response): ?object {
+    $json = @json_decode($response);
+    if (!is_object($json)) {
+        return null;
+    }
+    if (!isset($json->status) || !is_string($json->status) || $json->status !== 'ok') {
+        return null;
+    }
+    if (!isset($json->message) || !is_object($json->message)) {
+        return null;
+    }
+    return $json->message;
+}
+
 /**
  * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addition to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
  */
@@ -528,10 +542,10 @@ function query_crossref_newapi(string $doi): object {
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
-    $json = @json_decode($json);
+    $result = parse_crossref_newapi_response($json);
+    unset($json);
 
-    if (is_object($json) && isset($json->message) && isset($json->status) && (string) $json->status === "ok") {
-        $result = $json->message;
+    if ($result !== null) {
         HandleCache::$cache_active[$doi] = true;
         HandleCache::check_memory_use();
     } else {
@@ -541,7 +555,7 @@ function query_crossref_newapi(string $doi): object {
 
     // A bunch of stuff we will never use - make dubug messages and memory smaller
 
-    unset(  $json, $result->reference, $result->assertion, $result->{'reference-count'},
+    unset(  $result->reference, $result->assertion, $result->{'reference-count'},
             $result->deposited, $result->link, $result->{'update-policy'}, $result->{'is-referenced-by-count'},
             $result->{'published-online'}, $result->member, $result->score, $result->prefix, $result->source,
             $result->abstract, $result->URL, $result->relation, $result->{'content-domain'},
