@@ -54,6 +54,9 @@ function bot_curl_ip_is_public(string $ip): bool {
     }
 
     $packed = inet_pton($ip);
+    if ($packed === false) {
+        return false;
+    }
 
     /*
      * FILTER_FLAG_GLOBAL_RANGE still accepts multicast,
