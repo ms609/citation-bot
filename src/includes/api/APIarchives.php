@@ -122,7 +122,7 @@ function archive_title_scan_window(string $raw_html): string {
         return '';
     }
 
-    $limit = min(mb_strlen($raw_html, '8-bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES]);
+    $limit = min(mb_strlen($raw_html, '8-bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES);
     $body_position = mb_stripos($raw_html, '<body');
     if ($body_position !== false && $body_position < $limit) {
         $body_end = mb_strpos($raw_html, '>', $body_position);
