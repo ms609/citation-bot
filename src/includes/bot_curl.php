@@ -26,6 +26,9 @@ function bot_curl_ip_is_public(string $ip): bool {
         $packed = mb_substr($packed, 12, 4, '8bit');
         $ip = inet_ntop($packed);
     }
+    if ($ip === false) {
+        return false;
+    }
     /*
      * Reject non-global special-purpose ranges such as:
      *   10.0.0.0/8
