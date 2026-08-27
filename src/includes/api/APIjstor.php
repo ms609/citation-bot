@@ -284,8 +284,9 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                 $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat)); // Ignore these completely
                 break;
             default:
-                if (isset($ris_part[1])) { // After logging this for several years, nothing of value ever found
-                    report_info("Unexpected RIS data type ignored: " . echoable(mb_trim($ris_part[0])) . " set to " . echoable(mb_trim($ris_part[1]))); // @codeCoverageIgnore
+                // After logging this for several years, nothing of value ever found
+                if (isset($ris_part[1])) { // @phpstan-ignore isset.offset
+                    report_minor_error("Unexpected RIS data type ignored: " . echoable(mb_trim($ris_part[0])) . " set to " . echoable(mb_trim($ris_part[1]))); // @codeCoverageIgnore
                 }
         }
         unset($ris_part[0]);
