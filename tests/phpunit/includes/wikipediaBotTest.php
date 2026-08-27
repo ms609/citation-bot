@@ -15,6 +15,38 @@ final class wikipediaBotTest extends testBaseClass {
         WikipediaBot::make_ch();
     }
 
+    public function testApiBoundariesCatchThrowable(): void {
+        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $this->assertIsString($source);
+        $this->assertStringNotContainsString('catch (Exception $E)', $source);
+        $this->assertGreaterThanOrEqual(2, mb_substr_count($source, 'catch (Throwable $E)'));
+    }
+
+    public function testOAuthRequestConstructionIsInsideFetchBoundary(): void {
+        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $this->assertIsString($source);
+
+        $fetch_start = mb_strpos($source, 'private function fetch(');
+        if ($fetch_start === false) {
+            $this->fail('Could not locate WikipediaBot::fetch()');
+        }
+        $fetch_end = mb_strpos($source, 'public function write_page(', $fetch_start);
+        if ($fetch_end === false) {
+            $this->fail('Could not locate WikipediaBot::write_page()');
+        }
+
+        $fetch_source = mb_substr($source, $fetch_start, $fetch_end - $fetch_start);
+        $try_position = mb_strpos($fetch_source, 'try {');
+        $request_position = mb_strpos($fetch_source, 'Request::fromConsumerAndToken');
+        $sign_position = mb_strpos($fetch_source, 'signRequest(');
+
+        $this->assertNotFalse($try_position);
+        $this->assertNotFalse($request_position);
+        $this->assertNotFalse($sign_position);
+        $this->assertTrue($try_position < $request_position);
+        $this->assertTrue($try_position < $sign_position);
+    }
+
     private function category_members_with_retry(string $category): array {
         $backoff_delays = [2, 5];
         $members = WikipediaBot::category_members($category);
