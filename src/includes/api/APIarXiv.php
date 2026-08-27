@@ -27,6 +27,7 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
  * Return arXiv entries in the same order as the requested identifiers.
  * Missing or malformed entries are represented as null.
  *
+ * SimpleXMLElement $xml
  * @param array<string> $ids
  * @return array<SimpleXMLElement|null>
  */
