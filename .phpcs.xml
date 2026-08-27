@@ -54,6 +54,7 @@
                 <element key="create_function" value="null"/>
                 <element key="curl_close" value="null"/>
                 <element key="curl_share_close" value="null"/>
+				dsaf
                 <element key="die" value="exit"/>
                 <element key="doubleval" value="floatval"/>
                 <element key="eval" value="null"/>
