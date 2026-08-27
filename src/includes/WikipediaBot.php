@@ -150,7 +150,7 @@ final class WikipediaBot {
                 CURLOPT_HTTPHEADER => [$authenticationHeader],
             ]);
 
-            $data = @curl_exec(self::$ch_write);
+            $data = bot_curl_exec_withFalse(self::$ch_write);
             if ($data === false) {     // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_write);
                 $errorStr = curl_error(self::$ch_write);
@@ -508,7 +508,7 @@ final class WikipediaBot {
             CURLOPT_URL => $api_root,
             ]);
 
-            $data = @curl_exec(self::$ch_logout);
+            $data = bot_curl_exec_withFalse(self::$ch_logout);
             if ($data === false) {
                 // @codeCoverageIgnoreStart
                 $errnoInt = curl_errno(self::$ch_logout);
@@ -518,7 +518,7 @@ final class WikipediaBot {
             $data = (string) $data;
             if ($data === '') {
                 sleep(4);                                       // @codeCoverageIgnore
-                $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+                $data = bot_curl_exec(self::$ch_logout);  // @codeCoverageIgnore
             }
             return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
@@ -551,7 +551,7 @@ final class WikipediaBot {
                                 [CURLOPT_HTTPGET => true,
                                     CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' => 'raw',]),
                                 ]);
-        $text = @curl_exec(self::$ch_logout);
+        $text = bot_curl_exec_withFalse(self::$ch_logout);
         if ($text === false) {
             // @codeCoverageIgnoreStart
             $errnoInt = curl_errno(self::$ch_logout);
