@@ -164,4 +164,51 @@ final class UserMessagesTest extends testBaseClass {
         report_forget('test forget');
         $this->assertSame('', (string) ob_get_clean());
     }
+
+    /**
+     * @return array{int, string}
+     */
+    private function runUserMessagesSubprocess(string $body): array {
+        if (!function_exists('exec')) {
+            $this->markTestSkipped('exec() is unavailable');
+        }
+
+        $user_messages = realpath(__DIR__ . '/../../../src/includes/user_messages.php');
+        $this->assertNotFalse($user_messages);
+
+        $bootstrap =
+            'putenv("PUBLIC_BASE_URL=https://citations.toolforge.org");' .
+            'define("CI", false);' .
+            'define("HTML_OUTPUT", false);' .
+            'function bot_debug_log(string $text): void {}' .
+            'require_once ' . var_export($user_messages, true) . ';' .
+            $body;
+
+        $command = escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($bootstrap);
+        $output = [];
+        $exit_code = -1;
+        exec($command, $output, $exit_code); // phpcs:ignore
+
+        return [$exit_code, implode("\n", $output)];
+    }
+
+    public function testMinorErrorDoesNotTerminateProductionCli(): void {
+        [$exit_code, $output] = $this->runUserMessagesSubprocess(
+            'report_minor_error("recoverable CLI condition"); echo "CONTINUED";'
+        );
+
+        $this->assertSame(0, $exit_code);
+        $this->assertStringContainsString('recoverable CLI condition', $output);
+        $this->assertStringContainsString('CONTINUED', $output);
+    }
+
+    public function testFatalErrorReturnsNonZeroExitCode(): void {
+        [$exit_code, $output] = $this->runUserMessagesSubprocess(
+            'report_error("fatal CLI condition"); echo "UNREACHABLE";'
+        );
+
+        $this->assertContains($exit_code, [1, 255]); // Our code returns 1, but PHPUnit gives 255
+        $this->assertStringContainsString('fatal CLI condition', $output);
+        $this->assertStringNotContainsString('UNREACHABLE', $output);
+    }
 }

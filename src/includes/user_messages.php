@@ -77,27 +77,32 @@ function report_inline(string $text): void {
  */
 function report_error(string $text): never {
     if (CI) {
-        trigger_error($text);  // Stop this test now
+        trigger_error($text, E_USER_WARNING);
     } elseif (function_exists('bot_debug_log')) {
         bot_debug_log($text);  // Code logfile, if defined
         report_warning($text); // To the user
     } else {
         report_warning($text); // To the user
-        trigger_error($text);  // System Logfile
+        trigger_error($text, E_USER_WARNING);  // System Logfile
     }
-    exit(0);
+    exit(1);
 }
 
 /**
- * @codeCoverageIgnore
+ * Report an anomaly that should fail tests, but is recoverable in production.
+ *
+ * Command-line batch runs are production too: a page-specific or upstream-data
+ * problem must not terminate the whole process merely because HTML output is
+ * disabled.
  */
-function report_minor_error(string $text): void {  // For things we want to error in tests, but continue on Wikipedia
-    if (!HTML_OUTPUT) { // command line and testing
+function report_minor_error(string $text): void {
+    if (CI) {
         report_error($text);
-    } else {
-        bot_debug_log($text);
-        report_warning($text);
     }
+    if (function_exists('bot_debug_log')) {
+        bot_debug_log($text);
+    }
+    report_warning($text);
 }
 
 /** special flags to mark this function as making all untrustworthy input magically safe to output */
