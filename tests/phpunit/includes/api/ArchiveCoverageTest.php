@@ -513,12 +513,12 @@ final class ArchiveCoverageTest extends testBaseClass {
     }
 
     public function testFetchArchivePageRejectsEmptyUrlBeforeCurl(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertSame('', fetch_archive_page($ch, ''));
     }
 
     public function testFetchArchivePageRejectsNonArchiveHostBeforeCurl(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertSame('', fetch_archive_page($ch, 'https://example.com/archive'));
     }
 
