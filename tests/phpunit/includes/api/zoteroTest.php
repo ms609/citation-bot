@@ -231,6 +231,39 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testZoteroResponseRejectsMalformedScalarField(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => ['unexpected', 'array'],
+                'itemType' => 'webpage',
+            ],
+        ];
+        $zotero_response = json_encode($zotero_data);
+
+        Zotero::process_zotero_response($zotero_response, $template, '', 0);
+
+        $this->assertSame($text, $template->parsed_text());
+    }
+
+    public function testZoteroResponseRejectsMalformedCreatorEntry(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'Valid title',
+                'itemType' => 'journalArticle',
+                'creators' => ['unexpected scalar creator'],
+            ],
+        ];
+        $zotero_response = json_encode($zotero_data);
+
+        Zotero::process_zotero_response($zotero_response, $template, '', 0);
+
+        $this->assertSame($text, $template->parsed_text());
+    }
+
     public function testZoteroResponse5(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
