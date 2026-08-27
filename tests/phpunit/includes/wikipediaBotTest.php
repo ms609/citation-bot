@@ -288,4 +288,49 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertTrue(WikipediaBot::resultsGood($result));
     }
 
+    public function testCategoryMemberParserSkipsMalformedExternalRecords(): void {
+        $response = (object) [
+            'query' => (object) [
+                'categorymembers' => [
+                    (object) ['title' => 'Article One'],
+                    (object) ['title' => ['unexpected']],
+                    'not-an-object',
+                    (object) ['title' => 'Talk:Excluded'],
+                    (object) ['title' => 'Article Two'],
+                ],
+            ],
+        ];
+
+        $this->assertSame(
+            ['Article One', 'Article Two'],
+            WikipediaBot::category_member_titles_from_response($response)
+        );
+        $this->assertNull(WikipediaBot::category_member_titles_from_response((object) ['query' => []]));
+    }
+
+    public function testLinkParserSkipsMalformedExternalRecords(): void {
+        $json = json_encode([
+            'parse' => [
+                'links' => [
+                    ['ns' => 0, 'exists' => '', '*' => 'Article One'],
+                    ['ns' => 118, 'exists' => '', '*' => 'Draft:Article Two'],
+                    ['ns' => '0', 'exists' => '', '*' => 'Wrong namespace type'],
+                    ['ns' => 0, '*' => 'Missing exists'],
+                    ['ns' => 0, 'exists' => '', '*' => ['unexpected']],
+                    'not-an-array',
+                ],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->assertSame(
+            [
+                ['ns' => 0, 'title' => 'Article One'],
+                ['ns' => 118, 'title' => 'Draft:Article Two'],
+            ],
+            WikipediaBot::parse_links_response($json)
+        );
+        $this->assertNull(WikipediaBot::parse_links_response('{"parse":{"links":"bad"}}'));
+        $this->assertNull(WikipediaBot::parse_links_response('not json'));
+    }
+
 }
