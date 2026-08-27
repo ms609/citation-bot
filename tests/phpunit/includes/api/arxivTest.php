@@ -76,4 +76,36 @@ final class arxivTest extends testBaseClass {
         $this->assertSame('12345678', $template->get2('pmid'));
     }
 
+    public function testArxivEntriesAreMatchedByIdentifierNotResponseOrder(): void {
+        $xml = simplexml_load_string(
+            '<feed>' .
+            '<entry><id>https://arxiv.org/abs/2222.00002v3</id><title>Second</title></entry>' .
+            '<entry><id>https://arxiv.org/abs/1111.00001v1</id><title>First</title></entry>' .
+            '</feed>'
+        );
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+
+        $entries = arxiv_entries_for_ids(
+            $xml,
+            ['1111.00001', 'missing.00000', '2222.00002v3', '2222.00002']
+        );
+
+        $this->assertSame('First', (string) $entries[0]?->title);
+        $this->assertNull($entries[1]);
+        $this->assertSame('Second', (string) $entries[2]?->title);
+        $this->assertSame('Second', (string) $entries[3]?->title);
+    }
+
+    public function testArxivEntryMatcherIgnoresMalformedIds(): void {
+        $xml = simplexml_load_string(
+            '<feed>' .
+            '<entry><id>not-an-arxiv-url</id><title>Bad</title></entry>' .
+            '</feed>'
+        );
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+
+        $entries = arxiv_entries_for_ids($xml, ['not-an-arxiv-url']);
+        $this->assertSame([null], $entries);
+    }
+
 }
