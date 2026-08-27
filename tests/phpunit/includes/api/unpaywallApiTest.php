@@ -5,6 +5,38 @@ require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class unpaywallApiTest extends testBaseClass {
 
+    public function testUnpaywallParserAcceptsExpectedShape(): void {
+        $result = parse_unpaywall_response(
+            '{"journal_name":"Example Journal","best_oa_location":' .
+            '{"host_type":"repository","evidence":"oa repository",' .
+            '"url_for_landing_page":"https://example.test/article"}}'
+        );
+        $this->assertNotNull($result);
+        $this->assertSame('repository', $result->best_oa_location->host_type);
+    }
+
+    public function testUnpaywallParserRejectsMalformedNestedShapes(): void {
+        foreach ([
+            'not json',
+            '[]',
+            '{"best_oa_location":[]}',
+            '{"best_oa_location":"repository"}',
+            '{"best_oa_location":{"host_type":[]}}',
+            '{"best_oa_location":{"evidence":{}}}',
+            '{"best_oa_location":{"url_for_landing_page":[]}}',
+            '{"best_oa_location":{"url":{}}}',
+            '{"journal_name":[]}',
+        ] as $response) {
+            $this->assertNull(parse_unpaywall_response($response));
+        }
+    }
+
+    public function testUnpaywallParserAllowsNoBestLocation(): void {
+        $result = parse_unpaywall_response('{"doi":"10.1000/test","best_oa_location":null}');
+        $this->assertNotNull($result);
+        $this->assertFalse(isset($result->best_oa_location));
+    }
+
     public function testKnownBadOpenAccessDoiIsRejectedWithoutARequest(): void {
         $template = $this->make_citation('{{cite journal|doi=' . BAD_OA_URL[0] . '}}');
         $this->assertSame('wrong', get_unpaywall_url($template, BAD_OA_URL[0]));

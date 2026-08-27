@@ -267,17 +267,38 @@ final class WikipediaBot {
             return null;
         }
 
-        if (!isset($response->query->pages)) {
+        if (
+            !isset($response->query) ||
+            !is_object($response->query) ||
+            !isset($response->query->pages) ||
+            !is_object($response->query->pages)
+        ) {
             report_warning("Pages list is non-existent.  Aborting.");
             return null;
         }
         $myPage = self::reset($response->query->pages);
 
-        if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+        if (
+            !isset($myPage->lastrevid) ||
+            !is_scalar($myPage->lastrevid) ||
+            !isset($myPage->title) ||
+            !is_scalar($myPage->title) ||
+            !isset($myPage->revisions) ||
+            !is_array($myPage->revisions) ||
+            !isset($myPage->revisions[0]) ||
+            !is_object($myPage->revisions[0]) ||
+            !isset($myPage->revisions[0]->timestamp) ||
+            !is_scalar($myPage->revisions[0]->timestamp)
+        ) {
             report_warning("Page seems not to exist. Aborting.");
             return null;
         }
-        if (!isset($response->query->tokens->csrftoken)) {
+        if (
+            !isset($response->query->tokens) ||
+            !is_object($response->query->tokens) ||
+            !isset($response->query->tokens->csrftoken) ||
+            !is_scalar($response->query->tokens->csrftoken)
+        ) {
             report_warning("Response object lacked tokens.  Aborting. ");
             return null;
         }
@@ -285,21 +306,42 @@ final class WikipediaBot {
     }
 
     public static function resultsGood(?object $result): bool {
-        if (isset($result->error)) {
-            report_warning("Write error: " .
-                           echoable(mb_strtoupper($result->error->code)) . ": " .
-                           str_replace(["You ", " have "], ["This bot ", " has "],
-                           echoable((string) @$result->error->info)));
+        if ($result === null) {
+            report_warning("Unhandled write error. No response was returned.");
             return false;
-        } elseif (isset($result->edit->captcha)) {
+        }
+        if (isset($result->error)) {
+            if (!is_object($result->error)) {
+                report_warning("Write error response was malformed.");
+                return false;
+            }
+            $code = $result->error->code ?? '';
+            $info = $result->error->info ?? '';
+            if (!is_scalar($code) || !is_scalar($info)) {
+                report_warning("Write error response was malformed.");
+                return false;
+            }
+            report_warning("Write error: " .
+                           echoable(mb_strtoupper((string) $code)) . ": " .
+                           str_replace(["You ", " have "], ["This bot ", " has "],
+                           echoable((string) $info)));
+            return false;
+        }
+        if (!isset($result->edit) || !is_object($result->edit)) {
+            report_warning("Unhandled write error. Write response was malformed.");
+            return false;
+        }
+        if (isset($result->edit->captcha)) {
             report_error("Write error: We encountered a captcha, so the bot cannot be properly logged in.");  // @codeCoverageIgnore
-        } elseif (empty($result->edit->result)) { // Includes results === null
+        }
+        if (!isset($result->edit->result) || !is_string($result->edit->result) || $result->edit->result === '') {
             report_warning("Unhandled write error.  Please copy this output and " .
                            "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                            "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
             sleep(5);
             return false;
-        } elseif ($result->edit->result !== "Success") {
+        }
+        if ($result->edit->result !== "Success") {
             report_warning('Attempt to write page returned error: ' . echoable($result->edit->result));
             return false;
         }

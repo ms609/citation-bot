@@ -2,6 +2,39 @@
 
 declare(strict_types=1);
 
+function parse_semanticscholar_corpus_response(string $response): ?string {
+    $json = @json_decode($response);
+    if (!is_object($json) || !isset($json->corpusId) || (!is_string($json->corpusId) && !is_int($json->corpusId))) {
+        return null;
+    }
+    return (string) $json->corpusId;
+}
+
+function parse_semanticscholar_doi_response(string $response): ?string {
+    $json = @json_decode($response);
+    if (
+        !is_object($json) ||
+        !isset($json->externalIds) ||
+        !is_object($json->externalIds) ||
+        !isset($json->externalIds->DOI) ||
+        !is_string($json->externalIds->DOI)
+    ) {
+        return null;
+    }
+    return (string) $json->externalIds->DOI;
+}
+
+function parse_semanticscholar_open_access_response(string $response): ?bool {
+    $json = @json_decode($response);
+    if (!is_object($json) || isset($json->error) || !isset($json->isOpenAccess)) {
+        return null;
+    }
+    if (!is_bool($json->isOpenAccess)) {
+        return null;
+    }
+    return $json->isOpenAccess;
+}
+
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
@@ -14,21 +47,13 @@ function getS2CID(string $url): string {
         report_warning("No response from semanticscholar.");    // @codeCoverageIgnore
         return '';                                              // @codeCoverageIgnore
     }
-    $json = @json_decode($response);
+    $corpus_id = parse_semanticscholar_corpus_response($response);
     unset($response);
-    if (!$json) {
+    if ($corpus_id === null) {
         report_warning("Bad response from semanticscholar.");    // @codeCoverageIgnore
         return '';                                              // @codeCoverageIgnore
     }
-    if (!isset($json->corpusId)) {
-        report_warning("No corpusId found from semanticscholar for " . echoable($url)); // @codeCoverageIgnore
-        return '';                                                      // @codeCoverageIgnore
-    }
-    if (is_array($json->corpusId) || is_object($json->corpusId)) {
-        report_warning("Bad data from semanticscholar.");    // @codeCoverageIgnore
-        return '';                                          // @codeCoverageIgnore
-    }
-    return (string) $json->corpusId;
+    return $corpus_id;
 }
 
 function ConvertS2CID_DOI(string $s2cid): string {
@@ -44,21 +69,12 @@ function ConvertS2CID_DOI(string $s2cid): string {
         report_warning("No response from semanticscholar.");  // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
     }
-    $json = @json_decode($response);
+    $doi = parse_semanticscholar_doi_response($response);
     unset($response);
-    if (!$json) {
+    if ($doi === null) {
         report_warning("Bad response from semanticscholar."); // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
     }
-    if (!isset($json->externalIds->DOI)) {
-        return '';                                         // @codeCoverageIgnore
-    }
-    $doi = $json->externalIds->DOI;
-    if (is_array($doi) || is_object($doi)) {
-        report_warning("Bad data from semanticscholar."); // @codeCoverageIgnore
-        return '';                                        // @codeCoverageIgnore
-    }
-    $doi = (string) $doi;
     if (doi_works($doi)) {
         return $doi;
     } else {
@@ -87,17 +103,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     if (mb_stripos($response, 'Paper not found') !== false) {
         return false; // @codeCoverageIgnore
     }
-    $oa = @json_decode($response);
-    if ($oa === null) {
-        return null; // @codeCoverageIgnore
-    }
-    if (isset($oa->error)) {
-        return null; // @codeCoverageIgnore
-    }
-    if (isset($oa->isOpenAccess) && $oa->isOpenAccess) {
-        return true;
-    }
-    return false;
+    return parse_semanticscholar_open_access_response($response);
 }
 
 function get_doi_from_semanticscholar(Template $template): void {

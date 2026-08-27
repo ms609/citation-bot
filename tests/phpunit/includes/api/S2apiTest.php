@@ -4,6 +4,45 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class S2apiTest extends testBaseClass {
+    public function testSemanticScholarCorpusParserRejectsMalformedShapes(): void {
+        $this->assertSame('12345', parse_semanticscholar_corpus_response('{"corpusId":12345}'));
+        foreach ([
+            'not json',
+            '[]',
+            '{"corpusId":[]}',
+            '{"corpusId":{}}',
+            '{"corpusId":null}',
+        ] as $response) {
+            $this->assertNull(parse_semanticscholar_corpus_response($response));
+        }
+    }
+
+    public function testSemanticScholarDoiParserRejectsMalformedShapes(): void {
+        $this->assertSame(
+            '10.1000/test',
+            parse_semanticscholar_doi_response('{"externalIds":{"DOI":"10.1000/test"}}')
+        );
+        foreach ([
+            'not json',
+            '[]',
+            '{"externalIds":[]}',
+            '{"externalIds":{"DOI":[]}}',
+            '{"externalIds":{"DOI":{}}}',
+            '{"externalIds":{"DOI":null}}',
+        ] as $response) {
+            $this->assertNull(parse_semanticscholar_doi_response($response));
+        }
+    }
+
+    public function testSemanticScholarOpenAccessParserRequiresBoolean(): void {
+        $this->assertTrue(parse_semanticscholar_open_access_response('{"isOpenAccess":true}'));
+        $this->assertFalse(parse_semanticscholar_open_access_response('{"isOpenAccess":false}'));
+        $this->assertNull(parse_semanticscholar_open_access_response('{"isOpenAccess":"yes"}'));
+        $this->assertNull(parse_semanticscholar_open_access_response('{"isOpenAccess":[]}'));
+        $this->assertNull(parse_semanticscholar_open_access_response('{"error":"rate limited"}'));
+        $this->assertNull(parse_semanticscholar_open_access_response('not json'));
+    }
+
     public function testSemanticScholar(): void {
         $this->sleep_S2();
         $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";
