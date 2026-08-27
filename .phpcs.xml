@@ -54,6 +54,8 @@
                 <element key="create_function" value="null"/>
                 <element key="curl_close" value="null"/>
                 <element key="curl_share_close" value="null"/>
+                <element key="curl_exec" value="bot_curl_exec"/>
+                <element key="curl_init" value="bot_curl_init"/>
                 <element key="die" value="exit"/>
                 <element key="doubleval" value="floatval"/>
                 <element key="eval" value="null"/>

@@ -163,7 +163,7 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
  * @param array<int, int|string|bool|array<int, string>> $ops
  */
 function bot_curl_init(float $time, array $ops): CurlHandle {
-    $ch = curl_init();
+    $ch = curl_init(); // phpcs:ignore
     if ($ch === false) {
         report_error("curl_init failure"); // @codeCoverageIgnore
     }
@@ -202,17 +202,16 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
+    return (string) bot_curl_exec_withFalse($ch);
+}
+
+function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
-    /** Make sure mandatory security restrictions are always in effect. */
-    bot_curl_apply_security_options($ch);
-
-    $result = @curl_exec($ch);
-    bot_curl_transfer_results()[$ch] = [
-        'ok' => $result !== false,
-        'errno' => curl_errno($ch),
-        'error' => curl_error($ch),
-        'http_code' => (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE),
-    ];
-
-    return $result === false ? '' : (string) $result;
+    /** Make sure this is always in effect */
+    curl_setopt_array($ch, [
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
+    ]);
+    return @curl_exec($ch); // phpcs:ignore
 }
