@@ -12,6 +12,17 @@ function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to 
     }
 }
 
+/**
+ * Split one RIS line without allowing a malformed upstream line to leave
+ * callers with an undefined value field.
+ *
+ * @return array{0: string, 1: string}
+ */
+function ris_line_parts(string $ris_line): array {
+    $parts = explode(" - ", $ris_line . " ", 2);
+    return isset($parts[1]) ? [$parts[0], $parts[1]] : ['', ''];
+}
+
 function expand_by_jstor(Template $template): void {
     static $ch = null;
     if ($ch === null) {
@@ -61,10 +72,7 @@ function expand_by_jstor(Template $template): void {
         $bad_data = true;
         $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
         foreach ($ris as $ris_line) {
-            $ris_part = explode(" - ", $ris_line . " ", 2);
-            if (!isset($ris_part[1])) {
-                $ris_part[0] = ""; // Ignore
-            }
+            $ris_part = ris_line_parts($ris_line);
             switch (mb_trim($ris_part[0])) {
                 case "T1":
                 case "TI":
@@ -85,10 +93,7 @@ function expand_by_jstor(Template $template): void {
             $got_count = 0;
             $new_title = ': ';
             foreach ($ris as $ris_line) {
-                $ris_part = explode(" - ", $ris_line . " ", 2);
-                if (!isset($ris_part[1])) {
-                    $ris_part[0] = ""; // Ignore
-                }
+                $ris_part = ris_line_parts($ris_line);
                 switch (mb_trim($ris_part[0])) {
                     case "T1":
                         $new_title .= mb_trim($ris_part[1]);
@@ -113,10 +118,7 @@ function expand_by_jstor(Template $template): void {
         if ($bad_data) {
             report_info('Old title did not match for ' . jstor_link($jstor));
             foreach ($ris as $ris_line) {
-                if (!isset($ris_part[1])) {
-                    $ris_part[0] = ""; // Ignore
-                }
-                $ris_part = explode(" - ", $ris_line . " ", 2);
+                $ris_part = ris_line_parts($ris_line);
                 switch (mb_trim($ris_part[0])) {
                     case "T1":
                     case "TI":
@@ -163,10 +165,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     }
 
     foreach ($ris as $ris_line) {
-        $ris_part = explode(" - ", $ris_line . " ", 2);
-        if (!isset($ris_part[1])) {
-            $ris_part[0] = "";
-        } // Ignore
+        $ris_part = ris_line_parts($ris_line);
         if (mb_trim($ris_part[0]) === "TY") {
             if (in_array(mb_trim($ris_part[1]), RIS_IS_BOOK, true)) {
                   $ris_book = true; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
@@ -184,11 +183,8 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     }
 
     foreach ($ris as $ris_line) {
-        $ris_part = explode(" - ", $ris_line . " ", 2);
+        $ris_part = ris_line_parts($ris_line);
         $ris_parameter = false;
-        if (!isset($ris_part[1])) {
-            $ris_part[0] = "";
-        } // Ignore
         switch (mb_trim($ris_part[0])) {
             case "T1":
                 if ($ris_fullbook) {

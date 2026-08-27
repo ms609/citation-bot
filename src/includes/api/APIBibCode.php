@@ -462,6 +462,61 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
 }
 
 /**
+ * Validate one record before downstream code indexes or iterates its fields.
+ */
+function adsabs_record_is_safe(object $record): bool {
+    foreach (['bibcode', 'pub', 'pubdate', 'volume', 'issue', 'year', 'doctype', 'arxivclass'] as $field) {
+        if (isset($record->{$field}) && !is_scalar($record->{$field})) {
+            return false;
+        }
+    }
+
+    foreach (['title', 'author', 'identifier', 'page', 'doi', 'arxiv_class'] as $field) {
+        if (!isset($record->{$field})) {
+            continue;
+        }
+        if (!is_array($record->{$field})) {
+            return false;
+        }
+        foreach ($record->{$field} as $value) {
+            if (!is_scalar($value)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/**
+ * Validate the successful ADS/ABS response envelope.
+ *
+ * @param mixed $decoded json_decode() result
+ */
+function adsabs_valid_response(mixed $decoded): ?stdClass {
+    if (!$decoded instanceof stdClass || !isset($decoded->response) || !$decoded->response instanceof stdClass) {
+        return null;
+    }
+
+    $response = $decoded->response;
+    if (!isset($response->numFound) || !is_int($response->numFound) || $response->numFound < 0) {
+        return null;
+    }
+    if (!isset($response->docs)) {
+        return $response->numFound === 0 ? $response : null;
+    }
+    if (!is_array($response->docs) || ($response->numFound > 0 && $response->docs === [])) {
+        return null;
+    }
+    foreach ($response->docs as $record) {
+        if (!is_object($record) || !adsabs_record_is_safe($record)) {
+            return null;
+        }
+    }
+    return $response;
+}
+
+/**
  * @param string $options should be a series of field names, colons (optionally urlencoded), and  URL-ENCODED search strings, separated by (unencoded) ampersands. Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
  */
 function query_adsabs(string $options): stdClass {
@@ -593,14 +648,18 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
             throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
         } elseif (isset($decoded->response)) {
-            return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE */
+            $response = adsabs_valid_response($decoded);
+            if ($response === null) {
+                throw new UnexpectedValueException("Malformed AdsAbs response", 5000);
+            }
+            return $response;  /** NORMAL RETURN IS HIDDEN HERE */
         } elseif (isset($decoded->error)) {                  // @codeCoverageIgnore
             throw new Exception('' . $decoded->error, 5000); // @codeCoverageIgnore
         } else {
             throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
         }
         // @codeCoverageIgnoreStart
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         if ($e->getCode() === 5000) { // made up code for AdsAbs error
             report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
         } elseif ($e->getCode() === 60) {
@@ -627,6 +686,10 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
 }
 
 function process_bibcode_data(Template $this_template, object $record): void {
+    if (!adsabs_record_is_safe($record)) {
+        report_warning("Malformed AdsAbs record ignored.");
+        return;
+    }
     $this_template->record_api_usage('adsabs', 'bibcode');
     if (!isset($record->title[0])) {
         return;
@@ -711,6 +774,9 @@ function process_bibcode_data(Template $this_template, object $record): void {
 }
 
 function expand_book_adsabs(Template $template, object $record): void {
+    if (!adsabs_record_is_safe($record)) {
+        return;
+    }
     set_time_limit(120);
     if (isset($record->year)) {
         $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
