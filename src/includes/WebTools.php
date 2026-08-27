@@ -9,6 +9,28 @@ require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
  */
 
 /**
+ * Run one page's work behind a Throwable boundary.
+ *
+ * A bad citation, malformed external response, or PHP engine error on one page
+ * should not terminate a multi-page run.
+ *
+ * @param callable(): bool $operation
+ * @return ?bool true when the page changed, false when it did not, null on failure
+ */
+function run_page_with_exception_boundary(string $page_title, callable $operation): ?bool {
+    try {
+        return $operation();
+    } catch (Throwable $exception) {
+        bot_debug_log(
+            'Page processing failure for "' . $page_title . '": ' .
+            $exception::class . ': ' . $exception->getMessage()
+        );
+        report_warning('Unexpected error while processing page "' . echoable($page_title) . '". Skipping this page.');
+        return null;
+    }
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
@@ -35,59 +57,82 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
 
     $page = new Page();
     $done = 0;
-    $pages_changed = 0;   // Pages where expand_text() returned true, meaning text was actually modified
+    $pages_changed = 0;   // Pages successfully processed where expand_text() returned true
     $pages_unchanged = 0; // Pages where no edit was made: no changes needed, blank, protected, redirect, etc.
+    $pages_failed = 0;    // Pages skipped after an unexpected Throwable
 
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
         $done++;
-        if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
-            $pages_changed++;
-            if (SAVETOFILES_MODE) {
-                // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
-                // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
-                $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
-                report_phase("Saving to file " . echoable($filename));
-                $body = $page->parsed_text();
-                $bodylen = mb_strlen($body, '8bit'); // byte count, not character count
-                if (file_put_contents($filename, $body) === $bodylen) {
-                    report_phase("Saved to file " . echoable($filename));
-                } else {
-                    report_warning("Save to file failed.");
+        $page_result = run_page_with_exception_boundary(
+            $page_title,
+            function () use (
+                $page,
+                $page_title,
+                $api,
+                $edit_summary_end,
+                $total,
+                $done,
+                &$final_edit_overview
+            ): bool {
+                if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
+                    if (SAVETOFILES_MODE) {
+                        // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
+                        // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
+                        $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
+                        report_phase("Saving to file " . echoable($filename));
+                        $body = $page->parsed_text();
+                        $bodylen = mb_strlen($body, '8bit'); // byte count, not character count
+                        if (file_put_contents($filename, $body) === $bodylen) {
+                            report_phase("Saved to file " . echoable($filename));
+                        } else {
+                            report_warning("Save to file failed.");
+                        }
+                        unset($body);
+                    } else {
+                        report_phase("Writing to " . echoable($page_title) . '... ');
+                        $attempts = 0;
+                        if ($total === 1) {
+                            $edit_sum = $edit_summary_end;
+                        } else {
+                            $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
+                        }
+                        while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
+                            ++$attempts;
+                        }
+                        if ($attempts < MAX_TRIES) {
+                            $last_rev = WikipediaBot::get_last_revision($page_title);
+                            html_echo(
+                            "\n  <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
+                            . $last_rev . "\">diff</a>" .
+                            " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a>",
+                            "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=" . $last_rev . "\n");
+                            $final_edit_overview .=
+                                "\n [ <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
+                            . $last_rev . "\">diff</a>" .
+                            " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a> ] " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                        } else {
+                            report_warning("Write failed.");
+                            $final_edit_overview .= "\n Write failed.            " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                        }
+                    }
+                    return true;
                 }
-                unset($body);
-            } else {
-                report_phase("Writing to " . echoable($page_title) . '... ');
-                $attempts = 0;
-                if ($total === 1) {
-                    $edit_sum = $edit_summary_end;
-                } else {
-                    $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
-                }
-                while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
-                    ++$attempts;
-                }
-                if ($attempts < MAX_TRIES) {
-                    $last_rev = WikipediaBot::get_last_revision($page_title);
-                    html_echo(
-                    "\n  <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
-                    . $last_rev . "\">diff</a>" .
-                    " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a>",
-                    "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=" . $last_rev . "\n");
-                    $final_edit_overview .=
-                        "\n [ <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
-                    . $last_rev . "\">diff</a>" .
-                    " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a> ] " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
-                } else {
-                    report_warning("Write failed.");
-                    $final_edit_overview .= "\n Write failed.            " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
-                }
-            }
-        } else {
-            $pages_unchanged++;
-            report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
+
+                report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
                 $final_edit_overview .= "\n No changes needed. " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                return false;
+            }
+        );
+
+        if ($page_result === true) {
+            $pages_changed++;
+        } elseif ($page_result === false) {
+            $pages_unchanged++;
+        } else {
+            $pages_failed++;
+            $final_edit_overview .= "\n Processing failed. " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
         }
         echo "\n";
         check_memory_usage("After writing page");
@@ -99,7 +144,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (!HTML_OUTPUT) {
             $final_edit_overview = '';
         }
-        echo "\n Done all " . (string) $total . " pages: " . (string) $pages_changed . " changed, " . (string) $pages_unchanged . " unchanged. \n  # # # \n" . $final_edit_overview;
+        echo "\n Done all " . (string) $total . " pages: " . (string) $pages_changed . " changed, " .
+             (string) $pages_unchanged . " unchanged, " . (string) $pages_failed . " failed. \n  # # # \n" . $final_edit_overview;
     } else {
         echo "\n Done with page.";
     }
