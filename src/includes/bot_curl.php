@@ -154,5 +154,11 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
 
 function bot_curl_exec(CurlHandle $ch): string {
     curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
+    /** Make sure this is always in effect */
+    curl_setopt_array($ch, [
+        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
+    ]);
     return (string) @curl_exec($ch);
 }
