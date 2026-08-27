@@ -19,9 +19,9 @@ final class pageTest extends testBaseClass {
         // failure, which cannot be assigned to Page::$text (declared string).
         $this->assertSame(
             0,
-            substr_count($source, '$this->text = preg_replace_callback(')
+            mb_substr_count($source, '$this->text = preg_replace_callback(')
         );
-        $this->assertGreaterThanOrEqual(7, substr_count($source, '$this->text = safe_preg_replace_callback('));
+        $this->assertGreaterThanOrEqual(7, mb_substr_count($source, '$this->text = safe_preg_replace_callback('));
     }
 
     public function testPageChangeSummary1(): void {
