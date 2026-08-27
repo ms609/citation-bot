@@ -14,19 +14,18 @@ function bot_curl_ip_is_public(string $ip): bool {
     }
 
     /*
-     * Normalize IPv4-mapped IPv6, including both:
+     * Normalize IPv4-mapped IPv6, including:
      *   ::ffff:127.0.0.1
      *   ::ffff:7f00:1
      */
     if (
-        strlen($packed) === 16 &&
-        substr($packed, 0, 10) === str_repeat("\0", 10) &&
-        substr($packed, 10, 2) === "\xff\xff"
+        mb_strlen($packed, '8bit') === 16 &&
+        mb_substr($packed, 0, 10, '8bit') === str_repeat("\0", 10) &&
+        mb_substr($packed, 10, 2, '8bit') === "\xff\xff"
     ) {
-        $packed = substr($packed, 12, 4);
+        $packed = mb_substr($packed, 12, 4, '8bit');
         $ip = inet_ntop($packed);
     }
-
     /*
      * Reject non-global special-purpose ranges such as:
      *   10.0.0.0/8
@@ -57,8 +56,7 @@ function bot_curl_ip_is_public(string $ip): bool {
      * FILTER_FLAG_GLOBAL_RANGE still accepts multicast,
      * so explicitly reject it.
      */
-
-    if (strlen($packed) === 4) {
+    if (mb_strlen($packed, '8bit') === 4) {
         // IPv4 multicast: 224.0.0.0/4
         if ((ord($packed[0]) & 0xf0) === 0xe0) {
             return false;
