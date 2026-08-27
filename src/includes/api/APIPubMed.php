@@ -189,6 +189,7 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => ["Content-Type: application/x-www-form-urlencoded", "Accept: application/xml"],
         ]);
+        bot_curl_set_max_response_bytes($ch, 16 * 1024 * 1024);
     }
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,

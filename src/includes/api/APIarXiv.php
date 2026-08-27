@@ -62,6 +62,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
+        bot_curl_set_max_response_bytes($ch, 32 * 1024 * 1024);
     }
     set_time_limit(120);
     if (count($ids) === 0 || empty($templates)) {

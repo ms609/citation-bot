@@ -175,4 +175,54 @@ final class BotCurlTest extends testBaseClass {
     public function testEvenMoreRejectedIP7(): void {
         $this->assertFalse(bot_curl_ip_is_public('ff02::1'));       // IPv6 multicast
     }
+
+    public function testCurlLimitPageSizeUsesPerHandleLimit(): void {
+        $ch = bot_curl_init(1.0, []);
+        $this->assertNotFalse($ch);
+        bot_curl_set_max_response_bytes($ch, 1024);
+
+        $this->assertSame(0, curl_limit_page_size($ch, 0, 1024, 0, 0));
+        $this->assertSame(1, curl_limit_page_size($ch, 0, 1025, 0, 0));
+        $this->assertSame(1024, bot_curl_get_max_response_bytes($ch));
+    }
+
+    public function testCurlResponseLimitRejectsInvalidValues(): void {
+        $ch = bot_curl_init(1.0, []);
+        $this->assertNotFalse($ch);
+        $this->expectException(InvalidArgumentException::class);
+        bot_curl_set_max_response_bytes($ch, 0);
+    }
+
+    public function testMandatoryProtocolsExcludeFtp(): void {
+        $this->assertSame(
+            CURLPROTO_HTTP | CURLPROTO_HTTPS,
+            BOT_CURL_ALLOWED_PROTOCOLS_USE
+        );
+        $this->assertSame(0, BOT_CURL_ALLOWED_PROTOCOLS_USE & CURLPROTO_FTP);
+        $this->assertSame(
+            CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+            BOT_CURL_ALLOWED_PROTOCOLS_END
+        );
+    }
+
+    public function testSecurityOptionsCanBeAppliedToNormalHandle(): void {
+        $ch = bot_curl_init(1.0, []);
+        $this->assertNotFalse($ch);
+        bot_curl_apply_security_options($ch);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testBotCurlExecPreservesTransportFailureMetadata(): void {
+        new TestPage();
+        $ch = bot_curl_init(1.0, [
+            CURLOPT_URL => 'file:///definitely-not-allowed-by-citation-bot',
+        ]);
+
+        $this->assertSame('', bot_curl_exec($ch));
+        $transfer = bot_curl_last_transfer($ch);
+
+        $this->assertFalse($transfer['ok']);
+        $this->assertGreaterThan(0, $transfer['errno']);
+        $this->assertNotSame('', $transfer['error']);
+    }
 }

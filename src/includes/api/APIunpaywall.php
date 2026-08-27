@@ -29,6 +29,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
         $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+        bot_curl_set_max_response_bytes($ch_oa, 4 * 1024 * 1024);
     }
     if (in_array($doi, BAD_OA_URL, true)) {
         return 'wrong';
