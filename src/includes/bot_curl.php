@@ -142,8 +142,8 @@ function bot_curl_last_transfer(CurlHandle $ch): array {
 
 function bot_curl_apply_security_options(CurlHandle $ch): void {
     if (!curl_setopt_array($ch, [
-        CURLOPT_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS,
-        CURLOPT_REDIR_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS,
+        CURLOPT_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_USE,
+        CURLOPT_REDIR_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_END,
         CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
     ])) {
         throw new RuntimeException('Unable to apply mandatory cURL security options.');
