@@ -98,7 +98,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testPublicCurlDestinationAccepted(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertNotFalse($ch);
 
         $this->assertSame(
@@ -114,7 +114,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testLoopbackCurlDestinationRejected(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertNotFalse($ch);
 
         $this->assertSame(
