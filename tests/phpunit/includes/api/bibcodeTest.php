@@ -551,4 +551,47 @@ final class bibcodeTest extends testBaseClass {
         });
     }
 
+    public function testAdsabsResponseRejectsMalformedExternalShapes(): void {
+        $valid = (object) [
+            'response' => (object) [
+                'numFound' => 1,
+                'docs' => [
+                    (object) [
+                        'bibcode' => '2017NatCo...814879F',
+                        'title' => ['Example title'],
+                        'page' => ['1'],
+                    ],
+                ],
+            ],
+        ];
+        $this->assertNotNull(adsabs_valid_response($valid));
+
+        $bad_responses = [
+            null,
+            [],
+            (object) ['response' => []],
+            (object) ['response' => (object) ['numFound' => '1', 'docs' => []]],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => 'bad']],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => []]],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => [(object) ['title' => 'not-an-array']]]],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => [(object) ['title' => [['nested']]]]]],
+        ];
+
+        foreach ($bad_responses as $response) {
+            $this->assertNull(adsabs_valid_response($response));
+        }
+    }
+
+    public function testMalformedAdsabsRecordIsIgnoredInsteadOfThrowing(): void {
+        $template = $this->make_citation('{{cite journal|bibcode=2017NatCo...814879F}}');
+        $record = (object) [
+            'title' => ['Should not be added'],
+            'page' => (object) ['unexpected' => 'shape'],
+        ];
+
+        process_bibcode_data($template, $record);
+
+        $this->assertNull($template->get2('title'));
+    }
+
 }
