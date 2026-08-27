@@ -52,19 +52,17 @@ if ($json === '') {
     bot_html_footer();
     exit(0);
 }
-$array = json_decode($json, true);
+$links = WikipediaBot::parse_links_response($json);
 unset($json);
-if (!is_array($array) || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
+if ($links === null) {
     report_warning(' Error interpreting page list - perhaps page requested does not even exist');
     bot_html_footer();
     exit(0);
 }
-$links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-unset($array);
 $pages_in_category = [];
 foreach ($links as $link) {
-    if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
-        $linked_page = (string) $link['*'];
+    if ($link['ns'] === 0 || $link['ns'] === 118) {  // normal and draft articles only
+        $linked_page = $link['title'];
         $linked_page = str_replace(' ', '_', $linked_page);
         if (!in_array($linked_page, AVOIDED_LINKS, true) && mb_stripos($linked_page, 'disambiguation') === false) {
             $pages_in_category[] = $linked_page;
