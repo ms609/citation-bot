@@ -153,7 +153,7 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
-    return (string) bot_curl_exec_withFalse(CurlHandle $ch);
+    return (string) bot_curl_exec_withFalse($ch);
 }
 
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
