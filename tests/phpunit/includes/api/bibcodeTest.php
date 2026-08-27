@@ -573,14 +573,8 @@ final class bibcodeTest extends testBaseClass {
             (object) ['response' => (object) ['numFound' => '1', 'docs' => []]],
             (object) ['response' => (object) ['numFound' => 1, 'docs' => 'bad']],
             (object) ['response' => (object) ['numFound' => 1, 'docs' => []]],
-            (object) ['response' => (object) [
-                'numFound' => 1,
-                'docs' => [(object) ['title' => 'not-an-array']],
-            ]],
-            (object) ['response' => (object) [
-                'numFound' => 1,
-                'docs' => [(object) ['title' => [['nested']]],
-            ]],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => [(object) ['title' => 'not-an-array']]]],
+            (object) ['response' => (object) ['numFound' => 1, 'docs' => [(object) ['title' => [['nested']]]]]],
         ];
 
         foreach ($bad_responses as $response) {
