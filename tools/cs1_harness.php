@@ -65,14 +65,20 @@ restore_error_handler();
 // Convert report_error()'s trigger_error() into a catchable exception.
 // Errors suppressed with @ are honored (in PHP 8 the @ operator leaves
 // error_reporting() set to the insuppressible levels only), matching how
-// PHPUnit's own error handler behaves so normal bot code paths are unaffected.
+// PHPUnit's own error handler behaves. Only the report_* trigger_error()
+// severities (and fatal-ish errors) are escalated, so native E_WARNING,
+// E_NOTICE, and E_DEPRECATED pass through and results do not vary with the
+// PHP version or incidental codebase warnings.
 set_error_handler(static function (int $severity, string $message, string $file = '', int $line = 0): bool {
     $insuppressible = E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR;
     if ((error_reporting() & ~$insuppressible) === 0) {
         // Error was suppressed with @.
         return true;
     }
-    throw new ErrorException($message, 0, $severity, $file, $line);
+    if (($severity & (E_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_USER_WARNING | E_USER_NOTICE)) !== 0) {
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    }
+    return true;
 });
 
 // setup.php skips channel creation under CI; we need the handle ourselves.

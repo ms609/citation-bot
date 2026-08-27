@@ -61,6 +61,7 @@ on:
       - '.cursor/rules'
       - '.cursor/rules/citation-bot.mdc'
       - '.lycheeignore'
+      - '.github/workflows/cs1-harness.yml'
 
   schedule:
     - cron: '30 18 * * 1'
