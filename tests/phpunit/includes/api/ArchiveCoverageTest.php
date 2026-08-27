@@ -528,7 +528,7 @@ final class ArchiveCoverageTest extends testBaseClass {
 
         $window = archive_title_scan_window($payload);
 
-        $this->assertLessThanOrEqual(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($window, '8-bit'));
+        $this->assertLessThanOrEqual(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($window, '8bit'));
         $this->assertStringContainsString('Useful title', $window);
     }
 
@@ -543,7 +543,7 @@ final class ArchiveCoverageTest extends testBaseClass {
         $window = archive_title_scan_window($payload);
 
         $this->assertStringEndsWith('<body class="example">', $window);
-        $this->assertLessThan(mb_strlen($payload, '8-bit'), mb_strlen($window, '8-bit'));
+        $this->assertLessThan(mb_strlen($payload, '8bit'), mb_strlen($window, '8bit'));
     }
 
     public function testArchiveTitleScanWindowDoesNotIncludeLateBodyContent(): void {
