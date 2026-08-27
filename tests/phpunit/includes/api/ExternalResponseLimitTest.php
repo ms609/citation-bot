@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../../testBaseClass.php';
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class ExternalResponseLimitTest extends testBaseClass {
     /**
@@ -20,9 +21,7 @@ final class ExternalResponseLimitTest extends testBaseClass {
         ];
     }
 
-    /**
-     * @dataProvider configuredLimitProvider
-     */
+    #[DataProvider('configuredLimitProvider')]
     public function testExternalClientsSetExplicitResponseLimits(string $file, int $megabytes): void {
         $source = file_get_contents(__DIR__ . '/../../../../src/includes/api/' . $file);
         $this->assertIsString($source);
