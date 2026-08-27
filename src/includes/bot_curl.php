@@ -203,12 +203,19 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
-    return (string) bot_curl_exec_withFalse($ch);
+    $result = bot_curl_exec_withFalse($ch);
+    return $result === false ? '' : (string) $result;
 }
 
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
     bot_curl_apply_security_options($ch);
-    bot_curl_set_max_response_bytes($ch, BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
-    return @curl_exec($ch); // phpcs:ignore
+    $result = @curl_exec($ch);  // phpcs:ignore
+    bot_curl_transfer_results()[$ch] = [
+        'ok' => $result !== false,
+        'errno' => curl_errno($ch),
+        'error' => curl_error($ch),
+        'http_code' => (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE),
+    ];
+    return $result;
 }
