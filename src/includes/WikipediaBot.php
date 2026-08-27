@@ -134,17 +134,17 @@ final class WikipediaBot {
         }
         $params['format'] = 'json';
 
-        $token = $this->bot_token;
-        $consumer = $this->bot_consumer;
-        if (defined('EDIT_AS_USER')) { // @codeCoverageIgnoreStart
-             $token = $this->user_token;
-             $consumer = $this->user_consumer;
-        }                                                                // @codeCoverageIgnoreEnd
-        $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
-        $request->signRequest(new HmacSha1(), $consumer, $token);
-        $authenticationHeader = $request->toHeader();
-
         try {
+            $token = $this->bot_token;
+            $consumer = $this->bot_consumer;
+            if (defined('EDIT_AS_USER')) { // @codeCoverageIgnoreStart
+                 $token = $this->user_token;
+                 $consumer = $this->user_consumer;
+            }                                                                // @codeCoverageIgnoreEnd
+            $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
+            $request->signRequest(new HmacSha1(), $consumer, $token);
+            $authenticationHeader = $request->toHeader();
+
             curl_setopt_array(self::$ch_write, [
                 CURLOPT_POSTFIELDS => http_build_query($params),
                 CURLOPT_HTTPHEADER => [$authenticationHeader],
@@ -166,8 +166,9 @@ final class WikipediaBot {
             }         // @codeCoverageIgnoreEnd
             return self::ret_okay($ret) ? $ret : null;
             // @codeCoverageIgnoreStart
-        } catch (Exception $E) {
-            report_warning("Exception caught!\n");
+        } catch (Throwable $E) {
+            bot_debug_log('Wikipedia write API failure: ' . $E::class . ': ' . $E->getMessage());
+            report_warning("Wikipedia write API request failed; continuing.\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
         return null;
@@ -430,8 +431,9 @@ final class WikipediaBot {
             }
             return self::ret_okay(@json_decode($data)) ? $data : '';
             // @codeCoverageIgnoreStart
-        } catch (Exception $E) {
-            report_warning("Exception caught!!\n");
+        } catch (Throwable $E) {
+            bot_debug_log('Wikipedia read API failure: ' . $E::class . ': ' . $E->getMessage());
+            report_warning("Wikipedia read API request failed; continuing.\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
         return '';
