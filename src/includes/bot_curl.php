@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
+const BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES = 134217728; // 128 MiB
+const BOT_CURL_ALLOWED_PROTOCOLS = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 
 /**
  * Return true only for globally routable IP addresses.
@@ -96,11 +98,61 @@ function bot_curl_check_destination(
     return CURL_PREREQFUNC_OK;
 }
 
+/** @return WeakMap<CurlHandle, int> */
+function bot_curl_response_limits(): WeakMap {
+    static $limits = null;
+    if ($limits === null) {
+        $limits = new WeakMap();
+    }
+    return $limits;
+}
+
+function bot_curl_set_max_response_bytes(CurlHandle $ch, int $max_bytes): void {
+    if ($max_bytes <= 0) {
+        throw new InvalidArgumentException('Maximum cURL response size must be positive.');
+    }
+    bot_curl_response_limits()[$ch] = $max_bytes;
+}
+
+function bot_curl_get_max_response_bytes(CurlHandle $ch): int {
+    return bot_curl_response_limits()[$ch] ?? BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES;
+}
+
+/**
+ * @return WeakMap<CurlHandle, array{ok: bool, errno: int, error: string, http_code: int}>
+ */
+function bot_curl_transfer_results(): WeakMap {
+    static $results = null;
+    if ($results === null) {
+        $results = new WeakMap();
+    }
+    return $results;
+}
+
+/** @return array{ok: bool, errno: int, error: string, http_code: int} */
+function bot_curl_last_transfer(CurlHandle $ch): array {
+    return bot_curl_transfer_results()[$ch] ?? [
+        'ok' => false,
+        'errno' => 0,
+        'error' => 'cURL transfer has not run',
+        'http_code' => 0,
+    ];
+}
+
+function bot_curl_apply_security_options(CurlHandle $ch): void {
+    if (!curl_setopt_array($ch, [
+        CURLOPT_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS,
+        CURLOPT_REDIR_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS,
+        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
+    ])) {
+        throw new RuntimeException('Unable to apply mandatory cURL security options.');
+    }
+}
+
 function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0): int {
-    // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
-    // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
-    if ($down > 134217728) {
-         bot_debug_log("Absurdly large curl");
+    $max_bytes = bot_curl_get_max_response_bytes($_ch);
+    if ($down > $max_bytes) {
+         bot_debug_log("cURL response exceeded configured limit of " . $max_bytes . " bytes");
          return 1;
     }
     return 0;
@@ -143,22 +195,24 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
     //
     // CURLOPT_PREREQFUNCTION protects redirected requests and DNS
     // rebinding by inspecting the actual connected destination address.
-    curl_setopt_array($ch, [
-        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
-        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
-    ]);
+    bot_curl_apply_security_options($ch);
+    bot_curl_set_max_response_bytes($ch, BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
 
     return $ch;
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
     curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
-    /** Make sure this is always in effect */
-    curl_setopt_array($ch, [
-        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
-        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
-    ]);
-    return (string) @curl_exec($ch);
+    /** Make sure mandatory security restrictions are always in effect. */
+    bot_curl_apply_security_options($ch);
+
+    $result = @curl_exec($ch);
+    bot_curl_transfer_results()[$ch] = [
+        'ok' => $result !== false,
+        'errno' => curl_errno($ch),
+        'error' => curl_error($ch),
+        'http_code' => (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE),
+    ];
+
+    return $result === false ? '' : (string) $result;
 }
