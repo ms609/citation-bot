@@ -2,6 +2,29 @@
 
 declare(strict_types=1);
 
+function parse_unpaywall_response(string $response): ?object {
+    $oa = @json_decode($response);
+    if (!is_object($oa)) {
+        return null;
+    }
+    if (isset($oa->journal_name) && !is_scalar($oa->journal_name)) {
+        return null;
+    }
+    if (!isset($oa->best_oa_location)) {
+        return $oa;
+    }
+    if (!is_object($oa->best_oa_location)) {
+        return null;
+    }
+    $location = $oa->best_oa_location;
+    foreach (['host_type', 'evidence', 'url_for_landing_page', 'url'] as $field) {
+        if (isset($location->{$field}) && !is_scalar($location->{$field})) {
+            return null;
+        }
+    }
+    return $oa;
+}
+
 function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
@@ -19,11 +42,15 @@ function get_unpaywall_url(Template $template, string $doi): string {
         return 'rate_limited'; // @codeCoverageIgnore
     }
     if ($json) {
-        $oa = @json_decode($json);
+        $oa = parse_unpaywall_response($json);
         unset($json);
-        if ($oa !== false && isset($oa->best_oa_location)) {
+        if ($oa === null) {
+            report_warning("Malformed response from Unpaywall for DOI: " . echoable($doi));
+            return 'nothing';
+        }
+        if (isset($oa->best_oa_location)) {
             $best_location = $oa->best_oa_location;
-            if ($best_location->host_type === 'publisher') {
+            if (isset($best_location->host_type) && $best_location->host_type === 'publisher') {
                 // The best location is already linked to by the doi link
                 return 'publisher';
             }
