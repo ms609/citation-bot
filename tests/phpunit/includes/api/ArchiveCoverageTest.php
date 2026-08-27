@@ -522,6 +522,40 @@ final class ArchiveCoverageTest extends testBaseClass {
         $this->assertSame('', fetch_archive_page($ch, 'https://example.com/archive'));
     }
 
+    public function testArchiveTitleScanWindowIsBounded(): void {
+        $prefix = '<!doctype html><html><head><title>Useful title</title></head>';
+        $payload = $prefix . str_repeat('X', ARCHIVE_TITLE_SCAN_MAX_BYTES + 1024);
+
+        $window = archive_title_scan_window($payload);
+
+        $this->assertLessThanOrEqual(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($window, '8bit'));
+        $this->assertStringContainsString('Useful title', $window);
+    }
+
+    public function testArchiveTitleScanWindowStopsAfterOpeningBodyTag(): void {
+        $payload =
+            "HTTP/1.1 200 OK\r\n" .
+            "x-archive-guessed-charset: UTF-8\r\n\r\n" .
+            '<!doctype html><html><head><title>Useful title</title></head>' .
+            '<body class="example">' .
+            str_repeat('X', 100000);
+
+        $window = archive_title_scan_window($payload);
+
+        $this->assertStringEndsWith('<body class="example">', $window);
+        $this->assertLessThan(mb_strlen($payload, '8bit'), mb_strlen($window, '8bit'));
+    }
+
+    public function testArchiveTitleScanWindowDoesNotIncludeLateBodyContent(): void {
+        $payload = '<html><head><title>Early</title></head><body>' .
+            str_repeat('X', 10000) . 'LATE_MARKER';
+
+        $this->assertStringNotContainsString(
+            'LATE_MARKER',
+            archive_title_scan_window($payload)
+        );
+    }
+
     #[DataProvider('placeholderArchiveTitleProvider')]
     public function testScriptTitleRemovesPlaceholderArchiveTitle(
         string $title

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
-dsafd
+const ARCHIVE_TITLE_SCAN_MAX_BYTES = 4 * 1024 * 1024;
 
 /** @var list<string> */
 const ARCHIVE_FETCH_HOSTS = [
@@ -114,6 +114,27 @@ function throttle_archive(): void {
 }
 
 /**
+ * Return only the early portion of an archived response needed for title and
+ * charset discovery. This prevents broad regexes from scanning a huge body.
+ */
+function archive_title_scan_window(string $raw_html): string {
+    if ($raw_html === '') {
+        return '';
+    }
+
+    $limit = min(mb_strlen($raw_html, '8bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES);
+    $body_position = mb_stripos($raw_html, '<body');
+    if ($body_position !== false && $body_position < $limit) {
+        $body_end = mb_strpos($raw_html, '>', $body_position);
+        if ($body_end !== false) {
+            $limit = min($limit, $body_end + 1);
+        }
+    }
+
+    return mb_substr($raw_html, 0, $limit);
+}
+
+/**
  * @param array<Template> &$templates
  */
 function expand_templates_from_archives(array &$templates): void { // This is done very late as a latch ditch effort  // Pointer to save memory
@@ -156,6 +177,8 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             if (archive_url_is_allowed($archive_url) && mb_stripos($archive_url, '.pdf') === false) {
                 set_time_limit(120);
                 $raw_html = fetch_archive_page($ch, $archive_url);
+                $title_scan_html = archive_title_scan_window($raw_html);
+                unset($raw_html);
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                     '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
@@ -165,7 +188,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~',
                 ] as $regex) {
                     set_time_limit(120); // Slow regex sometimes
-                    if ($raw_html && preg_match($regex, $raw_html, $match)) {
+                    if ($title_scan_html !== '' && preg_match($regex, $title_scan_html, $match)) {
                         set_time_limit(120);
                         $title = mb_trim($match[1]);
                         if (mb_stripos($title, 'archive') === false &&
@@ -174,17 +197,17 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             ) {
                             $cleaned = false;
                             $encode = [];
-                            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
+                            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $title_scan_html, $match)) {
                                 if (is_encoding_reasonable($match[1])) {
                                     $encode[] = $match[1];
                                 }
                             }
-                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
+                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $title_scan_html, $match)) {
                                 if (is_encoding_reasonable($match[1])) {
                                     $encode[] = $match[1];
                                 }
                             }
-                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
+                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $title_scan_html, $match)) {
                                 if (mb_strtolower($match[1]) !== 'utf-8' && mb_strtolower($match[1]) !== 'iso-8859-1') {
                                     $encode[] = $match[1];
                                 }
@@ -224,7 +247,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                     if ($bad_count > 5) {
                                         $template->set('title', $old); // UTF-8 craziness
                                     } else {
-                                        $raw_html = ''; // We are done
+                                        $title_scan_html = '';
                                     }
                                 }
                             }
