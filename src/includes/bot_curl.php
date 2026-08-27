@@ -8,20 +8,73 @@ const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
  * Return true only for globally routable IP addresses.
  */
 function bot_curl_ip_is_public(string $ip): bool {
-    /*
-     * Normalize IPv4-mapped IPv6 addresses before applying the IPv4 rules.
-     * Otherwise ::ffff:127.0.0.1 and similar addresses can evade simplistic
-     * IPv6-only range checks.
-     */
-    if (preg_match('~^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$~iD', $ip, $matches)) {
-        $ip = $matches[1];
+    $packed = @inet_pton($ip);
+    if ($packed === false) {
+        return false;
     }
 
-    return filter_var(
-        $ip,
-        FILTER_VALIDATE_IP,
-        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-    ) !== false;
+    /*
+     * Normalize IPv4-mapped IPv6, including:
+     *   ::ffff:127.0.0.1
+     *   ::ffff:7f00:1
+     */
+    if (
+        mb_strlen($packed, '8bit') === 16 &&
+        mb_substr($packed, 0, 10, '8bit') === str_repeat("\0", 10) &&
+        mb_substr($packed, 10, 2, '8bit') === "\xff\xff"
+    ) {
+        $packed = mb_substr($packed, 12, 4, '8bit');
+        $ip = inet_ntop($packed);
+    }
+    if ($ip === false) {
+        return false;
+    }
+    /*
+     * Reject non-global special-purpose ranges such as:
+     *   10.0.0.0/8
+     *   100.64.0.0/10
+     *   127.0.0.0/8
+     *   169.254.0.0/16
+     *   172.16.0.0/12
+     *   192.0.2.0/24
+     *   192.168.0.0/16
+     *   198.18.0.0/15
+     *   198.51.100.0/24
+     *   203.0.113.0/24
+     *   IPv6 loopback, link-local, ULA, documentation, etc.
+     */
+    if (
+        filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_GLOBAL_RANGE
+        ) === false
+    ) {
+        return false;
+    }
+
+    $packed = inet_pton($ip);
+    if ($packed === false) {
+        return false;
+    }
+
+    /*
+     * FILTER_FLAG_GLOBAL_RANGE still accepts multicast,
+     * so explicitly reject it.
+     */
+    if (mb_strlen($packed, '8bit') === 4) {
+        // IPv4 multicast: 224.0.0.0/4
+        if ((ord($packed[0]) & 0xf0) === 0xe0) {
+            return false;
+        }
+    } else {
+        // IPv6 multicast: ff00::/8
+        if (ord($packed[0]) === 0xff) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /**
