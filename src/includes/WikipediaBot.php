@@ -348,6 +348,74 @@ final class WikipediaBot {
         return true;
     }
 
+    /**
+     * Extract usable category-member titles from a decoded MediaWiki response.
+     *
+     * @return array<string>|null
+     */
+    public static function category_member_titles_from_response(mixed $response): ?array {
+        if (
+            !is_object($response) ||
+            !isset($response->query) ||
+            !is_object($response->query) ||
+            !isset($response->query->categorymembers) ||
+            !is_array($response->query->categorymembers)
+        ) {
+            return null;
+        }
+
+        $list = [];
+        foreach ($response->query->categorymembers as $page) {
+            if (!is_object($page) || !isset($page->title) || !is_string($page->title)) {
+                continue;
+            }
+            $title = $page->title;
+            if (mb_stripos($title, 'talk:') === false &&
+                mb_stripos($title, 'Special:') === false &&
+                mb_stripos($title, '/doc') === false &&
+                mb_stripos($title, 'Template:') === false &&
+                mb_stripos($title, 'Mediawiki:') === false &&
+                mb_stripos($title, 'help:') === false &&
+                mb_stripos($title, 'Gadget:') === false &&
+                mb_stripos($title, 'Portal:') === false &&
+                mb_stripos($title, 'timedtext:') === false &&
+                mb_stripos($title, 'module:') === false &&
+                mb_stripos($title, 'category:') === false &&
+                mb_stripos($title, 'Wikipedia:') === false &&
+                mb_stripos($title, 'Gadget definition:') === false &&
+                mb_stripos($title, 'Topic:') === false &&
+                mb_stripos($title, 'Education Program:') === false &&
+                mb_stripos($title, 'Book:') === false) {
+                $list[] = $title;
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * Normalize existing article links from a MediaWiki parse response.
+     *
+     * @return array<array{ns: int, title: string}>|null
+     */
+    public static function parse_links_response(string $json): ?array {
+        $response = json_decode($json, true);
+        if (!is_array($response) || !isset($response['parse']) || !is_array($response['parse']) ||
+            !isset($response['parse']['links']) || !is_array($response['parse']['links'])) {
+            return null;
+        }
+
+        $links = [];
+        foreach ($response['parse']['links'] as $link) {
+            if (!is_array($link) || !array_key_exists('exists', $link) ||
+                !isset($link['ns']) || !is_int($link['ns']) ||
+                !isset($link['*']) || !is_string($link['*']) || $link['*'] === '') {
+                continue;
+            }
+            $links[] = ['ns' => $link['ns'], 'title' => $link['*']];
+        }
+        return $links;
+    }
+
     /** @return array<string> */
     public static function category_members(string $cat): array {
         $list = [];
@@ -361,33 +429,14 @@ final class WikipediaBot {
         do {
             $res = self::query_api($vars);
             $res = @json_decode($res);
-            if (isset($res->query->categorymembers)) {
-                foreach ($res->query->categorymembers as $page) {
-                    // We probably only want to visit pages in the main namespace
-                    if (mb_stripos($page->title, 'talk:') === false &&
-                            mb_stripos($page->title, 'Special:') === false &&
-                            mb_stripos($page->title, '/doc') === false &&
-                            mb_stripos($page->title, 'Template:') === false &&
-                            mb_stripos($page->title, 'Mediawiki:') === false &&
-                            mb_stripos($page->title, 'help:') === false &&
-                            mb_stripos($page->title, 'Gadget:') === false &&
-                            mb_stripos($page->title, 'Portal:') === false &&
-                            mb_stripos($page->title, 'timedtext:') === false &&
-                            mb_stripos($page->title, 'module:') === false &&
-                            mb_stripos($page->title, 'category:') === false &&
-                            mb_stripos($page->title, 'Wikipedia:') === false &&
-                            mb_stripos($page->title, 'Gadget definition:') === false &&
-                            mb_stripos($page->title, 'Topic:') === false &&
-                            mb_stripos($page->title, 'Education Program:') === false &&
-                            mb_stripos($page->title, 'Book:') === false) {
-                        $list[] = $page->title;
-                    }
-                }
-            } else {
+            $titles = self::category_member_titles_from_response($res);
+            if ($titles === null) {
                 report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
                 return [];                                                                     // @codeCoverageIgnore
             }
-            $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : false;
+            array_push($list, ...$titles);
+            $continue = $res->continue->cmcontinue ?? null;
+            $vars["cmcontinue"] = is_string($continue) && $continue !== '' ? $continue : false;
         } while ($vars["cmcontinue"]);
         return $list;
     }
