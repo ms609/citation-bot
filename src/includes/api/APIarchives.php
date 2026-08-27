@@ -123,6 +123,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
             CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_HEADER => true,
         ]);
+        bot_curl_set_max_response_bytes($ch, 16 * 1024 * 1024);
     }
     foreach ($templates as $template) {
         set_time_limit(120);
