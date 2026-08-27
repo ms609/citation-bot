@@ -11,6 +11,19 @@ use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class pageTest extends testBaseClass {
 
+    public function testPageTextCallbacksUseSafePregWrapper(): void {
+        $source = file_get_contents(__DIR__ . '/../../../src/includes/Page.php');
+        $this->assertIsString($source);
+
+        // Direct preg_replace_callback() can return null on a PCRE runtime
+        // failure, which cannot be assigned to Page::$text (declared string).
+        $this->assertSame(
+            0,
+            mb_substr_count($source, '$this->text = preg_replace_callback(')
+        );
+        $this->assertGreaterThanOrEqual(7, mb_substr_count($source, '$this->text = safe_preg_replace_callback('));
+    }
+
     public function testPageChangeSummary1(): void {
         $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}{stuff}{{{Stuffy|dsafsdf}}}'); // Change to book from journal
         $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
