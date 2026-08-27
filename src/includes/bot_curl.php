@@ -111,7 +111,7 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
  * @param array<int, int|string|bool|array<int, string>> $ops
  */
 function bot_curl_init(float $time, array $ops): CurlHandle {
-    $ch = curl_init();
+    $ch = curl_init(); // phpcs:ignore
     if ($ch === false) {
         report_error("curl_init failure"); // @codeCoverageIgnore
     }
@@ -160,5 +160,5 @@ function bot_curl_exec(CurlHandle $ch): string {
         CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
         CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
     ]);
-    return (string) @curl_exec($ch);
+    return (string) @curl_exec($ch); // phpcs:ignore
 }
