@@ -207,11 +207,7 @@ function bot_curl_exec(CurlHandle $ch): string {
 
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
-    /** Make sure this is always in effect */
-    curl_setopt_array($ch, [
-        CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
-        CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
-        CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
-    ]);
+    bot_curl_apply_security_options($ch);
+    bot_curl_set_max_response_bytes($ch, BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
     return @curl_exec($ch); // phpcs:ignore
 }
