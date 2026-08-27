@@ -187,7 +187,7 @@ final class UserMessagesTest extends testBaseClass {
         $command = escapeshellarg(PHP_BINARY) . ' -r ' . escapeshellarg($bootstrap);
         $output = [];
         $exit_code = -1;
-        exec($command, $output, $exit_code);
+        exec($command, $output, $exit_code); // phpcs:ignore
 
         return [$exit_code, implode("\n", $output)];
     }
