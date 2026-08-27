@@ -77,6 +77,98 @@ final class Zotero {
         return urlencode($url);
     }
 
+    private static function normalize_zotero_result(object $result, string $url): bool {
+        $scalar_fields = [
+            'title',
+            'publicationTitle',
+            'bookTitle',
+            'subject',
+            'caseName',
+            'nameOfAct',
+            'DOI',
+            'extra',
+            'date',
+            'ISBN',
+            'issue',
+            'pages',
+            'itemType',
+            'publisher',
+            'volume',
+            'series',
+            'rights',
+            'university',
+            'thesisType',
+        ];
+        foreach ($scalar_fields as $field) {
+            if (!isset($result->{$field})) {
+                continue;
+            }
+            if (!is_scalar($result->{$field})) {
+                report_warning("Malformed Zotero response field '" . $field . "' for URL " . echoable($url));
+                return false;
+            }
+            $result->{$field} = (string) $result->{$field};
+        }
+
+        if (isset($result->identifiers)) {
+            if (!is_object($result->identifiers)) {
+                report_warning("Malformed Zotero response field 'identifiers' for URL " . echoable($url));
+                return false;
+            }
+            if (isset($result->identifiers->doi)) {
+                if (!is_scalar($result->identifiers->doi)) {
+                    report_warning("Malformed Zotero response field 'identifiers.doi' for URL " . echoable($url));
+                    return false;
+                }
+                $result->identifiers->doi = (string) $result->identifiers->doi;
+            }
+        }
+
+        if (isset($result->author)) {
+            if (!is_array($result->author)) {
+                report_warning("Malformed Zotero response field 'author' for URL " . echoable($url));
+                return false;
+            }
+            foreach ($result->author as $author_index => $author) {
+                if (!is_array($author)) {
+                    report_warning("Malformed Zotero response author entry for URL " . echoable($url));
+                    return false;
+                }
+                foreach ($author as $name_index => $name_part) {
+                    if (!is_scalar($name_part)) {
+                        report_warning("Malformed Zotero response author name for URL " . echoable($url));
+                        return false;
+                    }
+                    $result->author[$author_index][$name_index] = (string) $name_part;
+                }
+            }
+        }
+
+        if (isset($result->creators)) {
+            if (!is_array($result->creators)) {
+                report_warning("Malformed Zotero response field 'creators' for URL " . echoable($url));
+                return false;
+            }
+            foreach ($result->creators as $creator) {
+                if (!is_object($creator)) {
+                    report_warning("Malformed Zotero response creator entry for URL " . echoable($url));
+                    return false;
+                }
+                foreach (['creatorType', 'firstName', 'lastName'] as $field) {
+                    if (isset($creator->{$field})) {
+                        if (!is_scalar($creator->{$field})) {
+                            report_warning("Malformed Zotero response creator field '" . $field . "' for URL " . echoable($url));
+                            return false;
+                        }
+                        $creator->{$field} = (string) $creator->{$field};
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     private static function record_zotero_failure(): void {
         self::$zotero_failures_count += 1;
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
@@ -374,6 +466,10 @@ final class Zotero {
             $result = $zotero_data[0];
         }
         $result = (object) $result;
+
+        if (!self::normalize_zotero_result($result, $url)) {
+            return;
+        }
 
         if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
             if (!empty($result->subject)) {
