@@ -24,6 +24,36 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
 }
 
 /**
+ * Return arXiv entries in the same order as the requested identifiers.
+ * Missing or malformed entries are represented as null.
+ *
+ * @param array<string> $ids
+ * @return array<SimpleXMLElement|null>
+ */
+function arxiv_entries_for_ids(SimpleXMLElement $xml, array $ids): array {
+    $entry_map = [];
+    foreach ($xml->entry as $entry) {
+        $raw_id = (string) $entry->id;
+        if (!preg_match('~^https?://arxiv\.org/abs/(.+)$~', $raw_id, $match)) {
+            continue;
+        }
+        $versioned_id = $match[1];
+        $unversioned_id = preg_replace('~v\d+$~', '', $versioned_id);
+        if ($unversioned_id === null || $unversioned_id === '') {
+            continue;
+        }
+        $entry_map[$versioned_id] = $entry;
+        $entry_map[$unversioned_id] = $entry;
+    }
+
+    $sorted = [];
+    foreach ($ids as $id) {
+        $sorted[] = $entry_map[$id] ?? null;
+    }
+    return $sorted;
+}
+
+/**
  * @param array<string> $ids
  * @param array<Template> &$templates
  */
@@ -67,36 +97,17 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     // Arxiv currently does not order the data received according to id_list. This is causing CitationBot to mix up
     // which Arxiv ID is associated with which citation. As a result, we first perform a sorting pass to make sure we
     // order the arxiv data based on our id_list so that we have a 1 to 1 ordering of both.
-    // Include both with and without version numbered ones
-    $entry_map = [];
-    foreach ($xml->entry as $entry) {
-        $arxiv_id = preg_replace('~https?://arxiv\.org/abs/([^v]+)v\d+~', '$1', (string)$entry->id);
-        $entry_map[$arxiv_id] = $entry;
-        $arxiv_id = preg_replace('~https?://arxiv\.org/abs/~', '$1', (string)$entry->id);
-        $entry_map[$arxiv_id] = $entry;
-    }
+    $id_list = array_values($ids);
+    $template_list = array_values($templates);
+    $sorted_arxiv_data = arxiv_entries_for_ids($xml, $id_list);
 
-    $sorted_arxiv_data = [];
-    foreach ($ids as $id) {
-        if (isset($entry_map[$id])) {
-            $sorted_arxiv_data[] = $entry_map[$id];
-        } else {
-            $sorted_arxiv_data[] = false;
-        }
-    }
-    unset($entry_map);
-
-    $this_template = current($templates); // advance at end of foreach loop
-    foreach ($sorted_arxiv_data as $entry) {
-        if ($entry === false) {
-            $this_template = next($templates);
+    foreach ($sorted_arxiv_data as $index => $entry) {
+        if ($entry === null || !isset($template_list[$index])) {
             continue;
         }
-        if ($this_template === false) { // @codeCoverageIgnore
-            report_error('Had more data than Templates in arxiv_api()');  // @codeCoverageIgnore
-        }
+        $this_template = $template_list[$index];
         $i = 0;
-        report_info("Found match for arXiv " . echoable($ids[$i]));
+        report_info("Found match for arXiv " . echoable($id_list[$index]));
         if ($this_template->add_if_new("doi", (string) @$entry->arxivdoi, 'arxiv')) {
             if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
                 // Move outdated/bad arXiv title out of the way
@@ -160,10 +171,9 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
                 $this_template->forget('publisher');
             }
         }
-        $this_template = next($templates);
     }
-    if ($this_template !== false) {
-        report_error('Had more Templates than data in arxiv_api()');    // @codeCoverageIgnore
+    if (count($template_list) !== count($id_list)) {
+        bot_debug_log('arxiv_api received mismatched identifier/template counts');
     }
     return;
 }
