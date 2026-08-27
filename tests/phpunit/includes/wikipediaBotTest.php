@@ -232,6 +232,36 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertNotNull(WikipediaBot::response2page($response));
     }
 
+    public function testResponse2PageRejectsMalformedNestedShapes(): void {
+        $cases = [
+            (object) ['batchcomplete' => true, 'query' => 'not an object'],
+            (object) ['batchcomplete' => true, 'query' => (object) ['pages' => []]],
+            (object) ['batchcomplete' => true, 'query' => (object) [
+                'pages' => (object) ['0' => (object) [
+                    'lastrevid' => 1,
+                    'title' => 'x',
+                    'revisions' => 'not an array',
+                ]],
+                'tokens' => (object) ['csrftoken' => 'token'],
+            ]],
+        ];
+
+        foreach ($cases as $response) {
+            $this->assertNull(WikipediaBot::response2page($response));
+        }
+    }
+
+    public function testResultsGoodRejectsMalformedExternalShapes(): void {
+        $this->assertFalse(WikipediaBot::resultsGood((object) ['error' => []]));
+        $this->assertFalse(WikipediaBot::resultsGood(
+            (object) ['error' => (object) ['code' => [], 'info' => 'bad']]
+        ));
+        $this->assertFalse(WikipediaBot::resultsGood((object) ['edit' => []]));
+        $this->assertFalse(WikipediaBot::resultsGood(
+            (object) ['edit' => (object) ['result' => []]]
+        ));
+    }
+
     public function test_resultsGood1(): void {
         new TestPage(); // Fill page name with test name for debugging
         $result = null;
