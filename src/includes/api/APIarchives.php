@@ -122,7 +122,7 @@ function archive_title_scan_window(string $raw_html): string {
         return '';
     }
 
-    $limit = min(mb_strlen($raw_html, '8-bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES);
+    $limit = min(mb_strlen($raw_html, '8-bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES]);
     $body_position = mb_stripos($raw_html, '<body');
     if ($body_position !== false && $body_position < $limit) {
         $body_end = mb_strpos($raw_html, '>', $body_position);
@@ -177,6 +177,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 set_time_limit(120);
                 $raw_html = fetch_archive_page($ch, $archive_url);
                 $title_scan_html = archive_title_scan_window($raw_html);
+                unset($raw_html);
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                     '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
@@ -246,7 +247,6 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                         $template->set('title', $old); // UTF-8 craziness
                                     } else {
                                         $title_scan_html = '';
-                                        $raw_html = ''; // We are done
                                     }
                                 }
                             }
