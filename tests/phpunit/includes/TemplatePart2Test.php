@@ -320,8 +320,8 @@ final class TemplatePart2Test extends testBaseClass {
     public function testAddBogusBibcode_2(): void {
         $text = "{{cite web}}";
         $template = $this->make_citation($text);
-        $this->assertTrue($template->add_if_new('bibcode', 'Z'));
-        $this->assertSame('Z..................', $template->get2('bibcode'));
+        $this->assertFalse($template->add_if_new('bibcode', 'Z'));
+        $this->assertNull($template->get2('bibcode'));
     }
 
     public function testvalidate_and_add1(): void {

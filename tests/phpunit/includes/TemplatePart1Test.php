@@ -1618,4 +1618,34 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertTrue($template->add_if_new('isbn', '978-0-306-40615-7'));
         $this->assertSame('978-0-306-40615-7', $template->get2('isbn'));
     }
+
+    public function testAddIfNewRejectsMalformedArxiv(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('arxiv', 'bogus'));
+        $this->assertNull($template->get2('arxiv'));
+        $this->assertTrue($template->add_if_new('arxiv', '1706.05013'));
+        $this->assertSame('1706.05013', $template->get2('arxiv'));
+    }
+
+    public function testAddIfNewRejectsMalformedPmid(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('pmid', 'notanumber'));
+        $this->assertNull($template->get2('pmid'));
+    }
+
+    public function testAddIfNewRejectsMalformedPmc(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('pmc', 'notnumeric'));
+        $this->assertNull($template->get2('pmc'));
+    }
+
+    public function testAddIfNewNormalizesPmcPrefix(): void {
+        $text = '{{cite journal | title = X | journal = J | pmid = 12345 }}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('pmc', 'PMC1234567'));
+        $this->assertSame('1234567', $template->get2('pmc'));
+    }
 }

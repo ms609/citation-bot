@@ -275,6 +275,25 @@ function check_citation(Template $template): array {
         $violations[] = 'url-title-link-conflict: CS1 "URL-wikilink conflict"';
     }
 
+    // R16: identifier format checks (validators mirror CS1's structural rules).
+    if (($template->has('arxiv') && !arxiv_id_valid($template->get('arxiv'))) ||
+        ($template->has('eprint') && !arxiv_id_valid($template->get('eprint')))) {
+        $violations[] = 'arxiv-malformed: CS1 "Check |arxiv= value"';
+    }
+    if ($template->has('pmid') && !pmid_valid($template->get('pmid'))) {
+        $violations[] = 'pmid-malformed: CS1 "Check |pmid= value"';
+    }
+    if ($template->has('pmc') && !pmc_valid($template->get('pmc'))) {
+        $violations[] = 'pmc-malformed: CS1 "Check |pmc= value"';
+    }
+    if ($template->has('bibcode') && !bibcode_valid($template->get('bibcode'))) {
+        $violations[] = 'bibcode-malformed: CS1 "Check |bibcode= value"';
+    }
+    if (($template->has('biorxiv') && !rxiv_id_valid($template->get('biorxiv'))) ||
+        ($template->has('medrxiv') && !rxiv_id_valid($template->get('medrxiv')))) {
+        $violations[] = 'rxiv-malformed: CS1 "Check |biorxiv=/|medrxiv= value"';
+    }
+
     return $violations;
 }
 
@@ -323,7 +342,7 @@ function build_matrix(): array {
         ['Clean cite magazine', '{{cite magazine |title=X |magazine=The New Yorker |date=2020}}', 'pass'],
         ['Clean cite encyclopedia', '{{cite encyclopedia |title=X |encyclopedia=Britannica |publisher=P |date=2020}}', 'pass'],
         ['Clean cite web with work= (periodical alias)', '{{cite web |url=https://example.com |title=X |work=SomeWebsite}}', 'pass'],
-        ['Clean cite arxiv', '{{cite arxiv |arxiv=1234.56789 |title=X}}', 'pass'],
+        ['Clean cite arxiv', '{{cite arxiv |arxiv=2401.99999 |title=X}}', 'pass'],
         ['Clean cite biorxiv', '{{cite biorxiv |biorxiv=10.1101/2020.01.01.000001 |title=X}}', 'pass'],
         ['Clean cite ssrn', '{{cite ssrn |ssrn=1234567 |title=X}}', 'pass'],
 
@@ -335,6 +354,8 @@ function build_matrix(): array {
         ['GAP empty title left as-is', '{{cite journal |journal=Nature}}', 'gap'],
         ['GAP orphaned trans-chapter left as-is', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'gap'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
+        ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'gap'],
+        ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],
     ];
 }
 
