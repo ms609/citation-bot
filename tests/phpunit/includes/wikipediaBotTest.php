@@ -19,7 +19,7 @@ final class wikipediaBotTest extends testBaseClass {
         $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
         $this->assertIsString($source);
         $this->assertStringNotContainsString('catch (Exception $E)', $source);
-        $this->assertGreaterThanOrEqual(2, substr_count($source, 'catch (Throwable $E)'));
+        $this->assertGreaterThanOrEqual(2, mb_substr_count($source, 'catch (Throwable $E)'));
     }
 
     public function testOAuthRequestConstructionIsInsideFetchBoundary(): void {
