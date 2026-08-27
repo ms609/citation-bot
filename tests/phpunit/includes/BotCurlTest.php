@@ -177,7 +177,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlLimitPageSizeUsesPerHandleLimit(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertNotFalse($ch);
         bot_curl_set_max_response_bytes($ch, 1024);
 
@@ -187,7 +187,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlResponseLimitRejectsInvalidValues(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertNotFalse($ch);
         $this->expectException(InvalidArgumentException::class);
         bot_curl_set_max_response_bytes($ch, 0);
@@ -206,7 +206,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testSecurityOptionsCanBeAppliedToNormalHandle(): void {
-        $ch = curl_init();
+        $ch = bot_curl_init();
         $this->assertNotFalse($ch);
         bot_curl_apply_security_options($ch);
         $this->addToAssertionCount(1);
