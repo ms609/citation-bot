@@ -92,7 +92,7 @@ final class BotCurlTest extends testBaseClass {
             CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
         ]);
         $out = bot_curl_exec($ch);
-        $this->assertSame('local curl fixture', $out);
+        $this->assertSame('', $out); /** The IP address validation blocks this now */
 
         @unlink($filename);
     }
