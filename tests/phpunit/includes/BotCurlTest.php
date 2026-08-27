@@ -196,9 +196,13 @@ final class BotCurlTest extends testBaseClass {
     public function testMandatoryProtocolsExcludeFtp(): void {
         $this->assertSame(
             CURLPROTO_HTTP | CURLPROTO_HTTPS,
-            BOT_CURL_ALLOWED_PROTOCOLS
+            BOT_CURL_ALLOWED_PROTOCOLS_USE
         );
-        $this->assertSame(0, BOT_CURL_ALLOWED_PROTOCOLS & CURLPROTO_FTP);
+        $this->assertSame(0, BOT_CURL_ALLOWED_PROTOCOLS_USE & CURLPROTO_FTP);
+        $this->assertSame(
+            CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
+            BOT_CURL_ALLOWED_PROTOCOLS_END
+        );
     }
 
     public function testSecurityOptionsCanBeAppliedToNormalHandle(): void {
