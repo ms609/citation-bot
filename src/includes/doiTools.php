@@ -851,36 +851,34 @@ function get_headers_array(string $url): false|array {
         );
         foreach ([$curl_insecure_hdl, $curl_insecure_doi] as $ch) {
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (CurlHandle $_ch, string $line) use (&$headers): int {
-                    $length = mb_strlen($line, '8bit');
-                    $line = mb_trim($line);
-                    if ($line === '') {
-                        return $length;
-                    }
-                    if (preg_match('~^HTTP/\S+\s+\d{3}(?:\s+.*)?$~', $line)) {
-                        $headers[] = $line;
-                        return $length;
-                    }
-                    $colon = mb_strpos($line, ':');
-                    if ($colon === false) {
-                        return $length;
-                    }
-                    $name = mb_substr($line, 0, $colon);
-                    $value = mb_trim(mb_substr($line, $colon + 1));
-                    if (!isset($headers[$name])) {
-                        $headers[$name] = $value;
-                    } elseif (is_array($headers[$name])) {
-                        $headers[$name][] = $value;
-                    } else {
-                        $headers[$name] = [$headers[$name], $value];
-                    }
+                $length = mb_strlen($line, '8bit');
+                $line = mb_trim($line);
+                if ($line === '') {
                     return $length;
                 }
-            );
+                if (preg_match('~^HTTP/\S+\s+\d{3}(?:\s+.*)?$~', $line)) {
+                    $headers[] = $line;
+                    return $length;
+                }
+                $colon = mb_strpos($line, ':');
+                if ($colon === false) {
+                    return $length;
+                }
+                $name = mb_substr($line, 0, $colon);
+                $value = mb_trim(mb_substr($line, $colon + 1));
+                if (!isset($headers[$name])) {
+                    $headers[$name] = $value;
+                } elseif (is_array($headers[$name])) {
+                      $headers[$name][] = $value;
+                } else {
+                    $headers[$name] = [$headers[$name], $value];
+                }
+                return $length;
+            });
             // Preserve GET semantics, but do not retain response bodies in memory.
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, static function (CurlHandle $_ch, string $data): int {
                     return mb_strlen($data, '8bit');
-                }
-            );
+            });
         }
     }
 
@@ -895,7 +893,7 @@ function get_headers_array(string $url): false|array {
     } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
         $ch = $curl_insecure_hdl;
     } else {
-        report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
+        report_error("BAD URL in get_headers_array");
     }
 
     curl_setopt($ch, CURLOPT_URL, $url);
