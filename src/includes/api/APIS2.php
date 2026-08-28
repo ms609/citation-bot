@@ -35,6 +35,23 @@ function parse_semanticscholar_open_access_response(string $response): ?bool {
     return $json->isOpenAccess;
 }
 
+function parse_semanticscholar_legacy_url_response(string $response): ?string {
+    $json = @json_decode($response);
+    if (
+        !is_object($json) ||
+        !isset($json->url) ||
+        !is_string($json->url) ||
+        $json->url === '' ||
+        !isset($json->is_publisher_licensed) ||
+        $json->is_publisher_licensed !== true ||
+        !isset($json->openAccessPdf) ||
+        !is_object($json->openAccessPdf)
+    ) {
+        return null;
+    }
+    return $json->url;
+}
+
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
@@ -146,12 +163,10 @@ function get_semanticscholar_url(Template $template, string $doi): void {
     curl_setopt($ch, CURLOPT_URL, $url);
     $response = bot_curl_exec($ch);
     if ($response) {
-        $oa = @json_decode($response);
+        $open_access_url = parse_semanticscholar_legacy_url_response($response);
         unset($response);
-        if ($oa !== false && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed && isset($oa->openAccessPdf) && $oa->openAccessPdf) {
-            $url = $oa->url;
-            unset($oa);
-            $template->get_identifiers_from_url($url);
+        if ($open_access_url !== null) {
+            $template->get_identifiers_from_url($open_access_url);
         }
     }
 }
