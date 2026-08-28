@@ -932,12 +932,8 @@ function tidy_date_inside(string $string): string {
  * See Comment::PLACEHOLDER_TEXT for syntax
  */
 function remove_comments(string $string): string {
-    $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
-    $ret = preg_replace("~<!--.*?-->~us", "", $string);
-    if ($ret === null) {
-        report_error("null in remove_comments()");
-    }
-    return $ret;
+    $string = safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
+    return safe_preg_replace("~<!--.*?-->~us", "", $string);
 }
 
 function can_safely_modify_dashes(string $value): bool {

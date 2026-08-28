@@ -96,7 +96,11 @@ function format_surname(string $surname): string {
     if (preg_match('~^\S\.?$~u', $surname)) {
         return mb_strtoupper($surname); // Just a single initial, with or without period
     }
-    $surname = mb_convert_case(mb_trim(preg_replace("~-~u", " - ", $surname)), MB_CASE_LOWER);
+    $hyphenated = preg_replace("~-~u", " - ", $surname);
+    if ($hyphenated !== null) {
+        $surname = $hyphenated;
+    }
+    $surname = mb_convert_case(mb_trim($surname), MB_CASE_LOWER);
     if (mb_substr($surname, 0, 2) === "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
     }
@@ -114,11 +118,14 @@ function format_surname(string $surname): string {
 
 function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
-    $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
+    $formatted = preg_replace_callback("~(\p{L})(\p{L}+)~u",
         static function (array $matches): string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
         },
         $ret);
+    if ($formatted !== null) {
+        $ret = $formatted;
+    }
     $ret = str_ireplace(['Von ', 'Und ', 'De La '], ['von ', 'und ', 'de la '], $ret);
     return safe_preg_replace_callback('~;\w~',
         static function (array $matches): string {
@@ -132,11 +139,15 @@ function format_forename(string $forename): string {
     if ($forename === '-' || $forename === '') {
         return '';
     }
-    return str_replace([" ."], "", mb_trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
-            static function (array $matches): string {
-                return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
-            },
-            $forename)));
+    $formatted = preg_replace_callback("~(\p{L})(\p{L}{3,})~u",
+        static function (array $matches): string {
+            return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
+        },
+        $forename);
+    if ($formatted !== null) {
+        $forename = $formatted;
+    }
+    return str_replace([" ."], "", mb_trim($forename));
 }
 
 /**
@@ -300,7 +311,10 @@ function format_multiple_authors(string $authors): string {
 
     $return = [];
     ## Split the citation into an author by author account
-    $authors = preg_replace(["~\band\b~iu", "~[\d\+\*]+~u"], ";", $authors); //Remove "and" and affiliation symbols
+    $normalized_authors = preg_replace(["~\band\b~iu", "~[\d\+\*]+~u"], ";", $authors); //Remove "and" and affiliation symbols
+    if ($normalized_authors !== null) {
+        $authors = $normalized_authors;
+    }
 
     $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
     $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
