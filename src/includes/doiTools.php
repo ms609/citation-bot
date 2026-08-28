@@ -821,33 +821,85 @@ function check_doi_for_jstor(string $doi, Template $template): void {
 /** @return false|array<string|array<string>> */
 function get_headers_array(string $url): false|array {
     static $last_url = "none yet";
-    // Allow cheap journals to work
-    static $context_insecure_doi;
-    static $context_insecure_hdl;
-    if (!isset($context_insecure_doi)) {
-        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(4, 2, 1, 1, 1) / 4.0); // Give up faster in test suite
-        $context_insecure_doi = stream_context_create([
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
-            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
-        ]);
-        $timeout = BOT_HTTP_TIMEOUT * (run_type_mods(3, 3, 1, 1, 1)); // Handles suck
-        $context_insecure_hdl = stream_context_create([
-            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true, 'security_level' => 0, 'verify_depth' => 0],
-            'http' => ['ignore_errors' => true, 'max_redirects' => 40, 'timeout' => $timeout, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT],
-        ]);
+    // Allow cheap/obsolete journal sites to work.  TLS verification is
+    // intentionally disabled here because DOI/HDL redirects frequently land
+    // on abandoned sites with expired, self-signed, or otherwise obsolete TLS.
+    static $curl_insecure_doi;
+    static $curl_insecure_hdl;
+    if (!isset($curl_insecure_doi)) {
+        $curl_options = [
+            CURLOPT_HEADER => false,
+            CURLOPT_NOBODY => false, // get_headers() uses GET by default
+            CURLOPT_MAXREDIRS => 40,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            // Permit obsolete TLS versions and weak OpenSSL security levels.
+            CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1,
+            CURLOPT_SSL_CIPHER_LIST => 'ALL:@SECLEVEL=0',
+        ];
+        $curl_insecure_doi = bot_curl_init(
+            run_type_mods(4, 2, 1, 1, 1) / 4.0, // Give up faster in test suite
+            $curl_options
+        );
+        $curl_insecure_hdl = bot_curl_init(
+            run_type_mods(3, 3, 1, 1, 1), // Handles suck
+            $curl_options
+        );
     }
     set_time_limit(120);
     if ($last_url === $url) {
         sleep(5);
     }
     $last_url = $url;
+
     if (mb_strpos($url, 'https://doi.org') === 0) {
-        return @get_headers($url, true, $context_insecure_doi);
+        $ch = $curl_insecure_doi;
     } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
-        return @get_headers($url, true, $context_insecure_hdl);
+        $ch = $curl_insecure_hdl;
     } else {
         report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
     }
+
+    /** @var array<string|array<string>> $headers */
+    $headers = [];
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_HEADERFUNCTION => static function (CurlHandle $_ch, string $line) use (&$headers): int {
+            $length = mb_strlen($line, '8bit');
+            $line = mb_trim($line);
+            if ($line === '') {
+                return $length;
+            }
+            if (preg_match('~^HTTP/\S+\s+\d{3}(?:\s+.*)?$~', $line)) {
+                $headers[] = $line;
+                return $length;
+            }
+            $colon = mb_strpos($line, ':');
+            if ($colon === false) {
+                return $length;
+            }
+            $name = mb_substr($line, 0, $colon);
+            $value = mb_trim(mb_substr($line, $colon + 1));
+            if (!isset($headers[$name])) {
+                $headers[$name] = $value;
+            } elseif (is_array($headers[$name])) {
+                $headers[$name][] = $value;
+            } else {
+                $headers[$name] = [$headers[$name], $value];
+            }
+            return $length;
+        },
+        // Preserve GET semantics, but do not retain response bodies in memory.
+        CURLOPT_WRITEFUNCTION => static function (CurlHandle $_ch, string $data): int {
+            return mb_strlen($data, '8bit');
+        },
+    ]);
+
+    if (bot_curl_exec_withFalse($ch) === false) {
+        return false;
+    }
+    return $headers;
 }
 
 function doi_is_bad (string $doi): bool {
