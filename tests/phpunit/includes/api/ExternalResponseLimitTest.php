@@ -48,9 +48,9 @@ final class ExternalResponseLimitTest extends testBaseClass {
 
         $next_pattern = '~\n\s*(?:(?:public|protected|private)\s+)?(?:static\s+)?function\s+[A-Za-z_][A-Za-z0-9_]*\s*\(~';
         if (preg_match($next_pattern, $source, $next, PREG_OFFSET_CAPTURE, $after_signature) === 1) {
-            return substr($source, $start, $next[0][1] - $start);
+            return mb_substr($source, $start, $next[0][1] - $start, '8bit');
         }
-        return substr($source, $start);
+        return mb_substr($source, $start, '8bit');
     }
 
     #[DataProvider('configuredLimitProvider')]
@@ -63,12 +63,12 @@ final class ExternalResponseLimitTest extends testBaseClass {
         $source = $this->functionSource($file, $function);
         $this->assertSame(
             $occurrences,
-            substr_count($source, 'bot_curl_set_max_response_bytes('),
+            mb_substr_count($source, 'bot_curl_set_max_response_bytes('),
             $function . ' should cap every cURL handle it owns'
         );
         $this->assertSame(
             $occurrences,
-            substr_count($source, $megabytes . ' * 1024 * 1024'),
+            mb_substr_count($source, $megabytes . ' * 1024 * 1024'),
             $function . ' should use the expected response-size limit'
         );
         $this->assertStringContainsString(
