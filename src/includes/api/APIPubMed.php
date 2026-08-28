@@ -178,6 +178,22 @@ function get_entrez_xml(string $type, string $query): ?SimpleXMLElement {
     return xml_post($url, $request);
 }
 
+function parse_entrez_xml_response(string $output): ?SimpleXMLElement {
+    if ($output === '') {
+        return null;
+    }
+    try {
+        $xml = @simplexml_load_string(
+            $output,
+            SimpleXMLElement::class,
+            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+    } catch (Throwable) {
+        return null;
+    }
+    return $xml === false ? null : $xml;
+}
+
 /**
  * Must use post in order to get DOIs with <, >, [, and ] in them and other problems
  * @param non-empty-string $url
@@ -196,8 +212,8 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
         CURLOPT_POSTFIELDS => $post,
     ]);
     $output = bot_curl_exec($ch);
-    $xml = @simplexml_load_string($output);
-    if ($xml === false) {
+    $xml = parse_entrez_xml_response($output);
+    if ($xml === null) {
         sleep(1);
         return null;
     }
