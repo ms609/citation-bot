@@ -842,9 +842,9 @@ function get_headers_array(string $url): false|array {
     }
     $last_url = $url;
     if (mb_strpos($url, 'https://doi.org') === 0) {
-        return @get_headers($url, true, $context_insecure_doi);
+        return bot_get_headers($url, true, $context_insecure_doi);
     } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
-        return @get_headers($url, true, $context_insecure_hdl);
+        return bot_get_headers($url, true, $context_insecure_hdl);
     } else {
         report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
     }
