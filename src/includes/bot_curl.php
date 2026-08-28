@@ -231,24 +231,25 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
 function curl_get_headers(string $url, bool $associative = false): array|false {
     static $ch = null;
     $headers = [];
-    $ch_ops = [
-        CURLOPT_NOBODY => true,
-        CURLOPT_HEADERFUNCTION => static function (CurlHandle $curl, string $headerLine) use (&$headers): int {
-            $length = mb_strlen($headerLine, '8bit');
-            $line = mb_trim($headerLine);
-            if ($line === '') {
-                return $length;
-            }
-            // A new HTTP status line means cURL has started a new response block, usually due to a redirect.
-            if (preg_match('~^http/\S+\s+\d+~i', $line)) {
-                $headers = [$line];
-                return $length;
-            }
-            $headers[] = $line;
-            return $length;
-        },
-    ];
+
     if ($ch === null) {
+        $ch_ops = [
+            CURLOPT_NOBODY => true,
+            CURLOPT_HEADERFUNCTION => static function (CurlHandle $curl, string $headerLine) use (&$headers): int {
+                $length = mb_strlen($headerLine, '8bit');
+                $line = mb_trim($headerLine);
+                if ($line === '') {
+                    return $length;
+                }
+                // A new HTTP status line means cURL has started a new response block, usually due to a redirect.
+                if (preg_match('~^http/\S+\s+\d+~i', $line)) {
+                    $headers = [$line];
+                    return $length;
+                }
+                $headers[] = $line;
+                return $length;
+            },
+        ];
         $ch = bot_curl_init(10, $ch_ops);
         bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024); // Largely meaningless
     }
