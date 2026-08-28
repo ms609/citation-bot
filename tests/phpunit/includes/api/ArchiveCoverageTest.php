@@ -724,4 +724,22 @@ final class ArchiveCoverageTest extends testBaseClass {
             $template->get2('title')
         );
     }
+
+    public function testSmartDecodeInvalidEncodingNeverThrows(): void {
+        $this->assertSame(
+            '',
+            smart_decode(
+                'Archive title',
+                'definitely-not-an-encoding',
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testEncodingReasonablenessIgnoresCase(): void {
+        $this->assertSame(
+            is_encoding_reasonable('windows-1252'),
+            is_encoding_reasonable('WINDOWS-1252')
+        );
+    }
 }
