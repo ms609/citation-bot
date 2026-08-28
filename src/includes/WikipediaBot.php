@@ -620,6 +620,34 @@ final class WikipediaBot {
         return (string) $text;
     }
 
+    public static function valid_user_from_response(string $response): ?bool {
+        $decoded = @json_decode($response);
+        if (
+            !is_object($decoded) ||
+            !isset($decoded->query) ||
+            !is_object($decoded->query) ||
+            !isset($decoded->query->users) ||
+            !is_array($decoded->query->users) ||
+            count($decoded->query->users) !== 1 ||
+            !isset($decoded->query->users[0]) ||
+            !is_object($decoded->query->users[0])
+        ) {
+            return null;
+        }
+
+        $user = $decoded->query->users[0];
+        if (property_exists($user, 'invalid') || property_exists($user, 'missing')) {
+            return false;
+        }
+        if (!isset($user->userid) || !is_int($user->userid) || $user->userid <= 0) {
+            return null;
+        }
+        if (property_exists($user, 'blockid') && !property_exists($user, 'blockpartial')) {
+            return false;
+        }
+        return true;
+    }
+
     public static function is_valid_user(string $user): bool {
         if (!$user) {
             return false;
@@ -631,25 +659,18 @@ final class WikipediaBot {
             "ususers" => $user,
         ];
         $response = self::query_api($query);
-        if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
+        $valid = self::valid_user_from_response($response);
+        if ($valid === null) { // try again if weird
             sleep(5);
             $response = self::query_api($query);
+            $valid = self::valid_user_from_response($response);
         }
-        if (mb_strpos($response, '"userid"') === false && mb_strpos($response, '"missing"') === false && mb_strpos($response, '"invalid"') === false) { // try again if weird
+        if ($valid === null) { // try again if weird
             sleep(10);
             $response = self::query_api($query);
+            $valid = self::valid_user_from_response($response);
         }
-        if ($response === '') {
-            return false;  // @codeCoverageIgnore
-        }
-        $response = str_replace(["\r", "\n"], '', $response);  // paranoid
-        if (mb_strpos($response, '"invalid"') !== false || // IP Address and similar stuff
-            (mb_strpos($response, '"blockid"') !== false && mb_strpos($response, '"blockpartial"') === false) || // Valid but blocked
-            mb_strpos($response, '"missing"') !== false || // No such account
-            mb_strpos($response, '"userid"') === false) { // should actually never return false here
-            return false;
-        }
-        return true;
+        return $valid ?? false;
     }
 
     public static function non_standard_mode(): bool {
