@@ -520,6 +520,40 @@ function adsabs_valid_response(mixed $decoded): ?stdClass {
 }
 
 /**
+ * @return array{limit: ?int, remaining: ?int, reset: ?int}
+ */
+function adsabs_rate_limit_headers(string $header): array {
+    $values = [
+        'limit' => null,
+        'remaining' => null,
+        'reset' => null,
+    ];
+    if (!preg_match_all(
+        '~^x-ratelimit-(limit|remaining|reset):[ \t]*(\d+)[ \t]*\r?$~im',
+        $header,
+        $matches,
+        PREG_SET_ORDER
+    )) {
+        return $values;
+    }
+    foreach ($matches as $match) {
+        $value = (int) $match[2];
+        switch (mb_strtolower($match[1])) {
+            case 'limit':
+                $values['limit'] = $value;
+                break;
+            case 'remaining':
+                $values['remaining'] = $value;
+                break;
+            case 'reset':
+                $values['reset'] = $value;
+                break;
+        }
+    }
+    return $values;
+}
+
+/**
  * @param string $options should be a series of field names, colons (optionally urlencoded), and  URL-ENCODED search strings, separated by (unencoded) ampersands. Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
  */
 function query_adsabs(string $options): stdClass {
@@ -566,20 +600,15 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
         unset($return);
         $decoded = @json_decode($body);
 
-        $ratelimit_total = null;
-        $ratelimit_left = null;
+        $rate_limits = adsabs_rate_limit_headers($header);
+        $ratelimit_total = $rate_limits['limit'];
+        $ratelimit_left = $rate_limits['remaining'];
         $ratelimit_current = null;
 
-        if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
+        if (is_int($ratelimit_total) && is_int($ratelimit_left)) {
             // @codeCoverageIgnoreStart
-            if ($rate_limit[1][2]) {
-                $ratelimit_total = intval($rate_limit[1][0]);
-                $ratelimit_left = intval($rate_limit[1][1]);
-                $ratelimit_current = $ratelimit_total - $ratelimit_left;
-                report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
-            } else {
-                throw new Exception('Too many requests', $http_response_code);
-            }
+            $ratelimit_current = max($ratelimit_total - $ratelimit_left, 0);
+            report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
             // @codeCoverageIgnoreEnd
         }
 
@@ -587,7 +616,14 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             $retry_msg = '';                                                  // @codeCoverageIgnoreStart
             $time_to_sleep = null;
             $limit_action = null;
-            if (is_int($ratelimit_total) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+            if (
+                is_int($ratelimit_total) &&
+                is_int($ratelimit_left) &&
+                is_int($ratelimit_current) &&
+                $ratelimit_left <= 0 &&
+                $ratelimit_current >= $ratelimit_total &&
+                preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)
+            ) {
                 // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
                 // available actions are: sleep, exit, ignore (default).
                 $rai = intval($retry_after[1]);
@@ -605,8 +641,8 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                     $retry_msg .= ' The AdsAbs API limit reached, but the on-limit action "' . strval($limit_action) . '" is not recognized and thus ignored.';
                 }
             }
-            if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
-                $rlr = intval($rate_limit_reset[1]);
+            if (is_int($rate_limits['reset'])) {
+                $rlr = $rate_limits['reset'];
                 $retry_msg .= ' Rate limit resets on ' . date('Y-m-d H:i:s', $rlr) . ' UTC.';
             }
             $retry_msg = mb_trim($retry_msg);
