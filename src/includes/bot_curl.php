@@ -235,8 +235,7 @@ function curl_get_headers(string $url, bool $associative = false): array|false {
     if ($ch === null) {
         $ch = bot_curl_init(10, [CURLOPT_NOBODY => true]);
         bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024); // Largely meaningless
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function
-            (CurlHandle $curl, string $headerLine) use (&$headers): int {
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (CurlHandle $curl, string $headerLine) use (&$headers): int {
                 $length = mb_strlen($headerLine, '8bit');
                 $line = mb_trim($headerLine);
                 if ($line === '') {
@@ -249,7 +248,7 @@ function curl_get_headers(string $url, bool $associative = false): array|false {
                 }
                 $headers[] = $line;
                 return $length;
-            });
+        });
     }
 
     $result = bot_curl_exec_withFalse($ch);
