@@ -827,7 +827,7 @@ function get_headers_array(string $url): false|array {
     static $curl_insecure_doi;
     static $curl_insecure_hdl;
     /** @var array<string|array<string>> $headers */
-    $headers = [];
+    static $headers = [];
 
     if (!isset($curl_insecure_doi)) {
         $curl_options = [
@@ -896,6 +896,7 @@ function get_headers_array(string $url): false|array {
         report_error("BAD URL in get_headers_array");
     }
 
+    $headers = [];
     /** @var non-empty-string $url */
     curl_setopt($ch, CURLOPT_URL, $url);
     if (bot_curl_exec_withFalse($ch) === false) {
