@@ -263,7 +263,6 @@ function curl_get_headers(string $url, bool $associative = false): array|false {
         return $headers;
     }
 
-    unset($result);
     $result = [];
     foreach ($headers as $index => $header) {
         if ($index === 0 && preg_match('~^http/~i', $header)) {
