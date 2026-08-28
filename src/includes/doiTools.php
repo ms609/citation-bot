@@ -826,6 +826,9 @@ function get_headers_array(string $url): false|array {
     // on abandoned sites with expired, self-signed, or otherwise obsolete TLS.
     static $curl_insecure_doi;
     static $curl_insecure_hdl;
+    /** @var array<string|array<string>> $headers */
+    $headers = [];
+
     if (!isset($curl_insecure_doi)) {
         $curl_options = [
             CURLOPT_HEADER => false,
@@ -846,7 +849,41 @@ function get_headers_array(string $url): false|array {
             run_type_mods(3, 3, 1, 1, 1), // Handles suck
             $curl_options
         );
+        foreach ([$curl_insecure_hdl, $curl_insecure_doi] as $ch) {
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (CurlHandle $_ch, string $line) use (&$headers): int {
+                    $length = mb_strlen($line, '8bit');
+                    $line = mb_trim($line);
+                    if ($line === '') {
+                        return $length;
+                    }
+                    if (preg_match('~^HTTP/\S+\s+\d{3}(?:\s+.*)?$~', $line)) {
+                        $headers[] = $line;
+                        return $length;
+                    }
+                    $colon = mb_strpos($line, ':');
+                    if ($colon === false) {
+                        return $length;
+                    }
+                    $name = mb_substr($line, 0, $colon);
+                    $value = mb_trim(mb_substr($line, $colon + 1));
+                    if (!isset($headers[$name])) {
+                        $headers[$name] = $value;
+                    } elseif (is_array($headers[$name])) {
+                        $headers[$name][] = $value;
+                    } else {
+                        $headers[$name] = [$headers[$name], $value];
+                    }
+                    return $length;
+                }
+            );
+            // Preserve GET semantics, but do not retain response bodies in memory.
+            curl_setopt($ch, CURLOPT_WRITEFUNCTION, static function (CurlHandle $_ch, string $data): int {
+                    return mb_strlen($data, '8bit');
+                }
+            );
+        }
     }
+
     set_time_limit(120);
     if ($last_url === $url) {
         sleep(5);
@@ -861,41 +898,7 @@ function get_headers_array(string $url): false|array {
         report_error("BAD URL in get_headers_array"); // @codeCoverageIgnore
     }
 
-    /** @var array<string|array<string>> $headers */
-    $headers = [];
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $url,
-        CURLOPT_HEADERFUNCTION => static function (CurlHandle $_ch, string $line) use (&$headers): int {
-            $length = mb_strlen($line, '8bit');
-            $line = mb_trim($line);
-            if ($line === '') {
-                return $length;
-            }
-            if (preg_match('~^HTTP/\S+\s+\d{3}(?:\s+.*)?$~', $line)) {
-                $headers[] = $line;
-                return $length;
-            }
-            $colon = mb_strpos($line, ':');
-            if ($colon === false) {
-                return $length;
-            }
-            $name = mb_substr($line, 0, $colon);
-            $value = mb_trim(mb_substr($line, $colon + 1));
-            if (!isset($headers[$name])) {
-                $headers[$name] = $value;
-            } elseif (is_array($headers[$name])) {
-                $headers[$name][] = $value;
-            } else {
-                $headers[$name] = [$headers[$name], $value];
-            }
-            return $length;
-        },
-        // Preserve GET semantics, but do not retain response bodies in memory.
-        CURLOPT_WRITEFUNCTION => static function (CurlHandle $_ch, string $data): int {
-            return mb_strlen($data, '8bit');
-        },
-    ]);
-
+    curl_setopt($ch, CURLOPT_URL, $url);
     if (bot_curl_exec_withFalse($ch) === false) {
         return false;
     }
