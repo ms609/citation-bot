@@ -200,10 +200,9 @@ final class BotCurlTest extends testBaseClass {
         );
         $this->assertSame(0, BOT_CURL_ALLOWED_PROTOCOLS_USE & CURLPROTO_FTP);
         $this->assertSame(
-            CURLPROTO_HTTP | CURLPROTO_HTTPS,
+            CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP,
             BOT_CURL_ALLOWED_PROTOCOLS_END
         );
-        $this->assertSame(0, BOT_CURL_ALLOWED_PROTOCOLS_END & CURLPROTO_FTP);
     }
 
     public function testSecurityOptionsCanBeAppliedToNormalHandle(): void {
