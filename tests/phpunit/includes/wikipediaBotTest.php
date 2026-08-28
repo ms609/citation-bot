@@ -133,6 +133,38 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertFalse($result);
     }
 
+    public function testValidUserResponseParser(): void {
+        $this->assertTrue(WikipediaBot::valid_user_from_response(
+            '{"query":{"users":[{"userid":123,"name":"Example"}]}}'
+        ));
+        $this->assertFalse(WikipediaBot::valid_user_from_response(
+            '{"query":{"users":[{"name":"Missing","missing":""}]}}'
+        ));
+        $this->assertFalse(WikipediaBot::valid_user_from_response(
+            '{"query":{"users":[{"name":"127.0.0.1","invalid":""}]}}'
+        ));
+        $this->assertFalse(WikipediaBot::valid_user_from_response(
+            '{"query":{"users":[{"userid":123,"name":"Blocked","blockid":7}]}}'
+        ));
+        $this->assertTrue(WikipediaBot::valid_user_from_response(
+            '{"query":{"users":[{"userid":123,"name":"Partial","blockid":7,"blockpartial":true}]}}'
+        ));
+    }
+
+    public function testValidUserResponseParserRejectsMalformedShapes(): void {
+        foreach ([
+            '',
+            'not json',
+            '{}',
+            '{"query":{"users":[]}}',
+            '{"query":{"users":[{"userid":"123"}]}}',
+            '{"query":{"users":[{"userid":123},{"userid":456}]}}',
+            '{"unrelated":"userid"}',
+        ] as $response) {
+            $this->assertNull(WikipediaBot::valid_user_from_response($response));
+        }
+    }
+
     public function testIsINValidUser(): void {
         $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017');
         $this->assertFalse($result);
