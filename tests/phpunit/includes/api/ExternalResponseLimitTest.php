@@ -44,7 +44,7 @@ final class ExternalResponseLimitTest extends testBaseClass {
         $matched = preg_match($pattern, $source, $match, PREG_OFFSET_CAPTURE);
         $this->assertSame(1, $matched, 'Could not locate function ' . $function . ' in ' . $file);
         $start = $match[0][1];
-        $after_signature = $start + strlen($match[0][0]);
+        $after_signature = $start + mb_strlen($match[0][0], '8bit');
 
         $next_pattern = '~\n\s*(?:(?:public|protected|private)\s+)?(?:static\s+)?function\s+[A-Za-z_][A-Za-z0-9_]*\s*\(~';
         if (preg_match($next_pattern, $source, $next, PREG_OFFSET_CAPTURE, $after_signature) === 1) {
