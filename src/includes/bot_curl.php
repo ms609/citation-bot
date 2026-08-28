@@ -228,8 +228,7 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
  *
  * @return array|false
  */
-function curl_get_headers(string $url, bool $associative = false): array|false
-{
+function curl_get_headers(string $url, bool $associative = false): array|false {
     static $ch = null;
     $headers = [];
     $ch_ops = [
