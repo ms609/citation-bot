@@ -219,3 +219,73 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
     ];
     return $result;
 }
+
+/**
+ * cURL-based replacement for PHP get_headers().
+ *
+ * @param string $url
+ * @param bool   $associative When true, return headers as an associative array.
+ *
+ * @return array|false
+ */
+function curl_get_headers(string $url, bool $associative = false): array|false
+{
+    static $ops = [
+        CURLOPT_NOBODY            => true,
+        CURLOPT_RETURNTRANSFER    => true,
+        CURLOPT_FOLLOWLOCATION    => true,
+        CURLOPT_HEADERFUNCTION => static function ($curl, string $headerLine) use (&$headers): int {
+            $length = mb_strlen($headerLine, '8bit');
+            $line = mb_trim($headerLine);
+            if ($line === '') {
+                return $length;
+            }
+            // A new HTTP status line means cURL has started a new response block, usually due to a redirect.
+            if (preg_match('~^http/\S+\s+\d+~i', $line)) {
+                $headers = [$line];
+                return $length;
+            }
+            $headers[] = $line;
+            return $length;
+        },
+    ]);
+    static $ch = bot_curl_init(10, []);
+
+    if ($ch === false) {
+        report_error('curl_get_headers failed to get curl handle');
+    }
+
+    $headers = [];
+    $result = bot_curl_exec($ch);
+    if ($result === '') {
+        return false;
+    }
+    if (!$associative) {
+        return $headers;
+    }
+
+    $result = [];
+    foreach ($headers as $index => $header) {
+        if ($index === 0 && preg_match('~^http/~i', $header)) {
+            $result[0] = $header;
+            continue;
+        }
+        $pos = mb_strpos($header, ':');
+        if ($pos === false) {
+            continue;
+        }
+        $name = mb_trim(mb_substr($header, 0, $pos));
+        $value = mb_trim(mb_substr($header, $pos + 1));
+
+        // PHP get_headers() can return multiple values for repeated headers.
+        if (array_key_exists($name, $result)) {
+            if (!is_array($result[$name])) {
+                $result[$name] = [$result[$name]];
+            }
+            $result[$name][] = $value;
+        } else {
+            $result[$name] = $value;
+        }
+    }
+    return $result;
+}
