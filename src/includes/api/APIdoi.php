@@ -234,6 +234,7 @@ function query_crossref(string $doi): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
+        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
     }
     if (mb_strpos($doi, '10.2307') === 0) {
         return null; // jstor API is better
@@ -299,6 +300,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     if ($ch === null) {
         $ch = bot_curl_init(1.5, // can take a long time when nothing to be found
         [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
+        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
     }
     if (mb_strpos($doi, '10.2307') === 0 || // jstor API is better
         mb_strpos($doi, '10.24436') === 0 || // They have horrible meta-data
@@ -333,6 +335,27 @@ function expand_doi_with_dx(Template $template, string $doi): void {
 }
 
 /**
+ * Safely follow a path through decoded associative JSON.
+ *
+ * @param array<mixed> $json
+ * @param array<int|string> $path
+ */
+function doi_json_get(array $json, array $path): mixed {
+    $value = $json;
+    foreach ($path as $key) {
+        if (!is_array($value) || !array_key_exists($key, $value)) {
+            return null;
+        }
+        $value = $value[$key];
+    }
+    return $value;
+}
+
+function doi_json_scalar(mixed $value): ?string {
+    return is_scalar($value) ? (string) $value : null;
+}
+
+/**
  * @param Template $template
  * @param string $doi
  * @param array<mixed> $json
@@ -351,6 +374,9 @@ function process_doi_json(Template $template, string $doi, array $json): void {
                 return;
             }
             $data = $data['0'];
+        }
+        if (!is_scalar($data)) {
+            return;
         }
         $data = (string) $data;
         if ($data === '') {
@@ -382,48 +408,60 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     // BE WARNED:  this code uses the "@$var" method.
     // If the variable is not set, then PHP just passes null, then that is interpreted as a empty string
     if ($template->blank(['date', 'year'])) {
-        $try_to_add_it('year', @$json['issued']['date-parts']['0']['0']);
-        $try_to_add_it('year', @$json['created']['date-parts']['0']['0']);
-        $try_to_add_it('year', @$json['published-print']['date-parts']['0']['0']);
+        $try_to_add_it('year', doi_json_get($json, ['issued', 'date-parts', 0, 0]));
+        $try_to_add_it('year', doi_json_get($json, ['created', 'date-parts', 0, 0]));
+        $try_to_add_it('year', doi_json_get($json, ['published-print', 'date-parts', 0, 0]));
     }
     $try_to_add_it('issue', @$json['issue']);
     $try_to_add_it('pages', @$json['pages']);
     $try_to_add_it('page', @$json['pages']);
     $try_to_add_it('volume', @$json['volume']);
-    $try_to_add_it('isbn', @$json['ISBN']['0']);
-    $try_to_add_it('isbn', @$json['isbn-type']['value']);
-    $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
-    if (isset($json['author'])) {
+    $try_to_add_it('isbn', doi_json_get($json, ['ISBN', 0]));
+    $try_to_add_it('isbn', doi_json_get($json, ['isbn-type', 'value']));
+    $try_to_add_it('isbn', doi_json_get($json, ['isbn-type', 0, 'value']));
+    if (isset($json['author']) && is_array($json['author'])) {
         $i = 0;
         foreach ($json['author'] as $auth) {
+            if (!is_array($auth)) {
+                continue;
+            }
             $i += 1;
-            $full_name = mb_strtolower(mb_trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            $given = doi_json_scalar($auth['given'] ?? null) ?? '';
+            $family = doi_json_scalar($auth['family'] ?? null) ?? '';
+            $literal = doi_json_scalar($auth['literal'] ?? null) ?? '';
+            $full_name = mb_strtolower(mb_trim($given . ' ' . $family . $literal));
             if (in_array($full_name, BAD_AUTHORS, true)) {
                 break;
             }
-            if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-                $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
+            if ($family === '' && $given !== '') {
+                $try_to_add_it('author' . (string) $i, $given);
             } else {
-                $try_to_add_it('last' . (string) $i, @$auth['family']);
-                $try_to_add_it('first' . (string) $i, @$auth['given']);
-                $try_to_add_it('author' . (string) $i, @$auth['literal']);
+                $try_to_add_it('last' . (string) $i, $family);
+                $try_to_add_it('first' . (string) $i, $given);
+                $try_to_add_it('author' . (string) $i, $literal);
             }
         }
     }
-    if (isset($json['editor']) && $template->wikiname() !== 'cite journal') {
+    if (isset($json['editor']) && is_array($json['editor']) && $template->wikiname() !== 'cite journal') {
         $i = 0;
         foreach ($json['editor'] as $auth) {
+            if (!is_array($auth)) {
+                continue;
+            }
             $i += 1;
-            $full_name = mb_strtolower(mb_trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+            $given = doi_json_scalar($auth['given'] ?? null) ?? '';
+            $family = doi_json_scalar($auth['family'] ?? null) ?? '';
+            $literal = doi_json_scalar($auth['literal'] ?? null) ?? '';
+            $full_name = mb_strtolower(mb_trim($given . ' ' . $family . $literal));
             if (in_array($full_name, BAD_AUTHORS, true)) {
                 break;
             }
-            if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-                $try_to_add_it('editor' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
+            if ($family === '' && $given !== '') {
+                $try_to_add_it('editor' . (string) $i, $given);
             } else {
-                $try_to_add_it('editor-last' . (string) $i, @$auth['family']);
-                $try_to_add_it('editor-first' . (string) $i, @$auth['given']);
-                $try_to_add_it('editor' . (string) $i, @$auth['literal']);
+                $try_to_add_it('editor-last' . (string) $i, $family);
+                $try_to_add_it('editor-first' . (string) $i, $given);
+                $try_to_add_it('editor' . (string) $i, $literal);
             }
         }
     }
@@ -432,7 +470,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         unset($json['container-title']);   // @codeCoverageIgnore
     }
 
-    $type = (string) @$json['type'];
+    $type = doi_json_scalar($json['type'] ?? null) ?? '';
     if ($type === 'article-journal' ||
             $type === 'journal-article' ||
             $type === 'article' ||
@@ -440,7 +478,7 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             $type === 'conference-paper' ||
             $type === 'paper-conference' ||
             $type === 'entry' ||
-            ($type === '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
+            ($type === '' && (isset($json['container-title']) || doi_json_get($json, ['issn', 0]) !== null))) {
         $try_to_add_it('journal', @$json['container-title']);
         $try_to_add_it('title', @$json['title']);
     } elseif ($type === 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
@@ -480,9 +518,9 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
         $try_to_add_it('publisher', @$json['publisher']);
-        if (!isset($json['categories']['1']) &&
+        if (doi_json_get($json, ['categories', 1]) === null &&
                 (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
-            $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+            $try_to_add_it('chapter', doi_json_get($json, ['categories', 0]));  // Not really right, but there is no cite data set template
         }
     } elseif ($type === '' || $type === 'graphic' || $type === 'report' || $type === 'report-component') {  // Add what we can where we can
         $try_to_add_it('title', @$json['title']);
@@ -493,16 +531,18 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
         $try_to_add_it('publisher', @$json['publisher']);
-        if (mb_stripos(@$json['URL'], 'hdl.handle.net')) {
-            $template->get_identifiers_from_url($json['URL']);
+        $external_url = doi_json_scalar($json['URL'] ?? null);
+        if ($external_url !== null && mb_stripos($external_url, 'hdl.handle.net') !== false) {
+            $template->get_identifiers_from_url($external_url);
         }
     } elseif ($type === 'standard') {
         $try_to_add_it('title', @$json['title']);
         $try_to_add_it('location', @$json['publisher-location']);
-        $try_to_add_it('publisher', @$json['standards-body']['name']);
+        $try_to_add_it('publisher', doi_json_get($json, ['standards-body', 'name']));
         $try_to_add_it('publisher', @$json['publisher']);
-        if (mb_stripos(@$json['URL'], 'hdl.handle.net')) {
-            $template->get_identifiers_from_url($json['URL']);
+        $external_url = doi_json_scalar($json['URL'] ?? null);
+        if ($external_url !== null && mb_stripos($external_url, 'hdl.handle.net') !== false) {
+            $template->get_identifiers_from_url($external_url);
         }
     } elseif ($type === 'posted-content' || $type === 'grant' || $type === 'song' || $type === 'motion_picture' || $type === 'patent' || $type === 'database') { // posted-content is from bioRxiv
         $try_to_add_it('title', @$json['title']);
@@ -527,7 +567,27 @@ function parse_crossref_newapi_response(string $response): ?object {
     if (!isset($json->message) || !is_object($json->message)) {
         return null;
     }
-    return $json->message;
+    $message = $json->message;
+    foreach (['title', 'subtitle'] as $field) {
+        if (!isset($message->{$field})) {
+            continue;
+        }
+        if (!is_array($message->{$field})) {
+            return null;
+        }
+        foreach ($message->{$field} as $index => $value) {
+            if (!is_scalar($value)) {
+                return null;
+            }
+            $message->{$field}[$index] = (string) $value;
+        }
+    }
+    foreach (['type', 'article-number'] as $field) {
+        if (isset($message->{$field}) && !is_scalar($message->{$field})) {
+            return null;
+        }
+    }
+    return $message;
 }
 
 /**
@@ -571,6 +631,7 @@ function get_doi_from_crossref(Template $template): void {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
     }
     set_time_limit(120);
     if ($template->has('doi')) {
@@ -662,6 +723,44 @@ function get_doi_from_crossref(Template $template): void {
 }
 
 /**
+ * Parse bioRxiv/medRxiv publication metadata without trusting nested types.
+ */
+function parse_biorxiv_publication_response(string $json, ?string &$api_status = null): ?string {
+    $api_status = null;
+    $data = @json_decode($json);
+    if (!is_object($data)) {
+        return null;
+    }
+
+    if (isset($data->messages) && is_array($data->messages) && isset($data->messages[0]) &&
+        is_object($data->messages[0]) && isset($data->messages[0]->status) &&
+        is_string($data->messages[0]->status)) {
+        $status = mb_trim((string) $data->messages[0]->status);
+        if ($status !== '') {
+            $api_status = $status;
+        }
+    }
+
+    if (!isset($data->collection) || !is_array($data->collection) ||
+        !isset($data->collection[0]) || !is_object($data->collection[0])) {
+        return null;
+    }
+
+    $article = $data->collection[0];
+    foreach (['published_doi', 'published'] as $field) {
+        if (!isset($article->{$field}) || !is_string($article->{$field})) {
+            continue;
+        }
+        $published_doi = mb_trim((string) $article->{$field});
+        if ($published_doi !== '' && $published_doi !== 'NA') {
+            return $published_doi;
+        }
+    }
+
+    return null;
+}
+
+/**
  * Check if bioRxiv/medRxiv preprint published via bioRxiv API.
  *
  * @param string $doi DOI (10.1101/* or 10.64898/*)
@@ -701,52 +800,16 @@ function get_biorxiv_published_doi(
     $url = "https://api.biorxiv.org/details/" . $api_server . "/" . doi_encode($doi) . "/na/json"; // Force JSON, just in case default changes
     curl_setopt($ch, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch);
-    $data = @json_decode($json);
-
-    if (!is_object($data)) {
-        return null;
-    }
-    if (isset($data->messages) &&
-        is_array($data->messages) &&
-        count($data->messages) > 0 &&
-        is_object($data->messages[0]) &&
-        isset($data->messages[0]->status)
-    ) {
-        $status = mb_trim((string) $data->messages[0]->status);
-        if ($status !== '') {
-            $api_status = $status;
+    $published_doi = parse_biorxiv_publication_response($json, $api_status);
+    if ($published_doi !== null) {
+        $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
+        $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
+        if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
+            if (doi_works($published_doi)) {
+                return $published_doi;
+            }
+            bot_debug_log("Got bad DOI from biorxiv: " . echoable($published_doi));
         }
     }
-
-    if (isset($data->collection) && is_array($data->collection) && count($data->collection) > 0) {
-        $article = $data->collection[0];
-        if (is_object($article)) {
-            $published_doi = '';
-            if (!empty($article->published_doi)) {
-                $published_doi = mb_trim((string) $article->published_doi);
-                if ($published_doi === 'NA') {
-                    $published_doi = '';
-                }
-            }
-            if (empty($published_doi) && !empty($article->published)) {
-                $published_doi = mb_trim((string) $article->published);
-                if ($published_doi === 'NA') {
-                    $published_doi = '';
-                }
-            }
-            if ($published_doi !== '') { // Possible, if the original string was just spaces
-                $is_biorxiv_doi = (mb_strpos($published_doi, '10.1101/') === 0);
-                $is_alt_biorxiv_doi = (mb_strpos($published_doi, '10.64898/') === 0);
-                if (!$is_biorxiv_doi && !$is_alt_biorxiv_doi) {
-                    if (doi_works($published_doi)) {
-                        return $published_doi;
-                    } else {
-                        bot_debug_log("Got bad DOI from biorxiv: " . echoable($published_doi));
-                    }
-                }
-            }
-        }
-    }
-
     return null;
 }

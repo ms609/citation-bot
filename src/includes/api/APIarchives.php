@@ -123,15 +123,15 @@ function archive_title_scan_window(string $raw_html): string {
     }
 
     $limit = min(mb_strlen($raw_html, '8bit'), ARCHIVE_TITLE_SCAN_MAX_BYTES);
-    $body_position = mb_stripos($raw_html, '<body');
+    $body_position = mb_stripos($raw_html, '<body', 0, '8bit');
     if ($body_position !== false && $body_position < $limit) {
-        $body_end = mb_strpos($raw_html, '>', $body_position);
+        $body_end = mb_strpos($raw_html, '>', $body_position, '8bit');
         if ($body_end !== false) {
             $limit = min($limit, $body_end + 1);
         }
     }
 
-    return mb_substr($raw_html, 0, $limit);
+    return mb_substr($raw_html, 0, $limit, '8bit');
 }
 
 /**

@@ -43,6 +43,26 @@ final class S2apiTest extends testBaseClass {
         $this->assertNull(parse_semanticscholar_open_access_response('not json'));
     }
 
+    public function testLegacySemanticScholarUrlParserRejectsMalformedShapes(): void {
+        $this->assertSame(
+            'https://example.test/paper',
+            parse_semanticscholar_legacy_url_response(
+                '{"url":"https://example.test/paper","is_publisher_licensed":true,"openAccessPdf":{"url":"https://example.test/paper.pdf"}}'
+            )
+        );
+
+        foreach ([
+            'not json',
+            '[]',
+            '{"url":[],"is_publisher_licensed":true,"openAccessPdf":{}}',
+            '{"url":"https://example.test","is_publisher_licensed":"yes","openAccessPdf":{}}',
+            '{"url":"https://example.test","is_publisher_licensed":true,"openAccessPdf":[]}',
+            '{"url":"https://example.test","is_publisher_licensed":true,"openAccessPdf":null}',
+        ] as $response) {
+            $this->assertNull(parse_semanticscholar_legacy_url_response($response));
+        }
+    }
+
     public function testSemanticScholar(): void {
         $this->sleep_S2();
         $text = "{{cite journal|doi=10.0001/Rubbish_bot_failure_test}}";

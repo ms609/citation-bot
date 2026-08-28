@@ -556,6 +556,15 @@ final class ArchiveCoverageTest extends testBaseClass {
         );
     }
 
+    public function testArchiveTitleScanWindowCapsMultibyteInputByBytes(): void {
+        $payload = str_repeat('é', ARCHIVE_TITLE_SCAN_MAX_BYTES);
+        $this->assertGreaterThan(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($payload, '8bit'));
+
+        $window = archive_title_scan_window($payload);
+
+        $this->assertSame(ARCHIVE_TITLE_SCAN_MAX_BYTES, mb_strlen($window, '8bit'));
+    }
+
     #[DataProvider('placeholderArchiveTitleProvider')]
     public function testScriptTitleRemovesPlaceholderArchiveTitle(
         string $title

@@ -465,7 +465,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
  * Validate one record before downstream code indexes or iterates its fields.
  */
 function adsabs_record_is_safe(object $record): bool {
-    foreach (['bibcode', 'pub', 'pubdate', 'volume', 'issue', 'year', 'doctype', 'arxivclass'] as $field) {
+    if (isset($record->bibcode) && !is_string($record->bibcode)) {
+        return false;
+    }
+    foreach (['pub', 'pubdate', 'volume', 'issue', 'year', 'doctype', 'arxivclass'] as $field) {
         if (isset($record->{$field}) && !is_scalar($record->{$field})) {
             return false;
         }
@@ -479,7 +482,7 @@ function adsabs_record_is_safe(object $record): bool {
             return false;
         }
         foreach ($record->{$field} as $value) {
-            if (!is_scalar($value)) {
+            if (!is_string($value)) {
                 return false;
             }
         }
@@ -544,6 +547,7 @@ function query_adsabs(string $options): stdClass {
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdClass {
     try {
         $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
+        bot_curl_set_max_response_bytes($ch, 16 * 1024 * 1024);
         $return = bot_curl_exec($ch);
         if ($return === "") {
             // @codeCoverageIgnoreStart
