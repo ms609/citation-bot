@@ -896,6 +896,7 @@ function get_headers_array(string $url): false|array {
         report_error("BAD URL in get_headers_array");
     }
 
+    /** @var non-empty-string $url */
     curl_setopt($ch, CURLOPT_URL, $url);
     if (bot_curl_exec_withFalse($ch) === false) {
         return false;
