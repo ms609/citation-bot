@@ -869,7 +869,7 @@ function get_headers_array(string $url): false|array {
                 if (!isset($headers[$name])) {
                     $headers[$name] = $value;
                 } elseif (is_array($headers[$name])) {
-                      $headers[$name][] = $value;
+                    $headers[$name][] = $value;
                 } else {
                     $headers[$name] = [$headers[$name], $value];
                 }
