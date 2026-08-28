@@ -594,4 +594,26 @@ final class bibcodeTest extends testBaseClass {
         $this->assertNull($template->get2('title'));
     }
 
+    public function testAdsabsValidatorRejectsNonStringListEntries(): void {
+        foreach ([
+            (object) ['title' => [123]],
+            (object) ['author' => [false]],
+            (object) ['page' => [42]],
+            (object) ['doi' => [(object) ['bad' => true]]],
+            (object) ['bibcode' => 12345],
+        ] as $record) {
+            $this->assertFalse(adsabs_record_is_safe($record));
+        }
+    }
+
+    public function testAdsabsValidatorAcceptsStringListEntries(): void {
+        $this->assertTrue(adsabs_record_is_safe((object) [
+            'bibcode' => '2017NatCo...814879F',
+            'title' => ['Title'],
+            'author' => ['Example, Alice'],
+            'page' => ['1'],
+            'doi' => ['10.1000/test'],
+        ]));
+    }
+
 }

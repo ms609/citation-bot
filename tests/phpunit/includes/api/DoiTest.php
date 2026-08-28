@@ -28,6 +28,75 @@ final class DoiTest extends testBaseClass {
         $this->assertNull(parse_crossref_newapi_response('{"status":[],"message":{}}'));
     }
 
+    public function testCrossRefNewApiParserRejectsMalformedNestedFields(): void {
+        foreach ([
+            '{"status":"ok","message":{"title":{}}}',
+            '{"status":"ok","message":{"title":[{}]}}',
+            '{"status":"ok","message":{"subtitle":"bad"}}',
+            '{"status":"ok","message":{"type":[]}}',
+            '{"status":"ok","message":{"article-number":{}}}',
+        ] as $response) {
+            $this->assertNull(parse_crossref_newapi_response($response));
+        }
+    }
+
+    public function testCrossRefNewApiParserNormalizesScalarTitleEntries(): void {
+        $result = parse_crossref_newapi_response(
+            '{"status":"ok","message":{"title":[123],"subtitle":[true],"type":"journal-article"}}'
+        );
+        $this->assertNotNull($result);
+        $this->assertSame(['123'], $result->title);
+        $this->assertSame(['1'], $result->subtitle);
+    }
+
+    public function testDoiJsonHelpersRejectObjectsAndBadPaths(): void {
+        $this->assertNull(doi_json_scalar((object) ['bad' => 'shape']));
+        $this->assertNull(doi_json_get(['issued' => 'bad'], ['issued', 'date-parts', 0, 0]));
+        $this->assertNull(doi_json_get(['issn' => (object) ['bad' => true]], ['issn', 0]));
+        $this->assertSame('2026', doi_json_scalar(2026));
+        $this->assertSame(
+            2026,
+            doi_json_get(['issued' => ['date-parts' => [[2026]]]], ['issued', 'date-parts', 0, 0])
+        );
+    }
+
+    public function testProcessDoiJsonIgnoresMalformedNestedValues(): void {
+        $template = $this->make_citation('{{cite journal}}');
+        process_doi_json($template, '10.1000/test', [
+            'issued' => (object) ['date-parts' => [[2026]]],
+            'ISBN' => (object) ['unexpected' => true],
+            'issn' => (object) ['unexpected' => true],
+            'author' => [
+                ['given' => (object) ['unexpected' => true], 'family' => 'Valid'],
+                'not-an-array',
+            ],
+            'URL' => [],
+            'title' => (object) ['unexpected' => true],
+            'type' => 'article-journal',
+        ]);
+
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('year'));
+    }
+
+    public function testBiorxivParserRejectsMalformedNestedFields(): void {
+        $status = null;
+        $this->assertNull(parse_biorxiv_publication_response(
+            '{"messages":[{"status":{}}],"collection":[{"published_doi":{}}]}',
+            $status
+        ));
+        $this->assertNull($status);
+
+        $this->assertSame(
+            '10.1000/published',
+            parse_biorxiv_publication_response(
+                '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/published"}]}',
+                $status
+            )
+        );
+        $this->assertSame('ok', $status);
+    }
+
     public function testExpansion_doi_not_from_crossrefRG(): void {
         $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
