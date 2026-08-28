@@ -501,6 +501,8 @@ final class Zotero {
                 report_info("ISBN data not found for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmcid') !== false) {
                 report_info("PMC data not found for URL " . $the_url);
+            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmid') !== false) {
+                report_info("PMID data not found for URL " . $the_url);
             } elseif (mb_strpos($zotero_response, 'reset reason: connection timeout') !== false) {
                 report_info("Connection timeout for URL" . $the_url);
             } elseif (mb_strpos($zotero_response, 'Invalid URL encoding in request parameters') !== false) {
