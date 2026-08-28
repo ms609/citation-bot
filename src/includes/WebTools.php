@@ -32,6 +32,21 @@ function run_page_with_exception_boundary(string $page_title, callable $operatio
 }
 
 /**
+ * Run a write once, then retry it up to $max_retries times.
+ *
+ * @param callable(): bool $operation
+ */
+function run_write_with_retries(callable $operation, int $max_retries): bool {
+    $max_retries = max(0, $max_retries);
+    for ($attempt = 0; $attempt <= $max_retries; ++$attempt) {
+        if ($operation()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
@@ -93,16 +108,16 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                         unset($body);
                     } else {
                         report_phase("Writing to " . echoable($page_title) . '... ');
-                        $attempts = 0;
                         if ($total === 1) {
                             $edit_sum = $edit_summary_end;
                         } else {
                             $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
                         }
-                        while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) {
-                            ++$attempts;
-                        }
-                        if ($attempts < MAX_TRIES) {
+                        $write_succeeded = run_write_with_retries(
+                            static fn (): bool => $page->write($api, $edit_sum),
+                            MAX_TRIES
+                        );
+                        if ($write_succeeded) {
                             $last_rev = WikipediaBot::get_last_revision($page_title);
                             html_echo(
                             "\n  <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
