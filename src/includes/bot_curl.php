@@ -233,9 +233,10 @@ function curl_get_headers(string $url, bool $associative = false): array|false {
     $headers = [];
 
     if ($ch === null) {
-        $ch_ops = [
-            CURLOPT_NOBODY => true,
-            CURLOPT_HEADERFUNCTION => static function (CurlHandle $curl, string $headerLine) use (&$headers): int {
+        $ch = bot_curl_init(10, [CURLOPT_NOBODY => true]);
+        bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024); // Largely meaningless
+        curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function
+            (CurlHandle $curl, string $headerLine) use (&$headers): int {
                 $length = mb_strlen($headerLine, '8bit');
                 $line = mb_trim($headerLine);
                 if ($line === '') {
@@ -248,10 +249,7 @@ function curl_get_headers(string $url, bool $associative = false): array|false {
                 }
                 $headers[] = $line;
                 return $length;
-            },
-        ];
-        $ch = bot_curl_init(10, $ch_ops);
-        bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024); // Largely meaningless
+            });
     }
 
     $result = bot_curl_exec_withFalse($ch);
