@@ -23,4 +23,46 @@ final class WebToolsTest extends testBaseClass {
 
         $this->assertNull($result);
     }
+
+    public function testWriteRetriesCanSucceedOnFinalRetry(): void {
+        $calls = 0;
+        $result = run_write_with_retries(
+            static function () use (&$calls): bool {
+                ++$calls;
+                return $calls === 3;
+            },
+            2
+        );
+
+        $this->assertTrue($result);
+        $this->assertSame(3, $calls);
+    }
+
+    public function testWriteRetriesStopAfterConfiguredRetries(): void {
+        $calls = 0;
+        $result = run_write_with_retries(
+            static function () use (&$calls): bool {
+                ++$calls;
+                return false;
+            },
+            2
+        );
+
+        $this->assertFalse($result);
+        $this->assertSame(3, $calls);
+    }
+
+    public function testWriteRetriesStopImmediatelyOnSuccess(): void {
+        $calls = 0;
+        $result = run_write_with_retries(
+            static function () use (&$calls): bool {
+                ++$calls;
+                return true;
+            },
+            2
+        );
+
+        $this->assertTrue($result);
+        $this->assertSame(1, $calls);
+    }
 }
