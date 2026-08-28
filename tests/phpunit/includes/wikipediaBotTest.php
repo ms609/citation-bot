@@ -333,4 +333,54 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertNull(WikipediaBot::parse_links_response('not json'));
     }
 
+    public function testFirstPageParserRejectsMalformedPagesShapes(): void {
+        $this->assertNull(WikipediaBot::first_page_from_response(
+            (object) ['query' => (object) ['pages' => []]]
+        ));
+        $this->assertNull(WikipediaBot::first_page_from_response(
+            (object) ['query' => (object) ['pages' => (object) []]]
+        ));
+        $this->assertNull(WikipediaBot::first_page_from_response(
+            (object) ['query' => (object) ['pages' => (object) ['1' => 'not-an-object']]]
+        ));
+
+        $page = WikipediaBot::first_page_from_response(
+            (object) ['query' => (object) ['pages' => (object) ['1' => (object) ['title' => 'Example']]]]
+        );
+        $this->assertNotNull($page);
+        $this->assertSame('Example', $page->title);
+    }
+
+    public function testRedirectTargetParserRequiresString(): void {
+        $this->assertSame(
+            'Target',
+            WikipediaBot::redirect_target_from_response(
+                (object) ['query' => (object) ['redirects' => [(object) ['to' => 'Target']]]]
+            )
+        );
+        $this->assertNull(WikipediaBot::redirect_target_from_response(
+            (object) ['query' => (object) ['redirects' => [(object) ['to' => []]]]]
+        ));
+        $this->assertNull(WikipediaBot::redirect_target_from_response(
+            (object) ['query' => (object) ['redirects' => 'bad']]
+        ));
+    }
+
+    public function testMediawikiErrorFieldsRejectObjectsAndArrays(): void {
+        $this->assertSame(
+            ['maxlag', 'Waiting'],
+            WikipediaBot::mediawiki_error_fields((object) ['code' => 'maxlag', 'info' => 'Waiting'])
+        );
+        $this->assertNull(WikipediaBot::mediawiki_error_fields(
+            (object) ['code' => (object) [], 'info' => 'bad']
+        ));
+        $this->assertNull(WikipediaBot::mediawiki_error_fields([]));
+        $this->assertFalse(WikipediaBot::ret_okay(
+            (object) ['error' => (object) ['code' => (object) [], 'info' => 'bad']]
+        ));
+        $this->assertTrue(WikipediaBot::fetch_response_is_retryable(
+            (object) ['error' => (object) ['code' => [], 'info' => (object) []]]
+        ));
+    }
+
 }
