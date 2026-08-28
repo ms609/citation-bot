@@ -198,20 +198,18 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             $cleaned = false;
                             $encode = [];
                             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $title_scan_html, $match)) {
-                                if (is_encoding_reasonable($match[1])) {
-                                    $encode[] = $match[1];
+                                $charset = mb_trim($match[1]);
+                                if ($charset !== '' && is_encoding_reasonable($charset)) {
+                                    $encode[] = $charset;
                                 }
                             }
                             if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $title_scan_html, $match)) {
-                                if (is_encoding_reasonable($match[1])) {
-                                    $encode[] = $match[1];
+                                $charset = mb_trim($match[1]);
+                                if ($charset !== '' && is_encoding_reasonable($charset)) {
+                                    $encode[] = $charset;
                                 }
                             }
-                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $title_scan_html, $match)) {
-                                if (mb_strtolower($match[1]) !== 'utf-8' && mb_strtolower($match[1]) !== 'iso-8859-1') {
-                                    $encode[] = $match[1];
-                                }
-                            }
+                            $encode = array_values(array_unique($encode));
                             foreach ($encode as $pos_encode) {
                                 if (!$cleaned) {
                                     $try = smart_decode($title, $pos_encode, $archive_url);
@@ -224,7 +222,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             if (!$cleaned) {
                                 $title = convert_to_utf8($title);
                             }
-                            unset($encode, $cleaned, $try, $match, $pos_encode);
+                            unset($encode, $cleaned, $try, $match, $pos_encode, $charset);
                             $good_title = true;
                             if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
                                 in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
@@ -359,9 +357,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         } else {
             $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
         }
-    } catch (Exception) { // @codeCoverageIgnoreStart
-        $try = "";
-    } catch (ValueError) {
+    } catch (Throwable) { // @codeCoverageIgnoreStart
         $try = "";
     }                     // @codeCoverageIgnoreEnd
     if ($try === "") {
