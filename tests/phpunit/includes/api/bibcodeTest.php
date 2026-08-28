@@ -616,4 +616,40 @@ final class bibcodeTest extends testBaseClass {
         ]));
     }
 
+    public function testAdsabsRateLimitHeadersAreParsedByName(): void {
+        $headers =
+            "HTTP/1.1 200 OK\r\n" .
+            "X-RateLimit-Remaining: 4999\r\n" .
+            "X-RateLimit-Reset: 1780000000\r\n" .
+            "X-RateLimit-Limit: 5000\r\n\r\n";
+
+        $this->assertSame(
+            ['limit' => 5000, 'remaining' => 4999, 'reset' => 1780000000],
+            adsabs_rate_limit_headers($headers)
+        );
+    }
+
+    public function testAdsabsRateLimitHeadersDoNotRequireReset(): void {
+        $headers =
+            "HTTP/1.1 200 OK\n" .
+            "x-ratelimit-limit: 5000\n" .
+            "x-ratelimit-remaining: 0\n";
+
+        $this->assertSame(
+            ['limit' => 5000, 'remaining' => 0, 'reset' => null],
+            adsabs_rate_limit_headers($headers)
+        );
+    }
+
+    public function testAdsabsRateLimitHeadersIgnoreMalformedValues(): void {
+        $headers =
+            "X-RateLimit-Limit: lots\n" .
+            "X-RateLimit-Remaining: 12\n";
+
+        $this->assertSame(
+            ['limit' => null, 'remaining' => 12, 'reset' => null],
+            adsabs_rate_limit_headers($headers)
+        );
+    }
+
 }
