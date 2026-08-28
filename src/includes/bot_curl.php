@@ -230,11 +230,11 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
  */
 function curl_get_headers(string $url, bool $associative = false): array|false
 {
-    static $ops = [
-        CURLOPT_NOBODY            => true,
-        CURLOPT_RETURNTRANSFER    => true,
-        CURLOPT_FOLLOWLOCATION    => true,
-        CURLOPT_HEADERFUNCTION => static function ($curl, string $headerLine) use (&$headers): int {
+    static $ch = null;
+    $headers = [];
+    $ch_ops = [
+        CURLOPT_NOBODY => true,
+        CURLOPT_HEADERFUNCTION => static function (CurlHandle $curl, string $headerLine) use (&$headers): int {
             $length = mb_strlen($headerLine, '8bit');
             $line = mb_trim($headerLine);
             if ($line === '') {
@@ -248,22 +248,22 @@ function curl_get_headers(string $url, bool $associative = false): array|false
             $headers[] = $line;
             return $length;
         },
-    ]);
-    static $ch = bot_curl_init(10, []);
-
-    if ($ch === false) {
-        report_error('curl_get_headers failed to get curl handle');
+    ];
+    if ($ch === null) {
+        $ch = bot_curl_init(10, $ch_ops);
+        bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024); // Largely meaningless
     }
 
-    $headers = [];
-    $result = bot_curl_exec($ch);
-    if ($result === '') {
+    $result = bot_curl_exec_withFalse($ch);
+    if ($result === false) {
         return false;
     }
+
     if (!$associative) {
         return $headers;
     }
 
+    unset($result);
     $result = [];
     foreach ($headers as $index => $header) {
         if ($index === 0 && preg_match('~^http/~i', $header)) {
