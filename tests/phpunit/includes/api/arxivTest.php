@@ -108,4 +108,20 @@ final class arxivTest extends testBaseClass {
         $this->assertSame([null], $entries);
     }
 
+    public function testArxivXmlParserRejectsMalformedResponses(): void {
+        $this->assertNull(parse_arxiv_xml_response('not xml'));
+        $this->assertNull(parse_arxiv_xml_response('<feed><entry>'));
+        $this->assertNull(parse_arxiv_xml_response("<feed>\xFF</feed>"));
+    }
+
+    public function testArxivXmlParserHandlesNamespacedFields(): void {
+        $xml = parse_arxiv_xml_response(
+            '<feed xmlns:arxiv="http://arxiv.org/schemas/atom">' .
+            '<entry><arxiv:doi>10.1000/test</arxiv:doi></entry>' .
+            '</feed>'
+        );
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+        $this->assertSame('10.1000/test', (string) $xml->entry->arxivdoi);
+    }
+
 }

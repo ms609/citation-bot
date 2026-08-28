@@ -136,4 +136,19 @@ final class pubmedTest extends testBaseClass {
         $this->assertSame('Jacob', $template->get2('last1'));
         $this->assertSame('P. 3rd', $template->get2('first1'));
     }
+
+    public function testEntrezXmlParserRejectsMalformedResponses(): void {
+        $this->assertNull(parse_entrez_xml_response(''));
+        $this->assertNull(parse_entrez_xml_response('not xml'));
+        $this->assertNull(parse_entrez_xml_response('<eSummaryResult><DocSum>'));
+        $this->assertNull(parse_entrez_xml_response("<eSummaryResult>\xFF</eSummaryResult>"));
+    }
+
+    public function testEntrezXmlParserAcceptsExpectedResponse(): void {
+        $xml = parse_entrez_xml_response(
+            '<eSummaryResult><DocSum><Id>12345</Id></DocSum></eSummaryResult>'
+        );
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+        $this->assertSame('12345', (string) $xml->DocSum->Id);
+    }
 }

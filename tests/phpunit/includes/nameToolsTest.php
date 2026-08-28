@@ -297,6 +297,14 @@ final class nameToolsTest extends testBaseClass {
         $this->assertSame('', format_forename(''));
     }
 
+    public function testMalformedUtf8NameFormattingDoesNotThrow(): void {
+        $bad = "Sm\xFFith";
+        $this->assertIsString(format_surname($bad));
+        $this->assertIsString(format_surname_2($bad));
+        $this->assertIsString(format_forename($bad));
+        $this->assertIsString(format_multiple_authors($bad));
+    }
+
     public function testMiscNameTests5(): void {
         $this->assertSame('', format_initials('    '));
     }

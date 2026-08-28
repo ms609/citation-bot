@@ -4,6 +4,19 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../../testBaseClass.php';
 
 final class googleBooksTest extends testBaseClass {
+    public function testGoogleBooksXmlParserRejectsMalformedResponses(): void {
+        $this->assertNull(parse_google_books_xml_response(''));
+        $this->assertNull(parse_google_books_xml_response('not xml'));
+        $this->assertNull(parse_google_books_xml_response('<entry><title>broken</entry>'));
+        $this->assertNull(parse_google_books_xml_response("<entry>\xFF</entry>"));
+    }
+
+    public function testGoogleBooksXmlParserAcceptsExpectedResponse(): void {
+        $xml = parse_google_books_xml_response('<entry><title>Example</title></entry>');
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+        $this->assertSame('Example', (string) $xml->title);
+    }
+
     public function testGoogleBookNormalize0(): void {
         new TestPage(); // Fill page name with test name for debugging
         $removed_redundant = 0;

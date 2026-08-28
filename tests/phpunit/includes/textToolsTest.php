@@ -1181,6 +1181,15 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('hello', safe_preg_replace('~zzz~', 'x', 'hello'));
     }
 
+    public function testRemoveCommentsHandlesMalformedUtf8WithoutThrowing(): void {
+        $input = "before\xFF<!-- comment -->after";
+        $this->assertSame($input, remove_comments($input));
+    }
+
+    public function testRemoveCommentsStillRemovesNormalComments(): void {
+        $this->assertSame('beforeafter', remove_comments('before<!-- comment -->after'));
+    }
+
     public function testSafePregReplaceCallbackEmptyInput(): void {
         $result = safe_preg_replace_callback('~a~', static function (array $_m): string {
             return 'b';
