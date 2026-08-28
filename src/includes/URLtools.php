@@ -17,6 +17,8 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_dx = bot_curl_init($time, []);
         $ch_doi = bot_curl_init($time, []);
+        bot_curl_set_max_response_bytes($ch_dx, 2 * 1024 * 1024);
+        bot_curl_set_max_response_bytes($ch_doi, 2 * 1024 * 1024);
     }
     // Now that we have expanded URLs, try to lose them
     foreach ($templates as $template) {

@@ -82,8 +82,12 @@ final class WikipediaBot {
             return false;
         }
         if (isset($response->error)) {
-            $error_code = (string) @$response->error->code;
-            $response_info = (string) @$response->error->info;
+            $error_fields = self::mediawiki_error_fields($response->error);
+            if ($error_fields === null) {
+                report_warning('Wikipedia API returned a malformed error response.');
+                return false;
+            }
+            [$error_code, $response_info] = $error_fields;
             if ($error_code === 'blocked') { // Most CI IPs are blocked, even to logged in users.
                 report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
             } elseif (mb_strpos($response_info, 'The database has been automatically locked') !== false) {
@@ -416,6 +420,55 @@ final class WikipediaBot {
         return $links;
     }
 
+    /** @return array{0: string, 1: string}|null */
+    public static function mediawiki_error_fields(mixed $error): ?array {
+        if (!is_object($error)) {
+            return null;
+        }
+        $code = $error->code ?? '';
+        $info = $error->info ?? '';
+        if (!is_scalar($code) || !is_scalar($info)) {
+            return null;
+        }
+        return [(string) $code, (string) $info];
+    }
+
+    public static function first_page_from_response(mixed $response): ?stdClass {
+        if (
+            !is_object($response) ||
+            !isset($response->query) ||
+            !is_object($response->query) ||
+            !isset($response->query->pages) ||
+            !is_object($response->query->pages)
+        ) {
+            return null;
+        }
+        $pages = (array) $response->query->pages;
+        if ($pages === []) {
+            return null;
+        }
+        $page = reset($pages);
+        return is_object($page) ? (object) (array) $page : null;
+    }
+
+    public static function redirect_target_from_response(mixed $response): ?string {
+        if (
+            !is_object($response) ||
+            !isset($response->query) ||
+            !is_object($response->query) ||
+            !isset($response->query->redirects) ||
+            !is_array($response->query->redirects) ||
+            !isset($response->query->redirects[0]) ||
+            !is_object($response->query->redirects[0]) ||
+            !isset($response->query->redirects[0]->to) ||
+            !is_string($response->query->redirects[0]->to) ||
+            $response->query->redirects[0]->to === ''
+        ) {
+            return null;
+        }
+        return $response->query->redirects[0]->to;
+    }
+
     /** @return array<string> */
     public static function category_members(string $cat): array {
         $list = [];
@@ -448,12 +501,17 @@ final class WikipediaBot {
             "titles" => $page,
         ]);
         $res = @json_decode($res);
-        if (!isset($res->query->pages)) {
+        $page_object = self::first_page_from_response($res);
+        if ($page_object === null) {
             report_minor_error("Failed to get article's last revision for " . echoable($page));      // @codeCoverageIgnore
             return '';                                                                     // @codeCoverageIgnore
         }
-        $page = self::reset($res->query->pages);
-        return isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '';
+        if (!isset($page_object->revisions) || !is_array($page_object->revisions) ||
+            !isset($page_object->revisions[0]) || !is_object($page_object->revisions[0]) ||
+            !isset($page_object->revisions[0]->revid) || !is_scalar($page_object->revisions[0]->revid)) {
+            return '';
+        }
+        return (string) $page_object->revisions[0]->revid;
     }
 
     /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
@@ -473,12 +531,12 @@ final class WikipediaBot {
             ]);
             $res = @json_decode($res);
         }
-        if (!isset($res->query->pages)) {
+        $page_object = self::first_page_from_response($res);
+        if ($page_object === null) {
             report_warning("Failed to get redirect status");
             return -2;
         }
-        $res = self::reset($res->query->pages);
-        return isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0);
+        return isset($page_object->missing) ? -1 : (isset($page_object->redirect) ? 1 : 0);
     }
 
     public static function redirect_target(string $page): ?string {
@@ -488,11 +546,12 @@ final class WikipediaBot {
             "titles" => $page,
         ]);
         $res = @json_decode($res);
-        if (!isset($res->query->redirects[0]->to)) {
+        $target = self::redirect_target_from_response($res);
+        if ($target === null) {
             report_warning("Failed to get redirect target");     // @codeCoverageIgnore
             return null;                                         // @codeCoverageIgnore
         }
-        return (string) $res->query->redirects[0]->to;
+        return $target;
     }
 
     /** @param array<string> $params */
@@ -689,9 +748,11 @@ final class WikipediaBot {
         if (!isset($response->error)) {
             return false;
         }
-
-        $error_code = (string) @$response->error->code;
-        $response_info = (string) @$response->error->info;
+        $error_fields = self::mediawiki_error_fields($response->error);
+        if ($error_fields === null) {
+            return true;
+        }
+        [$error_code, $response_info] = $error_fields;
 
         if (in_array($error_code, ['maxlag', 'ratelimited', 'readonly'], true)) {
             return true;
