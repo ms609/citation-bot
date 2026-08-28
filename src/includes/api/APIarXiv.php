@@ -23,6 +23,23 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
     arxiv_api($ids, $arxiv_templates);
 }
 
+function parse_arxiv_xml_response(string $response): ?SimpleXMLElement {
+    $normalized = preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response);
+    if ($normalized === null) {
+        return null;
+    }
+    try {
+        $xml = @simplexml_load_string(
+            $normalized,
+            SimpleXMLElement::class,
+            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+    } catch (Throwable) {
+        return null;
+    }
+    return $xml === false ? null : $xml;
+}
+
 /**
  * Return arXiv entries in the same order as the requested identifiers.
  * Missing or malformed entries are represented as null.
@@ -74,15 +91,13 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
     curl_setopt($ch, CURLOPT_URL, $request);
     $response = bot_curl_exec($ch);
     if ($response) {
-        $xml = @simplexml_load_string(
-            preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
-        );
+        $xml = parse_arxiv_xml_response($response);
         unset($response);
     } else {
         report_warning("No response from arXiv.");        // @codeCoverageIgnore
         return;                                      // @codeCoverageIgnore
     }
-    if (!is_object($xml)) {
+    if ($xml === null) {
         report_warning("No valid response from arXiv.");        // @codeCoverageIgnore
         return;                                  // @codeCoverageIgnore
     }

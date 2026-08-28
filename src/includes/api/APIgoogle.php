@@ -153,7 +153,7 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
             $google_book_url = 'https://books.google.com/books?vid=ISBN' . $isbn;
             curl_setopt($ch, CURLOPT_URL, $google_book_url);
             $google_content = bot_curl_exec($ch);
-            $google_content = preg_replace('~book_other_versions_anchor.*$~', '', $google_content);
+            $google_content = safe_preg_replace('~book_other_versions_anchor.*$~', '', $google_content);
             if (preg_match_all('~(?:content|html)\?id=(............)(?:&amp|")~', $google_content, $google_results)) {
                   $google_results = $google_results[1];
                   $google_results = array_unique($google_results);
@@ -197,6 +197,27 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
     return false;
 }
 
+function parse_google_books_xml_response(string $data): ?SimpleXMLElement {
+    if ($data === '') {
+        return null;
+    }
+    $simplified_xml = str_replace(
+        'http___//www.w3.org/2005/Atom',
+        'http://www.w3.org/2005/Atom',
+        str_replace(":", "___", $data)
+    );
+    try {
+        $xml = @simplexml_load_string(
+            $simplified_xml,
+            SimpleXMLElement::class,
+            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+    } catch (Throwable) {
+        return null;
+    }
+    return $xml === false ? null : $xml;
+}
+
 function google_book_details(Template $template, string $gid): void {
     static $ch = null;
     if ($ch === null) {
@@ -210,9 +231,8 @@ function google_book_details(Template $template, string $gid): void {
     if ($data === '') {
         return;
     }
-    $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom', str_replace(":", "___", $data));
-    $xml = @simplexml_load_string($simplified_xml);
-    if ($xml === false) {
+    $xml = parse_google_books_xml_response($data);
+    if ($xml === null) {
         return;
     }
     if ($xml->dc___title[1]) {
