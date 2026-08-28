@@ -725,16 +725,16 @@ final class ArchiveCoverageTest extends testBaseClass {
         );
     }
 
-     public function testSmartDecodeUnknownEncodingReturnsEmpty(): void {
-         $this->assertSame(
-             '',
-             smart_decode(
-                 'Archive title',
-                 'citation-bot-not-a-real-encoding',
-                 'https://web.archive.org/'
-             )
-         );
-     }
+    public function testSmartDecodeUnknownEncodingReturnsEmpty(): void {
+        $this->assertSame(
+            '',
+            smart_decode(
+                'Archive title',
+                'citation-bot-not-a-real-encoding',
+                'https://web.archive.org/'
+            )
+        );
+    }
 
     public function testSmartDecodeInvalidEncodingNeverThrows(): void {
         $this->assertSame(
