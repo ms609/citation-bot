@@ -62,7 +62,7 @@ function filter_runnable_page_titles(array $pages): array {
         if (mb_trim($page_title) === '') {
             continue;
         }
-        if (mb_strlen($page_title) > 255) {
+        if (strlen($page_title) > 255) {
             report_warning(
                 'Skipping page name "' . echoable(mb_substr($page_title, 0, 80)) .
                 '…" because it exceeds 255 bytes.'
@@ -72,6 +72,20 @@ function filter_runnable_page_titles(array $pages): array {
         $filtered[] = $page_title;
     }
     return array_values(array_unique($filtered, SORT_STRING));
+}
+
+/**
+ * Bound the raw page-list string before explode() duplicates its memory.
+ * N titles of at most 255 bytes plus N-1 separators fit in N*256 bytes.
+ */
+function page_batch_input_within_limit(string $pages, ?int $max_pages = null): bool {
+    $effective_max = $max_pages ??
+        (defined('MAX_PAGES_OVERRIDE') ? (int) MAX_PAGES_OVERRIDE : (int) MAX_PAGES);
+    if ($effective_max < 1) {
+        return false;
+    }
+    $max_bytes = $effective_max * 256;
+    return strlen($pages) <= $max_bytes;
 }
 
 /**
