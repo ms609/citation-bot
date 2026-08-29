@@ -146,6 +146,11 @@ function bot_curl_apply_security_options(CurlHandle $ch): void {
         CURLOPT_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_USE,
         CURLOPT_REDIR_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_END,
         CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
+        // These are mandatory because caller-provided options are applied
+        // before this function. A metadata provider must not be able to
+        // accidentally opt the process out of TLS certificate verification.
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYHOST => 2,
     ])) {
         throw new RuntimeException('Unable to apply mandatory cURL security options.');
     }
