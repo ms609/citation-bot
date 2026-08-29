@@ -85,7 +85,7 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
         return false;
     }
     $max_bytes = $effective_max * 256;
-    return strlen($pages) <= $max_bytes;
+    return mb_strlen($pages, '8bit') <= $max_bytes;
 }
 
 /**
