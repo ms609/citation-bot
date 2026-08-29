@@ -286,6 +286,7 @@ final class pageTest extends testBaseClass {
             $origText = $page->parsed_text();
             $trialCitation = '{{Cite journal | title Bot Testing | doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
             $page->overwrite_text($trialCitation);
+            dsfa
             $page_result = $page->write($api, "Testing bot write function");
             if (!$page_result && (bool) getenv('CI')) {
                 // Not all "CI" which includes any phpunit, but only GitHub Actions or TRAVIS or other fully automatic CI
