@@ -762,11 +762,6 @@ final class WikipediaBot {
         exit(0);
     }
 
-    private static function reset(object &$obj): stdClass { // We use old php 7 style reset, so emulate
-        $arr = (array) $obj;
-        return (object) reset($arr);
-    }
-
     public static function fetch_response_is_retryable(mixed $response): bool {
         if (!is_object($response)) {
             return true;
