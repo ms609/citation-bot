@@ -11,7 +11,8 @@ error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
 
-if (file_exists('git_pull.lock')) {
+$git_pull_lock = __DIR__ . '/../git_pull.lock';
+if (file_exists($git_pull_lock)) {
     sleep(5);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Git pull in progress - please retry in a moment</h1></main></body></html>';
     exit(0);
