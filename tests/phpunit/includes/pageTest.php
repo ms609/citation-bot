@@ -286,7 +286,9 @@ final class pageTest extends testBaseClass {
             $origText = $page->parsed_text();
             $trialCitation = '{{Cite journal | title Bot Testing | doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
             $page->overwrite_text($trialCitation);
+            sleep(3); // 3 second delay between each edit/read of the exact same page
             $page_result = $page->write($api, "Testing bot write function");
+            sleep(3);
             if (!$page_result && (bool) getenv('CI')) {
                 // Not all "CI" which includes any phpunit, but only GitHub Actions or TRAVIS or other fully automatic CI
                 // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
@@ -302,11 +304,13 @@ final class pageTest extends testBaseClass {
             $page->expand_text();
             $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
             $this->assertTrue(mb_strpos($page->edit_summary(), ' Removed ') > 3);
+            sleep(3);
             if ($page_result) {
                 $this->assertTrue($page->write($api));
             } else {
                 $this->assertFalse($page->write($api));
             }
+            sleep(3);
             $page->get_text_from($writeTestPage);
             $this->assertTrue(mb_strpos($page->parsed_text(), 'Nature') > 5); // This can fail, if the page gets edited and is no longer {{Cite journal | doi = 10.1038/nature09068 | title=Bot Testing | date=2010 | pmid=20505727 | last1=Smith | first1=M. R. | last2=Caron | first2=J. B. | journal=Nature | volume=465 | issue=7297 | pages=469–472 | hdl=1807/32368 | s2cid=4421029 }}
         });
