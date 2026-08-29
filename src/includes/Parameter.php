@@ -81,14 +81,25 @@ final class Parameter {
         }
     }
 
+    private static function normalize_unicode_spaces(string $text): string {
+        $normalized = preg_replace(
+            '/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u',
+            ' ',
+            $text
+        );
+        return $normalized ?? $text;
+    }
+
     /**
      * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
      */
     public function parsed_text(): string {
-        // Normalize non-standard Unicode space separators to regular spaces within citation template
-        $pre = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->pre);
-        $eq = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->eq);
-        $post = preg_replace('/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u', ' ', $this->post);
+        // Normalize non-standard Unicode space separators to regular spaces within citation template.
+        // If the input contains invalid UTF-8, preserve the original bytes instead of silently
+        // dropping the affected pre/equals/post segment when preg_replace() returns null.
+        $pre = self::normalize_unicode_spaces($this->pre);
+        $eq = self::normalize_unicode_spaces($this->eq);
+        $post = self::normalize_unicode_spaces($this->post);
 
         return $pre . $this->param . $eq . $this->val . $post;
     }

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/constants.php';     // @codeCoverageIgnore
 
+function mathml_safe_preg_replace_callback(string $regex, callable $replace, string $old): string {
+    $new = @preg_replace_callback($regex, $replace, $old);
+    return $new ?? $old;
+}
+
 /**
  * Convert MathML elements to LaTeX syntax
  * Handles complex MathML structures like mmultiscripts, msup, msub, mfrac, mroot, munder, munderover, etc.
@@ -18,7 +23,7 @@ function convert_mathml_to_latex(string $mathml): string {
 
     // Handle mmultiscripts for isotope notation: <mmultiscripts>base<mprescripts/>prescript</mmultiscripts>
     // Example: <mmultiscripts>Ni<mprescripts/><none/>67</mmultiscripts> -> ^{67}\mathrm{Ni}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<mmultiscripts>(.*?)<mprescripts/>(.*?)</mmultiscripts>~s',
         static function (array $matches): string {
             $base = mb_trim($matches[1]);
@@ -48,7 +53,7 @@ function convert_mathml_to_latex(string $mathml): string {
 
     // Handle msup (superscript): <msup><mi>x</mi><mn>2</mn></msup> -> x^{2}
     // Also handles <mi> superscripts, e.g. <msup><mi>x</mi><mi>n</mi></msup> -> x^{n}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<msup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msup>~s',
         static function (array $matches): string {
             $base = mb_trim($matches[2]);
@@ -60,7 +65,7 @@ function convert_mathml_to_latex(string $mathml): string {
 
     // Handle msub (subscript): <msub><mi>H</mi><mn>2</mn></msub> -> H_{2}
     // Also handles <mi> subscripts, e.g. <msub><mi>R</mi><mi>K</mi></msub> -> R_{K}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<msub>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*</msub>~s',
         static function (array $matches): string {
             $base = mb_trim($matches[2]);
@@ -72,7 +77,7 @@ function convert_mathml_to_latex(string $mathml): string {
 
     // Handle msubsup (subscript and superscript): <msubsup><mi>x</mi><mn>1</mn><mn>2</mn></msubsup> -> x_{1}^{2}
     // Also handles <mi> sub/superscripts for consistency with msub/msup, e.g. R_{K}^{*}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<msubsup>\s*<(mi|mn)>(.*?)</\1>\s*<(mi|mn)>(.*?)</\3>\s*<(mi|mn)>(.*?)</\5>\s*</msubsup>~s',
         static function (array $matches): string {
             $base = mb_trim($matches[2]);
@@ -84,7 +89,7 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle mfrac (fractions): <mfrac><mn>1</mn><mn>2</mn></mfrac> -> \frac{1}{2}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<mfrac>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mfrac>~s',
         static function (array $matches): string {
             $num = mb_trim($matches[1]);
@@ -95,7 +100,7 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle mroot (nth root): <mroot><mi>x</mi><mn>3</mn></mroot> -> \sqrt[3]{x}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<mroot>\s*<m[ino]>(.*?)</m[ino]>\s*<m[ino]>(.*?)</m[ino]>\s*</mroot>~s',
         static function (array $matches): string {
             $base = mb_trim($matches[1]);
@@ -106,7 +111,7 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle munder (underscript): <munder><mo>lim</mo><mrow>x→0</mrow></munder> -> \underset{x→0}{\lim}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<munder>(.*?)</munder>~s',
         static function (array $matches): string {
             $content = $matches[1];
@@ -125,7 +130,7 @@ function convert_mathml_to_latex(string $mathml): string {
     );
 
     // Handle munderover (underscript and overscript): <munderover><mo>∑</mo><mn>0</mn><mi>n</mi></munderover> -> \sum_{0}^{n}
-    $mathml = preg_replace_callback(
+    $mathml = mathml_safe_preg_replace_callback(
         '~<munderover>(.*?)</munderover>~s',
         static function (array $matches): string {
             $content = $matches[1];

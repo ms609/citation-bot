@@ -32,6 +32,36 @@ require_once __DIR__ . '/api/APIissn.php'; // @codeCoverageIgnoreEnd
 const UNPROTECTED_PAGE = ["autoconfirmed", "extendedconfirmed", "editautoreviewprotected"];
 const PROTECTED_PAGE = ["sysop", "templateeditor"];
 
+/** @return array{0: object, 1: string}|null */
+function page_details_from_api_response(mixed $details): ?array {
+    if (
+        !is_object($details) ||
+        !isset($details->query) ||
+        !is_object($details->query) ||
+        !isset($details->query->pages) ||
+        (!is_object($details->query->pages) && !is_array($details->query->pages))
+    ) {
+        return null;
+    }
+
+    $my_details = null;
+    foreach ((array) $details->query->pages as $candidate) {
+        if (is_object($candidate)) {
+            $my_details = $candidate;
+        }
+    }
+    if ($my_details === null) {
+        return null;
+    }
+
+    $read_at = $details->curtimestamp ?? '';
+    if (!is_scalar($read_at)) {
+        $read_at = '';
+    }
+
+    return [$my_details, (string) $read_at];
+}
+
 class Page {
     protected string $text = '';
     protected string $title = '';
@@ -63,26 +93,25 @@ class Page {
         $this->construct_modifications_array(); // Could be new page
 
         $details = WikipediaBot::read_details($title);
+        $parsed_details = page_details_from_api_response($details);
 
-        if (!isset($details->query->pages)) {
+        if ($parsed_details === null) {
             // @codeCoverageIgnoreStart
             $message = "Error: Could not fetch page.";
-            if (isset($details->error->info)) {
+            if (
+                isset($details->error) &&
+                is_object($details->error) &&
+                isset($details->error->info) &&
+                is_scalar($details->error->info)
+            ) {
                 $message .= " " . (string) $details->error->info;
             }
             report_warning(echoable($message));
             return false;
             // @codeCoverageIgnoreEnd
         }
-        foreach ($details->query->pages as $p) {
-            /** @var object $my_details */
-            $my_details = $p;
-        }
-        if (!isset($my_details)) {
-            report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
-            return false;                                                                                                        // @codeCoverageIgnore
-        }
-        $this->read_at = $details->curtimestamp ?? '';
+        [$my_details, $read_at] = $parsed_details;
+        $this->read_at = $read_at;
 
         $details = $my_details;
         if (isset($details->invalid)) {
