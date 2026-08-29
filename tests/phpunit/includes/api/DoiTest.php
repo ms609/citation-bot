@@ -452,4 +452,20 @@ final class DoiTest extends testBaseClass {
         $result = get_biorxiv_published_doi('10.1101/999999999');
         $this->assertNull($result);
     }
+
+    public function testCrossrefXmlParserRejectsMalformedResponses(): void {
+        $this->assertNull(parse_crossref_xml_response(''));
+        $this->assertNull(parse_crossref_xml_response('not xml'));
+        $this->assertNull(parse_crossref_xml_response("<query_result>\xFF</query_result>"));
+        $this->assertNull(parse_crossref_xml_response('<query_result><body>'));
+    }
+
+    public function testCrossrefXmlParserAcceptsExpectedShape(): void {
+        $xml = parse_crossref_xml_response(
+            '<query_result><body><query status="resolved"><doi>10.1000/test</doi></query></body></query_result>'
+        );
+        $this->assertInstanceOf(SimpleXMLElement::class, $xml);
+        $this->assertSame('resolved', (string) $xml->query_result->body->query['status']);
+        $this->assertSame('10.1000/test', (string) $xml->query_result->body->query->doi);
+    }
 }
