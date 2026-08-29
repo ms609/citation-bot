@@ -721,7 +721,7 @@ final class WikipediaBot {
             bot_html_footer();
             exit(0);
         }
-        @session_start(); // Need write access
+        @session_start(public_session_start_options()); // Need write access
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
