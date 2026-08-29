@@ -23,9 +23,21 @@ if (!is_string($password_in)) {
 } elseif ($deployPassword !== false && !hash_equals($password_in, (string) $deployPassword)) {
     $git_hub = 'Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your env.php file (DEPLOY_PASSWORD).';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
-    /** @psalm-suppress ForbiddenCode */
-    $git_hub = htmlspecialchars((string) shell_exec("(/usr/bin/git fetch  --all; /usr/bin/git reset --hard origin/master)  2>&1"), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5); // phpcs:ignore
-    rmdir(LOCK_DIR);
+    register_shutdown_function(static function (): void {
+        if (is_dir(LOCK_DIR)) {
+            @rmdir(LOCK_DIR);
+        }
+    });
+    try {
+        /** @psalm-suppress ForbiddenCode */
+        $git_hub = htmlspecialchars(
+            (string) shell_exec("(/usr/bin/git fetch --all && /usr/bin/git reset --hard origin/master) 2>&1"), // phpcs:ignore
+            ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5
+        );
+    } finally {
+        @rmdir(LOCK_DIR);
+        clearstatcache(true, LOCK_DIR);
+    }
     if ($deployPassword === false) {
         $git_hub = $git_hub . '\nWarning: No DEPLOY_PASSWORD was required.';
     }
