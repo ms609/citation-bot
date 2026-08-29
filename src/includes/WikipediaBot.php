@@ -282,7 +282,11 @@ final class WikipediaBot {
             report_warning("Pages list is non-existent.  Aborting.");
             return null;
         }
-        $myPage = self::reset($response->query->pages);
+        $myPage = self::first_page_from_response($response);
+        if ($myPage === null) {
+            report_warning("Pages list was ambiguous or malformed.  Aborting.");
+            return null;
+        }
 
         if (
             !isset($myPage->lastrevid) ||
@@ -445,12 +449,11 @@ final class WikipediaBot {
         ) {
             return null;
         }
-        $pages = (array) $response->query->pages;
-        if ($pages === []) {
+        $pages = array_values((array) $response->query->pages);
+        if (count($pages) !== 1 || !is_object($pages[0])) {
             return null;
         }
-        $page = reset($pages);
-        return is_object($page) ? (object) (array) $page : null;
+        return (object) (array) $pages[0];
     }
 
     public static function redirect_target_from_response(mixed $response): ?string {
@@ -757,11 +760,6 @@ final class WikipediaBot {
             header("Location: " . $authentication_url);
         }
         exit(0);
-    }
-
-    private static function reset(object &$obj): stdClass { // We use old php 7 style reset, so emulate
-        $arr = (array) $obj;
-        return (object) reset($arr);
     }
 
     public static function fetch_response_is_retryable(mixed $response): bool {
