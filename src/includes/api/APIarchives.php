@@ -74,7 +74,13 @@ function fetch_archive_page(CurlHandle $ch, string $url): string {
         /** @psalm-taint-escape ssrf */
         $safe_url = $url;
         curl_setopt($ch, CURLOPT_URL, $safe_url);
-        $raw_html = bot_curl_exec($ch);
+        try {
+            $raw_html = bot_curl_exec($ch);
+        } catch (Throwable $e) {
+            bot_debug_log('Archive request failed: ' . $e::class . ': ' . $e->getMessage());
+            report_warning("Archive request failed; continuing without archived-page metadata.");
+            return '';
+        }
         $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         if ($status < 300 || $status >= 400) {
             return $raw_html;

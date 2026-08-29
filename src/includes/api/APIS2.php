@@ -52,6 +52,16 @@ function parse_semanticscholar_legacy_url_response(string $response): ?string {
     return $json->url;
 }
 
+function semanticscholar_request(CurlHandle $ch): string {
+    try {
+        return bot_curl_exec($ch);
+    } catch (Throwable $e) {
+        bot_debug_log('Semantic Scholar request failed: ' . $e::class . ': ' . $e->getMessage());
+        report_warning("Semantic Scholar request failed; continuing without this metadata.");
+        return '';
+    }
+}
+
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
@@ -60,7 +70,7 @@ function getS2CID(string $url): string {
     }
     $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = bot_curl_exec($ch);
+    $response = semanticscholar_request($ch);
     if (!$response) {
         report_warning("No response from semanticscholar.");    // @codeCoverageIgnore
         return '';                                              // @codeCoverageIgnore
@@ -83,7 +93,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=externalIds';
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = bot_curl_exec($ch);
+    $response = semanticscholar_request($ch);
     if (!$response) {
         report_warning("No response from semanticscholar.");  // @codeCoverageIgnore
         return '';                                            // @codeCoverageIgnore
@@ -112,7 +122,7 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=isOpenAccess';
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = bot_curl_exec($ch);
+    $response = semanticscholar_request($ch);
     if ($response === '') {
         return null; // @codeCoverageIgnore
     }
@@ -161,7 +171,7 @@ function get_semanticscholar_url(Template $template, string $doi): void {
     }
     $url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = bot_curl_exec($ch);
+    $response = semanticscholar_request($ch);
     if ($response) {
         $open_access_url = parse_semanticscholar_legacy_url_response($response);
         unset($response);

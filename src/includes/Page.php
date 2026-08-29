@@ -1078,6 +1078,7 @@ class Page {
     }
 
     private function set_page_display_authors(): void {
+        $this->page_display_authors = '';
         $pattern = '/{{\s*?cs1\s*?config[^}]*?display-authors\s*?=\s*?(\w+)\b[^}]*?}}/im';
         if (preg_match($pattern, $this->text, $matches)) {
             $this->page_display_authors = mb_strtolower($matches[1]);

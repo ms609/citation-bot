@@ -307,11 +307,25 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
-        $zotero_response = bot_curl_exec(self::$zotero_ch);
+        try {
+            $zotero_response = bot_curl_exec(self::$zotero_ch);
+        } catch (Throwable $e) {
+            bot_debug_log('Citoid/Zotero request failed: ' . $e::class . ': ' . $e->getMessage());
+            report_warning("Citoid/Zotero request failed; continuing without URL metadata.");
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+        }
         $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE);
         if ($zotero_response === '' && $response_code !== 429 && $response_code < 500) {
             sleep(2); // @codeCoverageIgnore
-            $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
+            try {
+                $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
+            } catch (Throwable $e) {
+                bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
+                report_warning("Citoid/Zotero retry failed; continuing without URL metadata.");
+                self::record_zotero_failure();
+                return self::ERROR_DONE;
+            }
             $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE); // @codeCoverageIgnore
         }
         if ($response_code === 429 || $response_code >= 500) {
