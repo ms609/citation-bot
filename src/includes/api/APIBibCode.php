@@ -685,8 +685,12 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                 AdsAbsControl::small_give_up();  // @codeCoverageIgnore
                 throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
             }
-            bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
-            throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
+            $body_excerpt = mb_substr($body, 0, 2048, '8bit');
+            if (mb_strlen($body, '8bit') > 2048) {
+                $body_excerpt .= "\n...[truncated]";
+            }
+            bot_debug_log("Could not decode ADSABS API response:\n" . $body_excerpt . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
+            throw new Exception("Could not decode API response:\n" . $body_excerpt, 5000);  // @codeCoverageIgnore
         } elseif (isset($decoded->response)) {
             $response = adsabs_valid_response($decoded);
             if ($response === null) {
