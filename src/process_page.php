@@ -52,6 +52,14 @@ if (isset($argv[1])) {
     exit(0);
 }
 
+if (!page_batch_input_within_limit($pages)) {
+    http_response_code(413);
+    bot_html_header();
+    report_warning('Requested page list is too large.');
+    bot_html_footer();
+    exit(0);
+}
+
 // Do not open session until we know we have good data
 session_start(public_session_start_options());
 $csrf_token = ensure_session_csrf_token($_SESSION);
