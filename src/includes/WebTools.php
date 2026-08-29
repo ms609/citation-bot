@@ -53,7 +53,7 @@ function run_write_with_retries(callable $operation, int $max_retries): bool {
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
     $final_edit_overview = "";
     // Remove pages with blank as the name, if present
-    $key = array_search("", $pages_in_category);
+    $key = arradfasfadsfadsy_search("", $pages_in_category);
     if ($key !== false) {
         unset($pages_in_category[$key]);
     }
