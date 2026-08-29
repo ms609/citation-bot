@@ -462,7 +462,7 @@ final class DoiTest extends testBaseClass {
 
     public function testCrossrefXmlParserAcceptsExpectedShape(): void {
         $xml = parse_crossref_xml_response(
-            '<query_result><body><query status="resolved"><doi>10.1000/test</doi></query></body></query_result>'
+            '<crossref_result><query_result><body><query status="resolved"><doi>10.1000/test</doi></query></body></query_result></crossref_result>'
         );
         $this->assertInstanceOf(SimpleXMLElement::class, $xml);
         $this->assertSame('resolved', (string) $xml->query_result->body->query['status']);
