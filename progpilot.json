@@ -19,13 +19,13 @@
                 {
                     "flow_name": "$return_path",
                     "flow_line": 58,
-                    "flow_column": 2091,
+                    "flow_column": 2121,
                     "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
                     "flow_line": 58,
-                    "flow_column": 2106,
+                    "flow_column": 2136,
                     "flow_file": "src\/authenticate.php"
                 }
             ]
@@ -36,7 +36,7 @@
         "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "ea8a7fdfbc870ab3c4e8ec3ce065d64cd7982a7d2985936156057252451b7a7f",
+        "vuln_id": "10a043db402ae27261126e453e7becb0f9dcc4efbd2e6552a8d2cb9612234f3d",
         "vuln_type": "taint-style"
     },
     {
@@ -57,13 +57,13 @@
                 {
                     "flow_name": "$return_path",
                     "flow_line": 58,
-                    "flow_column": 2091,
+                    "flow_column": 2121,
                     "flow_file": "src\/authenticate.php"
                 },
                 {
                     "flow_name": "$_GET[\"return\"]",
                     "flow_line": 58,
-                    "flow_column": 2106,
+                    "flow_column": 2136,
                     "flow_file": "src\/authenticate.php"
                 }
             ]
@@ -74,7 +74,7 @@
         "sink_file": "src\/authenticate.php",
         "vuln_name": "header_injection",
         "vuln_cwe": "CWE_601",
-        "vuln_id": "29d993623ea0bfaabe2f24b23cd9c4a3d1443d197c154ec4dc3dfcd31ee1d36e",
+        "vuln_id": "f6810399226d2f2f6c3dacd9fe95fc4eeb84c73a27bc9ba1ad858aa6dfcbc5c9",
         "vuln_type": "taint-style"
     },
     {
@@ -457,8 +457,8 @@
             ]
         ],
         "sink_name": "echo",
-        "sink_line": 84,
-        "sink_column": 2769,
+        "sink_line": 92,
+        "sink_column": 2993,
         "sink_file": "src\/process_page.php",
         "vuln_name": "xss",
         "vuln_cwe": "CWE_79",
