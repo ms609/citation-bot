@@ -81,20 +81,20 @@ function category_confirmation_fields(string $category, array $query): array {
  */
 function post_confirmation_form(string $action, array $fields, string $csrf_token, string $button_text): string {
     $html = '</pre><form action="';
-    $html .= echoable($action)
+    $html .= echoable($action);
     $html .= '" method="post">';
     $html .= '<input type="hidden" name="csrf_token" value="';
-    $html .= echoable($csrf_token)
+    $html .= echoable($csrf_token);
     $html .= '" />';
     foreach ($fields as $name => $value) {
         $html .= '<input type="hidden" name="';
-        $html .= echoable($name)
+        $html .= echoable($name);
         $html .= '" value="';
-        $html .= echoable($value)
+        $html .= echoable($value);
         $html .= '" />';
     }
     $html .= '<p>Requested action: <strong>';
-    $html .= echoable($button_text)
+    $html .= echoable($button_text);
     $html .= '</strong></p>';
 
     $display_fields = [
@@ -122,7 +122,7 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
 
     $html .= '<p>No changes have been made. Confirm to continue.</p>';
     $html .= '<button type="submit">';
-    $html .= echoable($button_text)
+    $html .= echoable($button_text);
     $html .= '</button></form><pre>';
     return $html;
 }
