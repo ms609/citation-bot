@@ -62,9 +62,9 @@ function filter_runnable_page_titles(array $pages): array {
         if (mb_trim($page_title) === '') {
             continue;
         }
-        if (strlen($page_title) > 255) {
+        if (mb_strlen($page_title) > 255) {
             report_warning(
-                'Skipping page name "' . echoable(substr($page_title, 0, 80)) .
+                'Skipping page name "' . echoable(mb_substr($page_title, 0, 80)) .
                 '…" because it exceeds 255 bytes.'
             );
             continue;
