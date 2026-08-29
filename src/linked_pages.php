@@ -17,7 +17,7 @@ if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
     exit(0);
 }
 
-session_start(['read_and_close' => true]);
+session_start(public_session_start_options(true));
 
 $api = new WikipediaBot();
 

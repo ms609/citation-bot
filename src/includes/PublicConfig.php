@@ -265,6 +265,30 @@ function public_request_configuration_is_valid(?string $request_host): bool {
     }
 }
 
+/**
+ * Centralize security-sensitive PHP session options so every web entry point
+ * uses the same cookie and session-ID policy.
+ *
+ * @return array<string, bool|string>
+ */
+function public_session_start_options(bool $read_and_close = false): array {
+    $scheme = parse_url(public_base_url(), PHP_URL_SCHEME);
+    if (!is_string($scheme)) {
+        throw new RuntimeException('PUBLIC_BASE_URL lacks a valid scheme');
+    }
+
+    $options = [
+        'use_strict_mode' => true,
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+        'cookie_secure' => mb_strtolower($scheme) === 'https',
+    ];
+    if ($read_and_close) {
+        $options['read_and_close'] = true;
+    }
+    return $options;
+}
+
 function enforce_public_request_configuration(?string $request_host): void {
     if (PHP_SAPI === 'cli' || public_request_configuration_is_valid($request_host)) {
         return;
