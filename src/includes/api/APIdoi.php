@@ -230,6 +230,22 @@ function expand_by_doi(Template $template, bool $force = false): void {
     return;
 }
 
+function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {
+    if ($raw_xml === '') {
+        return null;
+    }
+    try {
+        $xml = @simplexml_load_string(
+            $raw_xml,
+            SimpleXMLElement::class,
+            LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+    } catch (Throwable) {
+        return null;
+    }
+    return $xml === false ? null : $xml;
+}
+
 function query_crossref(string $doi): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
@@ -249,13 +265,13 @@ function query_crossref(string $doi): ?SimpleXMLElement {
             continue;                // @codeCoverageIgnore
             // Keep trying...
         }
-        $raw_xml = preg_replace(
+        $raw_xml = safe_preg_replace(
             '~(\<year media_type=\"online\"\>\d{4}\<\/year\>\<year media_type=\"print\"\>)~',
                     '<year media_type="print">',
                     $raw_xml);
-        $xml = @simplexml_load_string($raw_xml);
+        $xml = parse_crossref_xml_response($raw_xml);
         unset($raw_xml);
-        if (is_object($xml) && isset($xml->query_result->body->query)) {
+        if ($xml !== null && isset($xml->query_result->body->query)) {
             $result = $xml->query_result->body->query;
             if ((string) @$result["status"] === "resolved") {
                 if (mb_stripos($doi, '10.1515/crll') === 0) {
@@ -689,13 +705,9 @@ function get_doi_from_crossref(Template $template): void {
         CROSSREFUSERNAME; // do not encode crossref email
         curl_setopt($ch, CURLOPT_URL, $url);
         $xml = bot_curl_exec($ch);
-        if (mb_strlen($xml) > 0) {
-            $result = @simplexml_load_string($xml);
-            unset($xml);
-        } else {
-            $result = false;
-        }
-        if ($result === false) {
+        $result = parse_crossref_xml_response($xml);
+        unset($xml);
+        if ($result === null) {
             report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
             return; // @codeCoverageIgnore
         }
