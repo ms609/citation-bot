@@ -52,7 +52,13 @@ function expand_by_jstor(Template $template): void {
         return; // We do not want i12342 kind
     }
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
-    $dat = bot_curl_exec($ch);
+    try {
+        $dat = bot_curl_exec($ch);
+    } catch (Throwable $e) {
+        bot_debug_log('JSTOR request failed: ' . $e::class . ': ' . $e->getMessage());
+        report_warning("JSTOR request failed; continuing without JSTOR metadata.");
+        return;
+    }
     if ($dat === '') {
         report_info("JSTOR API returned nothing for " . jstor_link($jstor)); // @codeCoverageIgnore
         return;                                                             // @codeCoverageIgnore

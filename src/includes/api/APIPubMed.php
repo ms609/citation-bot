@@ -211,7 +211,13 @@ function xml_post(string $url, string $post): ?SimpleXMLElement {
         CURLOPT_URL => $url,
         CURLOPT_POSTFIELDS => $post,
     ]);
-    $output = bot_curl_exec($ch);
+    try {
+        $output = bot_curl_exec($ch);
+    } catch (Throwable $e) {
+        bot_debug_log('Entrez request failed: ' . $e::class . ': ' . $e->getMessage());
+        report_warning("Entrez request failed; continuing without PubMed metadata.");
+        return null;
+    }
     $xml = parse_entrez_xml_response($output);
     if ($xml === null) {
         sleep(1);
