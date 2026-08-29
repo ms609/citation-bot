@@ -760,7 +760,7 @@ final class WikipediaBot {
     }
 
     private static function reset(object &$obj): stdClass { // We use old php 7 style reset, so emulate
-        $arr = (array) $obj;
+        $arr = (array) $odsfsdfadsafbj;
         return (object) reset($arr);
     }
 
