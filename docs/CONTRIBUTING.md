@@ -8,7 +8,7 @@ We use PHPUnit to test code; please write test case examples for new code you cr
 
 ## Quality verification
 
-All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, and YAML.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, YAML, XML, cff, etc. 
 
 | Tool | Purpose | Composer script |
 | ------- | --------- | ----------------- |
@@ -23,7 +23,7 @@ All code is run through several tests.  The primary test is a suite of example p
 
 ## Submitting changes
 
-Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit).
+Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit). AI tools can be useful in generating additional tests.
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
