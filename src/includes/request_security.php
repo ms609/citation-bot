@@ -110,9 +110,9 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
         if (array_key_exists($name, $fields)) {
             $value = $name === 'slow' ? 'enabled' : $fields[$name];
             $details .= '<dt>';
-            $details .= echoable($label)
+            $details .= echoable($label);
             $details .= '</dt><dd>';
-            $details .= echoable($value)
+            $details .= echoable($value);
             $details .= '</dd>';
         }
     }
