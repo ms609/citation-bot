@@ -662,13 +662,39 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             unset($retry_msg);
             unset($time_to_sleep);
 
-            if (isset($decoded->error->trace)) {
-                bot_debug_log("AdsAbs website returned a stack trace - URL was:    " . $adsabs_url);
-                throw new Exception("AdsAbs website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
-                ($decoded->error->code ?? 999));
+            $adsabs_error = $decoded->error;
+            $adsabs_error_code = 999;
+            if (is_object($adsabs_error)) {
+                $candidate_code = $adsabs_error->code ?? null;
+                if (is_int($candidate_code)) {
+                    $adsabs_error_code = $candidate_code;
+                } elseif (is_string($candidate_code) && preg_match('~^-?\\d+$~D', $candidate_code) === 1) {
+                    $adsabs_error_code = (int) $candidate_code;
+                }
+            }
+
+            if (is_scalar($adsabs_error)) {
+                $adsabs_error_message = (string) $adsabs_error;
+            } elseif (is_object($adsabs_error)) {
+                $candidate_message = $adsabs_error->msg ?? $adsabs_error->message ?? null;
+                $adsabs_error_message = is_scalar($candidate_message)
+                    ? (string) $candidate_message
+                    : 'AdsAbs returned an error object without a scalar message';
             } else {
-                    throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
-                ($decoded->error->code ?? 999));
+                $adsabs_error_message = 'AdsAbs returned malformed error data';
+            }
+
+            if (is_object($adsabs_error) && isset($adsabs_error->trace)) {
+                bot_debug_log("AdsAbs website returned a stack trace - URL was:    " . $adsabs_url);
+                throw new Exception(
+                    "AdsAbs website returned a stack trace\n - URL was:  " . $adsabs_url,
+                    $adsabs_error_code
+                );
+            } else {
+                throw new Exception(
+                    $adsabs_error_message . "\n - URL was:  " . $adsabs_url,
+                    $adsabs_error_code
+                );
             }
             // @codeCoverageIgnoreEnd
         }
@@ -685,8 +711,12 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                 AdsAbsControl::small_give_up();  // @codeCoverageIgnore
                 throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
             }
-            bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
-            throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
+            $body_excerpt = mb_substr($body, 0, 2048, '8bit');
+            if (mb_strlen($body, '8bit') > 2048) {
+                $body_excerpt .= "\n...[truncated]";
+            }
+            bot_debug_log("Could not decode ADSABS API response:\n" . $body_excerpt . "\nURL was:    " . $adsabs_url);  // @codeCoverageIgnore
+            throw new Exception("Could not decode API response:\n" . $body_excerpt, 5000);  // @codeCoverageIgnore
         } elseif (isset($decoded->response)) {
             $response = adsabs_valid_response($decoded);
             if ($response === null) {

@@ -47,16 +47,40 @@ function run_write_with_retries(callable $operation, int $max_retries): bool {
 }
 
 /**
+ * Reject page-specific bad input without aborting an otherwise valid batch.
+ *
+ * @param array<mixed> $pages
+ * @return array<string>
+ */
+function filter_runnable_page_titles(array $pages): array {
+    $filtered = [];
+    foreach ($pages as $page_title) {
+        if (!is_string($page_title)) {
+            report_warning('Skipping non-string page title.');
+            continue;
+        }
+        if (mb_trim($page_title) === '') {
+            continue;
+        }
+        if (mb_strlen($page_title) > 255) {
+            report_warning(
+                'Skipping page name "' . echoable(mb_substr($page_title, 0, 80)) .
+                '…" because it exceeds 255 bytes.'
+            );
+            continue;
+        }
+        $filtered[] = $page_title;
+    }
+    return array_values(array_unique($filtered, SORT_STRING));
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
     $final_edit_overview = "";
-    // Remove pages with blank as the name, if present
-    $key = arraydsfasdfdsfa_search("", $pages_in_category);
-    if ($key !== false) {
-        unset($pages_in_category[$key]);
-    }
+    $pages_in_category = filter_runnable_page_titles($pages_in_category);
     if (empty($pages_in_category)) {
         report_warning('No links to expand found');
         bot_html_footer();
