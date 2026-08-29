@@ -397,6 +397,22 @@ final class mathToolsTest extends testBaseClass {
         );
     }
 
+    public function testMathRegexBacktrackFailurePreservesInput(): void {
+        $old_limit = (string) ini_get('pcre.backtrack_limit');
+        try {
+            ini_set('pcre.backtrack_limit', '1');
+            $input = str_repeat('a', 64) . '!';
+            $result = mathml_safe_preg_replace_callback(
+                '~^(a+)+$~',
+                static fn (array $match): string => $match[0],
+                $input
+            );
+            $this->assertSame($input, $result);
+        } finally {
+            ini_set('pcre.backtrack_limit', $old_limit);
+        }
+    }
+
     public function testPlainTextWithoutMathMarkupIsUnchanged(): void {
         $this->assertSame(
             'ordinary text 123',
