@@ -62,7 +62,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
             $this->assertStringContainsString('&quot;&gt;&lt;script&gt;', $form);
             $this->assertStringContainsString('a&amp;b', $form);
             $this->assertStringNotContainsString('<script>', $form);
-        finally {
+        } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
@@ -86,7 +86,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
             $this->assertStringContainsString('<dt>PCRE option</dt><dd>0</dd>', $form);
             $this->assertStringContainsString('<dt>Thorough mode</dt><dd>enabled</dd>', $form);
             $this->assertStringContainsString('No changes have been made. Confirm to continue.', $form);
-        finally {
+        } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
@@ -198,7 +198,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
 
             $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
             $this->assertTrue(request_has_valid_post_csrf(['REQUEST_METHOD' => 'POST'], $post, $session));
-        finally {
+        } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
