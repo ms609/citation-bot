@@ -44,15 +44,11 @@ function page_details_from_api_response(mixed $details): ?array {
         return null;
     }
 
-    $my_details = null;
-    foreach ((array) $details->query->pages as $candidate) {
-        if (is_object($candidate)) {
-            $my_details = $candidate;
-        }
-    }
-    if ($my_details === null) {
+    $pages = array_values((array) $details->query->pages);
+    if (count($pages) !== 1 || !is_object($pages[0])) {
         return null;
     }
+    $my_details = $pages[0];
 
     $read_at = $details->curtimestamp ?? '';
     if (!is_scalar($read_at)) {
