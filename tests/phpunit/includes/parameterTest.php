@@ -305,6 +305,20 @@ final class parameterTest extends testBaseClass {
         $this->assertSame('', $parameter->post);
     }
 
+    public function testParsedTextPreservesInvalidUtf8OutsideValue(): void {
+        $parameter = new Parameter();
+        $parameter->pre = "\xFF";
+        $parameter->param = 'title';
+        $parameter->eq = "\xFE=\xFD";
+        $parameter->val = 'Example';
+        $parameter->post = "\xFC";
+
+        $this->assertSame(
+            "\xFFtitle\xFE=\xFDExample\xFC",
+            $parameter->parsed_text()
+        );
+    }
+
     public function testParsedTextNormalizesAdditionalUnicodeSpaces(): void {
         $spaces = [
             "\u{1680}", // Ogham space mark

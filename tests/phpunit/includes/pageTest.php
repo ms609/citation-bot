@@ -11,6 +11,41 @@ use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class pageTest extends testBaseClass {
 
+    public function testPageDetailsParserRejectsMalformedResponses(): void {
+        $this->assertNull(page_details_from_api_response(null));
+        $this->assertNull(page_details_from_api_response((object) ['query' => []]));
+        $this->assertNull(page_details_from_api_response(
+            (object) ['query' => (object) ['pages' => 'not a page collection']]
+        ));
+        $this->assertNull(page_details_from_api_response(
+            (object) ['query' => (object) ['pages' => (object) ['1' => 'not a page']]]
+        ));
+    }
+
+    public function testPageDetailsParserSanitizesTimestamp(): void {
+        $page = (object) ['title' => 'Example'];
+        $parsed = page_details_from_api_response((object) [
+            'curtimestamp' => ['unexpected'],
+            'query' => (object) ['pages' => (object) ['1' => $page]],
+        ]);
+
+        $this->assertNotNull($parsed);
+        $this->assertSame($page, $parsed[0]);
+        $this->assertSame('', $parsed[1]);
+    }
+
+    public function testPageDetailsParserAcceptsExpectedShape(): void {
+        $page = (object) ['title' => 'Example'];
+        $parsed = page_details_from_api_response((object) [
+            'curtimestamp' => '2026-08-28T20:00:00Z',
+            'query' => (object) ['pages' => (object) ['1' => $page]],
+        ]);
+
+        $this->assertNotNull($parsed);
+        $this->assertSame($page, $parsed[0]);
+        $this->assertSame('2026-08-28T20:00:00Z', $parsed[1]);
+    }
+
     public function testPageTextCallbacksUseSafePregWrapper(): void {
         $source = file_get_contents(__DIR__ . '/../../../src/includes/Page.php');
         $this->assertIsString($source);
