@@ -56,6 +56,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
     #[PreserveGlobalState(false)]
     public function testConfirmationFormEscapesUntrustedFields(): void {
         try {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
             $form = post_confirmation_form('process_page.php', ['page' => '"><script>'], 'a&b', 'Continue');
             $this->assertStringContainsString('method="post"', $form);
@@ -72,6 +73,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
     #[PreserveGlobalState(false)]
     public function testConfirmationFormShowsRequestedGetDetails(): void {
         try {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
             $fields = [
                 'page' => 'Example page',
@@ -173,6 +175,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
      */
     private function assert_confirmation_posts_fields(string $action, array $fields, string $button_text): void {
         try {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
             $session = ['csrf_token' => 'known-token'];
             $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
