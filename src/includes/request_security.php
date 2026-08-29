@@ -81,20 +81,20 @@ function category_confirmation_fields(string $category, array $query): array {
  */
 function post_confirmation_form(string $action, array $fields, string $csrf_token, string $button_text): string {
     $html = '</pre><form action="';
-    $html .= htmlspecialchars($action, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    $html .= echoable($action);
     $html .= '" method="post">';
     $html .= '<input type="hidden" name="csrf_token" value="';
-    $html .= htmlspecialchars($csrf_token, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    $html .= echoable($csrf_token);
     $html .= '" />';
     foreach ($fields as $name => $value) {
         $html .= '<input type="hidden" name="';
-        $html .= htmlspecialchars($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        $html .= echoable($name);
         $html .= '" value="';
-        $html .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        $html .= echoable($value);
         $html .= '" />';
     }
     $html .= '<p>Requested action: <strong>';
-    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    $html .= echoable($button_text);
     $html .= '</strong></p>';
 
     $display_fields = [
@@ -110,9 +110,9 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
         if (array_key_exists($name, $fields)) {
             $value = $name === 'slow' ? 'enabled' : $fields[$name];
             $details .= '<dt>';
-            $details .= htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+            $details .= echoable($label);
             $details .= '</dt><dd>';
-            $details .= htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+            $details .= echoable($value);
             $details .= '</dd>';
         }
     }
@@ -122,7 +122,7 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
 
     $html .= '<p>No changes have been made. Confirm to continue.</p>';
     $html .= '<button type="submit">';
-    $html .= htmlspecialchars($button_text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    $html .= echoable($button_text);
     $html .= '</button></form><pre>';
     return $html;
 }
