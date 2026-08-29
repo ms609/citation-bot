@@ -41,7 +41,7 @@ if (@$_SERVER['REQUEST_URI'] === public_url_path('/authenticate.php')) {
     return_to_sender();
 }
 
-session_start();
+session_start(public_session_start_options());
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }

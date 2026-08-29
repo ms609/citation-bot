@@ -53,7 +53,7 @@ if (isset($argv[1])) {
 }
 
 // Do not open session until we know we have good data
-session_start();
+session_start(public_session_start_options());
 $csrf_token = ensure_session_csrf_token($_SESSION);
 session_write_close();
 
