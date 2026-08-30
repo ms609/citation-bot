@@ -23,6 +23,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlLimitPageSizeAtExactLimit(): void {
+        $this->expectException(InvalidArgumentException::class);
         $ch = bot_curl_init(1, [], 256 * 1024 * 1024); // Too big
         $this->assertFalse($ch);
     }
@@ -183,6 +184,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlResponseLimitRejectsInvalidValues(): void {
+        $this->expectException(InvalidArgumentException::class);
         $ch = bot_curl_init(1.0, [], -1);
         $this->assertFalse($ch);
     }
