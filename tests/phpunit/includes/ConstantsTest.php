@@ -719,7 +719,7 @@ final class ConstantsTest extends testBaseClass {
 
     public function testCurlLimit(): void {
         new TestPage(); // Fill page name with test name for debugging
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 128 * 1024 *1024);
         $this->assertSame(1, curl_limit_page_size($ch, 1, 134217729));
         $this->assertSame(0, curl_limit_page_size($ch, 1, 134217728));
     }
