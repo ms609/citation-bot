@@ -1274,30 +1274,24 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testZooKeys2(): void {
-        $this->requires_secrets(function (): void {
-            if (WikipediaBot::is_redirect('Zookeys') === -2) {
-                $this->markTestSkipped('Skipping because Wikipedia API is unavailable');
-            }
-            $text = '{{Cite journal|journal=[[Zookeys]]}}';
-            $expanded = $this->process_citation($text);
-            $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
-        });
+        sleep(2);
+        $text = '{{Cite journal|journal=[[Zookeys]]}}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
     }
 
     public function testRedirectFixing(): void {
-        $this->requires_secrets(function (): void {
-            $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
-            $template = $this->prepare_citation($text);
-            $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
-        });
+        sleep(2);
+        $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
     }
 
     public function testRedirectFixing2(): void {
-        $this->requires_secrets(function (): void {
-            $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-            $template = $this->prepare_citation($text);
-            $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
-        });
+        sleep(2);
+        $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
     }
 
     public function testFixURLinLocation1(): void {
