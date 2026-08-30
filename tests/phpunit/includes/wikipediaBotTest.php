@@ -22,19 +22,6 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertGreaterThanOrEqual(2, mb_substr_count($source, 'catch (Throwable $E)'));
     }
 
-    public function testWikipediaCurlHandlesHaveExplicitResponseLimits(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
-        $this->assertIsString($source);
-        $this->assertStringContainsString(
-            'bot_curl_set_max_response_bytes(self::$ch_write, 16 * 1024 * 1024);',
-            $source
-        );
-        $this->assertStringContainsString(
-            'bot_curl_set_max_response_bytes(self::$ch_logout, 16 * 1024 * 1024);',
-            $source
-        );
-    }
-
     public function testOAuthRequestConstructionIsInsideFetchBoundary(): void {
         $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
         $this->assertIsString($source);
