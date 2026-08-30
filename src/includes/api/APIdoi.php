@@ -249,8 +249,7 @@ function parse_crossref_xml_response(string $raw_xml): ?SimpleXMLElement {
 function query_crossref(string $doi): ?SimpleXMLElement {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0, []);
-        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
+        $ch = bot_curl_init(1.0, [], 8 * 1024 * 1024);
     }
     if (mb_strpos($doi, '10.2307') === 0) {
         return null; // jstor API is better
@@ -315,8 +314,8 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.5, // can take a long time when nothing to be found
-        [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
-        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
+        [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]],
+        8 * 1024 * 1024);
     }
     if (mb_strpos($doi, '10.2307') === 0 || // jstor API is better
         mb_strpos($doi, '10.24436') === 0 || // They have horrible meta-data
@@ -613,8 +612,8 @@ function query_crossref_newapi(string $doi): object {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
-            [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+            [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT],
+            4 * 1024 * 1024 );
     }
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME;
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -646,8 +645,7 @@ function query_crossref_newapi(string $doi): object {
 function get_doi_from_crossref(Template $template): void {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
+        $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT], 8 * 1024 * 1024);
     }
     set_time_limit(120);
     if ($template->has('doi')) {
@@ -805,8 +803,8 @@ function get_biorxiv_published_doi(
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0,
-            [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-        bot_curl_set_max_response_bytes($ch, 16 * 1024 * 1024);
+            [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT],
+            16 * 1024 * 1024);
     }
 
     $url = "https://api.biorxiv.org/details/" . $api_server . "/" . doi_encode($doi) . "/na/json"; // Force JSON, just in case default changes
