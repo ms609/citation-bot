@@ -286,7 +286,7 @@ final class pageTest extends testBaseClass {
             sleep(1);
             $origText = $page->parsed_text();
             $this->assertTrue(mb_strpos($origText, 'Nature') > 5);
-            $trialCitation = '{{Cite journal | doi = 10.1038/nature09068 | pmid=<!-- --> | url=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |bibcode=<!-- --> |hdl=<!-- --> }}';
+            $trialCitation = '{{Cite journal | doi = 10.1038/nature09068 | pmid=<!-- --> | url=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |bibcode=<!-- --> |hdl=<!-- --> |s2cid=<!-- --> }}';
             $page->overwrite_text($trialCitation);
             $page_result = $page->write($api, "Testing bot write function");
             sleep(6);
