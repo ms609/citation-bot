@@ -704,7 +704,16 @@ final class WikipediaBot {
         $session_name = session_name();
         $session_id = session_id();
         if ($session_name !== false && $session_id !== false) {
-            @setcookie($session_name, $session_id, time() + (7 * 24 * 3600), "", "", true, true); // 7 days
+            $cookie_params = session_get_cookie_params();
+            $session_options = public_session_start_options();
+            @setcookie($session_name, $session_id, [
+                'expires' => time() + (7 * 24 * 3600),
+                'path' => $cookie_params['path'] !== '' ? $cookie_params['path'] : '/',
+                'domain' => $cookie_params['domain'],
+                'secure' => (bool) $session_options['cookie_secure'],
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]); // 7 days
         }
         if (isset($_SESSION['citation_bot_user_id']) &&
             isset($_SESSION['access_key']) &&
