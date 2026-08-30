@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 // We minimize include files so that this works even if we break the deployment
+// Better: curl -X POST -H "X-Deploy-Token: ${DEPLOY_PASSWORD}"  "https://citations.toolforge.org/gitpull.php"
+// Okay:   wget "https://citations.toolforge.org/gitpull.php?password=${DEPLOY_PASSWORD}"
 
 /** @psalm-suppress MissingFile */
 require_once __DIR__ . '/env.php';
@@ -19,14 +21,15 @@ clearstatcache(true, LOCK_DIR);
 
 $deployPassword = @getenv('DEPLOY_PASSWORD');
 
-$password_in = $_GET['password'] ?? '';
+$password_get = $_GET['password'] ?? '';
+$password_in = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? $password_get;
 
 if (!is_string($password_in)) {
     $git_hub = 'Invalid password type.';
 } elseif ($deployPassword === false) {
     $git_hub = 'Error: No DEPLOY_PASSWORD is configured.'
 } elseif ($deployPassword !== false && !hash_equals($password_in, (string) $deployPassword)) {
-    $git_hub = 'Incorrect password. Please add ?password=YOUR_PASSWORD to the URL. You can set the password in your env.php file (DEPLOY_PASSWORD).';
+    $git_hub = 'Incorrect password.';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
     register_shutdown_function(static function (): void {
         if (is_dir(LOCK_DIR)) {
