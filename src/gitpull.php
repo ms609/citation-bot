@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-// We minimize include files so that this works even if we break the deployment
-// Better: curl -X POST -H "X-Deploy-Token: ${DEPLOY_PASSWORD}"  "https://citations.toolforge.org/gitpull.php"
-// Okay:   wget "https://citations.toolforge.org/gitpull.php?password=${DEPLOY_PASSWORD}"
+// We minimize include files so that this works even if we break the deployment.
+// For automation:
+// curl -X POST -H "X-Deploy-Token: ${DEPLOY_PASSWORD}" "https://citations.toolforge.org/gitpull.php"
+// For interactive use, visit gitpull.php in a browser and submit the password form.
 
 /** @psalm-suppress MissingFile */
 require_once __DIR__ . '/env.php';
@@ -14,26 +15,88 @@ require_once __DIR__ . '/includes/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 @header('Cache-Control: no-store');
+@header('Referrer-Policy: no-referrer');
+@header('X-Content-Type-Options: nosniff');
+@header("Content-Security-Policy: default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 
 const LOCK_DIR = __DIR__ . '/git_pull.lock';
+
+/**
+ * Render the deployment page and stop processing.
+ */
+function gitpull_page(string $message = '', bool $show_form = false, bool $preformatted = false, int $status = 200): never {
+    http_response_code($status);
+    @header('Content-Type: text/html; charset=utf-8');
+
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head>',
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+        '<meta charset="utf-8" /><title>Git Pull</title></head><body><main>';
+
+    if ($message !== '') {
+        if ($preformatted) {
+            echo '<pre>', $message, '</pre>';
+        } else {
+            echo '<p>', htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5), '</p>';
+        }
+    }
+
+    if ($show_form) {
+        echo '<form method="post" action="gitpull.php">',
+            '<label for="deploy-password">Deployment password</label> ',
+            '<input id="deploy-password" name="password" type="password" ',
+            'autocomplete="current-password" required autofocus /> ',
+            '<button type="submit">Deploy</button>',
+            '</form>';
+    }
+
+    echo '</main></body></html>';
+    flush();
+    exit(0);
+}
 
 clearstatcache(true, LOCK_DIR);
 
 $deployPassword = (string) @getenv('DEPLOY_PASSWORD');
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $password_in = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? '';
-} else {
-    $password_in = $_GET['password'] ?? '';
+if ($deployPassword === '') {
+    gitpull_page('Error: No DEPLOY_PASSWORD is configured.', false, false, 503);
 }
 
+$requestMethod = is_string($_SERVER['REQUEST_METHOD'] ?? null) ? $_SERVER['REQUEST_METHOD'] : '';
+
+if ($requestMethod === 'GET') {
+    if (array_key_exists('password', $_GET)) {
+        @header('Location: gitpull.php', true, 303);
+        exit(0);
+    }
+    gitpull_page('', true);
+}
+
+if ($requestMethod !== 'POST') {
+    @header('Allow: GET, POST');
+    gitpull_page('Only GET and POST requests are supported.', false, false, 405);
+}
+
+$password_in = array_key_exists('HTTP_X_DEPLOY_TOKEN', $_SERVER)
+    ? $_SERVER['HTTP_X_DEPLOY_TOKEN']
+    : ($_POST['password'] ?? null);
+
+unset($_SERVER['HTTP_X_DEPLOY_TOKEN'], $_POST['password'], $_REQUEST['password']);
+
+if ($password_in === null || $password_in === '') {
+    gitpull_page('Deployment password is required.', true, false, 400);
+}
 if (!is_string($password_in)) {
-    $git_hub = 'Invalid password type.';
-} elseif ($deployPassword === '') {
-    $git_hub = 'Error: No DEPLOY_PASSWORD is configured.';
-} elseif (!hash_equals($password_in, $deployPassword)) {
-    $git_hub = 'Incorrect password.';
-} elseif (@mkdir(LOCK_DIR, 0700)) {
+    gitpull_page('Invalid password submission.', true, false, 400);
+}
+
+$passwordMatches = hash_equals($deployPassword, $password_in);
+unset($deployPassword, $password_in);
+
+if (!$passwordMatches) {
+    gitpull_page('Incorrect password.', true, false, 403);
+}
+
+if (@mkdir(LOCK_DIR, 0700)) {
     register_shutdown_function(static function (): void {
         if (is_dir(LOCK_DIR)) {
             @rmdir(LOCK_DIR);
@@ -51,7 +114,7 @@ if (!is_string($password_in)) {
         clearstatcache(true, LOCK_DIR);
     }
 } else {
-    $git_hub = "Please try again - lock file found";
+    gitpull_page('Please try again - lock file found', false, false, 409);
 }
-echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Git Pull</title></head><body><main><pre>', $git_hub, '</pre></main></body></html>';
-flush(); // paranoid about disk I/O
+
+gitpull_page($git_hub, false, true);
