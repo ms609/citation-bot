@@ -79,8 +79,7 @@ final class BotCurlTest extends testBaseClass {
                 CURLOPT_URL => 'file://' . $filename,
                 CURLOPT_PROTOCOLS => CURLPROTO_ALL,
                 CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
-            ]
-        ), 1 * 1024 * 1024);
+            ], 1 * 1024 * 1024);
         $out = bot_curl_exec($ch);
         $this->assertSame('', $out);
 
