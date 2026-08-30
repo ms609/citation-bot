@@ -52,7 +52,7 @@ RUN apt-get update && apt-get upgrade -y \
 
 # Allow directory listings. Not a security issue since this is a test environment.
 RUN a2enmod autoindex \
-    && echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
+    && echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n    <FilesMatch \"^(env\\.php|DebugLog\\.txt|cookie\\.txt)$\">\n        Require all denied\n    </FilesMatch>\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
     && a2enconf directory-listing
 
 # If ever deployed into production instead of just for testing, then two things need done:
