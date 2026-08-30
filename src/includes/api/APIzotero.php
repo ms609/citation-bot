@@ -48,8 +48,7 @@ final class Zotero {
         self::$zotero_ch = bot_curl_init($time, [
             CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Accept-Language: en-US,en,en-GB,en-CA', 'Cache-Control: no-cache, must-revalidate'],
-        ]);
-        bot_curl_set_max_response_bytes(self::$zotero_ch, 8 * 1024 * 1024);
+        ], 8 * 1024 * 1024);
     }
 
     public static function block_zotero(): void {

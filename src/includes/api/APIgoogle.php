@@ -86,8 +86,7 @@ function expand_by_google_books(Template $template): void {
 function expand_by_google_books_inner(Template $template, string $url_type, bool $use_it): bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0, []);
-        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
+        $ch = bot_curl_init(1.0, [], 8 * 1024 * 1024);
     }
     set_time_limit(120);
     if ($url_type) {
@@ -221,8 +220,7 @@ function parse_google_books_xml_response(string $data): ?SimpleXMLElement {
 function google_book_details(Template $template, string $gid): void {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0, []);
-        bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
+        $ch = bot_curl_init(1.0, [], 8 * 1024 * 1024);
     }
     set_time_limit(120);
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;

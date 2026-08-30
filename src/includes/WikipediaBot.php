@@ -37,11 +37,9 @@ final class WikipediaBot {
                     CURLOPT_POST => true,
                     CURLOPT_REFERER => $referer,
                     CURLOPT_URL => API_ROOT,
-                ]);
-        bot_curl_set_max_response_bytes(self::$ch_write, 16 * 1024 * 1024);
+                ], 16 * 1024 * 1024);
         self::$ch_logout = bot_curl_init(1.0,
-                [CURLOPT_REFERER => $referer, CURLOPT_FAILONERROR => true ]);
-        bot_curl_set_max_response_bytes(self::$ch_logout, 16 * 1024 * 1024);
+                [CURLOPT_REFERER => $referer, CURLOPT_FAILONERROR => true ], 16 * 1024 * 1024);
         unset($referer);
     }
 

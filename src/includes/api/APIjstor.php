@@ -26,8 +26,7 @@ function ris_line_parts(string $ris_line): array {
 function expand_by_jstor(Template $template): void {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(1.0, []);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+        $ch = bot_curl_init(1.0, [], 4 * 1024 * 1024);
     }
     set_time_limit(120);
     if ($template->incomplete() === false) {

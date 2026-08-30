@@ -15,10 +15,8 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
     static $ch_doi;
     if ($ch_dx === null) {
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
-        $ch_dx = bot_curl_init($time, []);
-        $ch_doi = bot_curl_init($time, []);
-        bot_curl_set_max_response_bytes($ch_dx, 2 * 1024 * 1024);
-        bot_curl_set_max_response_bytes($ch_doi, 2 * 1024 * 1024);
+        $ch_dx = bot_curl_init($time, [], 2 * 1024 * 1024);
+        $ch_doi = bot_curl_init($time, [], 2 * 1024 * 1024);
     }
     // Now that we have expanded URLs, try to lose them
     foreach ($templates as $template) {
@@ -1335,8 +1333,8 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
     static $ch_pmc;
     if ($ch_jstor === null) {
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
-        $ch_jstor = bot_curl_init($time, []);
-        $ch_pmc = bot_curl_init($time, []);
+        $ch_jstor = bot_curl_init($time, [], 2 * 1024 * 1024);
+        $ch_pmc = bot_curl_init($time, [], 2 * 1024 * 1024);
     }
 
     $update_url = function (string $url_type, string $url) use ($url_sent, $template): void {

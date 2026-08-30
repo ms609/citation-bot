@@ -108,13 +108,6 @@ function bot_curl_response_limits(): WeakMap {
     return $limits;
 }
 
-function bot_curl_set_max_response_bytes(CurlHandle $ch, int $max_bytes): void {
-    if ($max_bytes <= 0) {
-        throw new InvalidArgumentException('Maximum cURL response size must be positive.');
-    }
-    bot_curl_response_limits()[$ch] = $max_bytes;
-}
-
 function bot_curl_get_max_response_bytes(CurlHandle $ch): int {
     return bot_curl_response_limits()[$ch] ?? BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES;
 }
@@ -162,8 +155,9 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
 /**
  * @param float $time
  * @param array<int, int|string|bool|array<int, string>> $ops
+ * @param int $max_bytes
  */
-function bot_curl_init(float $time, array $ops): CurlHandle {
+function bot_curl_init(float $time, array $ops, int $max_bytes): CurlHandle {
     $ch = curl_init(); // phpcs:ignore
     if ($ch === false) {
         report_error("curl_init failure"); // @codeCoverageIgnore
@@ -199,8 +193,12 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
     // CURLOPT_PREREQFUNCTION protects redirected requests and DNS
     // rebinding by inspecting the actual connected destination address.
     bot_curl_apply_security_options($ch);
-    bot_curl_set_max_response_bytes($ch, BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
-
+    if ($max_bytes <= 0) {
+        throw new InvalidArgumentException('Maximum cURL response size must be positive.');
+    } elseif ($max_bytes > BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES) {
+        throw new InvalidArgumentException('Maximum cURL response size is too large.');
+    }
+    bot_curl_response_limits()[$ch] = $max_bytes;
     return $ch;
 }
 

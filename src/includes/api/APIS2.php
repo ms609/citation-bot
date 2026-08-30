@@ -65,8 +65,7 @@ function semanticscholar_request(CurlHandle $ch): string {
 function getS2CID(string $url): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
     }
     $url = 'https://api.semanticscholar.org/graph/v1/paper/URL:' . urlencode(urldecode($url)) . '?fields=corpusId';
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -87,8 +86,7 @@ function getS2CID(string $url): string {
 function ConvertS2CID_DOI(string $s2cid): string {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
     }
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=externalIds';
@@ -116,8 +114,7 @@ function ConvertS2CID_DOI(string $s2cid): string {
 function get_semanticscholar_license(string $s2cid): ?bool {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
     }
     /** @psalm-taint-escape ssrf */
     $url = 'https://api.semanticscholar.org/graph/v1/paper/CorpusID:' . urlencode($s2cid) . '?fields=isOpenAccess';
@@ -159,8 +156,7 @@ function get_doi_from_semanticscholar(Template $template): void {
 function get_semanticscholar_url(Template $template, string $doi): void {
     static $ch = null;
     if ($ch === null) {
-        $ch = bot_curl_init(0.5, HEADER_S2);
-        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
+        $ch = bot_curl_init(0.5, HEADER_S2, 4 * 1024 * 1024);
     }
     set_time_limit(120);
     if ($template->has('pmc') || ($template->has('doi') && $template->get('doi-access') === 'free') || ($template->has('jstor') && $template->get('jstor-access') === 'free')) {
