@@ -183,10 +183,8 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlResponseLimitRejectsInvalidValues(): void {
-        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
-        $this->assertNotFalse($ch);
-        $this->expectException(InvalidArgumentException::class);
-        bot_curl_set_max_response_bytes($ch, 0);
+        $ch = bot_curl_init(1.0, [], -1);
+        $this->assertFalse($ch);
     }
 
     public function testMandatoryProtocolsExcludeFtp(): void {
