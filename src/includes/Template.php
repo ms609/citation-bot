@@ -4197,10 +4197,10 @@ final class Template
                             /** @psalm-taint-escape ssrf */
                             $test_url = 'https://plants.jstor.org/stable/' . $doi;
                             $ch = bot_curl_init(1.5, [CURLOPT_URL => $test_url]);
-                            bot_curl_exec($ch);
+                            bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024);
+                            $jstor_html = bot_curl_exec($ch);
                             $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                            unset($ch);
-                            if ($httpCode === 200) {
+                            if (mb_stripos($jstor_html, 'Page not found') === false && $httpCode === 200) {
                                 $this->add_if_new('url', $test_url);
                             }
                         }
