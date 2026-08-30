@@ -645,7 +645,9 @@ final class ConstantsTest extends testBaseClass {
                 $this->markTestSkipped('Wikipedia API unavailable after retries (rate limit or outage)');
             }
         };
-        foreach (TEMPLATE_CONVERSIONS as $convert) {
+        $conversions = TEMPLATE_CONVERSIONS;
+        shuffle($conversions);
+        foreach ($conversions as $convert) {
             set_time_limit(120);
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
@@ -654,6 +656,7 @@ final class ConstantsTest extends testBaseClass {
             /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
             $tem = 'Template:' . $convert[0];
             $tem = str_replace(' ', '_', $tem);
+            usleep(50000); /* tiny bit of time */
             $status = $this->is_redirect_with_retry($tem); // Expect "1" or "-1"
             if ($status === 0) {
                 usleep(250000); /* one quarter of a second */
