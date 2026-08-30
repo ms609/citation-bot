@@ -150,6 +150,5 @@ final class SecurityBoundaryCoverageTest extends PHPUnit\Framework\TestCase {
         $this->assertStringContainsString('value="token&quot;&amp;&lt;"', $form);
         $this->assertStringContainsString('&lt;Continue &amp; go&gt;', $form);
         $this->assertStringNotContainsString('<dl class="request-summary">', $form);
-            
     }
 }
