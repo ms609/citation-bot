@@ -140,10 +140,10 @@ if (isset($_POST['PHP_ADSABSAPIKEY'])) {
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
-        exit(0); // invalid data
+        exit(1); // invalid data
     }
-} elseif ($_GET['PHP_ADSABSAPIKEY'])) {
-    exit(0); // we no longer allow GET of secrets
+} elseif (isset($_GET['PHP_ADSABSAPIKEY'])) {
+    exit(1); // we no longer allow GET of secrets
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
