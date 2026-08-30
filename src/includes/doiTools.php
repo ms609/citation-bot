@@ -852,6 +852,7 @@ function get_headers_array(string $url): false|array {
             $curl_options
         );
         foreach ([$curl_insecure_hdl, $curl_insecure_doi] as $ch) {
+            bot_curl_set_max_response_bytes($ch, 8 * 1024 * 1024);
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (CurlHandle $_ch, string $line) use (&$headers): int {
                 $length = mb_strlen($line, '8bit');
                 $line = mb_trim($line);
