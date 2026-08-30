@@ -144,7 +144,12 @@ if ($env_limit_action !== '') {
 unset($env_limit_action);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
-    define("HEADER_S2", [CURLOPT_HTTPHEADER => ["x-api-key: " . (string) getenv("PHP_S2APIKEY")]]);
+    define("HEADER_S2", [
+        CURLOPT_HTTPHEADER => ["x-api-key: " . (string) getenv("PHP_S2APIKEY")],
+        // CURLOPT_HTTPHEADER values are reused on redirects. Do not allow an
+        // unexpected cross-host redirect to receive the Semantic Scholar key.
+        CURLOPT_FOLLOWLOCATION => false,
+    ]);
 } else {
     define("HEADER_S2", []);
 }
