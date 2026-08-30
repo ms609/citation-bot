@@ -580,7 +580,7 @@ function query_adsabs(string $options): stdClass {
 /** @param array<string|bool|array<string>> $curl_opts */
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdClass {
     try {
-        $ch = bot_curl_init(1.0, $curl_opts, , 16 * 1024 * 1024); // Type varies greatly
+        $ch = bot_curl_init(1.0, $curl_opts, 16 * 1024 * 1024); // Type varies greatly
         $return = bot_curl_exec($ch);
         if ($return === "") {
             // @codeCoverageIgnoreStart
