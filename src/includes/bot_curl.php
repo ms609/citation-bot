@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
-const BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES = 134217728; // 128 MiB
+const BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES = 1; // 128 MiB
 const BOT_CURL_ALLOWED_PROTOCOLS_USE = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 const BOT_CURL_ALLOWED_PROTOCOLS_END = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP; // Some DOIs resolve to FTP sites, which is okay.  Some resolve to files, which we reject.
 
