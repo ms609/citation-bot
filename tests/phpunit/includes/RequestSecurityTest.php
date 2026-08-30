@@ -59,14 +59,14 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
             $form = post_confirmation_form('process_page.php', ['page' => '"><script>'], 'a&b', 'Continue');
-            $this->assertStringContainsString('method="post"', $form);
-            $this->assertStringContainsString('&quot;&gt;&lt;script&gt;', $form);
-            $this->assertStringContainsString('a&amp;b', $form);
-            $this->assertStringNotContainsString('<script>', $form);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
+        $this->assertStringContainsString('method="post"', $form);
+        $this->assertStringContainsString('&quot;&gt;&lt;script&gt;', $form);
+        $this->assertStringContainsString('a&amp;b', $form);
+        $this->assertStringNotContainsString('<script>', $form);
     }
 
     #[RunInSeparateProcess]
@@ -82,16 +82,16 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
                 'slow' => '1',
             ];
             $form = post_confirmation_form('process_page.php', $fields, 'token', 'Process page');
-            $this->assertStringContainsString('Requested action: <strong>Process page</strong>', $form);
-            $this->assertStringContainsString('<dt>Page</dt><dd>Example page</dd>', $form);
-            $this->assertStringContainsString('<dt>Wiki</dt><dd>en</dd>', $form);
-            $this->assertStringContainsString('<dt>PCRE option</dt><dd>0</dd>', $form);
-            $this->assertStringContainsString('<dt>Thorough mode</dt><dd>enabled</dd>', $form);
-            $this->assertStringContainsString('No changes have been made. Confirm to continue.', $form);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
+        $this->assertStringContainsString('Requested action: <strong>Process page</strong>', $form);
+        $this->assertStringContainsString('<dt>Page</dt><dd>Example page</dd>', $form);
+        $this->assertStringContainsString('<dt>Wiki</dt><dd>en</dd>', $form);
+        $this->assertStringContainsString('<dt>PCRE option</dt><dd>0</dd>', $form);
+        $this->assertStringContainsString('<dt>Thorough mode</dt><dd>enabled</dd>', $form);
+        $this->assertStringContainsString('No changes have been made. Confirm to continue.', $form);
     }
 
     public function testProcessPageOauthReturnBecomesConfirmedPost(): void {
@@ -179,31 +179,31 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
             uopz_redefine('HTML_OUTPUT', true);
             $session = ['csrf_token' => 'known-token'];
             $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
-            $document = new DOMDocument();
-            $this->assertTrue(@$document->loadHTML($form));
-            $xpath = new DOMXPath($document);
-            $forms = $xpath->query('//form[@method="post"]');
-            $this->assertNotFalse($forms);
-            $this->assertCount(1, $forms);
-            $posted_form = $forms->item(0);
-            $this->assertInstanceOf(DOMElement::class, $posted_form);
-            '@phan-var DOMElement $posted_form';
-            $this->assertSame($action, $posted_form->getAttribute('action'));
-
-            $inputs = $xpath->query('//form[@method="post"]//input[@type="hidden"]');
-            $this->assertNotFalse($inputs);
-
-            $post = [];
-            foreach ($inputs as $input) {
-                $this->assertInstanceOf(DOMElement::class, $input);
-                $post[$input->getAttribute('name')] = $input->getAttribute('value');
-            }
-
-            $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
-            $this->assertTrue(request_has_valid_post_csrf(['REQUEST_METHOD' => 'POST'], $post, $session));
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
+        $document = new DOMDocument();
+        $this->assertTrue(@$document->loadHTML($form));
+        $xpath = new DOMXPath($document);
+        $forms = $xpath->query('//form[@method="post"]');
+        $this->assertNotFalse($forms);
+        $this->assertCount(1, $forms);
+        $posted_form = $forms->item(0);
+        $this->assertInstanceOf(DOMElement::class, $posted_form);
+        '@phan-var DOMElement $posted_form';
+        $this->assertSame($action, $posted_form->getAttribute('action'));
+
+        $inputs = $xpath->query('//form[@method="post"]//input[@type="hidden"]');
+        $this->assertNotFalse($inputs);
+
+        $post = [];
+        foreach ($inputs as $input) {
+            $this->assertInstanceOf(DOMElement::class, $input);
+            $post[$input->getAttribute('name')] = $input->getAttribute('value');
+        }
+
+        $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
+        $this->assertTrue(request_has_valid_post_csrf(['REQUEST_METHOD' => 'POST'], $post, $session));
     }
 }
