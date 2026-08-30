@@ -27,8 +27,16 @@ function bot_debug_log(string $log_this): void {
             $base = "  ";
         }
         @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
-        // Do all at once to avoid spreading over lines in file
-        file_put_contents(__DIR__ . '/DebugLog.txt', $base . ' :: ' . echoable(WikipediaBot::get_last_user()) . " :: " . echoable(Page::get_last_title()) . " :: " . echoable($log_this) . "\n", FILE_APPEND);
+        // Keep each event on exactly one physical line so untrusted titles or
+        // upstream error text cannot forge additional log entries.
+        $user = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(WikipediaBot::get_last_user()));
+        $page = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(Page::get_last_title()));
+        $message = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable($log_this));
+        file_put_contents(
+            __DIR__ . '/DebugLog.txt',
+            $base . ' :: ' . $user . " :: " . $page . " :: " . $message . "\n",
+            FILE_APPEND | LOCK_EX
+        );
     }
 }
 
