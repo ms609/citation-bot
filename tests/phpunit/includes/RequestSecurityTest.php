@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+
 require_once __DIR__ . '/../../../src/includes/request_security.php';
 require_once __DIR__ . '/../../../src/includes/PublicConfig.php';
 
@@ -49,14 +52,25 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $this->assertTrue(request_has_valid_post_csrf($server, ['csrf_token' => 'token'], ['csrf_token' => 'token']));
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testConfirmationFormEscapesUntrustedFields(): void {
-        $form = post_confirmation_form('process_page.php', ['page' => '"><script>'], 'a&b', 'Continue');
+        try {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', true);
+            $form = post_confirmation_form('process_page.php', ['page' => '"><script>'], 'a&b', 'Continue');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', false);
+        }
         $this->assertStringContainsString('method="post"', $form);
         $this->assertStringContainsString('&quot;&gt;&lt;script&gt;', $form);
         $this->assertStringContainsString('a&amp;b', $form);
         $this->assertStringNotContainsString('<script>', $form);
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testConfirmationFormShowsRequestedGetDetails(): void {
         $fields = [
             'page' => 'Example page',
@@ -64,7 +78,14 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
             'pcre' => '0',
             'slow' => '1',
         ];
-        $form = post_confirmation_form('process_page.php', $fields, 'token', 'Process page');
+        try {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', true);
+            $form = post_confirmation_form('process_page.php', $fields, 'token', 'Process page');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', false);
+        }
         $this->assertStringContainsString('Requested action: <strong>Process page</strong>', $form);
         $this->assertStringContainsString('<dt>Page</dt><dd>Example page</dd>', $form);
         $this->assertStringContainsString('<dt>Wiki</dt><dd>en</dd>', $form);
@@ -145,6 +166,8 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         return $return_path;
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     /**
      * @param string $action
      * @param array<string, string> $fields
@@ -152,7 +175,14 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
      */
     private function assert_confirmation_posts_fields(string $action, array $fields, string $button_text): void {
         $session = ['csrf_token' => 'known-token'];
-        $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
+        try {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', true);
+            $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', false);
+        }
         $document = new DOMDocument();
         $this->assertTrue(@$document->loadHTML($form));
         $xpath = new DOMXPath($document);

@@ -5,6 +5,9 @@ require_once __DIR__ . '/../../../src/includes/PublicConfig.php';
 require_once __DIR__ . '/../../../src/includes/request_security.php';
 require_once __DIR__ . '/../../testBaseClass.php';
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+
 final class SecurityBoundaryCoverageTest extends PHPUnit\Framework\TestCase {
     private string|false $saved_public_base_url;
     private string|false $saved_allowed_origins;
@@ -119,17 +122,25 @@ final class SecurityBoundaryCoverageTest extends PHPUnit\Framework\TestCase {
         );
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testConfirmationFormEscapesUnknownFieldsAndOmitsEmptySummary(): void {
-        $form = post_confirmation_form(
-            'process_page.php?x="&y=<',
-            [
-                'extended_limit' => '1',
-                'weird"name' => '<value>&',
-            ],
-            'token"&<',
-            '<Continue & go>'
-        );
-
+        try {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', true);
+            $form = post_confirmation_form(
+                'process_page.php?x="&y=<',
+                [
+                    'extended_limit' => '1',
+                    'weird"name' => '<value>&',
+                ],
+                'token"&<',
+                '<Continue & go>'
+            );
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', false);
+        }
         $this->assertStringContainsString(
             'action="process_page.php?x=&quot;&amp;y=&lt;"',
             $form
