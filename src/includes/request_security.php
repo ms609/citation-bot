@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . 'user_messages.php'
+
 /**
  * @param array<array-key, mixed>|null &$session
  * @param-out array<array-key, mixed> $session
