@@ -10,7 +10,7 @@ if (file_exists(__DIR__ . '/env.php')) {
 require_once __DIR__ . '/includes/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
-session_start(['read_and_close' => true]);
+session_start(public_session_start_options(true));
 
 require_once __DIR__ . '/includes/big_jobs.php';
 require_once __DIR__ . '/includes/request_security.php';
