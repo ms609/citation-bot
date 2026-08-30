@@ -133,14 +133,17 @@ if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (mb_strpos((strin
     ini_set("pcre.jit", "0");
 }
 
-if (isset($_REQUEST['PHP_ADSABSAPIKEY'])) {
-    $key = (string) $_REQUEST['PHP_ADSABSAPIKEY'];
+if (isset($_POST['PHP_ADSABSAPIKEY'])) {
+    $key = (string) $_POST['PHP_ADSABSAPIKEY'];
+    unset($_POST['PHP_ADSABSAPIKEY']); // Remove secret from environment
     $key = mb_trim($key);
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
-        exit(0);
+        exit(1); // invalid data
     }
+} elseif (isset($_GET['PHP_ADSABSAPIKEY'])) {
+    exit(1); // we no longer allow GET of secrets
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
