@@ -28,8 +28,7 @@ function parse_unpaywall_response(string $response): ?object {
 function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
-        $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-        bot_curl_set_max_response_bytes($ch_oa, 4 * 1024 * 1024);
+        $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT], 4 * 1024 * 1024);
     }
     if (in_array($doi, BAD_OA_URL, true)) {
         return 'wrong';
@@ -220,7 +219,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                     CURLOPT_HEADER => true,
                     CURLOPT_NOBODY => true,
                     CURLOPT_URL => $the_url,
-                ]);
+                ], 4 * 1024 * 1024);
                 $headers_test = bot_curl_exec($ch);
                 // @codeCoverageIgnoreStart
                 if ($headers_test === "") {
