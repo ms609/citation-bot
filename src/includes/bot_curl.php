@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-const COOKIE_FILE_PATH = __DIR__ . '/cookie.txt'; // Proquest needs
 const BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES = 134217728; // 128 MiB
 const BOT_CURL_ALLOWED_PROTOCOLS_USE = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 const BOT_CURL_ALLOWED_PROTOCOLS_END = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP; // Some DOIs resolve to FTP sites, which is okay.  Some resolve to files, which we reject.
@@ -183,8 +182,10 @@ function bot_curl_init(float $time, array $ops): CurlHandle {
         CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
         CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
         CURLOPT_NOPROGRESS => false,
-        CURLOPT_COOKIEJAR => COOKIE_FILE_PATH,
-        CURLOPT_COOKIEFILE => COOKIE_FILE_PATH,
+        // Enable libcurl's in-memory cookie engine. Cookies remain available
+        // to subsequent transfers on this handle without placing shared
+        // cookie state inside the web-served source tree.
+        CURLOPT_COOKIEFILE => '',
         // 2 - Default Time by ratio
         CURLOPT_TIMEOUT => (int) ceil(BOT_HTTP_TIMEOUT * $time),
         CURLOPT_CONNECTTIMEOUT => (int) ceil(BOT_CONNECTION_TIMEOUT * $time),
