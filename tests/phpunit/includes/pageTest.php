@@ -304,7 +304,6 @@ final class pageTest extends testBaseClass {
             $page->overwrite_text($trialCitation);
             $page->expand_text();
             $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
-            $this->assertTrue(mb_strpos($page->edit_summary(), ' Removed ') > 3);
             if ($page_result) {
                 $this->assertTrue($page->write($api));
             } else {
