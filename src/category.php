@@ -67,7 +67,7 @@ if (!$category) {
     bot_html_footer();
     exit(0);
 }
-session_start();
+session_start(public_session_start_options());
 $csrf_token = ensure_session_csrf_token($_SESSION);
 session_write_close();
 
