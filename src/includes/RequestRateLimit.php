@@ -49,7 +49,7 @@ function request_rate_limit_consume(
     }
 
     $state_directory =
-        rtrim($base_directory, "/\\") .
+        mb_rtrim($base_directory, "/\\") .
         DIRECTORY_SEPARATOR .
         REQUEST_RATE_LIMIT_STATE_DIRECTORY;
 
@@ -154,7 +154,7 @@ function request_rate_limit_store_state($handle, float $tokens, float $updated):
     }
 
     $written = @fwrite($handle, $encoded);
-    return $written === strlen($encoded) && @fflush($handle);
+    return $written === mb_strlen($encoded, '8bit') && @fflush($handle);
 }
 
 function request_rate_limit_log_failure(string $bucket, string $reason): void {
