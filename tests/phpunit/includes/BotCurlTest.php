@@ -34,10 +34,9 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlLimitPageSizeLargePayload(): void {
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1024);
         $this->assertNotFalse($ch);
         $this->assertSame(1, curl_limit_page_size($ch, 0, 500000000, 0, 0));
-     }
     }
 
     public function testBotCurlInitReturnsCurlHandle(): void {
