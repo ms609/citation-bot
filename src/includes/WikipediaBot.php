@@ -708,7 +708,7 @@ final class WikipediaBot {
             $session_options = public_session_start_options();
             @setcookie($session_name, $session_id, [
                 'expires' => time() + (7 * 24 * 3600),
-                'path' => $cookie_params['path'] !== '' ? $cookie_params['path'] : '/',
+                'path' => $cookie_params['path'],
                 'domain' => $cookie_params['domain'],
                 'secure' => (bool) $session_options['cookie_secure'],
                 'httponly' => true,
