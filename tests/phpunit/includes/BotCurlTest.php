@@ -11,53 +11,52 @@ final class BotCurlTest extends testBaseClass {
 
     public function testCurlLimitPageSizeZeroBytes(): void {
         new TestPage(); // Fill page name with test name for debugging
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
         $this->assertSame(0, curl_limit_page_size($ch, 0, 0, 0, 0));
     }
 
     public function testCurlLimitPageSizeSmallPayload(): void {
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
         $this->assertSame(0, curl_limit_page_size($ch, 0, 1000, 0, 0));
     }
 
     public function testCurlLimitPageSizeAtExactLimit(): void {
-        // Limit is 128 MB = 134217728 bytes; at exactly the limit it should still return 0
-        $ch = bot_curl_init(1, []);
-        $this->assertNotFalse($ch);
-        $this->assertSame(0, curl_limit_page_size($ch, 0, 134217728, 0, 0));
+        $ch = bot_curl_init(1, [], 256 * 1024 * 1024); // Too big
+        $this->assertFalse($ch);
     }
 
     public function testCurlLimitPageSizeOneByteOverLimit(): void {
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1000);
         $this->assertNotFalse($ch);
-        $this->assertSame(1, curl_limit_page_size($ch, 0, 134217729, 0, 0));
+        $this->assertSame(1, curl_limit_page_size($ch, 0, 1001, 0, 0));
     }
 
     public function testCurlLimitPageSizeLargePayload(): void {
         $ch = bot_curl_init(1, []);
         $this->assertNotFalse($ch);
         $this->assertSame(1, curl_limit_page_size($ch, 0, 500000000, 0, 0));
+     }
     }
 
     public function testBotCurlInitReturnsCurlHandle(): void {
-        $ch = bot_curl_init(1.0, []);
+        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
         $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
     public function testBotCurlInitWithUrl(): void {
-        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'http://example.com']);
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'http://example.com'], 1 * 1024 * 1024);
         $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
     public function testBotCurlInitWithHalfTimeScale(): void {
-        $ch = bot_curl_init(0.5, []);
+        $ch = bot_curl_init(0.5, [], 1 * 1024 * 1024);
         $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
     public function testBotCurlInitWithZeroTimeScale(): void {
-        $ch = bot_curl_init(0.0, []);
+        $ch = bot_curl_init(0.0, [], 1 * 1024 * 1024);
         $this->assertInstanceOf(CurlHandle::class, $ch);
     }
 
@@ -71,7 +70,7 @@ final class BotCurlTest extends testBaseClass {
         flush();
         clearstatcache(true, $filename);
 
-        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename], 1 * 1024 * 1024);
         $out = bot_curl_exec($ch);
         $this->assertSame('', $out);
 
@@ -82,11 +81,11 @@ final class BotCurlTest extends testBaseClass {
                 CURLOPT_PROTOCOLS => CURLPROTO_ALL,
                 CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
             ]
-        );
+        ), 1 * 1024 * 1024);
         $out = bot_curl_exec($ch);
         $this->assertSame('', $out);
 
-        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename]);
+        $ch = bot_curl_init(1.0, [CURLOPT_URL => 'file://' . $filename], 1 * 1024 * 1024);
         curl_setopt_array($ch, [
             CURLOPT_PROTOCOLS => CURLPROTO_ALL,
             CURLOPT_REDIR_PROTOCOLS => CURLPROTO_ALL,
@@ -98,7 +97,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testPublicCurlDestinationAccepted(): void {
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
 
         $this->assertSame(
@@ -114,7 +113,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testLoopbackCurlDestinationRejected(): void {
-        $ch = bot_curl_init(1, []);
+        $ch = bot_curl_init(1, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
 
         $this->assertSame(
@@ -177,9 +176,8 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlLimitPageSizeUsesPerHandleLimit(): void {
-        $ch = bot_curl_init(1.0, []);
+        $ch = bot_curl_init(1.0, [], 1024);
         $this->assertNotFalse($ch);
-        bot_curl_set_max_response_bytes($ch, 1024);
 
         $this->assertSame(0, curl_limit_page_size($ch, 0, 1024, 0, 0));
         $this->assertSame(1, curl_limit_page_size($ch, 0, 1025, 0, 0));
@@ -187,7 +185,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testCurlResponseLimitRejectsInvalidValues(): void {
-        $ch = bot_curl_init(1.0, []);
+        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
         $this->expectException(InvalidArgumentException::class);
         bot_curl_set_max_response_bytes($ch, 0);
@@ -206,7 +204,7 @@ final class BotCurlTest extends testBaseClass {
     }
 
     public function testSecurityOptionsCanBeAppliedToNormalHandle(): void {
-        $ch = bot_curl_init(1.0, []);
+        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
         $this->assertNotFalse($ch);
         bot_curl_apply_security_options($ch);
         $this->addToAssertionCount(1);
@@ -216,7 +214,7 @@ final class BotCurlTest extends testBaseClass {
         new TestPage();
         $ch = bot_curl_init(1.0, [
             CURLOPT_URL => 'file:///definitely-not-allowed-by-citation-bot',
-        ]);
+        ], 1 * 1024 * 1024);
 
         $this->assertSame('', bot_curl_exec($ch));
         $transfer = bot_curl_last_transfer($ch);
