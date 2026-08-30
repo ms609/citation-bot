@@ -134,6 +134,7 @@ function is_doi_active(string $doi): ?bool {
             CURLOPT_NOBODY => false,
             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
         ]);
+        bot_curl_set_max_response_bytes($ch, 4 * 1024 * 1024);
     }
     $doi = mb_trim($doi);
     $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=" . CROSSREFUSERNAME; // do not encode crossref email
@@ -785,6 +786,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     static $ch = null;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, []);
+        bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024);
     }
     if ($template->has('jstor')) {
         return;
