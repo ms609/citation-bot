@@ -79,7 +79,36 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         );
     }
 
-    public function testResponse2PageReturnsFirstPage(): void {
+    public function testResponse2PageReturnsFirstPageWith1(): void {
+        $first = self::validPage();
+        $first->title = 'First page';
+        $first->pageid = 1;
+
+        // These are not used, but set to show that calling validPage() again does not break things
+        $second = self::validPage();
+        $second->title = 'Second page';
+        $second->pageid = 2;
+
+        $response = (object) [
+            'batchcomplete' => true,
+            'query' => (object) [
+                'pages' => (object) [
+                    '1' => $first,
+                ],
+                'tokens' => (object) [
+                    'csrftoken' => 'test-token',
+                ],
+            ],
+        ];
+
+        $page = WikipediaBot::response2page($response);
+
+        $this->assertNotNull($page);
+        $this->assertSame(1, $page->pageid);
+        $this->assertSame('First page', $page->title);
+    }
+
+    public function testResponse2PageReturnsNothingWith2(): void {
         $first = self::validPage();
         $first->title = 'First page';
         $first->pageid = 1;
@@ -93,7 +122,7 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
             'query' => (object) [
                 'pages' => (object) [
                     '1' => $first,
-                    '2' => $second,
+                    '2' => $second, // Should not get two pages
                 ],
                 'tokens' => (object) [
                     'csrftoken' => 'test-token',
@@ -103,9 +132,7 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
 
         $page = WikipediaBot::response2page($response);
 
-        $this->assertNotNull($page);
-        $this->assertSame(1, $page->pageid);
-        $this->assertSame('First page', $page->title);
+        $this->assertNull($page);
     }
 
     #[DataProvider('missingPagePropertyProvider')]
