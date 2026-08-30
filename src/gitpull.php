@@ -21,13 +21,16 @@ clearstatcache(true, LOCK_DIR);
 
 $deployPassword = @getenv('DEPLOY_PASSWORD');
 
-$password_get = $_GET['password'] ?? '';
-$password_in = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? $password_get;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $password_in = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? '';
+} else {
+    $password_in = $_GET['password'] ?? '';
+}
 
 if (!is_string($password_in)) {
     $git_hub = 'Invalid password type.';
 } elseif ($deployPassword === false) {
-    $git_hub = 'Error: No DEPLOY_PASSWORD is configured.'
+    $git_hub = 'Error: No DEPLOY_PASSWORD is configured.';
 } elseif ($deployPassword !== false && !hash_equals($password_in, (string) $deployPassword)) {
     $git_hub = 'Incorrect password.';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
