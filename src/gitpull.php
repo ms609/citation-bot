@@ -19,7 +19,7 @@ const LOCK_DIR = __DIR__ . '/git_pull.lock';
 
 clearstatcache(true, LOCK_DIR);
 
-$deployPassword = @getenv('DEPLOY_PASSWORD');
+$deployPassword = (string) @getenv('DEPLOY_PASSWORD');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password_in = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? '';
@@ -29,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if (!is_string($password_in)) {
     $git_hub = 'Invalid password type.';
-} elseif ($deployPassword === false) {
-    $git_hub = 'Error: No DEPLOY_PASSWORD is configured.'; // It could be set to blank, and that would work, but you have to choose this explicitly
-} elseif (!hash_equals($password_in, (string) $deployPassword)) {
+} elseif ($deployPassword === '') {
+    $git_hub = 'Error: No DEPLOY_PASSWORD is configured.';
+} elseif (!hash_equals($password_in, $deployPassword)) {
     $git_hub = 'Incorrect password.';
 } elseif (@mkdir(LOCK_DIR, 0700)) {
     register_shutdown_function(static function (): void {
