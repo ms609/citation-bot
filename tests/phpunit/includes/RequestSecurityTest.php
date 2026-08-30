@@ -72,15 +72,15 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testConfirmationFormShowsRequestedGetDetails(): void {
+        $fields = [
+            'page' => 'Example page',
+            'wiki_base' => 'en',
+            'pcre' => '0',
+            'slow' => '1',
+        ];
         try {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
-            $fields = [
-                'page' => 'Example page',
-                'wiki_base' => 'en',
-                'pcre' => '0',
-                'slow' => '1',
-            ];
             $form = post_confirmation_form('process_page.php', $fields, 'token', 'Process page');
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
@@ -174,10 +174,10 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
      * @param string $button_text
      */
     private function assert_confirmation_posts_fields(string $action, array $fields, string $button_text): void {
+        $session = ['csrf_token' => 'known-token'];
         try {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', true);
-            $session = ['csrf_token' => 'known-token'];
             $form = post_confirmation_form($action, $fields, $session['csrf_token'], $button_text);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
