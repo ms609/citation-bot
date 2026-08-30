@@ -4193,16 +4193,10 @@ final class Template
                     if (mb_substr($doi, 0, 8) === '10.5555/') {
                         // Test DOI prefix. NEVER will work
                         $this->forget('doi');
-                        if ($this->blank('url')) {
+                        if ($this->blank('url') && mb_substr($doi, 0, 15) === '10.5555/al.ap.') {
                             /** @psalm-taint-escape ssrf */
                             $test_url = 'https://plants.jstor.org/stable/' . $doi;
-                            $ch = bot_curl_init(1.5, [CURLOPT_URL => $test_url]);
-                            bot_curl_set_max_response_bytes($ch, 1 * 1024 * 1024);
-                            $jstor_html = bot_curl_exec($ch);
-                            $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                            if (mb_stripos($jstor_html, 'Page not found') === false && $httpCode === 200) {
-                                $this->add_if_new('url', $test_url);
-                            }
+                            $this->add_if_new('url', $test_url);
                         }
                         return;
                     }
