@@ -6,6 +6,7 @@ declare(strict_types=1);
 set_time_limit(120);
 
 require_once __DIR__ . '/includes/GadgetApi.php';
+dsfdsaf
 
 try {
     //Set up tool requirements
