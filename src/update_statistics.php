@@ -99,9 +99,8 @@ if ($parsed !== null) {
 }
 
 // If page exists and we have last_rev, use normal write_page (honors edit conflict checks)
-// For new/missing page, use direct statistics write that permits creation
-$ok = false;
-if ($last_rev !== 0 && $read_at !== '') {
+ // For new/missing page, use direct statistics write that permits creation
+ if ($last_rev !== 0 && $read_at !== '') {
     $ok = $api->write_page($stats_page, $wikitext, $summary, $last_rev, $read_at);
     if (!$ok) {
         // Fallback to direct create-permissive write

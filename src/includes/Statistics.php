@@ -45,7 +45,7 @@ function statistics_ucb_from_comment(string $comment): string {
  * Aggregate an array of contribs (each with at least ->comment)
  * into counts keyed by UCB type.
  *
- * @param array<object> $contribs
+ * @param array<object|array<string,mixed>> $contribs
  * @return array<string,int> e.g. ["#UCB_toolbar"=>12, "Untagged"=>3]
  */
 function statistics_aggregate(array $contribs): array {

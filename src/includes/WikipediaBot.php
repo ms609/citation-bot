@@ -564,7 +564,7 @@ final class WikipediaBot {
             if ($uccontinue !== '') {
                 $vars['uccontinue'] = $uccontinue;
             }
-            if ($use_max && $auth_instance !== null) {
+            if ($use_max) {
                 $res = $auth_instance->query_api_authenticated($vars);
                 // Fallback to anon 500 if authenticated max not granted (e.g. in CI without tokens)
                 if ($res === '') {
@@ -650,23 +650,18 @@ final class WikipediaBot {
             if (!isset($params['maxlag'])) {
                 $params['maxlag'] = '5';
             }
-            /** @psalm-suppress UnnecessaryVarAnnotation */
-            /** @var non-empty-string $api_root */
-            $api_root = API_ROOT;
             // Retry up to 3 times on retryable errors (maxlag, ratelimited, readonly, db locked)
             for ($attempt = 0; $attempt < 4; $attempt++) {
                 if ($attempt > 0) {
                     // Bounded backoff: 5s, 10s, 20s
-                    $delay = (int) (5 * (2 ** ($attempt - 1)));
-                    if ($delay > 20) {
-                        $delay = 20;
-                    }
+                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
                     sleep($delay);
                 }
+                // @phpstan-ignore-next-line – API_ROOT is non-empty-string
                 curl_setopt_array(self::$ch_logout, [
                 CURLOPT_POST => true,
                 CURLOPT_POSTFIELDS => http_build_query($params),
-                CURLOPT_URL => $api_root,
+                CURLOPT_URL => API_ROOT,
                 ]);
 
                 $data = bot_curl_exec_withFalse(self::$ch_logout);
@@ -679,9 +674,12 @@ final class WikipediaBot {
                     $data = '';
                 }
                 $data = (string) $data;
-                if ($data === '' && $attempt < 3) {
-                    sleep(4);                                       // @codeCoverageIgnore
-                    continue;                                       // @codeCoverageIgnore
+                if ($data === '') {
+                    if ($attempt < 3) {
+                        sleep(4);                                   // @codeCoverageIgnore
+                        continue;                                   // @codeCoverageIgnore
+                    }
+                    return '';
                 }
                 $decoded = @json_decode($data);
                 if (self::fetch_response_is_retryable($decoded)) {
@@ -692,14 +690,7 @@ final class WikipediaBot {
                     return $data;
                 }
                 // Non-retryable error – return empty to let caller handle
-                if ($decoded !== null && isset($decoded->error)) {
-                    return '';
-                }
-                // Malformed or empty – retry if attempts remain
-                if ($attempt < 3 && $data === '') {
-                    continue;
-                }
-                return self::ret_okay($decoded) ? $data : '';
+                return '';
             }
             return '';
             // @codeCoverageIgnoreStart
@@ -724,14 +715,9 @@ final class WikipediaBot {
             if (!isset($params['maxlag'])) {
                 $params['maxlag'] = '5';
             }
-            /** @var non-empty-string $api_root */
-            $api_root = API_ROOT;
             for ($attempt = 0; $attempt < 4; $attempt++) {
                 if ($attempt > 0) {
-                    $delay = (int) (5 * (2 ** ($attempt - 1)));
-                    if ($delay > 20) {
-                        $delay = 20;
-                    }
+                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
                     sleep($delay);
                 }
                 $token = $this->bot_token;
@@ -743,11 +729,12 @@ final class WikipediaBot {
                 $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
                 $request->signRequest(new HmacSha1(), $consumer, $token);
                 $header = $request->toHeader();
+                // @phpstan-ignore-next-line – API_ROOT is non-empty-string
                 curl_setopt_array(self::$ch_write, [
                     CURLOPT_POST => true,
                     CURLOPT_POSTFIELDS => http_build_query($params),
                     CURLOPT_HTTPHEADER => [$header],
-                    CURLOPT_URL => $api_root,
+                    CURLOPT_URL => API_ROOT,
                 ]);
                 $data = bot_curl_exec_withFalse(self::$ch_write);
                 if ($data === false) {
@@ -757,9 +744,12 @@ final class WikipediaBot {
                     $data = '';
                 }
                 $data = (string) $data;
-                if ($data === '' && $attempt < 3) {
-                    sleep(4);
-                    continue;
+                if ($data === '') {
+                    if ($attempt < 3) {
+                        sleep(4);
+                        continue;
+                    }
+                    return '';
                 }
                 $decoded = @json_decode($data);
                 if (self::fetch_response_is_retryable($decoded)) {
@@ -769,13 +759,7 @@ final class WikipediaBot {
                 if (self::ret_okay($decoded)) {
                     return $data;
                 }
-                if ($decoded !== null && isset($decoded->error)) {
-                    return '';
-                }
-                if ($attempt < 3 && $data === '') {
-                    continue;
-                }
-                return self::ret_okay($decoded) ? $data : '';
+                return '';
             }
             return '';
         } catch (Throwable $E) {
