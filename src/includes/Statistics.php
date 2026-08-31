@@ -10,7 +10,7 @@ declare(strict_types=1);
  */
 
 const STATISTICS_PAGE = 'User:Citation bot/statistics';
-const STATISTICS_UNTAGGED_LABEL = 'Untagged / Testing';
+const STATISTICS_UNTAGGED_LABEL = 'Untagged';
 
 const KNOWN_UCB_TYPES = [
     '#UCB_automated_tools',
@@ -46,7 +46,7 @@ function statistics_ucb_from_comment(string $comment): string {
  * into counts keyed by UCB type.
  *
  * @param array<object> $contribs
- * @return array<string,int> e.g. ["#UCB_toolbar"=>12, "Untagged / Testing"=>3]
+ * @return array<string,int> e.g. ["#UCB_toolbar"=>12, "Untagged"=>3]
  */
 function statistics_aggregate(array $contribs): array {
     $counts = [];

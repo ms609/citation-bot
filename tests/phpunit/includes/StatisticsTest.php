@@ -101,7 +101,7 @@ final class StatisticsTest extends testBaseClass {
         $this->assertStringContainsString('Total edits in last 24 hours: \'\'\'10\'\'\'', $text);
         $this->assertStringContainsString('{| class="wikitable sortable"', $text);
         $this->assertStringContainsString('<code>#UCB_toolbar</code>', $text);
-        $this->assertStringContainsString('<code>Untagged / Testing</code>', $text);
+        $this->assertStringContainsString('<code>' . STATISTICS_UNTAGGED_LABEL . '</code>', $text);
         $this->assertStringContainsString('10 || 100%', $text); // total row
         // Percentages: 5/10=50%, 3/10=30%, 2/10=20%
         $this->assertStringContainsString('50%', $text);
