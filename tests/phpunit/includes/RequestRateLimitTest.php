@@ -479,20 +479,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         putenv('PHP_RATE_LIMIT_DIRECTORY=' . $previous);
     }
 
-    public function testBaseDirectoryUsesEnvironmentOverride(): void {
-        $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
-
-        try {
-            putenv('PHP_RATE_LIMIT_DIRECTORY=/tmp/citation-bot-rate-limit-test-override');
-            $this->assertSame(
-                '/tmp/citation-bot-rate-limit-test-override',
-                request_rate_limit_base_directory()
-            );
-        } finally {
-            $this->restoreRateLimitDirectoryEnvironment($previous);
-        }
-    }
-
     public function testBaseDirectoryFallsBackToSystemTempDirectory(): void {
         $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
 
@@ -502,13 +488,5 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         } finally {
             $this->restoreRateLimitDirectoryEnvironment($previous);
         }
-    }
-
-    private function restoreRateLimitDirectoryEnvironment(string|false $previous): void {
-        if ($previous === false) {
-            putenv('PHP_RATE_LIMIT_DIRECTORY');
-            return;
-        }
-        putenv('PHP_RATE_LIMIT_DIRECTORY=' . $previous);
     }
 }
