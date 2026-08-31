@@ -1282,10 +1282,10 @@ function url_valid(string $value): bool {
     if (preg_match('~\s|[[:cntrl:]]~u', $value) === 1) {
         return false; // CS1 rejects URLs containing whitespace or control characters
     }
-    if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*:~', $value) !== 1) {
+    if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*:~', $value, $scheme_match) !== 1) {
         return false; // must begin with a scheme
     }
-    $rest = mb_substr($value, mb_strpos($value, ':') + 1);
+    $rest = mb_substr($value, mb_strlen($scheme_match[0]));
     if ($rest === '' || preg_match('~^/+$~', $rest) === 1) {
         return false; // scheme must be followed by an authority/path
     }

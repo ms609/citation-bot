@@ -331,6 +331,11 @@ function check_citation(Template $template): array {
         $violations[] = 'generic-title: CS1 "Cite uses generic title"';
     }
 
+    // R19: url must be structurally valid (CS1 "Check |url= value").
+    if ($template->has('url') && !url_valid($template->get('url'))) {
+        $violations[] = 'url-malformed: CS1 "Check |url= value"';
+    }
+
     return $violations;
 }
 
@@ -401,6 +406,7 @@ function build_matrix(): array {
         ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'gap'],
         ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
         ['GAP generic name in input survives tidy', '{{cite journal |title=X |journal=J |last1=CNN}}', 'gap'],
+        ['GAP malformed url in input survives tidy', '{{cite web |url=example.com |title=X}}', 'gap'],
     ];
 }
 

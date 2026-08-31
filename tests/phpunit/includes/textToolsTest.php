@@ -1359,8 +1359,8 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(is_generic_name('Editor'));        // role label
         $this->assertTrue(is_generic_name('Google'));        // site name
         $this->assertTrue(is_generic_name('about us'));      // generic phrase
-        $this->assertTrue(is_generic_name('Ed.'));           // punctuated ed. is flagged
-        $this->assertFalse(is_generic_name('Ed'));           // bare given name Ed is not
+        $this->assertFalse(is_generic_name('Ed'));           // common given name
+        $this->assertFalse(is_generic_name('Ed.'));          // abbreviation of Edward
         $this->assertFalse(is_generic_name('Advisors'));     // CS1 flags only singular Advisor
         $this->assertFalse(is_generic_name('Smith'));
         $this->assertFalse(is_generic_name('John Q. Public'));

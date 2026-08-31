@@ -13374,8 +13374,6 @@ const GENERIC_NAME_PATTERNS = [
     '~^bureau$~i',
     '~^company$~i',
     '~^desk$~i',
-    '~^eds?[.,;]~i',
-    '~[.,;\s]eds?\.?$~i',
     '~\bedited\b~i',
     '~\beditor\b~i',
     '~\beditors\b~i',

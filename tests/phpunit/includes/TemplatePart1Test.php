@@ -1667,7 +1667,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testValidateAndAddRejectsGenericName(): void {
         $text = '{{cite journal | title = X | journal = J }}';
         $template = $this->make_citation($text);
-        $template->validate_and_add('last1', 'CNN', '', '', false);
+        $template->validate_and_add('last1', 'google', '', '', false); // lowercase: only the generic-name gate catches it
         $this->assertNull($template->get2('last1'));
         $template->validate_and_add('last1', 'Smith', 'John', '', false);
         $this->assertNotNull($template->get2('last1'));
@@ -1679,6 +1679,13 @@ final class TemplatePart1Test extends testBaseClass {
         $template = $this->make_citation($text);
         $template->validate_and_add('last1', 'Sheeran', 'Ed', '', false);
         $this->assertNotNull($template->get2('last1'));
+    }
+
+    public function testAuthorIsHumanKeepsCombinedEdName(): void {
+        // Combined "Last, First" strings (as produced by first_author()) must
+        // not be rejected just because the first name is the common "Ed".
+        $this->assertTrue(author_is_human('Sheeran, Ed'));
+        $this->assertTrue(author_is_human('Sheeran, John'));
     }
 
     public function testAddIfNewRejectsMalformedUrl(): void {
