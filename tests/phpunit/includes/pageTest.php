@@ -288,7 +288,7 @@ final class pageTest extends testBaseClass {
             $this->assertTrue(mb_strpos($origText, 'Nature') > 5);
             $trialCitation = '{{Cite journal | doi = 10.1038/nature09068 | pmid=<!-- --> | url=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |bibcode=<!-- --> |hdl=<!-- --> |s2cid=<!-- --> }}';
             $page->overwrite_text($trialCitation);
-            $page_result = $page->write($api, "Testing bot write function");
+            $page_result = $page->write($api, "Testing bot write function | #UCB_Testing");
             sleep(6);
             // Double check we can read it back
             $page->get_text_from($writeTestPage);
@@ -305,9 +305,9 @@ final class pageTest extends testBaseClass {
             $page->expand_text();
             $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
             if ($page_result) {
-                $this->assertTrue($page->write($api));
+                $this->assertTrue($page->write($api, "| #UCB_Testing"));
             } else {
-                $this->assertFalse($page->write($api));
+                $this->assertFalse($page->write($api, "| #UCB_Testing"));
             }
             sleep(6);
             $page->get_text_from($writeTestPage);

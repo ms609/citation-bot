@@ -524,6 +524,78 @@ final class WikipediaBot {
         return (string) $page_object->revisions[0]->revid;
     }
 
+    /**
+     * Fetch recent contributions for a user within the last $hours hours.
+     * Uses list=usercontribs with ucdir=older and ucstart/ucend window.
+     * Handles continuation via uccontinue.
+     *
+     * @return array<object> edits with at least ->comment and ->timestamp
+     */
+    public static function fetch_user_contribs(string $user, int $hours = 24): array {
+        if (mb_trim($user) === '' || $hours < 1) {
+            return [];
+        }
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $start = $now->format('Y-m-d\TH:i:s\Z');
+        $end = $now->sub(new DateInterval('PT' . (string) $hours . 'H'))->format('Y-m-d\TH:i:s\Z');
+        $uccontinue = '';
+        $all = [];
+        // Guard against infinite loops: at most 20 batches (10k edits/day is far above reality)
+        for ($batch = 0; $batch < 20; $batch++) {
+            $vars = [
+                'action' => 'query',
+                'list' => 'usercontribs',
+                'ucuser' => $user,
+                'uclimit' => '500',
+                'ucprop' => 'comment|timestamp|title',
+                'ucdir' => 'older',
+                'ucstart' => $start,
+                'ucend' => $end,
+            ];
+            if ($uccontinue !== '') {
+                $vars['uccontinue'] = $uccontinue;
+            }
+            $res = self::query_api($vars);
+            if ($res === '') {
+                break;
+            }
+            $decoded = @json_decode($res);
+            if (!is_object($decoded)) {
+                break;
+            }
+            // Use statistics helper if available (loaded via setup.php)
+            if (function_exists('statistics_parse_contribs_response')) {
+                $parsed = statistics_parse_contribs_response($decoded);
+            } else {
+                $parsed = null;
+                if (isset($decoded->query) && is_object($decoded->query)
+                    && isset($decoded->query->usercontribs) && is_array($decoded->query->usercontribs)) {
+                    $edits = [];
+                    foreach ($decoded->query->usercontribs as $edit) {
+                        if (is_object($edit)) {
+                            $edits[] = $edit;
+                        }
+                    }
+                    $cont = null;
+                    if (isset($decoded->continue) && is_object($decoded->continue)
+                        && isset($decoded->continue->uccontinue) && is_string($decoded->continue->uccontinue)) {
+                        $cont = $decoded->continue->uccontinue;
+                    }
+                    $parsed = ['edits' => $edits, 'continue' => $cont];
+                }
+            }
+            if ($parsed === null) {
+                break;
+            }
+            array_push($all, ...$parsed['edits']);
+            if ($parsed['continue'] === null) {
+                break;
+            }
+            $uccontinue = $parsed['continue'];
+        }
+        return $all;
+    }
+
     /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
     public static function is_redirect(string $page): int {
         $res = self::query_api([
@@ -598,6 +670,77 @@ final class WikipediaBot {
         }
         return '';
         // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Write the statistics page, allowing creation if it does not exist.
+     * Unlike write_page(), this permits creation and is tolerant of missing pages.
+     */
+    public function write_statistics_page(string $title, string $text, string $summary): bool {
+        // Reuse the authenticated write path but without requiring lastrevid/start timestamp
+        $response = $this->fetch([
+            'action' => 'query',
+            'prop' => 'info',
+            'meta' => 'tokens',
+            'titles' => $title,
+        ]);
+        $myPage = self::response2page($response);
+        if ($myPage === null) {
+            // Page may not exist â€“ still try to get a token via separate query
+            $fallback = self::query_api(['action' => 'query', 'meta' => 'tokens', 'type' => 'csrf']);
+            $tok = @json_decode($fallback);
+            if (!isset($tok->query->tokens->csrftoken) || !is_string($tok->query->tokens->csrftoken)) {
+                report_warning('unable to get bot tokens for statistics page');
+                return false;
+            }
+            $auth_token = $tok->query->tokens->csrftoken;
+            $baseTimeStamp = '';
+            $startTimestamp = '';
+        } else {
+            if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
+                report_warning('unable to get bot tokens');
+                return false;
+            }
+            $auth_token = $response->query->tokens->csrftoken;
+            $baseTimeStamp = isset($myPage->revisions[0]->timestamp) && is_string($myPage->revisions[0]->timestamp) ? $myPage->revisions[0]->timestamp : '';
+            $startTimestamp = '';
+            // read_details gives curtimestamp as starttimestamp when available; reuse if present
+            $details = self::read_details($title);
+            $cur = $details->curtimestamp ?? '';
+            if (is_string($cur) && $cur !== '') {
+                $startTimestamp = $cur;
+            }
+        }
+        if (defined('EDIT_AS_USER')) {
+            $auth_token = (string) @json_decode($this->user_client->makeOAuthCall(
+                $this->user_token,
+                API_ROOT . '?action=query&meta=tokens&format=json'
+             ))->query->tokens->csrftoken;
+            if ($auth_token === '') {
+                report_error('unable to get user tokens');
+            }
+        }
+        $vars = [
+            'action' => 'edit',
+            'title' => $title,
+            'text' => $text,
+            'summary' => $summary,
+            'notminor' => '1',
+            'bot' => '1',
+            'watchlist' => 'nochange',
+            'token' => $auth_token,
+        ];
+        if ($baseTimeStamp !== '') {
+            $vars['basetimestamp'] = $baseTimeStamp;
+        }
+        if ($startTimestamp !== '') {
+            $vars['starttimestamp'] = $startTimestamp;
+        }
+        $result = $this->fetch($vars);
+        if (!self::resultsGood($result)) {
+            return false;
+        }
+        return true;
     }
 
     public static function read_details(string $title): object {
