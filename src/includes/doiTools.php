@@ -174,15 +174,45 @@ function is_doi_active(string $doi): ?bool {
     return null;                  // @codeCoverageIgnoreEnd
 }
 
-function throttle_dx (): void {
-    static $last = 0.0;
-    $min_time = 40000.0;
-    $now = microtime(true);
-    $left = (int) ($min_time - ($now - $last));
-    if ($left > 0 && $left < $min_time) {
-        usleep($left); // less than min_time is paranoia, but do not want an infinite delay
+/**
+ * Calculate the DOI resolver throttle delay.
+ *
+ * @param float $now_seconds Current wall-clock time in seconds.
+ * @param float $last_seconds Previous request time in seconds.
+ * @param float $minimum_interval_seconds Minimum spacing in seconds.
+ * @return int Microseconds to sleep.
+ */
+function dx_throttle_delay(
+    float $now_seconds,
+    float $last_seconds,
+    float $minimum_interval_seconds = 0.040
+): int {
+    if ($last_seconds <= 0.0 || $minimum_interval_seconds <= 0.0) {
+        return 0;
     }
-    $last = $now;
+
+    $remaining_seconds =
+        $minimum_interval_seconds -
+        ($now_seconds - $last_seconds);
+
+    if ($remaining_seconds <= 0.0) {
+        return 0;
+    }
+
+    return min(
+        (int) ceil($remaining_seconds * 1_000_000),
+        (int) ceil($minimum_interval_seconds * 1_000_000)
+    );
+}
+
+function throttle_dx(): void {
+    static $last = 0.0;
+    $now = microtime(true);
+    $delay = dx_throttle_delay($now, $last);
+    if ($delay > 0) {
+        usleep($delay);
+    }
+    $last = microtime(true);
 }
 
 function is_doi_works(string $doi): ?bool {
