@@ -13,6 +13,12 @@ final class WebToolsTest extends testBaseClass {
         );
     }
 
+    public function testPageExceptionBoundaryPreservesNullResult(): void {
+        $this->assertNull(
+            run_page_with_exception_boundary('test page', static fn (): ?bool => null)
+        );
+    }
+
     public function testPageExceptionBoundaryCatchesValueError(): void {
         $result = run_page_with_exception_boundary(
             'bad page',
@@ -22,6 +28,20 @@ final class WebToolsTest extends testBaseClass {
         );
 
         $this->assertNull($result);
+    }
+
+    public function testNegativeRetryCountIsClampedToSingleAttempt(): void {
+        $calls = 0;
+        $result = run_write_with_retries(
+            static function () use (&$calls): bool {
+                ++$calls;
+                return false;
+            },
+            -10
+        );
+
+        $this->assertFalse($result);
+        $this->assertSame(1, $calls);
     }
 
     public function testWriteRetriesCanSucceedOnFinalRetry(): void {
