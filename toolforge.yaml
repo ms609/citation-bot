@@ -1,10 +1,11 @@
 # Toolforge Jobs v2 – single daily statistics update, EN wiki only
-# Applied via `toolforge jobs load toolforge.yaml` (requires citations tool membership)
-# Legacy fallback: `5 0 * * * /usr/bin/php /data/project/citations/src/update_statistics.php`
+# Create via: toolforge jobs run update-statistics --image php8.4 --schedule "5 0 * * *" --command "php /data/project/citations/git_repo/src/update_statistics.php"
+# Or declarative: `toolforge jobs load toolforge.yaml` (requires citations tool membership)
+# Legacy fallback: `5 0 * * * /usr/bin/php /data/project/citations/git_repo/src/update_statistics.php`
 jobs:
   update-statistics:
-    image: tf-php84
-    command: php src/update_statistics.php
+    image: php8.4
+    command: php /data/project/citations/git_repo/src/update_statistics.php
     schedule: "5 0 * * *"
     concurrency: 1
     retry: 0
