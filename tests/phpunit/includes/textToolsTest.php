@@ -1335,6 +1335,8 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(rxiv_id_valid('10.64898/2025.12.10.693067'));  // new doi prefix
         $this->assertFalse(rxiv_id_valid('10.1101/abc'));
         $this->assertFalse(rxiv_id_valid('10.1101/2019.13.11.123456'));  // month 13
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.32.123456'));  // day 32
+        $this->assertFalse(rxiv_id_valid('10.64898/test123'));           // 10.64898 requires the dated form
         $this->assertFalse(rxiv_id_valid('bogus'));
         $this->assertFalse(rxiv_id_valid(''));
     }

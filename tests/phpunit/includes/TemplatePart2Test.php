@@ -317,11 +317,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Exists', $template->get2('bibcode'));
     }
 
-    public function testAddBogusBibcode_2(): void {
+    public function testRejectBogusBibcode(): void {
         $text = "{{cite web}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('bibcode', 'Z'));
         $this->assertNull($template->get2('bibcode'));
+    }
+
+    public function testPaddedShortBibcodeAccepted(): void {
+        // A short year-led bibcode is padded to 19 characters and kept.
+        $text = "{{cite web}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('bibcode', '2019'));
+        $this->assertSame('2019' . str_repeat('.', 15), $template->get2('bibcode'));
     }
 
     public function testvalidate_and_add1(): void {
