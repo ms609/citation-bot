@@ -1656,4 +1656,50 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertTrue($template->add_if_new('pmc', 'PMC1234567'));
         $this->assertSame('1234567', $template->get2('pmc'));
     }
+
+    public function testAddIfNewRejectsGenericTitle(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('title', 'No Title'));
+        $this->assertSame('X', $template->get2('title'));
+    }
+
+    public function testValidateAndAddRejectsGenericName(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $template->validate_and_add('last1', 'google', '', '', false); // lowercase: only the generic-name gate catches it
+        $this->assertNull($template->get2('last1'));
+        $template->validate_and_add('last1', 'Smith', 'John', '', false);
+        $this->assertNotNull($template->get2('last1'));
+    }
+
+    public function testValidateAndAddKeepsGivenNameEd(): void {
+        // The common given name "Ed" must not be rejected as a generic name.
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $template->validate_and_add('last1', 'Sheeran', 'Ed', '', false);
+        $this->assertNotNull($template->get2('last1'));
+    }
+
+    public function testAuthorIsHumanKeepsCombinedEdName(): void {
+        // Combined "Last, First" strings (as produced by first_author()) must
+        // not be rejected just because the first name is the common "Ed".
+        $this->assertTrue(author_is_human('Sheeran, Ed'));
+        $this->assertTrue(author_is_human('Sheeran, John'));
+    }
+
+    public function testAddIfNewRejectsMalformedUrl(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('url', 'not a url'));
+        $this->assertNull($template->get2('url'));
+        $this->assertTrue($template->add_if_new('url', 'https://example.com'));
+        $this->assertSame('https://example.com', $template->get2('url'));
+    }
+
+    public function testFloatingWwwUrlGetsScheme(): void {
+        $text = '{{cite journal | title = X | journal = J |  www.example.com/article }}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
+    }
 }

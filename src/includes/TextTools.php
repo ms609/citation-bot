@@ -1232,6 +1232,66 @@ function bibcode_valid(string $value): bool {
     return true;
 }
 
+/**
+ * True when a value matches CS1's "Cite uses generic name" triggers
+ * (role labels, site names, and generic phrases from the Configuration
+ * module's generic_names reject list).
+ */
+function is_generic_name(string $value): bool {
+    $lower = mb_strtolower($value);
+    foreach (GENERIC_NAMES as $phrase) {
+        if (mb_strpos($lower, $phrase) !== false) {
+            return true;
+        }
+    }
+    foreach (GENERIC_NAME_PATTERNS as $pattern) {
+        if (preg_match($pattern, $value) === 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * True when a value matches CS1's "Cite uses generic title" triggers.
+ * The plain-text phrases here are those not already covered by BAD_TITLES /
+ * ZOTERO_BAD_TITLES; the patterns cover the bracket/404 forms those exact
+ * lists cannot express.
+ */
+function is_generic_title(string $value): bool {
+    $lower = mb_strtolower($value);
+    foreach (GENERIC_TITLES as $phrase) {
+        if (mb_strpos($lower, $phrase) !== false) {
+            return true;
+        }
+    }
+    foreach (GENERIC_TITLE_PATTERNS as $pattern) {
+        if (preg_match($pattern, $value) === 1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * True when a value is a structurally valid URL for CS1 (error 40,
+ * "Check |url= value"): no whitespace/control characters, a proper scheme
+ * (RFC 3986 scheme syntax), and non-empty content after the scheme.
+ */
+function url_valid(string $value): bool {
+    if (preg_match('~\s|[[:cntrl:]]~u', $value) === 1) {
+        return false; // CS1 rejects URLs containing whitespace or control characters
+    }
+    if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*:~', $value, $scheme_match) !== 1) {
+        return false; // must begin with a scheme
+    }
+    $rest = mb_substr($value, mb_strlen($scheme_match[0]));
+    if ($rest === '' || preg_match('~^/+$~', $rest) === 1) {
+        return false; // scheme must be followed by an authority/path
+    }
+    return true;
+}
+
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);

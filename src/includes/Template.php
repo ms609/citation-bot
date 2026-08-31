@@ -1610,6 +1610,10 @@ final class Template
                 if (in_array(mb_strtolower(sanitize_string($value)), BAD_TITLES, true)) {
                     return false;
                 }
+                if (is_generic_title($value)) {
+                    report_inaction("Not adding generic title: " . echoable($value));
+                    return false;
+                }
                 if (
                     $this->blank($param_name) ||
                     in_array($this->get($param_name), GOOFY_TITLES, true) ||
@@ -1892,6 +1896,10 @@ final class Template
             case 'url':
                 // look for identifiers in URL - might be better to add a PMC parameter, say
                 if ($this->get_identifiers_from_url($value)) {
+                    return false;
+                }
+                if (!url_valid($value)) {
+                    report_inaction("Not adding malformed URL: " . echoable($value));
                     return false;
                 }
                 if (!$this->blank([$param_name, ...TITLE_LINK_ALIASES])) {
@@ -2711,12 +2719,15 @@ final class Template
                 // Takes priority over more tentative matches
                 report_add("Found URL floating in template; setting url");
                 $url = $match[0];
+                if (mb_stripos($url, 'www.') === 0) {
+                    $url = 'https://' . $url; // Give scheme-less floating URLs a scheme
+                }
                 if ($this->blank('url')) {
                     $this->add_if_new('url', $url);
                 } elseif ($this->blank(['archive-url', 'archiveurl']) && mb_stripos($url, 'archive') !== false) {
                     $this->add_if_new('archive-url', $url);
                 }
-                $dat = str_replace($url, '', $dat);
+                $dat = str_replace($match[0], '', $dat);
             }
 
             $shortest = -1;

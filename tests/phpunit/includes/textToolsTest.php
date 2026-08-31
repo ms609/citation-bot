@@ -1351,4 +1351,46 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(bibcode_valid('9999PhRvD..89h4022A')); // year must begin with 1 or 2
         $this->assertFalse(bibcode_valid(''));
     }
+
+    public function testIsGenericName(): void {
+        $this->assertTrue(is_generic_name('CNN'));           // site name
+        $this->assertTrue(is_generic_name('Reuters'));       // news agency
+        $this->assertTrue(is_generic_name('Author'));        // role label
+        $this->assertTrue(is_generic_name('Editor'));        // role label
+        $this->assertTrue(is_generic_name('Google'));        // site name
+        $this->assertTrue(is_generic_name('about us'));      // generic phrase
+        $this->assertFalse(is_generic_name('Ed'));           // common given name
+        $this->assertFalse(is_generic_name('Ed.'));          // abbreviation of Edward
+        $this->assertFalse(is_generic_name('Advisors'));     // CS1 flags only singular Advisor
+        $this->assertFalse(is_generic_name('Smith'));
+        $this->assertFalse(is_generic_name('John Q. Public'));
+        $this->assertFalse(is_generic_name(''));
+    }
+
+    public function testIsGenericTitle(): void {
+        // Pattern triggers.
+        $this->assertTrue(is_generic_title('No Title'));
+        $this->assertTrue(is_generic_title('[unknown]'));
+        $this->assertTrue(is_generic_title('404'));
+        $this->assertTrue(is_generic_title('Error 404'));
+        // Plain-text phrases not covered by BAD_TITLES / ZOTERO_BAD_TITLES.
+        $this->assertTrue(is_generic_title('HugeDomains'));
+        $this->assertTrue(is_generic_title('Redirecting...'));
+        $this->assertTrue(is_generic_title('usurped title'));
+        // Plain phrases covered by the existing lists are not duplicated here.
+        $this->assertFalse(is_generic_title('Wayback Machine'));
+        $this->assertFalse(is_generic_title('A real research paper'));
+        $this->assertFalse(is_generic_title(''));
+    }
+
+    public function testUrlValid(): void {
+        $this->assertTrue(url_valid('https://example.com'));
+        $this->assertTrue(url_valid('http://example.com/path?q=1#frag'));
+        $this->assertTrue(url_valid('ftp://example.com'));
+        $this->assertFalse(url_valid('not a url'));   // whitespace
+        $this->assertFalse(url_valid('example.com')); // no scheme
+        $this->assertFalse(url_valid('http:'));       // nothing after scheme
+        $this->assertFalse(url_valid('http://'));     // only slashes
+        $this->assertFalse(url_valid(''));
+    }
 }
