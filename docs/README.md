@@ -123,6 +123,7 @@ Includes (under `src/includes/`):
 ## Style and structure notes
 
 - Constants and definitions should be provided in `constants.php`.
+- Entry points that do not load `src/includes/setup.php` (currently `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves, as the output helpers in `src/includes/user_messages.php` read them unguarded. `setup.php` defines these based on the run context (CLI vs web); see `src/kill_big_job.php` for a web-only example.
 - A good balance between splitting functionality into single files and avoiding too many files should be maintained.
 - The code is generally NOT written densely.
 - Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, and action taking place through method calls that take place in assignments or equality checks.
