@@ -532,12 +532,7 @@ final class WikipediaBot {
      * @return array<object> edits with at least ->comment and ->timestamp
      */
     public static function fetch_user_contribs(string $user, int $hours = 24): array {
-        $user = mb_trim($user);
-        if ($user === '' || $hours < 1 || $hours > 168) {
-            return [];
-        }
-        if (mb_strlen($user, '8bit') > 255) {
-            report_warning('User name too long for contribs query');
+        if (mb_trim($user) === '' || $hours < 1) {
             return [];
         }
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));

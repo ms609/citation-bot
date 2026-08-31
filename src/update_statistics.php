@@ -26,18 +26,13 @@ foreach ($argv ?? [] as $arg) {
         }
     } elseif (str_starts_with($arg, '--user=')) {
         $val = mb_trim(mb_substr($arg, 7));
-        if ($val !== '' && mb_strlen($val, '8bit') <= 255 && $val !== '_') {
-            // Basic sanity – MediaWiki user names are 1-255 bytes, cannot be empty or just underscores
+        if ($val !== '') {
             $stats_user = $val;
-        } else {
-            report_warning('Invalid --user value, using default');
         }
     } elseif (str_starts_with($arg, '--page=')) {
         $val = mb_trim(mb_substr($arg, 7));
-        if ($val !== '' && mb_strlen($val, '8bit') <= 255) {
+        if ($val !== '') {
             $stats_page = $val;
-        } else {
-            report_warning('Invalid --page value, using default');
         }
     } elseif ($arg === '--help' || $arg === '-h') {
         echo "Usage: php src/update_statistics.php [--dry-run] [--hours=N] [--user=NAME] [--page=Title]\n";
@@ -47,25 +42,6 @@ foreach ($argv ?? [] as $arg) {
         echo "  --page=T    Statistics page title (default 'User:Citation bot/statistics')\n";
         exit(0);
     }
-}
-
-// Prevent concurrent statistics updates (cron + manual)
-$lock_file = sys_get_temp_dir() . '/citation_bot_statistics.lock';
-// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- lock file may not exist, suppress warning
-$lock_handle = @fopen($lock_file, 'c');
-if ($lock_handle === false) {
-    report_warning('Unable to open lock file for statistics update');
-} else {
-    if (!flock($lock_handle, LOCK_EX | LOCK_NB)) { // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-        report_warning('Another statistics update is already running – aborting');
-        @fclose($lock_handle); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-        exit(0);
-    }
-    // Hold lock until script ends – register shutdown to release
-    register_shutdown_function(static function () use ($lock_handle, $lock_file): void {
-        @flock($lock_handle, LOCK_UN); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-        @fclose($lock_handle); // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
-    });
 }
 
 if (!HTML_OUTPUT) {
