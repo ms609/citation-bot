@@ -13,7 +13,6 @@ final class WebToolsTest extends testBaseClass {
         );
     }
 
-
     public function testPageExceptionBoundaryPreservesNullResult(): void {
         $this->assertNull(
             run_page_with_exception_boundary('test page', static fn (): ?bool => null)
@@ -30,7 +29,6 @@ final class WebToolsTest extends testBaseClass {
 
         $this->assertNull($result);
     }
-
 
     public function testNegativeRetryCountIsClampedToSingleAttempt(): void {
         $calls = 0;
