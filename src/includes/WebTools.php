@@ -127,6 +127,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     $pages_changed = 0;   // Pages successfully processed where expand_text() returned true
     $pages_unchanged = 0; // Pages where no edit was made: no changes needed, blank, protected, redirect, etc.
     $pages_failed = 0;    // Pages skipped after an unexpected Throwable
+    /** @var array<string> $pages_edit_conflict */
+    $pages_edit_conflict = [];
 
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
@@ -141,7 +143,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 $edit_summary_end,
                 $total,
                 $done,
-                &$final_edit_overview
+                &$final_edit_overview,
+                &$pages_edit_conflict
             ): ?bool {
                 if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
                     if (SAVETOFILES_MODE) {
@@ -183,6 +186,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                         } elseif ($write_result === false) {
                             report_warning("Write skipped because the page changed while Citation Bot was working.");
                             $final_edit_overview .= "\n Write skipped.           " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                            $pages_edit_conflict[] = $page_title;
                         } else {
                             report_warning("Write failed.");
                             $final_edit_overview .= "\n Write failed.            " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
@@ -219,8 +223,39 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         }
         echo "\n Done all " . (string) $total . " pages: " . (string) $pages_changed . " changed, " .
              (string) $pages_unchanged . " unchanged, " . (string) $pages_failed . " failed. \n  # # # \n" . $final_edit_overview;
+        if (!empty($pages_edit_conflict)) {
+            $retry_count = (string) count($pages_edit_conflict);
+            if (HTML_OUTPUT) {
+                html_echo(
+                    "\n\n---\nPages skipped due to edit conflict — please try again (" . $retry_count . "):\n",
+                    "\n\n---\nPages skipped due to edit conflict — please try again (" . $retry_count . "):\n"
+                );
+                foreach ($pages_edit_conflict as $conflict_title) {
+                    html_echo(
+                        "\n* " . echoable($conflict_title),
+                        "\n* " . $conflict_title
+                    );
+                }
+                echo "\n";
+            } else {
+                echo "\n\n---\nPages skipped due to edit conflict — please try again (" . $retry_count . "):\n";
+                foreach ($pages_edit_conflict as $conflict_title) {
+                    echo "  * " . $conflict_title . "\n";
+                }
+            }
+        }
     } else {
         echo "\n Done with page.";
+        if (!empty($pages_edit_conflict)) {
+            if (HTML_OUTPUT) {
+                html_echo(
+                    "\n\nPage skipped due to edit conflict — please try again: " . echoable($pages_edit_conflict[0]),
+                    "\n\nPage skipped due to edit conflict — please try again: " . $pages_edit_conflict[0]
+                );
+            } else {
+                echo "\n\nPage skipped due to edit conflict — please try again: " . $pages_edit_conflict[0] . "\n";
+            }
+        }
     }
     bot_html_footer();
 }
