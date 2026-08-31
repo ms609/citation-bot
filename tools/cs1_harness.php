@@ -295,9 +295,17 @@ function check_citation(Template $template): array {
     if ($template->has('bibcode') && !bibcode_valid($template->get('bibcode'))) {
         $violations[] = 'bibcode-malformed: CS1 "Check |bibcode= value"';
     }
-    if (($template->has('biorxiv') && !rxiv_id_valid($template->get('biorxiv'))) ||
-        ($template->has('medrxiv') && !rxiv_id_valid($template->get('medrxiv')))) {
-        $violations[] = 'rxiv-malformed: CS1 "Check |biorxiv=/|medrxiv= value"';
+    foreach (['biorxiv', 'medrxiv'] as $param) {
+        if ($template->has($param)) {
+            $test_value = $template->get($param);
+            // Mirror the add_if_new gate: normalize the prefix before validating.
+            if (mb_strpos($test_value, '10.1101/') !== 0 && mb_strpos($test_value, '10.64898/') !== 0) {
+                $test_value = '10.1101/' . $test_value;
+            }
+            if (!rxiv_id_valid($test_value)) {
+                $violations[] = 'rxiv-malformed: CS1 "Check |biorxiv=/|medrxiv= value"';
+            }
+        }
     }
 
     return $violations;
@@ -362,6 +370,8 @@ function build_matrix(): array {
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'gap'],
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],
+        ['GAP malformed eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'gap'],
+        ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'gap'],
     ];
 }
 

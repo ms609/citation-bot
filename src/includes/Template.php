@@ -4572,7 +4572,7 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
+                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
                             // Convert to cite bioRxiv
                             $this->change_name_to('cite bioRxiv', true, true);
                             $this->rename('doi', 'biorxiv');
@@ -4617,7 +4617,7 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
+                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
                             // Convert to cite medRxiv
                             $this->change_name_to('cite medRxiv', true, true);
                             $this->rename('doi', 'medrxiv');
