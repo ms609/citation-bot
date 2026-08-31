@@ -99,14 +99,15 @@ final class StatisticsTest extends testBaseClass {
         $now = new DateTimeImmutable('2026-08-31 12:34:56', new DateTimeZone('UTC'));
         $text = statistics_generate_wikitext($counts, 10, $now, 24);
         $this->assertStringContainsString('Total edits in last 24 hours: \'\'\'10\'\'\'', $text);
+        $this->assertStringContainsString("''Last updated: 2026-08-31 12:34:56 UTC''", $text);
         $this->assertStringContainsString('{| class="wikitable sortable"', $text);
-        $this->assertStringContainsString('<code>#UCB_toolbar</code>', $text);
-        $this->assertStringContainsString('<code>' . STATISTICS_UNTAGGED_LABEL . '</code>', $text);
-        $this->assertStringContainsString('10 || 100%', $text); // total row
-        // Percentages: 5/10=50%, 3/10=30%, 2/10=20%
-        $this->assertStringContainsString('50%', $text);
-        $this->assertStringContainsString('30%', $text);
-        $this->assertStringContainsString('20%', $text);
+        $this->assertStringContainsString('! UCB type !! Edits', $text);
+        $this->assertStringNotContainsString('Percentage', $text);
+        $this->assertStringContainsString('<code>#UCB_toolbar</code> || 5', $text);
+        $this->assertStringContainsString('<code>#UCB_Category</code> || 3', $text);
+        $this->assertStringContainsString('<code>' . STATISTICS_UNTAGGED_LABEL . '</code> || 2', $text);
+        $this->assertStringContainsString('! Total || 10', $text);
+        $this->assertStringNotContainsString('%', $text);
         // Sorted descending – toolbar first
         $pos_toolbar = mb_strpos($text, '#UCB_toolbar');
         $pos_category = mb_strpos($text, '#UCB_Category');

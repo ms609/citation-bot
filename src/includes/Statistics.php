@@ -129,17 +129,14 @@ function statistics_generate_wikitext(array $counts, int $total, DateTimeImmutab
     }
     $out .= "Total edits in last {$window_hours} hours: '''{$total}'''\n\n";
     $out .= "{| class=\"wikitable sortable\"\n";
-    $out .= "! UCB type !! Edits !! Percentage\n";
+    $out .= "! UCB type !! Edits\n";
     foreach ($counts as $ucb => $num) {
-        $pct = $total > 0 ? round(($num / $total) * 100, 1) : 0;
-        // Format percentage: one decimal, but strip trailing .0 for neatness
-        $pct_str = mb_rtrim(mb_rtrim(number_format($pct, 1, '.', ''), '0'), '.');
         $safe_ucb = str_replace('|', '&#124;', $ucb);
         $out .= "|-\n";
-        $out .= "| <code>" . $safe_ucb . "</code> || {$num} || {$pct_str}%\n";
+        $out .= "| <code>" . $safe_ucb . "</code> || {$num}\n";
     }
     $out .= "|-\n";
-    $out .= "! Total || {$total} || 100%\n";
+    $out .= "! Total || {$total}\n";
     $out .= "|}\n\n";
     $out .= "<small>Breakdown by <code>#UCB</code> tag in edit summary. ";
     $out .= "\"" . STATISTICS_UNTAGGED_LABEL . "\" counts edits with no <code>#UCB_</code> tag ";
