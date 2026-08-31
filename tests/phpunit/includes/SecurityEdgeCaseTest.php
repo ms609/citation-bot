@@ -39,7 +39,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         }
 
         if ($this->session_was_set) {
-            $_SESSION = deserialize($this->saved_session);
+            $_SESSION = unserialize($this->saved_session);
         } else {
             unset($_SESSION);
         }
