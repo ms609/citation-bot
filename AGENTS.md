@@ -7,6 +7,7 @@ This file provides context for AI assistants working on the Citation Bot project
 - Language: PHP 8.4+
 - Main logic: Template.php
 - Test command: composer run test
+- afsd
 - CLI smoke-test (requires credentials, use --savetofiles to avoid writing to Wikipedia): php src/process_page.php "Page" --savetofiles
 - Code style: verbose, explicit, spaced-out, highly formatted style
 - First task: Read src/includes/Template.php, src/includes/Parameter.php, and src/includes/constants/parameters.php
