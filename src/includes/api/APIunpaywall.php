@@ -25,6 +25,17 @@ function parse_unpaywall_response(string $response): ?object {
     return $oa;
 }
 
+/**
+ * Canonical Handle proxy URLs are https://hdl.handle.net/<handle>.
+ * Also repair the legacy /handle/<handle> form Citation Bot previously emitted.
+ */
+function normalize_unpaywall_handle_url(string $url): string {
+    if (preg_match('~^https?://hdl\.handle\.net/(?:handle/+)?(\d{2,}.*/.+)$~i', $url, $matches)) {
+        return 'https://hdl.handle.net/' . $matches[1];
+    }
+    return $url;
+}
+
 function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
@@ -141,10 +152,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 return 'publisher';
             }
             // @codeCoverageIgnoreEnd
-            if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $oa_url, $matches)) {
-                // Normalize Handle URLs
-                $oa_url = 'https://hdl.handle.net/handle/' . $matches[1];
-            }
+            $oa_url = normalize_unpaywall_handle_url($oa_url);
             if ($template->has('hdl')) {
                 if (mb_stripos($oa_url, $template->get('hdl')) !== false) {
                       return 'have free';
