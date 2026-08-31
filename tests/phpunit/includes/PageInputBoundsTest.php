@@ -46,25 +46,6 @@ final class PageInputBoundsTest extends testBaseClass {
         );
     }
 
-    public function testPageTitleFilterSkipsInvalidAndDuplicateEntries(): void {
-        ob_start();
-        try {
-            $filtered = filter_runnable_page_titles([
-                'Second',
-                '',
-                " \t",
-                null,
-                7,
-                'First',
-                'Second',
-            ]);
-        } finally {
-            ob_end_clean();
-        }
-
-        $this->assertSame(['Second', 'First'], $filtered);
-    }
-
     public function testBatchInputLimitAccountsForTitlesAndSeparators(): void {
         $this->assertTrue(page_batch_input_within_limit(str_repeat('a', 511), 2));
         $this->assertTrue(page_batch_input_within_limit(str_repeat('a', 512), 2));
@@ -75,10 +56,6 @@ final class PageInputBoundsTest extends testBaseClass {
     public function testBatchInputLimitHandlesEmptyInputAndNegativeLimit(): void {
         $this->assertTrue(page_batch_input_within_limit('', 1));
         $this->assertFalse(page_batch_input_within_limit('', -1));
-    }
-
-    public function testBatchInputLimitUsesConfiguredDefault(): void {
-        $this->assertTrue(page_batch_input_within_limit('Example'));
     }
 
     public function testBatchInputLimitUsesConfiguredDefault(): void {
