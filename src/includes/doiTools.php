@@ -101,10 +101,11 @@ function doi_works(string $doi): ?bool {
     if (isset(HandleCache::$cache_hdl_bad[$doi])) {
         return false;
     }
-    HandleCache::check_memory_use();
     if (isset(HandleCache::$cache_hdl_null[$doi])) {
         return null;   // @codeCoverageIgnore
     }
+    HandleCache::check_memory_use();
+
     $works = is_doi_works($doi);
     if ($works === null) {
         // Network/resolver failures are transient. Do not poison a long-running batch.
