@@ -532,7 +532,12 @@ final class WikipediaBot {
      * @return array<object> edits with at least ->comment and ->timestamp
      */
     public static function fetch_user_contribs(string $user, int $hours = 24): array {
-        if (mb_trim($user) === '' || $hours < 1) {
+        $user = mb_trim($user);
+        if ($user === '' || $hours < 1 || $hours > 168) {
+            return [];
+        }
+        if (mb_strlen($user, '8bit') > 255) {
+            report_warning('User name too long for contribs query');
             return [];
         }
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
@@ -557,34 +562,21 @@ final class WikipediaBot {
             }
             $res = self::query_api($vars);
             if ($res === '') {
+                if ($batch === 0) {
+                    report_warning('Failed to fetch contribs for ' . echoable($user) . ' – API returned empty');
+                } else {
+                    bot_debug_log('fetch_user_contribs truncated after ' . (string) $batch . ' batches for ' . echoable($user));
+                }
                 break;
             }
             $decoded = @json_decode($res);
             if (!is_object($decoded)) {
+                report_warning('Failed to decode contribs response');
                 break;
             }
-            // Use statistics helper if available (loaded via setup.php)
-            if (function_exists('statistics_parse_contribs_response')) {
-                $parsed = statistics_parse_contribs_response($decoded);
-            } else {
-                $parsed = null;
-                if (isset($decoded->query) && is_object($decoded->query)
-                    && isset($decoded->query->usercontribs) && is_array($decoded->query->usercontribs)) {
-                    $edits = [];
-                    foreach ($decoded->query->usercontribs as $edit) {
-                        if (is_object($edit)) {
-                            $edits[] = $edit;
-                        }
-                    }
-                    $cont = null;
-                    if (isset($decoded->continue) && is_object($decoded->continue)
-                        && isset($decoded->continue->uccontinue) && is_string($decoded->continue->uccontinue)) {
-                        $cont = $decoded->continue->uccontinue;
-                    }
-                    $parsed = ['edits' => $edits, 'continue' => $cont];
-                }
-            }
+            $parsed = statistics_parse_contribs_response($decoded);
             if ($parsed === null) {
+                report_warning('Malformed contribs response');
                 break;
             }
             array_push($all, ...$parsed['edits']);
@@ -592,6 +584,8 @@ final class WikipediaBot {
                 break;
             }
             $uccontinue = $parsed['continue'];
+            // Be nice to the API – small delay between batches
+            usleep(200000);
         }
         return $all;
     }
@@ -640,28 +634,61 @@ final class WikipediaBot {
     private static function query_api(array $params): string {
         try {
             $params['format'] = 'json';
+            if (!isset($params['maxlag'])) {
+                $params['maxlag'] = '5';
+            }
             /** @psalm-suppress UnnecessaryVarAnnotation */
             /** @var non-empty-string $api_root */
             $api_root = API_ROOT;
-            curl_setopt_array(self::$ch_logout, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_URL => $api_root,
-            ]);
+            // Retry up to 3 times on retryable errors (maxlag, ratelimited, readonly, db locked)
+            for ($attempt = 0; $attempt < 4; $attempt++) {
+                if ($attempt > 0) {
+                    // Bounded backoff: 5s, 10s, 20s
+                    $delay = (int) (5 * (2 ** ($attempt - 1)));
+                    if ($delay > 20) {
+                        $delay = 20;
+                    }
+                    sleep($delay);
+                }
+                curl_setopt_array(self::$ch_logout, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query($params),
+                CURLOPT_URL => $api_root,
+                ]);
 
-            $data = bot_curl_exec_withFalse(self::$ch_logout);
-            if ($data === false) {
-                // @codeCoverageIgnoreStart
-                $errnoInt = curl_errno(self::$ch_logout);
-                $errorStr = curl_error(self::$ch_logout);
-                report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
-            }   // @codeCoverageIgnoreEnd
-            $data = (string) $data;
-            if ($data === '') {
-                sleep(4);                                       // @codeCoverageIgnore
-                $data = bot_curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+                $data = bot_curl_exec_withFalse(self::$ch_logout);
+                if ($data === false) {
+                    // @codeCoverageIgnoreStart
+                    $errnoInt = curl_errno(self::$ch_logout);
+                    $errorStr = curl_error(self::$ch_logout);
+                    report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
+                    // @codeCoverageIgnoreEnd
+                    $data = '';
+                }
+                $data = (string) $data;
+                if ($data === '' && $attempt < 3) {
+                    sleep(4);                                       // @codeCoverageIgnore
+                    continue;                                       // @codeCoverageIgnore
+                }
+                $decoded = @json_decode($data);
+                if (self::fetch_response_is_retryable($decoded)) {
+                    bot_debug_log('Retrying query_api after retryable error: ' . ($decoded->error->code ?? 'unknown'));
+                    continue;
+                }
+                if (self::ret_okay($decoded)) {
+                    return $data;
+                }
+                // Non-retryable error – return empty to let caller handle
+                if ($decoded !== null && isset($decoded->error)) {
+                    return '';
+                }
+                // Malformed or empty – retry if attempts remain
+                if ($attempt < 3 && $data === '') {
+                    continue;
+                }
+                return self::ret_okay($decoded) ? $data : '';
             }
-            return self::ret_okay(@json_decode($data)) ? $data : '';
+            return '';
             // @codeCoverageIgnoreStart
         } catch (Throwable $E) {
             bot_debug_log('Wikipedia read API failure: ' . $E::class . ': ' . $E->getMessage());
