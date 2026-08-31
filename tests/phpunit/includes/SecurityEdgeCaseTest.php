@@ -10,7 +10,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     /** @var array<string, string|false> */
     private array $saved_environment = [];
     private bool $session_was_set;
-    /** @var array<array-key, mixed> */
+    /** @var array<non-empty-string, mixed> */
     private array $saved_session = [];
 
     #[\Override]
