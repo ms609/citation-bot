@@ -101,15 +101,12 @@ function doi_works(string $doi): ?bool {
     if (isset(HandleCache::$cache_hdl_bad[$doi])) {
         return false;
     }
-    if (isset(HandleCache::$cache_hdl_null[$doi])) {
-        return null;   // @codeCoverageIgnore
-    }
     HandleCache::check_memory_use();
 
     $works = is_doi_works($doi);
-    if ($works === null) {  // These are unexpected nulls
-        HandleCache::$cache_hdl_null[$doi] = true;   // @codeCoverageIgnore
-        return null;   // @codeCoverageIgnore
+    if ($works === null) {
+        // Network/resolver failures are transient. Do not poison a long-running batch.
+        return null; // @codeCoverageIgnore
     }
     if ($works === false) {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
@@ -174,15 +171,28 @@ function is_doi_active(string $doi): ?bool {
     return null;                  // @codeCoverageIgnoreEnd
 }
 
-function throttle_dx (): void {
-    static $last = 0.0;
-    $min_time = 40000.0;
-    $now = microtime(true);
-    $left = (int) ($min_time - ($now - $last));
-    if ($left > 0 && $left < $min_time) {
-        usleep($left); // less than min_time is paranoia, but do not want an infinite delay
+function dx_throttle_delay(float $now, float $last, float $minimum_interval = 0.040): int {
+    if ($last <= 0.0 || $minimum_interval <= 0.0) {
+        return 0;
     }
-    $last = $now;
+    $remaining = $minimum_interval - ($now - $last);
+    if ($remaining <= 0.0) {
+        return 0;
+    }
+    return min(
+        (int) ceil($remaining * 1000000),
+        (int) ceil($minimum_interval * 1000000)
+    );
+}
+
+function throttle_dx(): void {
+    static $last = 0.0;
+    $now = microtime(true);
+    $delay = dx_throttle_delay($now, $last);
+    if ($delay > 0) {
+        usleep($delay);
+    }
+    $last = microtime(true);
 }
 
 function is_doi_works(string $doi): ?bool {
