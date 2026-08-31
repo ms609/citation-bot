@@ -1326,8 +1326,9 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testRxivIdValid(): void {
-        $this->assertTrue(rxiv_id_valid('10.1101/078733'));              // legacy 6-digit
+        $this->assertTrue(rxiv_id_valid('10.1101/078733'));              // legacy 6-digit (bioRxiv)
         $this->assertTrue(rxiv_id_valid('10.1101/078733v1'));            // legacy with version
+        $this->assertTrue(rxiv_id_valid('10.1101/19000380'));            // legacy 8-digit (early medRxiv)
         $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456'));   // dated form
         $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456v2')); // dated with version
         $this->assertTrue(rxiv_id_valid('10.1101/2020.04.05.20054502')); // 8-digit medRxiv form

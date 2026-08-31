@@ -14,9 +14,9 @@ declare(strict_types=1);
  *   php tools/cs1_harness.php --slow     # slow mode
  *   php tools/cs1_harness.php --list     # print the matrix without running
  *
- * The harness is offline-safe and deterministic: the matrix uses fabricated
- * identifiers and titles that external APIs cannot match, so no credentials
- * are needed and the pass/fail result is reproducible run-to-run.
+ * The harness needs no credentials: the matrix uses fabricated identifiers
+ * and titles that external APIs cannot match, so the pass/fail result is
+ * reproducible run-to-run when the upstream APIs respond normally.
  * Exit code is 1 if any "must-pass" case violates the CS1 rules.
  */
 
@@ -202,19 +202,19 @@ function check_citation(Template $template): array {
         $violations[] = 'isbn-invalid: CS1 "Check |isbn= value"';
     }
 
-    // R5: archive-url/archive-date coupling.
-    if ($template->has('archive-url') && !$template->has('archive-date')) {
+    // R5: archive-url/archive-date coupling (alias spellings included).
+    if (($template->has('archive-url') || $template->has('archiveurl')) && !$template->has('archive-date') && !$template->has('archivedate')) {
         $violations[] = 'archive-url-without-date: CS1 "|archive-url= requires |archive-date="';
     }
-    if ($template->has('archive-date') && !$template->has('archive-url')) {
+    if (($template->has('archive-date') || $template->has('archivedate')) && !$template->has('archive-url') && !$template->has('archiveurl')) {
         $violations[] = 'archive-date-without-url: CS1 "|archive-date= requires |archive-url="';
     }
-    if ($template->has('archive-url') && !$template->has('url')) {
+    if (($template->has('archive-url') || $template->has('archiveurl')) && !$template->has('url')) {
         $violations[] = 'archive-url-without-url: CS1 "|archive-url= requires |url="';
     }
 
-    // R6: access-date requires url or archive-url.
-    if ($template->has('access-date') && !$template->has('url') && !$template->has('archive-url')) {
+    // R6: access-date requires url or archive-url (alias spellings included).
+    if (($template->has('access-date') || $template->has('accessdate')) && !$template->has('url') && !$template->has('archive-url') && !$template->has('archiveurl')) {
         $violations[] = 'access-date-orphaned: CS1 "|access-date= requires |url="';
     }
 
@@ -370,7 +370,7 @@ function build_matrix(): array {
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'gap'],
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],
-        ['GAP malformed eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'gap'],
+        ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'gap'],
         ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'gap'],
     ];
 }

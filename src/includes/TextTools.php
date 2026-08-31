@@ -1196,13 +1196,14 @@ function pmc_valid(string $value): bool {
 
 /**
  * Validate a bioRxiv/medRxiv identifier against CS1's structural rules:
- * a legacy six-digit form or the dated yyyy.mm.dd.nnnnnn form (with the newer
+ * a legacy six-to-eight digit form (bioRxiv used 6 digits, early medRxiv 8,
+ * e.g. 10.1101/19000380) or the dated yyyy.mm.dd.nnnnnn form (with the newer
  * 10.64898 prefix and 6-8 digit identifiers), each with an optional version
  * suffix.
  */
 function rxiv_id_valid(string $value): bool {
-    if (preg_match('~^10\.1101/\d{6}(v\d+)?$~', $value) === 1) {
-        return true; // legacy six-digit identifier
+    if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
+        return true; // legacy identifier
     }
     if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
         $month = intval($match[3]);
@@ -1224,7 +1225,8 @@ function bibcode_valid(string $value): bool {
     if (mb_strlen($value) !== 19) {
         return false;
     }
-    if (preg_match('~^[12]\d{3}[\w&.]{15}$~', $value) !== 1) {
+    // Body charset covers CS1's allowed set (letters, digits, _, &, ., ', +, -).
+    if (preg_match('~^[12]\d{3}[\w&.+\'-]{15}$~', $value) !== 1) {
         return false;
     }
     return true;

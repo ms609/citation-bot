@@ -1862,10 +1862,10 @@ EP - 999 }}';
 
     public function testMedRxivComprehensiveParameterFiltering(): void {
         // Test that ALL disallowed parameters are removed, not just pmid/pmc/doi/journal
-        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.64898/test123 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
+        $text = '{{cite journal |title=Test Paper |journal=medRxiv |doi=10.64898/2025.12.10.693067 |year=2023 |volume=5 |issue=3 |pages=100-200 |publisher=Cold Spring Harbor |issn=1234-5678 |url=https://example.com}}';
         $prepared = $this->prepare_citation($text);
         $this->assertSame('cite medrxiv', $prepared->wikiname());
-        $this->assertSame('10.64898/test123', $prepared->get2('medrxiv'));
+        $this->assertSame('10.64898/2025.12.10.693067', $prepared->get2('medrxiv'));
         // Check that disallowed parameters are removed
         $this->assertNull($prepared->get2('doi'));
         $this->assertNull($prepared->get2('journal'));
