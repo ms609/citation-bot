@@ -64,7 +64,7 @@ function category_confirmation_fields(string $category, array $query): array {
         'cat' => $category,
         'extended_limit' => '1',
     ];
-    foreach (['wiki_base', 'pcre'] as $name) {
+    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
         if (isset($query[$name]) && is_string($query[$name])) {
             $fields[$name] = $query[$name];
         }

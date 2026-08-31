@@ -119,6 +119,8 @@ if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
         $edit_summary_end .= "| #UCB_automated_tools ";
     } elseif ($_REQUEST["edit"] === 'toolbar') {
         $edit_summary_end .= "| #UCB_toolbar ";
+    } elseif ($_REQUEST["edit"] === 'template') {
+        $edit_summary_end .= "| #UCB_template ";
     } elseif ($_REQUEST["edit"] === 'webform') {
         $edit_summary_end .= "| #UCB_webform ";
     } elseif ($_REQUEST["edit"] === 'Headbomb') {
