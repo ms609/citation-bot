@@ -191,7 +191,7 @@ The project uses extensive automated testing:
 
 The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message. Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
-**Local PHPUnit note:** `phpunit.xml.dist` aborts without a coverage driver; for local runs use the stripped `phpunit.local.xml` (gitignored): `php -d memory_limit=1G vendor/bin/phpunit --configuration phpunit.local.xml <path>`.
+**Local PHPUnit note:** `phpunit.xml.dist` aborts without a coverage driver; for local runs use the stripped `phpunit.local.xml` (gitignored): `php -d memory_limit=2G vendor/bin/phpunit --configuration phpunit.local.xml <path>`.
 
 All tests must pass before merging. Some tests are network-dependent (Zotero, PubMed, Unpaywall, JSTOR) and may pass/fail with upstream API availability; those are unrelated to local changes.
 
@@ -416,7 +416,7 @@ Include:
 # Run tests
 php vendor/bin/phpunit
 # Local runs (phpunit.xml.dist needs a coverage driver): use the stripped config
-php -d memory_limit=1G vendor/bin/phpunit --configuration phpunit.local.xml <path>
+php -d memory_limit=2G vendor/bin/phpunit --configuration phpunit.local.xml <path>
 
 # CS1 conformance regression gate (fast + slow)
 php tools/cs1_harness.php
