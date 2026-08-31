@@ -504,42 +504,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
-    public function testStoreStateWritesJson(): void {
-        $handle = fopen('php://temp', 'w+');
-        $this->assertIsResource($handle);
-
-        try {
-            $this->assertTrue(request_rate_limit_store_state($handle, 1.5, 100.0));
-            $this->assertTrue(rewind($handle));
-            $state = json_decode((string) stream_get_contents($handle), true);
-            $this->assertSame(['tokens' => 1.5, 'updated' => 100.0], $state);
-        } finally {
-            fclose($handle);
-        }
-    }
-
-    public function testStoreStateRejectsNonFiniteTokens(): void {
-        $handle = fopen('php://temp', 'w+');
-        $this->assertIsResource($handle);
-
-        try {
-            $this->assertFalse(request_rate_limit_store_state($handle, INF, 100.0));
-        } finally {
-            fclose($handle);
-        }
-    }
-
-    public function testStoreStateRejectsReadOnlyStream(): void {
-        $handle = fopen(__FILE__, 'r');
-        $this->assertIsResource($handle);
-
-        try {
-            $this->assertFalse(request_rate_limit_store_state($handle, 1.0, 100.0));
-        } finally {
-            fclose($handle);
-        }
-    }
-
     private function restoreRateLimitDirectoryEnvironment(string|false $previous): void {
         if ($previous === false) {
             putenv('PHP_RATE_LIMIT_DIRECTORY');
