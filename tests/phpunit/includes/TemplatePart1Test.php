@@ -563,7 +563,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testAddASIN2(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('asin', '630000000')); //63.... code
+        $this->assertTrue($expanded->add_if_new('asin', '630000000')); // 63.... code
         $this->assertSame('630000000', $expanded->get2('asin'));
     }
 
@@ -1037,22 +1037,30 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testId2Param3(): void {
-        $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} }}';
+        $text = '{{cite book | id={{arxiv|zzzz|1234567}} }}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
+        $this->assertSame('zzzz/1234567', $expanded->get2('arxiv'));
     }
 
     public function testId2Param4(): void {
-        $text = '{{cite book | id={{arxiv|astr.ph|1234.5678}} {{arxiv|astr.ph|1234.5678}} }}'; // Two of the same thing
+        $text = '{{cite book | id={{arxiv|zzzz|1234567}} {{arxiv|zzzz|1234567}} }}'; // Two of the same thing
         $expanded = $this->process_citation($text);
-        $this->assertSame('astr.ph/1234.5678', $expanded->get2('arxiv'));
-        $this->assertSame('{{cite book | arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
+        $this->assertSame('zzzz/1234567', $expanded->get2('arxiv'));
+        $this->assertSame('{{cite book | arxiv=zzzz/1234567 }}', $expanded->parsed_text());
     }
 
     public function testId2Param5(): void {
-        $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different templates
+        $text = '{{cite book|pages=1-2|id={{arxiv|zzzz|1234567}}}}{{cite book|pages=1-3|id={{arxiv|zzzz|1234567}}}}'; // Two of the same sub-template, but in different templates
         $expanded = $this->process_page($text);
-        $this->assertSame('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678 }}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
+        $this->assertSame('{{cite book|pages=1–2|arxiv=zzzz/1234567 }}{{cite book|pages=1–3|arxiv=zzzz/1234567 }}', $expanded->parsed_text());
+    }
+
+    public function testArxivSubtemplatesRejectArchiveWithNewStyleId(): void {
+        // An old-style archive combined with a new-style id (astro-ph/1706.05013)
+        // is not a valid arXiv identifier and must be dropped.
+        $text = '{{cite book | id={{arxiv|astro-ph|1706.05013}} }}';
+        $expanded = $this->process_citation($text);
+        $this->assertNull($expanded->get2('arxiv'));
     }
 
     public function testNestedTemplates1(): void {
@@ -1617,5 +1625,35 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($template->get2('isbn'));
         $this->assertTrue($template->add_if_new('isbn', '978-0-306-40615-7'));
         $this->assertSame('978-0-306-40615-7', $template->get2('isbn'));
+    }
+
+    public function testAddIfNewRejectsMalformedArxiv(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('arxiv', 'bogus'));
+        $this->assertNull($template->get2('arxiv'));
+        $this->assertTrue($template->add_if_new('arxiv', '1706.05013'));
+        $this->assertSame('1706.05013', $template->get2('arxiv'));
+    }
+
+    public function testAddIfNewRejectsMalformedPmid(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('pmid', 'notanumber'));
+        $this->assertNull($template->get2('pmid'));
+    }
+
+    public function testAddIfNewRejectsMalformedPmc(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('pmc', 'notnumeric'));
+        $this->assertNull($template->get2('pmc'));
+    }
+
+    public function testAddIfNewNormalizesPmcPrefix(): void {
+        $text = '{{cite journal | title = X | journal = J | pmid = 12345 }}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('pmc', 'PMC1234567'));
+        $this->assertSame('1234567', $template->get2('pmc'));
     }
 }

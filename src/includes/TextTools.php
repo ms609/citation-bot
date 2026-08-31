@@ -1152,6 +1152,86 @@ function isbn_valid(string $isbn): bool {
     return false;
 }
 
+/**
+ * Validate an arXiv identifier.  Mirrors the bot's own URL-extraction
+ * patterns (URLtools.php): the old archive/number form or the new YYMM.NNNNN
+ * form, each with an optional lowercase version suffix.  CS1 additionally
+ * constrains the year/month ranges and the digit count by year; we
+ * deliberately do not enforce those so values the URL path accepts are never
+ * rejected here (defense in depth, not strict CS1 fidelity).
+ */
+function arxiv_id_valid(string $value): bool {
+    if (preg_match('~^[a-zA-Z][a-zA-Z.\-]+/\d{7}(v\d+)?$~', $value) === 1) {
+        return true; // old style: e.g. hep-th/9901001
+    }
+    if (preg_match('~^\d{4}\.\d{4,5}(v\d+)?$~', $value) === 1) {
+        return true; // new style: e.g. 1706.05013 or 1706.05013v2
+    }
+    return false;
+}
+
+/**
+ * Validate a PubMed identifier: one to eight digits.
+ */
+function pmid_valid(string $value): bool {
+    if (preg_match('~^\d{1,8}$~', $value) !== 1) {
+        return false;
+    }
+    return intval($value) >= 1;
+}
+
+/**
+ * Validate a PubMed Central identifier: one to eight digits, optionally with
+ * a leading "PMC" prefix (which CS1 renders as a maintenance category).
+ */
+function pmc_valid(string $value): bool {
+    if (preg_match('~^[Pp][Mm][Cc](\d+)$~', $value, $match) === 1) {
+        $value = $match[1];
+    }
+    if (preg_match('~^\d{1,8}$~', $value) !== 1) {
+        return false;
+    }
+    return intval($value) >= 1;
+}
+
+/**
+ * Validate a bioRxiv/medRxiv identifier against CS1's structural rules:
+ * a legacy six-to-eight digit form (bioRxiv used 6 digits, early medRxiv 8,
+ * e.g. 10.1101/19000380) or the dated yyyy.mm.dd.nnnnnn form (with the newer
+ * 10.64898 prefix and 6-8 digit identifiers), each with an optional version
+ * suffix.
+ */
+function rxiv_id_valid(string $value): bool {
+    if (preg_match('~^10\.1101/\d{6,8}(v\d+)?$~', $value) === 1) {
+        return true; // legacy identifier
+    }
+    if (preg_match('~^10\.(1101|64898)/(20\d\d)\.(\d{2})\.(\d{2})\.\d{6,8}(v\d+)?$~', $value, $match) === 1) {
+        $month = intval($match[3]);
+        $day = intval($match[4]);
+        return $month >= 1 && $month <= 12 && $day >= 1 && $day <= 31;
+    }
+    return false;
+}
+
+/**
+ * Validate a bibcode: exactly 19 characters whose first four characters form
+ * a year beginning with 1 or 2 (matching REGEXP_BIBCODE), with only letters,
+ * digits, underscores, ampersands, and dots elsewhere.  CS1 additionally
+ * requires a letter at position five and a year within 1000..next year; we
+ * deliberately do not enforce those so values the URL path accepts are never
+ * rejected here (defense in depth, not strict CS1 fidelity).
+ */
+function bibcode_valid(string $value): bool {
+    if (mb_strlen($value) !== 19) {
+        return false;
+    }
+    // Body charset covers CS1's allowed set (letters, digits, _, &, ., ', +, -).
+    if (preg_match('~^[12]\d{3}[\w&.+\'-]{15}$~', $value) !== 1) {
+        return false;
+    }
+    return true;
+}
+
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);

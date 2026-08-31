@@ -7,7 +7,7 @@ This file provides context for AI assistants working on the Citation Bot project
 - Language: PHP 8.4+
 - Main logic: Template.php
 - Test command: composer run test
-- afsd
+- CS1 regression gate (run before and after citation-logic changes): `php tools/cs1_harness.php` and `php tools/cs1_harness.php --slow`
 - CLI smoke-test (requires credentials, use --savetofiles to avoid writing to Wikipedia): php src/process_page.php "Page" --savetofiles
 - Code style: verbose, explicit, spaced-out, highly formatted style
 - First task: Read src/includes/Template.php, src/includes/Parameter.php, and src/includes/constants/parameters.php
@@ -187,8 +187,13 @@ The project uses extensive automated testing:
 - **OpenSSF Scorecard** - Evaluates repository security practices
 - **Zizmor** - Analyzes GitHub Actions workflows for security issues
 - **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
+- **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error, or if a known-gap case unexpectedly resolves (XPASS)
 
-All tests must pass before merging.
+The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message. Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
+
+**Local PHPUnit note:** `phpunit.xml.dist` aborts without a coverage driver; for local runs use the stripped `phpunit.local.xml` (gitignored): `php -d memory_limit=1G vendor/bin/phpunit --configuration phpunit.local.xml <path>`.
+
+All tests must pass before merging. Some tests are network-dependent (Zotero, PubMed, Unpaywall, JSTOR) and may pass/fail with upstream API availability; those are unrelated to local changes.
 
 ## Common Development Tasks
 
@@ -214,6 +219,20 @@ All tests must pass before merging.
 2. Add extraction logic in relevant `API*.php` files
 3. Update `Template.php` if parameter needs special handling
 4. Add validation rules if needed
+
+### Running the CS1 Self-Validation Harness
+
+The harness (`tools/cs1_harness.php`) checks expanded citations against the CS1 error rules. It has no credentials and is deterministic when upstream APIs respond normally (the matrix uses fabricated identifiers/titles that cannot match).
+
+```bash
+php tools/cs1_harness.php            # fast mode
+php tools/cs1_harness.php --slow     # slow mode (bibcode search + URL expansion)
+php tools/cs1_harness.php --list     # print the matrix without running
+```
+
+- **Must-pass cases** (29) must satisfy every checker rule; a violation exits 1.
+- **Known-gap cases** (11) document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
+- When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
 
 ## Important Constraints
 
@@ -370,8 +389,9 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
 4. Ensure all CI checks pass
 5. Follow existing code style
 6. Update documentation
-7. Submit pull request with clear description
-8. **Common Pitfalls:**
+7. **Always check whether `.github/labeler.yml` needs a new entry** when adding or renaming files (especially new tooling, workflows, or entrypoints); the automatic PR labeling depends on it
+8. Submit pull request with clear description
+9. **Common Pitfalls:**
 
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
@@ -394,6 +414,12 @@ Include:
 ```bash
 # Run tests
 php vendor/bin/phpunit
+# Local runs (phpunit.xml.dist needs a coverage driver): use the stripped config
+php -d memory_limit=1G vendor/bin/phpunit --configuration phpunit.local.xml <path>
+
+# CS1 conformance regression gate (fast + slow)
+php tools/cs1_harness.php
+php tools/cs1_harness.php --slow
 
 # Static analysis
 php vendor/bin/phpstan analyze

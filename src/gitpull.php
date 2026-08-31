@@ -29,8 +29,8 @@ function gitpull_page(string $message = '', bool $show_form = false, bool $prefo
     @header('Content-Type: text/html; charset=utf-8');
 
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head>',
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-        '<meta charset="utf-8" /><title>Git Pull</title></head><body><main>';
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+        '<meta charset="utf-8"><title>Git Pull</title></head><body><main>';
 
     if ($message !== '') {
         if ($preformatted) {
@@ -44,7 +44,7 @@ function gitpull_page(string $message = '', bool $show_form = false, bool $prefo
         echo '<form method="post" action="gitpull.php">',
             '<label for="deploy-password">Deployment password</label> ',
             '<input id="deploy-password" name="password" type="password" ',
-            'autocomplete="current-password" required autofocus /> ',
+            'autocomplete="current-password" required autofocus> ',
             '<button type="submit">Deploy</button>',
             '</form>';
     }

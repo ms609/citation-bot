@@ -1293,4 +1293,62 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(isbn_valid('123-4567-890-128')); // valid check digit, prefix not 978/979
         $this->assertFalse(isbn_valid('979-0123456785'));   // 9790 group reserved for ISMN
     }
+
+    public function testArxivIdValid(): void {
+        $this->assertTrue(arxiv_id_valid('1706.05013'));          // new style
+        $this->assertTrue(arxiv_id_valid('1706.05013v2'));        // new style with version
+        $this->assertTrue(arxiv_id_valid('1234.5678'));           // any YYMM.NNNN accepted (matches URLtools)
+        $this->assertTrue(arxiv_id_valid('hep-th/9901001'));      // old style
+        $this->assertTrue(arxiv_id_valid('math.GT/0309136'));     // old style with class
+        $this->assertFalse(arxiv_id_valid('bogus'));
+        $this->assertFalse(arxiv_id_valid('1706.05013x'));        // bad version character
+        $this->assertFalse(arxiv_id_valid(''));
+    }
+
+    public function testPmidValid(): void {
+        $this->assertTrue(pmid_valid('1234567'));
+        $this->assertTrue(pmid_valid('1'));
+        $this->assertTrue(pmid_valid('99999999'));
+        $this->assertFalse(pmid_valid('123456789'));              // too long (9 digits)
+        $this->assertFalse(pmid_valid('12a45'));
+        $this->assertFalse(pmid_valid('0'));
+        $this->assertFalse(pmid_valid(''));
+    }
+
+    public function testPmcValid(): void {
+        $this->assertTrue(pmc_valid('1234567'));
+        $this->assertTrue(pmc_valid('PMC1234567'));
+        $this->assertTrue(pmc_valid('pmc123'));
+        $this->assertFalse(pmc_valid('1234567890123'));           // too long
+        $this->assertFalse(pmc_valid('abc'));
+        $this->assertFalse(pmc_valid('0'));
+        $this->assertFalse(pmc_valid(''));
+    }
+
+    public function testRxivIdValid(): void {
+        $this->assertTrue(rxiv_id_valid('10.1101/078733'));              // legacy 6-digit (bioRxiv)
+        $this->assertTrue(rxiv_id_valid('10.1101/078733v1'));            // legacy with version
+        $this->assertTrue(rxiv_id_valid('10.1101/19000380'));            // legacy 8-digit (early medRxiv)
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456'));   // dated form
+        $this->assertTrue(rxiv_id_valid('10.1101/2019.12.11.123456v2')); // dated with version
+        $this->assertTrue(rxiv_id_valid('10.1101/2020.04.05.20054502')); // 8-digit medRxiv form
+        $this->assertTrue(rxiv_id_valid('10.64898/2025.12.10.693067'));  // new doi prefix
+        $this->assertFalse(rxiv_id_valid('10.1101/abc'));
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.13.11.123456'));  // month 13
+        $this->assertFalse(rxiv_id_valid('10.1101/2019.12.32.123456'));  // day 32
+        $this->assertFalse(rxiv_id_valid('10.64898/test123'));           // 10.64898 requires the dated form
+        $this->assertFalse(rxiv_id_valid('bogus'));
+        $this->assertFalse(rxiv_id_valid(''));
+    }
+
+    public function testBibcodeValid(): void {
+        $this->assertTrue(bibcode_valid('2015arXiv151206696F'));
+        $this->assertTrue(bibcode_valid('2005A&A...430.1063G'));
+        $this->assertTrue(bibcode_valid('1234567890123456789')); // numeric bibcodes accepted (matches REGEXP_BIBCODE)
+        $this->assertTrue(bibcode_valid('2222NatSR...814768S')); // year 1xxx/2xxx accepted (matches REGEXP_BIBCODE)
+        $this->assertFalse(bibcode_valid('xyz'));                 // too short
+        $this->assertFalse(bibcode_valid('12345'));               // too short
+        $this->assertFalse(bibcode_valid('9999PhRvD..89h4022A')); // year must begin with 1 or 2
+        $this->assertFalse(bibcode_valid(''));
+    }
 }
