@@ -13340,12 +13340,9 @@ const ALWAYS_BAD_TITLES = [
 const GENERIC_NAMES = [
     'about us',
     'allmusic',
-    'business',
     'cnn',
-    'collaborator',
     'contact us',
     'contributor',
-    'correspondent',
     'directory',
     'facebook',
     'google',
@@ -13393,30 +13390,11 @@ const GENERIC_NAME_PATTERNS = [
 ];
 
 /**
- * CS1 "Cite uses generic title" triggers (special_case_translation
- * ['generic_titles']['reject']), plain-text phrases matched
- * case-insensitively as substrings; the pattern triggers are in
- * GENERIC_TITLE_PATTERNS.
- */
-const GENERIC_TITLES = [
-    'are you a robot',
-    'bot verification',
-    'hugedomains',
-    'internet archive wayback machine',
-    'log into facebook',
-    'login • instagram',
-    'page not found',
-    'redirecting...',
-    'subscribe to read',
-    'usurped title',
-    'wayback machine',
-    'webcite query result',
-    'website is for sale',
-    "wikiwix's cache",
-];
-
-/**
- * CS1 generic-title pattern triggers.
+ * CS1 generic-title pattern triggers (special_case_translation
+ * ['generic_titles']['reject']). The plain-text phrases are already covered
+ * by BAD_TITLES (exact match) and ZOTERO_BAD_TITLES (Zotero/archive paths),
+ * so only the pattern triggers that the exact-match lists cannot express are
+ * duplicated here.
  */
 const GENERIC_TITLE_PATTERNS = [
     '~^[(\[{<]?no +title[>}\])]?$~i',

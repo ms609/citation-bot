@@ -1365,12 +1365,14 @@ final class textToolsTest extends testBaseClass {
     }
 
     public function testIsGenericTitle(): void {
+        // Only the pattern triggers live in is_generic_title; the plain-text
+        // phrases (wayback machine, page not found, …) are handled by
+        // BAD_TITLES / ZOTERO_BAD_TITLES.
         $this->assertTrue(is_generic_title('No Title'));
-        $this->assertTrue(is_generic_title('Unknown'));
+        $this->assertTrue(is_generic_title('[unknown]'));
         $this->assertTrue(is_generic_title('404'));
         $this->assertTrue(is_generic_title('Error 404'));
-        $this->assertTrue(is_generic_title('Wayback Machine'));
-        $this->assertTrue(is_generic_title('Page Not Found'));
+        $this->assertFalse(is_generic_title('Wayback Machine'));   // plain phrase -> BAD_TITLES, not here
         $this->assertFalse(is_generic_title('A real research paper'));
         $this->assertFalse(is_generic_title(''));
     }
