@@ -1359,20 +1359,26 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(is_generic_name('Editor'));        // role label
         $this->assertTrue(is_generic_name('Google'));        // site name
         $this->assertTrue(is_generic_name('about us'));      // generic phrase
+        $this->assertTrue(is_generic_name('Ed.'));           // punctuated ed. is flagged
+        $this->assertFalse(is_generic_name('Ed'));           // bare given name Ed is not
+        $this->assertFalse(is_generic_name('Advisors'));     // CS1 flags only singular Advisor
         $this->assertFalse(is_generic_name('Smith'));
         $this->assertFalse(is_generic_name('John Q. Public'));
         $this->assertFalse(is_generic_name(''));
     }
 
     public function testIsGenericTitle(): void {
-        // Only the pattern triggers live in is_generic_title; the plain-text
-        // phrases (wayback machine, page not found, …) are handled by
-        // BAD_TITLES / ZOTERO_BAD_TITLES.
+        // Pattern triggers.
         $this->assertTrue(is_generic_title('No Title'));
         $this->assertTrue(is_generic_title('[unknown]'));
         $this->assertTrue(is_generic_title('404'));
         $this->assertTrue(is_generic_title('Error 404'));
-        $this->assertFalse(is_generic_title('Wayback Machine'));   // plain phrase -> BAD_TITLES, not here
+        // Plain-text phrases not covered by BAD_TITLES / ZOTERO_BAD_TITLES.
+        $this->assertTrue(is_generic_title('HugeDomains'));
+        $this->assertTrue(is_generic_title('Redirecting...'));
+        $this->assertTrue(is_generic_title('usurped title'));
+        // Plain phrases covered by the existing lists are not duplicated here.
+        $this->assertFalse(is_generic_title('Wayback Machine'));
         $this->assertFalse(is_generic_title('A real research paper'));
         $this->assertFalse(is_generic_title(''));
     }

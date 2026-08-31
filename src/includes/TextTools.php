@@ -1253,11 +1253,18 @@ function is_generic_name(string $value): bool {
 }
 
 /**
- * True when a value matches CS1's "Cite uses generic title" pattern triggers
- * (the plain-text phrases are already handled by BAD_TITLES and
- * ZOTERO_BAD_TITLES).
+ * True when a value matches CS1's "Cite uses generic title" triggers.
+ * The plain-text phrases here are those not already covered by BAD_TITLES /
+ * ZOTERO_BAD_TITLES; the patterns cover the bracket/404 forms those exact
+ * lists cannot express.
  */
 function is_generic_title(string $value): bool {
+    $lower = mb_strtolower($value);
+    foreach (GENERIC_TITLES as $phrase) {
+        if (mb_strpos($lower, $phrase) !== false) {
+            return true;
+        }
+    }
     foreach (GENERIC_TITLE_PATTERNS as $pattern) {
         if (preg_match($pattern, $value) === 1) {
             return true;

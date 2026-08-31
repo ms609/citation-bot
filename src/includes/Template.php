@@ -2719,12 +2719,15 @@ final class Template
                 // Takes priority over more tentative matches
                 report_add("Found URL floating in template; setting url");
                 $url = $match[0];
+                if (mb_stripos($url, 'www.') === 0) {
+                    $url = 'https://' . $url; // Give scheme-less floating URLs a scheme
+                }
                 if ($this->blank('url')) {
                     $this->add_if_new('url', $url);
                 } elseif ($this->blank(['archive-url', 'archiveurl']) && mb_stripos($url, 'archive') !== false) {
                     $this->add_if_new('archive-url', $url);
                 }
-                $dat = str_replace($url, '', $dat);
+                $dat = str_replace($match[0], '', $dat);
             }
 
             $shortest = -1;

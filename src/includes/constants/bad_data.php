@@ -13369,13 +13369,13 @@ const GENERIC_NAMES = [
  * organizational suffixes), mirroring the Lua patterns.
  */
 const GENERIC_NAME_PATTERNS = [
-    '~\badvisors?\b~i',
+    '~\badvisor\b~i',
     '~\bauthor\b~i',
     '~^bureau$~i',
     '~^company$~i',
     '~^desk$~i',
-    '~^\s*ed\.?\s*$~i',
-    '~^\s*eds\.?\s*$~i',
+    '~^eds?[.,;]~i',
+    '~[.,;\s]eds?\.?$~i',
     '~\bedited\b~i',
     '~\beditor\b~i',
     '~\beditors\b~i',
@@ -13390,11 +13390,24 @@ const GENERIC_NAME_PATTERNS = [
 ];
 
 /**
+ * CS1 generic-title plain-text triggers (special_case_translation
+ * ['generic_titles']['reject']) NOT already covered by BAD_TITLES /
+ * ZOTERO_BAD_TITLES, matched case-insensitively as substrings. The remaining
+ * CS1 phrases are covered by those lists and are not duplicated here.
+ */
+const GENERIC_TITLES = [
+    'hugedomains',
+    'log into facebook',
+    'redirecting...',
+    'usurped title',
+    'webcite query result',
+    "wikiwix's cache",
+];
+
+/**
  * CS1 generic-title pattern triggers (special_case_translation
- * ['generic_titles']['reject']). The plain-text phrases are already covered
- * by BAD_TITLES (exact match) and ZOTERO_BAD_TITLES (Zotero/archive paths),
- * so only the pattern triggers that the exact-match lists cannot express are
- * duplicated here.
+ * ['generic_titles']['reject']), which the exact-match BAD_TITLES list cannot
+ * express.
  */
 const GENERIC_TITLE_PATTERNS = [
     '~^[(\[{<]?no +title[>}\])]?$~i',

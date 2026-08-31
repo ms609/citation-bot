@@ -1673,6 +1673,14 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNotNull($template->get2('last1'));
     }
 
+    public function testValidateAndAddKeepsGivenNameEd(): void {
+        // The common given name "Ed" must not be rejected as a generic name.
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $template->validate_and_add('last1', 'Sheeran', 'Ed', '', false);
+        $this->assertNotNull($template->get2('last1'));
+    }
+
     public function testAddIfNewRejectsMalformedUrl(): void {
         $text = '{{cite journal | title = X | journal = J }}';
         $template = $this->make_citation($text);
@@ -1680,5 +1688,11 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertTrue($template->add_if_new('url', 'https://example.com'));
         $this->assertSame('https://example.com', $template->get2('url'));
+    }
+
+    public function testFloatingWwwUrlGetsScheme(): void {
+        $text = '{{cite journal | title = X | journal = J |  www.example.com/article }}';
+        $expanded = $this->process_citation($text);
+        $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
     }
 }
