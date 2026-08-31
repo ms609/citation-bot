@@ -60,7 +60,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testDropUrlCode3(): void { // url is same as one doi points to, except for http vs. https ; DOI prefix is deliberately NOT one that gets doi-access=free
+    public function testDropUrlCode3(): void { // url is same as one doi points to, except for http vs. https
         $text = '{{cite journal |pmc=XYZ| last1 = Watson | first1 = James D. | last2 = Crick | first2 = Francis H. C. | year = 1953 | title = Molecular Structure of Nucleic Acids: A Structure for Deoxyribose Nucleic Acid | url = http://www.nature.com/articles/171737a0 | doi=10.1038/171737a0 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
