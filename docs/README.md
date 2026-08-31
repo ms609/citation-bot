@@ -98,11 +98,13 @@ Operational/support endpoints:
 - `src/authenticate.php`: OAuth authorization flow for web users
 - `src/gitpull.php`: password-protected deployment/update endpoint
 - `src/kill_big_job.php`: lets users kill their own long-running batch jobs
+- `src/update_statistics.php`: daily cron to update `User:Citation bot/statistics`
 
 Includes (under `src/includes/`):
 
 - `src/includes/constants.php`: constants defined; further constants are split into files under `src/includes/constants/`
 - `src/includes/WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
+- `src/includes/Statistics.php`: UCB tag parsing and statistics wikitext generation for `User:Citation bot/statistics`
 - `src/includes/NameTools.php`: defines name functions
 - `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
 - `src/includes/setup.php`: sets up needed functions, requires most of the other files listed here

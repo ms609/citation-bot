@@ -226,6 +226,7 @@ require_once __DIR__ . '/api/APIunpaywall.php';
 require_once __DIR__ . '/api/APIjstor.php';
 require_once __DIR__ . '/api/APIarXiv.php';
 require_once __DIR__ . '/api/APIarchives.php';
+require_once __DIR__ . '/Statistics.php';
 require_once __DIR__ . '/Page.php';
 
 if (isset($argv)) {

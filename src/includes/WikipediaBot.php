@@ -524,6 +524,85 @@ final class WikipediaBot {
         return (string) $page_object->revisions[0]->revid;
     }
 
+    /**
+     * Fetch recent contributions for a user within the last $hours hours.
+     * Uses list=usercontribs with ucdir=older and ucstart/ucend window.
+     * Handles continuation via uccontinue.
+     *
+     * @return array<object> edits with at least ->comment and ->timestamp
+     */
+    public static function fetch_user_contribs(string $user, int $hours = 24): array {
+        if (mb_trim($user) === '' || $hours < 1) {
+            return [];
+        }
+        $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $start = $now->format('Y-m-d\TH:i:s\Z');
+        $end = $now->sub(new DateInterval('PT' . (string) $hours . 'H'))->format('Y-m-d\TH:i:s\Z');
+        $uccontinue = '';
+        $all = [];
+        // EN wiki single statistics page: use apihighlimits (uclimit=max → 5000 for bot) via authenticated request
+        $use_max = (defined('WIKI_BASE') && WIKI_BASE === 'en');
+        $auth_instance = null;
+        if ($use_max) {
+            $auth_instance = self::$last_WikipediaBot;
+            if ($auth_instance === null) {
+                $auth_instance = new self();
+            }
+        }
+        // Guard against infinite loops: at most 20 batches (20*5000=100k with max, far above reality)
+        for ($batch = 0; $batch < 20; $batch++) {
+            $vars = [
+                'action' => 'query',
+                'list' => 'usercontribs',
+                'ucuser' => $user,
+                'uclimit' => $use_max ? 'max' : '500',
+                'ucprop' => 'comment|timestamp|title',
+                'ucdir' => 'older',
+                'ucstart' => $start,
+                'ucend' => $end,
+            ];
+            if ($uccontinue !== '') {
+                $vars['uccontinue'] = $uccontinue;
+            }
+            if ($use_max) {
+                $res = $auth_instance->query_api_authenticated($vars);
+                // Fallback to anon 500 if authenticated max not granted (e.g. in CI without tokens)
+                if ($res === '') {
+                    $vars['uclimit'] = '500';
+                    $res = self::query_api($vars);
+                }
+            } else {
+                $res = self::query_api($vars);
+            }
+            if ($res === '') {
+                if ($batch === 0) {
+                    report_warning('Failed to fetch contribs for ' . echoable($user) . ' – API returned empty');
+                } else {
+                    bot_debug_log('fetch_user_contribs truncated after ' . (string) $batch . ' batches for ' . echoable($user));
+                }
+                break;
+            }
+            $decoded = @json_decode($res);
+            if (!is_object($decoded)) {
+                report_warning('Failed to decode contribs response');
+                break;
+            }
+            $parsed = statistics_parse_contribs_response($decoded);
+            if ($parsed === null) {
+                report_warning('Malformed contribs response');
+                break;
+            }
+            array_push($all, ...$parsed['edits']);
+            if ($parsed['continue'] === null) {
+                break;
+            }
+            $uccontinue = $parsed['continue'];
+            // Be nice to the API – small delay between batches
+            usleep(200000);
+        }
+        return $all;
+    }
+
     /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
     public static function is_redirect(string $page): int {
         $res = self::query_api([
@@ -568,28 +647,52 @@ final class WikipediaBot {
     private static function query_api(array $params): string {
         try {
             $params['format'] = 'json';
-            /** @psalm-suppress UnnecessaryVarAnnotation */
-            /** @var non-empty-string $api_root */
-            $api_root = API_ROOT;
-            curl_setopt_array(self::$ch_logout, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => http_build_query($params),
-            CURLOPT_URL => $api_root,
-            ]);
-
-            $data = bot_curl_exec_withFalse(self::$ch_logout);
-            if ($data === false) {
-                // @codeCoverageIgnoreStart
-                $errnoInt = curl_errno(self::$ch_logout);
-                $errorStr = curl_error(self::$ch_logout);
-                report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
-            }   // @codeCoverageIgnoreEnd
-            $data = (string) $data;
-            if ($data === '') {
-                sleep(4);                                       // @codeCoverageIgnore
-                $data = bot_curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+            if (!isset($params['maxlag'])) {
+                $params['maxlag'] = '5';
             }
-            return self::ret_okay(@json_decode($data)) ? $data : '';
+            // Retry up to 3 times on retryable errors (maxlag, ratelimited, readonly, db locked)
+            for ($attempt = 0; $attempt < 4; $attempt++) {
+                if ($attempt > 0) {
+                    // Bounded backoff: 5s, 10s, 20s
+                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
+                    sleep($delay);
+                }
+                // @phpstan-ignore-next-line – API_ROOT is non-empty-string
+                curl_setopt_array(self::$ch_logout, [
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query($params),
+                CURLOPT_URL => API_ROOT,
+                ]);
+
+                $data = bot_curl_exec_withFalse(self::$ch_logout);
+                if ($data === false) {
+                    // @codeCoverageIgnoreStart
+                    $errnoInt = curl_errno(self::$ch_logout);
+                    $errorStr = curl_error(self::$ch_logout);
+                    report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
+                    // @codeCoverageIgnoreEnd
+                    $data = '';
+                }
+                $data = (string) $data;
+                if ($data === '') {
+                    if ($attempt < 3) {
+                        sleep(4);                                   // @codeCoverageIgnore
+                        continue;                                   // @codeCoverageIgnore
+                    }
+                    return '';
+                }
+                $decoded = @json_decode($data);
+                if (self::fetch_response_is_retryable($decoded)) {
+                    bot_debug_log('Retrying query_api after retryable error: ' . ($decoded->error->code ?? 'unknown'));
+                    continue;
+                }
+                if (self::ret_okay($decoded)) {
+                    return $data;
+                }
+                // Non-retryable error – return empty to let caller handle
+                return '';
+            }
+            return '';
             // @codeCoverageIgnoreStart
         } catch (Throwable $E) {
             bot_debug_log('Wikipedia read API failure: ' . $E::class . ': ' . $E->getMessage());
@@ -598,6 +701,144 @@ final class WikipediaBot {
         }
         return '';
         // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Authenticated variant of query_api for EN wiki high-limit reads.
+     * Uses OAuth signing via ch_write to get apihighlimits (uclimit=max → 5000).
+     * Retries on maxlag/ratelimited like query_api but with signed requests.
+     * @param array<string> $params
+     */
+    private function query_api_authenticated(array $params): string {
+        try {
+            $params['format'] = 'json';
+            if (!isset($params['maxlag'])) {
+                $params['maxlag'] = '5';
+            }
+            for ($attempt = 0; $attempt < 4; $attempt++) {
+                if ($attempt > 0) {
+                    $delay = min(20, (int) (5 * (2 ** ($attempt - 1))));
+                    sleep($delay);
+                }
+                $token = $this->bot_token;
+                $consumer = $this->bot_consumer;
+                if (defined('EDIT_AS_USER')) {
+                    $token = $this->user_token;
+                    $consumer = $this->user_consumer;
+                }
+                $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
+                $request->signRequest(new HmacSha1(), $consumer, $token);
+                $header = $request->toHeader();
+                // @phpstan-ignore-next-line – API_ROOT is non-empty-string
+                curl_setopt_array(self::$ch_write, [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => http_build_query($params),
+                    CURLOPT_HTTPHEADER => [$header],
+                    CURLOPT_URL => API_ROOT,
+                ]);
+                $data = bot_curl_exec_withFalse(self::$ch_write);
+                if ($data === false) {
+                    $errnoInt = curl_errno(self::$ch_write);
+                    $errorStr = curl_error(self::$ch_write);
+                    report_warning('Curl error #' . $errnoInt . ' on authenticated query: ' . $errorStr);
+                    $data = '';
+                }
+                $data = (string) $data;
+                if ($data === '') {
+                    if ($attempt < 3) {
+                        sleep(4);
+                        continue;
+                    }
+                    return '';
+                }
+                $decoded = @json_decode($data);
+                if (self::fetch_response_is_retryable($decoded)) {
+                    bot_debug_log('Retrying authenticated query after retryable error: ' . ($decoded->error->code ?? 'unknown'));
+                    continue;
+                }
+                if (self::ret_okay($decoded)) {
+                    return $data;
+                }
+                return '';
+            }
+            return '';
+        } catch (Throwable $E) {
+            bot_debug_log('Authenticated query failure: ' . $E::class . ': ' . $E->getMessage());
+            report_warning("Authenticated query failed; continuing.\n");
+            report_info("Response: " . echoable($E->getMessage()));
+        }
+        return '';
+    }
+
+    /**
+     * Write the statistics page, allowing creation if it does not exist.
+     * Unlike write_page(), this permits creation and is tolerant of missing pages.
+     */
+    public function write_statistics_page(string $title, string $text, string $summary): bool {
+        // Reuse the authenticated write path but without requiring lastrevid/start timestamp
+        $response = $this->fetch([
+            'action' => 'query',
+            'prop' => 'info',
+            'meta' => 'tokens',
+            'titles' => $title,
+        ]);
+        $myPage = self::response2page($response);
+        if ($myPage === null) {
+            // Page may not exist â€“ still try to get a token via separate query
+            $fallback = self::query_api(['action' => 'query', 'meta' => 'tokens', 'type' => 'csrf']);
+            $tok = @json_decode($fallback);
+            if (!isset($tok->query->tokens->csrftoken) || !is_string($tok->query->tokens->csrftoken)) {
+                report_warning('unable to get bot tokens for statistics page');
+                return false;
+            }
+            $auth_token = $tok->query->tokens->csrftoken;
+            $baseTimeStamp = '';
+            $startTimestamp = '';
+        } else {
+            if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
+                report_warning('unable to get bot tokens');
+                return false;
+            }
+            $auth_token = $response->query->tokens->csrftoken;
+            $baseTimeStamp = isset($myPage->revisions[0]->timestamp) && is_string($myPage->revisions[0]->timestamp) ? $myPage->revisions[0]->timestamp : '';
+            $startTimestamp = '';
+            // read_details gives curtimestamp as starttimestamp when available; reuse if present
+            $details = self::read_details($title);
+            $cur = $details->curtimestamp ?? '';
+            if (is_string($cur) && $cur !== '') {
+                $startTimestamp = $cur;
+            }
+        }
+        if (defined('EDIT_AS_USER')) {
+            $auth_token = (string) @json_decode($this->user_client->makeOAuthCall(
+                $this->user_token,
+                API_ROOT . '?action=query&meta=tokens&format=json'
+             ))->query->tokens->csrftoken;
+            if ($auth_token === '') {
+                report_error('unable to get user tokens');
+            }
+        }
+        $vars = [
+            'action' => 'edit',
+            'title' => $title,
+            'text' => $text,
+            'summary' => $summary,
+            'notminor' => '1',
+            'bot' => '1',
+            'watchlist' => 'nochange',
+            'token' => $auth_token,
+        ];
+        if ($baseTimeStamp !== '') {
+            $vars['basetimestamp'] = $baseTimeStamp;
+        }
+        if ($startTimestamp !== '') {
+            $vars['starttimestamp'] = $startTimestamp;
+        }
+        $result = $this->fetch($vars);
+        if (!self::resultsGood($result)) {
+            return false;
+        }
+        return true;
     }
 
     public static function read_details(string $title): object {
