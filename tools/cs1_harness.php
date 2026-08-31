@@ -109,6 +109,12 @@ const ACCESS_PARAMS = [
     'doi-access' => ['doi'],
 ];
 
+const URL_PARAMS = ['url', 'URL'];
+const CHAPTER_URL_PARAMS = ['chapter-url', 'chapterurl'];
+const ARCHIVE_URL_PARAMS = ['archive-url', 'archiveurl'];
+const ARCHIVE_DATE_PARAMS = ['archive-date', 'archivedate'];
+const ACCESS_DATE_PARAMS = ['access-date', 'accessdate'];
+
 const TRANS_PARAMS = [
     'trans-title' => ['title', 'script-title'],
     'trans-chapter' => ['chapter'],
@@ -203,18 +209,18 @@ function check_citation(Template $template): array {
     }
 
     // R5: archive-url/archive-date coupling (alias spellings included).
-    if (($template->has('archive-url') || $template->has('archiveurl')) && !$template->has('archive-date') && !$template->has('archivedate')) {
+    if (has_any($template, ARCHIVE_URL_PARAMS) && !has_any($template, ARCHIVE_DATE_PARAMS)) {
         $violations[] = 'archive-url-without-date: CS1 "|archive-url= requires |archive-date="';
     }
-    if (($template->has('archive-date') || $template->has('archivedate')) && !$template->has('archive-url') && !$template->has('archiveurl')) {
+    if (has_any($template, ARCHIVE_DATE_PARAMS) && !has_any($template, ARCHIVE_URL_PARAMS)) {
         $violations[] = 'archive-date-without-url: CS1 "|archive-date= requires |archive-url="';
     }
-    if (($template->has('archive-url') || $template->has('archiveurl')) && !$template->has('url')) {
+    if (has_any($template, ARCHIVE_URL_PARAMS) && !has_any($template, URL_PARAMS)) {
         $violations[] = 'archive-url-without-url: CS1 "|archive-url= requires |url="';
     }
 
     // R6: access-date requires url or archive-url (alias spellings included).
-    if (($template->has('access-date') || $template->has('accessdate')) && !$template->has('url') && !$template->has('archive-url') && !$template->has('archiveurl')) {
+    if (has_any($template, ACCESS_DATE_PARAMS) && !has_any($template, URL_PARAMS) && !has_any($template, ARCHIVE_URL_PARAMS)) {
         $violations[] = 'access-date-orphaned: CS1 "|access-date= requires |url="';
     }
 
@@ -235,7 +241,7 @@ function check_citation(Template $template): array {
     }
 
     // R9: cite web requires a url.
-    if ($name === 'cite web' && !$template->has('url')) {
+    if ($name === 'cite web' && !has_any($template, URL_PARAMS)) {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
 
@@ -264,10 +270,10 @@ function check_citation(Template $template): array {
     }
 
     // R13: format parameters require their url base.
-    if ($template->has('format') && !$template->has('url')) {
+    if ($template->has('format') && !has_any($template, URL_PARAMS)) {
         $violations[] = 'format-orphaned: CS1 "|format= requires |url="';
     }
-    if ($template->has('chapter-format') && !$template->has('chapter-url')) {
+    if ($template->has('chapter-format') && !has_any($template, CHAPTER_URL_PARAMS)) {
         $violations[] = 'chapter-format-orphaned: CS1 "|chapter-format= requires |chapter-url="';
     }
 
@@ -277,7 +283,7 @@ function check_citation(Template $template): array {
     }
 
     // R15: url and title-link must not both be present.
-    if ($template->has('url') && $template->has('title-link')) {
+    if (has_any($template, URL_PARAMS) && $template->has('title-link')) {
         $violations[] = 'url-title-link-conflict: CS1 "URL-wikilink conflict"';
     }
 
@@ -337,6 +343,10 @@ function build_matrix(): array {
         ['url-access kept when base uses uppercase URL alias', '{{cite web |URL=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['url-access kept when base uses un-hyphenated alias', '{{cite web |url=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['chapter-url-access kept with chapter-url base', '{{cite book |title=X |chapter-url=https://example.com |chapter-url-access=free |year=2020}}', 'pass'],
+        ['uppercase URL base keeps access-date', '{{cite web |URL=https://example.com |access-date=2020-01-01 |title=X}}', 'pass'],
+        ['uppercase URL base keeps archive-url', '{{cite web |URL=https://example.com |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01 |title=X}}', 'pass'],
+        ['uppercase URL base keeps format', '{{cite web |URL=https://example.com |format=PDF |title=X}}', 'pass'],
+        ['un-hyphenated chapterurl base keeps chapter-format', '{{cite book |title=X |chapterurl=https://example.com |chapter-format=PDF |year=2020}}', 'pass'],
 
         // --- ISBN validation (merged Tier 1 fix) ---
         ['Valid ISBN-10 kept', '{{cite journal |title=X |journal=J |isbn=0-306-40615-2}}', 'pass'],
@@ -417,6 +427,7 @@ echo "--------------------------------------------------------------\n";
 
 $passed = 0;
 $gaps = 0;
+$resolved = 0;
 $failed = 0;
 $failures = [];
 
@@ -442,7 +453,12 @@ foreach ($matrix as [$name, $wikitext, $expectation]) {
         }
     } else {
         $gaps++;
-        $status = $violations === [] ? 'RESOLVED' : 'KNOWN-GAP';
+        if ($violations === []) {
+            $resolved++;
+            $status = 'RESOLVED';
+        } else {
+            $status = 'KNOWN-GAP';
+        }
         echo "GAP   $name [$status]\n";
         foreach ($violations as $violation) {
             echo "        - $violation\n";
@@ -451,7 +467,10 @@ foreach ($matrix as [$name, $wikitext, $expectation]) {
 }
 
 echo "--------------------------------------------------------------\n";
-echo "Summary: $passed passed, $gaps known gaps, $failed failed\n";
+echo "Summary: $passed passed, $gaps known gaps, $resolved unexpectedly resolved, $failed failed\n";
+if ($resolved > 0) {
+    echo "\n$resolved gap case(s) unexpectedly resolved: convert them from 'gap' to 'pass' (or confirm the resolution is intentional).\n";
+}
 if ($failed > 0) {
     echo "\nFailed cases:\n";
     foreach ($failures as [$name, $violations]) {
@@ -462,4 +481,4 @@ if ($failed > 0) {
     }
 }
 
-exit($failed > 0 ? 1 : 0);
+exit($failed > 0 || $resolved > 0 ? 1 : 0);
