@@ -48,6 +48,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - **`src/includes/Template.php`** - Template class - Core citation expansion logic
 - **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
 - **`src/includes/WikipediaBot.php`** - WikipediaBot class - Wikipedia API client with OAuth
+- **`src/includes/Statistics.php`** - Statistics helpers – UCB tag parsing, aggregation, and wikitext generation for `User:Citation bot/statistics`
 - **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 9 concrete subclasses
 - **`src/includes/URLtools.php`** - URL normalization and metadata extraction (standalone functions, no class)
 - **`src/includes/NameTools.php`** - Author name parsing and formatting (standalone functions, no class)
@@ -268,6 +269,7 @@ The gadget MUST:
 │   ├── linked_pages.php        # Processes pages linking to a given page
 │   ├── kill_big_job.php        # Kill large batch jobs
 │   ├── gitpull.php             # Password-protected deployment/update endpoint
+│   ├── update_statistics.php   # Daily cron to update User:Citation bot/statistics
 │   └── includes/
 │       ├── setup.php           # Bootstrap configuration
 │       ├── constants.php       # Application constants
@@ -275,6 +277,7 @@ The gadget MUST:
 │       ├── Template.php        # Citation expansion core
 │       ├── Parameter.php       # Parameter handling
 │       ├── WikipediaBot.php    # Wikipedia API client
+│       ├── Statistics.php      # Statistics helpers for User:Citation bot/statistics
 │       ├── URLtools.php        # URL normalization & metadata
 │       ├── NameTools.php       # Author name parsing
 │       ├── MathTools.php       # MathML to LaTeX conversion
@@ -431,6 +434,9 @@ php vendor/bin/phpcs
 
 # Process single page locally
 php src/process_page.php "Wikipedia:Sandbox" --savetofiles
+
+# Update statistics page (dry-run)
+php src/update_statistics.php --dry-run
 
 # Update dependencies
 composer update

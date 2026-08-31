@@ -38,6 +38,7 @@ infrastructure:
       - src/includes/user_messages.php
       - src/includes/PublicConfig.php
       - src/includes/request_security.php
+      - src/includes/Statistics.php
       - src/authenticate.php
 
 entrypoints:
@@ -57,6 +58,7 @@ entrypoints:
       - src/robots.txt
       - src/.user.ini
       - src/GadgetApi.php
+      - src/update_statistics.php
 
 tests:
   - changed-files:
