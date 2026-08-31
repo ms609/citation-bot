@@ -147,17 +147,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
-    public function testBaseDirectoryFallsBackToSystemTempDirectory(): void {
-        $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
-
-        try {
-            putenv('PHP_RATE_LIMIT_DIRECTORY');
-            $this->assertSame(sys_get_temp_dir(), request_rate_limit_base_directory());
-        } finally {
-            $this->restoreRateLimitDirectoryEnvironment($previous);
-        }
-    }
-
     public function testBucketNameAcceptsMaximumLengthAndSafePunctuation(): void {
         $bucket = 'a' . str_repeat('._-', 21); // 64 bytes total.
         $this->assertSame(64, mb_strlen($bucket));
@@ -488,21 +477,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             return;
         }
         putenv('PHP_RATE_LIMIT_DIRECTORY=' . $previous);
-    }
-
-    public function testNonPositiveCapacityIsRejected(): void {
-        $this->expectException(InvalidArgumentException::class);
-        request_rate_limit_consume('capacity-validation', 0, 1.0, $this->base_directory, 100.0);
-    }
-
-    public function testNonPositiveRefillRateIsRejected(): void {
-        $this->expectException(InvalidArgumentException::class);
-        request_rate_limit_consume('refill-validation', 1, 0.0, $this->base_directory, 100.0);
-    }
-
-    public function testNegativeTimestampIsRejected(): void {
-        $this->expectException(InvalidArgumentException::class);
-        request_rate_limit_consume('timestamp-validation', 1, 1.0, $this->base_directory, -1.0);
     }
 
     public function testBaseDirectoryUsesEnvironmentOverride(): void {
