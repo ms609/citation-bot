@@ -187,7 +187,7 @@ The project uses extensive automated testing:
 - **OpenSSF Scorecard** - Evaluates repository security practices
 - **Zizmor** - Analyzes GitHub Actions workflows for security issues
 - **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
-- **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error
+- **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error, or if a known-gap case unexpectedly resolves (XPASS)
 
 The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message. Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
@@ -230,7 +230,7 @@ php tools/cs1_harness.php --slow     # slow mode (bibcode search + URL expansion
 php tools/cs1_harness.php --list     # print the matrix without running
 ```
 
-- **Must-pass cases** (25) must satisfy every checker rule; a violation exits 1.
+- **Must-pass cases** (29) must satisfy every checker rule; a violation exits 1.
 - **Known-gap cases** (11) document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
 - When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
 

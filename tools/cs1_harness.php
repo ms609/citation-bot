@@ -17,7 +17,8 @@ declare(strict_types=1);
  * The harness needs no credentials: the matrix uses fabricated identifiers
  * and titles that external APIs cannot match, so the pass/fail result is
  * reproducible run-to-run when the upstream APIs respond normally.
- * Exit code is 1 if any "must-pass" case violates the CS1 rules.
+ * Exit code is 1 if any "must-pass" case violates the CS1 rules, or if a
+ * known-gap case unexpectedly resolves (an XPASS that must be converted).
  */
 
 set_time_limit(0);
@@ -109,6 +110,10 @@ const ACCESS_PARAMS = [
     'doi-access' => ['doi'],
 ];
 
+// Alias groups for the url/archive/access-date family. The bot normally
+// canonicalizes these aliases before output (so the checker usually sees the
+// canonical names); the groups are defense-in-depth so the rules also hold if
+// an alias form ever survives expansion.
 const URL_PARAMS = ['url', 'URL'];
 const CHAPTER_URL_PARAMS = ['chapter-url', 'chapterurl'];
 const ARCHIVE_URL_PARAMS = ['archive-url', 'archiveurl'];
@@ -467,7 +472,7 @@ foreach ($matrix as [$name, $wikitext, $expectation]) {
 }
 
 echo "--------------------------------------------------------------\n";
-echo "Summary: $passed passed, $gaps known gaps, $resolved unexpectedly resolved, $failed failed\n";
+echo "Summary: $passed passed, $gaps gap cases, $resolved unexpectedly resolved, $failed failed\n";
 if ($resolved > 0) {
     echo "\n$resolved gap case(s) unexpectedly resolved: convert them from 'gap' to 'pass' (or confirm the resolution is intentional).\n";
 }
