@@ -15,7 +15,7 @@ require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
  * should not terminate a multi-page run.
  *
  * @param string $page_title
- * @param callable(): bool $operation
+ * @param callable(): ?bool $operation
  * @return ?bool true when the page changed, false when it did not, null on failure
  */
 function run_page_with_exception_boundary(string $page_title, callable $operation): ?bool {
@@ -44,6 +44,19 @@ function run_write_with_retries(callable $operation, int $max_retries): bool {
         }
     }
     return false;
+}
+
+/**
+ * Convert the legacy write API's two signals into the page runner's tri-state.
+ *
+ * A successful-but-skipped write (for example an edit conflict detected before
+ * submission) is unchanged, while an exhausted retry sequence is a failure.
+ */
+function page_result_from_write(bool $write_succeeded, bool $write_skipped): ?bool {
+    if (!$write_succeeded) {
+        return null;
+    }
+    return !$write_skipped;
 }
 
 /**
@@ -129,7 +142,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 $total,
                 $done,
                 &$final_edit_overview
-            ): bool {
+            ): ?bool {
                 if (mb_strpos($page_title, 'Wikipedia:Requests') === false && $page->get_text_from($page_title) && $page->expand_text()) {
                     if (SAVETOFILES_MODE) {
                         // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
@@ -155,7 +168,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                             static fn (): bool => $page->write($api, $edit_sum),
                             MAX_TRIES
                         );
-                        if ($write_succeeded) {
+                        $write_result = page_result_from_write($write_succeeded, $api->last_write_was_skipped());
+                        if ($write_result === true) {
                             $last_rev = WikipediaBot::get_last_revision($page_title);
                             html_echo(
                             "\n  <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
@@ -166,11 +180,16 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                                 "\n [ <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
                             . $last_rev . "\">diff</a>" .
                             " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a> ] " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                        } elseif ($write_result === false) {
+                            report_warning("Write skipped because the page changed while Citation Bot was working.");
+                            $final_edit_overview .= "\n Write skipped.           " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
                         } else {
                             report_warning("Write failed.");
                             $final_edit_overview .= "\n Write failed.            " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
                         }
+                        return $write_result;
                     }
+                    // SAVETOFILES_MODE successfully produced (or attempted) the changed output.
                     return true;
                 }
 

@@ -23,6 +23,7 @@ final class WikipediaBot {
     private static CurlHandle $ch_logout;
     private string $the_user = '';
     private static ?self $last_WikipediaBot = null;
+    private bool $last_write_skipped = false;
 
     public static function make_ch(): void {
         static $init_done = false;
@@ -73,6 +74,10 @@ final class WikipediaBot {
             report_error('User Not Set');         // @codeCoverageIgnore
         }
         return $this->the_user;
+    }
+
+    public function last_write_was_skipped(): bool {
+        return $this->last_write_skipped;
     }
 
     public static function ret_okay(?object $response): bool { // We send back true for thing that are page specific
@@ -181,6 +186,7 @@ final class WikipediaBot {
 
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
+        $this->last_write_skipped = false;
         if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
             return false;                                                                             // @codeCoverageIgnore
@@ -203,7 +209,8 @@ final class WikipediaBot {
 
         if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
          || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-            report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
+            report_warning("Possible edit conflict detected. Aborting.");     // @codeCoverageIgnore
+            $this->last_write_skipped = true;                                 // @codeCoverageIgnore
             return true;                                                      // @codeCoverageIgnore
         }  // This returns true so that we do not try again
 
