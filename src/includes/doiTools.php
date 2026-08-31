@@ -174,7 +174,7 @@ function is_doi_active(string $doi): ?bool {
     return null;                  // @codeCoverageIgnoreEnd
 }
 
-function dx_throttle_delay(float $now, float $last, float $minimum_interval = 0.040): int {
+function dx_throttle_delay(float $now, float $last, float $minimum_interval = 0.050): int {
     if ($last <= 0.0 || $minimum_interval <= 0.0) {
         return 0;
     }
