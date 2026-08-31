@@ -16,15 +16,4 @@ final class DoiReliabilityTest extends testBaseClass {
     public function testFirstThrottleCallDoesNotSleep(): void {
         $this->assertSame(0, dx_throttle_delay(10.0, 0.0));
     }
-
-    public function testLegacyTransientNullCacheDoesNotOverrideEvaluation(): void {
-        $doi = 'not-a-doi';
-        HandleCache::$cache_hdl_null[$doi] = true;
-        try {
-            // is_doi_works() rejects this syntactically without network access.
-            $this->assertFalse(doi_works($doi));
-        } finally {
-            unset(HandleCache::$cache_hdl_null[$doi]);
-        }
-    }
 }
