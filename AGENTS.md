@@ -396,6 +396,7 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
    - Violating the verbose code style with compact one-liners
+   - Entry points that do not load `setup.php` (e.g. `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves: output helpers in `src/includes/user_messages.php` read `HTML_OUTPUT` unguarded, and an undefined constant fatals mid-page, truncating the output to a blank page. Note that tests extending `testBaseClass.php` load `setup.php` and will mask this failure — use the standalone separate-process pattern in `tests/phpunit/killBigJobPageTest.php` when testing such pages.
 
 ## Bug Reporting
 

@@ -16,6 +16,15 @@ session_start(public_session_start_options(true));
 require_once __DIR__ . '/includes/big_jobs.php';
 require_once __DIR__ . '/includes/request_security.php';
 
+// setup.php is deliberately not loaded on this lightweight page, so the two
+// output-mode constants it defines must be provided here, matching a web request.
+if (!defined('CI')) {
+    define('CI', (bool) getenv('CI'));
+}
+if (!defined('HTML_OUTPUT')) {
+    define('HTML_OUTPUT', true);
+}
+
 ob_implicit_flush(true);
 
 if (!isset($_SESSION['citation_bot_user_id'])) {
