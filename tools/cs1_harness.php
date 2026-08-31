@@ -319,6 +319,18 @@ function check_citation(Template $template): array {
         }
     }
 
+    // R17: generic names trigger CS1 "Cite uses generic name".
+    foreach (['last', 'first', 'author', 'last1', 'first1', 'author1', 'editor', 'editor1', 'editor-last', 'editor1-last', 'editor-first', 'editor1-first'] as $param) {
+        if ($template->has($param) && is_generic_name($template->get($param))) {
+            $violations[] = "generic-name-in-$param: CS1 \"Cite uses generic name\"";
+        }
+    }
+
+    // R18: generic titles trigger CS1 "Cite uses generic title".
+    if ($template->has('title') && is_generic_title($template->get('title'))) {
+        $violations[] = 'generic-title: CS1 "Cite uses generic title"';
+    }
+
     return $violations;
 }
 
@@ -387,6 +399,8 @@ function build_matrix(): array {
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],
         ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'gap'],
         ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'gap'],
+        ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
+        ['GAP generic name in input survives tidy', '{{cite journal |title=X |journal=J |last1=CNN}}', 'gap'],
     ];
 }
 

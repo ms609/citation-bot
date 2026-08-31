@@ -1656,4 +1656,29 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertTrue($template->add_if_new('pmc', 'PMC1234567'));
         $this->assertSame('1234567', $template->get2('pmc'));
     }
+
+    public function testAddIfNewRejectsGenericTitle(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('title', 'No Title'));
+        $this->assertSame('X', $template->get2('title'));
+    }
+
+    public function testValidateAndAddRejectsGenericName(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $template->validate_and_add('last1', 'CNN', '', '', false);
+        $this->assertNull($template->get2('last1'));
+        $template->validate_and_add('last1', 'Smith', 'John', '', false);
+        $this->assertNotNull($template->get2('last1'));
+    }
+
+    public function testAddIfNewRejectsMalformedUrl(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('url', 'not a url'));
+        $this->assertNull($template->get2('url'));
+        $this->assertTrue($template->add_if_new('url', 'https://example.com'));
+        $this->assertSame('https://example.com', $template->get2('url'));
+    }
 }

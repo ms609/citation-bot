@@ -1610,6 +1610,10 @@ final class Template
                 if (in_array(mb_strtolower(sanitize_string($value)), BAD_TITLES, true)) {
                     return false;
                 }
+                if (is_generic_title($value)) {
+                    report_inaction("Not adding generic title: " . echoable($value));
+                    return false;
+                }
                 if (
                     $this->blank($param_name) ||
                     in_array($this->get($param_name), GOOFY_TITLES, true) ||
@@ -1892,6 +1896,10 @@ final class Template
             case 'url':
                 // look for identifiers in URL - might be better to add a PMC parameter, say
                 if ($this->get_identifiers_from_url($value)) {
+                    return false;
+                }
+                if (!url_valid($value)) {
+                    report_inaction("Not adding malformed URL: " . echoable($value));
                     return false;
                 }
                 if (!$this->blank([$param_name, ...TITLE_LINK_ALIASES])) {

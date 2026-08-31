@@ -192,6 +192,7 @@ function author_is_human(string $author): bool {
         || mb_substr(mb_strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
+        || is_generic_name($author) // CS1 "Cite uses generic name" triggers
         || mb_substr(mb_strtolower($author), -4) === " inc"
         || mb_substr(mb_strtolower($author), -5) === " inc."
         || mb_substr(mb_strtolower($author), -4) === " llc"
