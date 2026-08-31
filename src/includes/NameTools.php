@@ -210,8 +210,10 @@ function author_is_human(string $author): bool {
 function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
+    $author = html_entity_decode($author, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    [$author, $junior] = junior_test(mb_trim($author));
     // Google and Zotero sometimes have these (sir) and just sir
-    $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
+    $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", $author);
     $author = preg_replace("~^( ?sir )~", "", $author);
     $author = preg_replace("~^(, sir )~", ", ", $author);
 
@@ -303,6 +305,9 @@ function format_author(string $author): string {
     $full_name = str_replace("..", ".", $full_name);  // Sometimes add period after period
     $full_name = str_replace(".", ". ", $full_name);  // Add spaces after all periods
     $full_name = str_replace(["   ", "  "], [" ", " "], $full_name); // Remove extra spaces
+    if ($junior !== '') {
+        $full_name .= $junior;
+    }
     return mb_trim($full_name);
 }
 
