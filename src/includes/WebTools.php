@@ -15,8 +15,8 @@ require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
  * should not terminate a multi-page run.
  *
  * @param string $page_title
- * @param callable(): ?bool $operation
- * @return ?bool true when the page changed, false when it did not, null on failure
+ * @param callable(): bool|null $operation
+ * @return bool|null true when the page changed, false when it did not, null on failure
  */
 function run_page_with_exception_boundary(string $page_title, callable $operation): ?bool {
     try {
