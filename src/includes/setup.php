@@ -46,7 +46,6 @@ if (file_exists(__DIR__ . '/../env.php')) {
     /** @psalm-suppress MissingFile */
     include_once __DIR__ . '/../env.php';
     $env_output_contents = ob_get_contents();
-    // @phpstan-ignore-next-line
     $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
     unset($env_output_contents);
     if ($env_output) {
