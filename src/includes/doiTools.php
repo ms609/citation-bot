@@ -109,7 +109,7 @@ function doi_works(string $doi): ?bool {
     $works = is_doi_works($doi);
     if ($works === null) {  // These are unexpected nulls
         HandleCache::$cache_hdl_null[$doi] = true;   // @codeCoverageIgnore
-        return null;
+        return null;   // @codeCoverageIgnore
     }
     if ($works === false) {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
