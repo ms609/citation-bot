@@ -44,6 +44,8 @@ foreach ($argv ?? [] as $arg) {
     }
 }
 
+$api = new WikipediaBot();
+
 if (!HTML_OUTPUT) {
     echo "Fetching contribs for {$stats_user} in last {$window_hours}h...\n";
 }
@@ -69,9 +71,6 @@ if ($dry_run) {
     echo "\nDry-run: not writing to {$stats_page}\n";
     exit(0);
 }
-
-// Real write path
-$api = new WikipediaBot();
 
 // Fetch current page text to avoid no-op writes and to get base timestamp
 $current = WikipediaBot::get_a_page($stats_page);

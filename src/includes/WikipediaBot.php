@@ -540,13 +540,22 @@ final class WikipediaBot {
         $end = $now->sub(new DateInterval('PT' . (string) $hours . 'H'))->format('Y-m-d\TH:i:s\Z');
         $uccontinue = '';
         $all = [];
-        // Guard against infinite loops: at most 20 batches (10k edits/day is far above reality)
+        // EN wiki single statistics page: use apihighlimits (uclimit=max → 5000 for bot) via authenticated request
+        $use_max = (defined('WIKI_BASE') && WIKI_BASE === 'en');
+        $auth_instance = null;
+        if ($use_max) {
+            $auth_instance = self::$last_WikipediaBot;
+            if ($auth_instance === null) {
+                $auth_instance = new self();
+            }
+        }
+        // Guard against infinite loops: at most 20 batches (20*5000=100k with max, far above reality)
         for ($batch = 0; $batch < 20; $batch++) {
             $vars = [
                 'action' => 'query',
                 'list' => 'usercontribs',
                 'ucuser' => $user,
-                'uclimit' => '500',
+                'uclimit' => $use_max ? 'max' : '500',
                 'ucprop' => 'comment|timestamp|title',
                 'ucdir' => 'older',
                 'ucstart' => $start,
@@ -555,7 +564,16 @@ final class WikipediaBot {
             if ($uccontinue !== '') {
                 $vars['uccontinue'] = $uccontinue;
             }
-            $res = self::query_api($vars);
+            if ($use_max && $auth_instance !== null) {
+                $res = $auth_instance->query_api_authenticated($vars);
+                // Fallback to anon 500 if authenticated max not granted (e.g. in CI without tokens)
+                if ($res === '') {
+                    $vars['uclimit'] = '500';
+                    $res = self::query_api($vars);
+                }
+            } else {
+                $res = self::query_api($vars);
+            }
             if ($res === '') {
                 if ($batch === 0) {
                     report_warning('Failed to fetch contribs for ' . echoable($user) . ' – API returned empty');
@@ -692,6 +710,80 @@ final class WikipediaBot {
         }
         return '';
         // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Authenticated variant of query_api for EN wiki high-limit reads.
+     * Uses OAuth signing via ch_write to get apihighlimits (uclimit=max → 5000).
+     * Retries on maxlag/ratelimited like query_api but with signed requests.
+     * @param array<string> $params
+     */
+    private function query_api_authenticated(array $params): string {
+        try {
+            $params['format'] = 'json';
+            if (!isset($params['maxlag'])) {
+                $params['maxlag'] = '5';
+            }
+            /** @var non-empty-string $api_root */
+            $api_root = API_ROOT;
+            for ($attempt = 0; $attempt < 4; $attempt++) {
+                if ($attempt > 0) {
+                    $delay = (int) (5 * (2 ** ($attempt - 1)));
+                    if ($delay > 20) {
+                        $delay = 20;
+                    }
+                    sleep($delay);
+                }
+                $token = $this->bot_token;
+                $consumer = $this->bot_consumer;
+                if (defined('EDIT_AS_USER')) {
+                    $token = $this->user_token;
+                    $consumer = $this->user_consumer;
+                }
+                $request = Request::fromConsumerAndToken($consumer, $token, 'POST', API_ROOT, $params);
+                $request->signRequest(new HmacSha1(), $consumer, $token);
+                $header = $request->toHeader();
+                curl_setopt_array(self::$ch_write, [
+                    CURLOPT_POST => true,
+                    CURLOPT_POSTFIELDS => http_build_query($params),
+                    CURLOPT_HTTPHEADER => [$header],
+                    CURLOPT_URL => $api_root,
+                ]);
+                $data = bot_curl_exec_withFalse(self::$ch_write);
+                if ($data === false) {
+                    $errnoInt = curl_errno(self::$ch_write);
+                    $errorStr = curl_error(self::$ch_write);
+                    report_warning('Curl error #' . $errnoInt . ' on authenticated query: ' . $errorStr);
+                    $data = '';
+                }
+                $data = (string) $data;
+                if ($data === '' && $attempt < 3) {
+                    sleep(4);
+                    continue;
+                }
+                $decoded = @json_decode($data);
+                if (self::fetch_response_is_retryable($decoded)) {
+                    bot_debug_log('Retrying authenticated query after retryable error: ' . ($decoded->error->code ?? 'unknown'));
+                    continue;
+                }
+                if (self::ret_okay($decoded)) {
+                    return $data;
+                }
+                if ($decoded !== null && isset($decoded->error)) {
+                    return '';
+                }
+                if ($attempt < 3 && $data === '') {
+                    continue;
+                }
+                return self::ret_okay($decoded) ? $data : '';
+            }
+            return '';
+        } catch (Throwable $E) {
+            bot_debug_log('Authenticated query failure: ' . $E::class . ': ' . $E->getMessage());
+            report_warning("Authenticated query failed; continuing.\n");
+            report_info("Response: " . echoable($E->getMessage()));
+        }
+        return '';
     }
 
     /**
