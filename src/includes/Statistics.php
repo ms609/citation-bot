@@ -139,8 +139,7 @@ function statistics_generate_wikitext(array $counts, int $total, DateTimeImmutab
     $out .= "! Total || {$total}\n";
     $out .= "|}\n\n";
     $out .= "<small>Breakdown by <code>#UCB</code> tag in edit summary. ";
-    $out .= "\"" . STATISTICS_UNTAGGED_LABEL . "\" counts edits with no <code>#UCB_</code> tag ";
-    $out .= "(typically test edits to [[User:Blocked Testing Account/writetest]]). ";
+    $out .= "\"" . STATISTICS_UNTAGGED_LABEL . "\" counts edits with no <code>#UCB_</code> tag. ";
     $out .= "Data via <code>list=usercontribs</code> for user <code>Citation_bot</code>.</small>\n";
     return $out;
 }
