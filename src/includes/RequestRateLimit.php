@@ -10,6 +10,14 @@ const GADGET_API_RATE_LIMIT_REFILL_PER_SECOND = 2.0;
 const GENERATE_TEMPLATE_RATE_LIMIT_CAPACITY = 20;
 const GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND = 0.5;
 
+function request_rate_limit_base_directory(): string {
+    $env_val = getenv('PHP_RATE_LIMIT_DIRECTORY');
+    if (is_string($env_val) && $env_val !== '') {
+        return $env_val;
+    }
+    return sys_get_temp_dir();
+}
+
 /**
  * Consume one token from a process-shared token bucket.
  *
@@ -42,7 +50,7 @@ function request_rate_limit_consume(
         throw new InvalidArgumentException('Rate-limit timestamp must be finite and non-negative.');
     }
 
-    $base_directory ??= sys_get_temp_dir();
+    $base_directory = request_rate_limit_base_directory();
     if ($base_directory === '') {
         request_rate_limit_log_failure($bucket, 'temporary directory is empty');
         return null;
