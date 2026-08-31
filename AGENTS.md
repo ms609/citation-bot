@@ -391,7 +391,7 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
 6. Update documentation
 7. **Always check whether `.github/labeler.yml` needs a new entry** when adding or renaming files (especially new tooling, workflows, or entrypoints); the automatic PR labeling depends on it
 8. Submit pull request with clear description
- 9. **Common Pitfalls:**
+9. **Common Pitfalls:**
 
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
