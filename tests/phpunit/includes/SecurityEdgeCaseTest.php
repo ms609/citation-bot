@@ -10,7 +10,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     /** @var array<string, string|false> */
     private array $saved_environment = [];
     private bool $session_was_set;
-    private array $saved_session = [];
+    private string $saved_session;
 
     #[\Override]
     protected function setUp(): void {
@@ -19,7 +19,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         }
         $this->session_was_set = isset($_SESSION);
         if ($this->session_was_set) {
-            $this->saved_session = $_dsafSESSION;
+            $this->saved_session = serialize($_SESSION);
         }
 
         putenv('PUBLIC_BASE_URL=https://public.example/tools');
@@ -39,7 +39,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         }
 
         if ($this->session_was_set) {
-            $_SESSION = $this->saved_session;
+            $_SESSION = unserialize($this->saved_session);
         } else {
             unset($_SESSION);
         }
