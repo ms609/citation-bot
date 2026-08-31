@@ -231,7 +231,7 @@ php tools/cs1_harness.php --list     # print the matrix without running
 ```
 
 - **Must-pass cases** (29) must satisfy every checker rule; a violation exits 1.
-- **Known-gap cases** (11) document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
+- **Known-gap cases** (14) document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
 - When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
 
 ## Important Constraints

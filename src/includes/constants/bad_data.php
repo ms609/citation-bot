@@ -13331,6 +13331,89 @@ const ALWAYS_BAD_TITLES = [
     'request rejected',
 ];
 
+/**
+ * CS1 "Cite uses generic name" triggers (Module:Citation/CS1/Configuration,
+ * special_case_translation['generic_names']['reject']). Plain-text phrases,
+ * matched case-insensitively as substrings; the pattern triggers are in
+ * GENERIC_NAME_PATTERNS.
+ */
+const GENERIC_NAMES = [
+    'about us',
+    'allmusic',
+    'cnn',
+    'contact us',
+    'contributor',
+    'directory',
+    'facebook',
+    'google',
+    'home page',
+    'instagram',
+    'interviewer',
+    'linkedin',
+    'pinterest',
+    'policy',
+    'privacy',
+    'reuters',
+    'site name',
+    'statement',
+    'submitted',
+    'translator',
+    'tumblr',
+    'twitter',
+    'updated',
+    'verfasser',
+];
+
+/**
+ * CS1 generic-name pattern triggers (word-boundary role labels and
+ * organizational suffixes), mirroring the Lua patterns.
+ */
+const GENERIC_NAME_PATTERNS = [
+    '~\badvisor\b~i',
+    '~\bauthor\b~i',
+    '~^bureau$~i',
+    '~^company$~i',
+    '~^desk$~i',
+    '~\bedited\b~i',
+    '~\beditor\b~i',
+    '~\beditors\b~i',
+    '~\bemail\b~i',
+    '~^group$~i',
+    '~^inc\.?$~i',
+    '~^limited$~i',
+    '~^news$~i',
+    '~news\s?[ -]?room~i',
+    '~super\.?\s?user~i',
+    '~\buser\b~i',
+];
+
+/**
+ * CS1 generic-title plain-text triggers (special_case_translation
+ * ['generic_titles']['reject']) NOT already covered by BAD_TITLES /
+ * ZOTERO_BAD_TITLES, matched case-insensitively as substrings. The remaining
+ * CS1 phrases are covered by those lists and are not duplicated here.
+ */
+const GENERIC_TITLES = [
+    'hugedomains',
+    'log into facebook',
+    'redirecting...',
+    'usurped title',
+    'webcite query result',
+    "wikiwix's cache",
+];
+
+/**
+ * CS1 generic-title pattern triggers (special_case_translation
+ * ['generic_titles']['reject']), which the exact-match BAD_TITLES list cannot
+ * express.
+ */
+const GENERIC_TITLE_PATTERNS = [
+    '~^[(\[{<]?no +title[>}\])]?$~i',
+    '~^[(\[{<]?unknown[>}\])]?$~i',
+    '~^404~',
+    '~error[ -]404~i',
+];
+
 /** These are case-insensitive strings used to reject new data */
 const BAD_TITLES = [
     ...ALWAYS_BAD_TITLES,

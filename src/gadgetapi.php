@@ -6,7 +6,7 @@ declare(strict_types=1);
 set_time_limit(120);
 
 require_once __DIR__ . '/includes/GadgetApi.php';
-dsfdsaf
+require_once __DIR__ . '/includes/RequestRateLimit.php';
 
 try {
     //Set up tool requirements
@@ -22,6 +22,18 @@ try {
     unset($origin);
 
     [$originalText, $editSummary] = gadget_api_validate_request($_POST);
+
+    $retry_after = request_rate_limit_consume(
+        'gadgetapi',
+        GADGET_API_RATE_LIMIT_CAPACITY,
+        GADGET_API_RATE_LIMIT_REFILL_PER_SECOND
+    );
+    if ($retry_after !== null) {
+        @header('Retry-After: ' . $retry_after);
+        @header('Cache-Control: no-store');
+        throw new GadgetApiRequestException('rate_limited', 429);
+    }
+    unset($retry_after);
     unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
     //Expand text from postvars

@@ -657,10 +657,10 @@ class Page {
             $last_first_in = [];
             $last_first_out = [];
         } // @codeCoverageIgnoreEnd
-        $normalized_text = preg_replace('/\s+\}\}/u', '}}', $this->text);
-        $normalized_start = preg_replace('/\s+\}\}/u', '}}', $this->start_text);
-        $normalized_text = preg_replace('/\|\s*[\w-]+\s*=\s*(?=\||\}\})/u', '', $normalized_text);
-        $normalized_start = preg_replace('/\|\s*[\w-]+\s*=\s*(?=\||\}\})/u', '', $normalized_start);
+        $normalized_text = safe_preg_replace('~\s+\}\}~u', '}}', $this->text);
+        $normalized_start = safe_preg_replace('~\s+\}\}~u', '}}', $this->start_text);
+        $normalized_text = safe_preg_replace('~\|\s*[\w-]+\s*=\s*(?=\||\}\})~u', '', $normalized_text);
+        $normalized_start = safe_preg_replace('~\|\s*[\w-]+\s*=\s*(?=\||\}\})~u', '', $normalized_start);
         return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_text)),
                                     str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $normalized_start))) !== 0;
     }
