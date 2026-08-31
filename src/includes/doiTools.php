@@ -174,17 +174,34 @@ function is_doi_active(string $doi): ?bool {
     return null;                  // @codeCoverageIgnoreEnd
 }
 
-function dx_throttle_delay(float $now, float $last, float $minimum_interval = 0.050): int {
-    if ($last <= 0.0 || $minimum_interval <= 0.0) {
+/**
+ * Calculate the DOI resolver throttle delay.
+ *
+ * @param float $now_seconds Current wall-clock time in seconds.
+ * @param float $last_seconds Previous request time in seconds.
+ * @param float $minimum_interval_seconds Minimum spacing in seconds.
+ * @return int Microseconds to sleep.
+ */
+function dx_throttle_delay(
+    float $now_seconds,
+    float $last_seconds,
+    float $minimum_interval_seconds = 0.040
+): int {
+    if ($last_seconds <= 0.0 || $minimum_interval_seconds <= 0.0) {
         return 0;
     }
-    $remaining = $minimum_interval - ($now - $last);
-    if ($remaining <= 0.0) {
+
+    $remaining_seconds =
+        $minimum_interval_seconds -
+        ($now_seconds - $last_seconds);
+
+    if ($remaining_seconds <= 0.0) {
         return 0;
     }
+
     return min(
-        (int) ceil($remaining * 1000000),
-        (int) ceil($minimum_interval * 1000000)
+        (int) ceil($remaining_seconds * 1_000_000),
+        (int) ceil($minimum_interval_seconds * 1_000_000)
     );
 }
 
