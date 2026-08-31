@@ -19,7 +19,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         }
         $this->session_was_set = isset($_SESSION);
         if ($this->session_was_set) {
-            $this->saved_session = $_SESSION;
+            $this->saved_session = $_dsafSESSION;
         }
 
         putenv('PUBLIC_BASE_URL=https://public.example/tools');
