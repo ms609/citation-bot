@@ -10,6 +10,11 @@ require_once __DIR__ . '/includes/setup.php';
 
 set_time_limit(120);
 
+if (PHP_SAPI !== 'cli') {
+    http_response_code(404);
+    exit(0);
+}
+
 // CLI options
 $dry_run = false;
 $window_hours = 24;

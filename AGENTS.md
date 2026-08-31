@@ -325,6 +325,7 @@ The gadget MUST:
 ├── composer.json               # Dependency configuration
 ├── docker-compose.yml          # Docker setup
 ├── Dockerfile                  # Container definition
+├── toolforge.yaml              # Toolforge Jobs definition for daily statistics
 ├── phpunit.xml.dist            # PHPUnit configuration
 ├── phpstan.neon                # PHPStan configuration
 ├── psalm.xml                   # Psalm configuration
