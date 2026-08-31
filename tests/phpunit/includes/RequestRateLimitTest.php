@@ -158,11 +158,9 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
-
     public function testBucketNameAcceptsMaximumLengthAndSafePunctuation(): void {
         $bucket = 'a' . str_repeat('._-', 21); // 64 bytes total.
-
-        $this->assertSame(64, strlen($bucket));
+        $this->assertSame(64, mb_strlen($bucket));
         $this->assertNull(
             request_rate_limit_consume($bucket, 1, 1.0, $this->base_directory, 100.0)
         );
@@ -385,14 +383,14 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             $this->assertIsString($contents);
             $this->assertSame(
                 1,
-                substr_count(
+                mb_substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): duplicate-reason; failing open.'
                 )
             );
             $this->assertSame(
                 1,
-                substr_count(
+                mb_substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): different-reason; failing open.'
                 )
@@ -466,7 +464,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             fclose($handle);
         }
     }
-
 
     private function rateLimitStatePath(string $bucket): string {
         return $this->base_directory .
