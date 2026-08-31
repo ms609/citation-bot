@@ -955,6 +955,38 @@ final class Zotero {
         if (isset($result->title) && $result->title === 'Cultural Advice' && mb_strpos($url, 'edu.au') !== false) {
             unset($result->title); // A warning, not a title
         }
+
+        // website= usually names the delivery site.  The OpenEdition report is
+        // different: Zotero independently identifies website= as bookTitle and
+        // the existing title as the bookSection title.  Only that corroborated
+        // shape is strong enough to reinterpret the existing fields.
+        if (
+            $template->wikiname() === 'cite web' &&
+            $template->has('website') &&
+            $template->has('title') &&
+            $template->blank(CHAPTER_ALIASES) &&
+            isset($result->bookTitle, $result->title, $result->itemType) &&
+            $result->itemType === 'bookSection' &&
+            // Do not reinterpret fields when this looks like a review of the
+            // book rather than a chapter of it (same guard as the itemType
+            // switch below) - see the "Book review confusion" reports.
+            mb_stripos($url . (string) $result->title . (string) $result->bookTitle, 'review') === false &&
+            str_equivalent($template->get('website'), (string) $result->bookTitle) &&
+            titles_are_similar($template->get('title'), (string) $result->title) &&
+            $template->blank(['journal', 'newspaper', 'magazine', 'periodical', 'encyclopedia', 'encyclopaedia']) &&
+            $template->blank(ISSUE_ALIASES) &&
+            $template->blank(['trans-title', 'script-title', 'trans-website', 'script-website', 'trans-work', 'script-work']) &&
+            $template->blank(TITLE_LINK_ALIASES) &&
+            ($template->blank('work') || str_equivalent($template->get('work'), $template->get('website')))
+        ) {
+            if ($template->has('work')) {
+                $template->forget('work');
+            }
+            $template->rename('title', 'chapter');
+            $template->rename('website', 'title');
+            $template->change_name_to('cite book');
+        }
+
         if ($template->has('title')) {
             if (isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
                 unset($result->title);
@@ -1129,7 +1161,7 @@ final class Zotero {
                     // Too much bad data to risk switching journal to book or vice versa.
                     // also reject 'review'
                     if ($template->wikiname() === 'cite web' &&
-                            $template->blank('website') && // Leads to error
+                            $template->can_auto_convert_web_to_cite_book() &&
                             mb_stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === false &&
                             mb_stripos($url, 'archive.org') === false && !preg_match('~^https?://[^/]*journal~', $url) &&
                             mb_stripos($url, 'booklistonline') === false &&

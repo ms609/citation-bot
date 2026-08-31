@@ -1535,6 +1535,12 @@ final class Template
                 if ($this->has('contribution') || $this->has('contribution-url')) {
                     return false;
                 }
+                // Adding a chapter immediately triggers tidy_parameter('chapter').
+                // Do not create a book-only field on an ambiguous cite web when
+                // that follow-up conversion would be unsafe.
+                if ($this->wikiname() === 'cite web' && !$this->can_auto_convert_web_to_cite_book()) {
+                    return false;
+                }
                 if ($this->wikiname() === 'citation') {
                     foreach (WORK_ALIASES as $work_alias) {
                         if ($this->has($work_alias) && !$this->blank($work_alias)) {
@@ -3443,6 +3449,42 @@ final class Template
         }
     }
 
+    /**
+     * Low-confidence metadata such as an ISBN or a newly found chapter should
+     * only auto-promote cite web when the existing parameters can be represented
+     * by cite book without guessing or dropping data.
+     */
+    public function can_auto_convert_web_to_cite_book(): bool {
+        if ($this->wikiname() !== 'cite web') {
+            return true;
+        }
+
+        // cite book does not support issue=/number=.
+        if (!$this->blank(ISSUE_ALIASES)) {
+            return false;
+        }
+
+        // Most work aliases identify a periodical/site.  Keep the existing
+        // ISBN conversion behavior only for work= values already recognized
+        // by Citation Bot as book-series metadata.
+        foreach (WORK_ALIASES as $work_alias) {
+            if ($work_alias !== 'work' && !$this->blank($work_alias)) {
+                return false;
+            }
+        }
+        if ($this->has('work')) {
+            if (
+                $this->blank('title') ||
+                !$this->is_book_series('work') ||
+                !$this->blank(['trans-work', 'script-work'])
+            ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void {
         if (mb_strpos($this->get('doi'), '10.1093') !== false && $this->wikiname() !== 'cite web') {
             return;
@@ -3473,6 +3515,19 @@ final class Template
         }
         $new_name = mb_strtolower(mb_trim($new_name)); // Match wikiname() output and cite book below
         if ($new_name === $this->wikiname()) {
+            return;
+        }
+        // website= identifies the delivery site in cite web.  cite book has no
+        // website= parameter, so preserve it as via=.  If a different via=
+        // already exists, declining the conversion is safer than losing either.
+        if (
+            $new_name === 'cite book' &&
+            $this->has('website') &&
+            $this->has('via') &&
+            !str_equivalent($this->get('website'), $this->get('via')) &&
+            !($this->has('work') && str_equivalent($this->get('website'), $this->get('work'))) &&
+            !($this->has('title') && str_equivalent($this->get('website'), $this->get('title')))
+        ) {
             return;
         }
         if ($this->has('conference') && $this->wikiname() === 'cite conference') {
@@ -3567,6 +3622,21 @@ final class Template
             } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
                 $this->forget('url');
             } // otherwise they are different urls
+
+            // website= is a delivery-site field in cite web, not evidence for a
+            // containing book title.  Preserve that meaning in cite book as via=.
+            // A conflicting via= was rejected before changing the template name.
+            if ($this->has('website')) {
+                if (
+                    ($this->has('work') && str_equivalent($this->get('website'), $this->get('work'))) ||
+                    ($this->has('title') && str_equivalent($this->get('website'), $this->get('title'))) ||
+                    $this->has('via')
+                ) {
+                    $this->forget('website');
+                } else {
+                    $this->rename('website', 'via');
+                }
+            }
 
             // If there is a work=/title= pair while converting to cite book, map to the
             // CS1 chapter=/title=/series= set. A work that names a book series must
@@ -4018,7 +4088,11 @@ final class Template
                             return;
                         }
                     }
-                    if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
+                    if (
+                        $this->has('chapter') &&
+                        $this->blank(['journal', 'bibcode', 'jstor', 'pmid']) &&
+                        $this->can_auto_convert_web_to_cite_book()
+                    ) {
                         $this->change_name_to('cite book');
                     }
                     return;
@@ -4507,7 +4581,10 @@ final class Template
                     }
                     $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
                     $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn'), false));
-                    if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
+                    if (
+                        ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') &&
+                        $this->can_auto_convert_web_to_cite_book()
+                    ) {
                         $this->change_name_to('cite book');
                     }
                     $this->forget('asin');
@@ -6406,7 +6483,8 @@ final class Template
             }
             if (
                 ($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
-                (mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0 || mb_strpos($this->get('isbn'), '978-019') === 0)
+                (mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0 || mb_strpos($this->get('isbn'), '978-019') === 0) &&
+                $this->can_auto_convert_web_to_cite_book()
             ) {
                 $this->change_name_to('cite book', true, true);
             }
@@ -6497,6 +6575,20 @@ final class Template
 
             if ($this->wikiname() === 'cite web') {
                 if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
+                    // website= identifies the delivery site here, and cite book has no
+                    // website= parameter, so mirror the change_name_to() handling.
+                    // Staying cite web is not an option: chapter= is itself unsupported.
+                    if ($this->has('website')) {
+                        if (
+                            ($this->has('work') && str_equivalent($this->get('website'), $this->get('work'))) ||
+                            ($this->has('title') && str_equivalent($this->get('website'), $this->get('title'))) ||
+                            $this->has('via')
+                        ) {
+                            $this->forget('website');
+                        } else {
+                            $this->rename('website', 'via');
+                        }
+                    }
                     if ($this->name === 'cite web') {
                         // Need special code to keep caps the same
                         $this->name = 'cite book';

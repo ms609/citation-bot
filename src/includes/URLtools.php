@@ -1878,11 +1878,17 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
 
         } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
 
-            if ($template->wikiname() === 'cite web') {
+            $was_cite_web = $template->wikiname() === 'cite web';
+            if ($was_cite_web) {
                 $template->change_name_to('cite book');
             }
             if ($match['domain'] === ".com") {
-                if (!$url_sent) {
+                if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
+                    // Drop the URL when it is redundant (template was already a
+                    // book citation, or the conversion succeeded). If the
+                    // conversion was declined (see Template::change_name_to()),
+                    // the template must remain a valid cite web, which
+                    // requires a url=.
                     $template->forget($url_type);
                     if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
@@ -1903,7 +1909,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                         return false;  // do not continue and delete it, because of TODO above
                     }
                 }
-                if (!$url_sent) {
+                if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
                     $template->forget($url_type); // will forget accessdate too
                     if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
@@ -2106,13 +2112,19 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             return false;
         } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match) &&
                             (mb_stripos($template->parsed_text(), 'library') === false)) { // Sometimes it is web cite to Library of Congress
-            if ($template->wikiname() === 'cite web') {
+            $was_cite_web = $template->wikiname() === 'cite web';
+            if ($was_cite_web) {
                 $template->change_name_to('cite book');  // Better template choice
             }
             if ($template->blank('lccn')) {
                 report_modification("Converting URL to LCCN parameter");
             }
-            if (!$url_sent) {
+            if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
+                // Drop the URL when it is redundant (template was already a
+                // book citation, or the conversion succeeded). If the
+                // conversion was declined (see Template::change_name_to()),
+                // the template must remain a valid cite web, which requires
+                // a url=.
                 $template->forget($url_type);
             }
             return $template->add_if_new('lccn', $match[1]);
@@ -2120,10 +2132,16 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             if ($template->blank('ol')) {
                 report_modification("Converting URL to OL parameter");
             }
-            if ($template->wikiname() === 'cite web') {
+            $was_cite_web = $template->wikiname() === 'cite web';
+            if ($was_cite_web) {
                 $template->change_name_to('cite book');  // Better template choice
             }
-            if (!$url_sent) {
+            if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
+                // Drop the URL when it is redundant (template was already a
+                // book citation, or the conversion succeeded). If the
+                // conversion was declined (see Template::change_name_to()),
+                // the template must remain a valid cite web, which requires
+                // a url=.
                 $template->forget($url_type);
             }
             return $template->add_if_new('ol', $match[1]);

@@ -1544,6 +1544,113 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('work'));
     }
 
+    public function testBookSectionWebsiteMatchingMetadataConvertsToBook(): void {
+        $text = '{{cite web |title=The United States of Greater Austria |url=https://books.openedition.org/ceup/2007?lang=en |website=Modernism: The Creation of Nation-States |publisher=Central European University Press |pages=312–318}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'The United States of Greater Austria',
+                'bookTitle' => 'Modernism: The Creation of Nation-States',
+                'publisher' => 'Central European University Press',
+                'pages' => '312-318',
+                'ISBN' => '978-615-5211-93-5',
+                'itemType' => 'bookSection',
+            ],
+        ];
+
+        Zotero::process_zotero_response(
+            (string) json_encode($zotero_data),
+            $template,
+            'https://books.openedition.org/ceup/2007?lang=en',
+            0
+        );
+
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('work'));
+        $this->assertSame('Modernism: The Creation of Nation-States', $template->get2('title'));
+        $this->assertSame('The United States of Greater Austria', $template->get2('chapter'));
+        $this->assertSame('978-615-5211-93-5', $template->get2('isbn'));
+    }
+
+    public function testBookSectionWebsiteMismatchDoesNotPromoteDeliverySite(): void {
+        $text = '{{cite web |title=Some chapter |url=https://example.com/book/chapter |website=Google Books}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'Some chapter',
+                'bookTitle' => 'Actual Book Title',
+                'ISBN' => '978-615-5211-93-5',
+                'itemType' => 'bookSection',
+            ],
+        ];
+
+        Zotero::process_zotero_response(
+            (string) json_encode($zotero_data),
+            $template,
+            'https://example.com/book/chapter',
+            0
+        );
+
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('Google Books', $template->get2('website'));
+        $this->assertSame('Some chapter', $template->get2('title'));
+        $this->assertNull($template->get2('chapter'));
+        $this->assertSame('978-615-5211-93-5', $template->get2('isbn'));
+    }
+
+    public function testBookSectionWebsiteMatchRequiresSectionTitleAgreement(): void {
+        $text = '{{cite web |title=Landing page |url=https://example.com/book/chapter |website=Actual Book Title}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'Actual Chapter',
+                'bookTitle' => 'Actual Book Title',
+                'ISBN' => '978-615-5211-93-5',
+                'itemType' => 'bookSection',
+            ],
+        ];
+
+        Zotero::process_zotero_response(
+            (string) json_encode($zotero_data),
+            $template,
+            'https://example.com/book/chapter',
+            0
+        );
+
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('Actual Book Title', $template->get2('website'));
+        $this->assertSame('Landing page', $template->get2('title'));
+        $this->assertNull($template->get2('chapter'));
+    }
+
+    public function testBookSectionReviewDataDoesNotPromoteWebsite(): void {
+        // A review of the book must not be reinterpreted as a chapter of it
+        // (the "Book review confusion" failure mode).
+        $text = '{{cite web |title=Review of the actual book |url=https://example.com/review |website=Actual Book Title}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'Review of the actual book',
+                'bookTitle' => 'Actual Book Title',
+                'ISBN' => '978-615-5211-93-5',
+                'itemType' => 'bookSection',
+            ],
+        ];
+
+        Zotero::process_zotero_response(
+            (string) json_encode($zotero_data),
+            $template,
+            'https://example.com/review',
+            0
+        );
+
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('Actual Book Title', $template->get2('website'));
+        $this->assertSame('Review of the actual book', $template->get2('title'));
+        $this->assertNull($template->get2('chapter'));
+    }
+
     public function testUfffcStrippedFromTitle(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
