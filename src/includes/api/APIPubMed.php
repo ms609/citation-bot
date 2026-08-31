@@ -18,6 +18,14 @@ function query_pmc_api (array $pmcs, array &$templates): void {  // Pointer to s
     entrez_api($pmcs, $templates, 'pmc');
 }
 
+function pubmed_item_name(SimpleXMLElement $item): string {
+    return (string) $item['Name'];
+}
+
+function pubmed_document_has_items(SimpleXMLElement $document): bool {
+    return isset($document->Item) && count($document->Item) > 0;
+}
+
 /**
  * @param array<string> $ids
  * @param array<Template> &$templates
@@ -47,8 +55,11 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
     }
 
     // A few PMC do not have any data, just pictures of stuff
-    if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) {
+    if (isset($xml->DocSum) && count($xml->DocSum) > 0) {
         foreach ($xml->DocSum as $document) {
+            if (!pubmed_document_has_items($document)) {
+                continue;
+            }
             report_info("Found match for {$db} identifier " . echoable((string) $document->Id));
             foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
                 $an_id = (string) $an_id;
@@ -90,11 +101,12 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                 break;
                             case "AuthorList":
                                 $i = 0;
-                                foreach ($item->Item as $key => $subItem) {
+                                foreach ($item->Item as $subItem) {
+                                    $item_name = pubmed_item_name($subItem);
                                     $subItem = (string) $subItem;
                                     if (preg_match('~^\d~', $subItem)) { // Author started with a number, skip all remaining authors.
                                         break;    // @codeCoverageIgnore
-                                    } elseif ((string) $key === "CollectiveName") { // This is often really long string of gibberish
+                                    } elseif ($item_name === "CollectiveName") { // Do not treat a study group as a person.
                                         break;    // @codeCoverageIgnore
                                     } elseif (mb_strlen($subItem) > 100) {
                                         break;    // @codeCoverageIgnore

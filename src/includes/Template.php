@@ -2011,6 +2011,10 @@ final class Template
 
             case 'eprint':
             case 'arxiv':
+                if (!arxiv_id_valid($value)) {
+                    report_inaction("Not adding malformed arXiv identifier: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank(ARXIV_ALIASES)) {
                     $this->add($param_name, $value);
                     return true;
@@ -2076,6 +2080,10 @@ final class Template
                 if ($value === "0") {
                     return false;
                 } // Got PMID of zero once from pubmed
+                if (!pmid_valid($value)) {
+                    report_inaction("Not adding malformed PMID: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank($param_name)) {
                     if ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite arxiv') {
                         $this->change_name_to('cite journal');
@@ -2091,6 +2099,10 @@ final class Template
                 if ($value === "PMC0" || $value === "0") {
                     return false;
                 } // Got PMID of zero once from pubmed
+                if (!pmc_valid($value)) {
+                    report_inaction("Not adding malformed PMC identifier: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank($param_name)) {
                     if ($this->wikiname() === 'cite arxiv') {
                         $this->change_name_to('cite journal');
@@ -2121,6 +2133,10 @@ final class Template
                         $low_quality = true;
                     } else {
                         $low_quality = false;
+                    }
+                    if (!bibcode_valid($value)) {
+                        report_inaction("Not adding malformed bibcode: " . echoable($value));
+                        return false;
                     }
                     $this->add('bibcode', $value);
                     if ($param_name === 'bibcode') {
@@ -2288,6 +2304,16 @@ final class Template
             case 'biorxiv':
             case 'medrxiv':
             case 'via':
+                if ($param_name === 'biorxiv' || $param_name === 'medrxiv') {
+                    $test_value = $value;
+                    if (mb_strpos($test_value, '10.1101/') !== 0 && mb_strpos($test_value, '10.64898/') !== 0) {
+                        $test_value = '10.1101/' . $test_value; // Same normalization prepare_rxiv() applies
+                    }
+                    if (!rxiv_id_valid($test_value)) {
+                        report_inaction("Not adding malformed $param_name identifier: " . echoable($value));
+                        return false;
+                    }
+                }
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
@@ -4546,7 +4572,7 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
+                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
                             // Convert to cite bioRxiv
                             $this->change_name_to('cite bioRxiv', true, true);
                             $this->rename('doi', 'biorxiv');
@@ -4591,7 +4617,7 @@ final class Template
                         $this->has('doi')
                     ) {
                         $doi_value = $this->get('doi');
-                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value)) {
+                        if (preg_match('~^10\.1101/|^10\.64898/~', $doi_value) && rxiv_id_valid($doi_value)) {
                             // Convert to cite medRxiv
                             $this->change_name_to('cite medRxiv', true, true);
                             $this->rename('doi', 'medrxiv');

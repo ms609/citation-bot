@@ -90,6 +90,7 @@ ci:
       - .github/labeler.yml
       - .github/cffconvert-requirements.txt
       - tools/update_cffconvert_lock.sh
+      - tools/cs1_harness.php
 
 docker:
   - changed-files:

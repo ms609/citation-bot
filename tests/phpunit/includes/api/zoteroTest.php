@@ -61,7 +61,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testDropUrlCode3(): void { // url is same as one doi points to, except for http vs. https
-        $text = "{{cite journal |pmc=XYZ| first = Luca | last = D'Auria | year = 2015 | title = Magma injection beneath the urban area of Naples | url = http://www.nature.com/articles/srep13100 | doi=10.1038/srep13100 }}";
+        $text = '{{cite journal |pmc=XYZ| last1 = Watson | first1 = James D. | last2 = Crick | first2 = Francis H. C. | year = 1953 | title = Molecular Structure of Nucleic Acids: A Structure for Deoxyribose Nucleic Acid | url = http://www.nature.com/articles/171737a0 | doi=10.1038/171737a0 }}';
         $expanded = $this->process_citation($text);
         $this->assertNotNull($expanded->get2('url'));
     }
