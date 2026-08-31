@@ -1,0 +1,66 @@
+name: CS1 Harness
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/**'
+      - 'tools/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/cs1-harness.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'src/**'
+      - 'tools/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - '.github/workflows/cs1-harness.yml'
+  schedule:
+    - cron: '10 18 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+      with:
+        php-version: '8.4'
+        coverage: none
+        extensions: mbstring, intl, curl, openssl, xml, sockets, pcntl
+
+    - name: Cache Composer dependencies
+      id: composer-cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: vendor
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate
+
+    - name: Install dependencies
+      run: composer install -vvv --no-progress
+
+    - name: Run CS1 harness (fast mode)
+      run: php tools/cs1_harness.php
+
+    - name: Run CS1 harness (slow mode)
+      run: php tools/cs1_harness.php --slow

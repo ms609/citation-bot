@@ -10,3 +10,4 @@ src/includes/DebugLog.txt
 src/includes/cookie.txt
 tmp/*
 vendor/*
+phpunit.local.xml
