@@ -107,9 +107,9 @@ function doi_works(string $doi): ?bool {
     HandleCache::check_memory_use();
 
     $works = is_doi_works($doi);
-    if ($works === null) {
-        // Network/resolver failures are transient. Do not poison a long-running batch.
-        return null; // @codeCoverageIgnore
+    if ($works === null) {  // These are unexpected nulls
+        HandleCache::$cache_hdl_null[$doi] = true;   // @codeCoverageIgnore
+        return null;
     }
     if ($works === false) {
         if (isset(NULL_DOI_BUT_GOOD[$doi])) {
