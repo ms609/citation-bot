@@ -26,6 +26,19 @@ function pubmed_document_has_items(SimpleXMLElement $document): bool {
     return isset($document->Item) && count($document->Item) > 0;
 }
 
+function pubmed_document_title(SimpleXMLElement $document): ?string {
+    if (!pubmed_document_has_items($document)) {
+        return null;
+    }
+    foreach ($document->Item as $item) {
+        if (pubmed_item_name($item) === 'Title') {
+            $title = str_replace(["[", "]"], "", (string) $item);
+            return $title === '' ? null : $title;
+        }
+    }
+    return null;
+}
+
 /**
  * @param array<string> $ids
  * @param array<Template> &$templates
@@ -203,7 +216,10 @@ function parse_entrez_xml_response(string $output): ?SimpleXMLElement {
     } catch (Throwable) {
         return null;
     }
-    return $xml === false ? null : $xml;
+    if ($xml === false || !in_array($xml->getName(), ['eSummaryResult', 'eSearchResult'], true)) {
+        return null;
+    }
+    return $xml;
 }
 
 /**
@@ -249,26 +265,25 @@ function find_pmid(Template $template): void {
         if ($template->has('title') && !in_array('doi', $results[2], true)) {
             usleep(100000); // Wait 1/10 of a second since we just tried
             $xml = get_entrez_xml('pubmed', $results[0]);
-            if ($xml === null || !is_object($xml->DocSum->Item)) {
-                report_inline("Unable to query PubMed."); // @codeCoverageIgnore
-                return; // @codeCoverageIgnore
+            if ($xml === null || !isset($xml->DocSum) || count($xml->DocSum) !== 1) {
+                report_inline("Unable to query PubMed.");
+                return;
             }
-            $Items = $xml->DocSum->Item;
-            foreach ($Items as $item) {
-                if ((string) $item->attributes()->Name === 'Title') {
-                    $new_title = str_replace(["[", "]"], "", (string) $item);
-                    foreach (THINGS_THAT_ARE_TITLES as $possible) {
-                        if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
-                            $template->add_if_new('pmid', $results[0]);
-                            return;
-                        }
-                    }
-                    // @codeCoverageIgnoreStart
-                    report_inline("Similar matching PubMed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
+            $new_title = pubmed_document_title($xml->DocSum[0]);
+            if ($new_title === null) {
+                report_inline("Unable to verify PubMed title.");
+                return;
+            }
+            foreach (THINGS_THAT_ARE_TITLES as $possible) {
+                if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
+                    $template->add_if_new('pmid', $results[0]);
                     return;
-                    // @codeCoverageIgnoreEnd
                 }
             }
+            // @codeCoverageIgnoreStart
+            report_inline("Similar matching PubMed title not similar enough. Rejected: " . pubmed_link('pmid', $results[0]));
+            return;
+            // @codeCoverageIgnoreEnd
         }
         $template->add_if_new('pmid', $results[0]);
     } else {

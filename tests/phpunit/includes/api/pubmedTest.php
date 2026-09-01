@@ -151,4 +151,18 @@ final class pubmedTest extends testBaseClass {
         $this->assertInstanceOf(SimpleXMLElement::class, $xml);
         $this->assertSame('12345', (string) $xml->DocSum->Id);
     }
+
+    public function testPubmedDocumentTitleRejectsMissingExpectedShape(): void {
+        $this->assertNull(pubmed_document_title(new SimpleXMLElement('<DocSum><Id>12345</Id></DocSum>')));
+        $this->assertNull(pubmed_document_title(
+            new SimpleXMLElement('<DocSum><Item Name="PubDate">2026</Item></DocSum>')
+        ));
+    }
+
+    public function testPubmedDocumentTitleExtractsTitle(): void {
+        $document = new SimpleXMLElement(
+            '<DocSum><Item Name="Title">[Expected title]</Item></DocSum>'
+        );
+        $this->assertSame('Expected title', pubmed_document_title($document));
+    }
 }
