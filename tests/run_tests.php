@@ -38,8 +38,16 @@ if (!is_resource($process)) {
 
 $paratest_exit_code = proc_close($process);
 
+$coverage_exit_code = 0;
+if ($paratest_exit_code === 0) {
+    passthru(
+        PHP_BINARY . ' -d memory_limit=' . $memory_limit . ' tests/check_coverage.php coverage.xml',
+        $coverage_exit_code
+    );
+}
+
 // Generate the timing report on stdout; its exit code is not propagated
 passthru(PHP_BINARY . ' -d memory_limit=' . $memory_limit . ' tests/parse_junit.php', $junit_exit_code);
 unset($junit_exit_code);
 
-exit($paratest_exit_code);
+exit($paratest_exit_code !== 0 ? $paratest_exit_code : $coverage_exit_code);
