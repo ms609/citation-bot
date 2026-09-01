@@ -133,7 +133,7 @@ final class Html5EncodingOptionsTest extends PHPUnit\Framework\TestCase {
             return null;
         }
 
-        $name = mb_strtolower(ltrim($token[1], '\\'));
+        $name = mb_strtolower(mb_ltrim($token[1], '\\'));
         if (str_contains($name, '\\')) {
             $parts = explode('\\', $name);
             $name = (string) end($parts);
