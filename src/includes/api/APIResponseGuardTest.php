@@ -75,7 +75,7 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $result = ExternalApiResponseGuard::run(
             'test API',
             static function (): string {
-                strlen([]);
+                mb_strlen([]);
                 return 'unreachable';
             },
             'fallback'
