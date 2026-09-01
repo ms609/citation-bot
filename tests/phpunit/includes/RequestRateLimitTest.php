@@ -147,9 +147,22 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+    public function testBaseDirectoryFallsBackToSystemTempDirectory(): void {
+        $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
+
+        try {
+            putenv('PHP_RATE_LIMIT_DIRECTORY');
+            $this->assertSame(sys_get_temp_dir(), request_rate_limit_base_directory());
+        } finally {
+            $this->restoreRateLimitDirectoryEnvironment($previous);
+        }
+    }
+
+
     public function testBucketNameAcceptsMaximumLengthAndSafePunctuation(): void {
         $bucket = 'a' . str_repeat('._-', 21); // 64 bytes total.
-        $this->assertSame(64, mb_strlen($bucket));
+
+        $this->assertSame(64, strlen($bucket));
         $this->assertNull(
             request_rate_limit_consume($bucket, 1, 1.0, $this->base_directory, 100.0)
         );
@@ -372,14 +385,14 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             $this->assertIsString($contents);
             $this->assertSame(
                 1,
-                mb_substr_count(
+                substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): duplicate-reason; failing open.'
                 )
             );
             $this->assertSame(
                 1,
-                mb_substr_count(
+                substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): different-reason; failing open.'
                 )
@@ -454,6 +467,7 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+
     private function rateLimitStatePath(string $bucket): string {
         return $this->base_directory .
             DIRECTORY_SEPARATOR .
@@ -479,6 +493,35 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         putenv('PHP_RATE_LIMIT_DIRECTORY=' . $previous);
     }
 
+    public function testNonPositiveCapacityIsRejected(): void {
+        $this->expectException(InvalidArgumentException::class);
+        request_rate_limit_consume('capacity-validation', 0, 1.0, $this->base_directory, 100.0);
+    }
+
+    public function testNonPositiveRefillRateIsRejected(): void {
+        $this->expectException(InvalidArgumentException::class);
+        request_rate_limit_consume('refill-validation', 1, 0.0, $this->base_directory, 100.0);
+    }
+
+    public function testNegativeTimestampIsRejected(): void {
+        $this->expectException(InvalidArgumentException::class);
+        request_rate_limit_consume('timestamp-validation', 1, 1.0, $this->base_directory, -1.0);
+    }
+
+    public function testBaseDirectoryUsesEnvironmentOverride(): void {
+        $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
+
+        try {
+            putenv('PHP_RATE_LIMIT_DIRECTORY=/tmp/citation-bot-rate-limit-test-override');
+            $this->assertSame(
+                '/tmp/citation-bot-rate-limit-test-override',
+                request_rate_limit_base_directory()
+            );
+        } finally {
+            $this->restoreRateLimitDirectoryEnvironment($previous);
+        }
+    }
+
     public function testBaseDirectoryFallsBackToSystemTempDirectory(): void {
         $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
 
@@ -488,5 +531,49 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         } finally {
             $this->restoreRateLimitDirectoryEnvironment($previous);
         }
+    }
+
+    public function testStoreStateWritesJson(): void {
+        $handle = fopen('php://temp', 'w+');
+        $this->assertIsResource($handle);
+
+        try {
+            $this->assertTrue(request_rate_limit_store_state($handle, 1.5, 100.0));
+            $this->assertTrue(rewind($handle));
+            $state = json_decode((string) stream_get_contents($handle), true);
+            $this->assertSame(['tokens' => 1.5, 'updated' => 100.0], $state);
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    public function testStoreStateRejectsNonFiniteTokens(): void {
+        $handle = fopen('php://temp', 'w+');
+        $this->assertIsResource($handle);
+
+        try {
+            $this->assertFalse(request_rate_limit_store_state($handle, INF, 100.0));
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    public function testStoreStateRejectsReadOnlyStream(): void {
+        $handle = fopen(__FILE__, 'r');
+        $this->assertIsResource($handle);
+
+        try {
+            $this->assertFalse(request_rate_limit_store_state($handle, 1.0, 100.0));
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    private function restoreRateLimitDirectoryEnvironment(string|false $previous): void {
+        if ($previous === false) {
+            putenv('PHP_RATE_LIMIT_DIRECTORY');
+            return;
+        }
+        putenv('PHP_RATE_LIMIT_DIRECTORY=' . $previous);
     }
 }
