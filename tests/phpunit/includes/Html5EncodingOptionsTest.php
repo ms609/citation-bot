@@ -62,11 +62,11 @@ final class Html5EncodingOptionsTest extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * @return array<int, array{
+     * @return array{
      *     function: string,
      *     line: int,
-     *     arguments: array<int, array<int, array|string>>
-     * }>
+     *     arguments: (array|string)[][]
+     * }[]
      */
     private static function htmlFunctionCalls(string $source): array {
         $tokens = token_get_all($source);
