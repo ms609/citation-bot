@@ -33,10 +33,8 @@ final class PageInputBoundsTest extends testBaseClass {
         $this->assertSame(['Second', 'First'], $filtered);
     }
 
-
     public function testExactly255Utf8BytesIsAccepted(): void {
         $title = str_repeat('é', 127) . 'a'; // 255 bytes, 128 characters.
-
         $this->assertSame(255, mb_strlen($title, '8bit'));
         $this->assertSame([$title], filter_runnable_page_titles([$title]));
     }
