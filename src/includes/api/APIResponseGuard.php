@@ -53,7 +53,7 @@ final class ExternalApiResponseGuard {
                 self::JSON_DEPTH,
                 JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING
             );
-        } catch (JsonException | ValueError) {
+        } catch (JsonException) {
             return null;
         }
     }
@@ -91,7 +91,7 @@ final class ExternalApiResponseGuard {
                 self::JSON_DEPTH,
                 JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING
             );
-        } catch (JsonException | ValueError) {
+        } catch (JsonException) {
             return null;
         }
 
