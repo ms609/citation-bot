@@ -71,12 +71,11 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $this->assertSame('ok', $result);
     }
 
-    public function testGuardContainsUnexpectedParserThrowable(): void { // This test has invalid code, and verifies that it fails
+    public function testGuardContainsUnexpectedParserThrowable(): void {
         $result = ExternalApiResponseGuard::run(
             'test API',
             static function (): string {
-                /** @psalm-suppress UnusedFunctionCall */ /** @psalm-suppress InvalidCast */ /** @psalm-suppress InvalidArgument */ /** @phpstan-ignore-next-line */ /** @phan-suppress-next-line PhanTypeMismatchArgumentInternalReal */
-                mb_strlen([]);
+                strlen([]);
                 return 'unreachable';
             },
             'fallback'
