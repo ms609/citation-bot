@@ -26,7 +26,7 @@ final class BookReviewConfusionTest extends testBaseClass {
         $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
         $this->assertTrue(isAdsBookReviewConfusion($template, $record), 'ADS review confusion should be detected');
         // Simulate that expand_by_adsabs would reject — template stays clean
-        $this->assertTrue($template->blank(['journal','volume','issue','pages','page','doi','bibcode','bibcode_nosearch']));
+        $this->assertTrue($template->blank(['journal', 'volume', 'issue', 'pages', 'page', 'doi', 'bibcode', 'bibcode_nosearch']));
     }
 
     public function testAdsRecordLooksLikeReviewForNature1939(): void {
@@ -77,7 +77,7 @@ final class BookReviewConfusionTest extends testBaseClass {
         $record = (object) ['title' => ['Systematic literature review of X'], 'pub' => 'Nature', 'doctype' => 'article'];
         $this->assertFalse(adsRecordLooksLikeReview($record) && isBookCitationForReviewGuard($template));
         // Direct check: literature review title should not be considered book review
-        $this->assertFalse(adsRecordLooksLikeReview((object)['title'=>['Systematic literature review of X'], 'doctype'=>'article', 'pub'=>'Nature']));
+        $this->assertFalse(adsRecordLooksLikeReview((object) ['title' => ['Systematic literature review of X'], 'doctype' => 'article', 'pub' => 'Nature']));
     }
 
     public function testLegitCiteJournalNotBlocked(): void {
