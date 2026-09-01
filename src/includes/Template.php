@@ -1943,6 +1943,11 @@ final class Template
 
             case 'archive-url':
                 if ($this->blank(['archive-url', 'archiveurl'])) {
+                    if ($this->blank(['archive-date', 'archivedate']) && !archive_url_has_timestamp($value)) {
+                        // CS1 would report "|archive-url= requires |archive-date="
+                        report_inaction("Not adding archive-url without extractable archive-date: " . echoable($value));
+                        return false;
+                    }
                     $this->add($param_name, $value);
                     $this->tidy_parameter($param_name);
                     return true;
@@ -3414,7 +3419,12 @@ final class Template
                             $v .= mb_substr($lve[1], 0, 1);
                         }
                         if ($fv_suffix !== '') {
-                            $v .= $fv_suffix;
+                            $vanc_suffix = mb_rtrim(mb_ltrim($fv_suffix), '.');
+                            if (vanc_suffix_valid($vanc_suffix)) {
+                                $v .= ' ' . $vanc_suffix;
+                            } else {
+                                report_inaction("Dropping name suffix not valid in Vancouver style: " . echoable($vanc_suffix));
+                            }
                         }
                         $i++;
                     }
@@ -5620,7 +5630,7 @@ final class Template
                 case 'archive-url':
                 case 'archiveurl':
                     if ($this->blank(['archive-date', 'archivedate'])) {
-                        if (preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)(\d{4})(\d{2})(\d{2})\d{6}~', $this->get($param), $matches)) {
+                        if (preg_match('~^https?://(?:(?:www\.|web\.)?archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)(\d{4})(\d{2})(\d{2})\d{6}~', $this->get($param), $matches)) {
                                $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
                         }
                         if (preg_match('~^https?://wayback\.archive\-it\.org/\d{4}/(\d{4})(\d{2})(\d{2})\d{6}~', $this->get($param), $matches)) {

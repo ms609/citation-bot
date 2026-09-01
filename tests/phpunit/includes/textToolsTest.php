@@ -1393,4 +1393,15 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(url_valid('http://'));     // only slashes
         $this->assertFalse(url_valid(''));
     }
+
+    public function testArchiveUrlHasTimestamp(): void {
+        $this->assertTrue(archive_url_has_timestamp('https://web.archive.org/web/20200101000000/https://example.com'));
+        $this->assertTrue(archive_url_has_timestamp('https://archive.today/20200101000000/https://example.com'));
+        $this->assertTrue(archive_url_has_timestamp('https://wayback.archive-it.org/1234/20200101000000/https://example.com'));
+        $this->assertTrue(archive_url_has_timestamp('https://www.webcitation.org/5eKc9qbge'));
+        $this->assertFalse(archive_url_has_timestamp('https://perma.cc/ABCD-1234'));
+        $this->assertFalse(archive_url_has_timestamp('https://ghostarchive.org/archive/xxxxx'));
+        $this->assertFalse(archive_url_has_timestamp('https://web.archive.org/web/https://example.com'));
+        $this->assertFalse(archive_url_has_timestamp(''));
+    }
 }
