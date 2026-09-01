@@ -275,7 +275,7 @@ function find_pmid(Template $template): void {
                 return;
             }
             foreach (THINGS_THAT_ARE_TITLES as $possible) {
-                if ($template->has($possible) && titles_are_similar($template->get($possible), new_title)) {
+                if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
                     $template->add_if_new('pmid', $results[0]);
                     return;
                 }
