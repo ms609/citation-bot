@@ -465,7 +465,6 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
-
     private function rateLimitStatePath(string $bucket): string {
         return $this->base_directory .
             DIRECTORY_SEPARATOR .
