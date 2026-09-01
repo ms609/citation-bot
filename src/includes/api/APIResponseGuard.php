@@ -113,7 +113,7 @@ final class ExternalApiResponseGuard {
                 ' ',
                 $exception::class . ': ' . $exception->getMessage()
             );
-            $message = substr($message, 0, 500);
+            $message = mb_substr($message, 0, 500);
 
             if (function_exists('bot_debug_log')) {
                 bot_debug_log($service . ' returned invalid data: ' . $message);
