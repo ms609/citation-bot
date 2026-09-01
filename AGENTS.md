@@ -49,6 +49,11 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - **`src/includes/Parameter.php`** - Parameter class - Template parameter handling
 - **`src/includes/WikipediaBot.php`** - WikipediaBot class - Wikipedia API client with OAuth
 - **`src/includes/Statistics.php`** - Statistics helpers – UCB tag parsing, aggregation, and wikitext generation for `User:Citation bot/statistics`
+- **`src/includes/GadgetApi.php`** - Gadget API validation and rate limiting helpers
+- **`src/includes/PublicConfig.php`** - Public URL/host/origin canonicalization and CORS helpers
+- **`src/includes/RequestRateLimit.php`** - Token-bucket rate limiting for gadget and web requests
+- **`src/includes/request_security.php`** - CSRF and session security helpers for web entrypoints
+- **`src/includes/TextTools.php`** - String manipulation and CS1 identifier validators
 - **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 9 concrete subclasses
 - **`src/includes/URLtools.php`** - URL normalization and metadata extraction (standalone functions, no class)
 - **`src/includes/NameTools.php`** - Author name parsing and formatting (standalone functions, no class)
@@ -278,6 +283,10 @@ The gadget MUST:
 │       ├── Parameter.php       # Parameter handling
 │       ├── WikipediaBot.php    # Wikipedia API client
 │       ├── Statistics.php      # Statistics helpers for User:Citation bot/statistics
+│       ├── GadgetApi.php       # Gadget API validation and rate limiting helpers
+│       ├── PublicConfig.php    # Public URL/host/origin canonicalization and CORS helpers
+│       ├── RequestRateLimit.php # Token-bucket rate limiting for gadget and web requests
+│       ├── request_security.php # CSRF and session security helpers
 │       ├── URLtools.php        # URL normalization & metadata
 │       ├── NameTools.php       # Author name parsing
 │       ├── MathTools.php       # MathML to LaTeX conversion

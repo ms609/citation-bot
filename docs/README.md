@@ -55,7 +55,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
-- **Timeout limit**: Request-level processing continues as long as the HTTP connection holds, but individual page lists are subject to internal size caps (see "Structure" below)
+- **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, unlimited for CLI); thorough mode can use the full budget
 
 ### Citation Expander Gadget (`src/gadgetapi.php`)
 
@@ -105,6 +105,10 @@ Includes (under `src/includes/`):
 - `src/includes/constants.php`: constants defined; further constants are split into files under `src/includes/constants/`
 - `src/includes/WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
 - `src/includes/Statistics.php`: UCB tag parsing and statistics wikitext generation for `User:Citation bot/statistics`
+- `src/includes/GadgetApi.php`: gadget request validation and rate-limiting helpers
+- `src/includes/PublicConfig.php`: public URL/host/origin canonicalization and CORS helpers
+- `src/includes/RequestRateLimit.php`: token-bucket rate limiting for gadget and web requests
+- `src/includes/request_security.php`: CSRF and session security helpers for web entrypoints
 - `src/includes/NameTools.php`: defines name functions
 - `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
 - `src/includes/setup.php`: sets up needed functions, requires most of the other files listed here
