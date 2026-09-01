@@ -40,6 +40,23 @@ function bot_debug_log(string $log_this): void {
     }
 }
 
+function setup_is_gadget_request(): bool {
+    return mb_strpos(
+        is_string($_SERVER['PHP_SELF'] ?? null) ? $_SERVER['PHP_SELF'] : '',
+        '/gadgetapi.php'
+    ) !== false;
+}
+
+function reject_setup_request(string $message, int $exit_code = 0): never {
+    if (setup_is_gadget_request() && class_exists('GadgetApiRequestException')) {
+        throw new GadgetApiRequestException('invalid_request', 400);
+    }
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>'
+        . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')
+        . '</h1></main></body></html>';
+    exit($exit_code);
+}
+
 if (file_exists(__DIR__ . '/../env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
@@ -62,10 +79,12 @@ enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? 
 // Should add all these to index.php web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
 if (isset($_REQUEST["wiki_base"])) {
-    $wiki_base = mb_trim((string) $_REQUEST["wiki_base"]);
+    if (!is_string($_REQUEST["wiki_base"])) {
+        reject_setup_request('Unsupported wiki requested - aborting');
+    }
+    $wiki_base = mb_trim($_REQUEST["wiki_base"]);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
-        echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Unsupported wiki requested - aborting</h1></main></body></html>';
-        exit(0);
+        reject_setup_request('Unsupported wiki requested - aborting');
     }
 } else {
     $wiki_base = 'en';
@@ -134,16 +153,20 @@ if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || (mb_strpos((strin
 }
 
 if (isset($_POST['PHP_ADSABSAPIKEY'])) {
-    $key = (string) $_POST['PHP_ADSABSAPIKEY'];
+    if (!is_string($_POST['PHP_ADSABSAPIKEY'])) {
+        unset($_POST['PHP_ADSABSAPIKEY']);
+        reject_setup_request('Invalid request data', 1);
+    }
+    $key = $_POST['PHP_ADSABSAPIKEY'];
     unset($_POST['PHP_ADSABSAPIKEY']); // Remove secret from environment
     $key = mb_trim($key);
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
-        exit(1); // invalid data
+        reject_setup_request('Invalid request data', 1);
     }
 } elseif (isset($_GET['PHP_ADSABSAPIKEY'])) {
-    exit(1); // we no longer allow GET of secrets
+    reject_setup_request('Invalid request data', 1); // we no longer allow GET of secrets
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
