@@ -138,7 +138,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     }
                 }
             }
-            if ($crossRef->volume_title && ($work_aliases_are_blank || $template->wikiname() === 'cite book' || ($is_book_chapter && !in_array($template->wikiname(), NO_CHAPTER_ADD)))) {
+            if ($crossRef->volume_title && ($work_aliases_are_blank || $template->wikiname() === 'cite book' || ($is_book_chapter && !in_array($template->wikiname(), NO_CHAPTER_ADD, true)))) {
                 if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
                     // title= already holds the article title: rename it to chapter= for most templates,
                     // but for cite encyclopedia/encyclopaedia prefer keeping title= and do not add a
