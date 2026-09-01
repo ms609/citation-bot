@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 function parse_unpaywall_response(string $response): ?object {
-    $oa = @json_decode($response);
-    if (!is_object($oa)) {
+    $oa = ExternalApiResponseGuard::decodeObject($response);
+    if ($oa === null) {
         return null;
     }
     if (isset($oa->journal_name) && !is_scalar($oa->journal_name)) {

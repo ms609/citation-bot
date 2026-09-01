@@ -3,17 +3,17 @@
 declare(strict_types=1);
 
 function parse_semanticscholar_corpus_response(string $response): ?string {
-    $json = @json_decode($response);
-    if (!is_object($json) || !isset($json->corpusId) || (!is_string($json->corpusId) && !is_int($json->corpusId))) {
+    $json = ExternalApiResponseGuard::decodeObject($response);
+    if ($json === null || !isset($json->corpusId) || (!is_string($json->corpusId) && !is_int($json->corpusId))) {
         return null;
     }
     return (string) $json->corpusId;
 }
 
 function parse_semanticscholar_doi_response(string $response): ?string {
-    $json = @json_decode($response);
+    $json = ExternalApiResponseGuard::decodeObject($response);
     if (
-        !is_object($json) ||
+        $json === null ||
         !isset($json->externalIds) ||
         !is_object($json->externalIds) ||
         !isset($json->externalIds->DOI) ||
@@ -25,8 +25,8 @@ function parse_semanticscholar_doi_response(string $response): ?string {
 }
 
 function parse_semanticscholar_open_access_response(string $response): ?bool {
-    $json = @json_decode($response);
-    if (!is_object($json) || isset($json->error) || !isset($json->isOpenAccess)) {
+    $json = ExternalApiResponseGuard::decodeObject($response);
+    if ($json === null || isset($json->error) || !isset($json->isOpenAccess)) {
         return null;
     }
     if (!is_bool($json->isOpenAccess)) {
@@ -36,9 +36,9 @@ function parse_semanticscholar_open_access_response(string $response): ?bool {
 }
 
 function parse_semanticscholar_legacy_url_response(string $response): ?string {
-    $json = @json_decode($response);
+    $json = ExternalApiResponseGuard::decodeObject($response);
     if (
-        !is_object($json) ||
+        $json === null ||
         !isset($json->url) ||
         !is_string($json->url) ||
         $json->url === '' ||
