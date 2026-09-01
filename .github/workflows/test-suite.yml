@@ -135,8 +135,7 @@ jobs:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   test-8-5:
-    if: github.event_name == 'schedule'
-    continue-on-error: true
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     runs-on: ubuntu-24.04
 
     steps:
