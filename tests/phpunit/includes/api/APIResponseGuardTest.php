@@ -75,7 +75,7 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $result = ExternalApiResponseGuard::run(
             'test API',
             static function (): string {
-                /** @psalm-suppress UnusedFunctionCall InvalidCast InvalidArgument */ /** @phpstan-ignore-next-line */ /** @phan-suppress-next-line PhanTypeMismatchArgumentInternalReal */
+                /** @psalm-suppress UnusedFunctionCall */ /** @psalm-suppress InvalidCast */ /** @psalm-suppress InvalidArgument */ /** @phpstan-ignore-next-line */ /** @phan-suppress-next-line PhanTypeMismatchArgumentInternalReal */
                 mb_strlen([]);
                 return 'unreachable';
             },
