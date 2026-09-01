@@ -652,4 +652,113 @@ final class bibcodeTest extends testBaseClass {
         );
     }
 
+    public function testTurnbullBookNotMashedWithNatureReview(): void {
+        $text = '{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->has('title'));
+        $this->assertSame('The James Gregory Tercentenary Memorial Volume', $template->get('title'));
+        $this->assertTrue(isBookCitationForReviewGuard($template), 'Turnbull citation should be treated as book for review confusion guard');
+        $record = (object) [
+            'title' => ['James Gregory Tercentenary Memorial Volume'],
+            'author' => ['Plummer, H. C.'],
+            'pub' => 'Nature',
+            'volume' => '144',
+            'issue' => '3661',
+            'page' => ['1062'],
+            'year' => '1939',
+            'bibcode' => '1939Natur.144.1062P',
+            'doi' => ['10.1038/1441062a0'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
+        $this->assertTrue(isAdsBookReviewConfusion($template, $record), 'ADS review confusion should be detected');
+        $this->assertTrue($template->blank(['journal', 'volume', 'issue', 'pages', 'page', 'doi', 'bibcode', 'bibcode_nosearch']));
+    }
+
+    public function testAdsRecordLooksLikeReviewForNature1939(): void {
+        $record = (object) [
+            'title' => ['James Gregory Tercentenary Memorial Volume'],
+            'pub' => 'Nature',
+            'volume' => '144',
+            'page' => ['1062'],
+            'year' => '1939',
+            'bibcode' => '1939Natur.144.1062P',
+            'doi' => ['10.1038/1441062a0'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(adsRecordLooksLikeReview($record), 'Nature 1939 review should be considered potential review');
+    }
+
+    public function testCitationLooksLikeBookForTurnbull(): void {
+        $template = $this->make_citation('{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}');
+        $this->assertTrue(isBookCitationForReviewGuard($template), 'Turnbull citation should be treated as book for review confusion guard');
+        $this->assertFalse(citationLooksLikeBook($template));
+        $this->assertTrue(isBookCitationForReviewGuard($template));
+    }
+
+    public function testBooksReceivedLiteralNotFlaggedAsReview(): void {
+        $record = (object) ['title' => ['Books Received'], 'pub' => 'Nature', 'doi' => ['10.1038/308567a0'], 'doctype' => 'article'];
+        $this->assertFalse(adsRecordLooksLikeReview($record), 'Literal Books Received listing should not be review');
+    }
+
+    public function testLiteratureReviewNotBookReview(): void {
+        $template = $this->make_citation('{{cite journal|title=Systematic literature review of X|journal=Nature|year=2020|volume=1}}');
+        $this->assertFalse(isBookCitationForReviewGuard($template));
+        $record = (object) ['title' => ['Systematic literature review of X'], 'pub' => 'Nature', 'doctype' => 'article'];
+        $this->assertFalse(adsRecordLooksLikeReview($record) && isBookCitationForReviewGuard($template));
+        $this->assertFalse(adsRecordLooksLikeReview((object) ['title' => ['Systematic literature review of X'], 'doctype' => 'article', 'pub' => 'Nature']));
+    }
+
+    public function testLegitCiteJournalNotBlocked(): void {
+        $template = $this->make_citation('{{cite journal|title=James Gregory Tercentenary Memorial Volume|journal=Nature|year=1939|volume=144|page=1062}}');
+        $this->assertFalse(isBookCitationForReviewGuard($template), 'Cite journal should not be book-like');
+        $record = (object) [
+            'title' => ['James Gregory Tercentenary Memorial Volume'],
+            'pub' => 'Nature',
+            'volume' => '144',
+            'page' => ['1062'],
+            'year' => '1939',
+            'bibcode' => '1939Natur.144.1062P',
+            'doctype' => 'article',
+        ];
+        $this->assertFalse(isAdsBookReviewConfusion($template, $record), 'Journal template should not trigger confusion guard');
+    }
+
+    public function testSylvesterBookNotMashedWithNatureReview(): void {
+        $template = $this->make_citation('{{citation|first=J. J.|last=Sylvester|editor-first=H. F.|editor-last=Baker|title=The Collected Mathematical Papers of James Joseph Sylvester|location=Cambridge, England|publisher=Cambridge University Press|year=1904}}');
+        $this->assertTrue(isBookCitationForReviewGuard($template));
+        $record = (object) [
+            'title' => ['The Collected Mathematical Papers of James Joseph Sylvester'],
+            'pub' => 'Nature',
+            'volume' => '71',
+            'issue' => '1831',
+            'page' => ['98'],
+            'year' => '1904',
+            'bibcode' => '1904Natur..71...98G',
+            'doi' => ['10.1038/071098a0'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
+        $this->assertTrue(isAdsBookReviewConfusion($template, $record));
+        $this->assertTrue(adsRecordLooksLikeReview($record));
+    }
+
+    public function testPeresBookNotMashedWithAmJPhReview(): void {
+        $template = $this->make_citation('{{citation|last=Peres|first=Asher|title=Quantum Theory: Concepts and Methods|publisher=Kluwer|year=1993|isbn=978-0-7923-3632-7}}');
+        $this->assertTrue(isBookCitationForReviewGuard($template));
+        $record = (object) [
+            'title' => ['Quantum Theory: Concepts and Methods'],
+            'pub' => 'American Journal of Physics',
+            'volume' => '63',
+            'issue' => '3',
+            'page' => ['285'],
+            'year' => '1995',
+            'bibcode' => '1995AmJPh..63..285P',
+            'doi' => ['10.1119/1.17946'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
+        $this->assertTrue(isAdsBookReviewConfusion($template, $record));
+    }
+
 }

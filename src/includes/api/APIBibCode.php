@@ -243,7 +243,7 @@ function expand_by_adsabs(Template $template): void {
         }
     }
 
-    if ($result->numFound !== 1 && !$skip_fallback && ($template->has('journal') || $template->has('issn'))) {
+    if ($result->numFound !== 1 && !$skip_fallback && ($template->has('journal') || $template->has('issn')) && !isBookCitationForReviewGuard($template)) {
         $journal = $template->get('journal');
         // try partial search using bibcode components:
         $pages = $template->page_range();
@@ -320,7 +320,7 @@ function expand_by_adsabs(Template $template): void {
             return;
         }
 
-        if (looksLikeBookReview($template, $record)) {
+        if (looksLikeBookReview($template, $record) || isAdsBookReviewConfusion($template, $record)) {
             // Possible book and we found book review in journal
             report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review. Rejecting.");
             return;
@@ -893,6 +893,54 @@ function citationLooksLikeBook(Template $template): bool {
     return $book_score >= 2;
 }
 
+function isBookCitationForReviewGuard(Template $template): bool {
+    if (citationLooksLikeBook($template)) {
+        return true;
+    }
+    if (!in_array($template->wikiname(), ['citation', 'cite book'], true)) {
+        return false;
+    }
+    $hasBookSignal = !$template->blank(LOCATIONS_AND_SUCH) || $template->has('publisher') || $template->has('editor') || $template->has('editor1');
+    $hasJournalSignal = !$template->blank(['journal', 'volume', 'issue', 'issn', 'bibcode', 'doi', 'jstor']);
+    return $hasBookSignal && $hasJournalSignal === false;
+}
+
+function isAdsBookReviewConfusion(Template $template, object $record): bool {
+    if (!isBookCitationForReviewGuard($template)) {
+        return false;
+    }
+    if (!isset($record->title[0]) || !is_string($record->title[0])) {
+        return false;
+    }
+    if (!titles_are_similar($template->get('title'), $record->title[0])) {
+        return false;
+    }
+    if (isset($record->bibcode) && is_string($record->bibcode) && is_a_book_bibcode($record->bibcode)) {
+        return false;
+    }
+    $pub = isset($record->pub) && is_string($record->pub) ? $record->pub : '';
+    if ($pub === '') {
+        return false;
+    }
+    // Require short pagination or volume/issue typical of a review (1-2 pages, e.g. 1062 or 1062-1063).
+    // If no pagination at all, do not treat as review confusion — too broad.
+    $hasPagination = isset($record->page) && is_array($record->page) && count($record->page) > 0;
+    $hasVolumeOrIssue = isset($record->volume) || isset($record->issue);
+    if (!$hasPagination && !$hasVolumeOrIssue) {
+        return false;
+    }
+    if ($hasPagination) {
+        if (count($record->page) > 2) {
+            return false;
+        }
+        $joined = implode('', $record->page);
+        if (!preg_match('~^[\d\-–]+$~u', $joined)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function adsRecordLooksLikeReview(object $record): bool {
     if (isset($record->bibcode) && is_string($record->bibcode) && is_a_book_bibcode($record->bibcode)) {
         return false;
@@ -906,6 +954,12 @@ function adsRecordLooksLikeReview(object $record): bool {
     $title = '';
     if (isset($record->title) && is_array($record->title) && isset($record->title[0]) && is_string($record->title[0])) {
         $title = $record->title[0];
+    }
+    if (mb_strtolower(mb_trim($title)) === 'books received') {
+        return false;
+    }
+    if (preg_match('~\b(?:literature review|systematic review|review article)\b~i', $title)) {
+        return false;
     }
     if (preg_match('~\b(?:book review|review of)\b~i', $title)) {
         return true;

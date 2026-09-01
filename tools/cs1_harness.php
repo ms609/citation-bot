@@ -393,6 +393,9 @@ function build_matrix(): array {
         ['Clean cite biorxiv', '{{cite biorxiv |biorxiv=10.1101/2020.01.01.000001 |title=X}}', 'pass'],
         ['Clean cite ssrn', '{{cite ssrn |ssrn=1234567 |title=X}}', 'pass'],
 
+        // --- book review confusion guard (Turnbull 1939) ---
+        ['Turnbull book stays book (no journal/doi/bibcode pollution)', '{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}', 'pass'],
+
         // --- known gaps (documented current CS1 violations, tracked) ---
         ['GAP bad ISBN-13 check digit survives tidy', '{{cite journal |title=X |journal=J |isbn=978-0-306-40615-8}}', 'gap'],
         ['GAP invalid ISBN prefix survives tidy', '{{cite journal |title=X |journal=J |isbn=123-4567-890128}}', 'gap'],
