@@ -341,12 +341,17 @@ function expand_doi_with_dx(Template $template, string $doi): void {
         $template->mark_inactive_doi();
         return;
     }
-    $json = @json_decode($data, true);
+    $json = ExternalApiResponseGuard::decodeAssocObject($data);
     unset($data);
-    if (!is_array($json)) {
+    if ($json === null) {
         return;
     }
-    process_doi_json($template, $doi, $json);
+    ExternalApiResponseGuard::run(
+        'DOI content negotiation',
+        static function () use ($template, $doi, $json): void {
+            process_doi_json($template, $doi, $json);
+        }
+    );
 }
 
 /**
@@ -572,8 +577,8 @@ function process_doi_json(Template $template, string $doi, array $json): void {
 }
 
 function parse_crossref_newapi_response(string $response): ?object {
-    $json = @json_decode($response);
-    if (!is_object($json)) {
+    $json = ExternalApiResponseGuard::decodeObject($response);
+    if ($json === null) {
         return null;
     }
     if (!isset($json->status) || !is_string($json->status) || $json->status !== 'ok') {

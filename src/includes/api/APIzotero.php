@@ -428,6 +428,15 @@ final class Zotero {
     }
 
     public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date): void {
+        ExternalApiResponseGuard::run(
+            'Citoid/Zotero',
+            static function () use ($zotero_response, $template, $url, $access_date): void {
+                self::process_zotero_response_unchecked($zotero_response, $template, $url, $access_date);
+            }
+        );
+    }
+
+    private static function process_zotero_response_unchecked(string $zotero_response, Template $template, string $url, int $access_date): void {
         if ($zotero_response === self::ERROR_DONE) {
             return;  // Error message already printed in zotero_request()
         }
@@ -462,7 +471,7 @@ final class Zotero {
             report_warning("Temporarily giving an error for URL " . echoable($url)); // @codeCoverageIgnore
             return;                           // @codeCoverageIgnore
         }
-        $zotero_data = @json_decode($zotero_response, false);
+        $zotero_data = ExternalApiResponseGuard::decodeJson($zotero_response);
         if (!isset($zotero_data)) {
             report_warning("Could not parse JSON for URL " . echoable($url) . ": " . echoable(mb_substr($zotero_response, 0, 500)));
             return;
