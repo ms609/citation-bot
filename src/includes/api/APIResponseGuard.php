@@ -26,7 +26,7 @@ final class ExternalApiResponseGuard {
     }
 
     private static function responseIsSafeToDecode(string $response): bool {
-        if ($response === '' || mb_strlen($response, '8bit') > self::MAX_RESPONSE_BYTES) {
+        if ($response === '' || strlen($response) > self::MAX_RESPONSE_BYTES) {
             return false;
         }
 
@@ -53,7 +53,7 @@ final class ExternalApiResponseGuard {
                 self::JSON_DEPTH,
                 JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING
             );
-        } catch (JsonException) {
+        } catch (JsonException | ValueError) {
             return null;
         }
     }
@@ -79,7 +79,7 @@ final class ExternalApiResponseGuard {
             return null;
         }
 
-        $trimmed = mb_ltrim($response);
+        $trimmed = ltrim($response);
         if ($trimmed === '' || $trimmed[0] !== '{') {
             return null;
         }
@@ -91,7 +91,7 @@ final class ExternalApiResponseGuard {
                 self::JSON_DEPTH,
                 JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING
             );
-        } catch (JsonException) {
+        } catch (JsonException | ValueError) {
             return null;
         }
 
@@ -113,7 +113,7 @@ final class ExternalApiResponseGuard {
                 ' ',
                 $exception::class . ': ' . $exception->getMessage()
             );
-            $message = mb_substr($message, 0, 500);
+            $message = substr($message, 0, 500);
 
             if (function_exists('bot_debug_log')) {
                 bot_debug_log($service . ' returned invalid data: ' . $message);
