@@ -112,6 +112,7 @@ final class arxivTest extends testBaseClass {
         $this->assertNull(parse_arxiv_xml_response('not xml'));
         $this->assertNull(parse_arxiv_xml_response('<feed><entry>'));
         $this->assertNull(parse_arxiv_xml_response("<feed>\xFF</feed>"));
+        $this->assertNull(parse_arxiv_xml_response('<html><body>upstream error</body></html>'));
     }
 
     public function testArxivXmlParserHandlesNamespacedFields(): void {

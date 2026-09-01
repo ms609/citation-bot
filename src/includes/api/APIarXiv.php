@@ -37,7 +37,10 @@ function parse_arxiv_xml_response(string $response): ?SimpleXMLElement {
     } catch (Throwable) {
         return null;
     }
-    return $xml === false ? null : $xml;
+    if ($xml === false || $xml->getName() !== 'feed') {
+        return null;
+    }
+    return $xml;
 }
 
 /**
