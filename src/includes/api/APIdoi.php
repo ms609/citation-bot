@@ -113,6 +113,10 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
 
             $crossRefNewAPI = query_crossref_newapi($doi);
+            if (isCrossRefReviewConfusion($template, $crossRefNewAPI)) {
+                report_info("Book review confusion rejected for doi:" . doi_link($doi) . " — not adding journal metadata to book citation");
+                return;
+            }
             if (isset($crossRefNewAPI->title[0]) && !isset($crossRefNewAPI->title[1])) {
                 $new_title = (string) $crossRefNewAPI->title[0];
                 if (conference_doi($doi) && isset($crossRefNewAPI->subtitle[0]) && mb_strlen((string) $crossRefNewAPI->subtitle[0]) > 4) {
@@ -605,6 +609,55 @@ function parse_crossref_newapi_response(string $response): ?object {
     return $message;
 }
 
+function isCrossRefReviewConfusion(Template $template, object $msg): bool {
+    if (function_exists('isBookCitationForReviewGuard')) {
+        if (!isBookCitationForReviewGuard($template)) {
+            return false;
+        }
+    } else {
+        // Fallback inline check if helper not loaded
+        if (!in_array($template->wikiname(), ['citation', 'cite book'], true)) {
+            return false;
+        }
+        $hasBookSignal = !$template->blank(LOCATIONS_AND_SUCH) || $template->has('publisher') || $template->has('editor') || $template->has('editor1');
+        $hasJournalSignal = !$template->blank(['journal', 'volume', 'issue', 'issn', 'bibcode', 'doi', 'jstor']);
+        if (!($hasBookSignal && $hasJournalSignal === false)) {
+            return false;
+        }
+    }
+    $container = '';
+    if (isset($msg->{'container-title'}) && is_array($msg->{'container-title'}) && isset($msg->{'container-title'}[0]) && is_string($msg->{'container-title'}[0])) {
+        $container = (string) $msg->{'container-title'}[0];
+    } elseif (isset($msg->journal_title) && is_string($msg->journal_title)) {
+        $container = (string) $msg->journal_title;
+    }
+    $journalLike = false;
+    if ($container !== '') {
+        if (mb_stripos($container, 'Nature') !== false || mb_stripos($container, 'Science') !== false) {
+            $journalLike = true;
+        }
+    }
+    if (isset($msg->volume) || isset($msg->page) || isset($msg->issue)) {
+        $journalLike = $journalLike || true;
+    }
+    if (!$journalLike) {
+        return false;
+    }
+    $title = '';
+    if (isset($msg->title) && is_array($msg->title) && isset($msg->title[0]) && is_string($msg->title[0])) {
+        $title = (string) $msg->title[0];
+    } elseif (isset($msg->article_title) && is_string($msg->article_title)) {
+        $title = (string) $msg->article_title;
+    }
+    if ($title === '' || $template->get('title') === '') {
+        return false;
+    }
+    if (!titles_are_similar($template->get('title'), $title)) {
+        return false;
+    }
+    return true;
+}
+
 /**
  * @todo look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref This API can get article numbers in addition to page numbers. Will need to use exist DX code, and add all the extra checks cross ref code has
  */
@@ -722,6 +775,17 @@ function get_doi_from_crossref(Template $template): void {
             }
             $doi = (string) $result->doi;
             if (in_array($doi, BAD_DOIS_FROM_CROSSREF, true)) {
+                return;
+            }
+            // Book review confusion check for OpenURL path
+            $tmpMsg = (object) [
+                'title' => isset($result->article_title) ? [(string) $result->article_title] : [],
+                'container-title' => isset($result->journal_title) ? [(string) $result->journal_title] : [],
+                'volume' => isset($result->volume) ? (string) $result->volume : null,
+                'page' => isset($result->first_page) ? (string) $result->first_page : null,
+            ];
+            if (isCrossRefReviewConfusion($template, $tmpMsg)) {
+                report_info("Book review confusion rejected for OpenURL doi:" . doi_link($doi) . " — not adding to book citation");
                 return;
             }
             report_inline(" Successful!");
