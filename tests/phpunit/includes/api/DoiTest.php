@@ -468,4 +468,18 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('resolved', (string) $xml->query_result->body->query['status']);
         $this->assertSame('10.1000/test', (string) $xml->query_result->body->query->doi);
     }
+
+    public function testCrossRefDoesNotReturnNatureReviewForBook(): void {
+        $template = $this->make_citation('{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}');
+        $crossRefMsg = (object) [
+            'title' => ['James Gregory Tercentenary Memorial Volume'],
+            'container-title' => ['Nature'],
+            'volume' => '144',
+            'page' => '1062-1063',
+            'issued' => (object) ['date-parts' => [[1939]]],
+            'DOI' => '10.1038/1441062a0',
+            'type' => 'journal-article',
+        ];
+        $this->assertTrue(isCrossRefReviewConfusion($template, $crossRefMsg), 'CrossRef Nature hit for book title should be flagged as review');
+    }
 }
