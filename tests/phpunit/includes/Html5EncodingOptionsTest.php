@@ -40,9 +40,9 @@ final class Html5EncodingOptionsTest extends PHPUnit\Framework\TestCase {
                     continue;
                 }
 
-                $relative_path = substr(
+                $relative_path = mb_substr(
                     $file->getPathname(),
-                    strlen($source_root) + 1
+                    mb_strlen($source_root) + 1
                 );
                 $violations[] = sprintf(
                     '%s:%d %s() must specify ENT_HTML5 in its flags argument',
