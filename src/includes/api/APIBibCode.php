@@ -922,8 +922,14 @@ function isAdsBookReviewConfusion(Template $template, object $record): bool {
     if ($pub === '') {
         return false;
     }
-    // Require short pagination typical of a review (1-2 pages, e.g. 1062 or 1062-1063)
-    if (isset($record->page) && is_array($record->page)) {
+    // Require short pagination or volume/issue typical of a review (1-2 pages, e.g. 1062 or 1062-1063).
+    // If no pagination at all, do not treat as review confusion — too broad.
+    $hasPagination = isset($record->page) && is_array($record->page) && count($record->page) > 0;
+    $hasVolumeOrIssue = isset($record->volume) || isset($record->issue);
+    if (!$hasPagination && !$hasVolumeOrIssue) {
+        return false;
+    }
+    if ($hasPagination) {
         if (count($record->page) > 2) {
             return false;
         }

@@ -610,20 +610,8 @@ function parse_crossref_newapi_response(string $response): ?object {
 }
 
 function isCrossRefReviewConfusion(Template $template, object $msg): bool {
-    if (function_exists('isBookCitationForReviewGuard')) {
-        if (!isBookCitationForReviewGuard($template)) {
-            return false;
-        }
-    } else {
-        // Fallback inline check if helper not loaded
-        if (!in_array($template->wikiname(), ['citation', 'cite book'], true)) {
-            return false;
-        }
-        $hasBookSignal = !$template->blank(LOCATIONS_AND_SUCH) || $template->has('publisher') || $template->has('editor') || $template->has('editor1');
-        $hasJournalSignal = !$template->blank(['journal', 'volume', 'issue', 'issn', 'bibcode', 'doi', 'jstor']);
-        if (!($hasBookSignal && $hasJournalSignal === false)) {
-            return false;
-        }
+    if (!function_exists('isBookCitationForReviewGuard') || !isBookCitationForReviewGuard($template)) {
+        return false;
     }
     $container = '';
     if (isset($msg->{'container-title'}) && is_array($msg->{'container-title'}) && isset($msg->{'container-title'}[0]) && is_string($msg->{'container-title'}[0])) {
@@ -631,15 +619,9 @@ function isCrossRefReviewConfusion(Template $template, object $msg): bool {
     } elseif (isset($msg->journal_title) && is_string($msg->journal_title)) {
         $container = (string) $msg->journal_title;
     }
-    $journalLike = false;
-    if ($container !== '') {
-        if (mb_stripos($container, 'Nature') !== false || mb_stripos($container, 'Science') !== false) {
-            $journalLike = true;
-        }
-    }
-    if (isset($msg->volume) || isset($msg->page) || isset($msg->issue)) {
-        $journalLike = $journalLike || true;
-    }
+    // Any container title or volume/page/issue indicates a journal record; for book-review confusion we treat any such as journal-like.
+    // The Narrow check is title similarity, not container breadth.
+    $journalLike = $container !== '' || isset($msg->volume) || isset($msg->page) || isset($msg->issue);
     if (!$journalLike) {
         return false;
     }

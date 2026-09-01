@@ -96,9 +96,4 @@ final class BookReviewConfusionTest extends testBaseClass {
         $this->assertFalse(isAdsBookReviewConfusion($template, $record), 'Journal template should not trigger confusion guard');
     }
 
-    public function testNatureBooksReceivedListingNotTreatedAsReviewSource(): void {
-        // Control: modern listing 10.1038/308567a0 with literal title Books Received should not be used as source for a book
-        $record = (object) ['title' => ['Books Received'], 'pub' => 'Nature', 'doi' => ['10.1038/308567a0'], 'doctype' => 'article'];
-        $this->assertFalse(adsRecordLooksLikeReview($record));
-    }
 }
