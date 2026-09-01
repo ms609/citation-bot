@@ -39,6 +39,8 @@ infrastructure:
       - src/includes/PublicConfig.php
       - src/includes/request_security.php
       - src/includes/Statistics.php
+      - src/includes/GadgetApi.php
+      - src/includes/RequestRateLimit.php
       - src/authenticate.php
       - toolforge.yaml
 
