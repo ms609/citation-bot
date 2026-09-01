@@ -1,11 +1,19 @@
-# Toolforge Jobs v2 – single daily statistics update, EN wiki only
-# Create via: toolforge jobs run update-statistics --image php8.4 --schedule "5 0 * * *" --command "php /data/project/citations/git_repo/src/update_statistics.php"
-# Or declarative: `toolforge jobs load toolforge.yaml` (requires citations tool membership)
-# Legacy fallback: `5 0 * * * /usr/bin/php /data/project/citations/git_repo/src/update_statistics.php`
-jobs:
-  update-statistics:
-    image: php8.4
-    command: php /data/project/citations/git_repo/src/update_statistics.php
-    schedule: "5 0 * * *"
-    concurrency: 1
-    retry: 0
+# Toolforge Jobs v2 – daily statistics update (EN wiki) + session cleanup every 8h
+# Load with:
+# toolforge jobs load toolforge.yaml
+# Kill all cron jobs:
+# toolforge jobs flush 
+# List all cron jobs:
+# toolforge jobs list
+# Remember simply doing "git pull" and updating this file does not update cron
+
+- name: update-statistics
+  image: php8.4
+  command: php /data/project/citations/git_repo/src/update_statistics.php
+  schedule: "5 0 * * *"
+  retry: 0
+
+- name: session-cleanup
+  image: bookworm
+  command: bash -c "find ~/sessions/ -type f -name 'sess_*' \( -size -109c -amin +60 -o -atime +7 \) -delete"
+  schedule: "0 */8 * * *"
