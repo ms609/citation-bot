@@ -9,6 +9,7 @@ final class googleBooksTest extends testBaseClass {
         $this->assertNull(parse_google_books_xml_response('not xml'));
         $this->assertNull(parse_google_books_xml_response('<entry><title>broken</entry>'));
         $this->assertNull(parse_google_books_xml_response("<entry>\xFF</entry>"));
+        $this->assertNull(parse_google_books_xml_response('<html><body>upstream error</body></html>'));
     }
 
     public function testGoogleBooksXmlParserAcceptsExpectedResponse(): void {
