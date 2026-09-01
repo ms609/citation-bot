@@ -506,4 +506,19 @@ final class nameToolsTest extends testBaseClass {
         $result = format_author("van der Waals, Johannes");
         $this->assertSame('Van Der Waals, Johannes', $result);
     }
+
+    /** Mirrors Module:Citation/CS1 is_suffix() */
+    public function testVancSuffixValid(): void {
+        $this->assertTrue(vanc_suffix_valid('Jr'));
+        $this->assertTrue(vanc_suffix_valid('Sr'));
+        $this->assertTrue(vanc_suffix_valid('1st'));
+        $this->assertTrue(vanc_suffix_valid('2nd'));
+        $this->assertTrue(vanc_suffix_valid('4th'));
+        $this->assertTrue(vanc_suffix_valid('9th'));
+        $this->assertFalse(vanc_suffix_valid('Jr.'));
+        $this->assertFalse(vanc_suffix_valid('III'));
+        $this->assertFalse(vanc_suffix_valid('12th'));
+        $this->assertFalse(vanc_suffix_valid('21st'));
+        $this->assertFalse(vanc_suffix_valid(''));
+    }
 }

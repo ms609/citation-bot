@@ -1702,4 +1702,13 @@ final class TemplatePart1Test extends testBaseClass {
         $expanded = $this->process_citation($text);
         $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
     }
+
+    public function testAddIfNewRejectsTimestamplessArchiveUrl(): void {
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('archive-url', 'https://perma.cc/ABCD-1234'));
+        $this->assertNull($template->get2('archive-url'));
+        $this->assertTrue($template->add_if_new('archive-url', 'https://web.archive.org/web/20200101000000/https://example.com'));
+        $this->assertNotNull($template->get2('archive-url'));
+    }
 }

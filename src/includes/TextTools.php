@@ -1292,6 +1292,18 @@ function url_valid(string $value): bool {
     return true;
 }
 
+/**
+ * True when an archive URL carries an extractable snapshot timestamp, mirroring
+ * the timestamp extraction in Template::tidy_parameter('archive-url').  If no
+ * timestamp can be extracted and |archive-date= is absent, CS1 would report
+ * "|archive-url= requires |archive-date=".
+ */
+function archive_url_has_timestamp(string $value): bool {
+    return preg_match('~^https?://(?:web\.archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)\d{14}~', $value) === 1
+        || preg_match('~^https?://wayback\.archive\-it\.org/\d+/\d{14}~', $value) === 1
+        || preg_match('~^https?://(?:www\.|)webcitation\.org/[0-9a-zA-Z]{9}~', $value) === 1;
+}
+
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
