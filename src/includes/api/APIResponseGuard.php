@@ -26,7 +26,7 @@ final class ExternalApiResponseGuard {
     }
 
     private static function responseIsSafeToDecode(string $response): bool {
-        if ($response === '' || strlen($response) > self::MAX_RESPONSE_BYTES) {
+        if ($response === '' || mb_strlen($response, '8bit') > self::MAX_RESPONSE_BYTES) {
             return false;
         }
 
@@ -79,7 +79,7 @@ final class ExternalApiResponseGuard {
             return null;
         }
 
-        $trimmed = ltrim($response);
+        $trimmed = mb_ltrim($response);
         if ($trimmed === '' || $trimmed[0] !== '{') {
             return null;
         }
