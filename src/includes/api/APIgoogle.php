@@ -214,7 +214,10 @@ function parse_google_books_xml_response(string $data): ?SimpleXMLElement {
     } catch (Throwable) {
         return null;
     }
-    return $xml === false ? null : $xml;
+    if ($xml === false || $xml->getName() !== 'entry') {
+        return null;
+    }
+    return $xml;
 }
 
 function google_book_details(Template $template, string $gid): void {
