@@ -158,10 +158,8 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
-
     public function testBucketNameAcceptsMaximumLengthAndSafePunctuation(): void {
         $bucket = 'a' . str_repeat('._-', 21); // 64 bytes total.
-
         $this->assertSame(64, mb_strlen($bucket));
         $this->assertNull(
             request_rate_limit_consume($bucket, 1, 1.0, $this->base_directory, 100.0)
