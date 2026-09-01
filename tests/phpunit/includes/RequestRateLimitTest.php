@@ -385,14 +385,14 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             $this->assertIsString($contents);
             $this->assertSame(
                 1,
-                substr_count(
+                mb_substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): duplicate-reason; failing open.'
                 )
             );
             $this->assertSame(
                 1,
-                substr_count(
+                mb_substr_count(
                     $contents,
                     'Citation Bot rate limiter (' . $bucket . '): different-reason; failing open.'
                 )
