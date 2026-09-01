@@ -96,4 +96,46 @@ final class BookReviewConfusionTest extends testBaseClass {
         $this->assertFalse(isAdsBookReviewConfusion($template, $record), 'Journal template should not trigger confusion guard');
     }
 
+    public function testSylvesterBookNotMashedWithNatureReview(): void {
+        // Real archive case: Matrix (mathematics) Sylvester 1904 book vs Nature 71:98 review
+        // https://en.wikipedia.org/w/index.php?title=Matrix_(mathematics)&diff=next&oldid=1291900192
+        $template = $this->make_citation('{{citation|first=J. J.|last=Sylvester|editor-first=H. F.|editor-last=Baker|title=The Collected Mathematical Papers of James Joseph Sylvester|location=Cambridge, England|publisher=Cambridge University Press|year=1904}}');
+        $this->assertTrue(isBookCitationForReviewGuard($template));
+        $record = (object) [
+            'title' => ['The Collected Mathematical Papers of James Joseph Sylvester'],
+            'pub' => 'Nature',
+            'volume' => '71',
+            'issue' => '1831',
+            'page' => ['98'],
+            'year' => '1904',
+            'bibcode' => '1904Natur..71...98G',
+            'doi' => ['10.1038/071098a0'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
+        $this->assertTrue(isAdsBookReviewConfusion($template, $record));
+        $this->assertTrue(adsRecordLooksLikeReview($record));
+    }
+
+    public function testPeresBookNotMashedWithAmJPhReview(): void {
+        // Real archive case: Peres 1993 book vs AmJPh 1995 review (year diff 2 but still confused)
+        // https://en.wikipedia.org/w/index.php?title=Matrix_(mathematics)&diff=next&oldid=1291912931
+        $template = $this->make_citation('{{citation|last=Peres|first=Asher|title=Quantum Theory: Concepts and Methods|publisher=Kluwer|year=1993|isbn=978-0-7923-3632-7}}');
+        $this->assertTrue(isBookCitationForReviewGuard($template));
+        $record = (object) [
+            'title' => ['Quantum Theory: Concepts and Methods'],
+            'pub' => 'American Journal of Physics',
+            'volume' => '63',
+            'issue' => '3',
+            'page' => ['285'],
+            'year' => '1995',
+            'bibcode' => '1995AmJPh..63..285P',
+            'doi' => ['10.1119/1.17946'],
+            'doctype' => 'article',
+        ];
+        $this->assertTrue(titles_are_similar($template->get('title'), $record->title[0]));
+        // Short pagination + journal-like pub + same title should be flagged even with year diff 2
+        $this->assertTrue(isAdsBookReviewConfusion($template, $record));
+    }
+
 }
