@@ -72,7 +72,6 @@ final class PageInputBoundsTest extends testBaseClass {
         $this->assertFalse(page_batch_input_within_limit('a', 0));
     }
 
-
     public function testBatchInputLimitHandlesEmptyInputAndNegativeLimit(): void {
         $this->assertTrue(page_batch_input_within_limit('', 1));
         $this->assertFalse(page_batch_input_within_limit('', -1));
