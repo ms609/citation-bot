@@ -357,6 +357,7 @@ function build_matrix(): array {
         ['Erxleben path: work=series lands in series=', '{{cite web |title=Harness paper alpha |work=Lecture Notes in Computer Science |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
         ['Najman path: title=book title kept, work=series -> series=', '{{cite web |title=Harness book title beta |work=Lecture notes in mathematics |date=2017 |isbn=978-0-19-852011-5}}', 'pass'],
         ['No-clobber: existing series= preserved', '{{cite web |title=Harness paper gamma |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
+        ['ISBN does not force periodical cite web to book', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'pass'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
