@@ -183,10 +183,6 @@ function is_initials(string $str): bool {
 }
 
 /**
- * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
- */
-
-/**
  * Mirrors Module:Citation/CS1 is_suffix(): the generational suffixes that
  * Vancouver style accepts.  Case-sensitive — "Jr." is not the same as "Jr".
  */
@@ -195,6 +191,9 @@ function vanc_suffix_valid(string $suffix): bool {
         || preg_match('~^\dth$~', $suffix) === 1;
 }
 
+/**
+ * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
+ */
 function author_is_human(string $author): bool {
     $author = mb_trim($author);
     $chars = count_chars($author);
