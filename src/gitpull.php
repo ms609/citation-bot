@@ -24,7 +24,7 @@ const LOCK_DIR = __DIR__ . '/git_pull.lock';
 /**
  * Render the deployment page and stop processing.
  */
-function gitpull_page(string $message = '', bool $show_form = false, bool $preformatted = false, int $status = 200): never {
+function gitpull_page(string $message, bool $show_form, int $status): never {
     http_response_code($status);
     @header('Content-Type: text/html; charset=utf-8');
 
@@ -32,13 +32,7 @@ function gitpull_page(string $message = '', bool $show_form = false, bool $prefo
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
         '<meta charset="utf-8"><title>Git Pull</title></head><body><main>';
 
-    if ($message !== '') {
-        if ($preformatted) {
-            echo '<pre>', $message, '</pre>';
-        } else {
-            echo '<p>', htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5), '</p>';
-        }
-    }
+    echo '<p>', htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'), '</p>';
 
     if ($show_form) {
         echo '<form method="post" action="gitpull.php">',
@@ -58,22 +52,22 @@ clearstatcache(true, LOCK_DIR);
 
 $deployPassword = (string) @getenv('DEPLOY_PASSWORD');
 if ($deployPassword === '') {
-    gitpull_page('Error: No DEPLOY_PASSWORD is configured.', false, false, 503);
+    gitpull_page('Error: No DEPLOY_PASSWORD is configured.', false, 503);
 }
 
 $requestMethod = is_string($_SERVER['REQUEST_METHOD'] ?? null) ? $_SERVER['REQUEST_METHOD'] : '';
 
 if ($requestMethod === 'GET') {
-    if (array_key_exists('password', $_GET)) {
+    if (!empty($_GET)) { // Clean up all URLs with flags passed in
         @header('Location: gitpull.php', true, 303);
         exit(0);
     }
-    gitpull_page('', true);
+    gitpull_page('', true, 200);
 }
 
 if ($requestMethod !== 'POST') {
     @header('Allow: GET, POST');
-    gitpull_page('Only GET and POST requests are supported.', false, false, 405);
+    gitpull_page('Only GET and POST requests are supported.', false, 405);
 }
 
 $password_in = array_key_exists('HTTP_X_DEPLOY_TOKEN', $_SERVER)
@@ -83,17 +77,17 @@ $password_in = array_key_exists('HTTP_X_DEPLOY_TOKEN', $_SERVER)
 unset($_SERVER['HTTP_X_DEPLOY_TOKEN'], $_POST['password'], $_REQUEST['password']);
 
 if ($password_in === null || $password_in === '') {
-    gitpull_page('Deployment password is required.', true, false, 400);
+    gitpull_page('Deployment password is required.', true, 400);
 }
 if (!is_string($password_in)) {
-    gitpull_page('Invalid password submission.', true, false, 400);
+    gitpull_page('Invalid password submission.', true, 400);
 }
 
 $passwordMatches = hash_equals($deployPassword, $password_in);
 unset($deployPassword, $password_in);
 
 if (!$passwordMatches) {
-    gitpull_page('Incorrect password.', true, false, 403);
+    gitpull_page('Incorrect password.', true, 403);
 }
 
 if (@mkdir(LOCK_DIR, 0700)) {
@@ -107,14 +101,14 @@ if (@mkdir(LOCK_DIR, 0700)) {
         /** @psalm-suppress ForbiddenCode */
         $git_hub = htmlspecialchars(
             (string) shell_exec("(/usr/bin/git fetch --all && /usr/bin/git reset --hard origin/master) 2>&1"), // phpcs:ignore
-            ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5
+            ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'
         );
     } finally {
         @rmdir(LOCK_DIR);
         clearstatcache(true, LOCK_DIR);
     }
 } else {
-    gitpull_page('Please try again - lock file found', false, false, 409);
+    gitpull_page('Please try again - lock file found', false, 409);
 }
 
-gitpull_page($git_hub, false, true);
+gitpull_page($git_hub, true, 200);
