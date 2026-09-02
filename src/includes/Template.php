@@ -2760,7 +2760,7 @@ final class Template
 
             foreach ($parameter_list as $parameter) {
                 /** @phpstan-ignore argument.invalidPregQuote */
-                if (mb_strpos($parameter, '#') === false && $parameter === mb_strtolower($parameter) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) {
+                if (mb_strpos($parameter, '#') === false && $parameter === mb_strtolower($parameter) && preg_match('~^(' . preg_quote($parameter, '~') . '(?: -|:| )\s*)~iu', $dat, $match)) {
                     // Avoid adding "URL" instead of "url"
                     $parameter_value = mb_trim(mb_substr($dat, mb_strlen($match[1])));
                     report_add("Found " . echoable($parameter) . " floating around in template; converted to parameter");
@@ -6999,7 +6999,7 @@ final class Template
 
             // 'CD' prefix + digits: match with .pub\d suffix
             if (!$match_found && preg_match('~^cd\d+$~i', $pages_value)) {
-                if (preg_match('~' . preg_quote($pages_lower) . '\.pub\d$~i', $doi_lower)) {
+                if (preg_match('~' . preg_quote($pages_lower, '~') . '\.pub\d$~i', $doi_lower)) {
                     $match_found = true;
                 }
             }
