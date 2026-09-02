@@ -32,7 +32,7 @@ final class ExternalApiResponseGuard {
 
         // JSON received over HTTP must be valid UTF-8. Reject malformed bytes
         // rather than allowing them to leak into string functions later.
-        return preg_match('//u', $response) === 1;
+        return preg_match('~~u', $response) === 1;
     }
 
     /**
