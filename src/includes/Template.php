@@ -6999,7 +6999,7 @@ final class Template
 
             // 'CD' prefix + digits: match with .pub\d suffix
             if (!$match_found && preg_match('~^cd\d+$~i', $pages_value)) {
-                if (preg_match('~' . preg_quote($pages_lower, '/') . '\.pub\d$~i', $doi_lower)) {
+                if (preg_match('~' . preg_quote($pages_lower) . '\.pub\d$~i', $doi_lower)) {
                     $match_found = true;
                 }
             }
