@@ -404,8 +404,8 @@ function unicode_levenshtein(string $left, string $right): int {
         return levenshtein($left, $right);
     }
 
-    $left_chars = preg_split('//u', $left, -1, PREG_SPLIT_NO_EMPTY);
-    $right_chars = preg_split('//u', $right, -1, PREG_SPLIT_NO_EMPTY);
+    $left_chars = preg_split('~~u', $left, -1, PREG_SPLIT_NO_EMPTY);
+    $right_chars = preg_split('~~u', $right, -1, PREG_SPLIT_NO_EMPTY);
     if (!is_array($left_chars) || !is_array($right_chars)) {
         return levenshtein($left, $right); // @codeCoverageIgnore
     }
