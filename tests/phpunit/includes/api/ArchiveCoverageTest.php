@@ -493,6 +493,14 @@ final class ArchiveCoverageTest extends testBaseClass {
                 'Archive title',
                 'Archive title',
             ],
+            'raw Windows-1252 accent converted' => [
+                "caf\xE9",
+                'café',
+            ],
+            'raw Windows-1252 dash converted' => [
+                "A\x96B",
+                'A–B',
+            ],
             'Livelong quotes repaired' => [
                 ' �Livelong� ',
                 ' "Livelong" ',
@@ -510,6 +518,37 @@ final class ArchiveCoverageTest extends testBaseClass {
                 'Folke Ekström',
             ],
         ];
+    }
+
+    public function testArchiveCandidateEncodingsFindsHtml5MetaCharset(): void {
+        $html = '<html><head><meta charset="Shift_JIS"></head></html>';
+
+        $this->assertSame(
+            ['Shift_JIS'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsFindsLegacyMetaCharset(): void {
+        $html =
+            "<meta http-equiv='content-type' " .
+            "content='text/html; charset=big5'>";
+
+        $this->assertSame(
+            ['big5'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsDeduplicatesCaseInsensitively(): void {
+        $html =
+            "x-archive-guessed-charset: Shift_JIS\r\n" .
+            '<meta charset="shift_jis">';
+
+        $this->assertSame(
+            ['Shift_JIS'],
+            archive_candidate_encodings($html)
+        );
     }
 
     public function testFetchArchivePageRejectsEmptyUrlBeforeCurl(): void {
