@@ -25,6 +25,13 @@ final class ExternalApiResponseGuard {
         // Static utility class.
     }
 
+    private static function stripUtf8Bom(string $response): string {
+        if (str_starts_with($response, "\xEF\xBB\xBF")) {
+            return mb_substr($response, 3, null, '8bit');
+        }
+        return $response;
+    }
+
     private static function responseIsSafeToDecode(string $response): bool {
         if ($response === '' || mb_strlen($response, '8bit') > self::MAX_RESPONSE_BYTES) {
             return false;
@@ -42,6 +49,7 @@ final class ExternalApiResponseGuard {
      *               too deeply nested, or not UTF-8.
      */
     public static function decodeJson(string $response): mixed {
+        $response = self::stripUtf8Bom($response);
         if (!self::responseIsSafeToDecode($response)) {
             return null;
         }
@@ -75,6 +83,7 @@ final class ExternalApiResponseGuard {
      * @return array<mixed>|null
      */
     public static function decodeAssocObject(string $response): ?array {
+        $response = self::stripUtf8Bom($response);
         if (!self::responseIsSafeToDecode($response)) {
             return null;
         }
