@@ -66,7 +66,7 @@ final class DefaultArgumentSafetyTest extends PHPUnit\Framework\TestCase {
                         continue;
                     }
 
-                    $line = 1 + substr_count(substr($source, 0, $function[0][1]), "\n");
+                    $line = 1 + mb_substr_count(mb_substr($source, 0, $function[0][1]), "\n");
                     $violations[] = sprintf(
                         '%s:%d %s() must not default $%s to success value %d',
                         self::relativePath($file),
