@@ -69,7 +69,7 @@ function prior_parameters(string $parameter, array $list = []): array {
     }
 
     // Handle parameters with numbers in them, e.g. author1
-    $parameterContainsANumber = preg_match('/(\D+)(\d+)/', $parameter, $match);
+    $parameterContainsANumber = preg_match('~(\D+)(\d+)~', $parameter, $match);
     $parameterIsNotS2cid = mb_stripos($parameter, 's2cid') === false;
     if ($parameterContainsANumber && $parameterIsNotS2cid) {
         $before = (string) ((int) $match[2] - 1);

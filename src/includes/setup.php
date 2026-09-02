@@ -51,9 +51,9 @@ function reject_setup_request(string $message, int $exit_code = 0): never {
     if (setup_is_gadget_request() && class_exists('GadgetApiRequestException')) {
         throw new GadgetApiRequestException('invalid_request', 400);
     }
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>'
-        . htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')
-        . '</h1></main></body></html>';
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>',
+        htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
+        '</h1></main></body></html>';
     exit($exit_code);
 }
 

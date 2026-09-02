@@ -113,7 +113,7 @@ final class Template
             }
         }
 
-        if (in_array(WIKI_BASE, ENGLISH_WIKI)) {
+        if (in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
             foreach (TEMPLATE_CONVERSIONS as $trial) {
                 if ($trim_name === $trial[0]) {
                     $this->name = $spacing[1] . $trial[1] . $spacing[2];
@@ -248,7 +248,7 @@ final class Template
 
     public function prepare_rxiv(): void {
         set_time_limit(120);
-        if (in_array($this->wikiname(), ["cite biorxiv", "cite medrxiv"])) {
+        if (in_array($this->wikiname(), ["cite biorxiv", "cite medrxiv"], true)) {
             $preprint_param = ($this->wikiname() === 'cite biorxiv') ? 'biorxiv' : 'medrxiv';
             $preprint_doi = $this->get($preprint_param);
             if ($preprint_doi !== '') {
@@ -1369,7 +1369,7 @@ final class Template
             case 'journal':
             case 'newspaper':
             case 'magazine':
-                if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
+                if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'], true)) {
                     return false;
                 }
                 if ($value === 'Peoplemag') {
@@ -1974,7 +1974,7 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
-                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'])) {
+                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'], true)) {
                     return false;
                 }
                 if (preg_match(REGEXP_DOI, $value, $match)) {
@@ -2759,8 +2759,7 @@ final class Template
             $parameter_list = array_reverse($parameter_list); // Longer things first
 
             foreach ($parameter_list as $parameter) {
-                /** @phpstan-ignore argument.invalidPregQuote */
-                if (mb_strpos($parameter, '#') === false && $parameter === mb_strtolower($parameter) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) {
+                if (mb_strpos($parameter, '#') === false && $parameter === mb_strtolower($parameter) && preg_match('~^(' . preg_quote($parameter, '~') . '(?: -|:| )\s*)~iu', $dat, $match)) {
                     // Avoid adding "URL" instead of "url"
                     $parameter_value = mb_trim(mb_substr($dat, mb_strlen($match[1])));
                     report_add("Found " . echoable($parameter) . " floating around in template; converted to parameter");
@@ -3594,9 +3593,9 @@ final class Template
                 $spacing[2] = ''; // @codeCoverageIgnoreEnd
             }
             $new_name_mapped = $new_name;
-            if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
+            if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
                 foreach (ALL_TEMPLATES_MAP as $map_array) {
-                    if (in_array(mb_strtolower($this->name), $map_array)) {
+                    if (in_array(mb_strtolower($this->name), $map_array, true)) {
                         foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
                                  $new_name_mapped = $map_in;
@@ -3707,7 +3706,7 @@ final class Template
         if ($name === 'cite') {
             $name = 'citation';
         }
-        if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // Do not map on english wiki's
+        if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // Do not map on english wiki's
             foreach (ALL_TEMPLATES_MAP as $map_array) {
                 foreach ($map_array as $map_in => $map_out) {
                     if ($name === $map_in) {
@@ -3925,7 +3924,7 @@ final class Template
                 case 'author':
                     $the_author = $this->get($param);
                     // Check for all-caps author names
-                    if ($the_author && preg_match('/^[A-Z\s]{4,}$/', $the_author) && !preg_match('/^[IVX]+$/', $the_author)) {
+                    if ($the_author && preg_match('~^[A-Z\s]{4,}$~', $the_author) && !preg_match('~^[IVX]+$~', $the_author)) {
                         report_warning("Author name is in all-caps and should be properly capitalized: " . echoable($the_author));
                     }
                     if ($this->blank('agency') && in_array(mb_strtolower($the_author), ['associated press', 'reuters'], true) && $this->wikiname() !== 'cite book') {
@@ -3974,7 +3973,7 @@ final class Template
                     // Check for all-caps last names
                     if ($pmatch[1] === 'last' || $pmatch[1] === 'surname') {
                         $the_last = $this->get($param);
-                        if ($the_last && preg_match('/^[A-Z\s]{4,}$/', $the_last) && !preg_match('/^[IVX]+$/', $the_last)) {
+                        if ($the_last && preg_match('~^[A-Z\s]{4,}$~', $the_last) && !preg_match('~^[IVX]+$~', $the_last)) {
                             report_warning("Author last name is in all-caps and should be properly capitalized: " . echoable($the_last));
                         }
                     }
@@ -6888,7 +6887,7 @@ final class Template
         // Handle cite IUCN special case
         if ($name === 'cite iucn') {
             $page_val = $this->get('page') ?: $this->get('pages');
-            if ($page_val !== '' && preg_match('/^e\./i', $page_val)) {
+            if ($page_val !== '' && preg_match('~^e\.~i', $page_val)) {
                 $iucn_param = $this->has('page') ? 'page' : 'pages';
                 foreach ($this->param as $p) {
                     if (mb_strtolower($p->param) === $iucn_param) {
@@ -6937,12 +6936,12 @@ final class Template
         $doi_value = mb_trim($this->get('doi'));
 
         // Skip if pages contains range/list characters
-        if (preg_match('/[,;_−–—‒%-]/u', $pages_value)) {
+        if (preg_match('~[,;_−–—‒%-]~u', $pages_value)) {
             return false;
         }
 
         // Skip if pages contains URL
-        if (preg_match('/https?:\/\//i', $pages_value)) {
+        if (preg_match('~https?:\/\/~i', $pages_value)) {
             return false;
         }
 
@@ -6990,7 +6989,7 @@ final class Template
             }
 
             // 'e' prefix: strip leading 'e', match remainder
-            if (!$match_found && preg_match('/^e([a-z\d]+)$/i', $pages_value, $m)) {
+            if (!$match_found && preg_match('~^e([a-z\d]+)$~i', $pages_value, $m)) {
                 $epage = mb_strtolower($m[1]);
                 if (str_ends_with($doi_lower, $epage)) {
                     $match_found = true;
@@ -6998,8 +6997,8 @@ final class Template
             }
 
             // 'CD' prefix + digits: match with .pub\d suffix
-            if (!$match_found && preg_match('/^cd\d+$/i', $pages_value)) {
-                if (preg_match('/' . preg_quote($pages_lower, '/') . '\.pub\d$/i', $doi_lower)) {
+            if (!$match_found && preg_match('~^cd\d+$~i', $pages_value)) {
+                if (preg_match('~' . preg_quote($pages_lower, '~') . '\.pub\d$~i', $doi_lower)) {
                     $match_found = true;
                 }
             }

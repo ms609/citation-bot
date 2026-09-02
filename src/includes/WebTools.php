@@ -221,8 +221,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (!HTML_OUTPUT) {
             $final_edit_overview = '';
         }
-        echo "\n Done all " . (string) $total . " pages: " . (string) $pages_changed . " changed, " .
-             (string) $pages_unchanged . " unchanged, " . (string) $pages_failed . " failed. \n  # # # \n" . $final_edit_overview;
+        echo "\n Done all ", (string) $total, " pages: ", (string) $pages_changed, " changed, ",
+             (string) $pages_unchanged, " unchanged, ", (string) $pages_failed, " failed. \n  # # # \n", $final_edit_overview;
         if (!empty($pages_edit_conflict)) {
             $retry_count = (string) count($pages_edit_conflict);
             if (HTML_OUTPUT) {
@@ -238,9 +238,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                 }
                 echo "\n";
             } else {
-                echo "\n\n---\nPages skipped due to edit conflict — please try again (" . $retry_count . "):\n";
+                echo "\n\n---\nPages skipped due to edit conflict — please try again (", $retry_count, "):\n";
                 foreach ($pages_edit_conflict as $conflict_title) {
-                    echo "  * " . $conflict_title . "\n";
+                    echo "  * ", $conflict_title, "\n";
                 }
             }
         }
@@ -253,7 +253,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
                     "\n\nPage skipped due to edit conflict — please try again: " . $pages_edit_conflict[0]
                 );
             } else {
-                echo "\n\nPage skipped due to edit conflict — please try again: " . $pages_edit_conflict[0] . "\n";
+                echo "\n\nPage skipped due to edit conflict — please try again: ", $pages_edit_conflict[0], "\n";
             }
         }
     }

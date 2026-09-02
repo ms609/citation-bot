@@ -83,7 +83,7 @@ final class Parameter {
 
     private static function normalize_unicode_spaces(string $text): string {
         $normalized = preg_replace(
-            '/[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]/u',
+            '~[\x{1680}\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u',
             ' ',
             $text
         );
