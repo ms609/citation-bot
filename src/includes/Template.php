@@ -2759,7 +2759,6 @@ final class Template
             $parameter_list = array_reverse($parameter_list); // Longer things first
 
             foreach ($parameter_list as $parameter) {
-                /** @phpstan-ignore argument.invalidPregQuote */
                 if (mb_strpos($parameter, '#') === false && $parameter === mb_strtolower($parameter) && preg_match('~^(' . preg_quote($parameter, '~') . '(?: -|:| )\s*)~iu', $dat, $match)) {
                     // Avoid adding "URL" instead of "url"
                     $parameter_value = mb_trim(mb_substr($dat, mb_strlen($match[1])));
