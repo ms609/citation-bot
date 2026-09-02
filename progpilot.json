@@ -78,6 +78,352 @@
         "vuln_type": "taint-style"
     },
     {
+        "source_name": [
+            "$state_directory"
+        ],
+        "source_line": [
+            59
+        ],
+        "source_column": [
+            2046
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "mkdir",
+        "sink_line": 66,
+        "sink_column": 2239,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "90460efc60504fbac715296233344ead58d9042ef41b57970bc22a3bae77ba83",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_directory"
+        ],
+        "source_line": [
+            59
+        ],
+        "source_column": [
+            2046
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "chmod",
+        "sink_line": 72,
+        "sink_column": 2437,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "4131fba2c6a92d6cb321cd185f1d56533e8c7ded9fa5472c02286ba11eb656b8",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_path"
+        ],
+        "source_line": [
+            74
+        ],
+        "source_column": [
+            2473
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "fopen",
+        "sink_line": 75,
+        "sink_column": 2562,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "fbc6ac5f217c7ce9416a923fc4f6bf3b1f84fd11e839ab4e8279a13c6f938703",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_path"
+        ],
+        "source_line": [
+            74
+        ],
+        "source_column": [
+            2473
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "chmod",
+        "sink_line": 80,
+        "sink_column": 2727,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "6e0555331f51cb483fac767afa904de305cf2c31a5a38ce8047050c90a4b4cdc",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$handle"
+        ],
+        "source_line": [
+            75
+        ],
+        "source_column": [
+            2551
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$fopen_return",
+                    "flow_line": 75,
+                    "flow_column": 2562,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$fopen_param0_line75_column2562_progpilot",
+                    "flow_line": 75,
+                    "flow_column": 2562,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$state_path",
+                    "flow_line": 74,
+                    "flow_column": 2473,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/gadgetapi.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "stream_get_contents",
+        "sink_line": 95,
+        "sink_column": 3135,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "629bccb24315c3d1d46df3f41dbb2c29517520a04dea439816698d95528ed806",
+        "vuln_type": "taint-style"
+    },
+    {
         "vuln_rule": "MUST_VERIFY_DEFINITION",
         "vuln_name": "security misconfiguration",
         "vuln_line": 188,
@@ -98,6 +444,352 @@
         "vuln_cwe": "CWE_295",
         "vuln_id": "4f43210e120e7ec3bcb1daf4b4f89d0575065d469946f780dcdd2e9d696247f7",
         "vuln_type": "custom"
+    },
+    {
+        "source_name": [
+            "$state_directory"
+        ],
+        "source_line": [
+            59
+        ],
+        "source_column": [
+            2046
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "mkdir",
+        "sink_line": 66,
+        "sink_column": 2239,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "af1f4a60c76e806ee465a7601093c8ff38bf2209971a7358e6afda01784ed1cf",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_directory"
+        ],
+        "source_line": [
+            59
+        ],
+        "source_column": [
+            2046
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "chmod",
+        "sink_line": 72,
+        "sink_column": 2437,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "81ee79d9ac7648d3a33308709abfc270387563ef16b980f74907f59887d28ac6",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_path"
+        ],
+        "source_line": [
+            74
+        ],
+        "source_column": [
+            2473
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "fopen",
+        "sink_line": 75,
+        "sink_column": 2562,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "8925ea05aeb39577e3edb9e70a14063c0b5355f7a837a29231c87c14f66b1615",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$state_path"
+        ],
+        "source_line": [
+            74
+        ],
+        "source_column": [
+            2473
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "chmod",
+        "sink_line": 80,
+        "sink_column": 2727,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "b2cc625776a66c945bcb8fc09b79931ce44d758cb0c340b039590a89355fa4c9",
+        "vuln_type": "taint-style"
+    },
+    {
+        "source_name": [
+            "$handle"
+        ],
+        "source_line": [
+            75
+        ],
+        "source_column": [
+            2551
+        ],
+        "source_file": [
+            "src\/includes\/RequestRateLimit.php"
+        ],
+        "tainted_flow": [
+            [
+                {
+                    "flow_name": "$fopen_return",
+                    "flow_line": 75,
+                    "flow_column": 2562,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$fopen_param0_line75_column2562_progpilot",
+                    "flow_line": 75,
+                    "flow_column": 2562,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$state_path",
+                    "flow_line": 74,
+                    "flow_column": 2473,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$state_directory",
+                    "flow_line": 59,
+                    "flow_column": 2046,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_return",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/generate_template.php"
+                },
+                {
+                    "flow_name": "$mb_rtrim_param0_line60_column2073_progpilot",
+                    "flow_line": 60,
+                    "flow_column": 2073,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$base_directory",
+                    "flow_line": 53,
+                    "flow_column": 1844,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$request_rate_limit_base_directory_return",
+                    "flow_line": 16,
+                    "flow_column": 476,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$env_val",
+                    "flow_line": 14,
+                    "flow_column": 371,
+                    "flow_file": "src\/includes\/RequestRateLimit.php"
+                },
+                {
+                    "flow_name": "$getenv_return",
+                    "flow_line": 14,
+                    "flow_column": 382,
+                    "flow_file": "src\/gadgetapi.php"
+                }
+            ]
+        ],
+        "sink_name": "stream_get_contents",
+        "sink_line": 95,
+        "sink_column": 3135,
+        "sink_file": "src\/includes\/RequestRateLimit.php",
+        "vuln_name": "path_traversal",
+        "vuln_cwe": "CWE_22",
+        "vuln_id": "6e09c160153c5d386ace437e48fc89526108a5a077f93bf96dcd9ec84132a2ab",
+        "vuln_type": "taint-style"
     },
     {
         "source_name": [
