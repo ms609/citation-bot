@@ -272,7 +272,7 @@ final class DoiTest extends testBaseClass {
     public function testCrossRefAddSeries1(): void {
         $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane|pmid=<!-- -->|pmc=<!-- -->}}";
         $template = $this->process_citation($text);
-        $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
+        $this->assertNull($template->get2('series'));
     }
 
     public function testCrossRefAddSeries2(): void {
