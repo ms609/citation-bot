@@ -3707,7 +3707,7 @@ final class Template
         if ($name === 'cite') {
             $name = 'citation';
         }
-        if (!in_array(WIKI_BASE, ENGLISH_WIKI), true) { // Do not map on english wiki's
+        if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) { // Do not map on english wiki's
             foreach (ALL_TEMPLATES_MAP as $map_array) {
                 foreach ($map_array as $map_in => $map_out) {
                     if ($name === $map_in) {
