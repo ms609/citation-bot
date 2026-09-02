@@ -381,6 +381,34 @@ final class ArchiveCoverageTest extends testBaseClass {
         );
     }
 
+    public function testSmartDecodeShiftJisAliasIsCaseInsensitive(): void {
+        $encoded = mb_convert_encoding(
+            '日本語',
+            'SJIS-win',
+            'UTF-8'
+        );
+
+        $this->assertSame(
+            '日本語',
+            smart_decode(
+                $encoded,
+                'shift_jis',
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testSmartDecodeRejectsInvalidUtf8ForUtf8Label(): void {
+        $this->assertSame(
+            '',
+            smart_decode(
+                "caf\xE9",
+                'UTF-8',
+                'https://web.archive.org/'
+            )
+        );
+    }
+
     public function testSmartDecodeXSjisAlias(): void {
         $encoded = mb_convert_encoding(
             '日本語',
@@ -463,14 +491,15 @@ final class ArchiveCoverageTest extends testBaseClass {
 
     public function testConvertToUtf8InsideRejectsAmbiguousAsianEncoding(): void {
         // A1 A1 is valid in multiple East Asian encodings.
-        // The function deliberately refuses conversion when its
-        // detection passes disagree.
+        // The inner detector deliberately refuses conversion when its
+        // detection passes disagree, and the public wrapper rejects it.
         $value = "\xA1\xA1";
 
         $this->assertSame(
             $value,
             convert_to_utf8_inside($value)
         );
+        $this->assertSame('', convert_to_utf8($value));
     }
 
     #[DataProvider('utf8RepairProvider')]
@@ -493,13 +522,13 @@ final class ArchiveCoverageTest extends testBaseClass {
                 'Archive title',
                 'Archive title',
             ],
-            'raw Windows-1252 accent converted' => [
+            'unlabelled Windows-1252 accent rejected' => [
                 "caf\xE9",
-                'café',
+                '',
             ],
-            'raw Windows-1252 dash converted' => [
+            'unlabelled Windows-1252 dash rejected' => [
                 "A\x96B",
-                'A–B',
+                '',
             ],
             'Livelong quotes repaired' => [
                 ' �Livelong� ',
@@ -540,14 +569,62 @@ final class ArchiveCoverageTest extends testBaseClass {
         );
     }
 
+    public function testArchiveCandidateEncodingsFindsHttpCharset(): void {
+        $html =
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=windows-1251\r\n\r\n" .
+            '<html><head><title>Example</title></head></html>';
+
+        $this->assertSame(
+            ['windows-1251'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsKeepsExplicitDefaultCharset(): void {
+        $html = '<html><head><meta charset="windows-1252"></head></html>';
+
+        $this->assertSame(
+            ['windows-1252'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsPreferDeclarationsOverGuess(): void {
+        $html =
+            "x-archive-guessed-charset: Shift_JIS\r\n" .
+            '<meta charset="windows-1252">';
+
+        $this->assertSame(
+            ['windows-1252', 'Shift_JIS'],
+            archive_candidate_encodings($html)
+        );
+    }
+
     public function testArchiveCandidateEncodingsDeduplicatesCaseInsensitively(): void {
         $html =
             "x-archive-guessed-charset: Shift_JIS\r\n" .
             '<meta charset="shift_jis">';
 
         $this->assertSame(
-            ['Shift_JIS'],
+            ['shift_jis'],
             archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsSupportsDeclaredIso88597(): void {
+        $html = '<meta charset="iso-8859-7">';
+        $encoded = mb_convert_encoding('Ελλάδα', 'ISO-8859-7', 'UTF-8');
+        $encodings = archive_candidate_encodings($html);
+
+        $this->assertSame(['iso-8859-7'], $encodings);
+        $this->assertSame(
+            'Ελλάδα',
+            smart_decode(
+                $encoded,
+                $encodings[0],
+                'https://web.archive.org/'
+            )
         );
     }
 

@@ -15,6 +15,21 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $this->assertSame('ok', $decoded->nested->value);
     }
 
+    public function testDecodeObjectAcceptsUtf8Bom(): void {
+        $decoded = ExternalApiResponseGuard::decodeObject(
+            "\xEF\xBB\xBF{\"id\":123}"
+        );
+
+        $this->assertInstanceOf(stdClass::class, $decoded);
+        $this->assertSame(123, $decoded->id);
+        $this->assertSame(
+            ['message' => 'ok'],
+            ExternalApiResponseGuard::decodeAssocObject(
+                "\xEF\xBB\xBF{\"message\":\"ok\"}"
+            )
+        );
+    }
+
     public function testDecodeObjectRejectsMalformedAndWrongTopLevelShapes(): void {
         foreach ([
             '',
