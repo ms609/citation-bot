@@ -332,13 +332,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     // This will convert &delta into delta
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
-            || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle) < 0.98)
-                : (levenshtein($inTitle, $dbTitle) > 3))
+            || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
+                : (unicode_levenshtein($inTitle, $dbTitle) > 3))
     &&
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
-            || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2) < 0.98)
-                : (levenshtein($inTitle2, $dbTitle) > 3));
+            || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2, '8bit') < 0.98)
+                : (unicode_levenshtein($inTitle2, $dbTitle) > 3));
 }
 
 function titles_simple(string $inTitle): string {
@@ -384,7 +384,50 @@ function titles_simple(string $inTitle): string {
     return str_remove_irrelevant_bits($inTitle);
 }
 
+function normalize_unicode_nfc(string $input): string {
+    if ($input === '' || !mb_check_encoding($input, 'UTF-8')) {
+        return $input;
+    }
+    if (!class_exists(Normalizer::class)) {
+        return $input;
+    }
+
+    $normalized = Normalizer::normalize($input, Normalizer::FORM_C);
+    return is_string($normalized) ? $normalized : $input;
+}
+
+function unicode_levenshtein(string $left, string $right): int {
+    if ($left === $right) {
+        return 0;
+    }
+    if (!mb_check_encoding($left, 'UTF-8') || !mb_check_encoding($right, 'UTF-8')) {
+        return levenshtein($left, $right);
+    }
+
+    $left_chars = preg_split('//u', $left, -1, PREG_SPLIT_NO_EMPTY);
+    $right_chars = preg_split('//u', $right, -1, PREG_SPLIT_NO_EMPTY);
+    if (!is_array($left_chars) || !is_array($right_chars)) {
+        return levenshtein($left, $right); // @codeCoverageIgnore
+    }
+
+    $previous = range(0, count($right_chars));
+    foreach ($left_chars as $left_pos => $left_char) {
+        $current = [$left_pos + 1];
+        foreach ($right_chars as $right_pos => $right_char) {
+            $current[] = min(
+                $previous[$right_pos + 1] + 1,
+                $current[$right_pos] + 1,
+                $previous[$right_pos] + ($left_char === $right_char ? 0 : 1)
+            );
+        }
+        $previous = $current;
+    }
+
+    return $previous[count($right_chars)];
+}
+
 function strip_diacritics (string $input): string {
+    $input = normalize_unicode_nfc($input);
     return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
@@ -394,8 +437,8 @@ function normalize_c1_quotes(string $str): string {
         return '';
     }
 
-    // Handle invalid UTF-8 (raw bytes from Windows-1252). Replace quote bytes
-    // first, then transcode any remaining legacy bytes before using /u regexes.
+    // Raw C1 quote bytes are safe to replace byte-for-byte. Do not guess the
+    // encoding of the rest of a malformed string here.
     if (!mb_check_encoding($str, 'UTF-8')) {
         $str = str_replace(
             ["\x91", "\x92", "\x93", "\x94"],
@@ -403,7 +446,7 @@ function normalize_c1_quotes(string $str): string {
             $str
         );
         if (!mb_check_encoding($str, 'UTF-8')) {
-            $str = mb_convert_encoding($str, 'UTF-8', 'Windows-1252');
+            return $str;
         }
     }
 
@@ -420,6 +463,9 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
         return '';
     }
     $str = normalize_c1_quotes($str);
+    if (!mb_check_encoding($str, 'UTF-8')) {
+        return $str;
+    }
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
     $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
