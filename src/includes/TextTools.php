@@ -136,11 +136,7 @@ function wikify_external_text(string $title): string {
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
-    if (mb_strlen($title, '8bit') === mb_strlen($title)) {
-        $title = mb_trim($title, " \t\n\r\0\x0B\xc2\xa0");
-    } else {
-        $title = mb_trim($title, " \t\n\r\0");
-    }
+    $title = mb_trim($title, " \t\n\r\0\x0B\u{00A0}");
 
     $num_replace = count($replacement);
     for ($i = 0; $i < $num_replace; $i++) {
@@ -398,15 +394,22 @@ function normalize_c1_quotes(string $str): string {
         return '';
     }
 
-    // Handle invalid UTF-8 (raw bytes from Windows-1252)
+    // Handle invalid UTF-8 (raw bytes from Windows-1252). Replace quote bytes
+    // first, then transcode any remaining legacy bytes before using /u regexes.
     if (!mb_check_encoding($str, 'UTF-8')) {
-        $str = (string) preg_replace('~[\x91\x92]~', "'", $str);
-        $str = (string) preg_replace('~[\x93\x94]~', '"', $str);
+        $str = str_replace(
+            ["\x91", "\x92", "\x93", "\x94"],
+            ["'", "'", '"', '"'],
+            $str
+        );
+        if (!mb_check_encoding($str, 'UTF-8')) {
+            $str = mb_convert_encoding($str, 'UTF-8', 'Windows-1252');
+        }
     }
 
     // Handle valid UTF-8 control characters (U+0091-U+0094)
-    $str = (string) preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
-    $str = (string) preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
+    $str = safe_preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
+    $str = safe_preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
 
     return $str;
 }

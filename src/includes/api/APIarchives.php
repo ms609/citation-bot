@@ -141,6 +141,54 @@ function archive_title_scan_window(string $raw_html): string {
 }
 
 /**
+ * Extract non-default charset candidates from archive headers and HTML meta tags.
+ *
+ * @return list<string>
+ */
+function archive_candidate_encodings(string $html): array {
+    $encodings = [];
+
+    if (preg_match('~x-archive-guessed-charset:\s*([^\s;]+)~i', $html, $match)) {
+        $encodings[] = mb_trim($match[1], "\"'");
+    }
+
+    $meta_pattern =
+        '~<meta\b[^>]*\bcharset\s*=\s*(?:"([^"]+)"|\'([^\']+)\'|([^\s"\'>/]+))[^>]*>~i';
+    if (preg_match_all(
+        $meta_pattern,
+        $html,
+        $meta_matches,
+        PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
+    )) {
+        foreach ($meta_matches as $meta_match) {
+            $encodings[] = (string) (
+                $meta_match[1] ??
+                $meta_match[2] ??
+                $meta_match[3] ??
+                ''
+            );
+        }
+    }
+
+    $candidates = [];
+    $seen = [];
+    foreach ($encodings as $charset) {
+        $charset = mb_trim($charset);
+        $key = mb_strtolower($charset);
+        if (
+            $charset !== '' &&
+            is_encoding_reasonable($charset) &&
+            !isset($seen[$key])
+        ) {
+            $candidates[] = $charset;
+            $seen[$key] = true;
+        }
+    }
+
+    return $candidates;
+}
+
+/**
  * @param array<Template> &$templates
  */
 function expand_templates_from_archives(array &$templates): void { // This is done very late as a latch ditch effort  // Pointer to save memory
@@ -201,20 +249,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             $title !== ''
                             ) {
                             $cleaned = false;
-                            $encode = [];
-                            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $title_scan_html, $match)) {
-                                $charset = mb_trim($match[1]);
-                                if ($charset !== '' && is_encoding_reasonable($charset)) {
-                                    $encode[] = $charset;
-                                }
-                            }
-                            if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $title_scan_html, $match)) {
-                                $charset = mb_trim($match[1]);
-                                if ($charset !== '' && is_encoding_reasonable($charset)) {
-                                    $encode[] = $charset;
-                                }
-                            }
-                            $encode = array_values(array_unique($encode));
+                            $encode = archive_candidate_encodings($title_scan_html);
                             foreach ($encode as $pos_encode) {
                                 if (!$cleaned) {
                                     $try = smart_decode($title, $pos_encode, $archive_url);
@@ -227,7 +262,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             if (!$cleaned) {
                                 $title = convert_to_utf8($title);
                             }
-                            unset($encode, $cleaned, $try, $match, $pos_encode, $charset);
+                            unset($encode, $cleaned, $try, $match, $pos_encode);
                             $good_title = true;
                             if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
                                 in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
@@ -278,6 +313,11 @@ function convert_to_utf8(string $value): string {
     $lq2 = mb_substr_count($test, "„");
     if ((1 + $count_cr1) === $count_cr2 && (4 + $len1 > $len2) && ($bad1 >= $bad2) && ($lq1 <= $lq2) && ($rq1 <= $rq2)) { // Special case for single (c) or (r) and did not grow much
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
+    }
+    // Archive titles must not leave this function with invalid UTF-8. Legacy
+    // Western pages commonly contain raw Windows-1252 bytes.
+    if (!mb_check_encoding($value, 'UTF-8')) {
+        $value = mb_convert_encoding($value, 'UTF-8', 'Windows-1252');
     }
     // Special cases
     $value = str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"], [' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
