@@ -380,6 +380,11 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame("Text 'with C1' bytes", normalize_c1_quotes("Text \x91with C1\x92 bytes"));
     }
 
+    public function testC1NormalizationPreservesOtherWindows1252Bytes(): void {
+        $this->assertSame('A–B', normalize_c1_quotes("A\x96B"));
+        $this->assertSame('café', normalize_c1_quotes("caf\xE9"));
+    }
+
     public function testC1PreservesValidUTF8(): void {
         // Valid UTF-8 multibyte sequences preserved (en-dashes, CJK, accented chars)
         $this->assertSame("Hartree–Fock Method", straighten_quotes("Hartree–Fock Method", true));
@@ -490,6 +495,7 @@ final class textToolsTest extends testBaseClass {
     public function testTrailingNbsp(): void {
         $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&nbsp;'));
         $this->assertSame('Dfadsfds', wikify_external_text('Dfadsfds&amp;nbsp;'));
+        $this->assertSame('Déjà vu', wikify_external_text("Déjà vu\u{00A0}"));
     }
 
     public function testItal(): void {
