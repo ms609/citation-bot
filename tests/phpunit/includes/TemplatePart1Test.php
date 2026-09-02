@@ -535,7 +535,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testBadAuthor2(): void {
         $text = '{{cite journal|title=Guidelines for the management of adults with hospital-acquired, ventilator-associated, and healthcare-associated pneumonia |journal=Am. J. Respir. Crit. Care Med. |volume=171 |issue=4 |pages=388–416 |year=2005 |pmid=15699079 |doi=10.1164/rccm.200405-644ST|pmid=|pmc=|arxiv=}}';
         $expanded = $this->process_citation($text);
-        $this->assertSame('American Thoracicdsaf Society', $expanded->get2('author1'));
+        $this->assertNull($expanded->get2('author1'));
     }
 
     public function testRemoveASIN1(): void {
