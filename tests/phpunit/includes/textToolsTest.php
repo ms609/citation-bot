@@ -380,9 +380,15 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame("Text 'with C1' bytes", normalize_c1_quotes("Text \x91with C1\x92 bytes"));
     }
 
-    public function testC1NormalizationPreservesOtherWindows1252Bytes(): void {
-        $this->assertSame('A–B', normalize_c1_quotes("A\x96B"));
-        $this->assertSame('café', normalize_c1_quotes("caf\xE9"));
+    public function testC1NormalizationPreservesOtherInvalidBytes(): void {
+        $dash = "A\x96B";
+        $accent = "caf\xE9";
+        $mixed = "Déjà \x96 vu";
+
+        $this->assertSame($dash, normalize_c1_quotes($dash));
+        $this->assertSame($accent, normalize_c1_quotes($accent));
+        $this->assertSame($mixed, normalize_c1_quotes($mixed));
+        $this->assertSame($mixed, straighten_quotes($mixed, true));
     }
 
     public function testC1PreservesValidUTF8(): void {
@@ -390,6 +396,20 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame("Hartree–Fock Method", straighten_quotes("Hartree–Fock Method", true));
         $this->assertSame("大学における研究", straighten_quotes("大学における研究", true));
         $this->assertSame("ÑÒÓÔ", straighten_quotes("ÑÒÓÔ", true));
+    }
+
+    public function testUnicodeNormalizationCanonicalEquivalence(): void {
+        $decomposed = "Cafe\u{0301} Society";
+
+        $this->assertSame('Café Society', normalize_unicode_nfc($decomposed));
+        $this->assertSame('Cafe Society', strip_diacritics($decomposed));
+        $this->assertTrue(titles_are_similar('Café Society', $decomposed));
+        $this->assertFalse(titles_are_dissimilar('Café Society', $decomposed));
+    }
+
+    public function testUnicodeLevenshteinCountsCodePoints(): void {
+        $this->assertSame(1, unicode_levenshtein('東京大学', '東京大學'));
+        $this->assertSame(0, unicode_levenshtein('Ελλάδα', 'Ελλάδα'));
     }
 
     public function testC1EmptyString(): void {
