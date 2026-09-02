@@ -405,8 +405,8 @@ function normalize_c1_quotes(string $str): string {
     }
 
     // Handle valid UTF-8 control characters (U+0091-U+0094)
-    $str = (string) preg_replace('/[\x{0091}\x{0092}]/u', "'", $str);
-    $str = (string) preg_replace('/[\x{0093}\x{0094}]/u', '"', $str);
+    $str = (string) preg_replace('~[\x{0091}\x{0092}]~u', "'", $str);
+    $str = (string) preg_replace('~[\x{0093}\x{0094}]~u', '"', $str);
 
     return $str;
 }
