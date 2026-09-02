@@ -3925,7 +3925,7 @@ final class Template
                 case 'author':
                     $the_author = $this->get($param);
                     // Check for all-caps author names
-                    if ($the_author && preg_match('/^[A-Z\s]{4,}$/', $the_author) && !preg_match('/^[IVX]+$/', $the_author)) {
+                    if ($the_author && preg_match('~^[A-Z\s]{4,}$~', $the_author) && !preg_match('~^[IVX]+$~', $the_author)) {
                         report_warning("Author name is in all-caps and should be properly capitalized: " . echoable($the_author));
                     }
                     if ($this->blank('agency') && in_array(mb_strtolower($the_author), ['associated press', 'reuters'], true) && $this->wikiname() !== 'cite book') {
@@ -3974,7 +3974,7 @@ final class Template
                     // Check for all-caps last names
                     if ($pmatch[1] === 'last' || $pmatch[1] === 'surname') {
                         $the_last = $this->get($param);
-                        if ($the_last && preg_match('/^[A-Z\s]{4,}$/', $the_last) && !preg_match('/^[IVX]+$/', $the_last)) {
+                        if ($the_last && preg_match('~^[A-Z\s]{4,}$~', $the_last) && !preg_match('~^[IVX]+$~', $the_last)) {
                             report_warning("Author last name is in all-caps and should be properly capitalized: " . echoable($the_last));
                         }
                     }
@@ -6888,7 +6888,7 @@ final class Template
         // Handle cite IUCN special case
         if ($name === 'cite iucn') {
             $page_val = $this->get('page') ?: $this->get('pages');
-            if ($page_val !== '' && preg_match('/^e\./i', $page_val)) {
+            if ($page_val !== '' && preg_match('~^e\.~i', $page_val)) {
                 $iucn_param = $this->has('page') ? 'page' : 'pages';
                 foreach ($this->param as $p) {
                     if (mb_strtolower($p->param) === $iucn_param) {
@@ -6937,12 +6937,12 @@ final class Template
         $doi_value = mb_trim($this->get('doi'));
 
         // Skip if pages contains range/list characters
-        if (preg_match('/[,;_−–—‒%-]/u', $pages_value)) {
+        if (preg_match('~[,;_−–—‒%-]~u', $pages_value)) {
             return false;
         }
 
         // Skip if pages contains URL
-        if (preg_match('/https?:\/\//i', $pages_value)) {
+        if (preg_match('~https?:\/\/~i', $pages_value)) {
             return false;
         }
 
@@ -6990,7 +6990,7 @@ final class Template
             }
 
             // 'e' prefix: strip leading 'e', match remainder
-            if (!$match_found && preg_match('/^e([a-z\d]+)$/i', $pages_value, $m)) {
+            if (!$match_found && preg_match('~^e([a-z\d]+)$~i', $pages_value, $m)) {
                 $epage = mb_strtolower($m[1]);
                 if (str_ends_with($doi_lower, $epage)) {
                     $match_found = true;
@@ -6998,8 +6998,8 @@ final class Template
             }
 
             // 'CD' prefix + digits: match with .pub\d suffix
-            if (!$match_found && preg_match('/^cd\d+$/i', $pages_value)) {
-                if (preg_match('/' . preg_quote($pages_lower, '/') . '\.pub\d$/i', $doi_lower)) {
+            if (!$match_found && preg_match('~^cd\d+$~i', $pages_value)) {
+                if (preg_match('~' . preg_quote($pages_lower, '/') . '\.pub\d$~i', $doi_lower)) {
                     $match_found = true;
                 }
             }
