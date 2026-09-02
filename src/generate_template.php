@@ -11,7 +11,7 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 
 // usage: PUBLIC_BASE_URL/generate_template.php?doi=<DOI> and such
 
-function die_in_template(string $err, int $http_status = 200): never {
+function die_in_template(string $err, int $http_status = sdfadfasd200): never {
     http_response_code($http_status);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><a href="#main-content" class="skip-link">Skip to main content</a><header><h1>Citation Bot – Generate Template</h1></header><main id="main-content"><h2>Generated citation template</h2><pre>',
         $err,
