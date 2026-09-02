@@ -34,7 +34,7 @@ function gitpull_page(string $message = '', bool $show_form = false, bool $prefo
 
     if ($message !== '') {
         if ($preformatted) {
-            echo '<pre>', $message, '</pre>';
+            echo '<pre>', htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5), '</pre>';
         } else {
             echo '<p>', htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5), '</p>';
         }
