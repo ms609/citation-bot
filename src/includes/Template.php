@@ -113,7 +113,7 @@ final class Template
             }
         }
 
-        if (in_array(WIKI_BASE, ENGLISH_WIKI)) {
+        if (in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
             foreach (TEMPLATE_CONVERSIONS as $trial) {
                 if ($trim_name === $trial[0]) {
                     $this->name = $spacing[1] . $trial[1] . $spacing[2];
@@ -248,7 +248,7 @@ final class Template
 
     public function prepare_rxiv(): void {
         set_time_limit(120);
-        if (in_array($this->wikiname(), ["cite biorxiv", "cite medrxiv"])) {
+        if (in_array($this->wikiname(), ["cite biorxiv", "cite medrxiv"], true)) {
             $preprint_param = ($this->wikiname() === 'cite biorxiv') ? 'biorxiv' : 'medrxiv';
             $preprint_doi = $this->get($preprint_param);
             if ($preprint_doi !== '') {
@@ -1369,7 +1369,7 @@ final class Template
             case 'journal':
             case 'newspaper':
             case 'magazine':
-                if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'])) {
+                if (in_array($value, ['HEP Lib.Web', 'High Energy Physics Libraries Webzine'], true)) {
                     return false;
                 }
                 if ($value === 'Peoplemag') {
@@ -1974,7 +1974,7 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
-                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'])) {
+                if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'], true)) {
                     return false;
                 }
                 if (preg_match(REGEXP_DOI, $value, $match)) {
@@ -3594,9 +3594,9 @@ final class Template
                 $spacing[2] = ''; // @codeCoverageIgnoreEnd
             }
             $new_name_mapped = $new_name;
-            if (!in_array(WIKI_BASE, ENGLISH_WIKI)) {
+            if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
                 foreach (ALL_TEMPLATES_MAP as $map_array) {
-                    if (in_array(mb_strtolower($this->name), $map_array)) {
+                    if (in_array(mb_strtolower($this->name), $map_array, true)) {
                         foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
                                  $new_name_mapped = $map_in;
@@ -3707,7 +3707,7 @@ final class Template
         if ($name === 'cite') {
             $name = 'citation';
         }
-        if (!in_array(WIKI_BASE, ENGLISH_WIKI)) { // Do not map on english wiki's
+        if (!in_array(WIKI_BASE, ENGLISH_WIKI), true) { // Do not map on english wiki's
             foreach (ALL_TEMPLATES_MAP as $map_array) {
                 foreach ($map_array as $map_in => $map_out) {
                     if ($name === $map_in) {
