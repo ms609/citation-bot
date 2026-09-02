@@ -221,7 +221,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (!HTML_OUTPUT) {
             $final_edit_overview = '';
         }
-        echo "\n Done all ", (string) $total,. " pages: " . (string) $pages_changed . " changed, ",
+        echo "\n Done all ", (string) $total, " pages: ", (string) $pages_changed, " changed, ",
              (string) $pages_unchanged, " unchanged, ", (string) $pages_failed, " failed. \n  # # # \n", $final_edit_overview;
         if (!empty($pages_edit_conflict)) {
             $retry_count = (string) count($pages_edit_conflict);
