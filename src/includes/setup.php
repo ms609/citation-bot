@@ -47,14 +47,14 @@ function setup_is_gadget_request(): bool {
     ) !== false;
 }
 
-function reject_setup_request(string $message, int $exit_code = 0): never {
+function reject_setup_request(string $message): never {
     if (setup_is_gadget_request() && class_exists('GadgetApiRequestException')) {
         throw new GadgetApiRequestException('invalid_request', 400);
     }
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>',
         htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
         '</h1></main></body></html>';
-    exit($exit_code);
+    exit(1);
 }
 
 if (file_exists(__DIR__ . '/../env.php')) {
@@ -155,7 +155,7 @@ if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || setup_is_gadget_r
 if (isset($_POST['PHP_ADSABSAPIKEY'])) {
     if (!is_string($_POST['PHP_ADSABSAPIKEY'])) {
         unset($_POST['PHP_ADSABSAPIKEY']);
-        reject_setup_request('Invalid request data', 1);
+        reject_setup_request('Invalid request data');
     }
     $key = $_POST['PHP_ADSABSAPIKEY'];
     unset($_POST['PHP_ADSABSAPIKEY']); // Remove secret from environment
@@ -163,10 +163,10 @@ if (isset($_POST['PHP_ADSABSAPIKEY'])) {
     if (preg_match('~^[a-zA-Z0-9]{16,120}$~', $key)) {
         define('PHP_ADSABSAPIKEY', $key);
     } else {
-        reject_setup_request('Invalid request data', 1);
+        reject_setup_request('Invalid request data');
     }
 } elseif (isset($_GET['PHP_ADSABSAPIKEY'])) {
-    reject_setup_request('Invalid request data', 1); // we no longer allow GET of secrets
+    reject_setup_request('Invalid request data'); // we no longer allow GET of secrets
 } else {
     define('PHP_ADSABSAPIKEY', (string) getenv('PHP_ADSABSAPIKEY'));
 }
