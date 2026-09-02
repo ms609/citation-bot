@@ -68,7 +68,7 @@ if (!HTML_OUTPUT) {
         echo "  {$ucb}: {$num} ({$pct}%)\n";
     }
     echo "\n--- Wikitext preview (first 2000 chars) ---\n";
-    echo mb_substr($wikitext, 0, 2000) . "\n";
+    echo mb_substr($wikitext, 0, 2000), "\n";
     echo "--- end preview ---\n";
 }
 
