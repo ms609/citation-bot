@@ -444,8 +444,8 @@ function archive_html_meta_tags(string $html): array {
         if (!$closing && in_array($name, $skip_elements, true)) {
             $search = $end + 1;
             $close_start = false;
-            while (($candidate = stripos($html, '</' . $name, $search)) !== false) {
-                $after = $html[$candidate + 2 + strlen($name)] ?? '';
+            while (($candidate = mb_stripos($html, '</' . $name, $search, '8bit')) !== false) {
+                $after = $html[$candidate + 2 + mb_strlen($name, '8bit')] ?? '';
                 if ($after === '>' || $after === '/' || preg_match('~[\x09-\x0D ]~', $after)) {
                     $close_start = $candidate;
                     break;
