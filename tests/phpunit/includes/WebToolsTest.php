@@ -85,4 +85,90 @@ final class WebToolsTest extends testBaseClass {
         $this->assertTrue($result);
         $this->assertSame(1, $calls);
     }
+
+    public function testCategoryScopeWinsOverWebformCaller(): void {
+        $summary = category_edit_summary_end('SomeUser', 'CS1 errors: dates', false, false);
+        $this->assertStringContainsString('| Suggested by SomeUser', $summary);
+        $this->assertStringContainsString('[[Category:CS1 errors: dates]]', $summary);
+        $this->assertStringContainsString('#UCB_Category', $summary);
+        $this->assertStringNotContainsString('| #UCB_webform ', $summary);
+        $this->assertSame('#UCB_Category', statistics_ucb_from_comment($summary));
+    }
+
+    public function testCategoryOverrideSuffixes(): void {
+        $plain = category_edit_summary_end('U', 'C', false, false);
+        $this->assertStringNotContainsString('Whitelisted', $plain);
+        $this->assertStringNotContainsString('Developer', $plain);
+        $dev_without_override = category_edit_summary_end('U', 'C', false, true);
+        $this->assertStringNotContainsString('Whitelisted', $dev_without_override);
+        $this->assertStringNotContainsString('Developer', $dev_without_override);
+
+        $white = category_edit_summary_end('U', 'C', true, false);
+        $this->assertStringContainsString('#UCB_Category', $white);
+        $this->assertStringContainsString('Whitelisted category', $white);
+        $this->assertSame('#UCB_Category', statistics_ucb_from_comment($white));
+
+        $dev = category_edit_summary_end('U', 'C', true, true);
+        $this->assertStringContainsString('Developer - max category limit override enabled', $dev);
+        $this->assertSame('#UCB_Category', statistics_ucb_from_comment($dev));
+    }
+
+    public function testDeprecatedPersonalTagsFallThroughToOther(): void {
+        foreach (['Headbomb', 'Smith609', 'arXiv'] as $edit) {
+            $summary = process_page_edit_summary_end('SomeUser', true, $edit);
+            $this->assertStringContainsString('#UCB_Other', $summary);
+            $this->assertStringNotContainsString('#UCB_Headbomb', $summary);
+            $this->assertStringNotContainsString('#UCB_Smith609', $summary);
+            $this->assertStringNotContainsString('#UCB_arXiv', $summary);
+            $this->assertSame('#UCB_Other', statistics_ucb_from_comment($summary));
+        }
+    }
+
+    public function testProcessPageKnownCallersUnchanged(): void {
+        $this->assertStringContainsString(
+            '#UCB_toolbar',
+            process_page_edit_summary_end('SomeUser', true, 'toolbar')
+        );
+        $this->assertStringContainsString(
+            '#UCB_webform',
+            process_page_edit_summary_end('SomeUser', true, 'webform')
+        );
+        $this->assertStringContainsString(
+            '#UCB_automated_tools',
+            process_page_edit_summary_end('SomeUser', true, 'automated_tools')
+        );
+        $this->assertStringContainsString(
+            '#UCB_template',
+            process_page_edit_summary_end('SomeUser', true, 'template')
+        );
+        $this->assertStringContainsString(
+            '#UCB_Other',
+            process_page_edit_summary_end('SomeUser', true, 'something-made-up')
+        );
+    }
+
+    public function testProcessPageEmptyEditDefaults(): void {
+        $this->assertStringContainsString(
+            '#UCB_webform',
+            process_page_edit_summary_end('SomeUser', true, null)
+        );
+        $this->assertStringContainsString(
+            '#UCB_webform',
+            process_page_edit_summary_end('SomeUser', true, '')
+        );
+        $this->assertStringContainsString(
+            '#UCB_CommandLine',
+            process_page_edit_summary_end('', false, null)
+        );
+    }
+
+    public function testProcessPageSuggestedByPrefixAndCliTagInteraction(): void {
+        $html = process_page_edit_summary_end('SomeUser', true, 'toolbar');
+        $this->assertStringContainsString('| Suggested by SomeUser', $html);
+        $this->assertStringContainsString('#UCB_toolbar', $html);
+
+        $cli = process_page_edit_summary_end('SomeUser', false, 'toolbar');
+        $this->assertStringContainsString('#UCB_toolbar', $cli);
+        $this->assertStringNotContainsString('Suggested by', $cli);
+    }
 }

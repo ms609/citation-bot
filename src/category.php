@@ -127,34 +127,11 @@ if ($total > intval($effective_max / 4)) {
 if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
     report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:{$category}]] ";
-if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
-    if ($_REQUEST["edit"] === 'automated_tools') {
-        $edit_summary_end .= "| #UCB_automated_tools ";
-    } elseif ($_REQUEST["edit"] === 'toolbar') {
-        $edit_summary_end .= "| #UCB_toolbar ";
-    } elseif ($_REQUEST["edit"] === 'template') {
-        $edit_summary_end .= "| #UCB_template ";
-    } elseif ($_REQUEST["edit"] === 'webform') {
-        $edit_summary_end .= "| #UCB_webform ";
-    } elseif ($_REQUEST["edit"] === 'Headbomb') {
-        $edit_summary_end .= "| #UCB_Headbomb ";
-    } elseif ($_REQUEST["edit"] === 'Smith609') {
-        $edit_summary_end .= "| #UCB_Smith609 ";
-    } elseif ($_REQUEST["edit"] === 'arXiv') {
-        $edit_summary_end .= "| #UCB_arXiv ";
-    } else {
-        $edit_summary_end .= "| #UCB_Other ";
-    }
-} else {
-    $edit_summary_end .= "| #UCB_Category ";
-}
-if (defined('MAX_PAGES_OVERRIDE')) {
-    if ($dev_user_run) {
-        $edit_summary_end .= "| Developer - max category limit override enabled ";
-    } else {
-        $edit_summary_end .= "| Whitelisted category ";
-    }
-}
+$edit_summary_end = category_edit_summary_end(
+    $api->get_the_user(),
+    $category,
+    defined('MAX_PAGES_OVERRIDE'),
+    $dev_user_run
+);
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
