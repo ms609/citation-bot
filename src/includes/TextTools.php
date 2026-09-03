@@ -661,7 +661,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0] &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3, '8bit'); // PREG_OFFSET_CAPTURE is always in bytes
             }
         }
     }
@@ -675,7 +675,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         foreach ($matches_in as $key => $_value) {
             if ($matches_in[$key][0] !== $matches_out[$key][0] &&
                     $matches_in[$key][1] === $matches_out[$key][1]) {
-                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
+                $new_case = mb_substr_replace($new_case, mb_trim($matches_in[$key][0]), $matches_out[$key][1], 3, '8bit'); // PREG_OFFSET_CAPTURE is always in bytes
             }
         }
     }
@@ -769,7 +769,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 }
 
 function mb_strrev(string $string, string $encode = ''): string {
-    $chars = mb_str_split($string, 1, $encode ? '' : mb_internal_encoding());
+    $encoding = $encode !== '' ? $encode : mb_internal_encoding();
+    $chars = mb_str_split($string, 1, $encoding);
     return implode('', array_reverse($chars));
 }
 
@@ -781,8 +782,22 @@ function mb_ucwords(string $string): string {
         $string) ?? $string;
 }
 
-function mb_substr_replace(string $string, string $replacement, int $start, int $length): string {
-    return mb_substr($string, 0, $start) . $replacement . mb_substr($string, $start + $length);
+function mb_substr_replace(
+    string $string,
+    string $replacement,
+    int $start,
+    int $length,
+    ?string $encoding = null
+): string {
+    if ($encoding === null) {
+        return mb_substr($string, 0, $start) .
+            $replacement .
+            mb_substr($string, $start + $length, null);
+    } else {
+        return mb_substr($string, 0, $start, $encoding) .
+            $replacement .
+            mb_substr($string, $start + $length, null, $encoding);
+    }
 }
 
 function remove_brackets(string $string): string {

@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+function initialize_public_config_encoding(): void { // PHAN realizes this should always be false
+    // @phpstan-ignore-next-line
+    if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) {
+        throw new RuntimeException('Unable to initialize UTF-8 encoding');
+    }
+}
+
 /**
  * Return a normalized host, with an optional port, or null for invalid input.
  */
@@ -290,7 +297,11 @@ function public_session_start_options(bool $read_and_close = false): array {
 }
 
 function enforce_public_request_configuration(?string $request_host): void {
-    if (PHP_SAPI === 'cli' || public_request_configuration_is_valid($request_host)) {
+    if (PHP_SAPI === 'cli') {
+        return;
+    }
+    initialize_public_config_encoding();
+    if (public_request_configuration_is_valid($request_host)) {
         return;
     }
     http_response_code(400); // @codeCoverageIgnore

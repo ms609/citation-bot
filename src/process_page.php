@@ -18,7 +18,10 @@ require_once __DIR__ . '/includes/request_security.php';
 if (isset($argv[1])) {
     $pages = $argv[1];
     if (in_array($pages, ['page_list.txt', 'page_list2.txt'], true)) {
-        $pages = mb_trim((string) file_get_contents($pages));
+        $pages = (string) file_get_contents($pages);
+        $pages = mb_check_encoding($pages, 'UTF-8')
+            ? mb_trim($pages)
+            : mb_trim($pages, " \t\n\r\0\x0B", '8bit');
     }
     $from_get = false;
 } elseif (isset($_POST["page"])) {
@@ -38,7 +41,7 @@ if (isset($argv[1])) {
         bot_html_footer();
         exit(0);
     }
-    if (mb_strpos($pages, '|') !== false) {
+    if (mb_strpos($pages, '|', 0, '8bit') !== false) {
         bot_html_header();
         report_warning('Use the webform for multiple pages.');
         bot_html_footer();

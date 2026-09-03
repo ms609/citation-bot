@@ -123,11 +123,11 @@ function get_semanticscholar_license(string $s2cid): ?bool {
     if ($response === '') {
         return null; // @codeCoverageIgnore
     }
-    if (mb_stripos($response, 'Too Many Requests') !== false) {
+    if (mb_stripos($response, 'Too Many Requests', 0, '8bit') !== false) {
         sleep(1);
         return null; // @codeCoverageIgnore
     }
-    if (mb_stripos($response, 'Paper not found') !== false) {
+    if (mb_stripos($response, 'Paper not found', 0, '8bit') !== false) {
         return false; // @codeCoverageIgnore
     }
     return parse_semanticscholar_open_access_response($response);

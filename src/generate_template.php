@@ -29,6 +29,9 @@ unset($_GET, $_POST, $_REQUEST); // Memory minimize
 if (!is_string($param) || !is_string($value)) {
     die_in_template('Invalid parameter type error for passed parameter', 400); // @codeCoverageIgnore
 }
+if (!mb_check_encoding($param, 'UTF-8') || !mb_check_encoding($value, 'UTF-8')) {
+    die_in_template('Invalid UTF-8 parameter data', 400); // @codeCoverageIgnore
+}
 if (mb_strlen($value) < 3) {
     die_in_template('Unset parameter error', 400); // @codeCoverageIgnore
 }

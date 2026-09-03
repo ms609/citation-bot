@@ -538,7 +538,7 @@ function adsabs_rate_limit_headers(string $header): array {
     }
     foreach ($matches as $match) {
         $value = (int) $match[2];
-        switch (mb_strtolower($match[1])) {
+        switch (mb_strtolower($match[1], '8bit')) {
             case 'limit':
                 $values['limit'] = $value;
                 break;
@@ -705,7 +705,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
         }
 
         if (!is_object($decoded)) {
-            if (mb_stripos($body, 'down for maintenance') !== false) {
+            if (mb_stripos($body, 'down for maintenance', 0, '8bit') !== false) {
                 AdsAbsControl::big_give_up();  // @codeCoverageIgnore
                 AdsAbsControl::small_give_up();  // @codeCoverageIgnore
                 throw new Exception("ADSABS is down for maintenance", 5000);  // @codeCoverageIgnore
