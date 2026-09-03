@@ -17,9 +17,9 @@ const KNOWN_UCB_TYPES = [
     '#UCB_toolbar',
     '#UCB_template',
     '#UCB_webform',
-    '#UCB_Headbomb',
-    '#UCB_Smith609',
-    '#UCB_arXiv',
+    '#UCB_Headbomb', // Deprecated: no longer produced on new edits; kept so historic summaries still classify.
+    '#UCB_Smith609', // Deprecated: no longer produced on new edits; kept so historic summaries still classify.
+    '#UCB_arXiv', // Deprecated: no longer produced on new edits; kept so historic summaries still classify.
     '#UCB_Other',
     '#UCB_Category',
     '#UCB_Gadget',
