@@ -57,7 +57,7 @@ final class PageInputBoundsTest extends testBaseClass {
 
     public function testPageTitleFilterRejectsMalformedUtf8Classes(): void {
         $invalid = [
-            "\xC0\xAF",       // overlong slash
+            "\xC0\xAF", // overlong slash
             "\xE0\x80\xAF", // overlong three-byte sequence
             "\xED\xA0\x80", // UTF-16 surrogate U+D800
             "\xF4\x90\x80\x80", // above U+10FFFF
