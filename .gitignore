@@ -11,3 +11,4 @@ src/includes/cookie.txt
 tmp/*
 vendor/*
 phpunit.local.xml
+.worktrees/
