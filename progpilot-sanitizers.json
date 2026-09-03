@@ -13,13 +13,6 @@
             "prevent": [
                 "xss"
             ]
-        },
-        {
-            "name": "htmlentities",
-            "language": "php",
-            "prevent": [
-                "xss"
-            ]
         }
     ]
 }
