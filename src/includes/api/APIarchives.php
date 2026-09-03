@@ -424,12 +424,12 @@ function archive_html_meta_tags(string $html): array {
             break;
         }
 
-        $inside = ltrim(
+        $inside = mb_ltrim(
             mb_substr($html, $start + 1, $end - $start - 1, '8bit')
         );
         $closing = str_starts_with($inside, '/');
         if ($closing) {
-            $inside = ltrim(mb_substr($inside, 1, null, '8bit'));
+            $inside = mb_ltrim(mb_substr($inside, 1, null, '8bit'));
         }
 
         if (!preg_match('~^([A-Za-z][A-Za-z0-9:-]*)~', $inside, $match)) {
@@ -450,7 +450,7 @@ function archive_html_meta_tags(string $html): array {
                     $close_start = $candidate;
                     break;
                 }
-                $search = $candidate + 2 + strlen($name);
+                $search = $candidate + 2 + mb_strlen($name, '8bit');
             }
             if ($close_start === false) {
                 break;
