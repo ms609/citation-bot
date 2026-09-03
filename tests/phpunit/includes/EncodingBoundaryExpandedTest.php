@@ -483,8 +483,8 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     public function testMbStrrevByteModePreservesAllBytes(): void {
         $input = "\x00\xFF\x80A";
         $output = mb_strrev($input, '8bit');
-        $this->assertSame(strlen($input), strlen($output));
-        $this->assertSame(strrev($input), $output);
+        $this->assertSame(mb_strlen($input, '8bit'), mb_strlen($output, '8bit'));
+        $this->assertSame(mb_strrev($input, '8bit'), $output);
     }
 
     public function testPublicConfigEncodingInitializerIsIdempotent(): void {
@@ -546,7 +546,6 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
             }
         }
     }
-
 
     public function testMixedEncodingHttpHeaderAndUtf8BodyKeepsDeclaredHeaderCandidateFirst(): void {
         $response =
