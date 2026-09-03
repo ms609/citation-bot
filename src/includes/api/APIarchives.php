@@ -637,9 +637,11 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
 /**
  * Decode a title captured from raw archive bytes, then perform Unicode trimming.
  *
+ * @param string $raw_title
  * @param list<string> $encodings
+ * @param string $archive_url
  */
-function archive_decode_title_candidate(string $raw_title, array $encodings, string $archive_url): string {
+function archive_decode_title_candidate(string $raw_title, array $encodings, ): string {
     if ($raw_title === '') {
         return '';
     }
