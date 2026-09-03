@@ -538,7 +538,7 @@ function adsabs_rate_limit_headers(string $header): array {
     }
     foreach ($matches as $match) {
         $value = (int) $match[2];
-        switch (strtolower($match[1])) {
+        switch (mb_strtolower($match[1], '8bit')) {
             case 'limit':
                 $values['limit'] = $value;
                 break;
