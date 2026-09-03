@@ -278,45 +278,45 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $this->assertSame('fallback', $result);
     }
 
-   public function testDecodeJsonAcceptsSingleBomAndJsonWhitespace(): void {
-       $decoded = ExternalApiResponseGuard::decodeJson(
-           "\xEF\xBB\xBF \n{\"id\":123}"
-       );
+    public function testDecodeJsonAcceptsSingleBomAndJsonWhitespace(): void {
+        $decoded = ExternalApiResponseGuard::decodeJson(
+            "\xEF\xBB\xBF \n{\"id\":123}"
+        );
+ 
+        $this->assertInstanceOf(stdClass::class, $decoded);
+        $this->assertSame(123, $decoded->id);
+    }
 
-       $this->assertInstanceOf(stdClass::class, $decoded);
-       $this->assertSame(123, $decoded->id);
-   }
+    public function testDecodeJsonRejectsDoubleAndMisplacedBom(): void {
+        foreach ([
+            "\xEF\xBB\xBF\xEF\xBB\xBF{\"id\":1}",
+            " \xEF\xBB\xBF{\"id\":1}",
+        ] as $response) {
+            $this->assertNull(ExternalApiResponseGuard::decodeJson($response));
+        }
+    }
 
-   public function testDecodeJsonRejectsDoubleAndMisplacedBom(): void {
-       foreach ([
-           "\xEF\xBB\xBF\xEF\xBB\xBF{\"id\":1}",
-           " \xEF\xBB\xBF{\"id\":1}",
-       ] as $response) {
-           $this->assertNull(ExternalApiResponseGuard::decodeJson($response));
-       }
-   }
+    public function testDecodeJsonRejectsInvalidUtf8AfterBom(): void {
+        $this->assertNull(
+            ExternalApiResponseGuard::decodeJson(
+                "\xEF\xBB\xBF{\"value\":\"\xFF\"}"
+            )
+        );
+    }
 
-   public function testDecodeJsonRejectsInvalidUtf8AfterBom(): void {
-       $this->assertNull(
-           ExternalApiResponseGuard::decodeJson(
-               "\xEF\xBB\xBF{\"value\":\"\xFF\"}"
-           )
-       );
-   }
+    public function testDecodeAssocObjectAcceptsBomThenWhitespace(): void {
+        $this->assertSame(
+            ['message' => 'ok'],
+            ExternalApiResponseGuard::decodeAssocObject(
+                "\xEF\xBB\xBF \r\n{\"message\":\"ok\"}"
+            )
+        );
+    }
 
-   public function testDecodeAssocObjectAcceptsBomThenWhitespace(): void {
-       $this->assertSame(
-           ['message' => 'ok'],
-           ExternalApiResponseGuard::decodeAssocObject(
-               "\xEF\xBB\xBF \r\n{\"message\":\"ok\"}"
-           )
-       );
-   }
-
-   public function testBomOnlyIsRejectedAcrossJsonDecoders(): void {
-       $bom = "\xEF\xBB\xBF";
-       $this->assertNull(ExternalApiResponseGuard::decodeJson($bom));
-       $this->assertNull(ExternalApiResponseGuard::decodeObject($bom));
-       $this->assertNull(ExternalApiResponseGuard::decodeAssocObject($bom));
-   }
+    public function testBomOnlyIsRejectedAcrossJsonDecoders(): void {
+        $bom = "\xEF\xBB\xBF";
+        $this->assertNull(ExternalApiResponseGuard::decodeJson($bom));
+        $this->assertNull(ExternalApiResponseGuard::decodeObject($bom));
+        $this->assertNull(ExternalApiResponseGuard::decodeAssocObject($bom));
+    }
 }
