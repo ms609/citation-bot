@@ -1364,6 +1364,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('publisher', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('publisher', 'Goodbye dead'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testAddExitingThings2(): void {
@@ -1615,6 +1616,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->add_if_new('publisher', 'EXPANSIONISM');
         $this->AssertSame('Expansionism', $expanded->get2('publisher'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testCapsNewPublisher_2(): void {
@@ -1622,6 +1624,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->add_if_new('publisher', 'EXPANSIONISM');
         $this->AssertSame('Expansionism', $expanded->get2('publisher'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testAddAreManyThings(): void {
@@ -2807,6 +2810,26 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('format'));
     }
 
+    public function testBad1093UrlFallbackRequiresPublisher(): void {
+        $text = '{{cite web |url=https://example.com |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |via=hose |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('publisher'));
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('hose', $template->get2('work'));
+    }
+
+    public function testForgetUrlUsesExplicitJournalWhenDoiIsUnreliable(): void {
+        $text = '{{cite web |url=https://example.com |journal=Harness Journal |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Harness Journal', $template->get2('journal'));
+    }
+
     public function testTidyRemovesOrphanedUrlAccess(): void {
         // A citation that arrives with url= already gone but url-access= left behind
         // (e.g. a human TNT'd the url) must be cleaned up, not left with the CS1
@@ -2815,6 +2838,120 @@ final class TemplatePart2Test extends testBaseClass {
         $template = $this->make_citation($text);
         $template->tidy();
         $this->assertNull($template->get2('url-access'));
+    }
+
+    public function testFinalTidyDoesNotMakePublisherLessCiteDocument(): void {
+        // final_tidy() must not convert to cite document without a publisher
+        // (CS1 "Cite document requires |publisher=").
+        $text = '{{cite journal |title=Harness title |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+    }
+
+    public function testFinalTidyMakesCiteDocumentWhenPublisherPresent(): void {
+        // With a publisher present the cite document conversion is valid.
+        $text = '{{cite journal |title=Harness title |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |publisher=Harness Press}}';
+        $template = $this->make_citation($text);
+        $template->final_tidy();
+        $this->assertSame('cite document', $template->wikiname());
+    }
+
+    public function testForgetUrlIgnoresPlaceholderChapterWhenDoiIsUnreliable(): void {
+        // A comment-only chapter= is not URL-independent evidence: with an
+        // unreliable bad-10.1093 DOI the citation must stay cite web.
+        $text = '{{cite web |url=https://example.com |chapter=<!-- --> |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testForgetUrlIgnoresCommentOnlyJournalWhenDoiIsUnreliable(): void {
+        // A comment-only journal= is not evidence either.
+        $text = '{{cite web |url=https://example.com |journal=<!-- --> |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testTidyRemovesOrphanedTransChapter(): void {
+        // A citation that arrives with trans-chapter= but no chapter= carries
+        // the CS1 "|trans-chapter= requires |chapter=" error; tidy must drop
+        // the orphan instead of leaving it in place.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |trans-chapter=Y}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('trans-chapter'));
+    }
+
+    public function testLatePublisherConvertsStrandedWebToDocument(): void {
+        // A url-less cite web stranded by the publisher gate must convert
+        // once a publisher arrives late (CS1 "Cite document requires
+        // |publisher=" is then satisfiable).  No work= here: add_if_new
+        // refuses publishers while work is set (established behavior).
+        $text = '{{cite web |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $this->assertSame('cite web', $template->wikiname());
+        $template->add_if_new('publisher', 'Harness Press');
+        $this->assertSame('Harness Press', $template->get2('publisher'));
+        $this->assertSame('cite document', $template->wikiname());
+    }
+
+    public function testPublisherTidyRoutesJournalWebToJournal(): void {
+        // A url-less cite web that carries journal evidence must become cite
+        // journal (not cite document) when its publisher is tidied.
+        $text = '{{cite web |title=Harness title |journal=Harness Journal |publisher=Harness Press}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        // Param order must not matter: publisher tidied first must give the
+        // same answer.
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |journal=Harness Journal}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        // Same priority check for the other evidence families.
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |newspaper=Harness News}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite news', $template->wikiname());
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |arxiv=2401.99999}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite arxiv', $template->wikiname());
+    }
+
+    public function testPublisherDoesNotConvertWebWithUrl(): void {
+        // A cite web that still has its url must never become cite document
+        // just because a publisher was added.
+        $text = '{{cite web |url=https://example.com |title=Harness title |work=Hose}}';
+        $template = $this->make_citation($text);
+        $template->add_if_new('publisher', 'Harness Press');
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testTidyRemovesOrphanedTransEntry(): void {
+        // trans-entry= without entry= is the same CS1 error family.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |trans-entry=Y}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('trans-entry'));
+    }
+
+    public function testTidyRemovesOrphanedTransContribution(): void {
+        // trans-contribution= without contribution= is the same CS1 error family.
+        $text = '{{cite book |title=T |publisher=P |date=2020 |trans-contribution=Y}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('trans-contribution'));
+    }
+
+    public function testTidyKeepsTransChapterWhenBasePresent(): void {
+        // A trans-chapter= whose base chapter= is present must be kept.
+        $text = '{{cite book |title=T |chapter=C |trans-chapter=Y |publisher=P |date=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('Y', $template->get2('trans-chapter'));
     }
 
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {
