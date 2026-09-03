@@ -1703,6 +1703,20 @@ final class TemplatePart1Test extends testBaseClass {
         $this->assertSame('https://www.example.com/article', $expanded->get2('url'));
     }
 
+    public function testAddIfNewRejectsOrcidUrl(): void {
+        // ORCID URLs identify authors, not the cited work: the bot should
+        // never add one as |url= (User talk:Citation bot "Bad ORCID link",
+        // "Adds ORCID URL with invalid character...").
+        $text = '{{cite journal | title = X | journal = J }}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('url', 'https://orcid.org/0000-0003-0487-0196'));
+        $this->assertNull($template->get2('url'));
+        $this->assertFalse($template->add_if_new('url', 'http://orcid.org/0000-0001-9153-2907'));
+        $this->assertNull($template->get2('url'));
+        $this->assertTrue($template->add_if_new('url', 'https://example.com/article'));
+        $this->assertSame('https://example.com/article', $template->get2('url'));
+    }
+
     public function testAddIfNewRejectsTimestamplessArchiveUrl(): void {
         $text = '{{cite journal | title = X | journal = J }}';
         $template = $this->make_citation($text);

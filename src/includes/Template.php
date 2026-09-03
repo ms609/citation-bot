@@ -1908,6 +1908,11 @@ final class Template
                     report_inaction("Not adding malformed URL: " . echoable($value));
                     return false;
                 }
+                if (preg_match('~^https?://(?:www\.|)orcid\.org/~i', $value) === 1) {
+                    // ORCID URLs identify authors, not the cited work: never use one as |url=
+                    report_inaction("Not adding ORCID author URL as article URL: " . echoable($value));
+                    return false;
+                }
                 if (!$this->blank([$param_name, ...TITLE_LINK_ALIASES])) {
                     return false;
                 }
