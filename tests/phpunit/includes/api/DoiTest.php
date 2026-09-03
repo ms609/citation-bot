@@ -97,6 +97,86 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('ok', $status);
     }
 
+    public function testBiorxivParserAcceptsUtf8Bom(): void {
+        $status = null;
+        $response =
+            "\xEF\xBB\xBF" .
+            '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/published"}]}';
+
+        $this->assertSame(
+            '10.1000/published',
+            parse_biorxiv_publication_response($response, $status)
+        );
+        $this->assertSame('ok', $status);
+    }
+
+    public function testBiorxivParserAcceptsBomBeforeJsonWhitespace(): void {
+        $status = null;
+        $response =
+            "\xEF\xBB\xBF \n" .
+            '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/published"}]}';
+
+        $this->assertSame(
+            '10.1000/published',
+            parse_biorxiv_publication_response($response, $status)
+        );
+        $this->assertSame('ok', $status);
+    }
+
+    public function testBiorxivParserRejectsInvalidUtf8(): void {
+        $status = null;
+        $response =
+            '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/' .
+            "\xFF" .
+            '"}]}';
+
+        $this->assertNull(
+            parse_biorxiv_publication_response($response, $status)
+        );
+        $this->assertNull($status);
+    }
+
+    public function testBiorxivParserRejectsExcessiveJsonNesting(): void {
+        $status = null;
+        $response = str_repeat('{"x":', 140) . '1' . str_repeat('}', 140);
+
+        $this->assertNull(
+            parse_biorxiv_publication_response($response, $status)
+        );
+        $this->assertNull($status);
+    }
+
+    public function testBiorxivParserRejectsWrongTopLevelJsonShapes(): void {
+        foreach (['[]', 'null', '"metadata"', '123', 'true'] as $response) {
+            $status = 'stale';
+            $this->assertNull(
+                parse_biorxiv_publication_response($response, $status),
+                $response
+            );
+            $this->assertNull($status);
+        }
+    }
+
+    public function testBiorxivParserRejectsDoubleUtf8Bom(): void {
+        $status = null;
+        $response =
+            "\xEF\xBB\xBF\xEF\xBB\xBF" .
+            '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/published"}]}';
+
+        $this->assertNull(parse_biorxiv_publication_response($response, $status));
+        $this->assertNull($status);
+    }
+
+    public function testBiorxivParserRejectsBomAfterWhitespace(): void {
+        $status = null;
+        $response =
+            " \xEF\xBB\xBF" .
+            '{"messages":[{"status":"ok"}],"collection":[{"published_doi":"10.1000/published"}]}';
+
+        $this->assertNull(parse_biorxiv_publication_response($response, $status));
+        $this->assertNull($status);
+    }
+
     public function testExpansion_doi_not_from_crossrefRG(): void {
         $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
