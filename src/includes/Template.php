@@ -4266,6 +4266,27 @@ final class Template
                     }
                     return;
 
+                case 'trans-title':
+                case 'trans-chapter':
+                case 'trans-quote':
+                case 'trans-journal':
+                case 'trans-work':
+                case 'trans-magazine':
+                case 'trans-newspaper':
+                case 'trans-website':
+                case 'trans-encyclopedia':
+                case 'trans-dictionary':
+                case 'trans-periodical':
+                case 'trans-section':
+                    // Remove a trans-<param> whose base parameter is absent
+                    // (CS1 "|trans-<param>= requires |<param>=").  A script-
+                    // <param> base also satisfies the requirement.
+                    $trans_base = mb_substr($param, 6);
+                    if ($this->blank([$trans_base, 'script-' . $trans_base]) && $this->has($param)) {
+                        $this->forget($param);
+                    }
+                    return;
+
                 case 'doi':
                     $doi = $this->get($param);
                     if (!$doi) {

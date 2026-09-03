@@ -402,7 +402,7 @@ function build_matrix(): array {
         ['GAP bad ISBN-10 (pre-2007) survives tidy', '{{cite journal |title=X |journal=J |date=1999 |isbn=0-306-40615-1}}', 'gap'],
         ['GAP url-less cite web left as-is', '{{cite web |title=X}}', 'gap'],
         ['GAP empty title left as-is', '{{cite journal |journal=Nature}}', 'gap'],
-        ['GAP orphaned trans-chapter left as-is', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'gap'],
+        ['Orphaned trans-chapter removed', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'pass'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'gap'],
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],

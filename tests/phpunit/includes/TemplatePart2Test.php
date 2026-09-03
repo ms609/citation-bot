@@ -2837,6 +2837,24 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('url-access'));
     }
 
+    public function testTidyRemovesOrphanedTransChapter(): void {
+        // A citation that arrives with trans-chapter= but no chapter= carries
+        // the CS1 "|trans-chapter= requires |chapter=" error; tidy must drop
+        // the orphan instead of leaving it in place.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |trans-chapter=Y}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('trans-chapter'));
+    }
+
+    public function testTidyKeepsTransChapterWhenBasePresent(): void {
+        // A trans-chapter= whose base chapter= is present must be kept.
+        $text = '{{cite book |title=T |chapter=C |trans-chapter=Y |publisher=P |date=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('Y', $template->get2('trans-chapter'));
+    }
+
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {
         // The base url param may use its non-hyphenated alias (contributionurl),
         // so an access param must not be dropped when that alias is present.
