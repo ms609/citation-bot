@@ -141,9 +141,12 @@ function archive_title_scan_window(string $raw_html): string {
 }
 
 /**
- * Return only the HTTP header block from a curl response that includes headers.
+ * Split a curl response containing headers into the final HTTP header block
+ * and the corresponding body.
+ *
+ * @return array{headers: string, body: string}
  */
-function archive_http_header_block(string $response): string {
+function archive_http_response_parts(string $response): array {
     $offset = 0;
     $last = '';
     $length = mb_strlen($response, '8bit');
@@ -159,7 +162,12 @@ function archive_http_header_block(string $response): string {
         $crlf_end = mb_strpos($response, "\r\n\r\n", $offset, '8bit');
         $lf_end = mb_strpos($response, "\n\n", $offset, '8bit');
         if ($crlf_end === false && $lf_end === false) {
-            return $last;
+            return [
+                'headers' => $last,
+                'body' => $last === ''
+                    ? $response
+                    : mb_substr($response, $offset, null, '8bit'),
+            ];
         }
 
         if ($crlf_end === false) {
@@ -197,7 +205,26 @@ function archive_http_header_block(string $response): string {
         }
     }
 
-    return $last;
+    return [
+        'headers' => $last,
+        'body' => $last === ''
+            ? $response
+            : mb_substr($response, $offset, null, '8bit'),
+    ];
+}
+
+/**
+ * Return only the final HTTP header block from a curl response.
+ */
+function archive_http_header_block(string $response): string {
+    return archive_http_response_parts($response)['headers'];
+}
+
+/**
+ * Return only the body corresponding to the final HTTP header block.
+ */
+function archive_http_body(string $response): string {
+    return archive_http_response_parts($response)['body'];
 }
 
 /**
@@ -330,35 +357,161 @@ function archive_html_attributes(string $tag): array {
 }
 
 /**
+ * Find the end of an HTML tag without treating > inside a quoted attribute as
+ * the tag terminator.
+ */
+function archive_html_tag_end(string $html, int $start): ?int {
+    $quote = '';
+    $length = mb_strlen($html, '8bit');
+    for ($position = $start + 1; $position < $length; ++$position) {
+        $char = $html[$position];
+        if ($quote !== '') {
+            if ($char === $quote) {
+                $quote = '';
+            }
+            continue;
+        }
+        if ($char === '"' || $char === "'") {
+            $quote = $char;
+            continue;
+        }
+        if ($char === '>') {
+            return $position;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Extract actual meta start tags while skipping comments, raw-text/RCDATA
+ * elements, and strings that only look like tags inside another tag's attrs.
+ *
+ * @return list<string>
+ */
+function archive_html_meta_tags(string $html): array {
+    $tags = [];
+    $length = mb_strlen($html, '8bit');
+    $position = 0;
+    $skip_elements = [
+        'script', 'style', 'title', 'textarea', 'template', 'noscript',
+        'xmp', 'iframe', 'noembed', 'noframes',
+    ];
+
+    while ($position < $length) {
+        $start = mb_strpos($html, '<', $position, '8bit');
+        if ($start === false) {
+            break;
+        }
+
+        if (mb_substr($html, $start, 4, '8bit') === '<!--') {
+            $comment_end = mb_strpos($html, '-->', $start + 4, '8bit');
+            if ($comment_end === false) {
+                break;
+            }
+            $position = $comment_end + 3;
+            continue;
+        }
+
+        $next = $html[$start + 1] ?? '';
+        if ($next === '' || preg_match('~[A-Za-z/!?]~', $next) !== 1) {
+            $position = $start + 1;
+            continue;
+        }
+
+        $end = archive_html_tag_end($html, $start);
+        if ($end === null) {
+            break;
+        }
+
+        $inside = ltrim(
+            mb_substr($html, $start + 1, $end - $start - 1, '8bit')
+        );
+        $closing = str_starts_with($inside, '/');
+        if ($closing) {
+            $inside = ltrim(mb_substr($inside, 1, null, '8bit'));
+        }
+
+        if (!preg_match('~^([A-Za-z][A-Za-z0-9:-]*)~', $inside, $match)) {
+            $position = $end + 1;
+            continue;
+        }
+
+        $name = mb_strtolower($match[1]);
+        if (!$closing && $name === 'plaintext') {
+            break;
+        }
+        if (!$closing && in_array($name, $skip_elements, true)) {
+            $search = $end + 1;
+            $close_start = false;
+            while (($candidate = stripos($html, '</' . $name, $search)) !== false) {
+                $after = $html[$candidate + 2 + strlen($name)] ?? '';
+                if ($after === '>' || $after === '/' || preg_match('~[\x09-\x0D ]~', $after)) {
+                    $close_start = $candidate;
+                    break;
+                }
+                $search = $candidate + 2 + strlen($name);
+            }
+            if ($close_start === false) {
+                break;
+            }
+            $close_end = archive_html_tag_end($html, $close_start);
+            if ($close_end === null) {
+                break;
+            }
+            $position = $close_end + 1;
+            continue;
+        }
+
+        if (!$closing && $name === 'meta') {
+            $tags[] = mb_substr($html, $start, $end - $start + 1, '8bit');
+        }
+        $position = $end + 1;
+    }
+
+    return $tags;
+}
+
+/**
+ * Apply HTML meta-prescan encoding semantics to a declared label.
+ */
+function archive_meta_encoding_label(string $encoding): string {
+    $key = mb_strtolower(mb_trim($encoding));
+    if (in_array(
+        $key,
+        [
+            'csunicode',
+            'iso-10646-ucs-2',
+            'ucs-2',
+            'unicode',
+            'unicodefeff',
+            'unicodefffe',
+            'utf-16',
+            'utf-16be',
+            'utf-16le',
+        ],
+        true
+    )) {
+        return 'UTF-8';
+    }
+    if ($key === 'x-user-defined') {
+        return 'windows-1252';
+    }
+
+    return $encoding;
+}
+
+/**
  * Extract explicit charset declarations from HTML meta elements.
  *
  * @return list<string>
  */
 function archive_meta_declared_encodings(string $html): array {
-    // An unterminated comment or raw-text element consumes the rest of the
-    // document for this lightweight scan; do not expose fake meta tags inside it.
-    $scan = preg_replace('~<!--(?:.*?-->|.*\z)~s', '', $html);
-    $scan = is_string($scan) ? $scan : $html;
-    $without_embedded_text = preg_replace(
-        '~<(script|style|template|noscript)\b[^>]*>(?:.*?</\1\s*>|.*\z)~is',
-        '',
-        $scan
-    );
-    $scan = is_string($without_embedded_text) ? $without_embedded_text : $scan;
-
     $declared = [];
-    if (!preg_match_all(
-        '~<meta\b(?:[^>"\']+|"[^"]*"|\'[^\']*\')*>~i',
-        $scan,
-        $meta_tags
-    )) {
-        return $declared;
-    }
-
-    foreach ($meta_tags[0] as $tag) {
+    foreach (archive_html_meta_tags($html) as $tag) {
         $attributes = archive_html_attributes($tag);
         if (isset($attributes['charset']) && $attributes['charset'] !== '') {
-            $declared[] = $attributes['charset'];
+            $declared[] = archive_meta_encoding_label($attributes['charset']);
             continue;
         }
 
@@ -368,7 +521,7 @@ function archive_meta_declared_encodings(string $html): array {
         ) {
             $charset = archive_charset_parameter($attributes['content']);
             if ($charset !== null) {
-                $declared[] = $charset;
+                $declared[] = archive_meta_encoding_label($charset);
             }
         }
     }
@@ -388,6 +541,7 @@ function archive_candidate_encodings(string $html): array {
     $declared = [];
     $guessed = [];
     $headers = archive_http_header_block($html);
+    $body = archive_http_body($html);
 
     if ($headers !== '') {
         if (preg_match_all('~^content-type:\s*([^\r\n]*)\r?$~im', $headers, $header_matches)) {
@@ -404,7 +558,7 @@ function archive_candidate_encodings(string $html): array {
         }
     }
 
-    foreach (archive_meta_declared_encodings($html) as $charset) {
+    foreach (archive_meta_declared_encodings($body) as $charset) {
         $declared[] = $charset;
     }
 
@@ -611,6 +765,84 @@ function is_encoding_reasonable(string $encode): bool { // common "default" ones
     return !in_array($encode, SANE_ENCODE, true);
 }
 
+/**
+ * Keep archive decoding to a finite set of web encodings rather than passing
+ * arbitrary labels through to iconv(). A few legacy aliases already supported
+ * by Citation Bot are retained for compatibility.
+ */
+function archive_web_encoding_is_supported(string $encoding): bool {
+    return in_array(
+        mb_strtolower($encoding),
+        [
+            // WHATWG encoding labels, plus a few historical Citation Bot aliases.
+            'unicode-1-1-utf-8', 'unicode11utf8', 'unicode20utf8',
+            'utf-8', 'utf8', 'x-unicode20utf8', 'en-utf-8',
+            'windows-utf-8', 'utf8_unicode_ci',
+            '866', 'cp866', 'csibm866', 'ibm866',
+            'csisolatin2', 'iso-8859-2', 'iso-ir-101', 'iso8859-2',
+            'iso88592', 'iso_8859-2', 'iso_8859-2:1987', 'l2', 'latin2',
+            'csisolatin3', 'iso-8859-3', 'iso-ir-109', 'iso8859-3',
+            'iso88593', 'iso_8859-3', 'iso_8859-3:1988', 'l3', 'latin3',
+            'csisolatin4', 'iso-8859-4', 'iso-ir-110', 'iso8859-4',
+            'iso88594', 'iso_8859-4', 'iso_8859-4:1988', 'l4', 'latin4',
+            'csisolatincyrillic', 'cyrillic', 'iso-8859-5', 'iso-ir-144',
+            'iso8859-5', 'iso88595', 'iso_8859-5', 'iso_8859-5:1988',
+            'arabic', 'asmo-708', 'csiso88596e', 'csiso88596i',
+            'csisolatinarabic', 'ecma-114', 'iso-8859-6', 'iso-8859-6-e',
+            'iso-8859-6-i', 'iso-ir-127', 'iso8859-6', 'iso88596',
+            'iso_8859-6', 'iso_8859-6:1987',
+            'csisolatingreek', 'ecma-118', 'elot_928', 'greek', 'greek8',
+            'iso-8859-7', 'iso-ir-126', 'iso8859-7', 'iso88597',
+            'iso_8859-7', 'iso_8859-7:1987', 'sun_eu_greek',
+            'csiso88598e', 'csisolatinhebrew', 'hebrew', 'iso-8859-8',
+            'iso-8859-8-e', 'iso-ir-138', 'iso8859-8', 'iso88598',
+            'iso_8859-8', 'iso_8859-8:1988', 'visual',
+            'csiso88598i', 'iso-8859-8-i', 'logical',
+            'csisolatin6', 'iso-8859-10', 'iso-ir-157', 'iso8859-10',
+            'iso885910', 'l6', 'latin6',
+            'iso-8859-13', 'iso8859-13', 'iso885913',
+            'iso-8859-14', 'iso8859-14', 'iso885914',
+            'csisolatin9', 'iso-8859-15', 'iso8859-15', 'iso885915',
+            'iso_8859-15', 'l9', 'iso-8859-16',
+            'cskoi8r', 'koi', 'koi8', 'koi8-r', 'koi8_r',
+            'koi8-ru', 'koi8-u',
+            'csmacintosh', 'mac', 'macintosh', 'x-mac-roman', 'macroman',
+            'dos-874', 'iso-8859-11', 'iso8859-11', 'iso885911',
+            'tis-620', 'windows-874',
+            'cp1250', 'windows-1250', 'x-cp1250',
+            'cp1251', 'windows-1251', 'x-cp1251',
+            'ansi_x3.4-1968', 'ascii', 'cp1252', 'cp819', 'csisolatin1',
+            'ibm819', 'iso-8859-1', 'iso-ir-100', 'iso8859-1',
+            'iso88591', 'iso_8859-1', 'iso_8859-1:1987', 'l1', 'latin1',
+            'us-ascii', 'windows-1252', 'x-cp1252',
+            'cp1253', 'windows-1253', 'x-cp1253',
+            'cp1254', 'csisolatin5', 'iso-8859-9', 'iso-ir-148',
+            'iso8859-9', 'iso88599', 'iso_8859-9', 'iso_8859-9:1989',
+            'l5', 'latin5', 'windows-1254', 'x-cp1254',
+            'cp1255', 'windows-1255', 'x-cp1255',
+            'cp1256', 'windows-1256', 'x-cp1256',
+            'cp1257', 'windows-1257', 'x-cp1257',
+            'cp1258', 'windows-1258', 'x-cp1258',
+            'x-mac-cyrillic', 'x-mac-ukrainian', 'maccyrillic',
+            'maccentraleurope', 'mac-centraleurope',
+            'chinese', 'csgb2312', 'csiso58gb231280', 'gb2312',
+            'gb_2312', 'gb_2312-80', 'gbk', 'iso-ir-58', 'x-gbk',
+            'gb18030',
+            'big5', 'big-5', 'big5-hkscs', 'cn-big5', 'csbig5', 'x-x-big5',
+            'cseucpkdfmtjapanese', 'euc-jp', 'x-euc-jp',
+            'csiso2022jp', 'iso-2022-jp',
+            'csshiftjis', 'ms932', 'ms_kanji', 'shift-jis', 'shift_jis',
+            'sjis', 'sjis-win', 'windows-31j', 'x-sjis', 'cp932',
+            'cseuckr', 'csksc56011987', 'euc-kr', 'iso-ir-149', 'korean',
+            'ks_c_5601-1987', 'ks_c_5601-1989', 'ksc5601', 'ksc_5601',
+            'windows-949',
+            'utf-16', 'utf-16be', 'utf-16le', 'unicodefffe',
+            'csunicode', 'iso-10646-ucs-2', 'ucs-2', 'unicode', 'unicodefeff',
+        ],
+        true
+    );
+}
+
 function smart_decode(string $title, string $encode, string $archive_url): string {
     if ($title === "") {
         return "";
@@ -682,6 +914,9 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     }
 
     $encode_key = mb_strtolower($encode);
+    if (!archive_web_encoding_is_supported($encode)) {
+        return "";
+    }
     if (
         in_array($encode_key, INSANE_ENCODE, true) ||
         in_array($encode_key, ['utf-7', 'unicode', 'none'], true)
