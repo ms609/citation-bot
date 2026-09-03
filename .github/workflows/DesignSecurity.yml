@@ -55,4 +55,4 @@ jobs:
       run: composer install -vvv --no-progress
 
     - name: PHP Design Security
-      run: composer run progpilot
+      run: composer run progpilot | sed 's#\/home\/runner\/work\/citation-bot\/citation-bot\/##'
