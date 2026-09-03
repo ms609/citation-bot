@@ -412,6 +412,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame(0, unicode_levenshtein('Ελλάδα', 'Ελλάδα'));
     }
 
+    public function testUnicodeNormalizerDependencyIsAvailable(): void {
+        $this->assertTrue(class_exists(Normalizer::class));
+    }
+
     public function testUnicodeLevenshteinNormalizesCanonicalEquivalents(): void {
         $this->assertSame(
             0,
