@@ -389,7 +389,7 @@ function normalize_unicode_nfc(string $input): string {
         return $input;
     }
     if (!class_exists(Normalizer::class)) {
-        return $input;
+        throw new RuntimeException('Unicode NFC normalization support is required.');
     }
 
     $normalized = Normalizer::normalize($input, Normalizer::FORM_C);
