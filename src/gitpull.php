@@ -98,11 +98,9 @@ if (@mkdir(LOCK_DIR, 0700)) {
         }
     });
     try {
+        // Note: gitpull_page() escapes output with htmlspecialchars, so keep raw here to avoid double-encoding.
         /** @psalm-suppress ForbiddenCode */
-        $git_hub = htmlspecialchars(
-            (string) shell_exec("(/usr/bin/git fetch --all && /usr/bin/git reset --hard origin/master) 2>&1"), // phpcs:ignore
-            ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'
-        );
+        $git_hub = (string) shell_exec("(/usr/bin/git fetch --all && /usr/bin/git reset --hard origin/master) 2>&1"); // phpcs:ignore
     } finally {
         @rmdir(LOCK_DIR);
         clearstatcache(true, LOCK_DIR);

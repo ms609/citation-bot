@@ -6,6 +6,13 @@
             "prevent": [
                 "xss"
             ]
+        },
+        {
+            "name": "htmlspecialchars",
+            "language": "php",
+            "prevent": [
+                "xss"
+            ]
         }
     ]
 }
