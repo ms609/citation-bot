@@ -1364,6 +1364,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('publisher', 'Springer Zone'));
         $this->assertFalse($expanded->add_if_new('publisher', 'Goodbye dead'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testAddExitingThings2(): void {
@@ -1615,6 +1616,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->add_if_new('publisher', 'EXPANSIONISM');
         $this->AssertSame('Expansionism', $expanded->get2('publisher'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testCapsNewPublisher_2(): void {
@@ -1622,6 +1624,7 @@ final class TemplatePart2Test extends testBaseClass {
         $expanded = $this->make_citation($text);
         $expanded->add_if_new('publisher', 'EXPANSIONISM');
         $this->AssertSame('Expansionism', $expanded->get2('publisher'));
+        $this->assertSame('cite web', $expanded->wikiname()); // Title-less: no retry conversion
     }
 
     public function testAddAreManyThings(): void {
@@ -2892,6 +2895,30 @@ final class TemplatePart2Test extends testBaseClass {
         $template->add_if_new('publisher', 'Harness Press');
         $this->assertSame('Harness Press', $template->get2('publisher'));
         $this->assertSame('cite document', $template->wikiname());
+    }
+
+    public function testPublisherTidyRoutesJournalWebToJournal(): void {
+        // A url-less cite web that carries journal evidence must become cite
+        // journal (not cite document) when its publisher is tidied.
+        $text = '{{cite web |title=Harness title |journal=Harness Journal |publisher=Harness Press}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        // Param order must not matter: publisher tidied first must give the
+        // same answer.
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |journal=Harness Journal}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite journal', $template->wikiname());
+        // Same priority check for the other evidence families.
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |newspaper=Harness News}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite news', $template->wikiname());
+        $text = '{{cite web |publisher=Harness Press |title=Harness title |arxiv=2401.99999}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite arxiv', $template->wikiname());
     }
 
     public function testPublisherDoesNotConvertWebWithUrl(): void {

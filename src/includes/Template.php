@@ -3499,6 +3499,39 @@ final class Template
         return true;
     }
 
+    /**
+     * Best template for a url-less cite web given URL-independent evidence.
+     * Returns '' when no evidence supports re-typing (caller falls back to
+     * cite document).  Mirrors the forget-url fallback priority:
+     * journal, newspaper, book identifiers, arxiv.
+     */
+    private function retarget_url_less_web(bool $bad_doi): string {
+        $has_journal = $this->has('journal');
+        $has_newspaper = $this->has('newspaper');
+        $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+        $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
+        if ($bad_doi) {
+            // Comment placeholders do not count as evidence.
+            $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
+            $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
+            $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
+            $has_book_evidence = $this->get_without_comments_and_placeholders('isbn') !== '' || $this->get_without_comments_and_placeholders('lccn') !== '' || $this->get_without_comments_and_placeholders('oclc') !== '' || $this->get_without_comments_and_placeholders('ol') !== '' || $this->get_without_comments_and_placeholders('chapter') !== '';
+        }
+        if ($has_journal) {
+            return 'cite journal';
+        }
+        if ($has_newspaper) {
+            return 'cite news';
+        }
+        if ($has_book_evidence) {
+            return 'cite book';
+        }
+        if ($has_arxiv) {
+            return 'cite arxiv';
+        }
+        return '';
+    }
+
     public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false, bool $allow_bad_10_1093_doi = false): void {
         if (mb_strpos($this->get('doi'), '10.1093') !== false && $this->wikiname() !== 'cite web') {
             return;
@@ -3506,7 +3539,7 @@ final class Template
         if (mb_strpos($this->get('doi'), '10.13140') !== false) {
             return;
         }
-        if ($new_name === 'cite document' && $this->get_without_comments_and_placeholders('publisher') === '') {
+        if ($new_name === 'cite document' && ($this->get_without_comments_and_placeholders('publisher') === '' || $this->blank('publisher'))) {
             return;
         }
         if (!$allow_bad_10_1093_doi && bad_10_1093_doi($this->get('doi'))) {
@@ -5495,16 +5528,22 @@ final class Template
                         }
                         return;
                     }
-                    // A publisher that survived cleanup may complete a cite
-                    // document conversion previously declined for lack of one:
-                    // retry only the stranded shapes (url-less cite web, or an
-                    // ARE_WORKS work value).  change_name_to() re-applies its
-                    // own DOI and work-alias guards.
-                    if ($this->get_without_comments_and_placeholders('publisher') !== '') {
-                        $stranded_web = $this->wikiname() === 'cite web' && $this->blank(ALL_URL_TYPES);
-                        $stranded_work = in_array(mb_strtolower($this->get('work')), ARE_WORKS, true);
-                        if ($stranded_web || $stranded_work) {
-                            $this->change_name_to('cite document');
+                    // A publisher that survived cleanup may complete a conversion
+                    // previously declined for lack of one.  Retry the stranded
+                    // shape (titled url-less cite web) with the same evidence
+                    // priority the forget-url fallback uses; title-less webs
+                    // and other templates keep a valid name by staying put.
+                    // change_name_to() re-applies its own DOI and work-alias
+                    // guards.
+                    if ($this->get_without_comments_and_placeholders('publisher') !== '' && !$this->blank('publisher')) {
+                        if ($this->wikiname() === 'cite web' && $this->blank(ALL_URL_TYPES) && $this->has('title')) {
+                            $retry_bad_doi = bad_10_1093_doi($this->get('doi'));
+                            $retry_target = $this->retarget_url_less_web($retry_bad_doi);
+                            if ($retry_target !== '') {
+                                $this->change_name_to($retry_target, true, false, $retry_bad_doi);
+                            } else {
+                                $this->change_name_to('cite document');
+                            }
                         }
                     }
 
@@ -6739,7 +6778,7 @@ final class Template
                         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
                     }
                 } else {
-                    if ($this->get_without_comments_and_placeholders('publisher') === '') {
+                    if ($this->get_without_comments_and_placeholders('publisher') === '' || $this->blank('publisher')) {
                         report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
                     } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
@@ -7667,7 +7706,7 @@ final class Template
                         $spacing[1] = '';
                         $spacing[2] = ''; // @codeCoverageIgnoreEnd
                     }
-                    if ($this->get_without_comments_and_placeholders('publisher') === '') {
+                    if ($this->get_without_comments_and_placeholders('publisher') === '' || $this->blank('publisher')) {
                         report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
                     } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
@@ -7729,24 +7768,9 @@ final class Template
             // An unreliable bad-10.1093 fallback-DOI should not block a replacement supported by
             // explicit URL-independent evidence.  Comment placeholders do not count as evidence.
             $bad_doi = bad_10_1093_doi($this->get('doi'));
-            $has_journal = $this->has('journal');
-            $has_newspaper = $this->has('newspaper');
-            $has_arxiv = $this->has('arxiv') || $this->has('eprint');
-            $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
-            if ($bad_doi) {
-                $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
-                $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
-                $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
-                $has_book_evidence = $this->get_without_comments_and_placeholders('isbn') !== '' || $this->get_without_comments_and_placeholders('lccn') !== '' || $this->get_without_comments_and_placeholders('oclc') !== '' || $this->get_without_comments_and_placeholders('ol') !== '' || $this->get_without_comments_and_placeholders('chapter') !== '';
-            }
-            if ($has_journal) {
-                $this->change_name_to('cite journal', true, false, $bad_doi);
-            } elseif ($has_newspaper) {
-                $this->change_name_to('cite news', true, false, $bad_doi);
-            } elseif ($has_book_evidence) {
-                $this->change_name_to('cite book', true, false, $bad_doi);
-            } elseif ($has_arxiv) {
-                $this->change_name_to('cite arxiv', true, false, $bad_doi);
+            $retarget = $this->retarget_url_less_web($bad_doi);
+            if ($retarget !== '') {
+                $this->change_name_to($retarget, true, false, $bad_doi);
             } else {
                 $this->change_name_to('cite document');
             }
