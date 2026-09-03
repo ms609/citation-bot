@@ -1377,4 +1377,168 @@ final class ArchiveCoverageTest extends testBaseClass {
             );
         }
     }
+
+    public function testArchiveCandidateEncodingsDoesNotParseMetaFromHttpHeaders(): void {
+        $response =
+            "HTTP/1.1 200 OK\r\n" .
+            "X-Debug: <meta charset=\"big5\">\r\n\r\n" .
+            '<html><head><meta charset="utf-8"></head></html>';
+
+        $this->assertSame(
+            ['utf-8'],
+            archive_candidate_encodings($response)
+        );
+    }
+
+    public function testArchiveHttpBodyUsesBodyAfterFinalHeaderBlock(): void {
+        $response =
+            "HTTP/1.1 100 Continue\r\n\r\n" .
+            "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n" .
+            '<html><meta charset="utf-8"></html>';
+
+        $this->assertSame(
+            '<html><meta charset="utf-8"></html>',
+            archive_http_body($response)
+        );
+    }
+
+    public function testArchiveMetaIgnoresRcdataAndAttributeLookalikes(): void {
+        foreach ([
+            '<title>Literal <meta charset="big5"></title>',
+            '<textarea>Literal <meta charset="big5"></textarea>',
+            '<link title="<meta charset=\'big5\'>">',
+            '<div data-example="before > <meta charset=\'big5\'> after">x</div>',
+        ] as $html) {
+            $this->assertSame([], archive_meta_declared_encodings($html), $html);
+        }
+    }
+
+    public function testArchiveMetaIgnoresOtherRawTextElements(): void {
+        foreach (['xmp', 'iframe', 'noembed', 'noframes'] as $tag) {
+            $this->assertSame(
+                [],
+                archive_meta_declared_encodings(
+                    '<' . $tag . '>Literal <meta charset="big5"></' . $tag . '>'
+                ),
+                $tag
+            );
+        }
+        $this->assertSame(
+            [],
+            archive_meta_declared_encodings(
+                '<plaintext>Literal <meta charset="big5">'
+            )
+        );
+    }
+
+    public function testArchiveMetaScannerContinuesAfterLiteralLessThanText(): void {
+        $html = '2 < 3 <meta charset="utf-8">';
+        $this->assertSame(['utf-8'], archive_meta_declared_encodings($html));
+    }
+
+    public function testArchiveMetaMapsUtf16LabelsToUtf8(): void {
+        foreach ([
+            'UTF-16',
+            'UTF-16LE',
+            'UTF-16BE',
+            'unicode',
+            'unicodefffe',
+            'csunicode',
+            'ucs-2',
+        ] as $encoding) {
+            $this->assertSame(
+                ['UTF-8'],
+                archive_meta_declared_encodings(
+                    '<meta charset="' . $encoding . '">'
+                ),
+                $encoding
+            );
+        }
+    }
+
+    public function testArchiveMetaMapsXUserDefinedToWindows1252(): void {
+        $this->assertSame(
+            ['windows-1252'],
+            archive_meta_declared_encodings(
+                '<meta charset="x-user-defined">'
+            )
+        );
+    }
+
+    public function testArchiveTransportAndMetaUtf16SemanticsRemainDistinct(): void {
+        $response =
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=UTF-16LE\r\n\r\n" .
+            '<meta charset="UTF-16LE">';
+
+        $this->assertSame(
+            ['UTF-16LE', 'UTF-8'],
+            archive_candidate_encodings($response)
+        );
+    }
+
+    public function testArchiveWebEncodingAllowlistCoversRepresentativeAliases(): void {
+        foreach ([
+            'latin2',
+            'csisolatingreek',
+            'x-cp1254',
+            'gb2312',
+            'big5-hkscs',
+            'x-euc-jp',
+            'windows-949',
+        ] as $encoding) {
+            $this->assertTrue(
+                archive_web_encoding_is_supported($encoding),
+                $encoding
+            );
+        }
+
+        foreach ([
+            'replacement',
+            'csiso2022kr',
+            'hz-gb-2312',
+            'iso-2022-cn',
+            'iso-2022-kr',
+        ] as $encoding) {
+            $this->assertFalse(
+                archive_web_encoding_is_supported($encoding),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeRejectsNonWebIconvEncodings(): void {
+        foreach ([
+            'UTF-32LE',
+            'UTF-7',
+            'CESU-8',
+            'BOCU-1',
+            'SCSU',
+            'IBM037',
+        ] as $encoding) {
+            $this->assertSame(
+                '',
+                smart_decode(
+                    'Archive title',
+                    $encoding,
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeStillAcceptsSupportedLegacyEncodings(): void {
+        $cyrillic = mb_convert_encoding('Москва', 'Windows-1251', 'UTF-8');
+        $korean = mb_convert_encoding('한국', 'EUC-KR', 'UTF-8');
+
+        $this->assertSame(
+            'Москва',
+            smart_decode($cyrillic, 'Windows-1251', 'https://web.archive.org/')
+        );
+        $this->assertSame(
+            '한국',
+            smart_decode($korean, 'EUC-KR', 'https://web.archive.org/')
+        );
+    }
 }
