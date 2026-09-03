@@ -5,6 +5,15 @@ declare(strict_types=1);
 require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
 
 /**
+ * Users allowed to exceed the web page-count limit (MAX_PAGES).
+ * Shared by the category and linked-pages entry points.
+ */
+const DEV_USERS = [
+    'AManWithNoPlan',
+    'Redalert2fan',
+];
+
+/**
  * Only on webpage
  */
 
@@ -126,6 +135,16 @@ function category_edit_summary_end(string $username, string $category, bool $has
         }
     }
     return $edit_summary_end;
+}
+
+/**
+ * Whether the given user may exceed the web page-count limit (MAX_PAGES)
+ * on linked-pages runs, mirroring the category entry point's DEV_USERS
+ * override. Note this is separate from the linked-pages User: restriction,
+ * which uses its own wider allow-list.
+ */
+function linked_pages_should_override_limit(string $username): bool {
+    return in_array($username, DEV_USERS, true);
 }
 
 /**

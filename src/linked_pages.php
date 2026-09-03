@@ -42,7 +42,16 @@ if ($page_name === '') {
     exit(0);
 }
 
+$dev_user_run = false;
+if (!defined('MAX_PAGES_OVERRIDE') && linked_pages_should_override_limit($api->get_the_user())) {
+    define('MAX_PAGES_OVERRIDE', 1000000);
+    $dev_user_run = true;
+}
+
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from {$page_name} | #UCB_webform_linked ";
+if ($dev_user_run) {
+    $edit_summary_end .= "| Developer - max linked-pages limit override enabled ";
+}
 
 $json = WikipediaBot::get_links($page_name);
 unset($page_name);
