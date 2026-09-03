@@ -33,11 +33,6 @@ const GET_IS_OKAY = [
     'Unflagged free DOI',
 ];
 
-const DEV_USERS = [
-    'AManWithNoPlan',
-    'Redalert2fan',
-];
-
 $category = '';
 $from_get = false;
 if (is_string(@$_POST["cat"])) {

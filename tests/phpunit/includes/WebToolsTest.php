@@ -162,6 +162,14 @@ final class WebToolsTest extends testBaseClass {
         );
     }
 
+    public function testLinkedPagesDevOverrideLimitedToDevUsers(): void {
+        $this->assertTrue(linked_pages_should_override_limit('AManWithNoPlan'));
+        $this->assertTrue(linked_pages_should_override_limit('Redalert2fan'));
+        $this->assertFalse(linked_pages_should_override_limit('Headbomb'));
+        $this->assertFalse(linked_pages_should_override_limit('SomeUser'));
+        $this->assertFalse(linked_pages_should_override_limit(''));
+    }
+
     public function testProcessPageSuggestedByPrefixAndCliTagInteraction(): void {
         $html = process_page_edit_summary_end('SomeUser', true, 'toolbar');
         $this->assertStringContainsString('| Suggested by SomeUser', $html);
