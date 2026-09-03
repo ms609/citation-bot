@@ -789,9 +789,15 @@ function mb_substr_replace(
     int $length,
     ?string $encoding = null
 ): string {
-    return mb_substr($string, 0, $start, $encoding) .
-        $replacement .
-        mb_substr($string, $start + $length, null, $encoding);
+    if ($encoding === null) {
+        return mb_substr($string, 0, $start) .
+            $replacement .
+            mb_substr($string, $start + $length, null);
+    } else {
+        return mb_substr($string, 0, $start, $encoding) .
+            $replacement .
+            mb_substr($string, $start + $length, null, $encoding);
+    }
 }
 
 function remove_brackets(string $string): string {
