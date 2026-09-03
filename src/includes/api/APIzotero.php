@@ -436,12 +436,24 @@ final class Zotero {
         );
     }
 
+    private static function trim_raw_response(string $response): string {
+        return mb_check_encoding($response, 'UTF-8')
+            ? mb_trim($response)
+            : mb_trim($response, " \t\n\r\0\x0B", '8bit');
+    }
+
+    private static function raw_response_excerpt(string $response, int $limit = 500): string {
+        return mb_check_encoding($response, 'UTF-8')
+            ? mb_substr($response, 0, $limit)
+            : mb_substr($response, 0, $limit, '8bit');
+    }
+
     private static function process_zotero_response_unchecked(string $zotero_response, Template $template, string $url, int $access_date): void {
         if ($zotero_response === self::ERROR_DONE) {
             return;  // Error message already printed in zotero_request()
         }
 
-        switch (mb_trim($zotero_response)) {
+        switch (self::trim_raw_response($zotero_response)) {
             case '':
                 report_info("Nothing returned for URL " . echoable($url));
                 return;
@@ -459,27 +471,27 @@ final class Zotero {
                 return;
         }
 
-        if (mb_strpos($zotero_response, '502 Bad Gateway') !== false) {
+        if (mb_strpos($zotero_response, '502 Bad Gateway', 0, '8bit') !== false) {
             report_warning("Bad Gateway error for URL " . echoable($url));
             return;
         }
-        if (mb_strpos($zotero_response, '503 Service Temporarily Unavailable') !== false) {
+        if (mb_strpos($zotero_response, '503 Service Temporarily Unavailable', 0, '8bit') !== false) {
             report_warning("Temporarily Unavailable error for URL " . echoable($url)); // @codeCoverageIgnore
             return;                           // @codeCoverageIgnore
         }
-        if (mb_strpos($zotero_response, '<title>Wikimedia Error</title>') !== false) {
+        if (mb_strpos($zotero_response, '<title>Wikimedia Error</title>', 0, '8bit') !== false) {
             report_warning("Temporarily giving an error for URL " . echoable($url)); // @codeCoverageIgnore
             return;                           // @codeCoverageIgnore
         }
         $zotero_data = ExternalApiResponseGuard::decodeJson($zotero_response);
         if (!isset($zotero_data)) {
-            report_warning("Could not parse JSON for URL " . echoable($url) . ": " . echoable(mb_substr($zotero_response, 0, 500)));
+            report_warning("Could not parse JSON for URL " . echoable($url) . ": " . echoable(self::raw_response_excerpt($zotero_response)));
             return;
         } elseif (!is_array($zotero_data)) {
             if (is_object($zotero_data)) {
                 $zotero_data = (array) $zotero_data;
             } else {
-                report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . echoable(mb_substr($zotero_response, 0, 500)));
+                report_warning("JSON did not parse correctly for URL " . echoable($url) . ": " . echoable(self::raw_response_excerpt($zotero_response)));
                 return;
             }
         }
@@ -505,34 +517,34 @@ final class Zotero {
         }
         if (!isset($result->title)) {
             $the_url = mb_substr(echoable(mb_substr($url, 0, 500)), 0, 600); // Limit length
-            if (mb_strpos($zotero_response, 'unknown_error') !== false) { // @codeCoverageIgnoreStart
+            if (mb_strpos($zotero_response, 'unknown_error', 0, '8bit') !== false) { // @codeCoverageIgnoreStart
                 report_info("Did not get a title for unknown reason from URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'The remote document is not in a supported format') !== false) {
+            } elseif (mb_strpos($zotero_response, 'The remote document is not in a supported format', 0, '8bit') !== false) {
                 report_info("Document type not supported (usually PDF) for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unable to load URL') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unable to load URL', 0, '8bit') !== false) {
                 report_info("Zotero could not fetch anything for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Invalid host supplied') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Invalid host supplied', 0, '8bit') !== false) {
                 report_info("DNS lookup failed for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unknown error') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unknown error', 0, '8bit') !== false) {
                 report_info("Did not get a title for unknown reason from URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unable to get any metadata from url') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unable to get any metadata from url', 0, '8bit') !== false) {
                 report_info("Did not get a title for unknown meta-data reason from URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Maximum number of allowed redirects reached') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Maximum number of allowed redirects reached', 0, '8bit') !== false) {
                 report_info("Too many redirects for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unable to retrieve data from ISBN') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unable to retrieve data from ISBN', 0, '8bit') !== false) {
                 report_info("ISBN data not found for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmcid') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmcid', 0, '8bit') !== false) {
                 report_info("PMC data not found for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmid') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Unable to locate resource with pmid', 0, '8bit') !== false) {
                 report_info("PMID data not found for URL " . $the_url);
-            } elseif (mb_strpos($zotero_response, 'reset reason: connection timeout') !== false) {
+            } elseif (mb_strpos($zotero_response, 'reset reason: connection timeout', 0, '8bit') !== false) {
                 report_info("Connection timeout for URL" . $the_url);
-            } elseif (mb_strpos($zotero_response, 'Invalid URL encoding in request parameters') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Invalid URL encoding in request parameters', 0, '8bit') !== false) {
                 report_minor_error("This URL cannot be encoded for the Zotero endpoint: " . $the_url); /* See Islam in New Zealand on en.  Also note the wiki output formats work, but give different output.  https://phabricator.wikimedia.org/T413651  TODO: fix it if they do not */
-            } elseif (mb_strpos($zotero_response, 'Invalid URL') !== false) {
+            } elseif (mb_strpos($zotero_response, 'Invalid URL', 0, '8bit') !== false) {
                 report_minor_error("This URL (or where it redirected to) was Invalid: " . $the_url);
             } else {
-                report_minor_error("For some odd reason (" . echoable(mb_substr($zotero_response, 0, 500)) . ") we did not get a title for URL " . $the_url); // Odd Error
+                report_minor_error("For some odd reason (" . echoable(self::raw_response_excerpt($zotero_response)) . ") we did not get a title for URL " . $the_url); // Odd Error
             }
             return;  // @codeCoverageIgnoreEnd
         }

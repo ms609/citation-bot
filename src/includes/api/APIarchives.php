@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
 const ARCHIVE_TITLE_SCAN_MAX_BYTES = 4 * 1024 * 1024;
+const ARCHIVE_ASCII_WHITESPACE = " \t\n\r\0\x0B";
 
 /** @var list<string> */
 const ARCHIVE_FETCH_HOSTS = [
@@ -192,7 +193,7 @@ function archive_http_response_parts(string $response): array {
             '~^HTTP/\d(?:\.\d)?\s+1\d{2}\b~i',
             $status_line
         ) === 1;
-        $is_connect = mb_stripos($status_line, 'connection established') !== false;
+        $is_connect = mb_stripos($status_line, 'connection established', 0, '8bit') !== false;
         if (!$is_interim && !$is_connect) {
             break;
         }
@@ -271,12 +272,12 @@ function archive_charset_parameter(string $content_type): ?string {
         if ($equals === false) {
             continue;
         }
-        $name = mb_trim(mb_substr($segment, 0, $equals, '8bit'));
+        $name = mb_trim(mb_substr($segment, 0, $equals, '8bit'), ARCHIVE_ASCII_WHITESPACE, '8bit');
         if (strcasecmp($name, 'charset') !== 0) {
             continue;
         }
 
-        $raw = mb_trim(mb_substr($segment, $equals + 1, null, '8bit'));
+        $raw = mb_trim(mb_substr($segment, $equals + 1, null, '8bit'), ARCHIVE_ASCII_WHITESPACE, '8bit');
         if ($raw === '') {
             return null;
         }
@@ -302,7 +303,7 @@ function archive_charset_parameter(string $content_type): ?string {
             }
             if ($char === $first) {
                 $closed = true;
-                if (mb_trim(mb_substr($raw, $i + 1, null, '8bit')) !== '') {
+                if (mb_trim(mb_substr($raw, $i + 1, null, '8bit'), ARCHIVE_ASCII_WHITESPACE, '8bit') !== '') {
                     return null;
                 }
                 break;
@@ -312,7 +313,7 @@ function archive_charset_parameter(string $content_type): ?string {
         if (!$closed) {
             return null;
         }
-        $value = mb_trim($value);
+        $value = mb_trim($value, ARCHIVE_ASCII_WHITESPACE, '8bit');
         return $value !== '' ? $value : null;
     }
 
@@ -341,7 +342,7 @@ function archive_html_attributes(string $tag): array {
     }
 
     foreach ($matches as $match) {
-        $name = mb_strtolower($match[1]);
+        $name = strtolower($match[1]);
         if (array_key_exists($name, $attributes)) {
             continue;
         }
@@ -425,11 +426,17 @@ function archive_html_meta_tags(string $html): array {
         }
 
         $inside = mb_ltrim(
-            mb_substr($html, $start + 1, $end - $start - 1, '8bit')
+            mb_substr($html, $start + 1, $end - $start - 1, '8bit'),
+            ARCHIVE_ASCII_WHITESPACE,
+            '8bit'
         );
         $closing = str_starts_with($inside, '/');
         if ($closing) {
-            $inside = mb_ltrim(mb_substr($inside, 1, null, '8bit'));
+            $inside = mb_ltrim(
+                mb_substr($inside, 1, null, '8bit'),
+                ARCHIVE_ASCII_WHITESPACE,
+                '8bit'
+            );
         }
 
         if (!preg_match('~^([A-Za-z][A-Za-z0-9:-]*)~', $inside, $match)) {
@@ -437,7 +444,7 @@ function archive_html_meta_tags(string $html): array {
             continue;
         }
 
-        $name = mb_strtolower($match[1]);
+        $name = strtolower($match[1]);
         if (!$closing && $name === 'plaintext') {
             break;
         }
@@ -476,7 +483,7 @@ function archive_html_meta_tags(string $html): array {
  * Apply HTML meta-prescan encoding semantics to a declared label.
  */
 function archive_meta_encoding_label(string $encoding): string {
-    $key = mb_strtolower(mb_trim($encoding));
+    $key = strtolower(mb_trim($encoding, ARCHIVE_ASCII_WHITESPACE, '8bit'));
     if (in_array(
         $key,
         [
@@ -517,7 +524,10 @@ function archive_meta_declared_encodings(string $html): array {
 
         if (
             isset($attributes['http-equiv'], $attributes['content']) &&
-            strcasecmp(mb_trim($attributes['http-equiv']), 'content-type') === 0
+            strcasecmp(
+                mb_trim($attributes['http-equiv'], ARCHIVE_ASCII_WHITESPACE, '8bit'),
+                'content-type'
+            ) === 0
         ) {
             $charset = archive_charset_parameter($attributes['content']);
             if ($charset !== null) {
@@ -554,7 +564,11 @@ function archive_candidate_encodings(string $html): array {
         }
 
         if (preg_match('~^x-archive-guessed-charset:\s*([^\s;]+)~im', $headers, $match)) {
-            $guessed[] = mb_trim($match[1], "\"'");
+            $guessed[] = mb_trim(
+                $match[1],
+                ARCHIVE_ASCII_WHITESPACE . "\"'",
+                '8bit'
+            );
         }
     }
 
@@ -566,8 +580,12 @@ function archive_candidate_encodings(string $html): array {
     $seen = [];
 
     foreach ($declared as $charset) {
-        $charset = mb_trim($charset, " \t\n\r\0\x0B\"'");
-        $key = mb_strtolower($charset);
+        $charset = mb_trim(
+            $charset,
+            ARCHIVE_ASCII_WHITESPACE . "\"'",
+            '8bit'
+        );
+        $key = strtolower($charset);
         if ($charset !== '' && !isset($seen[$key])) {
             $candidates[] = $charset;
             $seen[$key] = true;
@@ -575,8 +593,12 @@ function archive_candidate_encodings(string $html): array {
     }
 
     foreach ($guessed as $charset) {
-        $charset = mb_trim($charset, " \t\n\r\0\x0B\"'");
-        $key = mb_strtolower($charset);
+        $charset = mb_trim(
+            $charset,
+            ARCHIVE_ASCII_WHITESPACE . "\"'",
+            '8bit'
+        );
+        $key = strtolower($charset);
         if (
             $charset !== '' &&
             is_encoding_reasonable($charset) &&
@@ -610,6 +632,24 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
     }
 
     return convert_to_utf8($title);
+}
+
+/**
+ * Decode a title captured from raw archive bytes, then perform Unicode trimming.
+ *
+ * @param list<string> $encodings
+ */
+function archive_decode_title_candidate(string $raw_title, array $encodings, string $archive_url): string {
+    if ($raw_title === '') {
+        return '';
+    }
+
+    // Decode first: byte trimming can split UTF-16 code units (for example, 0x20 0x00).
+    $title = archive_decode_title($raw_title, $encodings, $archive_url);
+    if ($title === '' || !mb_check_encoding($title, 'UTF-8')) {
+        return '';
+    }
+    return mb_trim($title);
 }
 
 /**
@@ -667,15 +707,14 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     set_time_limit(120); // Slow regex sometimes
                     if ($title_scan_html !== '' && preg_match($regex, $title_scan_html, $match)) {
                         set_time_limit(120);
-                        $title = mb_trim($match[1]);
-                        if (mb_stripos($title, 'archive') === false &&
-                            mb_stripos($title, 'wayback') === false &&
-                            $title !== ''
+                        $encode = archive_candidate_encodings($title_scan_html);
+                        $title = archive_decode_title_candidate($match[1], $encode, $archive_url);
+                        unset($encode, $match);
+                        if ($title !== '' &&
+                            mb_stripos($title, 'archive') === false &&
+                            mb_stripos($title, 'wayback') === false
                             ) {
-                            $encode = archive_candidate_encodings($title_scan_html);
-                            $title = archive_decode_title($title, $encode, $archive_url);
-                            unset($encode, $match);
-                            $good_title = $title !== '' && mb_check_encoding($title, 'UTF-8');
+                            $good_title = true;
                             if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
                                 in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
                                 $good_title = false;
@@ -711,17 +750,20 @@ function expand_templates_from_archives(array &$templates): void { // This is do
 
 function convert_to_utf8(string $value): string {
     $value = convert_to_utf8_inside($value);
+    if (mb_check_encoding($value, 'UTF-8')) {
+        return str_replace([" �Livelong� ", "Uni�o", "Independ�ncia", "Folke Ekstr�m"], [' "Livelong" ', "União", "Independência", "Folke Ekström"], $value);
+    }
     $test = preg_replace('~[\'a-zA-Z0-9 ]+~', '', $value);
     $test = mb_convert_encoding($test, 'utf-8', 'windows-1252');
-    $count_cr1 = mb_substr_count($value, '®') + mb_substr_count($value, '©');
+    $count_cr1 = mb_substr_count($value, "\xAE", '8bit') + mb_substr_count($value, "\xA9", '8bit');
     $count_cr2 = mb_substr_count($test, '®') + mb_substr_count($test, '©');
-    $len1 = mb_strlen($value);
-    $len2 = mb_strlen($test);
-    $bad1 = mb_substr_count($value, "");
+    $len1 = mb_strlen($value, '8bit');
+    $len2 = mb_strlen($test, '8bit');
+    $bad1 = mb_substr_count($value, "\x81", '8bit');
     $bad2 = mb_substr_count($test, "");
-    $rq1 = mb_substr_count($value, "”");
+    $rq1 = mb_substr_count($value, "\x94", '8bit');
     $rq2 = mb_substr_count($test, "”");
-    $lq1 = mb_substr_count($value, "„");
+    $lq1 = mb_substr_count($value, "\x84", '8bit');
     $lq2 = mb_substr_count($test, "„");
     if ((1 + $count_cr1) === $count_cr2 && (4 + $len1 > $len2) && ($bad1 >= $bad2) && ($lq1 <= $lq2) && ($rq1 <= $rq2)) { // Special case for single (c) or (r) and did not grow much
         $value = mb_convert_encoding($value, 'utf-8', 'windows-1252');
@@ -761,7 +803,7 @@ function convert_to_utf8_inside(string $value): string {
 }
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
-    $encode = mb_strtolower($encode);
+    $encode = strtolower($encode);
     return !in_array($encode, SANE_ENCODE, true);
 }
 
@@ -772,7 +814,7 @@ function is_encoding_reasonable(string $encode): bool { // common "default" ones
  */
 function archive_web_encoding_is_supported(string $encoding): bool {
     return in_array(
-        mb_strtolower($encoding),
+        strtolower($encoding),
         [
             // WHATWG encoding labels, plus a few historical Citation Bot aliases.
             'unicode-1-1-utf-8', 'unicode11utf8', 'unicode20utf8',
@@ -848,8 +890,8 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         return "";
     }
 
-    $encode = mb_trim($encode);
-    $encode_key = mb_strtolower($encode);
+    $encode = mb_trim($encode, ARCHIVE_ASCII_WHITESPACE, '8bit');
+    $encode_key = strtolower($encode);
 
     if ($encode_key === 'maccentraleurope') {
         $encode = 'mac-centraleurope';
@@ -913,7 +955,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         $encode = 'iso-' . $matches[1];
     }
 
-    $encode_key = mb_strtolower($encode);
+    $encode_key = strtolower($encode);
     if (!archive_web_encoding_is_supported($encode)) {
         return "";
     }
@@ -930,7 +972,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     $master_list = mb_list_encodings();
     $valid = [];
     foreach ($master_list as $enc) {
-        $valid[] = mb_strtolower($enc);
+        $valid[] = strtolower($enc);
     }
 
     // mb_convert_encoding() substitutes malformed source bytes by default.
