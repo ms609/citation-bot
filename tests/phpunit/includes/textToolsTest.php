@@ -412,6 +412,54 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame(0, unicode_levenshtein('Ελλάδα', 'Ελλάδα'));
     }
 
+    public function testUnicodeLevenshteinNormalizesCanonicalEquivalents(): void {
+        $this->assertSame(
+            0,
+            unicode_levenshtein('é', "e\u{0301}")
+        );
+        $this->assertSame(
+            0,
+            unicode_levenshtein('Café Society', "Cafe\u{0301} Society")
+        );
+    }
+
+    public function testUnicodeLevenshteinHandlesMultibyteEdits(): void {
+        $this->assertSame(1, unicode_levenshtein('A😀B', 'A😃B'));
+        $this->assertSame(1, unicode_levenshtein('東京大学', '東京大学院'));
+        $this->assertSame(3, unicode_levenshtein('', '東京a'));
+        $this->assertSame(3, unicode_levenshtein('東京a', ''));
+    }
+
+    public function testUnicodeLevenshteinIsSymmetric(): void {
+        $left = 'Café 東京';
+        $right = "Cafe\u{0301} 京都";
+
+        $this->assertSame(
+            unicode_levenshtein($left, $right),
+            unicode_levenshtein($right, $left)
+        );
+    }
+
+    public function testUnicodeLevenshteinNormalizesBeforeCountingDifference(): void {
+        $this->assertSame(
+            1,
+            unicode_levenshtein("Cafe\u{0301}", 'Cafè')
+        );
+    }
+
+    public function testUnicodeLevenshteinFallsBackForInvalidUtf8(): void {
+        $this->assertSame(1, unicode_levenshtein("\xFFa", "\xFEa"));
+    }
+
+    public function testUnicodeLevenshteinNormalizesHangulJamoComposition(): void {
+        $decomposed = "\u{1100}\u{1161}";
+        $this->assertSame(0, unicode_levenshtein($decomposed, '가'));
+    }
+
+    public function testUnicodeLevenshteinCountsOneEditInsideEmojiZwjSequence(): void {
+        $this->assertSame(1, unicode_levenshtein('👩‍🔬', '👨‍🔬'));
+    }
+
     public function testC1EmptyString(): void {
         $this->assertSame('', straighten_quotes('', true));
         $this->assertSame('', normalize_c1_quotes(''));
@@ -1429,5 +1477,20 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(archive_url_has_timestamp('https://ghostarchive.org/archive/xxxxx'));
         $this->assertFalse(archive_url_has_timestamp('https://web.archive.org/web/https://example.com'));
         $this->assertFalse(archive_url_has_timestamp(''));
+    }
+
+    public function testUnicodeLevenshteinNormalizesCombiningMarkOrder(): void {
+        $left = "a\u{0301}\u{0323}";
+        $right = "a\u{0323}\u{0301}";
+
+        $this->assertSame(0, unicode_levenshtein($left, $right));
+    }
+
+    public function testUnicodeLevenshteinDoesNotCompatibilityFold(): void {
+        $this->assertSame(1, unicode_levenshtein('Ａ', 'A'));
+    }
+
+    public function testUnicodeLevenshteinInvalidIdenticalBytesRemainEqual(): void {
+        $this->assertSame(0, unicode_levenshtein("\xFFa", "\xFFa"));
     }
 }

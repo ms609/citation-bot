@@ -397,11 +397,14 @@ function normalize_unicode_nfc(string $input): string {
 }
 
 function unicode_levenshtein(string $left, string $right): int {
-    if ($left === $right) {
-        return 0;
-    }
     if (!mb_check_encoding($left, 'UTF-8') || !mb_check_encoding($right, 'UTF-8')) {
         return levenshtein($left, $right);
+    }
+
+    $left = normalize_unicode_nfc($left);
+    $right = normalize_unicode_nfc($right);
+    if ($left === $right) {
+        return 0;
     }
 
     $left_chars = preg_split('~~u', $left, -1, PREG_SPLIT_NO_EMPTY);

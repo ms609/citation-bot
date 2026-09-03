@@ -72,6 +72,10 @@ function filter_runnable_page_titles(array $pages): array {
             report_warning('Skipping non-string page title.');
             continue;
         }
+        if (!mb_check_encoding($page_title, 'UTF-8')) {
+            report_warning('Skipping page title with invalid UTF-8.');
+            continue;
+        }
         if (mb_trim($page_title) === '') {
             continue;
         }

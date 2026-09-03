@@ -409,6 +409,73 @@ final class ArchiveCoverageTest extends testBaseClass {
         );
     }
 
+    public function testSmartDecodeUsesWindows1252ForHtmlLatin1Aliases(): void {
+        foreach (['ISO-8859-1', '8859-1', 'latin1', 'us-ascii', 'cp1252'] as $encoding) {
+            $this->assertSame(
+                'A€B',
+                smart_decode(
+                    "A\x80B",
+                    $encoding,
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeCoversAdditionalHtmlLatin1Aliases(): void {
+        foreach ([
+            'iso8859-1',
+            'iso_8859-1',
+            'iso_8859-1:1987',
+            'latin-1',
+            'l1',
+            'IBM819',
+            'csISOLatin1',
+            'x-cp1252',
+        ] as $encoding) {
+            $this->assertSame(
+                'A€B',
+                smart_decode(
+                    "A\x80B",
+                    $encoding,
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeAcceptsCaseInsensitiveCp932Alias(): void {
+        $encoded = mb_convert_encoding('日本語', 'SJIS-win', 'UTF-8');
+        $this->assertSame('日本語', smart_decode($encoded, 'CP932', 'https://web.archive.org/'));
+    }
+
+    public function testSmartDecodeRejectsMalformedKnownSourceEncoding(): void {
+        $this->assertSame(
+            '',
+            smart_decode(
+                "\x82",
+                'Shift_JIS',
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testSmartDecodeRejectsUnsupportedWebEncodingLabels(): void {
+        foreach (['UTF-7', 'unicode', 'none'] as $encoding) {
+            $this->assertSame(
+                '',
+                smart_decode(
+                    'Archive title',
+                    $encoding,
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
+    }
+
     public function testSmartDecodeXSjisAlias(): void {
         $encoded = mb_convert_encoding(
             '日本語',
@@ -592,7 +659,8 @@ final class ArchiveCoverageTest extends testBaseClass {
 
     public function testArchiveCandidateEncodingsPreferDeclarationsOverGuess(): void {
         $html =
-            "x-archive-guessed-charset: Shift_JIS\r\n" .
+            "HTTP/1.1 200 OK\r\n" .
+            "x-archive-guessed-charset: Shift_JIS\r\n\r\n" .
             '<meta charset="windows-1252">';
 
         $this->assertSame(
@@ -603,7 +671,8 @@ final class ArchiveCoverageTest extends testBaseClass {
 
     public function testArchiveCandidateEncodingsDeduplicatesCaseInsensitively(): void {
         $html =
-            "x-archive-guessed-charset: Shift_JIS\r\n" .
+            "HTTP/1.1 200 OK\r\n" .
+            "x-archive-guessed-charset: Shift_JIS\r\n\r\n" .
             '<meta charset="shift_jis">';
 
         $this->assertSame(
@@ -625,6 +694,255 @@ final class ArchiveCoverageTest extends testBaseClass {
                 $encodings[0],
                 'https://web.archive.org/'
             )
+        );
+    }
+
+    public function testArchiveCharsetParameterRequiresExactName(): void {
+        $this->assertSame(
+            'windows-1251',
+            archive_charset_parameter('text/html; charset = " windows-1251 "')
+        );
+        $this->assertNull(archive_charset_parameter('text/html; x-charset=Shift_JIS'));
+        $this->assertNull(archive_charset_parameter('text/html; foocharset=big5'));
+        $this->assertNull(archive_charset_parameter('text/html; charset='));
+        $this->assertNull(archive_charset_parameter(
+            'text/html; boundary="foo;charset=Shift_JIS"'
+        ));
+        $this->assertSame(
+            'windows-1252',
+            archive_charset_parameter(
+                'text/html; charset=windows-1252; charset=big5'
+            )
+        );
+    }
+
+    public function testArchiveHtmlAttributesKeepsFirstDuplicateAttribute(): void {
+        $attributes = archive_html_attributes(
+            '<meta charset="utf-8" charset="shift_jis" content="first" content="second">'
+        );
+
+        $this->assertSame('utf-8', $attributes['charset']);
+        $this->assertSame('first', $attributes['content']);
+    }
+
+    public function testArchiveCandidateEncodingsSupportsUnquotedLegacyContentType(): void {
+        $this->assertSame(
+            ['big5'],
+            archive_candidate_encodings(
+                '<meta http-equiv=content-type content=text/html;charset=big5>'
+            )
+        );
+    }
+
+    public function testArchiveCandidateEncodingsRejectsNonCharsetParameters(): void {
+        foreach ([
+            "HTTP/1.1 200 OK\r\nContent-Type: text/html; x-charset=Shift_JIS\r\n\r\n",
+            '<meta http-equiv="content-type" content="text/html; x-charset=Shift_JIS">',
+        ] as $html) {
+            $this->assertSame([], archive_candidate_encodings($html), $html);
+        }
+    }
+
+    public function testArchiveCandidateEncodingsOrdersHttpThenMetaThenGuess(): void {
+        $html =
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=windows-1251\r\n" .
+            "x-archive-guessed-charset: Shift_JIS\r\n\r\n" .
+            '<meta charset="big5">';
+
+        $this->assertSame(
+            ['windows-1251', 'big5', 'Shift_JIS'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsSupportsLfHttp2Headers(): void {
+        $html =
+            "HTTP/2 200\n" .
+            "Content-Type: text/html; charset=windows-1251\n\n" .
+            '<meta charset="big5">';
+
+        $this->assertSame(
+            ['windows-1251', 'big5'],
+            archive_candidate_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsHandlesAttributeCaseAndOrder(): void {
+        foreach ([
+            "<META CHARSET = 'Shift_JIS'>" => ['Shift_JIS'],
+            '<meta content="text/html;charset=windows-1251" http-equiv="CONTENT-TYPE">' => ['windows-1251'],
+        ] as $html => $expected) {
+            $this->assertSame($expected, archive_candidate_encodings($html), $html);
+        }
+    }
+
+    public function testArchiveCandidateEncodingsRejectsCharsetLookalikes(): void {
+        foreach ([
+            '<meta data-charset="Shift_JIS">',
+            '<meta name="charset" content="windows-1251">',
+            '<meta name="description" content="foo charset=windows-1251">',
+            '<!-- <meta charset="big5"> -->',
+            '<script>const fake = \'<meta charset="big5">\';</script>',
+            '<title>x-archive-guessed-charset: Shift_JIS</title>',
+        ] as $html) {
+            $this->assertSame([], archive_candidate_encodings($html), $html);
+        }
+    }
+
+    public function testArchiveCandidateEncodingsSupportsUnquotedCharset(): void {
+        $this->assertSame(
+            ['big5'],
+            archive_candidate_encodings('<meta charset=big5/>')
+        );
+    }
+
+    public function testArchiveGuessMustBeInHttpHeaders(): void {
+        $this->assertSame(
+            [],
+            archive_candidate_encodings(
+                '<html><head><script>' .
+                '"x-archive-guessed-charset: Shift_JIS"' .
+                '</script></head></html>'
+            )
+        );
+    }
+
+    public function testArchiveDecodeTitleKeepsAlreadyValidUtf8(): void {
+        $title = 'Café — 東京';
+
+        foreach (['windows-1252', 'ISO-8859-1', 'Shift_JIS', 'windows-1251'] as $encoding) {
+            $this->assertSame(
+                $title,
+                archive_decode_title(
+                    $title,
+                    [$encoding],
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
+    }
+
+    public function testArchiveDecodeTitleUsesDeclaredLegacyEncoding(): void {
+        $this->assertSame(
+            'café',
+            archive_decode_title(
+                "caf\xE9",
+                ['iso-8859-1'],
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testArchiveDecodeTitleFallsBackAcrossCandidates(): void {
+        $this->assertSame(
+            'café',
+            archive_decode_title(
+                "caf\xE9",
+                ['UTF-8', 'windows-1252'],
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testArchiveDecodeTitlePreservesAmbiguousValidUtf8(): void {
+        // C3 80 is valid UTF-8 for À but is also decodable as Windows-1251.
+        // The conservative UTF-8-first rule must not reinterpret it.
+        $title = "\xC3\x80";
+        $this->assertTrue(mb_check_encoding($title, 'UTF-8'));
+        $this->assertSame(
+            'À',
+            archive_decode_title(
+                $title,
+                ['windows-1251'],
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testArchiveDecodeTitleRejectsUnresolvableInvalidBytes(): void {
+        $this->assertSame(
+            '',
+            archive_decode_title(
+                "\xA1\xA1",
+                ['UTF-8'],
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testArchiveHttpHeaderBlockHandlesChainedInterimResponses(): void {
+        $response =
+            "HTTP/1.1 103 Early Hints\r\nLink: </style.css>; rel=preload\r\n\r\n" .
+            "HTTP/1.1 100 Continue\r\n\r\n" .
+            "HTTP/3 200\nContent-Type: text/html; charset=windows-1251\n\n" .
+            '<html></html>';
+
+        $headers = archive_http_header_block($response);
+        $this->assertStringStartsWith('HTTP/3 200', $headers);
+        $this->assertStringContainsString('charset=windows-1251', $headers);
+    }
+
+    public function testArchiveHttpHeaderBlockAcceptsHttp10WithoutReasonPhrase(): void {
+        $response =
+            "HTTP/1.0 200\r\n" .
+            "Content-Type: text/html; charset=big5\r\n\r\n" .
+            '<html></html>';
+
+        $this->assertSame(
+            "HTTP/1.0 200\r\nContent-Type: text/html; charset=big5",
+            archive_http_header_block($response)
+        );
+    }
+
+    public function testArchiveCharsetParameterIgnoresSingleQuotedSemicolonText(): void {
+        $contentType =
+            "multipart/mixed; boundary='part;charset=Shift_JIS'; charset=windows-1252";
+
+        $this->assertSame(
+            'windows-1252',
+            archive_charset_parameter($contentType)
+        );
+    }
+
+    public function testArchiveMetaSupportsFormFeedSeparatorsAndSelfClosingTag(): void {
+        $html = "<meta\fcharset='Shift_JIS'/>";
+        $this->assertSame(
+            ['Shift_JIS'],
+            archive_meta_declared_encodings($html)
+        );
+    }
+
+    public function testArchiveCandidateEncodingsDeduplicatesAcrossAllSources(): void {
+        $response =
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=UTF-8\r\n" .
+            "x-archive-guessed-charset: Shift_JIS\r\n\r\n" .
+            '<meta charset="utf-8">';
+
+        $this->assertSame(
+            ['UTF-8', 'Shift_JIS'],
+            archive_candidate_encodings($response)
+        );
+    }
+
+    public function testSmartDecodeTrimsAsciiWhitespaceAroundWebLabel(): void {
+        $this->assertSame(
+            'A€B',
+            smart_decode(
+                "A\x80B",
+                "\t ANSI_X3.4-1968 \r\n",
+                'https://web.archive.org/'
+            )
+        );
+    }
+
+    public function testSmartDecodeBig5HyphenAliasIsCaseInsensitive(): void {
+        $encoded = mb_convert_encoding('中文', 'BIG-5', 'UTF-8');
+        $this->assertSame(
+            '中文',
+            smart_decode($encoded, 'BIG-5', 'https://web.archive.org/')
         );
     }
 
@@ -857,5 +1175,206 @@ final class ArchiveCoverageTest extends testBaseClass {
             is_encoding_reasonable('windows-1252'),
             is_encoding_reasonable('WINDOWS-1252')
         );
+    }
+
+    public function testArchiveHttpHeaderBlockUsesFinalInterimResponse(): void {
+        $response =
+            "HTTP/1.1 100 Continue\r\n" .
+            "Content-Type: text/plain; charset=big5\r\n\r\n" .
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=windows-1251\r\n\r\n" .
+            '<html></html>';
+
+        $headers = archive_http_header_block($response);
+        $this->assertStringStartsWith('HTTP/1.1 200 OK', $headers);
+        $this->assertStringContainsString('charset=windows-1251', $headers);
+        $this->assertStringNotContainsString('charset=big5', $headers);
+    }
+
+    public function testArchiveHttpHeaderBlockHandlesProxyConnectThenHttp2(): void {
+        $response =
+            "HTTP/1.1 200 Connection established\r\n\r\n" .
+            "HTTP/2 200\nContent-Type: text/html; charset=big5\n\n" .
+            '<html></html>';
+
+        $this->assertSame(
+            "HTTP/2 200\nContent-Type: text/html; charset=big5",
+            archive_http_header_block($response)
+        );
+    }
+
+    public function testArchiveHttpHeaderBlockRejectsIncompleteResponse(): void {
+        $this->assertSame(
+            '',
+            archive_http_header_block(
+                "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=big5"
+            )
+        );
+    }
+
+    public function testArchiveHttpHeaderBlockDoesNotParseStatusLikeBody(): void {
+        $response =
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=windows-1251\r\n\r\n" .
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/plain; charset=big5\r\n\r\n";
+
+        $headers = archive_http_header_block($response);
+        $this->assertStringContainsString('charset=windows-1251', $headers);
+        $this->assertStringNotContainsString('charset=big5', $headers);
+    }
+
+    public function testArchiveCandidateEncodingsUsesFinalHeaderBlock(): void {
+        $response =
+            "HTTP/1.1 100 Continue\r\n" .
+            "Content-Type: text/plain; charset=Shift_JIS\r\n\r\n" .
+            "HTTP/1.1 200 OK\r\n" .
+            "Content-Type: text/html; charset=windows-1251\r\n\r\n" .
+            '<meta charset="big5">';
+
+        $this->assertSame(
+            ['windows-1251', 'big5'],
+            archive_candidate_encodings($response)
+        );
+    }
+
+    public function testArchiveMetaIgnoresUnterminatedComment(): void {
+        $this->assertSame(
+            [],
+            archive_meta_declared_encodings('<!-- <meta charset="big5">')
+        );
+    }
+
+    public function testArchiveMetaIgnoresUnterminatedRawTextElements(): void {
+        foreach (['script', 'style', 'template', 'noscript'] as $tag) {
+            $this->assertSame(
+                [],
+                archive_meta_declared_encodings(
+                    '<' . $tag . '>fake <meta charset="big5">'
+                ),
+                $tag
+            );
+        }
+    }
+
+    public function testArchiveMetaHandlesGreaterThanInsideQuotedAttribute(): void {
+        $html =
+            '<meta content="text/html; note=a > b; charset=windows-1251" ' .
+            'http-equiv="content-type">';
+
+        $this->assertSame(
+            ['windows-1251'],
+            archive_meta_declared_encodings($html)
+        );
+    }
+
+    public function testArchiveCharsetParameterIgnoresEscapedQuotedSemicolon(): void {
+        $contentType = 'text/html; boundary="foo\\";charset=Shift_JIS"';
+        $this->assertNull(archive_charset_parameter($contentType));
+    }
+
+    public function testArchiveCharsetParameterDecodesQuotedPairs(): void {
+        $this->assertSame(
+            'windows-1252',
+            archive_charset_parameter('text/html; charset="windows\\-1252"')
+        );
+    }
+
+    public function testArchiveCharsetParameterRejectsMalformedValues(): void {
+        foreach ([
+            'text/html; charset="windows-1252',
+            'text/html; charset=windows-1252 extra',
+            'text/html; charset="windows-1252" trailing',
+        ] as $contentType) {
+            $this->assertNull(
+                archive_charset_parameter($contentType),
+                $contentType
+            );
+        }
+    }
+
+    public function testArchiveHtmlAttributesFirstDuplicateIsCaseInsensitive(): void {
+        $attributes = archive_html_attributes(
+            '<meta CHARSET="utf-8" charset="shift_jis">'
+        );
+
+        $this->assertSame('utf-8', $attributes['charset']);
+    }
+
+    public function testArchiveMetaCharsetAttributeWinsOverLegacyPragma(): void {
+        $html =
+            '<meta charset="utf-8" http-equiv="content-type" ' .
+            'content="text/html; charset=big5">';
+
+        $this->assertSame(['utf-8'], archive_meta_declared_encodings($html));
+    }
+
+    public function testArchiveMetaEmptyCharsetFallsBackToLegacyPragma(): void {
+        $html =
+            '<meta charset="" http-equiv="content-type" ' .
+            'content="text/html; charset=big5">';
+
+        $this->assertSame(['big5'], archive_meta_declared_encodings($html));
+    }
+
+    public function testSmartDecodeCoversRemainingWindows1252WebAliases(): void {
+        foreach (['ansi_x3.4-1968', 'iso-ir-100', 'iso88591'] as $encoding) {
+            $this->assertSame(
+                'A€B',
+                smart_decode("A\x80B", $encoding, 'https://web.archive.org/'),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeCoversUtf8WebAliases(): void {
+        $title = 'Café 東京';
+        foreach ([
+            'unicode-1-1-utf-8',
+            'unicode11utf8',
+            'unicode20utf8',
+            'x-unicode20utf8',
+        ] as $encoding) {
+            $this->assertSame(
+                $title,
+                smart_decode($title, $encoding, 'https://web.archive.org/'),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeUtf8AliasesRejectMalformedUtf8(): void {
+        foreach (['unicode11utf8', 'x-unicode20utf8'] as $encoding) {
+            $this->assertSame(
+                '',
+                smart_decode("caf\xE9", $encoding, 'https://web.archive.org/'),
+                $encoding
+            );
+        }
+    }
+
+    public function testSmartDecodeCoversShiftJisWebAliases(): void {
+        $encoded = mb_convert_encoding('日本語', 'SJIS-win', 'UTF-8');
+        foreach (['csshiftjis', 'ms932', 'ms_kanji'] as $encoding) {
+            $this->assertSame(
+                '日本語',
+                smart_decode($encoded, $encoding, 'https://web.archive.org/'),
+                $encoding
+            );
+        }
+    }
+
+    public function testArchiveDecodeTitlePreservesAsciiForLegacyDeclarations(): void {
+        foreach (['windows-1251', 'Shift_JIS', 'big5'] as $encoding) {
+            $this->assertSame(
+                'Plain ASCII title',
+                archive_decode_title(
+                    'Plain ASCII title',
+                    [$encoding],
+                    'https://web.archive.org/'
+                ),
+                $encoding
+            );
+        }
     }
 }

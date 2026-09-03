@@ -788,8 +788,8 @@ function get_doi_from_crossref(Template $template): void {
  */
 function parse_biorxiv_publication_response(string $json, ?string &$api_status = null): ?string {
     $api_status = null;
-    $data = @json_decode($json);
-    if (!is_object($data)) {
+    $data = ExternalApiResponseGuard::decodeObject($json);
+    if ($data === null) {
         return null;
     }
 

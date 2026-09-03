@@ -141,6 +141,242 @@ function archive_title_scan_window(string $raw_html): string {
 }
 
 /**
+ * Return only the HTTP header block from a curl response that includes headers.
+ */
+function archive_http_header_block(string $response): string {
+    $offset = 0;
+    $last = '';
+    $length = mb_strlen($response, '8bit');
+
+    // curl can return more than one header block for an interim response or
+    // a proxy CONNECT. Use the last consecutive HTTP header block.
+    for ($blocks = 0; $blocks < 8 && $offset < $length; ++$blocks) {
+        $remaining = mb_substr($response, $offset, null, '8bit');
+        if (!preg_match('~^HTTP/\d(?:\.\d)?\s~i', $remaining)) {
+            break;
+        }
+
+        $crlf_end = mb_strpos($response, "\r\n\r\n", $offset, '8bit');
+        $lf_end = mb_strpos($response, "\n\n", $offset, '8bit');
+        if ($crlf_end === false && $lf_end === false) {
+            return $last;
+        }
+
+        if ($crlf_end === false) {
+            $end = $lf_end;
+            $separator_length = 2;
+        } elseif ($lf_end === false || $crlf_end < $lf_end) {
+            $end = $crlf_end;
+            $separator_length = 4;
+        } else {
+            $end = $lf_end;
+            $separator_length = 2;
+        }
+
+        $last = mb_substr($response, $offset, $end - $offset, '8bit');
+        $offset = $end + $separator_length;
+
+        $status_line_end = mb_strpos($last, "\n", 0, '8bit');
+        $status_line = $status_line_end === false
+            ? $last
+            : mb_substr($last, 0, $status_line_end, '8bit');
+        $is_interim = preg_match(
+            '~^HTTP/\d(?:\.\d)?\s+1\d{2}\b~i',
+            $status_line
+        ) === 1;
+        $is_connect = mb_stripos($status_line, 'connection established') !== false;
+        if (!$is_interim && !$is_connect) {
+            break;
+        }
+
+        if (!preg_match(
+            '~^HTTP/\d(?:\.\d)?\s~i',
+            mb_substr($response, $offset, null, '8bit')
+        )) {
+            break;
+        }
+    }
+
+    return $last;
+}
+
+/**
+ * Extract an exact charset parameter from a Content-Type value.
+ */
+function archive_charset_parameter(string $content_type): ?string {
+    // Split parameters while respecting quoted strings. In particular, a
+    // semicolon inside boundary="..." must not introduce a fake charset.
+    $segments = [];
+    $start = 0;
+    $quote = '';
+    $escaped = false;
+    $length = mb_strlen($content_type, '8bit');
+
+    for ($i = 0; $i < $length; ++$i) {
+        $char = $content_type[$i];
+        if ($quote !== '') {
+            if ($escaped) {
+                $escaped = false;
+                continue;
+            }
+            if ($char === '\\') {
+                $escaped = true;
+                continue;
+            }
+            if ($char === $quote) {
+                $quote = '';
+            }
+            continue;
+        }
+        if ($char === '"' || $char === "'") {
+            $quote = $char;
+            continue;
+        }
+        if ($char === ';') {
+            $segments[] = mb_substr($content_type, $start, $i - $start, '8bit');
+            $start = $i + 1;
+        }
+    }
+    $segments[] = mb_substr($content_type, $start, null, '8bit');
+
+    foreach ($segments as $segment) {
+        $equals = mb_strpos($segment, '=', 0, '8bit');
+        if ($equals === false) {
+            continue;
+        }
+        $name = mb_trim(mb_substr($segment, 0, $equals, '8bit'));
+        if (strcasecmp($name, 'charset') !== 0) {
+            continue;
+        }
+
+        $raw = mb_trim(mb_substr($segment, $equals + 1, null, '8bit'));
+        if ($raw === '') {
+            return null;
+        }
+        $first = $raw[0];
+        if ($first !== '"' && $first !== "'") {
+            return preg_match('~\s~', $raw) ? null : $raw;
+        }
+
+        $value = '';
+        $escaped = false;
+        $closed = false;
+        $value_length = mb_strlen($raw, '8bit');
+        for ($i = 1; $i < $value_length; ++$i) {
+            $char = $raw[$i];
+            if ($escaped) {
+                $value .= $char;
+                $escaped = false;
+                continue;
+            }
+            if ($char === '\\') {
+                $escaped = true;
+                continue;
+            }
+            if ($char === $first) {
+                $closed = true;
+                if (mb_trim(mb_substr($raw, $i + 1, null, '8bit')) !== '') {
+                    return null;
+                }
+                break;
+            }
+            $value .= $char;
+        }
+        if (!$closed) {
+            return null;
+        }
+        $value = mb_trim($value);
+        return $value !== '' ? $value : null;
+    }
+
+    return null;
+}
+
+/**
+ * Parse ASCII HTML attributes without treating strings such as data-charset as
+ * a real charset attribute.
+ *
+ * @return array<string, string>
+ */
+function archive_html_attributes(string $tag): array {
+    $attributes = [];
+    $pattern =
+        '~(?:^|\s)([A-Za-z_:][A-Za-z0-9_.:-]*)\s*=\s*' .
+        '(?:"([^"]*)"|\'([^\']*)\'|([^\s"\'<>`]+?)(?=\s|/?>))~';
+
+    if (!preg_match_all(
+        $pattern,
+        $tag,
+        $matches,
+        PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
+    )) {
+        return $attributes;
+    }
+
+    foreach ($matches as $match) {
+        $name = mb_strtolower($match[1]);
+        if (array_key_exists($name, $attributes)) {
+            continue;
+        }
+        $attributes[$name] = (string) (
+            $match[2] ??
+            $match[3] ??
+            $match[4] ??
+            ''
+        );
+    }
+
+    return $attributes;
+}
+
+/**
+ * Extract explicit charset declarations from HTML meta elements.
+ *
+ * @return list<string>
+ */
+function archive_meta_declared_encodings(string $html): array {
+    // An unterminated comment or raw-text element consumes the rest of the
+    // document for this lightweight scan; do not expose fake meta tags inside it.
+    $scan = preg_replace('~<!--(?:.*?-->|.*\z)~s', '', $html);
+    $scan = is_string($scan) ? $scan : $html;
+    $without_embedded_text = preg_replace(
+        '~<(script|style|template|noscript)\b[^>]*>(?:.*?</\1\s*>|.*\z)~is',
+        '',
+        $scan
+    );
+    $scan = is_string($without_embedded_text) ? $without_embedded_text : $scan;
+
+    $declared = [];
+    if (!preg_match_all(
+        '~<meta\b(?:[^>"\']+|"[^"]*"|\'[^\']*\')*>~i',
+        $scan,
+        $meta_tags
+    )) {
+        return $declared;
+    }
+
+    foreach ($meta_tags[0] as $tag) {
+        $attributes = archive_html_attributes($tag);
+        if (isset($attributes['charset']) && $attributes['charset'] !== '') {
+            $declared[] = $attributes['charset'];
+            continue;
+        }
+
+        if (
+            isset($attributes['http-equiv'], $attributes['content']) &&
+            strcasecmp(mb_trim($attributes['http-equiv']), 'content-type') === 0
+        ) {
+            $charset = archive_charset_parameter($attributes['content']);
+            if ($charset !== null) {
+                $declared[] = $charset;
+            }
+        }
+    }
+
+    return $declared;
+}
+
+/**
  * Extract charset candidates from HTTP headers and HTML meta tags.
  *
  * Explicit declarations are authoritative enough to try even when the charset
@@ -151,45 +387,25 @@ function archive_title_scan_window(string $raw_html): string {
 function archive_candidate_encodings(string $html): array {
     $declared = [];
     $guessed = [];
+    $headers = archive_http_header_block($html);
 
-    $header_pattern =
-        '~^content-type:[^\r\n]*\bcharset\s*=\s*(?:"([^"]+)"|\'([^\']+)\'|([^\s;"\']+))~im';
-    if (preg_match_all(
-        $header_pattern,
-        $html,
-        $header_matches,
-        PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
-    )) {
-        foreach ($header_matches as $header_match) {
-            $declared[] = (string) (
-                $header_match[1] ??
-                $header_match[2] ??
-                $header_match[3] ??
-                ''
-            );
+    if ($headers !== '') {
+        if (preg_match_all('~^content-type:\s*([^\r\n]*)\r?$~im', $headers, $header_matches)) {
+            foreach ($header_matches[1] as $content_type) {
+                $charset = archive_charset_parameter($content_type);
+                if ($charset !== null) {
+                    $declared[] = $charset;
+                }
+            }
+        }
+
+        if (preg_match('~^x-archive-guessed-charset:\s*([^\s;]+)~im', $headers, $match)) {
+            $guessed[] = mb_trim($match[1], "\"'");
         }
     }
 
-    $meta_pattern =
-        '~<meta\b[^>]*\bcharset\s*=\s*(?:"([^"]+)"|\'([^\']+)\'|([^\s"\'>/]+))[^>]*>~i';
-    if (preg_match_all(
-        $meta_pattern,
-        $html,
-        $meta_matches,
-        PREG_SET_ORDER | PREG_UNMATCHED_AS_NULL
-    )) {
-        foreach ($meta_matches as $meta_match) {
-            $declared[] = (string) (
-                $meta_match[1] ??
-                $meta_match[2] ??
-                $meta_match[3] ??
-                ''
-            );
-        }
-    }
-
-    if (preg_match('~x-archive-guessed-charset:\s*([^\s;]+)~i', $html, $match)) {
-        $guessed[] = mb_trim($match[1], "\"'");
+    foreach (archive_meta_declared_encodings($html) as $charset) {
+        $declared[] = $charset;
     }
 
     $candidates = [];
@@ -218,6 +434,28 @@ function archive_candidate_encodings(string $html): array {
     }
 
     return $candidates;
+}
+
+/**
+ * Decode an archive title only when it is not already valid UTF-8.
+ *
+ * @param string $title
+ * @param list<string> $encodings
+ * @param string $archive_url
+ */
+function archive_decode_title(string $title, array $encodings, string $archive_url): string {
+    if ($title === '' || mb_check_encoding($title, 'UTF-8')) {
+        return $title;
+    }
+
+    foreach ($encodings as $encoding) {
+        $try = smart_decode($title, $encoding, $archive_url);
+        if ($try !== '' && mb_check_encoding($try, 'UTF-8')) {
+            return $try;
+        }
+    }
+
+    return convert_to_utf8($title);
 }
 
 /**
@@ -280,22 +518,10 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                             mb_stripos($title, 'wayback') === false &&
                             $title !== ''
                             ) {
-                            $cleaned = false;
                             $encode = archive_candidate_encodings($title_scan_html);
-                            foreach ($encode as $pos_encode) {
-                                if (!$cleaned) {
-                                    $try = smart_decode($title, $pos_encode, $archive_url);
-                                    if ($try !== "" && mb_check_encoding($try, 'UTF-8')) {
-                                        $title = $try;
-                                        $cleaned = true;
-                                    }
-                                }
-                            }
-                            if (!$cleaned) {
-                                $title = convert_to_utf8($title);
-                            }
-                            unset($encode, $cleaned, $try, $match, $pos_encode);
-                            $good_title = true;
+                            $title = archive_decode_title($title, $encode, $archive_url);
+                            unset($encode, $match);
+                            $good_title = $title !== '' && mb_check_encoding($title, 'UTF-8');
                             if (in_array(mb_strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, true) ||
                                 in_array(mb_strtolower($title), IN_PRESS_ALIASES, true)) {
                                 $good_title = false;
@@ -397,13 +623,54 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         $encode = 'mac-centraleurope';
     } elseif (in_array(
         $encode_key,
-        ['utf-8; charset=utf-8', 'en-utf-8', 'utf8', 'windows-utf-8', 'utf8_unicode_ci'],
+        [
+            'utf-8; charset=utf-8',
+            'en-utf-8',
+            'unicode-1-1-utf-8',
+            'unicode11utf8',
+            'unicode20utf8',
+            'utf8',
+            'windows-utf-8',
+            'utf8_unicode_ci',
+            'x-unicode20utf8',
+        ],
         true
     )) {
         $encode = 'UTF-8';
-    } elseif (in_array($encode_key, ['shift_jis', 'x-sjis', 'sjis'], true)) {
+    } elseif (in_array(
+        $encode_key,
+        [
+            'ansi_x3.4-1968',
+            'iso-8859-1',
+            'iso-ir-100',
+            'iso8859-1',
+            'iso88591',
+            'iso_8859-1',
+            'iso_8859-1:1987',
+            '8859-1',
+            'latin1',
+            'latin-1',
+            'l1',
+            'us-ascii',
+            'ascii',
+            'cp819',
+            'ibm819',
+            'csisolatin1',
+            'cp1252',
+            'x-cp1252',
+            'windows-1252',
+        ],
+        true
+    )) {
+        // HTML labels in the ISO-8859-1/ASCII family are Windows-1252.
+        $encode = 'Windows-1252';
+    } elseif (in_array(
+        $encode_key,
+        ['csshiftjis', 'ms932', 'ms_kanji', 'shift_jis', 'shift-jis', 'x-sjis', 'sjis', 'windows-31j', 'cp932'],
+        true
+    )) {
         $encode = 'SJIS-win';
-    } elseif ($encode_key === 'big5') {
+    } elseif (in_array($encode_key, ['big5', 'big-5'], true)) {
         $encode = 'BIG-5';
     }
 
@@ -415,7 +682,10 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     }
 
     $encode_key = mb_strtolower($encode);
-    if (in_array($encode_key, INSANE_ENCODE, true)) {
+    if (
+        in_array($encode_key, INSANE_ENCODE, true) ||
+        in_array($encode_key, ['utf-7', 'unicode', 'none'], true)
+    ) {
         return "";
     }
     if ($encode_key === 'utf-8') {
@@ -427,6 +697,16 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     foreach ($master_list as $enc) {
         $valid[] = mb_strtolower($enc);
     }
+
+    // mb_convert_encoding() substitutes malformed source bytes by default.
+    // Reject malformed input for known mbstring encodings instead.
+    if (
+        in_array($encode_key, $valid, true) &&
+        !mb_check_encoding($title, $encode)
+    ) {
+        return '';
+    }
+
     try {
         if (in_array($encode_key, TRY_ENCODE, true) ||
             !in_array($encode_key, $valid, true)) {
