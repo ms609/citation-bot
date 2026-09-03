@@ -314,7 +314,7 @@ function archive_html_attributes(string $tag): array {
     }
 
     foreach ($matches as $match) {
-        $name = strtolower($match[1]);
+        $name = mb_strtolower($match[1]);
         if (array_key_exists($name, $attributes)) {
             continue;
         }
@@ -439,7 +439,9 @@ function archive_candidate_encodings(string $html): array {
 /**
  * Decode an archive title only when it is not already valid UTF-8.
  *
+ * @param string $title
  * @param list<string> $encodings
+ * @param string $archive_url
  */
 function archive_decode_title(string $title, array $encodings, string $archive_url): string {
     if ($title === '' || mb_check_encoding($title, 'UTF-8')) {
