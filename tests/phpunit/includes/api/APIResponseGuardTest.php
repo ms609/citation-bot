@@ -282,7 +282,7 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $decoded = ExternalApiResponseGuard::decodeJson(
             "\xEF\xBB\xBF \n{\"id\":123}"
         );
- 
+
         $this->assertInstanceOf(stdClass::class, $decoded);
         $this->assertSame(123, $decoded->id);
     }
