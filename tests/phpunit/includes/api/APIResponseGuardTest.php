@@ -52,7 +52,7 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
         $asciiJson = '{"id":1}';
         $codeUnits = array_map(
             static fn (string $char): int => ord($char),
-            str_split($asciiJson)
+            mb_str_split($asciiJson)
         );
 
         $utf16Le = pack('v*', ...$codeUnits);
@@ -145,7 +145,7 @@ final class APIResponseGuardTest extends PHPUnit\Framework\TestCase {
             'v*',
             ...array_map(
                 static fn (string $char): int => ord($char),
-                str_split('{"id":1}')
+                mb_str_split('{"id":1}')
             )
         );
 
