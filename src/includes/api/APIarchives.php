@@ -342,7 +342,7 @@ function archive_html_attributes(string $tag): array {
     }
 
     foreach ($matches as $match) {
-        $name = strtolower($match[1]);
+        $name = mb_strtolower($match[1], '8bit');
         if (array_key_exists($name, $attributes)) {
             continue;
         }
@@ -444,7 +444,7 @@ function archive_html_meta_tags(string $html): array {
             continue;
         }
 
-        $name = strtolower($match[1]);
+        $name = mb_strtolower($match[1], '8bit');
         if (!$closing && $name === 'plaintext') {
             break;
         }
@@ -483,7 +483,7 @@ function archive_html_meta_tags(string $html): array {
  * Apply HTML meta-prescan encoding semantics to a declared label.
  */
 function archive_meta_encoding_label(string $encoding): string {
-    $key = strtolower(mb_trim($encoding, ARCHIVE_ASCII_WHITESPACE, '8bit'));
+    $key = mb_strtolower(mb_trim($encoding, ARCHIVE_ASCII_WHITESPACE, '8bit'), '8bit');
     if (in_array(
         $key,
         [
@@ -585,7 +585,7 @@ function archive_candidate_encodings(string $html): array {
             ARCHIVE_ASCII_WHITESPACE . "\"'",
             '8bit'
         );
-        $key = strtolower($charset);
+        $key = mb_trtolower($charset, '8bit');
         if ($charset !== '' && !isset($seen[$key])) {
             $candidates[] = $charset;
             $seen[$key] = true;
@@ -598,7 +598,7 @@ function archive_candidate_encodings(string $html): array {
             ARCHIVE_ASCII_WHITESPACE . "\"'",
             '8bit'
         );
-        $key = strtolower($charset);
+        $key = mb_strtolower($charset, '8bit');
         if (
             $charset !== '' &&
             is_encoding_reasonable($charset) &&
@@ -803,7 +803,7 @@ function convert_to_utf8_inside(string $value): string {
 }
 
 function is_encoding_reasonable(string $encode): bool { // common "default" ones that are often wrong
-    $encode = strtolower($encode);
+    $encode = mb_strtolower($encode, '8bit');
     return !in_array($encode, SANE_ENCODE, true);
 }
 
@@ -814,7 +814,7 @@ function is_encoding_reasonable(string $encode): bool { // common "default" ones
  */
 function archive_web_encoding_is_supported(string $encoding): bool {
     return in_array(
-        strtolower($encoding),
+        mb_strtolower($encoding, '8bit'),
         [
             // WHATWG encoding labels, plus a few historical Citation Bot aliases.
             'unicode-1-1-utf-8', 'unicode11utf8', 'unicode20utf8',
@@ -891,7 +891,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     }
 
     $encode = mb_trim($encode, ARCHIVE_ASCII_WHITESPACE, '8bit');
-    $encode_key = strtolower($encode);
+    $encode_key = mb_strtolower($encode, '8bit');
 
     if ($encode_key === 'maccentraleurope') {
         $encode = 'mac-centraleurope';
@@ -955,7 +955,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
         $encode = 'iso-' . $matches[1];
     }
 
-    $encode_key = strtolower($encode);
+    $encode_key = mb_strtolower($encode, '8bit');
     if (!archive_web_encoding_is_supported($encode)) {
         return "";
     }
@@ -972,7 +972,7 @@ function smart_decode(string $title, string $encode, string $archive_url): strin
     $master_list = mb_list_encodings();
     $valid = [];
     foreach ($master_list as $enc) {
-        $valid[] = strtolower($enc);
+        $valid[] = mb_strtolower($enc, '8bit');
     }
 
     // mb_convert_encoding() substitutes malformed source bytes by default.
