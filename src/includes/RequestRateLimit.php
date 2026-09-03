@@ -57,7 +57,7 @@ function request_rate_limit_consume(
     }
 
     $state_directory =
-        mb_rtrim($base_directory, "/\\") .
+        mb_rtrim($base_directory, "/\\", '8bit') .
         DIRECTORY_SEPARATOR .
         REQUEST_RATE_LIMIT_STATE_DIRECTORY;
 

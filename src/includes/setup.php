@@ -11,6 +11,11 @@ error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
 
+if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
+    echo 'Unable to set encoding';
+    exit(0);
+}
+
 $git_pull_lock = __DIR__ . '/../git_pull.lock';
 if (file_exists($git_pull_lock)) {
     sleep(5);
@@ -138,11 +143,6 @@ if (isset($argv) && in_array('--savetofiles', $argv, true)) {
     define("SAVETOFILES_MODE", true);
 } else {
     define("SAVETOFILES_MODE", false);
-}
-
-if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
-    echo 'Unable to set encoding';
-    exit(0);
 }
 
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
