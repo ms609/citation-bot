@@ -13329,6 +13329,7 @@ const ALWAYS_BAD_TITLES = [
     'radware bot manager captcha',
     'register &#124; british newspaper archive',
     'request rejected',
+    'Verifying Device',
 ];
 
 /**
