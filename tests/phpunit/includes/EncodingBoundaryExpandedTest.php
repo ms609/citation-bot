@@ -236,7 +236,7 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     }
 
     public function testZoteroRawResponseTrimPreservesUnicodeWhitespaceForUtf8(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'trim_raw_response');
+        $method = new ReflectionMethod(Zotero::class, 'trim_raw_response');
         $this->assertSame(
             'payload',
             $method->invoke(null, "\u{2003}payload\u{2003}")
@@ -244,7 +244,7 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     }
 
     public function testZoteroRawResponseTrimUsesByteSafeFallbackForMalformedInput(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'trim_raw_response');
+        $method = new ReflectionMethod(Zotero::class, 'trim_raw_response');
         $this->assertSame(
             "\xFFpayload\xFE",
             $method->invoke(null, " \t\xFFpayload\xFE\r\n")
@@ -252,12 +252,12 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     }
 
     public function testZoteroExcerptDoesNotSplitValidUtf8Characters(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'raw_response_excerpt');
+        $method = new ReflectionMethod(Zotero::class, 'raw_response_excerpt');
         $this->assertSame('😀😀', $method->invoke(null, '😀😀😀', 2));
     }
 
     public function testZoteroExcerptUsesExactBytesForMalformedResponses(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'raw_response_excerpt');
+        $method = new ReflectionMethod(Zotero::class, 'raw_response_excerpt');
         $this->assertSame("\xFFAB", $method->invoke(null, "\xFFABCDE", 3));
     }
 
@@ -495,29 +495,29 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
     }
 
     public function testZoteroRawResponseTrimHandlesAllWhitespace(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'trim_raw_response');
+        $method = new ReflectionMethod(Zotero::class, 'trim_raw_response');
         $this->assertSame('', $method->invoke(null, " \t\r\n"));
         $this->assertSame('', $method->invoke(null, "\u{2003}\u{2003}"));
     }
 
     public function testZoteroRawResponseTrimDoesNotDropMalformedInteriorBytes(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'trim_raw_response');
+        $method = new ReflectionMethod(Zotero::class, 'trim_raw_response');
         $this->assertSame("\xFF A \xFE", $method->invoke(null, " \xFF A \xFE "));
     }
 
     public function testZoteroExcerptHandlesZeroAndOversizedLimits(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'raw_response_excerpt');
+        $method = new ReflectionMethod(Zotero::class, 'raw_response_excerpt');
         $this->assertSame('', $method->invoke(null, 'abcdef', 0));
         $this->assertSame('abcdef', $method->invoke(null, 'abcdef', 999));
     }
 
     public function testZoteroExcerptHandlesEmptyResponse(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'raw_response_excerpt');
+        $method = new ReflectionMethod(Zotero::class, 'raw_response_excerpt');
         $this->assertSame('', $method->invoke(null, '', 500));
     }
 
     public function testZoteroExcerptMalformedResponsePreservesNulByte(): void {
-        $method = new ReflectionMethod(APIzotero::class, 'raw_response_excerpt');
+        $method = new ReflectionMethod(Zotero::class, 'raw_response_excerpt');
         $this->assertSame("\xFF\x00A", $method->invoke(null, "\xFF\x00ABCDE", 3));
     }
 
