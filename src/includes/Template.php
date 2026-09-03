@@ -3506,7 +3506,7 @@ final class Template
         if (mb_strpos($this->get('doi'), '10.13140') !== false) {
             return;
         }
-        if ($new_name === 'cite document' && $this->blank('publisher')) {
+        if ($new_name === 'cite document' && $this->get_without_comments_and_placeholders('publisher') === '') {
             return;
         }
         if (!$allow_bad_10_1093_doi && bad_10_1093_doi($this->get('doi'))) {
@@ -4268,14 +4268,18 @@ final class Template
 
                 case 'trans-title':
                 case 'trans-chapter':
+                case 'trans-article':
+                case 'trans-contribution':
+                case 'trans-entry':
+                case 'trans-map':
                 case 'trans-quote':
                 case 'trans-journal':
                 case 'trans-work':
                 case 'trans-magazine':
                 case 'trans-newspaper':
                 case 'trans-website':
+                case 'trans-encyclopaedia':
                 case 'trans-encyclopedia':
-                case 'trans-dictionary':
                 case 'trans-periodical':
                 case 'trans-section':
                     // Remove a trans-<param> whose base parameter is absent
@@ -5490,6 +5494,18 @@ final class Template
                             $this->forget('author');
                         }
                         return;
+                    }
+                    // A publisher that survived cleanup may complete a cite
+                    // document conversion previously declined for lack of one:
+                    // retry only the stranded shapes (url-less cite web, or an
+                    // ARE_WORKS work value).  change_name_to() re-applies its
+                    // own DOI and work-alias guards.
+                    if ($this->get_without_comments_and_placeholders('publisher') !== '') {
+                        $stranded_web = $this->wikiname() === 'cite web' && $this->blank(ALL_URL_TYPES);
+                        $stranded_work = in_array(mb_strtolower($this->get('work')), ARE_WORKS, true);
+                        if ($stranded_web || $stranded_work) {
+                            $this->change_name_to('cite document');
+                        }
                     }
 
                     return;
@@ -6723,7 +6739,9 @@ final class Template
                         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
                     }
                 } else {
-                    if (mb_substr($this->name, 0, 1) === 'c') {
+                    if ($this->get_without_comments_and_placeholders('publisher') === '') {
+                        report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
+                    } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
                     } else {
                         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
@@ -7649,7 +7667,7 @@ final class Template
                         $spacing[1] = '';
                         $spacing[2] = ''; // @codeCoverageIgnoreEnd
                     }
-                    if ($this->blank('publisher')) {
+                    if ($this->get_without_comments_and_placeholders('publisher') === '') {
                         report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
                     } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
@@ -7714,16 +7732,18 @@ final class Template
             $has_journal = $this->has('journal');
             $has_newspaper = $this->has('newspaper');
             $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+            $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
             if ($bad_doi) {
                 $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
                 $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
                 $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
+                $has_book_evidence = $this->get_without_comments_and_placeholders('isbn') !== '' || $this->get_without_comments_and_placeholders('lccn') !== '' || $this->get_without_comments_and_placeholders('oclc') !== '' || $this->get_without_comments_and_placeholders('ol') !== '' || $this->get_without_comments_and_placeholders('chapter') !== '';
             }
             if ($has_journal) {
                 $this->change_name_to('cite journal', true, false, $bad_doi);
             } elseif ($has_newspaper) {
                 $this->change_name_to('cite news', true, false, $bad_doi);
-            } elseif (!$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter'])) {
+            } elseif ($has_book_evidence) {
                 $this->change_name_to('cite book', true, false, $bad_doi);
             } elseif ($has_arxiv) {
                 $this->change_name_to('cite arxiv', true, false, $bad_doi);

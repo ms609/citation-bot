@@ -555,6 +555,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('hose', $template->get2('work'));
     }
@@ -566,6 +567,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('hose', $template->get2('work'));
     }
@@ -577,6 +579,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('hose', $template->get2('work'));
     }
@@ -588,6 +591,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite web', $template->wikiname());
         $this->assertSame('kittens via doggies', $template->get2('work'));
     }
@@ -599,6 +603,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Hose', $template->get2('journal'));
     }
@@ -610,6 +615,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Hose', $template->get2('journal'));
     }
@@ -621,6 +627,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Hose', $template->get2('journal'));
     }
@@ -632,6 +639,7 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
         $this->assertNull($template->get2('via'));
         $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('publisher')); // No publisher: cite document conversion must stay blocked
         $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('Kittens Via Doggies', $template->get2('journal'));
     }
