@@ -3499,7 +3499,7 @@ final class Template
         return true;
     }
 
-    public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false): void {
+    public function change_name_to(string $new_name, bool $rename_cite_book = true, bool $rename_anything = false, bool $allow_bad_10_1093_doi = false): void {
         if (mb_strpos($this->get('doi'), '10.1093') !== false && $this->wikiname() !== 'cite web') {
             return;
         }
@@ -3509,7 +3509,7 @@ final class Template
         if ($new_name === 'cite document' && $this->blank('publisher')) {
             return;
         }
-        if (bad_10_1093_doi($this->get('doi'))) {
+        if (!$allow_bad_10_1093_doi && bad_10_1093_doi($this->get('doi'))) {
             return;
         }
         foreach (WORK_ALIASES as $work) {
@@ -7628,7 +7628,9 @@ final class Template
                         $spacing[1] = '';
                         $spacing[2] = ''; // @codeCoverageIgnoreEnd
                     }
-                    if (mb_substr($this->name, 0, 1) === 'c') {
+                    if ($this->blank('publisher')) {
+                        report_inaction("Keeping " . $this->wikiname() . " because cite document requires a publisher");
+                    } elseif (mb_substr($this->name, 0, 1) === 'c') {
                         $this->name = $spacing[1] . 'cite document' . $spacing[2];
                     } else {
                         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
@@ -7685,14 +7687,25 @@ final class Template
             }
         }
         if (mb_strpos($par, 'url') !== false && $this->wikiname() === 'cite web' && $this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
-            if ($this->has('journal')) {
-                $this->change_name_to('cite journal');
-            } elseif ($this->has('newspaper')) {
-                $this->change_name_to('cite news');
+            // An unreliable bad-10.1093 fallback-DOI should not block a replacement supported by
+            // explicit URL-independent evidence.  Comment placeholders do not count as evidence.
+            $bad_doi = bad_10_1093_doi($this->get('doi'));
+            $has_journal = $this->has('journal');
+            $has_newspaper = $this->has('newspaper');
+            $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+            if ($bad_doi) {
+                $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
+                $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
+                $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
+            }
+            if ($has_journal) {
+                $this->change_name_to('cite journal', true, false, $bad_doi);
+            } elseif ($has_newspaper) {
+                $this->change_name_to('cite news', true, false, $bad_doi);
             } elseif (!$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter'])) {
-                $this->change_name_to('cite book');
-            } elseif ($this->has('arxiv') || $this->has('eprint')) {
-                $this->change_name_to('cite arxiv');
+                $this->change_name_to('cite book', true, false, $bad_doi);
+            } elseif ($has_arxiv) {
+                $this->change_name_to('cite arxiv', true, false, $bad_doi);
             } else {
                 $this->change_name_to('cite document');
             }

@@ -2807,6 +2807,26 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('format'));
     }
 
+    public function testBad1093UrlFallbackRequiresPublisher(): void {
+        $text = '{{cite web |url=https://example.com |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |via=hose |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('via'));
+        $this->assertNull($template->get2('publisher'));
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('hose', $template->get2('work'));
+    }
+
+    public function testForgetUrlUsesExplicitJournalWhenDoiIsUnreliable(): void {
+        $text = '{{cite web |url=https://example.com |journal=Harness Journal |doi=10.1093/BADDDDDDDD/BADDDDDDD/junl |title=Harness title}}';
+        $template = $this->make_citation($text);
+        $template->forget('url');
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Harness Journal', $template->get2('journal'));
+    }
+
     public function testTidyRemovesOrphanedUrlAccess(): void {
         // A citation that arrives with url= already gone but url-access= left behind
         // (e.g. a human TNT'd the url) must be cleaned up, not left with the CS1
