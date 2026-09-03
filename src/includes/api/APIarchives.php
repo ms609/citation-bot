@@ -585,7 +585,7 @@ function archive_candidate_encodings(string $html): array {
             ARCHIVE_ASCII_WHITESPACE . "\"'",
             '8bit'
         );
-        $key = mb_trtolower($charset, '8bit');
+        $key = mb_strtolower($charset, '8bit');
         if ($charset !== '' && !isset($seen[$key])) {
             $candidates[] = $charset;
             $seen[$key] = true;
