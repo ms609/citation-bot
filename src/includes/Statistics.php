@@ -17,6 +17,8 @@ const KNOWN_UCB_TYPES = [
     '#UCB_toolbar',
     '#UCB_template',
     '#UCB_webform',
+    // The next three tags are deprecated: no longer produced on new edits;
+    // kept so historic summaries still classify.
     '#UCB_Headbomb',
     '#UCB_Smith609',
     '#UCB_arXiv',

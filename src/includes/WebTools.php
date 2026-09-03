@@ -106,6 +106,66 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
 }
 
 /**
+ * Build the edit summary suffix for a category run.
+ *
+ * Scope wins over caller: category runs are always tagged #UCB_Category
+ * (even when launched from the webform with edit=webform) so they stay
+ * countable separately from single-page #UCB_webform runs in statistics.
+ * The caller edit parameter is intentionally not accepted here and any
+ * caller tag (toolbar, template, automated_tools, etc.) is discarded for
+ * category scope, matching the linked-pages precedent.
+ */
+function category_edit_summary_end(string $username, string $category, bool $has_override = false, bool $is_dev_run = false): string {
+    $edit_summary_end = "| Suggested by " . $username . " | [[Category:{$category}]] ";
+    $edit_summary_end .= "| #UCB_Category ";
+    if ($has_override) {
+        if ($is_dev_run) {
+            $edit_summary_end .= "| Developer - max category limit override enabled ";
+        } else {
+            $edit_summary_end .= "| Whitelisted category ";
+        }
+    }
+    return $edit_summary_end;
+}
+
+/**
+ * Build the edit summary suffix for a single/batch page run.
+ *
+ * Only generic caller tags are produced. Personal and unused tags
+ * (Headbomb, Smith609, arXiv) are intentionally not produced and fall
+ * through to #UCB_Other, since anyone could otherwise mint them via
+ * ?edit= and fake personal attribution. They stay recognized in
+ * KNOWN_UCB_TYPES so historic edits still classify.
+ */
+function process_page_edit_summary_end(string $username, bool $is_html_output, ?string $edit): string {
+    if ($is_html_output) {
+        $edit_summary_end = "| Suggested by " . $username . " ";
+    } else {
+        $edit_summary_end = ""; // Command line edits as the person
+    }
+    if (!empty($edit)) {
+        if ($edit === 'automated_tools') {
+            $edit_summary_end .= "| #UCB_automated_tools ";
+        } elseif ($edit === 'toolbar') {
+            $edit_summary_end .= "| #UCB_toolbar ";
+        } elseif ($edit === 'template') {
+            $edit_summary_end .= "| #UCB_template ";
+        } elseif ($edit === 'webform') {
+            $edit_summary_end .= "| #UCB_webform ";
+        } else {
+            $edit_summary_end .= "| #UCB_Other ";
+        }
+    } else {
+        if ($is_html_output) {
+            $edit_summary_end .= "| #UCB_webform ";
+        } else {
+            $edit_summary_end .= "| #UCB_CommandLine ";
+        }
+    }
+    return $edit_summary_end;
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
