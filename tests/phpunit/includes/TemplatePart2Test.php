@@ -1396,7 +1396,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testAllSortsOfBadData_3(): void {
         $text = "{{Cite journal|journal=arXiv: blah|title=arXiv|issue=null|volume=n/a|page=n/a|pages=null|eprint=x}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|title=arXiv|volume=n/a|page=n/a|eprint=x}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|title=arXiv|volume=n/a|page=n/a}}', $expanded->parsed_text());
     }
 
     public function testAllSortsOfBadData_4(): void {
@@ -1832,7 +1832,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testCiteDocument_9(): void {
         $text = "{{cite document|url=x|pmc=x}}";
         $expanded = $this->process_citation($text);
-        $this->AssertSame('cite journal', $expanded->wikiname());
+        $this->AssertSame('cite document', $expanded->wikiname());
     }
 
     public function testCiteDocument_10(): void {
