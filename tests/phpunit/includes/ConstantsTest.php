@@ -295,6 +295,12 @@ final class ConstantsTest extends testBaseClass {
                 ['subject-link', 'transcript-url', '| author = ', 'quote', 'deadurl', 'deadurl'  ],
                 $text
             );
+            // Things that the data quality code deletes
+            $text = str_replace(
+                ['| PMC = Z123Z ', '| arxiv = Z123Z ', '| bibcode = Z123Z ', '| eprint = Z123Z ', '| pmc = Z123Z '],
+                ['', '', '', '', ''],
+                $text
+            );
             if ($prepared->get('doi') === 'Z123Z') {
                 $prepared->forget('doi-broken-date');
             }
