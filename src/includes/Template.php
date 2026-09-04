@@ -141,7 +141,7 @@ final class Template
             $doi_match = [];
             $doi_has_valid_shape =
                 preg_match(REGEXP_DOI, $doi, $doi_match) === 1 &&
-                ($doi_match[0] ?? '') === $doi;
+                $doi_match[0] === $doi;
             $book_doi =
                 $doi_has_valid_shape &&
                 (mb_strpos($doi, '/978-') !== false || mb_strpos($doi, '/978019') !== false);
