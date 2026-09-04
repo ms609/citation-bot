@@ -3954,7 +3954,19 @@ final class Template
                     return;
 
                 case 'arxiv':
-                    if ($this->has($param) && $this->wikiname() === 'cite web') {
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!arxiv_id_valid($value)) {
+                        report_forget("Removing malformed arXiv identifier: " . echoable($value));
+                        $this->forget($param);
+                        return;
+                    }
+                    if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
                     return;
@@ -4099,16 +4111,22 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $bibcode_journal = (string) mb_substr($this->get($param), 4);
-                    if ($bibcode_journal === '') {
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!bibcode_valid($value)) {
+                        report_forget("Removing malformed bibcode: " . echoable($value));
+                        $this->forget($param);
                         return;
-                    } // bad bibcodes would not have four characters, use ==, since it might be "" or false depending upon error/PHP version
+                    }
+                    $bibcode_journal = (string) mb_substr($value, 4);
                     foreach (NON_JOURNAL_BIBCODES as $exception) {
                         if (mb_substr($bibcode_journal, 0, mb_strlen($exception)) === $exception) {
                             return;
                         }
                     }
-                    if (mb_strpos($this->get($param), 'book') !== false) {
+                    if (mb_strpos($value, 'book') !== false) {
                         $this->change_name_to('cite book', false);
                     } else {
                         $this->change_name_to('cite journal', false);
@@ -4599,6 +4617,15 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!arxiv_id_valid($value)) {
+                        report_forget("Removing malformed arXiv identifier: " . echoable($value));
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
@@ -5047,6 +5074,15 @@ final class Template
                         $this->set($param, $matches[1]);
                     }
                     if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!pmc_valid($value)) {
+                        report_forget("Removing malformed PMC identifier: " . echoable($value));
+                        $this->forget($param);
                         return;
                     }
                     if ($this->wikiname() !== 'cite ssrn') {
