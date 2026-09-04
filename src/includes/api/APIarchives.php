@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 const ARCHIVE_FETCH_MAX_REDIRECTS = 5;
 const ARCHIVE_TITLE_SCAN_MAX_BYTES = 4 * 1024 * 1024;
-const ARCHIVE_ASCII_WHITESPACE = " \t\n\r\0\x0B";
+const ARCHIVE_ASCII_WHITESPACE = " \t\n\r\0\x0B\x0C";
 
 /** @var list<string> */
 const ARCHIVE_FETCH_HOSTS = [
@@ -483,7 +483,8 @@ function archive_html_meta_tags(string $html): array {
  * Apply HTML meta-prescan encoding semantics to a declared label.
  */
 function archive_meta_encoding_label(string $encoding): string {
-    $key = mb_strtolower(mb_trim($encoding, ARCHIVE_ASCII_WHITESPACE, '8bit'), '8bit');
+    $normalized = mb_trim($encoding, ARCHIVE_ASCII_WHITESPACE, '8bit');
+    $key = mb_strtolower($normalized, '8bit');
     if (in_array(
         $key,
         [
@@ -504,8 +505,7 @@ function archive_meta_encoding_label(string $encoding): string {
     if ($key === 'x-user-defined') {
         return 'windows-1252';
     }
-
-    return $encoding;
+    return $normalized;
 }
 
 /**
@@ -517,11 +517,13 @@ function archive_meta_declared_encodings(string $html): array {
     $declared = [];
     foreach (archive_html_meta_tags($html) as $tag) {
         $attributes = archive_html_attributes($tag);
-        if (isset($attributes['charset']) && $attributes['charset'] !== '') {
-            $declared[] = archive_meta_encoding_label($attributes['charset']);
-            continue;
+        if (isset($attributes['charset'])) {
+            $encoding = archive_meta_encoding_label($attributes['charset']);
+            if ($encoding !== '') {
+                $declared[] = $encoding;
+                continue;
+            }
         }
-
         if (
             isset($attributes['http-equiv'], $attributes['content']) &&
             strcasecmp(
@@ -535,7 +537,6 @@ function archive_meta_declared_encodings(string $html): array {
             }
         }
     }
-
     return $declared;
 }
 
