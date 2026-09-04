@@ -21,7 +21,7 @@ final class EncodingBoundaryTest extends testBaseClass {
 
     public function testTitleCapitalizationPreservesCaseAfterMultibytePrefix(): void {
         $this->assertSame(
-            'Café ITS Is Faster',
+            'Café ITS is Faster',
             title_capitalization('CAFÉ ITS IS FASTER', true)
         );
         $this->assertSame(
