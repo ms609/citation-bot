@@ -132,6 +132,22 @@ final class Template
             } else {
                 $cite_caps = $spacing[1] . "cite ";
             }
+
+            // Existing identifiers are untrusted input.  Do not let malformed
+            // values select a citation type merely because the parameter exists.
+            $doi = mb_trim($this->get_without_comments_and_placeholders('doi'));
+            $pmid = mb_trim($this->get_without_comments_and_placeholders('pmid'));
+            $pmc = mb_trim($this->get_without_comments_and_placeholders('pmc'));
+            $doi_match = [];
+            $doi_has_valid_shape =
+                preg_match(REGEXP_DOI, $doi, $doi_match) === 1 &&
+                ($doi_match[0] ?? '') === $doi;
+            $book_doi =
+                $doi_has_valid_shape &&
+                (mb_strpos($doi, '/978-') !== false || mb_strpos($doi, '/978019') !== false);
+            $has_valid_pmid = $pmid !== '' && pmid_valid($pmid);
+            $has_valid_pmc = $pmc !== '' && pmc_valid($pmc);
+
             if (!$this->blank_other_than_comments('journal')) {
                 $this->name = $cite_caps . 'journal' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('newspaper')) {
@@ -142,11 +158,11 @@ final class Template
                 $this->name = $cite_caps . 'magazine' . $spacing[2];
             } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
                 $this->name = $cite_caps . 'encyclopedia' . $spacing[2];
-            } elseif (mb_strpos($this->get('doi'), '/978-') !== false || mb_strpos($this->get('doi'), '/978019') !== false || mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0) {
+            } elseif ($book_doi || mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0) {
                 $this->name = $cite_caps . 'book' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
                 $this->name = $cite_caps . 'book' . $spacing[2];
-            } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
+            } elseif ($has_valid_pmid || $has_valid_pmc) {
                 $this->name = $cite_caps . 'journal' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
                 $this->name = $cite_caps . 'document' . $spacing[2];
