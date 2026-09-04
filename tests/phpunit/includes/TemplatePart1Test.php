@@ -87,7 +87,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testTemplateConvertComplex2aa(): void {
         $text = "{{cite document|doi=XXX/978-XXX}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("cite book", $expanded->wikiname());
+        $this->assertSame("cite document", $expanded->wikiname());
         $this->assertNotNull($expanded->get2('doi-broken-date')); // This one gets "move perm.." from dx.doi.org, and is bogus
     }
 
@@ -130,7 +130,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testTemplateConvertComplex2cb(): void {
         $text = "{{Cite document|doi=XXX/978-XXX|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("cite book", $expanded->wikiname());
+        $this->assertSame("cite document", $expanded->wikiname());
     }
 
     public function testTemplateConvertComplex2cc(): void {
@@ -926,7 +926,7 @@ final class TemplatePart1Test extends testBaseClass {
 
     public function testPageDuplication(): void {
         // Fake bibcoce otherwise we'll find a bibcode
-        $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
+        $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=<!-- -->}}';
         $expanded = $this->process_citation($text);
         $this->assertSame($text, str_replace([' page=546 ', '|s2cid=4106096 '], [' p=546 ', ''], $expanded->parsed_text()));
     }

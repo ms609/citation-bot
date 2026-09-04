@@ -655,11 +655,20 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_journal = '';
             $bad_data = true;
         }
-        if ((mb_stripos($the_journal, 'arXiv:') === 0 || str_i_same($the_journal, 'arXiv')) && !$template->blank(ARXIV_ALIASES)) {
+        $arxiv = $template->get_without_comments_and_placeholders('arxiv');
+        $eprint = $template->get_without_comments_and_placeholders('eprint');
+        if (
+            (mb_stripos($the_journal, 'arXiv:') === 0 || str_i_same($the_journal, 'arXiv')) &&
+            ($arxiv !== '' || $eprint !== '')
+        ) {
+            $has_valid_arxiv =
+                ($arxiv !== '' && arxiv_id_valid($arxiv)) ||
+                ($eprint !== '' && arxiv_id_valid($eprint));
+
             $template->forget('journal');
             $the_journal = '';
             $bad_data = true;
-            if ($template->wikiname() === 'cite journal') {
+            if ($has_valid_arxiv && $template->wikiname() === 'cite journal') {
                 $template->change_name_to('cite arXiv');
             }
         }

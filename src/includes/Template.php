@@ -132,6 +132,22 @@ final class Template
             } else {
                 $cite_caps = $spacing[1] . "cite ";
             }
+
+            // Existing identifiers are untrusted input.  Do not let malformed
+            // values select a citation type merely because the parameter exists.
+            $doi = mb_trim($this->get_without_comments_and_placeholders('doi'));
+            $pmid = mb_trim($this->get_without_comments_and_placeholders('pmid'));
+            $pmc = mb_trim($this->get_without_comments_and_placeholders('pmc'));
+            $doi_match = [];
+            $doi_has_valid_shape =
+                preg_match(REGEXP_DOI, $doi, $doi_match) === 1 &&
+                $doi_match[0] === $doi;
+            $book_doi =
+                $doi_has_valid_shape &&
+                (mb_strpos($doi, '/978-') !== false || mb_strpos($doi, '/978019') !== false);
+            $has_valid_pmid = $pmid !== '' && pmid_valid($pmid);
+            $has_valid_pmc = $pmc !== '' && pmc_valid($pmc);
+
             if (!$this->blank_other_than_comments('journal')) {
                 $this->name = $cite_caps . 'journal' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('newspaper')) {
@@ -142,11 +158,11 @@ final class Template
                 $this->name = $cite_caps . 'magazine' . $spacing[2];
             } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
                 $this->name = $cite_caps . 'encyclopedia' . $spacing[2];
-            } elseif (mb_strpos($this->get('doi'), '/978-') !== false || mb_strpos($this->get('doi'), '/978019') !== false || mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0) {
+            } elseif ($book_doi || mb_strpos($this->get('isbn'), '978-0-19') === 0 || mb_strpos($this->get('isbn'), '978019') === 0) {
                 $this->name = $cite_caps . 'book' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
                 $this->name = $cite_caps . 'book' . $spacing[2];
-            } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
+            } elseif ($has_valid_pmid || $has_valid_pmc) {
                 $this->name = $cite_caps . 'journal' . $spacing[2];
             } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
                 $this->name = $cite_caps . 'document' . $spacing[2];
@@ -3500,6 +3516,20 @@ final class Template
     }
 
     /**
+     * Return true only when an existing arXiv/eprint parameter is structurally
+     * valid and can therefore be used as evidence for a template-type change.
+     */
+    private function has_valid_arxiv_identifier(): bool {
+        foreach (ARXIV_ALIASES as $param) {
+            $value = $this->get_without_comments_and_placeholders($param);
+            if ($value !== '' && arxiv_id_valid($value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Best template for a url-less cite web given URL-independent evidence.
      * Returns '' when no evidence supports re-typing (caller falls back to
      * cite document).  Mirrors the forget-url fallback priority:
@@ -3508,13 +3538,12 @@ final class Template
     private function retarget_url_less_web(bool $bad_doi): string {
         $has_journal = $this->has('journal');
         $has_newspaper = $this->has('newspaper');
-        $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+        $has_arxiv = $this->has_valid_arxiv_identifier();
         $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
         if ($bad_doi) {
             // Comment placeholders do not count as evidence.
             $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
             $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
-            $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
             $has_book_evidence = $this->get_without_comments_and_placeholders('isbn') !== '' || $this->get_without_comments_and_placeholders('lccn') !== '' || $this->get_without_comments_and_placeholders('oclc') !== '' || $this->get_without_comments_and_placeholders('ol') !== '' || $this->get_without_comments_and_placeholders('chapter') !== '';
         }
         if ($has_journal) {
@@ -3954,7 +3983,19 @@ final class Template
                     return;
 
                 case 'arxiv':
-                    if ($this->has($param) && $this->wikiname() === 'cite web') {
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!arxiv_id_valid($value)) {
+                        report_forget("Removing malformed arXiv identifier: " . echoable($value));
+                        $this->forget($param);
+                        return;
+                    }
+                    if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
                     return;
@@ -4099,16 +4140,22 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $bibcode_journal = (string) mb_substr($this->get($param), 4);
-                    if ($bibcode_journal === '') {
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!bibcode_valid($value)) {
+                        report_forget("Removing malformed bibcode: " . echoable($value));
+                        $this->forget($param);
                         return;
-                    } // bad bibcodes would not have four characters, use ==, since it might be "" or false depending upon error/PHP version
+                    }
+                    $bibcode_journal = (string) mb_substr($value, 4);
                     foreach (NON_JOURNAL_BIBCODES as $exception) {
                         if (mb_substr($bibcode_journal, 0, mb_strlen($exception)) === $exception) {
                             return;
                         }
                     }
-                    if (mb_strpos($this->get($param), 'book') !== false) {
+                    if (mb_strpos($value, 'book') !== false) {
                         $this->change_name_to('cite book', false);
                     } else {
                         $this->change_name_to('cite journal', false);
@@ -4599,6 +4646,15 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!arxiv_id_valid($value)) {
+                        report_forget("Removing malformed arXiv identifier: " . echoable($value));
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->wikiname() === 'cite web') {
                         $this->change_name_to('cite arxiv');
                     }
@@ -5047,6 +5103,15 @@ final class Template
                         $this->set($param, $matches[1]);
                     }
                     if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (!pmc_valid($value)) {
+                        report_forget("Removing malformed PMC identifier: " . echoable($value));
+                        $this->forget($param);
                         return;
                     }
                     if ($this->wikiname() !== 'cite ssrn') {
@@ -6559,7 +6624,7 @@ final class Template
                 }
             }
             if ($this->wikiname() === 'cite journal' && mb_stripos($this->initial_name, 'journal') === false) {
-                if ($this->has('arxiv') || $this->has('eprint')) {
+                if ($this->has_valid_arxiv_identifier()) {
                     $arxiv_journal = $this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') !== false;
                     if ($arxiv_journal) {
                         $this->forget('journal');
@@ -6567,7 +6632,12 @@ final class Template
                     } elseif ($this->blank(WORK_ALIASES) && $this->blank(['pmid', 'pmc'])) {
                         $this->change_name_to('cite arxiv');
                     }
-                } elseif ($this->blank(WORK_ALIASES)) {
+                } elseif (
+                    $this->blank(WORK_ALIASES) &&
+                    mb_strtolower(mb_trim($this->initial_name)) !== 'cite arxiv'
+                ) {
+                    // Do not restore an initially-arXiv template after its only
+                    // arXiv identifier has proved invalid.
                     $this->change_name_to($this->initial_name);
                 }
             }
