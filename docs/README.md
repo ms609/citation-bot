@@ -72,6 +72,25 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
 
+## Big-run gate (single-request priority)
+
+Web runs of more than 4 pages (categories, linked-pages runs, and large
+webform lists) are admission-controlled so that single requests (≤4 pages)
+always have free workers:
+
+- **Concurrency pool:** at most 10 big runs in flight, of which large runs
+  (≥50 pages) are limited to 4. Singles, trusted operators (`DEV_USERS`), CLI
+  runs, the gadget, and testing runs bypass the gate.
+- **Token bucket:** capacity 400, refill 4.0/s, charged at admission with no
+  refund. Cost = `min(400, ceil(pages × type_weight × size_weight))`; heavy
+  activation types (category/linked/webform, weight 1.5) drain it fastest.
+- **Deferred runs** receive a busy page explaining why: the pool is at
+  capacity (with the active count), the token quota is exhausted (with a wait
+  estimate), or availability could not be checked.
+- Implementation: `big_run_try_acquire`/`big_run_release` in
+  `src/includes/RequestRateLimit.php`; `gate_big_run` in
+  `src/includes/WebTools.php`.
+
 [![Citation bot's architecture](architecture.svg)](architecture.svg)
 
 ## Structure
@@ -107,7 +126,7 @@ Includes (under `src/includes/`):
 - `src/includes/Statistics.php`: UCB tag parsing and statistics wikitext generation for `User:Citation bot/statistics`
 - `src/includes/GadgetApi.php`: gadget request validation and rate-limiting helpers
 - `src/includes/PublicConfig.php`: public URL/host/origin canonicalization and CORS helpers
-- `src/includes/RequestRateLimit.php`: token-bucket rate limiting for gadget and web requests
+- `src/includes/RequestRateLimit.php`: token-bucket rate limiting for gadget/generate-template requests, plus the big-run admission gate that gives single requests priority over bulk runs
 - `src/includes/request_security.php`: CSRF and session security helpers for web entrypoints
 - `src/includes/NameTools.php`: defines name functions
 - `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
@@ -115,7 +134,7 @@ Includes (under `src/includes/`):
 - `src/includes/miscTools.php`: a variety of functions
 - `src/includes/URLtools.php`: normalize URLs and extract information from URLs
 - `src/includes/TextTools.php`: string manipulation functions including converting to wiki
-- `src/includes/WebTools.php`: things unique to the web interface
+- `src/includes/WebTools.php`: things unique to the web interface, including the big-run gate (`gate_big_run`)
 - `src/includes/bot_curl.php`: curl wrapper with bot-appropriate defaults and timeouts
 - `src/includes/user_messages.php`: functions for reporting bot activity to users
 - `src/includes/doiTools.php`: DOI-specific validation and normalization functions
