@@ -169,6 +169,29 @@ final class Zotero {
         return true;
     }
 
+    /**
+     * Some websites list the site or publication name as the only "author"
+     * (e.g. Citoid reports "Fun N' Taste" as the sole creator of funntaste.com).
+     * Such names are not people and must not be added as authors. Returns true
+     * when the given creator name matches the publication title, book title, or
+     * the URL host.
+     */
+    private static function creator_is_site_name(string $name, string $url, object $result): bool {
+        $name = mb_trim($name);
+        foreach (['publicationTitle', 'bookTitle'] as $field) {
+            if (isset($result->{$field}) && str_i_same($name, (string) $result->{$field})) {
+                return true;
+            }
+        }
+        if (preg_match('~^https?://([^/]+)~', $url, $hostname) === 1) {
+            $hostname = str_ireplace('www.', '', (string) $hostname[1]);
+            if (str_i_same($name, $hostname)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static function record_zotero_failure(): void {
         self::$zotero_failures_count += 1;
         if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
@@ -1290,6 +1313,12 @@ final class Zotero {
                 while (isset($result->creators[$i])) {
                     $creatorType = $result->creators[$i]->creatorType ?? 'author';
                     if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
+                        // Websites often have non-authors listed in metadata.
+                        // Skip creators whose name is really the site or publication name.
+                        if (self::creator_is_site_name($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName, $url, $result)) {
+                            $i++;
+                            continue;
+                        }
                         // Only process if author passes validation
                         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
                             // Increment counter only after validation passes, based on creator type
