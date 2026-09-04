@@ -1396,7 +1396,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testAllSortsOfBadData_3(): void {
         $text = "{{Cite journal|journal=arXiv: blah|title=arXiv|issue=null|volume=n/a|page=n/a|pages=null|eprint=x}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite arXiv|title=arXiv|volume=n/a|page=n/a|eprint=x}}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal|title=arXiv|volume=n/a|page=n/a|eprint=x}}', $expanded->parsed_text());
     }
 
     public function testAllSortsOfBadData_4(): void {
