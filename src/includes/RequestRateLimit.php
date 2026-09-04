@@ -2,13 +2,6 @@
 
 declare(strict_types=1);
 
-// NOTE: the big-run gate constants are deliberately declared AFTER the
-// pre-existing functions in this file (see below). progpilot's false-positive
-// whitelist (progpilot.json) matches findings by a line-dependent vuln-id
-// hash, so shifting the existing request_rate_limit_consume code by adding
-// constants at the top of this file silently breaks the whitelist and fails
-// CI. Keep any new top-level declarations below the existing code.
-
 const REQUEST_RATE_LIMIT_STATE_DIRECTORY = 'citation-bot-rate-limit';
 
 const GADGET_API_RATE_LIMIT_CAPACITY = 40;
