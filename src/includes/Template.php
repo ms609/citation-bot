@@ -3500,6 +3500,20 @@ final class Template
     }
 
     /**
+     * Return true only when an existing arXiv/eprint parameter is structurally
+     * valid and can therefore be used as evidence for a template-type change.
+     */
+    private function has_valid_arxiv_identifier(): bool {
+        foreach (ARXIV_ALIASES as $param) {
+            $value = $this->get_without_comments_and_placeholders($param);
+            if ($value !== '' && arxiv_id_valid($value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Best template for a url-less cite web given URL-independent evidence.
      * Returns '' when no evidence supports re-typing (caller falls back to
      * cite document).  Mirrors the forget-url fallback priority:
@@ -3508,13 +3522,12 @@ final class Template
     private function retarget_url_less_web(bool $bad_doi): string {
         $has_journal = $this->has('journal');
         $has_newspaper = $this->has('newspaper');
-        $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+        $has_arxiv = $this->has_valid_arxiv_identifier();
         $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
         if ($bad_doi) {
             // Comment placeholders do not count as evidence.
             $has_journal = $this->get_without_comments_and_placeholders('journal') !== '';
             $has_newspaper = $this->get_without_comments_and_placeholders('newspaper') !== '';
-            $has_arxiv = $this->get_without_comments_and_placeholders('arxiv') !== '' || $this->get_without_comments_and_placeholders('eprint') !== '';
             $has_book_evidence = $this->get_without_comments_and_placeholders('isbn') !== '' || $this->get_without_comments_and_placeholders('lccn') !== '' || $this->get_without_comments_and_placeholders('oclc') !== '' || $this->get_without_comments_and_placeholders('ol') !== '' || $this->get_without_comments_and_placeholders('chapter') !== '';
         }
         if ($has_journal) {
@@ -6559,7 +6572,7 @@ final class Template
                 }
             }
             if ($this->wikiname() === 'cite journal' && mb_stripos($this->initial_name, 'journal') === false) {
-                if ($this->has('arxiv') || $this->has('eprint')) {
+                if ($this->has_valid_arxiv_identifier()) {
                     $arxiv_journal = $this->has('journal') && mb_stripos($this->get('journal'), 'arxiv') !== false;
                     if ($arxiv_journal) {
                         $this->forget('journal');
@@ -6567,7 +6580,12 @@ final class Template
                     } elseif ($this->blank(WORK_ALIASES) && $this->blank(['pmid', 'pmc'])) {
                         $this->change_name_to('cite arxiv');
                     }
-                } elseif ($this->blank(WORK_ALIASES)) {
+                } elseif (
+                    $this->blank(WORK_ALIASES) &&
+                    mb_strtolower(mb_trim($this->initial_name)) !== 'cite arxiv'
+                ) {
+                    // Do not restore an initially-arXiv template after its only
+                    // arXiv identifier has proved invalid.
                     $this->change_name_to($this->initial_name);
                 }
             }
