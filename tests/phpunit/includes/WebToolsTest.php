@@ -95,6 +95,28 @@ final class WebToolsTest extends testBaseClass {
         $this->assertSame('#UCB_Category', statistics_ucb_from_comment($summary));
     }
 
+    public function testCategoryEditPriorityTemplateAndAutomatedTools(): void {
+        $template = category_edit_summary_end('U', 'C', false, false, 'template');
+        $this->assertStringContainsString('#UCB_template', $template);
+        $this->assertStringNotContainsString('#UCB_Category', $template);
+        $this->assertSame('#UCB_template', statistics_ucb_from_comment($template));
+
+        $automated = category_edit_summary_end('U', 'C', false, false, 'automated_tools');
+        $this->assertStringContainsString('#UCB_automated_tools', $automated);
+        $this->assertStringNotContainsString('#UCB_Category', $automated);
+        $this->assertSame('#UCB_automated_tools', statistics_ucb_from_comment($automated));
+    }
+
+    public function testCategoryEditFallsBackToCategoryTag(): void {
+        foreach ([null, 'webform', 'toolbar', 'something-made-up'] as $edit) {
+            $summary = category_edit_summary_end('U', 'C', false, false, $edit);
+            $this->assertStringContainsString('#UCB_Category', $summary);
+            $this->assertStringNotContainsString('#UCB_template', $summary);
+            $this->assertStringNotContainsString('#UCB_automated_tools', $summary);
+            $this->assertSame('#UCB_Category', statistics_ucb_from_comment($summary));
+        }
+    }
+
     public function testCategoryOverrideSuffixes(): void {
         $plain = category_edit_summary_end('U', 'C', false, false);
         $this->assertStringNotContainsString('Whitelisted', $plain);
