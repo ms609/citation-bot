@@ -598,6 +598,33 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         $this->assertCount(1, $state['entries']);
     }
 
+    public function testBigRunCorruptStateRecoversToFreshBucket(): void {
+        $state_path = $this->bigRunStatePath();
+        $state_directory = dirname($state_path);
+        $this->assertTrue(mkdir($state_directory, 0700, true));
+        $this->assertNotFalse(file_put_contents($state_path, '{not-json'));
+
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertTrue($result[0]);
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame(392.0, $state['tokens']); // fresh 400 - 8
+        $this->assertCount(1, $state['entries']);
+    }
+
+    public function testBigRunCombinedDenialReportsTheLongerWait(): void {
+        // Pool full (10 small entries) AND zero tokens: reason = whichever wait is longer.
+        $entries = [];
+        for ($i = 0; $i < BIG_RUN_MAX_TOTAL; ++$i) {
+            $entries['e' . $i] = ['started_at' => 100.0, 'tier' => 'small'];
+        }
+        $this->writeBigRunState('{"tokens":0.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        // A 50-page category: slot_wait = ceil(100+120-100) = 120; token_wait = ceil(113/4) = 29.
+        $result = big_run_try_acquire(50, 'category', null, 100.0);
+        $this->assertSame([false, 120, null, 'big_full', 10], $result);
+    }
+
     public function testBigRunAcquireFailsOpenOnStorageError(): void {
         $blocking_path = $this->base_directory . DIRECTORY_SEPARATOR . 'not-a-directory';
         $this->assertNotFalse(file_put_contents($blocking_path, 'x'));
@@ -624,7 +651,7 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             $this->assertTrue(flock($handle, LOCK_EX | LOCK_NB));
             $started = microtime(true);
             $result = big_run_try_acquire(5, 'category', null, 100.0);
-            $this->assertSame([false, 1, null, 'big_full', 0], $result);
+            $this->assertSame([false, 1, null, 'retry_later', 0], $result);
             $this->assertLessThan(0.5, microtime(true) - $started);
         } finally {
             flock($handle, LOCK_UN);

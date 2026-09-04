@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+// NOTE: the big-run gate constants are deliberately declared AFTER the
+// pre-existing functions in this file (see below). progpilot's false-positive
+// whitelist (progpilot.json) matches findings by a line-dependent vuln-id
+// hash, so shifting the existing request_rate_limit_consume code by adding
+// constants at the top of this file silently breaks the whitelist and fails
+// CI. Keep any new top-level declarations below the existing code.
+
 const REQUEST_RATE_LIMIT_STATE_DIRECTORY = 'citation-bot-rate-limit';
 
 const GADGET_API_RATE_LIMIT_CAPACITY = 40;
@@ -242,7 +249,12 @@ function big_run_token_cost(int $page_count, string $run_type): int {
 }
 
 function big_run_new_entry_id(): string {
-    return bin2hex(random_bytes(8));
+    try {
+        return bin2hex(random_bytes(8));
+    } catch (Throwable $exception) {
+        // Extremely rare RNG failure; a time-based id keeps fail-open paths working.
+        return uniqid('bigrun', true);
+    }
 }
 
 /**
@@ -284,7 +296,8 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
         // Do not let a request storm fill PHP workers with processes waiting on the lock.
         $locked = @flock($handle, LOCK_EX | LOCK_NB);
         if (!$locked) {
-            return [false, 1, null, 'big_full', 0];
+            error_log('Citation Bot big-run gate: state file lock busy; deferring run.');
+            return [false, 1, null, 'retry_later', 0];
         }
 
         $now ??= microtime(true);
@@ -312,6 +325,9 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
             if (!big_run_store_state($handle, $tokens - $cost, $now, $entries)) {
                 request_rate_limit_log_failure('big-run', 'unable to persist state');
             }
+            error_log('Citation Bot big-run gate: admitted ' . $run_type . ' run of ' .
+                (string) $page_count . ' pages, cost ' . (string) $cost . ', balance ' .
+                (string) ($tokens - $cost) . ', ' . (string) count($entries) . ' active.');
             return [true, null, $entry_id, null, count($entries)];
         }
 
@@ -338,6 +354,10 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
         if (!big_run_store_state($handle, $tokens, $now, $entries)) {
             request_rate_limit_log_failure('big-run', 'unable to persist state');
         }
+
+        error_log('Citation Bot big-run gate: deferred ' . $run_type . ' run of ' .
+            (string) $page_count . ' pages (cost ' . (string) $cost . ', balance ' .
+            (string) $tokens . ', ' . (string) $active_count . ' active): ' . $reason);
 
         return [false, $retry_after, null, $reason, $active_count];
     } finally {

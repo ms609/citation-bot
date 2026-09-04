@@ -209,7 +209,7 @@ final class WebToolsTest extends testBaseClass {
         $this->assertSame('automated_tools', big_run_type_from_edit('automated_tools'));
         $this->assertSame('toolbar', big_run_type_from_edit('toolbar'));
         $this->assertSame('template', big_run_type_from_edit('template'));
-        $this->assertSame('testing', big_run_type_from_edit('testing'));
+        $this->assertSame('other', big_run_type_from_edit('testing')); // user-controlled, never exempt
         $this->assertSame('other', big_run_type_from_edit('something-made-up'));
     }
 
@@ -237,6 +237,10 @@ final class WebToolsTest extends testBaseClass {
         $this->assertSame(
             'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 35 seconds.',
             big_run_busy_page_message('tokens', null, 29)
+        );
+        $this->assertSame(
+            'Citation Bot could not check big-run availability right now. Please try again shortly.',
+            big_run_busy_page_message('retry_later', null, null)
         );
     }
 }

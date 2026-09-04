@@ -199,13 +199,16 @@ function process_page_edit_summary_end(string $username, bool $is_html_output, ?
  * Mirrors process_page_edit_summary_end's tag mapping so the token weight
  * matches the edit-summary tag: the default webform POST (no edit parameter)
  * is #UCB_webform, not #UCB_Other. Unknown non-empty values fall through to
- * #UCB_Other.
+ * #UCB_Other. 'testing' is deliberately NOT honored here: the edit parameter
+ * is user-controlled, so granting it the testing exemption (which bypasses
+ * the gate entirely) would let anyone mint an unlimited un-gated run, the
+ * same reason process_page_edit_summary_end refuses deprecated tags.
  */
 function big_run_type_from_edit(?string $edit): string {
     if ($edit === null || $edit === '') {
         return 'webform';
     }
-    if (in_array($edit, ['webform', 'automated_tools', 'toolbar', 'template', 'testing'], true)) {
+    if (in_array($edit, ['webform', 'automated_tools', 'toolbar', 'template'], true)) {
         return $edit;
     }
     return 'other';
@@ -249,6 +252,9 @@ function big_run_busy_page_message(string $reason, ?int $active_count, ?int $ret
     if ($reason === 'tokens') {
         return 'Citation Bot\'s big-run quota is currently exhausted. Please try again in about ' .
             big_run_humanize_wait($retry_after ?? 0) . '.';
+    }
+    if ($reason === 'retry_later') {
+        return 'Citation Bot could not check big-run availability right now. Please try again shortly.';
     }
     return 'Citation Bot is currently at capacity with other big runs (' .
         (string) ($active_count ?? 0) . ' in progress). Please try again shortly.';
@@ -312,11 +318,10 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         bot_html_footer();
         return;
     }
-    if (HTML_OUTPUT) {
-        if ($total > BIG_RUN_PAGE_THRESHOLD) {
-            report_warning('Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — please review the changes it makes.');
-        }
+    if (HTML_OUTPUT && $total > BIG_RUN_PAGE_THRESHOLD) {
         gate_big_run($total, $run_type, $api->get_the_user());
+        // Only reached if the run was admitted; a deferred run exits above.
+        report_warning('Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — please review the changes it makes.');
     }
     big_jobs_check_overused($total);
 
