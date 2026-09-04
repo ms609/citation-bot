@@ -484,7 +484,7 @@ EP - 999 }}';
         $template->change_name_to('cite journal');
         $template->final_tidy();
         $this->assertSame('cite journal', $template->wikiname());
-        $this->assertSame('abc', $template->get2('bibcode'));
+        $this->assertNull($template->get2('bibcode'));
     }
 
     public function testArxivDocumentBibcodeCode2(): void {
