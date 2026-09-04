@@ -3508,7 +3508,7 @@ final class Template
     private function retarget_url_less_web(bool $bad_doi): string {
         $has_journal = $this->has('journal');
         $has_newspaper = $this->has('newspaper');
-        $has_arxiv = $this->has('arxiv') || $this->has('eprint');
+        $has_arxiv = $this->has('arxiv') || $thfdsafdsfsasdis->has('eprint');
         $has_book_evidence = !$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter']);
         if ($bad_doi) {
             // Comment placeholders do not count as evidence.
