@@ -331,8 +331,8 @@ function format_multiple_authors(string $authors): string {
         $authors = $normalized_authors;
     }
 
-    $authors = str_replace(["&nbsp;", "(", ")"], [" "], $authors); //Remove spaces and weird punctuation
-    $authors = str_replace([".,", "&", "  "], ";", $authors); //Remove "and"
+    $authors = str_replace(["&nbsp;", "(", ")"], [" ", "", ""], $authors); //Remove spaces and weird punctuation
+    $authors = str_replace([".,", "&", "  "], [";", "", ""], $authors); //Remove "and"
     if (preg_match("~[,;]$~", mb_trim($authors))) {
         $authors = mb_substr(mb_trim($authors), 0, mb_strlen(mb_trim($authors)) - 1); // remove trailing punctuation
     }
