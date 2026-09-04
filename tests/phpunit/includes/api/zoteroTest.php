@@ -618,6 +618,51 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Joe', $template->get2('author1'));
     }
 
+    public function testSiteNameAsSoleCreatorNotAddedAsAuthor(): void {
+        // funntaste.com has no per-article author; Citoid reports the site name
+        // "Fun N' Taste" as both the publication and the sole creator. That is not
+        // a person, so it must not be added as last1/first1.
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://funntaste.com/dry-chilli-pan-mee-restoran-kin-kin/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => "Fun N'", 'lastName' => 'Taste'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Food Review: Chilli Pan Mee @ Restoran Kin Kin, Chow Kit, Kuala Lumpur',
+            'itemType' => 'newspaperArticle',
+            'publicationTitle' => "Fun N' Taste",
+            'creators' => $creators,
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        $this->assertSame("Fun N' Taste", $template->get2('work'));
+    }
+
+    public function testHostnameAsSoleCreatorNotAddedAsAuthor(): void {
+        // Some sites report their bare domain as the sole creator; that is not a
+        // person, so it must not be added as last1/first1.
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://www.example.com/some/article';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => '', 'lastName' => 'example.com'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Some article',
+            'itemType' => 'report',
+            'creators' => $creators,
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+    }
+
     public function testZoteroResponse30(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
