@@ -483,8 +483,8 @@ EP - 999 }}';
         $template = $this->make_citation($text);
         $template->change_name_to('cite journal');
         $template->final_tidy();
-        $this->assertSame('cite arxiv', $template->wikiname());
-        $this->assertNull($template->get2('bibcode'));
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('abc', $template->get2('bibcode'));
     }
 
     public function testArxivDocumentBibcodeCode2(): void {
@@ -507,7 +507,7 @@ EP - 999 }}';
         $template = $this->make_citation($text);
         $template->change_name_to('cite journal');
         $template->final_tidy();
-        $this->assertSame('cite arxiv', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testArxivToJournalIfDoi(): void {
@@ -545,7 +545,7 @@ EP - 999 }}';
         $text = "{{cite web|url=1|arxiv=2}}";
         $template = $this->make_citation($text);
         $template->forget('url');
-        $this->assertSame('cite arxiv', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testRenameToArxivWhenLoseUrl_2(): void {

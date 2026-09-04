@@ -9,16 +9,29 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
     $ids = [];
     $arxiv_templates = [];
     foreach ($templates as $this_template) {
+        $eprint = str_ireplace(
+            "arXiv:",
+            "",
+            $this_template->get_without_comments_and_placeholders('eprint') .
+            $this_template->get_without_comments_and_placeholders('arxiv')
+        );
+        if ($eprint === '') {
+            continue;
+        }
+        if (!arxiv_id_valid($eprint)) {
+            report_inaction("Not querying malformed arXiv identifier: " . echoable($eprint));
+            continue;
+        }
+
+        // Normalize the parameter name only after the identifier has proved valid;
+        // a rejected API candidate must not mutate the citation.
         if ($this_template->wikiname() === 'cite arxiv') {
             $this_template->rename('arxiv', 'eprint');
         } else {
             $this_template->rename('eprint', 'arxiv');
         }
-        $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
-        if ($eprint && mb_stripos($eprint, 'CITATION_BOT') === false) {
-            $ids[] = $eprint;
-            $arxiv_templates[] = $this_template;
-        }
+        $ids[] = $eprint;
+        $arxiv_templates[] = $this_template;
     }
     arxiv_api($ids, $arxiv_templates);
 }
