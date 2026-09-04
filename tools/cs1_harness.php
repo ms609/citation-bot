@@ -410,7 +410,7 @@ function build_matrix(): array {
         ['Orphaned trans-entry removed', '{{cite journal |title=X |journal=J |trans-entry=Y}}', 'pass'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'gap'],
-        ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gap'],
+        ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'gadddp'],
         ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'gap'],
         ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'gap'],
         ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
