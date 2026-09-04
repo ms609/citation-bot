@@ -87,7 +87,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testTemplateConvertComplex2aa(): void {
         $text = "{{cite document|doi=XXX/978-XXX}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("cite book", $expanded->wikiname());
+        $this->assertSame("cite document", $expanded->wikiname());
         $this->assertNotNull($expanded->get2('doi-broken-date')); // This one gets "move perm.." from dx.doi.org, and is bogus
     }
 
@@ -130,7 +130,7 @@ final class TemplatePart1Test extends testBaseClass {
     public function testTemplateConvertComplex2cb(): void {
         $text = "{{Cite document|doi=XXX/978-XXX|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame("cite book", $expanded->wikiname());
+        $this->assertSame("cite document", $expanded->wikiname());
     }
 
     public function testTemplateConvertComplex2cc(): void {
