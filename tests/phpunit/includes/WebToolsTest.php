@@ -222,8 +222,8 @@ final class WebToolsTest extends testBaseClass {
         $this->assertFalse(big_run_gate_decision(5, 'testing', 'SomeUser'));
     }
 
-    public function testBigRunHumanizeWaitAppliesTwentyPercentBuffer(): void {
-        $this->assertSame('35 seconds', big_run_humanize_wait(29));
+    public function testBigRunHumanizeWaitAppliesThirtyPercentBuffer(): void {
+        $this->assertSame('38 seconds', big_run_humanize_wait(29));  // ceil(29*1.3)
         $this->assertSame('1 minute', big_run_humanize_wait(59));
         $this->assertSame('2 minutes', big_run_humanize_wait(100));
         $this->assertSame('1 second', big_run_humanize_wait(0));
@@ -235,7 +235,7 @@ final class WebToolsTest extends testBaseClass {
             big_run_busy_page_message('big_full', 8, null)
         );
         $this->assertSame(
-            'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 35 seconds.',
+            'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 38 seconds.',
             big_run_busy_page_message('tokens', null, 29)
         );
         $this->assertSame(

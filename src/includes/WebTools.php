@@ -234,10 +234,10 @@ function big_run_gate_decision(int $page_count, string $run_type, string $userna
 }
 
 /**
- * Humanize a wait in seconds, applying a 20% buffer so users do not retry too early.
+ * Humanize a wait in seconds, applying a 30% buffer so users do not retry too early.
  */
 function big_run_humanize_wait(int $seconds): string {
-    $buffered = max(1, (int) ceil($seconds * 1.2));
+    $buffered = max(1, (int) ceil($seconds * 1.3));
     if ($buffered < 60) {
         return (string) $buffered . ($buffered === 1 ? ' second' : ' seconds');
     }

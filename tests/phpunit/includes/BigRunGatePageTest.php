@@ -113,7 +113,7 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             ob_end_clean();
 
             $this->assertSame(
-                'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 35 seconds.',
+                'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 38 seconds.',
                 (string) ($GLOBALS['big_run_gate_warning'] ?? '')
             );
         } finally {
