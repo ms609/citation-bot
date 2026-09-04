@@ -189,7 +189,7 @@ final class SSRNTest extends testBaseClass {
             ['news_journal', '{{cite news|journal=Test Journal|title=Test|date=2024-01-01}}', 'cite news'],
             ['citation_doi', '{{citation|doi=10.1000/test}}', 'citation'],
             ['arxiv_published', '{{cite arxiv|arxiv=1234.5678|doi=10.1000/test|title=Test}}', 'cite journal'],
-            ['web_bibcode', '{{cite web|bibcode=2024Test....12.3456A|title=Test}}', 'cite journal'],
+            ['web_bibcode', '{{cite web|bibcode=2024Test....12.3456A|title=Test}}', 'cite web'],
             ['web_jstor', '{{cite web|jstor=12345|title=Test}}', 'cite journal'],
             ['web_oclc', '{{cite web|oclc=12345678|title=Test}}', 'cite web'],
             ['web_isbn', '{{cite web|isbn=978-0-19-123456-7|title=Test}}', 'cite book'],
