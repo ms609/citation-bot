@@ -10,40 +10,6 @@ const GADGET_API_RATE_LIMIT_REFILL_PER_SECOND = 2.0;
 const GENERATE_TEMPLATE_RATE_LIMIT_CAPACITY = 20;
 const GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND = 0.5;
 
-// Big-run gate: single requests (≤ BIG_RUN_PAGE_THRESHOLD pages) bypass the
-// gate entirely. Big runs compete for a nested concurrency pool (total ≤
-// BIG_RUN_MAX_TOTAL, of which large runs ≤ BIG_RUN_MAX_LARGE) and must draw
-// from a shared token bucket. All state lives in one locked JSON file so the
-// PHP-FPM worker processes share it.
-
-const BIG_RUN_STATE_FILE = 'big-run.json';
-const BIG_RUN_PAGE_THRESHOLD = 4;
-const BIG_RUN_LARGE_THRESHOLD = 50;
-const BIG_RUN_MAX_TOTAL = 10;
-const BIG_RUN_MAX_LARGE = 4;
-const BIG_RUN_STALE_TIMEOUT_SECONDS = 300;
-const BIG_RUN_NOMINAL_DURATION = 120;
-const BIG_RUN_TOKEN_CAPACITY = 400;
-const BIG_RUN_TOKEN_REFILL_PER_SECOND = 4.0;
-
-/** Per-page token weight for each activation type. */
-const BIG_TOKEN_WEIGHTS = [
-    'category' => 1.5,
-    'webform_linked' => 1.5,
-    'webform' => 1.5,
-    'automated_tools' => 0.5,
-    'toolbar' => 1.0,
-    'template' => 0.5,
-    'other' => 1.0,
-    'testing' => 0.0,
-];
-
-/** Per-page token multiplier for each run-size tier. */
-const BIG_SIZE_WEIGHTS = [
-    'small' => 1.0,
-    'large' => 1.5,
-];
-
 function request_rate_limit_base_directory(): string {
     $env_val = getenv('PHP_RATE_LIMIT_DIRECTORY');
     if (is_string($env_val) && $env_val !== '') {
@@ -210,6 +176,42 @@ function request_rate_limit_log_failure(string $bucket, string $reason): void {
     $reported[$key] = true;
     error_log('Citation Bot rate limiter (' . $bucket . '): ' . $reason . '; failing open.');
 }
+
+// Big-run gate: single requests (≤ BIG_RUN_PAGE_THRESHOLD pages) bypass the
+// gate entirely. Big runs compete for a nested concurrency pool (total ≤
+// BIG_RUN_MAX_TOTAL, of which large runs ≤ BIG_RUN_MAX_LARGE) and must draw
+// from a shared token bucket. All state lives in one locked JSON file so the
+// PHP-FPM worker processes share it. Constants are declared here rather than
+// at the top of the file so the pre-existing request_rate_limit_consume keeps
+// its line numbers (progpilot's false-positive list matches on those).
+
+const BIG_RUN_STATE_FILE = 'big-run.json';
+const BIG_RUN_PAGE_THRESHOLD = 4;
+const BIG_RUN_LARGE_THRESHOLD = 50;
+const BIG_RUN_MAX_TOTAL = 10;
+const BIG_RUN_MAX_LARGE = 4;
+const BIG_RUN_STALE_TIMEOUT_SECONDS = 300;
+const BIG_RUN_NOMINAL_DURATION = 120;
+const BIG_RUN_TOKEN_CAPACITY = 400;
+const BIG_RUN_TOKEN_REFILL_PER_SECOND = 4.0;
+
+/** Per-page token weight for each activation type. */
+const BIG_TOKEN_WEIGHTS = [
+    'category' => 1.5,
+    'webform_linked' => 1.5,
+    'webform' => 1.5,
+    'automated_tools' => 0.5,
+    'toolbar' => 1.0,
+    'template' => 0.5,
+    'other' => 1.0,
+    'testing' => 0.0,
+];
+
+/** Per-page token multiplier for each run-size tier. */
+const BIG_SIZE_WEIGHTS = [
+    'small' => 1.0,
+    'large' => 1.5,
+];
 
 function big_run_state_path(string $base_directory): string {
     $state_directory =
