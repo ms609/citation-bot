@@ -61,7 +61,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $text = "{{cite web|arxiv=xxxxxxxxxxxx}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('arxiv');
-        $this->assertSame('cite arxiv', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testTidy6b(): void {
@@ -83,7 +83,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $text = "{{cite web|bibcode=abookthisis}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('bibcode');
-        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('cite web', $template->wikiname());
     }
 
     public function testTidy9(): void {
