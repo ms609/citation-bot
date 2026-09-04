@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
+require_once __DIR__ . '/RequestRateLimit.php'; // @codeCoverageIgnore
 
 /**
  * Users allowed to exceed the web page-count limit (MAX_PAGES).
@@ -193,10 +194,110 @@ function process_page_edit_summary_end(string $username, bool $is_html_output, ?
 }
 
 /**
+ * Map an ?edit= request-source value to the big-run gate activation type.
+ *
+ * Mirrors process_page_edit_summary_end's tag mapping so the token weight
+ * matches the edit-summary tag: the default webform POST (no edit parameter)
+ * is #UCB_webform, not #UCB_Other. Unknown non-empty values fall through to
+ * #UCB_Other.
+ */
+function big_run_type_from_edit(?string $edit): string {
+    if ($edit === null || $edit === '') {
+        return 'webform';
+    }
+    if (in_array($edit, ['webform', 'automated_tools', 'toolbar', 'template', 'testing'], true)) {
+        return $edit;
+    }
+    return 'other';
+}
+
+/**
+ * Whether a run must pass through the big-run gate.
+ *
+ * Singles (≤ BIG_RUN_PAGE_THRESHOLD pages), trusted operators (DEV_USERS) and
+ * testing runs are never gated.
+ */
+function big_run_gate_decision(int $page_count, string $run_type, string $username): bool {
+    if ($page_count <= BIG_RUN_PAGE_THRESHOLD) {
+        return false;
+    }
+    if (in_array($username, DEV_USERS, true)) {
+        return false;
+    }
+    if ($run_type === 'testing') {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Humanize a wait in seconds, applying a 20% buffer so users do not retry too early.
+ */
+function big_run_humanize_wait(int $seconds): string {
+    $buffered = max(1, (int) ceil($seconds * 1.2));
+    if ($buffered < 60) {
+        return (string) $buffered . ($buffered === 1 ? ' second' : ' seconds');
+    }
+    $minutes = max(1, (int) round($buffered / 60));
+    return (string) $minutes . ($minutes === 1 ? ' minute' : ' minutes');
+}
+
+/**
+ * Build the busy-page message for a deferred big run.
+ */
+function big_run_busy_page_message(string $reason, ?int $active_count, ?int $retry_after): string {
+    if ($reason === 'tokens') {
+        return 'Citation Bot\'s big-run quota is currently exhausted. Please try again in about ' .
+            big_run_humanize_wait($retry_after ?? 0) . '.';
+    }
+    return 'Citation Bot is currently at capacity with other big runs (' .
+        (string) ($active_count ?? 0) . ' in progress). Please try again shortly.';
+}
+
+/**
+ * Render the busy page for a deferred big run (message + footer).
+ */
+function big_run_render_busy_page(string $reason, ?int $active_count, ?int $retry_after): void {
+    report_warning(big_run_busy_page_message($reason, $active_count, $retry_after));
+    bot_html_footer();
+}
+
+/**
+ * Gate a big run: admit it (and register release) or render the busy page.
+ *
+ * Callers must only invoke this when HTML_OUTPUT is true (web requests), so the
+ * authenticated username is always available.
+ *
+ * @param int $page_count Effective (post-filter) page count.
+ * @param string $run_type Activation type from big_run_type_from_edit().
+ * @param string $username Authenticated Wikipedia username.
+ */
+function gate_big_run(int $page_count, string $run_type, string $username, ?string $base_directory = null, ?float $now = null): void {
+    if (!HTML_OUTPUT) {
+        return;
+    }
+    if (!big_run_gate_decision($page_count, $run_type, $username)) {
+        return;
+    }
+
+    $result = big_run_try_acquire($page_count, $run_type, $base_directory, $now);
+    if ($result[0]) {
+        $entry_id = $result[2];
+        if ($entry_id !== null) {
+            register_shutdown_function('big_run_release', $entry_id, $base_directory);
+        }
+        return;
+    }
+
+    big_run_render_busy_page((string) ($result[3] ?? 'big_full'), $result[4], $result[1]);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
-function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
+function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end, string $run_type = 'other'): void {
     $final_edit_overview = "";
     $pages_in_category = filter_runnable_page_titles($pages_in_category);
     if (empty($pages_in_category)) {
@@ -210,6 +311,12 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) $effective_max);
         bot_html_footer();
         return;
+    }
+    if (HTML_OUTPUT) {
+        if ($total > BIG_RUN_PAGE_THRESHOLD) {
+            report_warning('Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — please review the changes it makes.');
+        }
+        gate_big_run($total, $run_type, $api->get_the_user());
     }
     big_jobs_check_overused($total);
 

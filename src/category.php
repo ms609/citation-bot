@@ -134,4 +134,4 @@ $edit_summary_end = category_edit_summary_end(
     $request_edit
 );
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
-edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end, 'category');

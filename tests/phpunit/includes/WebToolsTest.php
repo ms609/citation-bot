@@ -201,4 +201,42 @@ final class WebToolsTest extends testBaseClass {
         $this->assertStringContainsString('#UCB_toolbar', $cli);
         $this->assertStringNotContainsString('Suggested by', $cli);
     }
+
+    public function testBigRunTypeFromEditMatchesEditSummaryTags(): void {
+        $this->assertSame('webform', big_run_type_from_edit(null));
+        $this->assertSame('webform', big_run_type_from_edit(''));
+        $this->assertSame('webform', big_run_type_from_edit('webform'));
+        $this->assertSame('automated_tools', big_run_type_from_edit('automated_tools'));
+        $this->assertSame('toolbar', big_run_type_from_edit('toolbar'));
+        $this->assertSame('template', big_run_type_from_edit('template'));
+        $this->assertSame('testing', big_run_type_from_edit('testing'));
+        $this->assertSame('other', big_run_type_from_edit('something-made-up'));
+    }
+
+    public function testBigRunGateDecisionBypassesSinglesDevAndTesting(): void {
+        $this->assertFalse(big_run_gate_decision(4, 'category', 'SomeUser'));
+        $this->assertTrue(big_run_gate_decision(5, 'category', 'SomeUser'));
+        $this->assertTrue(big_run_gate_decision(5, 'webform', 'SomeUser'));
+        $this->assertFalse(big_run_gate_decision(5, 'category', 'AManWithNoPlan'));
+        $this->assertFalse(big_run_gate_decision(5, 'category', 'Redalert2fan'));
+        $this->assertFalse(big_run_gate_decision(5, 'testing', 'SomeUser'));
+    }
+
+    public function testBigRunHumanizeWaitAppliesTwentyPercentBuffer(): void {
+        $this->assertSame('35 seconds', big_run_humanize_wait(29));
+        $this->assertSame('1 minute', big_run_humanize_wait(59));
+        $this->assertSame('2 minutes', big_run_humanize_wait(100));
+        $this->assertSame('1 second', big_run_humanize_wait(0));
+    }
+
+    public function testBigRunBusyPageMessagesDistinguishReasons(): void {
+        $this->assertSame(
+            'Citation Bot is currently at capacity with other big runs (8 in progress). Please try again shortly.',
+            big_run_busy_page_message('big_full', 8, null)
+        );
+        $this->assertSame(
+            'Citation Bot\'s big-run quota is currently exhausted. Please try again in about 35 seconds.',
+            big_run_busy_page_message('tokens', null, 29)
+        );
+    }
 }

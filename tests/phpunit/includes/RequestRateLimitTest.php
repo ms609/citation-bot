@@ -489,4 +489,171 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             $this->restoreRateLimitDirectoryEnvironment($previous);
         }
     }
+
+    public function testBigRunTierClassifiesByPageCount(): void {
+        $this->assertSame('small', big_run_tier(4));
+        $this->assertSame('small', big_run_tier(49));
+        $this->assertSame('large', big_run_tier(50));
+        $this->assertSame('large', big_run_tier(500));
+    }
+
+    public function testBigRunTokenCostVariesByTypeAndTier(): void {
+        $this->assertSame(8, big_run_token_cost(5, 'category'));     // ceil(5*1.5*1.0)
+        $this->assertSame(74, big_run_token_cost(49, 'category'));   // ceil(49*1.5*1.0)
+        $this->assertSame(113, big_run_token_cost(50, 'category'));  // ceil(50*1.5*1.5)
+        $this->assertSame(75, big_run_token_cost(100, 'template'));  // ceil(100*0.5*1.5)
+        $this->assertSame(0, big_run_token_cost(100, 'testing'));    // zero weight
+        $this->assertSame(10, big_run_token_cost(10, 'unknown-type')); // defaults to 'other'
+    }
+
+    public function testBigRunTokenCostIsCappedAtCapacity(): void {
+        $this->assertSame(400, big_run_token_cost(178, 'category')); // ceil(178*2.25)=401
+        $this->assertSame(400, big_run_token_cost(1000, 'category'));
+    }
+
+    public function testBigRunAcquireAdmitsAndDeductsTokens(): void {
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertSame([true, null, $result[2], null, 1], $result);
+        $this->assertIsString($result[2]);
+        $this->assertGreaterThan(0, mb_strlen($result[2]));
+
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame(392.0, $state['tokens']); // 400 - ceil(5*1.5*1.0)=8
+        $this->assertCount(1, $state['entries']);
+    }
+
+    public function testBigRunAcquireDefersWhenTokensInsufficient(): void {
+        $this->writeBigRunState('{"tokens":0.0,"updated":100.0,"entries":{}}');
+        $result = big_run_try_acquire(50, 'category', null, 100.0);
+        $this->assertSame([false, 29, null, 'tokens', 0], $result); // ceil(113/4.0)=29
+    }
+
+    public function testBigRunAcquireDefersWhenPoolFull(): void {
+        $entries = [];
+        for ($i = 0; $i < BIG_RUN_MAX_TOTAL; ++$i) {
+            $entries['e' . $i] = ['started_at' => 100.0, 'tier' => 'small'];
+        }
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertSame([false, 120, null, 'big_full', 10], $result); // oldest end 100+120
+    }
+
+    public function testBigRunAcquireDefersWhenLargeSubCapFullButSmallAllowed(): void {
+        $entries = [];
+        for ($i = 0; $i < BIG_RUN_MAX_LARGE; ++$i) {
+            $entries['l' . $i] = ['started_at' => 100.0, 'tier' => 'large'];
+        }
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        $large_result = big_run_try_acquire(50, 'category', null, 100.0);
+        $this->assertSame([false, 120, null, 'big_full', 4], $large_result);
+
+        $small_result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertTrue($small_result[0]);
+        $this->assertSame(5, $small_result[4]);
+    }
+
+    public function testBigRunReleaseFreesSlot(): void {
+        $entries = [];
+        for ($i = 0; $i < BIG_RUN_MAX_TOTAL; ++$i) {
+            $entries['e' . $i] = ['started_at' => 100.0, 'tier' => 'small'];
+        }
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        big_run_release('e0', null);
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertTrue($result[0]);
+        $this->assertSame(10, $result[4]); // 9 existing + 1 new
+    }
+
+    public function testBigRunStaleEntriesArePrunedOnAcquire(): void {
+        $entries = ['stale' => ['started_at' => 100.0, 'tier' => 'small']];
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        $result = big_run_try_acquire(5, 'category', null, 500.0); // 400s later
+        $this->assertTrue($result[0]);
+        $this->assertSame(1, $result[4]); // stale pruned, new entry added
+    }
+
+    public function testBigRunSavedTokensAreClampedToCapacity(): void {
+        $this->writeBigRunState('{"tokens":500.0,"updated":100.0,"entries":{}}');
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertTrue($result[0]);
+
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame(392.0, $state['tokens']); // 400 - 8, not 500 - 8
+    }
+
+    public function testBigRunReleaseOfUnknownIdIsNoop(): void {
+        $entries = ['a1' => ['started_at' => 100.0, 'tier' => 'small']];
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        big_run_release('does-not-exist', null);
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertArrayHasKey('a1', $state['entries']);
+        $this->assertCount(1, $state['entries']);
+    }
+
+    public function testBigRunAcquireFailsOpenOnStorageError(): void {
+        $blocking_path = $this->base_directory . DIRECTORY_SEPARATOR . 'not-a-directory';
+        $this->assertNotFalse(file_put_contents($blocking_path, 'x'));
+
+        try {
+            putenv('PHP_RATE_LIMIT_DIRECTORY=' . $blocking_path);
+            $result = big_run_try_acquire(5, 'category', null, 100.0);
+            $this->assertTrue($result[0]);
+            $this->assertIsString($result[2]);
+        } finally {
+            putenv('PHP_RATE_LIMIT_DIRECTORY=' . $this->base_directory);
+            @unlink($blocking_path);
+        }
+    }
+
+    public function testBigRunLockContentionDefersImmediately(): void {
+        $state_path = $this->bigRunStatePath();
+        $state_directory = dirname($state_path);
+        $this->assertTrue(mkdir($state_directory, 0700, true));
+        $handle = fopen($state_path, 'c+');
+        $this->assertIsResource($handle);
+
+        try {
+            $this->assertTrue(flock($handle, LOCK_EX | LOCK_NB));
+            $started = microtime(true);
+            $result = big_run_try_acquire(5, 'category', null, 100.0);
+            $this->assertSame([false, 1, null, 'big_full', 0], $result);
+            $this->assertLessThan(0.5, microtime(true) - $started);
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    private function bigRunStatePath(): string {
+        return $this->base_directory .
+            DIRECTORY_SEPARATOR .
+            REQUEST_RATE_LIMIT_STATE_DIRECTORY .
+            DIRECTORY_SEPARATOR .
+            BIG_RUN_STATE_FILE;
+    }
+
+    private function writeBigRunState(string $raw_state): void {
+        $state_path = $this->bigRunStatePath();
+        $state_directory = dirname($state_path);
+        if (!is_dir($state_directory)) {
+            $this->assertTrue(mkdir($state_directory, 0700, true));
+        }
+        $this->assertNotFalse(file_put_contents($state_path, $raw_state));
+    }
+
+    private function readBigRunState(): mixed {
+        $raw = file_get_contents($this->bigRunStatePath());
+        $this->assertIsString($raw);
+        $state = json_decode($raw, true);
+        $this->assertIsArray($state);
+        return $state;
+    }
 }
