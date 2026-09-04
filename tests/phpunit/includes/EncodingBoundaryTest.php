@@ -25,7 +25,7 @@ final class EncodingBoundaryTest extends testBaseClass {
             title_capitalization('CAFÉ ITS IS FASTER', true)
         );
         $this->assertSame(
-            'Café DOS Is Faster',
+            'Café DOS is Faster',
             title_capitalization('CAFÉ DOS IS FASTER', true)
         );
     }
