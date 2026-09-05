@@ -82,4 +82,4 @@ unset($links);
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 $pages_in_category = array_unique($pages_in_category);
 
-edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end, 'webform_linked');

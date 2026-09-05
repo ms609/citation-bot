@@ -51,7 +51,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - **`src/includes/Statistics.php`** - Statistics helpers – UCB tag parsing, aggregation, and wikitext generation for `User:Citation bot/statistics`
 - **`src/includes/GadgetApi.php`** - Gadget API validation and rate limiting helpers
 - **`src/includes/PublicConfig.php`** - Public URL/host/origin canonicalization and CORS helpers
-- **`src/includes/RequestRateLimit.php`** - Token-bucket rate limiting for gadget and web requests
+- **`src/includes/RequestRateLimit.php`** - Token-bucket rate limiting for gadget/generate-template requests, plus the big-run admission gate (`big_run_try_acquire`/`big_run_release`) that gives single requests priority over bulk runs
 - **`src/includes/request_security.php`** - CSRF and session security helpers for web entrypoints
 - **`src/includes/TextTools.php`** - String manipulation and CS1 identifier validators
 - **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 9 concrete subclasses
@@ -125,6 +125,39 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 - All fast mode operations
 - **Plus:** Bibcode searches, Zotero URL expansion
 - Takes longer but more thorough
+
+## Big-Run Gate (Single-Request Priority)
+
+Web runs of more than `BIG_RUN_PAGE_THRESHOLD` pages (4) — categories,
+linked-pages runs, and large webform lists — are admission-controlled so that
+single requests (≤4 pages) always have free workers. There is no queue; all
+24 PHP-FPM workers are homogeneous, so priority is enforced as admission
+control on big runs.
+
+- **Nested concurrency pool:** total ≤ `BIG_RUN_MAX_TOTAL` (10) big runs in
+  flight, of which large runs (≥ `BIG_RUN_LARGE_THRESHOLD` = 50 pages) ≤
+  `BIG_RUN_MAX_LARGE` (4). Singles, `DEV_USERS`, CLI (`!HTML_OUTPUT`), the
+  gadget, and testing runs bypass the gate entirely.
+- **Token bucket:** capacity `BIG_RUN_TOKEN_CAPACITY` (400), refill
+  `BIG_RUN_TOKEN_REFILL_PER_SECOND` (4.0/s), charged at admission, no refund.
+  Cost = `min(400, ceil(pages × type_weight × size_weight))`.
+- **Type weights** (`BIG_TOKEN_WEIGHTS`, mirroring the `#UCB_*` edit tags):
+  category/linked/webform 1.5, automated_tools/template 0.5, toolbar/other
+  1.0, testing 0.0. **Size weights** (`BIG_SIZE_WEIGHTS`): small 1.0, large 1.5.
+- **Deferred runs** get a reason-aware busy page: `big_full` shows the active
+  run count; `tokens` shows a wait estimate (refill math + 30% buffer);
+  `retry_later` covers lock contention. Token balances are never shown to users.
+- **State** lives in one locked JSON file (`big-run.json`) in the rate-limit
+  directory; stale entries are pruned on acquire; storage failures fail open.
+- **Code:** `big_run_try_acquire`/`big_run_release` in `RequestRateLimit.php`;
+  `gate_big_run`, `big_run_type_from_edit`, `big_run_gate_decision`,
+  `big_run_busy_page_message` in `WebTools.php`; entry points pass their
+  activation type via `edit_a_list_of_pages(..., $run_type)`.
+- **progpilot caveat:** `progpilot.json` matches DesignSecurity false positives
+  by a line-dependent `vuln_id` hash. Do **not** add lines above
+  `request_rate_limit_consume` in `RequestRateLimit.php` (currently ~line 95) —
+  doing so silently breaks the DesignSecurity CI check. Keep any new top-level
+  declarations below the existing code.
 
 ## Development Environment
 
@@ -285,7 +318,7 @@ The gadget MUST:
 │       ├── Statistics.php      # Statistics helpers for User:Citation bot/statistics
 │       ├── GadgetApi.php       # Gadget API validation and rate limiting helpers
 │       ├── PublicConfig.php    # Public URL/host/origin canonicalization and CORS helpers
-│       ├── RequestRateLimit.php # Token-bucket rate limiting for gadget and web requests
+│       ├── RequestRateLimit.php # Rate limiting + big-run admission gate
 │       ├── request_security.php # CSRF and session security helpers
 │       ├── URLtools.php        # URL normalization & metadata
 │       ├── NameTools.php       # Author name parsing
@@ -293,7 +326,7 @@ The gadget MUST:
 │       ├── WikiThings.php      # Wiki markup handling
 │       ├── miscTools.php       # Miscellaneous utilities
 │       ├── TextTools.php       # String manipulation
-│       ├── WebTools.php        # Web interface helpers
+│       ├── WebTools.php        # Web helpers incl. gate_big_run()
 │       ├── bot_curl.php        # Curl wrapper with defaults
 │       ├── user_messages.php   # Bot activity reporting
 │       ├── doiTools.php        # DOI validation & normalization
