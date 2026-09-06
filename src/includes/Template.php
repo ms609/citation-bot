@@ -7432,6 +7432,16 @@ final class Template
                 $free_after_ts = strtotime($rule_value);
                 if ($pub_ts !== null && $free_after_ts !== false && $pub_ts >= $free_after_ts) {
                     $this->add_if_new('doi-access', 'free');
+                } elseif ($pub_ts === null && $free_after_ts !== false) {
+                    // Year-only fallback: tag only when the whole publication year is post-flip
+                    $pub_year = $this->pub_year_extended();
+                    if ($pub_year > 1000) { // Sanity-check: must be a plausible year
+                        $rule_year = (int) date('Y', $free_after_ts);
+                        $rule_is_first_of_year = (date('m-d', $free_after_ts) === '01-01');
+                        if ($pub_year > $rule_year || ($rule_is_first_of_year && $pub_year === $rule_year)) {
+                            $this->add_if_new('doi-access', 'free');
+                        }
+                    }
                 }
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();

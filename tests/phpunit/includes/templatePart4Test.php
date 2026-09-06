@@ -2011,6 +2011,97 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiConditionalAfterDate_HbmOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1002/hbm.example|date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_HbmBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/hbm.example|date=2019-12-31}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_HbmYearOnlyFlipYear_Free(): void {
+        $text = '{{cite journal|doi=10.1002/hbm.example|year=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WeOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1002/we.example|date=2021-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_WeBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/we.example|date=2020-12-31}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AelmOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1002/aelm.example|date=2023-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AelmBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1002/aelm.example|date=2022-12-31}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AogsOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1111/aogs.example|date=2022-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AogsBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1111/aogs.example|date=2021-12-31}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalEmbargoMonths_PnasSevenMonthsOld_Free(): void {
+        $text = '{{cite journal|doi=10.1073/pnas.0000000|date=' . date('F Y', strtotime('-7 months')) . '}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterYear_EpjcSlash_Free(): void {
+        $text = '{{cite journal|doi=10.1140/epjc/s10052-2015-0000-0|year=2015}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiFreePrefixEpjconf1140_Free(): void {
+        $text = '{{cite journal|doi=10.1140/epjconf/e2009-00912-1}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiFreePrefixEpjconf1051_Free(): void {
+        $text = '{{cite journal|doi=10.1051/epjconf/202429511013}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
     public function testDoiFreePrefixDetected(): void {
         $doi_t = new Template();
         $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y}}');
@@ -2025,6 +2116,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $doi_t->set_free_doi_access();
         $this->assertSame('free', $doi_t->get2('doi-access'));
         $this->assertStringContainsString('10.1186/s12915-020-00940-y|Title|doi-access=free', $doi_t->parsed_text());
+    }
+
+    public function testDoiTemplateConditionalPrefixNotTagged(): void {
+        // Standalone {{doi}} carries no date, so conditional rules must not fire there
+        $doi_t = new Template();
+        $doi_t->parse_text('{{doi|10.1002/hbm.20131}}');
+        $doi_t->set_free_doi_access();
+        $this->assertNull($doi_t->get2('doi-access'));
     }
 
     public function testDoiFreePrefixPreservesLeadingSpace(): void {

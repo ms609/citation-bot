@@ -21,7 +21,6 @@ const DOI_FREE_PREFIX = [
     '10.1002/adsr.',
     '10.1002/advs.',
     '10.1002/ael2.',
-    '10.1002/aelm',
     '10.1002/aesr.',
     '10.1002/aff2.',
     '10.1002/agf2.',
@@ -135,7 +134,6 @@ const DOI_FREE_PREFIX = [
     '10.1002/glr2.',
     '10.1002/gps3.',
     '10.1002/gtm2.',
-    '10.1002/hbm.',
     '10.1002/hcs2.',
     '10.1002/hem3.',
     '10.1002/hkj2.',
@@ -281,7 +279,6 @@ const DOI_FREE_PREFIX = [
     '10.1002/vms3.',
     '10.1002/vro2.',
     '10.1002/vzj2.',
-    '10.1002/we.',
     '10.1002/wjo2.',
     '10.1002/wlb3.',
     '10.1002/wll2.',
@@ -485,7 +482,6 @@ const DOI_FREE_PREFIX = [
     '10.1038/srep',
     '10.1045/',
     '10.1046/j.1365-246X',
-    '10.1046/j.1365-246x',
     '10.1046/j.1365-8711',
     '10.1049/aie2.',
     '10.1049/blc2.',
@@ -537,10 +533,10 @@ const DOI_FREE_PREFIX = [
     '10.1049/tje2.',
     '10.1049/wss2.',
     '10.1051/0004-6361',
+    '10.1051/epjconf',
     '10.1051/parasite',
     '10.1057/s41599',
     '10.1074/',
-    '10.1074/jbc.',
     '10.1080/14399776',
     '10.1093/asjof',
     '10.1093/bjro',
@@ -552,7 +548,6 @@ const DOI_FREE_PREFIX = [
     '10.1093/ismejo',
     '10.1093/jamiaopen',
     '10.1093/mnras',
-    '10.1093/mnrasl',
     '10.1093/ofid',
     '10.1093/oodh',
     '10.1093/ooec',
@@ -593,26 +588,7 @@ const DOI_FREE_PREFIX = [
     '10.1109/lls.',
     '10.1109/lsmc.',
     '10.1109/OA',
-    '10.1109/oajpe.',
     '10.1109/OJ',
-    '10.1109/ojap.',
-    '10.1109/ojcas.',
-    '10.1109/ojcoms.',
-    '10.1109/ojcs.',
-    '10.1109/ojcsys.',
-    '10.1109/ojemb.',
-    '10.1109/ojia.',
-    '10.1109/ojid.',
-    '10.1109/ojies.',
-    '10.1109/ojim.',
-    '10.1109/ojits.',
-    '10.1109/ojnano.',
-    '10.1109/ojpel.',
-    '10.1109/ojse.',
-    '10.1109/ojsp.',
-    '10.1109/ojsscs.',
-    '10.1109/ojuffc.',
-    '10.1109/ojvt.',
     '10.1109/sr.',
     '10.1109/tfr.',
     '10.1109/tmlcn.',
@@ -629,8 +605,6 @@ const DOI_FREE_PREFIX = [
     '10.1111/acel.',
     '10.1111/adb.',
     '10.1111/anec.',
-    '10.1111/aogs',
-    '10.1111/aogs.',
     '10.1111/bor.',
     '10.1111/bpa.',
     '10.1111/cas.',
@@ -688,7 +662,6 @@ const DOI_FREE_PREFIX = [
     '10.11648/',
     '10.1176/appi.prcp.',
     '10.1186/',
-    '10.1186/s41601',
     '10.1192/bjo',
     '10.1192/j.eurpsy',
     '10.1194/',
@@ -706,7 +679,6 @@ const DOI_FREE_PREFIX = [
     '10.13052/jmm1550-4646.',
     '10.13105/',
     '10.1371/',
-    '10.1371/journal.pone',
     '10.14231/AG',
     '10.14256/',
     '10.14293/',
@@ -812,7 +784,6 @@ const DOI_FREE_PREFIX = [
     '10.3814/',
     '10.3847/',
     '10.3897/',
-    '10.3897/zookeys',
     '10.3906/',
     '10.3982/qe',
     '10.3982/te',
@@ -929,8 +900,10 @@ const DOI_FREE_PREFIX = [
 
 /**
  * Conditional free DOI rules: DOIs that are free only under certain publication-date conditions.
- * Rule types: AFTER_YEAR (year > value), AFTER_DATE (publication date >= value), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
+ * Rule types: AFTER_YEAR (year > value), AFTER_DATE (publication date >= value; year-only dates tag only when the whole publication year is post-flip), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
  * If no parseable date is present, no free tag is added.
+ * Note: these rules apply only through the `doi` tidy path (`doi_free_check_conditional`).
+ * Standalone {{doi}}/{{doi-inline}} templates carry no date, so `set_free_doi_access()` ignores them.
  * @var array<array{prefix: string, type: string, value: string}>
  */
 const DOI_FREE_CONDITIONAL = [
@@ -939,10 +912,10 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'AFTER_YEAR',
         'value'  => '2006',
     ],
-    [   // PNAS: 12-month rolling embargo
+    [   // PNAS: 6-month rolling embargo
         'prefix' => '10.1073/pnas',
         'type'   => 'EMBARGO_MONTHS',
-        'value'  => '12',
+        'value'  => '6',
     ],
     [   // Limnology and Oceanography: 36-month rolling embargo
         'prefix' => '10.1002/lno.',
@@ -960,7 +933,7 @@ const DOI_FREE_CONDITIONAL = [
         'value'  => '36',
     ],
     [   // EPJC: open-access after 2014
-        'prefix' => '10.1140/epjc',
+        'prefix' => '10.1140/epjc/',
         'type'   => 'AFTER_YEAR',
         'value'  => '2014',
     ],
@@ -973,5 +946,25 @@ const DOI_FREE_CONDITIONAL = [
         'prefix' => '10.1002/wsb.',
         'type'   => 'AFTER_DATE',
         'value'  => '2023-03-01',
+    ],
+    [   // Human Brain Mapping: fully open access as of 1 January 2020
+        'prefix' => '10.1002/hbm.',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Wind Energy: joined Wiley Open Access portfolio in January 2021
+        'prefix' => '10.1002/we.',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2021-01-01',
+    ],
+    [   // Advanced Electronic Materials: fully open access as of 1 January 2023
+        'prefix' => '10.1002/aelm',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2023-01-01',
+    ],
+    [   // Acta Obstetricia et Gynecologica Scandinavica: joined Wiley Open Access portfolio in January 2022
+        'prefix' => '10.1111/aogs',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2022-01-01',
     ],
 ];
