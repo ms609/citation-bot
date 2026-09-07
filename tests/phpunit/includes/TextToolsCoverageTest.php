@@ -113,7 +113,7 @@ final class TextToolsCoverageTest extends testBaseClass {
             'published-print' => ['date-parts' => [[2022, 1, 1]]],
         ]);
 
-        $this->assertSame('2024', $template->get2('year'));
+        $this->assertSame('2024', $template->get2('date'));
     }
 
     public function testDoiDatePartsFallsBackToCreatedWhenIssuedIsMissing(): void {
@@ -122,7 +122,7 @@ final class TextToolsCoverageTest extends testBaseClass {
             'published-print' => ['date-parts' => [[2022, 1, 1]]],
         ]);
 
-        $this->assertSame('2023', $template->get2('year'));
+        $this->assertSame('2023', $template->get2('date'));
     }
 
     public function testDoiDatePartsFallsBackToCreatedWhenIssuedIsEmpty(): void {
@@ -131,7 +131,7 @@ final class TextToolsCoverageTest extends testBaseClass {
             'created' => ['date-parts' => [[2023]]],
         ]);
 
-        $this->assertSame('2023', $template->get2('year'));
+        $this->assertSame('2023', $template->get2('date'));
     }
 
     public function testDoiDatePartsFallsBackToPublishedPrint(): void {
@@ -141,7 +141,7 @@ final class TextToolsCoverageTest extends testBaseClass {
             'published-print' => ['date-parts' => [[2022, 11, 30]]],
         ]);
 
-        $this->assertSame('2022', $template->get2('year'));
+        $this->assertSame('2022', $template->get2('date'));
     }
 
     public function testDoiDatePartsUsesFirstReturnedDateTuple(): void {
@@ -149,7 +149,7 @@ final class TextToolsCoverageTest extends testBaseClass {
             'issued' => ['date-parts' => [[2024, 6, 15], [2023, 1, 1]]],
         ]);
 
-        $this->assertSame('2024', $template->get2('year'));
+        $this->assertSame('2024', $template->get2('date'));
     }
 
     public function testDoiDatePartsRejectsMalformedStructuresWithoutThrowing(): void {
