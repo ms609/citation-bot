@@ -164,8 +164,16 @@ final class NameToolsEdgeCaseTest extends testBaseClass {
      */
     public static function formatAuthorEdgeProvider(): array {
         return [
-            'html encoded apostrophe in surname' => [
+            'decimal html encoded apostrophe in surname' => [
                 'O&#039;BRIEN, JOHN',
+                "O'Brien, John",
+            ],
+            'hex html encoded apostrophe in surname' => [
+                'O&#x27;BRIEN, JOHN',
+                "O'Brien, John",
+            ],
+            'named html encoded apostrophe in surname' => [
+                'O&apos;BRIEN, JOHN',
                 "O'Brien, John",
             ],
             'leading conjunction is removed' => [
