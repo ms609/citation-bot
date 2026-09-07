@@ -2995,6 +2995,24 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Y', $template->get2('trans-chapter'));
     }
 
+    public function testTidyRemovesOrphanedArchiveDate(): void {
+        // An archive-date= without archive-url= carries the CS1
+        // "|archive-date= requires |archive-url=" error; tidy must drop the
+        // orphan instead of leaving it in place.
+        $text = '{{cite web |url=https://example.com |title=T |archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('archive-date'));
+    }
+
+    public function testTidyKeepsArchiveDateWhenArchiveUrlPresent(): void {
+        // An archive-date= whose base archive-url= is present must be kept.
+        $text = '{{cite web |url=https://example.com |title=T |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('2020-01-01', $template->get2('archive-date'));
+    }
+
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {
         // The base url param may use its non-hyphenated alias (contributionurl),
         // so an access param must not be dropped when that alias is present.
