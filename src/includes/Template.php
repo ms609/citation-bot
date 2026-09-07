@@ -5769,9 +5769,18 @@ final class Template
                     }
                     return;
 
+                case 'archive-date':
+                    if ($this->blank(['archive-url', 'archiveurl']) && $this->has($param)) {
+                        $this->forget($param);
+                    }
+                    return;
+
                 case 'archivedate':
                     if ($this->has('archivedate') && $this->get('archive-date') === $this->get('archivedate')) {
                         $this->forget('archivedate');
+                    }
+                    if ($this->blank(['archive-url', 'archiveurl']) && $this->has($param)) {
+                        $this->forget($param);
                     }
                     return;
 

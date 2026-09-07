@@ -903,7 +903,8 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testArchiveDate_1(): void {
-        $text = "{{cite journal}}";
+        // archive-url= present so the added date is no orphan.
+        $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_MDY;
         $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
@@ -911,7 +912,8 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testArchiveDate_2(): void {
-        $text = "{{cite journal}}";
+        // archive-url= present so the added date is no orphan.
+        $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_DMY;
         $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
@@ -919,7 +921,8 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testArchiveDate_3(): void {
-        $text = "{{cite journal}}";
+        // archive-url= present so the added date is no orphan.
+        $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
         Template::$date_style = DateStyle::DATES_WHATEVER;
         $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
@@ -927,7 +930,8 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testArchiveDate_4(): void {
-        $text = "{{cite journal}}";
+        // archive-url= present so the added date is no orphan.
+        $text = "{{cite journal|archive-url=https://web.archive.org/web/20100101000000/https://example.com}}";
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('archive-date', 'SDAFEWFEWW#F#WFWEFESFEFSDFDFD'));
         $this->assertNull($template->get2('archive-date'));
