@@ -192,7 +192,7 @@ final class TextToolsCoverageTest extends testBaseClass {
     public function testZoteroDateAcceptsStringDate(): void {
         $template = $this->processZoteroDate('2024-06-15');
 
-        $this->assertSame(tidy_date('2024-06-15'), $template->get2('date'));
+        $this->assertSame('15 June 2024', $template->get2('date'));
     }
 
     public function testZoteroDateAcceptsIntegerYearFromExternalApi(): void {
@@ -218,14 +218,14 @@ final class TextToolsCoverageTest extends testBaseClass {
         $accessDate = (int) strtotime('2024-06-15');
         $template = $this->processZoteroDate('2024-06-14', $accessDate);
 
-        $this->assertSame(tidy_date('2024-06-14'), $template->get2('date'));
+        $this->assertSame('14 June 2024', $template->get2('date'));
     }
 
     public function testZoteroDateEqualToAccessDateIsAccepted(): void {
         $accessDate = (int) strtotime('2024-06-15');
         $template = $this->processZoteroDate('2024-06-15', $accessDate);
 
-        $this->assertSame(tidy_date('2024-06-15'), $template->get2('date'));
+        $this->assertSame('15 June 2024', $template->get2('date'));
     }
 
     public function testZoteroDateAfterAccessDateIsRejected(): void {
@@ -244,7 +244,7 @@ final class TextToolsCoverageTest extends testBaseClass {
     public function testRisDateUsesNormalDateTidying(): void {
         $template = $this->processRisDate('2024-06-15');
 
-        $this->assertSame(tidy_date('2024-06-15'), $template->get2('date'));
+        $this->assertSame('15 June 2024', $template->get2('date'));
     }
 
     public function testRisDateDoesNotOverwriteExistingDate(): void {
