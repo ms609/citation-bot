@@ -220,7 +220,7 @@ function author_is_human(string $author): bool {
 function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
-    $author = html_entity_decode($author, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+    $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     [$author, $junior] = junior_test(mb_trim($author));
     // Google and Zotero sometimes have these (sir) and just sir
     $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", $author);
@@ -322,7 +322,7 @@ function format_author(string $author): string {
 }
 
 function format_multiple_authors(string $authors): string {
-    $authors = html_entity_decode($authors, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $authors = html_entity_decode($authors, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
 
     $return = [];
     ## Split the citation into an author by author account
