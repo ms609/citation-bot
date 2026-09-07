@@ -1,6 +1,13 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Regression tests for plausible-but-messy author data.
+ *
+ * These cases deliberately avoid asserting behavior for inputs that appear to
+ * expose a defect (those are documented separately in the edge audit).
+ */
+
 require_once __DIR__ . '/../../testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -361,13 +368,6 @@ final class NameToolsEdgeCaseTest extends testBaseClass {
             'canonical ordinal suffix' => ['Smith, John 2nd'],
         ];
     }
-
-/**
- * Regression tests for plausible-but-messy author data.
- *
- * These cases deliberately avoid asserting behavior for inputs that appear to
- * expose a defect (those are documented separately in the edge audit).
- */
 
     #[DataProvider('slightlyMalformedJuniorProvider')]
     public function testJuniorTestHandlesSlightlyMalformedSuffixesPredictably(
