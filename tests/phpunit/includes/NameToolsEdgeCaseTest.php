@@ -361,19 +361,6 @@ final class NameToolsEdgeCaseTest extends testBaseClass {
             'canonical ordinal suffix' => ['Smith, John 2nd'],
         ];
     }
-}
-diff --git a/tests/phpunit/includes/NameToolsMessyInputTest.php b/tests/phpunit/includes/NameToolsMessyInputTest.php
-new file mode 100644
-index 0000000..80b497c
---- /dev/null
-++ b/tests/phpunit/includes/NameToolsMessyInputTest.php
-@@ -0,0 +1,332 @@
-<?php
-declare(strict_types=1);
-
-require_once __DIR__ . '/../../testBaseClass.php';
-
-use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Regression tests for plausible-but-messy author data.
@@ -381,7 +368,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
  * These cases deliberately avoid asserting behavior for inputs that appear to
  * expose a defect (those are documented separately in the edge audit).
  */
-final class NameToolsMessyInputTest extends testBaseClass {
 
     #[DataProvider('slightlyMalformedJuniorProvider')]
     public function testJuniorTestHandlesSlightlyMalformedSuffixesPredictably(
