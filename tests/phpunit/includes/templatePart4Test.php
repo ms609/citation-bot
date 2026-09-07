@@ -2074,6 +2074,41 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiConditionalAfterDate_ChasOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1021/acs.chas.6c00007|date=2026-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_ChasBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1021/acs.chas.3c00120|date=2024-01-22}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_ChasYearOnlyFlipYear_Free(): void {
+        $text = '{{cite journal|doi=10.1021/acs.chas.6c00007|year=2026}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_ChasYearOnlyBeforeFlip_NotFree(): void {
+        $text = '{{cite journal|doi=10.1021/acs.chas.0c00075|year=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_ChasNoDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1021/acs.chas.6c00007}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
     public function testDoiConditionalEmbargoMonths_PnasSevenMonthsOld_Free(): void {
         $text = '{{cite journal|doi=10.1073/pnas.0000000|date=' . date('F Y', strtotime('-7 months')) . '}}';
         $template = $this->make_citation($text);
