@@ -262,28 +262,72 @@ function big_run_busy_page_message(string $reason, ?int $active_count, ?int $ret
 
 /**
  * Render the busy page for a deferred big run (message + footer).
+ *
+ * Sends 503 with Retry-After (when known) and no-store, mirroring the gadget
+ * rate-limit response, so automated clients back off instead of retrying.
  */
 function big_run_render_busy_page(string $reason, ?int $active_count, ?int $retry_after): void {
+    if (!headers_sent()) {
+        http_response_code(503);
+        if ($retry_after !== null && $retry_after > 0) {
+            @header('Retry-After: ' . $retry_after);
+        }
+        @header('Cache-Control: no-store');
+    }
     report_warning(big_run_busy_page_message($reason, $active_count, $retry_after));
     bot_html_footer();
 }
 
 /**
+ * Preflight check for inherently bulk entry points (category, linked-pages).
+ *
+ * Runs BEFORE remote discovery work (category enumeration, link-list fetching)
+ * so a burst of bulk requests does not occupy every worker doing discovery for
+ * runs the full gate would reject. Best effort and side-effect free: no tokens
+ * spent, no slot reserved — the full gate_big_run() after filtering still
+ * decides admission. Exempt callers (DEV_USERS, testing, CLI) skip it, and any
+ * storage/lock problem fails open to discovery.
+ */
+function gate_big_run_preflight(string $run_type, string $username, ?string $base_directory = null, ?float $now = null): void {
+    if (!HTML_OUTPUT) {
+        return;
+    }
+    if (in_array($username, DEV_USERS, true)) {
+        return;
+    }
+    if ($run_type === 'testing') {
+        return;
+    }
+
+    [$room_available, $active_count] = big_run_preflight_check($base_directory, $now);
+    if ($room_available) {
+        return;
+    }
+
+    big_run_render_busy_page('big_full', $active_count, null);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
  * Gate a big run: admit it (and register release) or render the busy page.
  *
- * Callers must only invoke this when HTML_OUTPUT is true (web requests), so the
- * authenticated username is always available.
+ * Web entry point for the big-run gate; safe to call unconditionally because
+ * CLI runs (!HTML_OUTPUT) and exempt runs return early via
+ * big_run_gate_decision(). The authenticated username must be available when
+ * HTML_OUTPUT is true.
  *
  * @param int $page_count Effective (post-filter) page count.
  * @param string $run_type Activation type from big_run_type_from_edit().
  * @param string $username Authenticated Wikipedia username.
+ * @return string|null Admitted entry id for heartbeating, or null when the
+ *                     gate was skipped (exempt/CLI). A deferred run exits.
  */
-function gate_big_run(int $page_count, string $run_type, string $username, ?string $base_directory = null, ?float $now = null): void {
+function gate_big_run(int $page_count, string $run_type, string $username, ?string $base_directory = null, ?float $now = null): ?string {
     if (!HTML_OUTPUT) {
-        return;
+        return null;
     }
     if (!big_run_gate_decision($page_count, $run_type, $username)) {
-        return;
+        return null;
     }
 
     $result = big_run_try_acquire($page_count, $run_type, $base_directory, $now);
@@ -292,7 +336,7 @@ function gate_big_run(int $page_count, string $run_type, string $username, ?stri
         if ($entry_id !== null) {
             register_shutdown_function('big_run_release', $entry_id, $base_directory);
         }
-        return;
+        return $entry_id;
     }
 
     big_run_render_busy_page((string) ($result[3] ?? 'big_full'), $result[4], $result[1]);
@@ -319,11 +363,17 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         return;
     }
     if (HTML_OUTPUT && $total > BIG_RUN_PAGE_THRESHOLD) {
-        gate_big_run($total, $run_type, $api->get_the_user());
+        // Per-user big-job rejection first: it costs no shared tokens, while
+        // gate_big_run() spends tokens with no refund. Rejecting here avoids
+        // draining the shared bucket for a run that was always going to exit.
+        big_jobs_check_overused($total);
+        $big_run_entry_id = gate_big_run($total, $run_type, $api->get_the_user());
         // Only reached if the run was admitted; a deferred run exits above.
         report_warning('Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — please review the changes it makes.');
+    } else {
+        $big_run_entry_id = null;
+        big_jobs_check_overused($total);
     }
-    big_jobs_check_overused($total);
 
     $page = new Page();
     $done = 0;
@@ -336,6 +386,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
+        if ($big_run_entry_id !== null) {
+            big_run_heartbeat($big_run_entry_id);
+        }
         $done++;
         $page_result = run_page_with_exception_boundary(
             $page_title,

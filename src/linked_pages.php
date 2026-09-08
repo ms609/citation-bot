@@ -53,6 +53,12 @@ if ($dev_user_run) {
     $edit_summary_end .= "| Developer - max linked-pages limit override enabled ";
 }
 
+// Preflight before remote link-list fetching: refuse immediately when the
+// big-run pool is already full instead of occupying this worker with discovery
+// for a run the full gate would reject. Full admission still happens in
+// edit_a_list_of_pages() after filtering.
+gate_big_run_preflight('webform_linked', $api->get_the_user());
+
 $json = WikipediaBot::get_links($page_name);
 unset($page_name);
 

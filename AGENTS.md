@@ -144,6 +144,17 @@ control on big runs.
 - **Type weights** (`BIG_TOKEN_WEIGHTS`, mirroring the `#UCB_*` edit tags):
   category/linked/webform 1.5, automated_tools/template 0.5, toolbar/other
   1.0, testing 0.0. **Size weights** (`BIG_SIZE_WEIGHTS`): small 1.0, large 1.5.
+  **Billing** (`big_run_charge_type`): `?edit=` is requester-controlled, so all
+  page-list runs bill at the webform rate regardless of the claimed source tag;
+  only server-derived workload kinds (category, webform_linked) keep their own
+  weight. Testing keeps its exemption (unreachable from HTTP entry points).
+- **Preflight:** category/linked-pages entry points call
+  `gate_big_run_preflight()` before remote discovery, so a saturated pool
+  defers immediately instead of occupying a worker with enumeration.
+- **Leases:** admitted entries carry `last_seen_at`, renewed by
+  `big_run_heartbeat()` from the per-page loop; pruning uses heartbeat age, not
+  `started_at`. Releases retry briefly on lock contention. The per-user
+  `big_jobs` check runs before token charging so rejected runs spend nothing.
 - **Deferred runs** get a reason-aware busy page: `big_full` shows the active
   run count; `tokens` shows a wait estimate (refill math + 30% buffer);
   `retry_later` covers lock contention. Token balances are never shown to users.

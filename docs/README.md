@@ -84,9 +84,15 @@ always have free workers:
 - **Token bucket:** capacity 400, refill 4.0/s, charged at admission with no
   refund. Cost = `min(400, ceil(pages × type_weight × size_weight))`; heavy
   activation types (category/linked/webform, weight 1.5) drain it fastest.
+  Page-list runs always bill at the webform rate regardless of the `?edit=`
+  tag, since that tag is requester-controlled.
 - **Deferred runs** receive a busy page explaining why: the pool is at
   capacity (with the active count), the token quota is exhausted (with a wait
-  estimate), or availability could not be checked.
+  estimate), or availability could not be checked. The busy page is served
+  with 503 + `Retry-After` so automated clients back off.
+- Category/linked-pages runs check pool room before remote discovery and renew
+  a liveness lease from the per-page loop, so long jobs are not mistaken for
+  stale ones.
 - Implementation: `big_run_try_acquire`/`big_run_release` in
   `src/includes/RequestRateLimit.php`; `gate_big_run` in
   `src/includes/WebTools.php`.

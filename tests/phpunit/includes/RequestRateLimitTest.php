@@ -659,6 +659,115 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+    public function testBigRunUntrustedSourceTypesBillAtWebformRate(): void {
+        // ?edit= is requester-controlled: template/automated_tools/toolbar must
+        // not buy a quota discount over a plain webform run of the same size.
+        $this->assertSame('category', big_run_charge_type('category'));
+        $this->assertSame('webform_linked', big_run_charge_type('webform_linked'));
+        $this->assertSame('webform', big_run_charge_type('webform'));
+        $this->assertSame('webform', big_run_charge_type('template'));
+        $this->assertSame('webform', big_run_charge_type('automated_tools'));
+        $this->assertSame('webform', big_run_charge_type('toolbar'));
+        $this->assertSame('webform', big_run_charge_type('other'));
+        $this->assertSame('webform', big_run_charge_type('something-made-up'));
+        $this->assertSame('testing', big_run_charge_type('testing'));
+
+        // 50-page large runs: template/automated_tools cost what webform costs.
+        $this->assertSame(113, big_run_token_cost(50, big_run_charge_type('template')));
+        $this->assertSame(113, big_run_token_cost(50, big_run_charge_type('automated_tools')));
+        $this->assertSame(113, big_run_token_cost(50, big_run_charge_type('webform')));
+    }
+
+    public function testBigRunOldestStartedAtCanFilterByTier(): void {
+        $entries = [
+            'old_small' => ['started_at' => 50.0, 'tier' => 'small'],
+            'new_large' => ['started_at' => 100.0, 'tier' => 'large'],
+        ];
+        $this->assertSame(50.0, big_run_oldest_started_at($entries));
+        $this->assertSame(100.0, big_run_oldest_started_at($entries, 'large'));
+        $this->assertSame(50.0, big_run_oldest_started_at($entries, 'small'));
+        $this->assertNull(big_run_oldest_started_at($entries, 'bogus'));
+        $this->assertNull(big_run_oldest_started_at([]));
+    }
+
+    public function testBigRunLargeWaitIgnoresOlderSmallEntry(): void {
+        // 4 large runs (subpool full) + 1 older small run: a new large run's
+        // slot wait must come from the oldest LARGE entry, not the small one.
+        $entries = ['old_small' => ['started_at' => 10.0, 'tier' => 'small']];
+        for ($i = 0; $i < BIG_RUN_MAX_LARGE; ++$i) {
+            $entries['l' . $i] = ['started_at' => 100.0, 'tier' => 'large'];
+        }
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        $result = big_run_try_acquire(50, 'category', null, 100.0);
+        // Oldest large ends 100+120 -> wait 120; small entry at 10 must not win.
+        $this->assertSame([false, 120, null, 'big_full', 5], $result);
+    }
+
+    public function testBigRunHeartbeatRenewsLease(): void {
+        // Admit a run at t=100, heartbeat it at t=350: at t=450 the entry must
+        // still be alive (heartbeat age 100s < 300s timeout) even though its
+        // started_at age is 350s.
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertTrue($result[0]);
+        $entry_id = $result[2];
+        $this->assertIsString($entry_id);
+
+        big_run_heartbeat($entry_id, null, 350.0);
+
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame(350.0, $state['entries'][$entry_id]['last_seen_at']);
+
+        // A new acquisition at t=450 must see 2 active (old entry + new one),
+        // not prune the heartbeated entry as stale.
+        $second = big_run_try_acquire(5, 'category', null, 450.0);
+        $this->assertTrue($second[0]);
+        $this->assertSame(2, $second[4]);
+    }
+
+    public function testBigRunEntriesWithoutHeartbeatPruneOnStartedAt(): void {
+        // Old-format entries (no last_seen_at) still prune on started_at.
+        $entries = ['old' => ['started_at' => 100.0, 'tier' => 'small']];
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        $result = big_run_try_acquire(5, 'category', null, 500.0);
+        $this->assertTrue($result[0]);
+        $this->assertSame(1, $result[4]);
+    }
+
+    public function testBigRunPreflightReportsPoolPressureWithoutCharging(): void {
+        // Empty pool: capacity available, nothing spent.
+        [$available, $active] = big_run_preflight_check(null, 100.0);
+        $this->assertTrue($available);
+        $this->assertSame(0, $active);
+
+        // Full pool: no capacity; token balance must be untouched.
+        $entries = [];
+        for ($i = 0; $i < BIG_RUN_MAX_TOTAL; ++$i) {
+            $entries['e' . $i] = ['started_at' => 100.0, 'tier' => 'small', 'last_seen_at' => 100.0];
+        }
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        [$available, $active] = big_run_preflight_check(null, 100.0);
+        $this->assertFalse($available);
+        $this->assertSame(10, $active);
+
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame(400.0, $state['tokens']);
+        $this->assertCount(10, $state['entries']);
+    }
+
+    public function testBigRunPreflightIgnoresStaleEntries(): void {
+        $entries = ['stale' => ['started_at' => 100.0, 'tier' => 'small', 'last_seen_at' => 100.0]];
+        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+
+        [$available, $active] = big_run_preflight_check(null, 500.0);
+        $this->assertTrue($available);
+        $this->assertSame(0, $active);
+    }
+
     private function bigRunStatePath(): string {
         return $this->base_directory .
             DIRECTORY_SEPARATOR .

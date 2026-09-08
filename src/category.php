@@ -99,6 +99,12 @@ if (!defined('MAX_PAGES_OVERRIDE') && in_array($api->get_the_user(), DEV_USERS, 
     $dev_user_run = true;
 }
 
+// Preflight before remote enumeration: refuse immediately when the big-run
+// pool is already full instead of occupying this worker with discovery for a
+// run the full gate would reject. Side-effect free; full admission with token
+// charging still happens in edit_a_list_of_pages() after filtering.
+gate_big_run_preflight('category', $api->get_the_user());
+
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
 shuffle($pages_in_category);
 $total = count($pages_in_category);

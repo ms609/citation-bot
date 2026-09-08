@@ -228,6 +228,24 @@ function big_run_tier(int $page_count): string {
 }
 
 /**
+ * Billing type for token charging.
+ *
+ * ?edit= is requester-controlled, so page-list source labels must not buy a
+ * quota discount: template/automated_tools/toolbar/other all bill at the
+ * webform rate. Workload kinds derived server-side (category, webform_linked)
+ * keep their own weight; testing keeps its exemption (unreachable from HTTP).
+ */
+function big_run_charge_type(string $run_type): string {
+    if ($run_type === 'category' || $run_type === 'webform_linked') {
+        return $run_type;
+    }
+    if ($run_type === 'testing') {
+        return 'testing';
+    }
+    return 'webform';
+}
+
+/**
  * Token cost of a big run, capped at the bucket capacity.
  *
  * Cost = min(capacity, ceil(pages × type_weight × size_weight)). The type
@@ -305,7 +323,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
 
         $active_count = count($entries);
         $tier = big_run_tier($page_count);
-        $cost = big_run_token_cost($page_count, $run_type);
+        $cost = big_run_token_cost($page_count, big_run_charge_type($run_type));
 
         $slots_available =
             $active_count < BIG_RUN_MAX_TOTAL &&
@@ -314,7 +332,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
 
         if ($slots_available && $tokens_available) {
             $entry_id = big_run_new_entry_id();
-            $entries[$entry_id] = ['started_at' => $now, 'tier' => $tier];
+            $entries[$entry_id] = ['started_at' => $now, 'tier' => $tier, 'last_seen_at' => $now];
             if (!big_run_store_state($handle, $tokens - $cost, $now, $entries)) {
                 request_rate_limit_log_failure('big-run', 'unable to persist state');
             }
@@ -327,7 +345,16 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
         $retry_after = null;
         $reason = null;
         if (!$slots_available) {
-            $oldest = big_run_oldest_started_at($entries);
+            // Wait on the blocking pool: the oldest entry overall when the
+            // total pool is full, else the oldest large entry when only the
+            // large subpool is full (a small entry finishing frees no large slot).
+            $blocking_tier = null;
+            if ($active_count >= BIG_RUN_MAX_TOTAL) {
+                $blocking_tier = null;
+            } elseif ($tier === 'large') {
+                $blocking_tier = 'large';
+            }
+            $oldest = big_run_oldest_started_at($entries, $blocking_tier);
             $slot_wait = 1;
             if ($oldest !== null) {
                 $slot_wait = (int) max(1, ceil(($oldest + (float) BIG_RUN_NOMINAL_DURATION) - $now));
@@ -379,8 +406,20 @@ function big_run_release(string $entry_id, ?string $base_directory = null): void
 
     $locked = false;
     try {
-        $locked = @flock($handle, LOCK_EX | LOCK_NB);
+        // Release must make a strong effort: a missed release occupies a
+        // concurrency slot until stale pruning. Retry briefly on contention
+        // (bounded so a shutdown path cannot stall a worker for long).
+        $attempts = 0;
+        while ($attempts < 50) {
+            $locked = @flock($handle, LOCK_EX | LOCK_NB);
+            if ($locked) {
+                break;
+            }
+            ++$attempts;
+            usleep(2000);
+        }
         if (!$locked) {
+            request_rate_limit_log_failure('big-run', 'unable to acquire state lock for release');
             return;
         }
 
@@ -401,8 +440,95 @@ function big_run_release(string $entry_id, ?string $base_directory = null): void
 }
 
 /**
+ * Best-effort preflight check before expensive discovery work (category
+ * enumeration, link-list fetching) that happens ahead of full admission.
+ *
+ * Reports whether the shared concurrency pool currently has room, without
+ * spending tokens or reserving a slot. Callers that find no room should defer
+ * immediately instead of occupying a worker with discovery for a run that the
+ * full gate would reject. Side-effect free; fail-open on any storage or lock
+ * problem.
+ *
+ * @return array{0: bool, 1: int} [room_available, active_big_run_count].
+ */
+function big_run_preflight_check(?string $base_directory = null, ?float $now = null): array {
+    $base_directory = $base_directory ?? request_rate_limit_base_directory();
+    if ($base_directory === '') {
+        return [true, 0];
+    }
+
+    $state_path = big_run_state_path($base_directory);
+    $state_directory = dirname($state_path);
+    if (!is_dir($state_directory)) {
+        return [true, 0];
+    }
+
+    $handle = @fopen($state_path, 'r');
+    if ($handle === false) {
+        return [true, 0];
+    }
+
+    try {
+        if (!@flock($handle, LOCK_SH | LOCK_NB)) {
+            return [true, 0];
+        }
+        try {
+            $now ??= microtime(true);
+            [, , $entries] = big_run_read_state($handle, $now);
+            $entries = big_run_prune_stale_entries($entries, $now);
+            $active_count = count($entries);
+            return [$active_count < BIG_RUN_MAX_TOTAL, $active_count];
+        } finally {
+            @flock($handle, LOCK_UN);
+        }
+    } finally {
+        fclose($handle);
+    }
+}
+
+/**
+ * Renew the liveness lease of an admitted run. Called from the per-page loop
+ * so long runs are not pruned as stale while still processing. Best effort
+ * and silent: a missed heartbeat only risks earlier pruning, never a fatal.
+ */
+function big_run_heartbeat(string $entry_id, ?string $base_directory = null, ?float $now = null): void {
+    $base_directory = $base_directory ?? request_rate_limit_base_directory();
+    if ($base_directory === '' || $entry_id === '') {
+        return;
+    }
+
+    $state_path = big_run_state_path($base_directory);
+    $handle = @fopen($state_path, 'c+');
+    if ($handle === false) {
+        return;
+    }
+
+    $locked = false;
+    try {
+        $locked = @flock($handle, LOCK_EX | LOCK_NB);
+        if (!$locked) {
+            return;
+        }
+
+        $now ??= microtime(true);
+        [$tokens, $updated, $entries] = big_run_read_state($handle, $now);
+        if (isset($entries[$entry_id])) {
+            $entries[$entry_id]['last_seen_at'] = $now;
+            if (!big_run_store_state($handle, $tokens, $updated, $entries)) {
+                request_rate_limit_log_failure('big-run', 'unable to persist state');
+            }
+        }
+    } finally {
+        if ($locked) {
+            @flock($handle, LOCK_UN);
+        }
+        fclose($handle);
+    }
+}
+
+/**
  * @param resource $handle
- * @return array{0: float, 1: float, 2: array<string, array{started_at: float, tier: string}>}
+ * @return array{0: float, 1: float, 2: array<string, array{started_at: float, tier: string, last_seen_at?: float}>}
  */
 function big_run_read_state($handle, float $now): array {
     $tokens = (float) BIG_RUN_TOKEN_CAPACITY;
@@ -444,6 +570,9 @@ function big_run_read_state($handle, float $now): array {
                         $entries[$entry_id] = [
                             'started_at' => (float) $entry['started_at'],
                             'tier' => $entry['tier'],
+                            'last_seen_at' => isset($entry['last_seen_at']) && is_numeric($entry['last_seen_at'])
+                                ? (float) $entry['last_seen_at']
+                                : (float) $entry['started_at'],
                         ];
                     }
                 }
@@ -455,16 +584,21 @@ function big_run_read_state($handle, float $now): array {
 }
 
 /**
- * Drop entries whose run cannot still be alive (started before the timeout).
+ * Drop entries whose run cannot still be alive (no heartbeat within timeout).
  *
- * @param array<string, array{started_at: float, tier: string}> $entries
- * @return array<string, array{started_at: float, tier: string}>
+ * Liveness is based on last_seen_at, renewed by big_run_heartbeat() from the
+ * per-page loop — not on the original started_at, since bulk runs routinely
+ * take longer than the stale timeout.
+ *
+ * @param array<string, array{started_at: float, tier: string, last_seen_at?: float}> $entries
+ * @return array<string, array{started_at: float, tier: string, last_seen_at?: float}>
  */
 function big_run_prune_stale_entries(array $entries, float $now): array {
     $cutoff = $now - (float) BIG_RUN_STALE_TIMEOUT_SECONDS;
     $pruned = [];
     foreach ($entries as $entry_id => $entry) {
-        if ($entry['started_at'] >= $cutoff) {
+        $last_seen = $entry['last_seen_at'] ?? $entry['started_at'];
+        if ($last_seen >= $cutoff) {
             $pruned[$entry_id] = $entry;
         }
     }
@@ -472,7 +606,7 @@ function big_run_prune_stale_entries(array $entries, float $now): array {
 }
 
 /**
- * @param array<string, array{started_at: float, tier: string}> $entries
+ * @param array<string, array{started_at: float, tier: string, last_seen_at?: float}> $entries
  */
 function big_run_count_tier(array $entries, string $tier): int {
     $count = 0;
@@ -485,11 +619,14 @@ function big_run_count_tier(array $entries, string $tier): int {
 }
 
 /**
- * @param array<string, array{started_at: float, tier: string}> $entries
+ * @param array<string, array{started_at: float, tier: string, last_seen_at?: float}> $entries
  */
-function big_run_oldest_started_at(array $entries): ?float {
+function big_run_oldest_started_at(array $entries, ?string $tier = null): ?float {
     $oldest = null;
     foreach ($entries as $entry) {
+        if ($tier !== null && $entry['tier'] !== $tier) {
+            continue;
+        }
         if ($oldest === null || $entry['started_at'] < $oldest) {
             $oldest = $entry['started_at'];
         }
@@ -501,7 +638,7 @@ function big_run_oldest_started_at(array $entries): ?float {
  * @param resource $handle
  * @param float $tokens
  * @param float $updated
- * @param array<string, array{started_at: float, tier: string}> $entries
+ * @param array<string, array{started_at: float, tier: string, last_seen_at?: float}> $entries
  */
 function big_run_store_state($handle, float $tokens, float $updated, array $entries): bool {
     $encoded = json_encode(
