@@ -131,8 +131,9 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 Web runs of more than `BIG_RUN_PAGE_THRESHOLD` pages (4) — categories,
 linked-pages runs, and large webform lists — are admission-controlled so that
 single requests (≤4 pages) always have free workers. There is no queue; all
-24 PHP-FPM workers are homogeneous, so priority is enforced as admission
-control on big runs.
+24 php-cgi children are homogeneous (lighttpd, 1 proc × 24 via the tool's
+custom `~/lighttpd.conf`, which remaps `.php` to a `.php8` FastCGI stanza),
+so priority is enforced as admission control on big runs.
 
 - **Nested concurrency pool:** total ≤ `BIG_RUN_MAX_TOTAL` (10) big runs in
   flight, of which large runs (≥ `BIG_RUN_LARGE_THRESHOLD` = 50 pages) ≤

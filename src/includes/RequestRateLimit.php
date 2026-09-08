@@ -181,7 +181,7 @@ function request_rate_limit_log_failure(string $bucket, string $reason): void {
 // gate entirely. Big runs compete for a nested concurrency pool (total ≤
 // BIG_RUN_MAX_TOTAL, of which large runs ≤ BIG_RUN_MAX_LARGE) and must draw
 // from a shared token bucket. All state lives in one locked JSON file so the
-// PHP-FPM worker processes share it. Constants are declared here rather than
+// php-cgi worker processes share it. Constants are declared here rather than
 // at the top of the file so the pre-existing request_rate_limit_consume keeps
 // its line numbers (progpilot's false-positive list matches on those).
 
