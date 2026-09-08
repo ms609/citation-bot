@@ -348,12 +348,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
             // Wait on the blocking pool: the oldest entry overall when the
             // total pool is full, else the oldest large entry when only the
             // large subpool is full (a small entry finishing frees no large slot).
-            $blocking_tier = null;
-            if ($active_count >= BIG_RUN_MAX_TOTAL) {
-                $blocking_tier = null;
-            } elseif ($tier === 'large') {
-                $blocking_tier = 'large';
-            }
+            $blocking_tier = ($tier === 'large' && $active_count < BIG_RUN_MAX_TOTAL) ? 'large' : null;
             $oldest = big_run_oldest_started_at($entries, $blocking_tier);
             $slot_wait = 1;
             if ($oldest !== null) {

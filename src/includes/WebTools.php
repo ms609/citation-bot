@@ -215,6 +215,23 @@ function big_run_type_from_edit(?string $edit): string {
 }
 
 /**
+ * Whether a caller is exempt from the big-run gate regardless of page count.
+ *
+ * Single rule shared by gate_big_run() and gate_big_run_preflight() so the
+ * two doors cannot disagree: trusted operators (DEV_USERS) and testing runs
+ * are never gated.
+ */
+function big_run_is_exempt(string $run_type, string $username): bool {
+    if (in_array($username, DEV_USERS, true)) {
+        return true;
+    }
+    if ($run_type === 'testing') {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Whether a run must pass through the big-run gate.
  *
  * Singles (≤ BIG_RUN_PAGE_THRESHOLD pages), trusted operators (DEV_USERS) and
@@ -224,13 +241,7 @@ function big_run_gate_decision(int $page_count, string $run_type, string $userna
     if ($page_count <= BIG_RUN_PAGE_THRESHOLD) {
         return false;
     }
-    if (in_array($username, DEV_USERS, true)) {
-        return false;
-    }
-    if ($run_type === 'testing') {
-        return false;
-    }
-    return true;
+    return !big_run_is_exempt($run_type, $username);
 }
 
 /**
@@ -292,10 +303,7 @@ function gate_big_run_preflight(string $run_type, string $username, ?string $bas
     if (!HTML_OUTPUT) {
         return;
     }
-    if (in_array($username, DEV_USERS, true)) {
-        return;
-    }
-    if ($run_type === 'testing') {
+    if (big_run_is_exempt($run_type, $username)) {
         return;
     }
 
