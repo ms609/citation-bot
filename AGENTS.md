@@ -156,6 +156,12 @@ so priority is enforced as admission control on big runs.
   `big_run_heartbeat()` from the per-page loop; pruning uses heartbeat age, not
   `started_at`. Releases retry briefly on lock contention. The per-user
   `big_jobs` check runs before token charging so rejected runs spend nothing.
+- **Scope (accepted limitations):** the gate shapes cooperative traffic, not
+  adversaries — splitting a run (e.g. 4+1 pages) evades it by design. `DEV_USERS`
+  bypass it entirely. Slow mode bills the same as fast mode until production
+  data justifies a weight. Gate logging stays at full volume until the
+  10/4/400 constants are validated against real traffic (deferral rate and
+  `big_full`/`tokens` reason split in `error.log`).
 - **Deferred runs** get a reason-aware busy page: `big_full` shows the active
   run count; `tokens` shows a wait estimate (refill math + 30% buffer);
   `retry_later` covers lock contention. Token balances are never shown to users.
