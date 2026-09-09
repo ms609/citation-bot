@@ -603,9 +603,11 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testPMCEmbargo2(): void {
+        // A future embargo date without pmc= is an orphan (CS1 "|pmc-embargo-date=
+        // requires |pmc=") and must be dropped, like the past date in test 1.
         $text = '{{Cite journal|pmc-embargo-date=January 22, 2090}}';
         $template = $this->process_citation($text);
-        $this->assertSame('January 22, 2090', $template->get2('pmc-embargo-date'));
+        $this->assertNull($template->get2('pmc-embargo-date'));
     }
 
     public function testPMCEmbargo3(): void {
@@ -615,12 +617,15 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testPMCEmbargo4(): void {
-        $text = '{{Cite journal}}';
+        // With pmc= present the future embargo date sticks, so the slot is
+        // taken and the duplicate add is refused.
+        $text = '{{Cite journal|pmc=PMC1234567}}';
         $template = $this->make_citation($text);
         $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 1990'));
         $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 2010'));
         $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 3010'));
         $this->assertTrue($template->add_if_new('pmc-embargo-date', 'November 15, 2090'));
+        $this->assertSame('November 15, 2090', $template->get2('pmc-embargo-date')); // Stuck, not dropped as orphan
         $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 2080'));
     }
 
@@ -2946,12 +2951,66 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('trans-contribution'));
     }
 
+    public function testPmcBeforeEmbargoKeepsBoth(): void {
+        // Documents the add order the PubMed path must use: pmc first, then
+        // the embargo date (the reverse order loses the date to the orphan
+        // drop inside add()).
+        $text = '{{Cite journal}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('pmc', 'PMC1234567', 'entrez'));
+        $this->assertTrue($template->add_if_new('pmc-embargo-date', 'November 15, 2090', 'entrez'));
+        $this->assertSame('1234567', $template->get2('pmc')); // Normalized PMC1234567 to digits
+        $this->assertSame('November 15, 2090', $template->get2('pmc-embargo-date'));
+        // Reverse order loses the date to the orphan drop inside add().
+        $reversed = $this->make_citation('{{Cite journal}}');
+        $this->assertTrue($reversed->add_if_new('pmc-embargo-date', 'November 15, 2090', 'entrez'));
+        $this->assertNull($reversed->get2('pmc-embargo-date'));
+        $this->assertTrue($reversed->add_if_new('pmc', 'PMC1234567', 'entrez'));
+        $this->assertNull($reversed->get2('pmc-embargo-date')); // Gone: nothing re-adds it
+    }
+
+    public function testTidyRemovesOrphanedPmcEmbargoDate(): void {
+        // A future pmc-embargo-date= without pmc= carries the CS1
+        // "|pmc-embargo-date= requires |pmc=" error; tidy must drop the
+        // orphan instead of leaving it in place.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |pmc-embargo-date=2035-06-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('pmc-embargo-date'));
+    }
+
+    public function testTidyKeepsPmcEmbargoDateWhenPmcPresent(): void {
+        // A pmc-embargo-date= whose base pmc= is present must be kept.
+        $text = '{{cite journal |title=T |journal=J |date=2020 |pmc=PMC1234567 |pmc-embargo-date=2035-06-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('2035-06-01', $template->get2('pmc-embargo-date'));
+    }
+
     public function testTidyKeepsTransChapterWhenBasePresent(): void {
         // A trans-chapter= whose base chapter= is present must be kept.
         $text = '{{cite book |title=T |chapter=C |trans-chapter=Y |publisher=P |date=2020}}';
         $template = $this->make_citation($text);
         $template->tidy();
         $this->assertSame('Y', $template->get2('trans-chapter'));
+    }
+
+    public function testTidyRemovesOrphanedArchiveDate(): void {
+        // An archive-date= without archive-url= carries the CS1
+        // "|archive-date= requires |archive-url=" error; tidy must drop the
+        // orphan instead of leaving it in place.
+        $text = '{{cite web |url=https://example.com |title=T |archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('archive-date'));
+    }
+
+    public function testTidyKeepsArchiveDateWhenArchiveUrlPresent(): void {
+        // An archive-date= whose base archive-url= is present must be kept.
+        $text = '{{cite web |url=https://example.com |title=T |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('2020-01-01', $template->get2('archive-date'));
     }
 
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {

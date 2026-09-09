@@ -374,6 +374,9 @@ function build_matrix(): array {
         ['uppercase URL base keeps archive-url', '{{cite web |URL=https://example.com |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01 |title=X}}', 'pass'],
         ['uppercase URL base keeps format', '{{cite web |URL=https://example.com |format=PDF |title=X}}', 'pass'],
         ['un-hyphenated chapterurl base keeps chapter-format', '{{cite book |title=X |chapterurl=https://example.com |chapter-format=PDF |year=2020}}', 'pass'],
+        ['Orphaned archive-date removed', '{{cite web |url=https://example.com |title=X |archive-date=2020-01-01}}', 'pass'],
+        ['Orphaned archivedate removed', '{{cite web |url=https://example.com |title=X |archivedate=2020-01-01}}', 'pass'],
+        ['archive-date kept with archive-url base', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01}}', 'pass'],
 
         // --- ISBN validation (merged Tier 1 fix) ---
         ['Valid ISBN-10 kept', '{{cite journal |title=X |journal=J |isbn=0-306-40615-2}}', 'pass'],
@@ -384,6 +387,7 @@ function build_matrix(): array {
         ['doi-broken-date removed without doi', '{{cite journal |title=X |journal=J |doi-broken-date=2020-01-01}}', 'pass'],
         ['format removed without url', '{{cite journal |title=X |journal=J |format=PDF}}', 'pass'],
         ['pmc-embargo-date removed without pmc', '{{cite journal |title=X |journal=J |pmc-embargo-date=2020-01-01}}', 'pass'],
+        ['future pmc-embargo-date removed without pmc', '{{cite journal |title=X |journal=J |pmc-embargo-date=2035-06-01}}', 'pass'],
 
         // --- clean citations across template families ---
         ['Clean cite journal', '{{cite journal |title=Some paper |journal=Nature |year=2020 |volume=1 |issue=2 |pages=3}}', 'pass'],
