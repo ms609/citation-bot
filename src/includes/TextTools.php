@@ -1360,6 +1360,26 @@ function url_valid(string $value): bool {
 }
 
 /**
+ * True when an archive URL is structurally usable as |archive-url=, mirroring
+ * the CS1 "|archive-url= is malformed" reasons the bot can detect locally.
+ * A save-command URL triggers a new snapshot instead of linking one, and a
+ * wildcard URL is a search page rather than a snapshot.  Timestamp coupling
+ * is handled separately by archive_url_has_timestamp().
+ */
+function archive_url_valid(string $value): bool {
+    if (!url_valid($value)) {
+        return false;
+    }
+    if (preg_match('~^https?://(?:(?:www\.|web\.)?archive\.org/)?save/~i', $value) === 1) {
+        return false; // save command triggers a snapshot instead of linking one
+    }
+    if (preg_match('~^https?://(?:www\.|web\.)?archive\.org/web/\*/~', $value) === 1) {
+        return false; // wildcard is a search page, not a snapshot
+    }
+    return true;
+}
+
+/**
  * True when an archive URL carries an extractable snapshot timestamp, mirroring
  * the timestamp extraction in Template::tidy_parameter('archive-url').  If no
  * timestamp can be extracted and |archive-date= is absent, CS1 would report

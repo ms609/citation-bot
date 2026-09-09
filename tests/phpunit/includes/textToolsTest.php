@@ -1483,6 +1483,16 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(archive_url_has_timestamp(''));
     }
 
+    public function testArchiveUrlValid(): void {
+        $this->assertTrue(archive_url_valid('https://web.archive.org/web/20200101000000/https://example.com'));
+        $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));
+        $this->assertTrue(archive_url_valid('https://ghostarchive.org/archive/xxxxx')); // structurally fine; timestamp rules are separate
+        $this->assertFalse(archive_url_valid('https://web.archive.org/save/https://example.com')); // save command triggers a snapshot
+        $this->assertFalse(archive_url_valid('https://web.archive.org/web/*/https://example.com')); // wildcard is a search page
+        $this->assertFalse(archive_url_valid('not a url'));
+        $this->assertFalse(archive_url_valid(''));
+    }
+
     public function testUnicodeLevenshteinNormalizesCombiningMarkOrder(): void {
         $left = "a\u{0301}\u{0323}";
         $right = "a\u{0323}\u{0301}";

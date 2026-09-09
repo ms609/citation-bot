@@ -516,6 +516,30 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testRefusesSaveCommandArchiveUrl(): void {
+        // A save-command URL triggers a new snapshot; the bot must never add
+        // one, even when an archive-date= is already present.
+        $text = '{{Cite web | url=https://example.com | title=T | archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('archive-url', 'https://web.archive.org/save/https://example.com'));
+        $this->assertNull($template->get2('archive-url'));
+    }
+
+    public function testRefusesWildcardArchiveUrl(): void {
+        // A wildcard URL is a search page, not a snapshot.
+        $text = '{{Cite web | url=https://example.com | title=T | archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('archive-url', 'https://web.archive.org/web/*/https://example.com'));
+        $this->assertNull($template->get2('archive-url'));
+    }
+
+    public function testKeepsSnapshotArchiveUrl(): void {
+        $text = '{{Cite web | url=https://example.com | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('archive-url', 'https://web.archive.org/web/20200101000000/https://example.com'));
+        $this->assertSame('https://web.archive.org/web/20200101000000/https://example.com', $template->get2('archive-url'));
+    }
+
     public function testReplaceBadDOI(): void {
         $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
