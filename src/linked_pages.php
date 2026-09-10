@@ -53,6 +53,10 @@ if ($dev_user_run) {
     $edit_summary_end .= "| Developer - max linked-pages limit override enabled ";
 }
 
+// Refuse immediately when the big-run pool is already full (see
+// gate_big_run_preflight()); full admission still happens after filtering.
+gate_big_run_preflight('webform_linked', $api->get_the_user());
+
 $json = WikipediaBot::get_links($page_name);
 unset($page_name);
 
@@ -82,4 +86,4 @@ unset($links);
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 $pages_in_category = array_unique($pages_in_category);
 
-edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end, 'webform_linked');

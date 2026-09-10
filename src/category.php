@@ -99,6 +99,10 @@ if (!defined('MAX_PAGES_OVERRIDE') && in_array($api->get_the_user(), DEV_USERS, 
     $dev_user_run = true;
 }
 
+// Refuse immediately when the big-run pool is already full (see
+// gate_big_run_preflight()); full admission still happens after filtering.
+gate_big_run_preflight('category', $api->get_the_user());
+
 $pages_in_category = array_unique(WikipediaBot::category_members($category));
 shuffle($pages_in_category);
 $total = count($pages_in_category);
@@ -134,4 +138,4 @@ $edit_summary_end = category_edit_summary_end(
     $request_edit
 );
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
-edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end, 'category');
