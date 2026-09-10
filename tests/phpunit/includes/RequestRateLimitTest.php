@@ -147,6 +147,35 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+    public function testExplicitBaseDirectoryOverridesEnvironment(): void {
+        $environment_directory =
+            $this->base_directory . DIRECTORY_SEPARATOR . 'environment-directory';
+        $this->assertTrue(mkdir($environment_directory, 0700, true));
+        $previous = getenv('PHP_RATE_LIMIT_DIRECTORY');
+
+        try {
+            putenv('PHP_RATE_LIMIT_DIRECTORY=' . $environment_directory);
+            $this->assertNull(
+                request_rate_limit_consume(
+                    'explicit-directory',
+                    1,
+                    1.0,
+                    $this->base_directory,
+                    100.0
+                )
+            );
+            $this->assertFileExists($this->rateLimitStatePath('explicit-directory'));
+            $this->assertDirectoryDoesNotExist(
+                $environment_directory .
+                DIRECTORY_SEPARATOR .
+                REQUEST_RATE_LIMIT_STATE_DIRECTORY
+            );
+        } finally {
+            $this->restoreRateLimitDirectoryEnvironment($previous);
+            @rmdir($environment_directory);
+        }
+    }
+
     public function testBucketNameAcceptsMaximumLengthAndSafePunctuation(): void {
         $bucket = 'a' . str_repeat('._-', 21); // 64 bytes total.
         $this->assertSame(64, mb_strlen($bucket));
@@ -331,6 +360,25 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             );
         } finally {
             putenv('PHP_RATE_LIMIT_DIRECTORY=' . $this->base_directory);
+            @unlink($blocking_path);
+        }
+    }
+
+    public function testDirectoryCreationFailureFailsOpenNotEnv(): void {
+        $blocking_path = $this->base_directory . DIRECTORY_SEPARATOR . 'not-a-directory';
+        $this->assertNotFalse(file_put_contents($blocking_path, 'x'));
+
+        try {
+            $this->assertNull(
+                request_rate_limit_consume(
+                    'mkdir-failure',
+                    1,
+                    1.0,
+                    $blocking_path,
+                    100.0
+                )
+            );
+        } finally {
             @unlink($blocking_path);
         }
     }
