@@ -107,7 +107,7 @@ function format_surname(string $surname): string {
     if (mb_substr($surname, 0, 2) === "mc") {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
+    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h") {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
     }
     if (mb_substr($surname, 0, 1) === "&") {
