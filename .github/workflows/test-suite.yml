@@ -28,6 +28,7 @@ on:
       - '.github/workflows/harden-runner-audit.yml'
       - '.github/workflows/openssf-scorecard.yml'
       - '.github/workflows/zizmor.yml'
+      - '.github/workflows/codespell.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
@@ -62,6 +63,7 @@ on:
       - '.cursor/rules/citation-bot.mdc'
       - '.lycheeignore'
       - '.github/workflows/cs1-harness.yml'
+      - '.codespellrc'
 
   schedule:
     - cron: '30 18 * * 1'
