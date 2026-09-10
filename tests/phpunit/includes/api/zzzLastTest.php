@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /*
- * Final Test - thus burried deep in the test suite. Does not need to be last, but quite a ways in.
+ * Final Test - thus buried deep in the test suite. Does not need to be last, but quite a ways in.
  */
 
 require_once __DIR__ . '/../../../testBaseClass.php';
