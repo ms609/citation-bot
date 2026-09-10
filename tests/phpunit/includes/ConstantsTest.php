@@ -262,7 +262,8 @@ final class ConstantsTest extends testBaseClass {
                 '| url-access = Z123Z ', '| chapter-url-access = Z123Z ', '| contribution-url-access = Z123Z ', '| article-url-access = Z123Z ', '| entry-url-access = Z123Z ', '| section-url-access = Z123Z ', '| event-url-access = Z123Z ', '| lay-url-access = Z123Z ', '| transcript-url-access = Z123Z ', '| map-url-access = Z123Z ',
                 '| trans-title = Z123Z ', '| trans-chapter = Z123Z ', '| trans-article = Z123Z ', '| trans-contribution = Z123Z ', '| trans-entry = Z123Z ', '| trans-map = Z123Z ', '| trans-quote = Z123Z ', '| trans-journal = Z123Z ',
                 '| trans-work = Z123Z ', '| trans-magazine = Z123Z ', '| trans-newspaper = Z123Z ', '| trans-website = Z123Z ', '| trans-encyclopaedia = Z123Z ', '| trans-encyclopedia = Z123Z ', '| trans-periodical = Z123Z ', '| trans-section = Z123Z ',
-                '| archive-date = Z123Z ', '| archivedate = Z123Z '],
+                '| archive-date = Z123Z ', '| archivedate = Z123Z ',
+                '| archive-url = Z123Z ', '| archiveurl = Z123Z '],
                 '',
                 $text
             ); // Stuff that gets dropped when orphaned (no base parameter present)
