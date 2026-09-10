@@ -1232,9 +1232,9 @@ const ZOTERO_AVOID_REGEX = [
     'google\.com/search', // Google search results
     'info\.hazu\.hr', // Fails 100%
     'jstor\.org/stable/', // We have special jstor code
-    'kijkcijferanalyse\.nl/', // highjacked
+    'kijkcijferanalyse\.nl/', // hijacked
     'kyobobook\.co\.kr', // Bookstore that give junk
-    'leighrayment\.com', // highjacked
+    'leighrayment\.com', // hijacked
     'lincstothepast\.com',
     'miar\.ub\.edu\/issn', // ISSN description, not actually the journal
     'myprivacy\.dpgmedia\.nl', // blocker
@@ -1245,7 +1245,7 @@ const ZOTERO_AVOID_REGEX = [
     'qmul\.ac\.uk', // Redirects cause data from other pages to be returned
     'radiomap\.eu', // Fails 100%
     'scholarlycommons\.pacific\.edu\/euler\-works', // returns journal reference to works, not the actual work
-    'seapower\-digital\.com', // highjacked
+    'seapower\-digital\.com', // hijacked
     'startribune\.newspapers\.com', // Fails 100%
     'stats\.espncricinfo\.com', // Fails 100%
     'steubencourier\.com', // USA Today highjakced
