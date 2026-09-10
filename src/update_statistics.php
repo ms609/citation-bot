@@ -84,7 +84,7 @@ if (mb_trim($current) === mb_trim($wikitext)) {
     exit(0);
 }
 
-// Try to write via helper that allows creation (nocreate=0 for stats page)
+// Try to write via helper that allows creation by omitting MediaWiki's nocreate parameter.
 $summary = "Update statistics: {$total} edits in last 24 hours";
 if ($window_hours !== 24) {
     $summary = "Update statistics: {$total} edits in last {$window_hours} hours";
