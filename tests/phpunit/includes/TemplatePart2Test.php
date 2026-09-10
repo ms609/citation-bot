@@ -1787,25 +1787,29 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testBadURLStatusSettings3(): void {
-        $text = "{{cite web|url-status=sì|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=sì|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('dead', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings4(): void {
-        $text = "{{cite web|url-status=no|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=no|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('live', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings5(): void {
-        $text = "{{cite web|url-status=dead|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=dead|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('dead', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings6(): void {
-        $text = "{{cite web|url-status=live|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=live|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('live', $expanded->get2('url-status'));
     }
