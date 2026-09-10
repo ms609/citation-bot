@@ -4,7 +4,7 @@
 skip = .git*,*.svg,locale,vendor,*.lock,*.css,*.min.*,.codespellrc
 check-hidden = true
 ignore-regex = \b(Fro|Ownes|Requestor|forIn|afterAll|File::WRONLY)\b|/sombody/
-# Keep intentional HTTP/query/hostname/regex fragments and existing fixture identifiers.
+# Keep intentional HTTP/query/hostname/regex fragments and existing source identifiers.
 # dne == do-not-exists
 # defaultY == javascript variable name (cf. defaultX)
 ignore-words-list = 2st,ans,defaultY,dne,doubleclick,dum,independ,ist,nd,ned
