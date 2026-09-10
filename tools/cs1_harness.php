@@ -340,6 +340,13 @@ function check_citation(Template $template): array {
         $violations[] = 'url-malformed: CS1 "Check |url= value"';
     }
 
+    // R20: archive-url must not be a save-command or wildcard URL (CS1 "|archive-url= is malformed").
+    foreach (ARCHIVE_URL_PARAMS as $archive_param) {
+        if ($template->has($archive_param) && !archive_url_valid($template->get($archive_param))) {
+            $violations[] = 'archive-url-malformed: CS1 "|archive-url= is malformed"';
+        }
+    }
+
     return $violations;
 }
 
@@ -377,6 +384,8 @@ function build_matrix(): array {
         ['Orphaned archive-date removed', '{{cite web |url=https://example.com |title=X |archive-date=2020-01-01}}', 'pass'],
         ['Orphaned archivedate removed', '{{cite web |url=https://example.com |title=X |archivedate=2020-01-01}}', 'pass'],
         ['archive-date kept with archive-url base', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01}}', 'pass'],
+        ['Save-command archive-url removed', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/save/https://example.com |archive-date=2020-01-01}}', 'pass'],
+        ['Wildcard archive-url removed', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/*/https://example.com |archive-date=2020-01-01}}', 'pass'],
 
         // --- ISBN validation (merged Tier 1 fix) ---
         ['Valid ISBN-10 kept', '{{cite journal |title=X |journal=J |isbn=0-306-40615-2}}', 'pass'],

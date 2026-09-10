@@ -1964,6 +1964,11 @@ final class Template
 
             case 'archive-url':
                 if ($this->blank(['archive-url', 'archiveurl'])) {
+                    if (!archive_url_valid($value)) {
+                        // CS1 would report "|archive-url= is malformed"
+                        report_inaction("Not adding malformed archive-url: " . echoable($value));
+                        return false;
+                    }
                     if ($this->blank(['archive-date', 'archivedate']) && !archive_url_has_timestamp($value)) {
                         // CS1 would report "|archive-url= requires |archive-date="
                         report_inaction("Not adding archive-url without extractable archive-date: " . echoable($value));
@@ -5786,6 +5791,12 @@ final class Template
 
                 case 'archive-url':
                 case 'archiveurl':
+                    if ($this->has($param) && !archive_url_valid($this->get($param))) {
+                        // CS1 "|archive-url= is malformed": save commands and
+                        // wildcard searches are not snapshots.
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->blank(['archive-date', 'archivedate'])) {
                         if (preg_match('~^https?://(?:(?:www\.|web\.)?archive\.org/web/|archive\.today/|archive\.\S\S/|webarchive\.loc\.gov/all/|www\.webarchive\.org\.uk/wayback/archive/)(\d{4})(\d{2})(\d{2})\d{6}~', $this->get($param), $matches)) {
                                $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
@@ -7146,8 +7157,7 @@ final class Template
                 }
             }
         } else {
-            // Alpha-numeric
-
+            // Alphanumeric
             // Direct 5+ char DOI suffix match
             if (mb_strlen($pages_value) > 4 && str_ends_with($doi_lower, $pages_lower)) {
                 $match_found = true;

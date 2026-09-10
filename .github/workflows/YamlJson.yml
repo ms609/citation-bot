@@ -29,7 +29,7 @@ jobs:
 
       - name: json-yaml-validate
         id: json-yaml-validate
-        uses: GrantBirki/json-yaml-validate@3ff75979f3b21171f2e8a44705f0ff4bed30bbc0 # v5.0.0
+        uses: GrantBirki/json-yaml-validate@9dbc6e6ff950c53200156e8afbc16ef1355f1c8d # v5.0.1
 
       - name: markdown-validate
         id: markdown-validate

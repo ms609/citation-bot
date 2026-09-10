@@ -516,6 +516,30 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testRefusesSaveCommandArchiveUrl(): void {
+        // A save-command URL triggers a new snapshot; the bot must never add
+        // one, even when an archive-date= is already present.
+        $text = '{{Cite web | url=https://example.com | title=T | archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('archive-url', 'https://web.archive.org/save/https://example.com'));
+        $this->assertNull($template->get2('archive-url'));
+    }
+
+    public function testRefusesWildcardArchiveUrl(): void {
+        // A wildcard URL is a search page, not a snapshot.
+        $text = '{{Cite web | url=https://example.com | title=T | archive-date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('archive-url', 'https://web.archive.org/web/*/https://example.com'));
+        $this->assertNull($template->get2('archive-url'));
+    }
+
+    public function testKeepsSnapshotArchiveUrl(): void {
+        $text = '{{Cite web | url=https://example.com | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('archive-url', 'https://web.archive.org/web/20200101000000/https://example.com'));
+        $this->assertSame('https://web.archive.org/web/20200101000000/https://example.com', $template->get2('archive-url'));
+    }
+
     public function testReplaceBadDOI(): void {
         $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);
@@ -1763,25 +1787,29 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testBadURLStatusSettings3(): void {
-        $text = "{{cite web|url-status=sì|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=sì|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('dead', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings4(): void {
-        $text = "{{cite web|url-status=no|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=no|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('live', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings5(): void {
-        $text = "{{cite web|url-status=dead|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=dead|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('dead', $expanded->get2('url-status'));
     }
 
     public function testBadURLStatusSettings6(): void {
-        $text = "{{cite web|url-status=live|url=X|archive-url=Y}}";
+        // Real snapshot URL: junk archive-url values are dropped in tidy.
+        $text = "{{cite web|url-status=live|url=X|archive-url=https://web.archive.org/web/20200101000000/https://example.com}}";
         $expanded = $this->process_citation($text);
         $this->AssertSame('live', $expanded->get2('url-status'));
     }

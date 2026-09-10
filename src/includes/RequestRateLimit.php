@@ -50,7 +50,7 @@ function request_rate_limit_consume(
         throw new InvalidArgumentException('Rate-limit timestamp must be finite and non-negative.');
     }
 
-    $base_directory = request_rate_limit_base_directory();
+    $base_directory ??= request_rate_limit_base_directory();
     if ($base_directory === '') {
         request_rate_limit_log_failure($bucket, 'temporary directory is empty');
         return null;

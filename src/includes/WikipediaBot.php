@@ -778,20 +778,27 @@ final class WikipediaBot {
         // Reuse the authenticated write path but without requiring lastrevid/start timestamp
         $response = $this->fetch([
             'action' => 'query',
-            'prop' => 'info',
+            'prop' => 'info|revisions',
+            'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $title,
         ]);
         $myPage = self::response2page($response);
-        if ($myPage === null) {
-            // Page may not exist â€“ still try to get a token via separate query
-            $fallback = self::query_api(['action' => 'query', 'meta' => 'tokens', 'type' => 'csrf']);
-            $tok = @json_decode($fallback);
-            if (!isset($tok->query->tokens->csrftoken) || !is_string($tok->query->tokens->csrftoken)) {
+        if ($myPage === null) { // Page may not exist - still try to get a token via separate query
+            $missingPage = self::first_page_from_response($response);
+            if ($missingPage === null || !isset($missingPage->missing)) {
+                report_warning('Unable to validate statistics page state.');
+                return false;
+            }
+            // A missing page has no revision metadata, but the signed query still returns a CSRF token.
+            if (
+                empty($response->query->tokens->csrftoken) ||
+                !is_string($response->query->tokens->csrftoken)
+            ) {
                 report_warning('unable to get bot tokens for statistics page');
                 return false;
             }
-            $auth_token = $tok->query->tokens->csrftoken;
+            $auth_token = $response->query->tokens->csrftoken;
             $baseTimeStamp = '';
             $startTimestamp = '';
         } else {
