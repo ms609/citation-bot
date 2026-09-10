@@ -1370,10 +1370,10 @@ function archive_url_valid(string $value): bool {
     if (!url_valid($value)) {
         return false;
     }
-    if (preg_match('~^https?://(?:(?:www\.|web\.)?archive\.org/)?save/~i', $value) === 1) {
+    if (preg_match('~^https?://(?:www\.|web\.)?archive\.org/save/~i', $value) === 1) {
         return false; // save command triggers a snapshot instead of linking one
     }
-    if (preg_match('~^https?://(?:www\.|web\.)?archive\.org/web/\*/~', $value) === 1) {
+    if (preg_match('~^https?://(?:www\.|web\.)?archive\.org/web/\*/~i', $value) === 1) {
         return false; // wildcard is a search page, not a snapshot
     }
     return true;

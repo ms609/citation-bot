@@ -1488,7 +1488,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));
         $this->assertTrue(archive_url_valid('https://ghostarchive.org/archive/xxxxx')); // structurally fine; timestamp rules are separate
         $this->assertFalse(archive_url_valid('https://web.archive.org/save/https://example.com')); // save command triggers a snapshot
+        $this->assertFalse(archive_url_valid('HTTPS://WEB.ARCHIVE.ORG/SAVE/https://example.com')); // host case must not matter
         $this->assertFalse(archive_url_valid('https://web.archive.org/web/*/https://example.com')); // wildcard is a search page
+        $this->assertFalse(archive_url_valid('HTTPS://WEB.ARCHIVE.ORG/WEB/*/https://example.com')); // host case must not matter
+        $this->assertTrue(archive_url_valid('https://example.com/save/foo')); // non-archive /save/ path is not a save command
         $this->assertFalse(archive_url_valid('not a url'));
         $this->assertFalse(archive_url_valid(''));
     }
