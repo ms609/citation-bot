@@ -9,7 +9,7 @@ declare(strict_types=1);
 // Do not ever remove CITATION_BOT_PLACEHOLDER from strings, there are lots of REGEX and stripos() calls in the code
 
 abstract class WikiThings {
-    public const bool TREAT_IDENTICAL_SEPARATELY = false;  // The contents of theses items never get edited, so this is safe
+    public const bool TREAT_IDENTICAL_SEPARATELY = false;  // The contents of these items never get edited, so this is safe
     private string $rawtext; // Uninitialized.  Will crash if read before set; which is good.
 
     public function parse_text(string $text): void {
