@@ -25,7 +25,7 @@ return [
     'ast_trim_max_elements_per_level' => 500000,
  
     /**
-     * Set these to effectivelly infinite, since defaults result in false positives as data is lost
+     * Set these to effectively infinite, since defaults result in false positives as data is lost
      */
     'ast_trim_max_total_elements' => 5000000,
     'max_union_type_set_size' => 5000000,
