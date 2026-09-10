@@ -28,7 +28,7 @@
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://app.codecov.io/gh/ms609/citation-bot)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml)
-[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml‎/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml‎)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml)
 
 ## GitHub repository details
 
