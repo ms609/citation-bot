@@ -84,7 +84,7 @@ session_write_close();
         <option value="ru">ru.wikipedia.org</option>
         <option value="sr">sr.wikipedia.org</option>
         <!-- Need to do better international treatment <option value="vi">vi.wikipedia.org</option> -->
-        <option value="mdwiki">MDWiki.org</option>
+        <!-- <option value="mdwiki">MDWiki.org</option> still not authorized -->
       </select>
     </p>
     <div role="status" aria-live="polite" id="botStatus" class="sr-only"></div>
