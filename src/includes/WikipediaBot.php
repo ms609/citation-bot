@@ -778,7 +778,8 @@ final class WikipediaBot {
         // Reuse the authenticated write path but without requiring lastrevid/start timestamp
         $response = $this->fetch([
             'action' => 'query',
-            'prop' => 'info',
+            'prop' => 'info|revisions',
+            'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $title,
         ]);

@@ -47,6 +47,28 @@ final class wikipediaBotTest extends testBaseClass {
         $this->assertTrue($try_position < $sign_position);
     }
 
+    public function testStatisticsWriteQueryRequestsRevisionTimestamp(): void {
+        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $this->assertIsString($source);
+
+        $method_start = mb_strpos($source, 'public function write_statistics_page(');
+        if ($method_start === false) {
+            $this->fail('Could not locate WikipediaBot::write_statistics_page()');
+        }
+        $method_end = mb_strpos(
+            $source,
+            'public static function read_details(',
+            $method_start
+        );
+        if ($method_end === false) {
+            $this->fail('Could not locate WikipediaBot::read_details()');
+        }
+
+        $method_source = mb_substr($source, $method_start, $method_end - $method_start);
+        $this->assertStringContainsString("'prop' => 'info|revisions'", $method_source);
+        $this->assertStringContainsString("'rvprop' => 'timestamp'", $method_source);
+    }
+
     private function category_members_with_retry(string $category): array {
         $backoff_delays = [2, 5];
         $members = WikipediaBot::category_members($category);
