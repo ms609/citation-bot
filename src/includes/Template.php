@@ -7157,8 +7157,7 @@ final class Template
                 }
             }
         } else {
-            // Alpha-numeric
-
+            // Alphanumeric
             // Direct 5+ char DOI suffix match
             if (mb_strlen($pages_value) > 4 && str_ends_with($doi_lower, $pages_lower)) {
                 $match_found = true;
