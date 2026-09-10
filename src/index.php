@@ -83,7 +83,7 @@ session_write_close();
         <option value="mk">mk.wikipedia.org</option>
         <option value="ru">ru.wikipedia.org</option>
         <option value="sr">sr.wikipedia.org</option>
-        <option value="mdwiki">MDWiki.org</option>
+        <option value="mdwikiwerq">MDWiki.org</option>
       </select>
     </p>
     <div role="status" aria-live="polite" id="botStatus" class="sr-only"></div>
