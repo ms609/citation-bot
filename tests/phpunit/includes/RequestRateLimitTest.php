@@ -1234,20 +1234,48 @@ PHP;
         $this->assertSame([false, 2, null, 'retry_later', 0], $result);
     }
 
-    public function testBigRunMalformedEntriesAreDroppedAndFutureTimesAreClamped(): void {
+    public function testBigRunMalformedEntrySchemaFailsWholeSnapshotClosed(): void {
         $entries = [
+            'valid' => ['started_at' => 90.0, 'tier' => 'small', 'last_seen_at' => 90.0, 'phase' => 'running'],
             'bad_tier' => ['started_at' => 90.0, 'tier' => 'bogus', 'last_seen_at' => 90.0, 'phase' => 'running'],
+        ];
+        $raw = '{"tokens":400.0,"updated":100.0,"entries":' .
+            json_encode($entries, JSON_THROW_ON_ERROR) . '}';
+        $this->writeBigRunState($raw);
+
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertSame([false, 2, null, 'retry_later', 0], $result);
+        $this->assertSame($raw, file_get_contents($this->bigRunStatePath()));
+    }
+
+    public function testBigRunMalformedEntryValueFailsWholeSnapshotClosed(): void {
+        $entries = [
+            'valid' => ['started_at' => 90.0, 'tier' => 'small', 'last_seen_at' => 90.0, 'phase' => 'running'],
             'negative' => ['started_at' => -1.0, 'tier' => 'small', 'last_seen_at' => 90.0, 'phase' => 'running'],
+        ];
+        $raw = '{"tokens":400.0,"updated":100.0,"entries":' .
+            json_encode($entries, JSON_THROW_ON_ERROR) . '}';
+        $this->writeBigRunState($raw);
+
+        $result = big_run_try_acquire(5, 'category', null, 100.0);
+        $this->assertSame([false, 2, null, 'retry_later', 0], $result);
+        $this->assertSame($raw, file_get_contents($this->bigRunStatePath()));
+    }
+
+    public function testBigRunFutureTimesAreClamped(): void {
+        $entries = [
             'future' => ['started_at' => 500.0, 'tier' => 'small', 'last_seen_at' => 600.0, 'phase' => 'running'],
         ];
-        $this->writeBigRunState('{"tokens":400.0,"updated":100.0,"entries":' . json_encode($entries, JSON_THROW_ON_ERROR) . '}');
+        $this->writeBigRunState(
+            '{"tokens":400.0,"updated":100.0,"entries":' .
+            json_encode($entries, JSON_THROW_ON_ERROR) . '}'
+        );
 
         $result = big_run_try_acquire(5, 'category', null, 100.0);
         $this->assertTrue($result[0]);
+
         $state = $this->readBigRunState();
         $this->assertIsArray($state);
-        $this->assertArrayNotHasKey('bad_tier', $state['entries']);
-        $this->assertArrayNotHasKey('negative', $state['entries']);
         $this->assertSame(100.0, $state['entries']['future']['started_at']);
         $this->assertSame(100.0, $state['entries']['future']['last_seen_at']);
     }
