@@ -73,6 +73,112 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 **Note**: Both interfaces perform core citation expansion effectively. The gadget sacrifices some thoroughness for speed and reliability to provide a better in-browser editing experience.
 
+## Big-run gate (interactive-capacity reservation)
+
+Web processing of more than 4 runnable pages is admission-controlled so
+interactive/small work retains worker capacity while bulk work is bounded.
+This is capacity reservation rather than scheduler priority: Citation Bot does
+not reorder FastCGI requests after they reach the web server.
+
+- **Discovery-probe pool:** category and linked-page entry points acquire a
+  short-lived probe lease **before their first remote discovery API call**.
+  Probe leases spend no tokens and use a separate pool (default 4), bounding
+  worker occupancy even when the first upstream request is slow. Once discovery
+  proves the request is bulk, the same lease is atomically promoted into the
+  normal bulk pool before further bulk discovery. A request that ultimately has
+  <=4 runnable pages releases its probe/discovery lease before page processing.
+- **Bulk concurrency pool:** default capacity is 10 discovery/running leases;
+  at most 4 may be large (>=50 pages). Large classification happens during
+  discovery at the 50th runnable page, before further discovery or token
+  charging.
+- **Worker-capacity invariant:** the reported live deployment uses 24 web
+  workers. With defaults, at most 10 normal bulk leases plus 4 discovery probes
+  can occupy workers through this subsystem, leaving roughly 10 workers for
+  singles, gadget/API traffic, authentication, and other work. Keep
+  `WEB_WORKER_COUNT > CITATION_BOT_BIG_RUN_MAX_TOTAL +
+  CITATION_BOT_BIG_RUN_MAX_DISCOVERY_PROBES`; re-check the custom worker count
+  after migrations or web-service recreation. If the worker count changes,
+  retune the gate before relying on its interactive-capacity guarantee.
+- **Trusted operators:** `DEV_USERS` retain extended web page-count limits and
+  are token-exempt, but still consume physical concurrency. Testing remains
+  concurrency- and token-exempt. CLI remains outside the web gate only under
+  the documented resource-isolation assumption.
+- **Bounded discovery:** category enumeration stops at the accepted maximum + 1;
+  linked-page enumeration uses paginated `generator=links`. After probe
+  promotion, the existing fifth-runnable/raw-candidate/five-batch bounds remain
+  defense in depth against unusual continuation behavior and mostly-filtered
+  sources.
+- **Per-user large-run ownership:** >=50-page requests also use the existing
+  per-user lease. A persistent `_guard` file serializes acquisition, stale
+  takeover, kill signaling, heartbeat and shutdown cleanup. Heartbeat verifies
+  inode ownership; a resumed stale process cannot refresh or remove a newer
+  replacement lease. Lease files prefer writable `/dev/shm` on Linux and fall
+  back to `sys_get_temp_dir()/citation-bot-big-jobs` elsewhere.
+- **Token bucket:** default capacity 400 and refill 4.0/s. Tokens are charged
+  exactly once at direct admission or `discovery -> running` promotion.
+  Requester-controlled `?edit=` attribution is normalized inside
+  `big_run_token_cost()` and cannot choose a cheaper billing class.
+- **Shared lease ownership:** probe, discovery and running entries carry
+  `last_seen_at`. The common cURL path heartbeats before and after a transfer,
+  and the cURL progress callback also renews the lease while `curl_exec()`
+  is active; page-loop hooks provide an additional renewal point. A transient
+  lock/storage failure is retryable; a valid state snapshot that no longer
+  contains the request's lease is definitive ownership loss and stops that
+  request. A pruned stale request therefore cannot resume as untracked work
+  after capacity has been reassigned.
+- **State integrity:** `big-run.lock` is the permanent `flock()` inode;
+  `big-run.json` is atomically replaced through a flushed same-directory
+  temporary file. The private state directory must be a real writable directory
+  owned by the effective process user, and symlinked lock/state paths are
+  rejected. State snapshots are capped at 64 KiB. A present snapshot must have
+  valid `tokens`, `updated`, `entries`, and **every individual lease entry must
+  validate**; one malformed entry fails the snapshot closed instead of being
+  discarded and undercounting live work. Invalid-state logs distinguish
+  unreadable, empty, oversized, JSON-decode, top-level schema/numeric, and
+  individual-entry schema/value failures without logging snapshot contents.
+- **Failure policy:** singles that never enter the gate remain available, while
+  known bulk/probe work fails closed on gate-state, lock, schema or persistence
+  failures. Pool saturation uses a fixed conservative retry; token pressure is
+  derived from refill math plus the safety buffer.
+- **HTTP behavior:** admission output is buffered only until the decision.
+  Deferred or lease-lost bulk work returns 503 with `Retry-After` and
+  `Cache-Control: no-store`; successful work flushes the buffer before normal
+  progress streaming.
+- **Tuning:** defaults may be overridden with
+  `CITATION_BOT_BIG_RUN_MAX_TOTAL`,
+  `CITATION_BOT_BIG_RUN_MAX_DISCOVERY_PROBES`,
+  `CITATION_BOT_BIG_RUN_MAX_LARGE`,
+  `CITATION_BOT_BIG_RUN_TOKEN_CAPACITY`,
+  `CITATION_BOT_BIG_RUN_TOKEN_REFILL_PER_SECOND`,
+  `CITATION_BOT_BIG_RUN_STALE_TIMEOUT_SECONDS`,
+  `CITATION_BOT_BIG_RUN_HEARTBEAT_INTERVAL_SECONDS`, and
+  `CITATION_BOT_BIG_RUN_POOL_RETRY_SECONDS`. Tune from interactive p95/p99
+  latency, CPU/memory pressure, worker occupancy, and structured deferral logs.
+- **Deployment topology:** the local JSON + `flock()` backend coordinates one
+  shared-filesystem application instance. Keep the web service at one replica
+  while using this backend; horizontal scaling requires a genuinely shared,
+  transactional gate store.
+- **Lock-protocol migration:** the first deployment that changes from locking
+  `big-run.json` directly to permanent `big-run.lock` must be drained: stop the
+  web service, let old php-cgi requests exit, update while stopped, clear the
+  old state snapshot, then restart. V5.9 does not change the state schema or
+  lock-inode protocol relative to v5.8, so a v5.8 -> v5.9 deployment requires no
+  state deletion or migration. Apply release changes from a clean reviewed tree,
+  quiesce the web service while replacing the gate code, run the validation
+  suite, then restart workers.
+- **CLI assumption:** CLI work bypasses the web admission gate only while it
+  does not consume the same constrained web-worker envelope.
+- **Observability:** structured reasons distinguish `probe_full`, `total_full`,
+  `large_full`, `tokens`, `retry_later`, `lease_lost`, promotion failures, and
+  invalid-state reasons including `state_unreadable`, `state_empty`,
+  `state_oversized`, `json_decode`, `top_level_schema`, `top_level_numeric`,
+  `entry_schema`, and `entry_value`.
+
+Implementation lives in `src/includes/RequestRateLimit.php`; web admission and
+response buffering are in `src/includes/WebTools.php`; bounded discovery is in
+`src/includes/WikipediaBot.php`; the per-user >=50-page lease is in
+`src/includes/big_jobs.php`.
+
 [![Citation bot's architecture](architecture.svg)](architecture.svg)
 
 ## Structure
@@ -108,7 +214,7 @@ Includes (under `src/includes/`):
 - `src/includes/Statistics.php`: UCB tag parsing and statistics wikitext generation for `User:Citation bot/statistics`
 - `src/includes/GadgetApi.php`: gadget request validation and rate-limiting helpers
 - `src/includes/PublicConfig.php`: public URL/host/origin canonicalization and CORS helpers
-- `src/includes/RequestRateLimit.php`: token-bucket rate limiting for gadget and web requests
+- `src/includes/RequestRateLimit.php`: token-bucket rate limiting for gadget/generate-template requests, plus the big-run admission gate that gives single requests priority over bulk runs
 - `src/includes/request_security.php`: CSRF and session security helpers for web entrypoints
 - `src/includes/NameTools.php`: defines name functions
 - `src/includes/MathTools.php`: converts MathML notation to LaTeX for Wikipedia citations
@@ -116,7 +222,7 @@ Includes (under `src/includes/`):
 - `src/includes/miscTools.php`: a variety of functions
 - `src/includes/URLtools.php`: normalize URLs and extract information from URLs
 - `src/includes/TextTools.php`: string manipulation functions including converting to wiki
-- `src/includes/WebTools.php`: things unique to the web interface
+- `src/includes/WebTools.php`: things unique to the web interface, including the big-run gate (`gate_big_run`)
 - `src/includes/bot_curl.php`: curl wrapper with bot-appropriate defaults and timeouts
 - `src/includes/user_messages.php`: functions for reporting bot activity to users
 - `src/includes/doiTools.php`: DOI-specific validation and normalization functions
@@ -145,6 +251,10 @@ To run the bot from a new environment, you will need to create an `src/env.php` 
     chmod go-rwx src/env.php
 
 Every deployment must configure `PUBLIC_BASE_URL`, the canonical externally visible URL (including any deployment path) used for OAuth callbacks, redirects, HTTP referrers, and User-Agent identification. Web deployments must also configure `ALLOWED_HOSTS` and `ALLOWED_ORIGINS`. `ALLOWED_HOSTS` is a comma-separated list of exact HTTP Host values, including ports where applicable. `ALLOWED_ORIGINS` is a comma-separated CORS allowlist; entries are origins without paths, and a left-most wildcard such as `https://*.wikipedia.org` is supported. The host from `PUBLIC_BASE_URL` must also appear in `ALLOWED_HOSTS`.
+
+The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning variables documented in `src/env.php.example`. Normally leave them unset to use the reviewed defaults; tune them only from measured interactive latency, CPU/memory pressure, and structured deferral reasons.
+
+When upgrading from a build that locks `big-run.json` directly to the permanent `big-run.lock` backend, perform a **drained deployment**. Stop the web service and wait for all old php-cgi requests to exit, update the code while the service is stopped, remove the old `big-run.json` snapshot from the configured rate-limit state directory, then restart the web service. Do not use the live `gitpull.php` endpoint for this one-time lock-protocol transition: old and new requests otherwise coordinate on different lock objects. Once every worker is running the new protocol, normal deployments may resume.
 
  To run the bot as a webservice from WM Toolforge:
 

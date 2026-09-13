@@ -51,7 +51,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - **`src/includes/Statistics.php`** - Statistics helpers – UCB tag parsing, aggregation, and wikitext generation for `User:Citation bot/statistics`
 - **`src/includes/GadgetApi.php`** - Gadget API validation and rate limiting helpers
 - **`src/includes/PublicConfig.php`** - Public URL/host/origin canonicalization and CORS helpers
-- **`src/includes/RequestRateLimit.php`** - Token-bucket rate limiting for gadget and web requests
+- **`src/includes/RequestRateLimit.php`** - Token-bucket rate limiting for gadget/generate-template requests, plus the big-run admission gate (`big_run_try_acquire`/`big_run_release`) that gives single requests priority over bulk runs
 - **`src/includes/request_security.php`** - CSRF and session security helpers for web entrypoints
 - **`src/includes/TextTools.php`** - String manipulation and CS1 identifier validators
 - **`src/includes/WikiThings.php`** - Wiki markup handling (nowiki, comments, etc.) — contains abstract class WikiThings + 9 concrete subclasses
@@ -125,6 +125,75 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 - All fast mode operations
 - **Plus:** Bibcode searches, Zotero URL expansion
 - Takes longer but more thorough
+
+## Big-Run Gate (Interactive-Capacity Reservation)
+
+Web processing above `BIG_RUN_PAGE_THRESHOLD` (4 runnable pages) is
+admission-controlled. This reserves capacity; it is not a web-server scheduler
+and does not reorder already-arrived FastCGI requests.
+
+- **Probe-before-I/O:** category/linked entry points acquire a short-lived
+  `phase=probe` lease before the first remote discovery API call. Default probe
+  capacity is 4. Probes spend no tokens and do not consume the normal total.
+  Once bulk discovery is proven, the same lease must atomically become
+  `phase=discovery` before more bulk discovery occurs.
+- **Concurrency:** default normal bulk capacity is 10; at most 4 normal leases
+  may be large (>=50 pages). `phase=probe` is separately capped at 4.
+- **Worker invariant:** production was reported/configured with 24 web workers.
+  Keep the actual worker count strictly greater than
+  `big_run_max_total() + big_run_max_discovery_probes()` and leave deliberate
+  headroom for singles/gadget/API/authentication traffic. Verify the custom
+  worker setting after migrations or web-service recreation before relying on
+  the reservation guarantee.
+- **Trusted users:** `DEV_USERS` are token-exempt but not concurrency-exempt;
+  testing bypasses both. CLI bypasses the web gate only under the documented
+  resource-isolation assumption.
+- **Discovery:** category discovery stops at accepted maximum + 1; linked-page
+  discovery is paginated. Fifth-runnable/raw-candidate/five-batch bounds remain
+  defense in depth after the initial probe semaphore.
+- **Large-user lease:** acquire the per-user >=50-page lease as soon as discovery
+  reaches 50 runnable pages. The persistent `_guard` serializes takeover and
+  inode ownership is authoritative. Ownership loss is terminal. `/dev/shm` is
+  preferred when writable; otherwise use `sys_get_temp_dir()/citation-bot-big-jobs`.
+- **Shared state machine:** `probe -> discovery -> running`. Final promotion
+  charges tokens exactly once. Probe-to-discovery promotion checks the normal
+  total atomically. Wrong/missing phases fail closed.
+- **Shared ownership loss:** `big_run_heartbeat_status()` distinguishes `ok`,
+  retryable infrastructure failure, and `lost`. `lost` means a valid snapshot no
+  longer owns that ID; the request must stop immediately rather than continuing
+  outside concurrency accounting.
+- **State integrity:** `big-run.lock` is the permanent flock target;
+  `big-run.json` is atomically replaced. The private state root must be a real,
+  writable, process-owned directory; symlinked lock/state paths are rejected.
+  Snapshots are capped at 64 KiB. Every persisted lease entry is mandatory-schema
+  data (`started_at`, `tier`, `last_seen_at`, `phase`); any malformed entry makes
+  the whole snapshot invalid/fail-closed. Invalid-state logs identify the failure
+  class but must never include raw snapshot contents.
+- **Liveness:** common cURL hooks renew before/after transfers and from the
+  libcurl progress callback while `curl_exec()` is active; page-loop
+  hooks remain an additional renewal point. Shared heartbeat interval stays
+  bounded relative to stale timeout and transient renewal failures retry
+  promptly. Per-user large-job heartbeat/kill checks use their separate guarded
+  lease. Do not replace the progress callback without preserving both response
+  size enforcement and these heartbeat calls.
+- **HTTP:** deferred and lease-lost work returns 503, `Retry-After`, and
+  `Cache-Control: no-store` while admission output is still replaceable.
+- **Tuning:** reviewed defaults are 10 total, 4 probes, 4 large, 400 tokens,
+  4.0 tokens/s. Environment overrides exist; tune against measured worker
+  occupancy, interactive p95/p99 latency, CPU/memory pressure and deferral logs.
+- **Deployment:** local JSON + `flock()` is single-instance/shared-filesystem
+  only. Horizontal replicas require shared transactional state. Preserve the
+  drained migration procedure for the historical direct-json-lock -> permanent
+  lock-inode transition. V5.9 keeps the v5.8 state schema and lock inode; routine
+  v5.8 -> v5.9 deployment needs no state deletion, but gate-code replacement
+  should occur from a clean reviewed tree with the web workers quiesced and the
+  validation suite run before restart.
+- **Code:** state/admission in `RequestRateLimit.php`; web policy/buffering in
+  `WebTools.php`; discovery in `WikipediaBot.php`; per-user large ownership in
+  `big_jobs.php`.
+- **progpilot caveat:** `progpilot.json` includes line-dependent suppressions for
+  pre-existing rate-limit code. Keep the big-run subsystem below that block or
+  deliberately regenerate suppressions after line-moving changes.
 
 ## Development Environment
 
@@ -285,7 +354,7 @@ The gadget MUST:
 │       ├── Statistics.php      # Statistics helpers for User:Citation bot/statistics
 │       ├── GadgetApi.php       # Gadget API validation and rate limiting helpers
 │       ├── PublicConfig.php    # Public URL/host/origin canonicalization and CORS helpers
-│       ├── RequestRateLimit.php # Token-bucket rate limiting for gadget and web requests
+│       ├── RequestRateLimit.php # Rate limiting + big-run admission gate
 │       ├── request_security.php # CSRF and session security helpers
 │       ├── URLtools.php        # URL normalization & metadata
 │       ├── NameTools.php       # Author name parsing
@@ -293,7 +362,7 @@ The gadget MUST:
 │       ├── WikiThings.php      # Wiki markup handling
 │       ├── miscTools.php       # Miscellaneous utilities
 │       ├── TextTools.php       # String manipulation
-│       ├── WebTools.php        # Web interface helpers
+│       ├── WebTools.php        # Web helpers incl. gate_big_run()
 │       ├── bot_curl.php        # Curl wrapper with defaults
 │       ├── user_messages.php   # Bot activity reporting
 │       ├── doiTools.php        # DOI validation & normalization

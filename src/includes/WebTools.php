@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
+require_once __DIR__ . '/RequestRateLimit.php'; // @codeCoverageIgnore
 
 /**
  * Users allowed to exceed the web page-count limit (MAX_PAGES).
@@ -193,25 +194,374 @@ function process_page_edit_summary_end(string $username, bool $is_html_output, ?
 }
 
 /**
+ * Map an ?edit= request-source value to the big-run gate activation type.
+ *
+ * Mirrors process_page_edit_summary_end's tag mapping so the token weight
+ * matches the edit-summary tag: the default webform POST (no edit parameter)
+ * is #UCB_webform, not #UCB_Other. Unknown non-empty values fall through to
+ * #UCB_Other. 'testing' is deliberately NOT honored here: the edit parameter
+ * is user-controlled, so granting it the testing exemption (which bypasses
+ * the gate entirely) would let anyone mint an unlimited un-gated run, the
+ * same reason process_page_edit_summary_end refuses deprecated tags.
+ */
+function big_run_type_from_edit(?string $edit): string {
+    if ($edit === null || $edit === '') {
+        return 'webform';
+    }
+    if (in_array($edit, ['webform', 'automated_tools', 'toolbar', 'template'], true)) {
+        return $edit;
+    }
+    return 'other';
+}
+
+/**
+ * Concurrency exemptions are deliberately narrow. Trusted operators may be
+ * token-exempt, but their web bulk jobs still consume physical concurrency.
+ */
+function big_run_is_concurrency_exempt(string $run_type, string $_username): bool {
+    return $run_type === 'testing';
+}
+
+/**
+ * Trusted operators may bypass token charging without disappearing from the
+ * global concurrency accounting. Testing is exempt from both.
+ */
+function big_run_is_token_exempt(string $run_type, string $username): bool {
+    return $run_type === 'testing' || in_array($username, DEV_USERS, true);
+}
+
+/**
+ * Backwards-compatible helper name: "exempt" now means concurrency-exempt.
+ */
+function big_run_is_exempt(string $run_type, string $username): bool {
+    return big_run_is_concurrency_exempt($run_type, $username);
+}
+
+/** Whether a run must consume a bulk concurrency slot. */
+function big_run_gate_decision(int $page_count, string $run_type, string $username): bool {
+    if ($page_count <= BIG_RUN_PAGE_THRESHOLD) {
+        return false;
+    }
+    return !big_run_is_concurrency_exempt($run_type, $username);
+}
+
+/**
+ * Start a short-lived application-owned output buffer while admission is
+ * undecided. This preserves streaming after admission while guaranteeing that
+ * a later 503/Retry-After can still replace the normal page header.
+ */
+function bot_admission_buffer_start(): void {
+    if (!HTML_OUTPUT || isset($GLOBALS['citation_bot_admission_buffer_level'])) {
+        return;
+    }
+    ob_start();
+    $GLOBALS['citation_bot_admission_buffer_level'] = ob_get_level();
+}
+
+function bot_admission_buffer_discard(): void {
+    $level = $GLOBALS['citation_bot_admission_buffer_level'] ?? null;
+    if (!is_int($level) || ob_get_level() !== $level) {
+        return;
+    }
+    ob_clean();
+}
+
+function bot_admission_buffer_flush(): void {
+    $level = $GLOBALS['citation_bot_admission_buffer_level'] ?? null;
+    if (!is_int($level) || ob_get_level() !== $level) {
+        unset($GLOBALS['citation_bot_admission_buffer_level']);
+        return;
+    }
+    ob_end_flush();
+    unset($GLOBALS['citation_bot_admission_buffer_level']);
+}
+
+/** Humanize an already-buffered Retry-After value. */
+function big_run_humanize_wait(int $seconds): string {
+    $seconds = max(1, $seconds);
+    if ($seconds < 60) {
+        return (string) $seconds . ($seconds === 1 ? ' second' : ' seconds');
+    }
+    $minutes = max(1, (int) ceil($seconds / 60));
+    return (string) $minutes . ($minutes === 1 ? ' minute' : ' minutes');
+}
+
+/**
+ * Return one conservative retry value for both the HTTP header and body.
+ * Token waits are mathematically derived and receive a 30% safety buffer;
+ * pool waits intentionally use a fixed backoff instead of pretending that
+ * started_at predicts when a long-running lease will finish.
+ */
+function big_run_effective_retry_after(string $reason, ?int $retry_after): int {
+    if ($reason === 'tokens') {
+        return max(1, (int) ceil(max(1, $retry_after ?? 1) * 1.3));
+    }
+    if ($reason === 'total_full' || $reason === 'large_full') {
+        return max(big_run_pool_retry_seconds(), $retry_after ?? 0);
+    }
+    return max(2, $retry_after ?? 0);
+}
+
+/** Build the busy-page message for a deferred big run. */
+function big_run_busy_page_message(string $reason, ?int $active_count, ?int $retry_after): string {
+    if ($reason === 'tokens') {
+        return 'Citation Bot\'s big-run quota is currently exhausted. Please try again in about ' .
+            big_run_humanize_wait($retry_after ?? 1) . '.';
+    }
+    if ($reason === 'retry_later') {
+        return 'Citation Bot could not check big-run availability right now. Please try again shortly.';
+    }
+    if ($reason === 'lease_lost') {
+        return 'Citation Bot stopped this bulk run because its shared lease was lost. ' .
+            'Please retry; stopping prevents stale work from exceeding the concurrency limit.';
+    }
+    return 'Citation Bot is currently at capacity with other bulk work (' .
+        (string) ($active_count ?? 0) . ' in progress). Please try again in about ' .
+        big_run_humanize_wait($retry_after ?? big_run_pool_retry_seconds()) . '.';
+}
+
+/**
+ * @return array{status: int, retry_after: string, cache_control: string}
+ */
+function big_run_busy_headers(string $reason, ?int $retry_after): array {
+    $effective_retry = big_run_effective_retry_after($reason, $retry_after);
+    return [
+        'status' => 503,
+        'retry_after' => (string) $effective_retry,
+        'cache_control' => 'no-store',
+    ];
+}
+
+/** Render a complete 503 busy page while headers are still replaceable. */
+function big_run_render_busy_page(string $reason, ?int $active_count, ?int $retry_after): void {
+    $headers = big_run_busy_headers($reason, $retry_after);
+    $effective_retry = (int) $headers['retry_after'];
+    bot_admission_buffer_discard();
+    if (!headers_sent()) {
+        http_response_code($headers['status']);
+        @header('Retry-After: ' . $headers['retry_after']);
+        @header('Cache-Control: ' . $headers['cache_control']);
+    }
+    bot_html_header();
+    report_warning(big_run_busy_page_message($reason, $active_count, $effective_retry));
+    bot_html_footer();
+    bot_admission_buffer_flush();
+}
+
+/**
+ * Acquire the small discovery-probe semaphore before the first remote
+ * category/linked-page API call. Probe leases spend no tokens.
+ */
+function gate_big_run_probe(
+    string $run_type,
+    string $username,
+    ?string $base_directory = null,
+    ?float $now = null
+): ?string {
+    if (!HTML_OUTPUT || big_run_is_concurrency_exempt($run_type, $username)) {
+        return null;
+    }
+
+    $result = big_run_try_acquire_probe($base_directory, $now);
+    if (!$result[0]) {
+        big_run_render_busy_page((string) ($result[3] ?? 'probe_full'), $result[4], $result[1]);
+        exit(0); // @codeCoverageIgnore
+    }
+
+    $entry_id = $result[2];
+    if ($entry_id !== null) {
+        register_shutdown_function('big_run_release', $entry_id, $base_directory);
+        big_run_set_current_entry($entry_id, $base_directory, $now);
+    }
+    return $entry_id;
+}
+
+/** Promote a probe into normal discovery before further bulk discovery. */
+function gate_big_run_probe_to_discovery(
+    ?string $entry_id,
+    ?string $base_directory = null,
+    ?float $now = null
+): ?string {
+    if ($entry_id === null) {
+        return null;
+    }
+
+    $result = big_run_try_promote_probe_to_discovery($entry_id, $base_directory, $now);
+    if ($result[0]) {
+        return $entry_id;
+    }
+
+    big_run_clear_current_entry($entry_id);
+    big_run_render_busy_page((string) ($result[3] ?? 'total_full'), $result[4], $result[1]);
+    exit(0); // @codeCoverageIgnore
+}
+
+/** Acquire a provisional slot for expensive category/linked-page discovery. */
+function gate_big_run_discovery(
+    string $run_type,
+    string $username,
+    ?string $base_directory = null,
+    ?float $now = null
+): ?string {
+    if (!HTML_OUTPUT || big_run_is_concurrency_exempt($run_type, $username)) {
+        return null;
+    }
+
+    $result = big_run_try_acquire_discovery($base_directory, $now);
+    if (!$result[0]) {
+        big_run_render_busy_page((string) ($result[3] ?? 'total_full'), $result[4], $result[1]);
+        exit(0); // @codeCoverageIgnore
+    }
+
+    $entry_id = $result[2];
+    if ($entry_id !== null) {
+        register_shutdown_function('big_run_release', $entry_id, $base_directory);
+        big_run_set_current_entry($entry_id, $base_directory, $now);
+    }
+    return $entry_id;
+}
+
+/** Move a discovery lease into the large subpool or return a clean busy page. */
+function gate_big_run_discovery_large(
+    string $entry_id,
+    ?string $base_directory = null,
+    ?float $now = null
+): void {
+    $result = big_run_try_mark_discovery_large($entry_id, $base_directory, $now);
+    if ($result[0]) {
+        return;
+    }
+
+    big_run_clear_current_entry($entry_id);
+    big_run_render_busy_page((string) ($result[3] ?? 'large_full'), $result[4], $result[1]);
+    exit(0); // @codeCoverageIgnore
+}
+
+/** Release a provisional lease early; shutdown cleanup then becomes a no-op. */
+function release_big_run_lease(?string $entry_id, ?string $base_directory = null): void {
+    if ($entry_id === null) {
+        return;
+    }
+    big_run_release($entry_id, $base_directory);
+    big_run_clear_current_entry($entry_id);
+}
+
+/**
+ * Gate a big run. If a discovery lease exists, atomically promote it instead
+ * of acquiring a second slot. Singles release an unnecessary provisional
+ * lease and remain completely ungated during page processing.
+ */
+function gate_big_run(
+    int $page_count,
+    string $run_type,
+    string $username,
+    ?string $base_directory = null,
+    ?float $now = null,
+    ?string $discovery_entry_id = null
+): ?string {
+    if (!HTML_OUTPUT) {
+        return null;
+    }
+    if (!big_run_gate_decision($page_count, $run_type, $username)) {
+        release_big_run_lease($discovery_entry_id, $base_directory);
+        return null;
+    }
+
+    $charge_tokens = !big_run_is_token_exempt($run_type, $username);
+    if ($discovery_entry_id !== null) {
+        $result = big_run_try_promote(
+            $discovery_entry_id,
+            $page_count,
+            $run_type,
+            $base_directory,
+            $now,
+            $charge_tokens
+        );
+    } else {
+        $result = big_run_try_acquire(
+            $page_count,
+            $run_type,
+            $base_directory,
+            $now,
+            $charge_tokens
+        );
+    }
+
+    if ($result[0]) {
+        $entry_id = $result[2] ?? $discovery_entry_id;
+        if ($entry_id !== null && $discovery_entry_id === null) {
+            register_shutdown_function('big_run_release', $entry_id, $base_directory);
+            big_run_set_current_entry($entry_id, $base_directory, $now);
+        }
+        return $entry_id;
+    }
+
+    if ($discovery_entry_id !== null) {
+        big_run_clear_current_entry($discovery_entry_id);
+    }
+    big_run_render_busy_page((string) ($result[3] ?? 'total_full'), $result[4], $result[1]);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
-function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
+function edit_a_list_of_pages(
+    array $pages_in_category,
+    WikipediaBot $api,
+    string $edit_summary_end,
+    string $run_type = 'other',
+    ?string $discovery_entry_id = null
+): void {
     $final_edit_overview = "";
     $pages_in_category = filter_runnable_page_titles($pages_in_category);
     if (empty($pages_in_category)) {
+        release_big_run_lease($discovery_entry_id);
         report_warning('No links to expand found');
         bot_html_footer();
+        bot_admission_buffer_flush();
         return;
     }
     $total = count($pages_in_category);
     $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
     if ($total > $effective_max) {
+        release_big_run_lease($discovery_entry_id);
         report_warning('Number of links is huge. Cancelling run. Maximum size is ' . (string) $effective_max);
         bot_html_footer();
+        bot_admission_buffer_flush();
         return;
     }
-    big_jobs_check_overused($total);
+    if (HTML_OUTPUT && $total > BIG_RUN_PAGE_THRESHOLD) {
+        // The per-user large-job lock is intentionally checked before shared
+        // token charging; a request rejected here must not consume the bucket.
+        big_jobs_check_overused($total);
+        $big_run_entry_id = gate_big_run(
+            $total,
+            $run_type,
+            $api->get_the_user(),
+            null,
+            null,
+            $discovery_entry_id
+        );
+        report_warning(
+            'Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — ' .
+            'please review the changes it makes.'
+        );
+    } else {
+        $big_run_entry_id = gate_big_run(
+            $total,
+            $run_type,
+            $api->get_the_user(),
+            null,
+            null,
+            $discovery_entry_id
+        );
+        big_jobs_check_overused($total);
+    }
+
+    // Admission is final; from here onward normal progress output may stream.
+    bot_admission_buffer_flush();
 
     $page = new Page();
     $done = 0;
@@ -224,6 +574,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
+        if ($big_run_entry_id !== null) {
+            big_run_heartbeat_or_stop($big_run_entry_id);
+        }
         $done++;
         $page_result = run_page_with_exception_boundary(
             $page_title,

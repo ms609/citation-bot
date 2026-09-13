@@ -431,6 +431,77 @@ final class WikipediaBot {
         return $links;
     }
 
+    /**
+     * Fetch one bounded batch of existing links using generator=links, so
+     * linked-page discovery can be paginated instead of action=parse
+     * materializing the complete link set before admission.
+     *
+     * @param string $title
+     * @param array{gplcontinue: string, continue: string}|null $continue
+     * @return array{links: array<array{ns: int, title: string}>, scanned: int, continue: array{gplcontinue: string, continue: string}|null}|null
+     */
+    public static function linked_pages_batch(
+        string $title,
+        ?array $continue = null,
+        int $limit = 50
+    ): ?array {
+        $limit = max(1, min(500, $limit));
+        $vars = [
+            'action' => 'query',
+            'generator' => 'links',
+            'titles' => $title,
+            'gplnamespace' => '0|118',
+            'gpllimit' => (string) $limit,
+            'prop' => 'info',
+        ];
+        if ($continue !== null) {
+            $vars['gplcontinue'] = $continue['gplcontinue'];
+            $vars['continue'] = $continue['continue'];
+        }
+
+        $raw = self::query_api($vars);
+        $response = @json_decode($raw);
+        if (!is_object($response)) {
+            return null;
+        }
+        if (!isset($response->query)) {
+            return ['links' => [], 'scanned' => 0, 'continue' => null];
+        }
+        if (!is_object($response->query)) {
+            return null;
+        }
+
+        $links = [];
+        $scanned = 0;
+        if (isset($response->query->pages) && is_object($response->query->pages)) {
+            foreach ((array) $response->query->pages as $page) {
+                ++$scanned;
+                if (
+                    !is_object($page) ||
+                    isset($page->missing) ||
+                    !isset($page->ns, $page->title) ||
+                    !is_int($page->ns) ||
+                    !is_string($page->title) ||
+                    $page->title === ''
+                ) {
+                    continue;
+                }
+                $links[] = ['ns' => $page->ns, 'title' => $page->title];
+            }
+        }
+
+        $next = $response->continue->gplcontinue ?? null;
+        $generic_continue = $response->continue->continue ?? null;
+        $continuation = null;
+        if (is_string($next) && $next !== '') {
+            $continuation = [
+                'gplcontinue' => $next,
+                'continue' => is_string($generic_continue) ? $generic_continue : 'gplcontinue||',
+            ];
+        }
+        return ['links' => $links, 'scanned' => $scanned, 'continue' => $continuation];
+    }
+
     /** @return array{0: string, 1: string}|null */
     public static function mediawiki_error_fields(mixed $error): ?array {
         if (!is_object($error)) {
@@ -501,6 +572,111 @@ final class WikipediaBot {
             $continue = $res->continue->cmcontinue ?? null;
             $vars["cmcontinue"] = is_string($continue) && $continue !== '' ? $continue : false;
         } while ($vars["cmcontinue"]);
+        return $list;
+    }
+
+    /**
+     * Enumerate category members without materializing work past $max_titles.
+     * The callback fires before further discovery once either the fifth
+     * runnable title is found or a bounded raw-member probe is exhausted.
+     * The latter prevents a category with very few runnable pages but huge
+     * filtered membership from consuming unbounded discovery work ungated.
+     *
+     * @param string $cat
+     * @param int $max_titles
+     * @param (callable(): void)|null $on_bulk_discovered
+     * @param (callable(): void)|null $on_large_discovered
+     * @return array<string>
+     */
+    public static function category_members_bounded(
+        string $cat,
+        int $max_titles,
+        ?callable $on_bulk_discovered = null,
+        ?callable $on_large_discovered = null
+    ): array {
+        if ($max_titles < 1) {
+            return [];
+        }
+
+        $list = [];
+        $seen = [];
+        $bulk_signaled = false;
+        $large_signaled = false;
+        $raw_members_scanned = 0;
+        $probe_batches = 0;
+        $vars = [
+            'cmtitle' => 'Category:' . $cat,
+            'action' => 'query',
+            'cmlimit' => (string) (BIG_RUN_PAGE_THRESHOLD + 1),
+            'list' => 'categorymembers',
+        ];
+        $generic_continue = null;
+
+        do {
+            $request_vars = $vars;
+            if (is_string($generic_continue) && $generic_continue !== '') {
+                $request_vars['continue'] = $generic_continue;
+            }
+            $res = self::query_api($request_vars);
+            ++$probe_batches;
+            $decoded = @json_decode($res);
+            $raw_members = (is_object($decoded) && isset($decoded->query->categorymembers) && is_array($decoded->query->categorymembers))
+                ? count($decoded->query->categorymembers)
+                : 0;
+            $raw_members_scanned += $raw_members;
+            $titles = self::category_member_titles_from_response($decoded);
+            if ($titles === null) {
+                report_warning('Error reading API for category ' . echoable($cat) . "\n\n");
+                return [];
+            }
+
+            foreach ($titles as $title) {
+                if (isset($seen[$title])) {
+                    continue;
+                }
+                $seen[$title] = true;
+                $list[] = $title;
+                $runnable_count = count($list);
+
+                if (!$bulk_signaled && $runnable_count > BIG_RUN_PAGE_THRESHOLD) {
+                    $bulk_signaled = true;
+                    if ($on_bulk_discovered !== null) {
+                        $on_bulk_discovered();
+                    }
+                }
+                if (!$large_signaled && $runnable_count >= BIG_RUN_LARGE_THRESHOLD) {
+                    $large_signaled = true;
+                    if ($on_large_discovered !== null) {
+                        $on_large_discovered();
+                    }
+                }
+                if ($runnable_count >= $max_titles) {
+                    return $list;
+                }
+            }
+
+            $continue = $decoded->continue->cmcontinue ?? null;
+            $vars['cmcontinue'] = is_string($continue) && $continue !== '' ? $continue : false;
+            $generic_continue = $decoded->continue->continue ?? null;
+            if (
+                !$bulk_signaled &&
+                big_run_discovery_probe_requires_lease(
+                    $raw_members_scanned,
+                    $probe_batches,
+                    (bool) $vars['cmcontinue']
+                )
+            ) {
+                $bulk_signaled = true;
+                if ($on_bulk_discovered !== null) {
+                    $on_bulk_discovered();
+                }
+            }
+            if ($bulk_signaled) {
+                $remaining = max(1, $max_titles - count($list));
+                $vars['cmlimit'] = (string) min(500, $remaining);
+            }
+        } while ($vars['cmcontinue']);
+
         return $list;
     }
 
@@ -1017,6 +1193,7 @@ final class WikipediaBot {
             if (mb_substr($return, 0, 1) !== '/' || mb_substr($return, 0, 2) === '//' || preg_match('~\s+~', $return)) { // Security paranoia
                 report_error('Invalid URL passes to internal API');
             }
+
             /** @psalm-taint-escape header */
             $authentication_url = oauth_authentication_url($return);
             header("Location: " . $authentication_url);
