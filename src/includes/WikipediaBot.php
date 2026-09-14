@@ -500,6 +500,8 @@ final class WikipediaBot {
             ];
         }
         return ['links' => $links, 'scanned' => $scanned, 'continue' => $continuation];
+    }
+
      * Decode a MediaWiki response that is expected to be a JSON object.
      * Non-object JSON is rejected rather than being coerced with an object cast.
      */
