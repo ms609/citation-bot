@@ -431,6 +431,15 @@ final class WikipediaBot {
         return $links;
     }
 
+    /**
+     * Decode a MediaWiki response that is expected to be a JSON object.
+     * Non-object JSON is rejected rather than being coerced with an object cast.
+     */
+    public static function decode_object_response(string $json): stdClass {
+        $decoded = json_decode($json);
+        return $decoded instanceof stdClass ? $decoded : new stdClass();
+    }
+
     /** @return array{0: string, 1: string}|null */
     public static function mediawiki_error_fields(mixed $error): ?array {
         if (!is_object($error)) {
@@ -856,7 +865,7 @@ final class WikipediaBot {
             'curtimestamp' => 'true',
             'inprop' => 'protection',
         ]);
-        return (object) @json_decode($details);
+        return self::decode_object_response($details);
     }
 
     public static function get_links(string $title): string {
