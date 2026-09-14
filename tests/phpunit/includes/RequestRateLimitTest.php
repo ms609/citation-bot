@@ -405,37 +405,30 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testLogFailureReportsDuplicateReasonOnlyOnce(): void {
-        $log_path = tempnam(sys_get_temp_dir(), 'citation-bot-rate-limit-log-');
-        $this->assertIsString($log_path);
-        $previous_log = ini_get('error_log');
+        $log_path = __DIR__ . '/../../../src/includes/DebugLog.txt';
         $bucket = 'log-dedupe-' . bin2hex(random_bytes(4));
 
-        try {
-            ini_set('error_log', $log_path);
-            request_rate_limit_log_failure($bucket, 'duplicate-reason');
-            request_rate_limit_log_failure($bucket, 'duplicate-reason');
-            request_rate_limit_log_failure($bucket, 'different-reason');
+        request_rate_limit_log_failure($bucket, 'duplicate-reason');
+        request_rate_limit_log_failure($bucket, 'duplicate-reason');
+        request_rate_limit_log_failure($bucket, 'different-reason');
 
-            $contents = file_get_contents($log_path);
-            $this->assertIsString($contents);
-            $this->assertSame(
-                1,
-                mb_substr_count(
-                    $contents,
-                    'Citation Bot rate limiter (' . $bucket . '): duplicate-reason; failing open.'
-                )
-            );
-            $this->assertSame(
-                1,
-                mb_substr_count(
-                    $contents,
-                    'Citation Bot rate limiter (' . $bucket . '): different-reason; failing open.'
-                )
-            );
-        } finally {
-            ini_set('error_log', (string) $previous_log);
-            @unlink($log_path);
-        }
+        clearstatcache(true, $log_path);
+        $contents = file_get_contents($log_path);
+        $this->assertIsString($contents);
+        $this->assertSame(
+            1,
+            mb_substr_count(
+                $contents,
+                'Citation Bot rate limiter (' . $bucket . '): duplicate-reason; failing open.'
+            )
+        );
+        $this->assertSame(
+            1,
+            mb_substr_count(
+                $contents,
+                'Citation Bot rate limiter (' . $bucket . '): different-reason; failing open.'
+            )
+        );
     }
 
     public function testStoreStateTruncatesLongerPreviousPayload(): void {
