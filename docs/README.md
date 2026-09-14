@@ -181,7 +181,12 @@ not reorder FastCGI requests after they reach the web server.
   `big-run.lock`, rejects unsafe paths or lock contention, preserves any
   existing regular snapshot as a timestamped same-directory `.recovery-*`
   backup, and atomically installs an empty state with a full token bucket.
-  Do not expose reset through HTTP and do not delete `big-run.lock`.
+  Automatic corruption recovery remains intentionally disabled. A manual HTTP
+  recovery endpoint is available at `reset_big_run_state.php`; it uses the same
+  `DEPLOY_PASSWORD`, constant-time comparison, browser password form, and
+  `X-Deploy-Token` automation header as `gitpull.php`. Reset is POST-only and
+  requires explicit drain/quiesce confirmation. The CLI path remains preferred.
+  Do not delete `big-run.lock`.
 
 Implementation lives in `src/includes/RequestRateLimit.php`; web admission and
 response buffering are in `src/includes/WebTools.php`; bounded discovery is in

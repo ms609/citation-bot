@@ -174,7 +174,11 @@ and does not reorder already-arrived FastCGI requests.
   bulk workers first, acquire `big-run.lock`, preserve the previous regular
   snapshot as `.recovery-*`, and atomically install fresh empty/full-token
   state. The reset must refuse symlinked/non-regular state, unsafe state roots,
-  and lock contention. There is intentionally no HTTP reset path. Keep
+  and lock contention. Automatic corruption recovery remains forbidden. The manual
+  `src/reset_big_run_state.php` HTTP path is permitted only with the same
+  `DEPLOY_PASSWORD`/`X-Deploy-Token`, constant-time password check, method
+  restrictions, and public-request hardening pattern used by `gitpull.php`; reset
+  must remain POST-only with explicit drain/quiesce confirmation. Keep
   `big-run.lock`; retained recovery snapshots are forensic/operator artifacts.
 - **Liveness:** common cURL hooks renew before/after transfers and from the
   libcurl progress callback while `curl_exec()` is active; page-loop

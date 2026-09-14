@@ -518,8 +518,10 @@ function big_run_log_state_invalid(string $reason, array $fields = []): void {
     $reported[$reason] = true;
     error_log(
         'Citation Bot big-run gate: INVALID SHARED STATE (' . $reason . '); ' .
-        'bulk admission is FAIL-CLOSED. Diagnose with `php tools/reset_big_run_state.php --check`; ' .
-        'after draining/quiescing bulk workers recover with `php tools/reset_big_run_state.php --reset`.'
+        'bulk admission is FAIL-CLOSED and no automatic recovery will run. ' .
+        'Diagnose with `php tools/reset_big_run_state.php --check`; after draining/quiescing bulk workers ' .
+        'recover with `php tools/reset_big_run_state.php --reset` or the DEPLOY_PASSWORD-protected ' .
+        '`reset_big_run_state.php` web endpoint.'
     );
 }
 
