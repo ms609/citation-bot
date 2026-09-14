@@ -4,6 +4,38 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../testBaseClass.php';
 
 final class mathToolsTest extends testBaseClass {
+    public function testParseDecimalIntegerAcceptsCompleteIntegerStrings(): void {
+        $this->assertSame(12, parse_decimal_integer('12'));
+        $this->assertSame(12, parse_decimal_integer('  0012  '));
+        $this->assertSame(-12, parse_decimal_integer('-0012'));
+        $this->assertSame(12, parse_decimal_integer('+0012'));
+        $this->assertSame(0, parse_decimal_integer('-000'));
+        $this->assertSame(PHP_INT_MAX, parse_decimal_integer((string) PHP_INT_MAX));
+    }
+
+    public function testParseDecimalIntegerRejectsFuzzyAndOutOfRangeStrings(): void {
+        foreach ([
+            '',
+            'abc',
+            '12abc',
+            '12.5',
+            '1e3',
+            '++12',
+            (string) PHP_INT_MAX . '0',
+        ] as $value) {
+            $this->assertNull(parse_decimal_integer($value), $value);
+        }
+    }
+
+    public function testParseDecimalIntegerPrefixMakesPrefixParsingExplicit(): void {
+        $this->assertSame(12, parse_decimal_integer_prefix('12A'));
+        $this->assertSame(12, parse_decimal_integer_prefix(" \t0012 pages"));
+        $this->assertSame(-12, parse_decimal_integer_prefix('-12foo'));
+        $this->assertSame(12, parse_decimal_integer_prefix('12.5'));
+        $this->assertNull(parse_decimal_integer_prefix('A12'));
+        $this->assertNull(parse_decimal_integer_prefix(''));
+        $this->assertNull(parse_decimal_integer_prefix((string) PHP_INT_MAX . '0tail'));
+    }
 
     public function testMathMLIsotopeNotation(): void {
         // Test isotope notation with mmultiscripts: ^{67}Ni

@@ -1158,7 +1158,7 @@ function addISBNdashes(string $isbn): string {
         return $isbn;
     }
     $new = str_replace('-', '', $isbn);
-    if (mb_strlen($new) === 10) {
+    if (mb_strlen($new) === 10 && preg_match('~\A\d{9}[0-9Xx]\z~D', $new) === 1) {
         $num = 9780000000000 + (int) str_ireplace('x', '9', $new);
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
@@ -1172,7 +1172,7 @@ function addISBNdashes(string $isbn): string {
         $v = $split;
         return mb_substr($new, 0, $v[0]) . '-' . mb_substr($new, $v[0], $v[1]) . '-' . mb_substr($new, $v[0] + $v[1], $v[2]) . '-' . mb_substr($new, $v[0] + $v[1] + $v[2], 1);
         // split = SKIP3, $v[0], $v[1], $v[2], 1
-    } elseif (mb_strlen($new) === 13) {
+    } elseif (mb_strlen($new) === 13 && preg_match('~\A\d{13}\z~D', $new) === 1) {
         $num = (int) $new;
         foreach (ISBN_HYPHEN_POS as $k => $v) {
             if ($num <= (int) $k) {
