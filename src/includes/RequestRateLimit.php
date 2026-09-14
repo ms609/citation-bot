@@ -174,7 +174,7 @@ function request_rate_limit_log_failure(string $bucket, string $reason): void {
     }
 
     $reported[$key] = true;
-    error_log('Citation Bot rate limiter (' . $bucket . '): ' . $reason . '; failing open.');
+    bot_debug_log('Citation Bot rate limiter (' . $bucket . '): ' . $reason . '; failing open.');
 }
 
 // Big-run gate: single requests (≤ BIG_RUN_PAGE_THRESHOLD pages) bypass the
@@ -307,7 +307,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
         // Do not let a request storm fill PHP workers with processes waiting on the lock.
         $locked = @flock($handle, LOCK_EX | LOCK_NB);
         if (!$locked) {
-            error_log('Citation Bot big-run gate: state file lock busy; deferring run.');
+            bot_debug_log('Citation Bot big-run gate: state file lock busy; deferring run.');
             return [false, 1, null, 'retry_later', 0];
         }
 
@@ -336,7 +336,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
             if (!big_run_store_state($handle, $tokens - $cost, $now, $entries)) {
                 request_rate_limit_log_failure('big-run', 'unable to persist state');
             }
-            error_log('Citation Bot big-run gate: admitted ' . $run_type . ' run of ' .
+            bot_debug_log('Citation Bot big-run gate: admitted ' . $run_type . ' run of ' .
                 (string) $page_count . ' pages, cost ' . (string) $cost . ', balance ' .
                 (string) ($tokens - $cost) . ', ' . (string) count($entries) . ' active.');
             return [true, null, $entry_id, null, count($entries)];
@@ -370,7 +370,7 @@ function big_run_try_acquire(int $page_count, string $run_type, ?string $base_di
             request_rate_limit_log_failure('big-run', 'unable to persist state');
         }
 
-        error_log('Citation Bot big-run gate: deferred ' . $run_type . ' run of ' .
+        bot_debug_log('Citation Bot big-run gate: deferred ' . $run_type . ' run of ' .
             (string) $page_count . ' pages (cost ' . (string) $cost . ', balance ' .
             (string) $tokens . ', ' . (string) $active_count . ' active): ' . $reason);
 
