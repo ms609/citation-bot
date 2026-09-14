@@ -50,6 +50,20 @@ function page_details_from_api_response(mixed $details): ?array {
     }
     $my_details = $pages[0];
 
+    if (property_exists($my_details, 'lastrevid')) {
+        $last_revision_id = $my_details->lastrevid;
+        if (
+            is_string($last_revision_id) &&
+            preg_match('~\A\d+\z~D', $last_revision_id) === 1
+        ) {
+            $last_revision_id = parse_decimal_integer($last_revision_id);
+        }
+        if (!is_int($last_revision_id) || $last_revision_id < 0) {
+            return null;
+        }
+        $my_details->lastrevid = $last_revision_id;
+    }
+
     $read_at = $details->curtimestamp ?? '';
     if (!is_scalar($read_at)) {
         $read_at = '';
@@ -114,7 +128,11 @@ class Page {
             report_warning("Page invalid: " . (isset($details->invalidreason) ? echoable((string) $details->invalidreason) : ''));
             return false;
         }
-        if ( !isset($details->touched) || !isset($details->lastrevid)) {
+        if (
+            !isset($details->touched) ||
+            !isset($details->lastrevid) ||
+            !is_int($details->lastrevid)
+        ) {
             report_warning("Could not even get the page.     Perhaps non-existent?");
             return false;
         }
@@ -144,7 +162,7 @@ class Page {
 
         $this->title = (string) $details->title;
         self::$last_title = $this->title;
-        $this->lastrevid = (int) $details->lastrevid;
+        $this->lastrevid = $details->lastrevid;
 
         $this->text = WikipediaBot::get_a_page($title);
 

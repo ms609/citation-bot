@@ -35,6 +35,37 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         ];
     }
 
+    public function testDecodeObjectResponseAcceptsJsonObject(): void {
+        $decoded = WikipediaBot::decode_object_response(
+            '{"query":{"pages":{}}}'
+        );
+
+        $this->assertTrue(isset($decoded->query));
+        $this->assertInstanceOf(stdClass::class, $decoded->query);
+    }
+
+    #[DataProvider('nonObjectJsonResponseProvider')]
+    public function testDecodeObjectResponseRejectsNonObjectJson(string $json): void {
+        $decoded = WikipediaBot::decode_object_response($json);
+
+        $this->assertSame([], get_object_vars($decoded));
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function nonObjectJsonResponseProvider(): array {
+        return [
+            'array' => ['[]'],
+            'null' => ['null'],
+            'string' => ['"unexpected"'],
+            'integer' => ['42'],
+            'float' => ['12.5'],
+            'boolean' => ['true'],
+            'invalid json' => ['not json'],
+        ];
+    }
+
     public function testRetOkayAcceptsResponseWithoutError(): void {
         $response = (object) [
             'batchcomplete' => true,

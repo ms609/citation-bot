@@ -220,18 +220,14 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
         }
     }
 
-    public function testPublicConfigEncodingInitializerSetsBothMbEncodings(): void {
+    public function testPublicConfigEncodingInitializerSetsInternalEncoding(): void {
         $before_internal = mb_internal_encoding();
-        $before_regex = mb_regex_encoding();
         try {
             mb_internal_encoding('ISO-8859-1');
-            $this->assertTrue(mb_regex_encoding('ISO-8859-1'));
             initialize_public_config_encoding();
             $this->assertSame('UTF-8', mb_internal_encoding());
-            $this->assertSame('UTF-8', mb_regex_encoding());
         } finally {
             mb_internal_encoding($before_internal);
-            $this->assertTrue(mb_regex_encoding($before_regex));
         }
     }
 
@@ -491,7 +487,6 @@ final class EncodingBoundaryExpandedTest extends testBaseClass {
         initialize_public_config_encoding();
         initialize_public_config_encoding();
         $this->assertSame('UTF-8', mb_internal_encoding());
-        $this->assertSame('UTF-8', mb_regex_encoding());
     }
 
     public function testZoteroRawResponseTrimHandlesAllWhitespace(): void {

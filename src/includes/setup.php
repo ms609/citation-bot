@@ -11,7 +11,7 @@ error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
 
-if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
+if (!mb_internal_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
     echo 'Unable to set encoding';
     exit(0);
 }

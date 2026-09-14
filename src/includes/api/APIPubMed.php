@@ -438,7 +438,11 @@ function do_pumbed_query(Template $template, array $terms): array {
     // @codeCoverageIgnoreEnd
 
     if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
-        return [(string) $xml->IdList->Id[0], (int) (string) $xml->Count, $terms]; // first results; number of results
+        $count = parse_decimal_integer((string) $xml->Count);
+        if ($count === null || $count < 0) {
+            return ['', 0, []];
+        }
+        return [(string) $xml->IdList->Id[0], $count, $terms]; // first results; number of results
     } else {
         return ['', 0, []];
     }

@@ -6,7 +6,7 @@ if (file_exists(__DIR__ . '/env.php')) {
 }
 require_once __DIR__ . '/includes/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
-session_start();
+session_start(public_session_start_options());
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
