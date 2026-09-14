@@ -172,7 +172,16 @@ not reorder FastCGI requests after they reach the web server.
   `large_full`, `tokens`, `retry_later`, `lease_lost`, promotion failures, and
   invalid-state reasons including `state_unreadable`, `state_empty`,
   `state_oversized`, `json_decode`, `top_level_schema`, `top_level_numeric`,
-  `entry_schema`, and `entry_value`.
+  `entry_schema`, and `entry_value`.- **Operator recovery:** strict whole-snapshot validation deliberately does not
+  auto-heal malformed state. An invalid snapshot emits a prominent
+  `INVALID SHARED STATE (...)` log line while bulk admission remains
+  fail-closed. Diagnose with `php tools/reset_big_run_state.php --check`.
+  After draining/quiescing bulk workers, recover with
+  `php tools/reset_big_run_state.php --reset`. Reset holds the permanent
+  `big-run.lock`, rejects unsafe paths or lock contention, preserves any
+  existing regular snapshot as a timestamped same-directory `.recovery-*`
+  backup, and atomically installs an empty state with a full token bucket.
+  Do not expose reset through HTTP and do not delete `big-run.lock`.
 
 Implementation lives in `src/includes/RequestRateLimit.php`; web admission and
 response buffering are in `src/includes/WebTools.php`; bounded discovery is in

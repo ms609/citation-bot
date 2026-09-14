@@ -501,6 +501,38 @@ function big_run_log(string $event, array $fields = []): void {
 }
 
 /**
+ * Record an invalid shared snapshot and emit an operator-visible recovery hint.
+ *
+ * Raw snapshot contents are intentionally never logged.
+ *
+ * @param array<string, scalar|null> $fields
+ */
+function big_run_log_state_invalid(string $reason, array $fields = []): void {
+    $GLOBALS['citation_bot_big_run_last_state_invalid_reason'] = $reason;
+    big_run_log('state_invalid', ['reason' => $reason] + $fields);
+
+    static $reported = [];
+    if (isset($reported[$reason])) {
+        return;
+    }
+    $reported[$reason] = true;
+    error_log(
+        'Citation Bot big-run gate: INVALID SHARED STATE (' . $reason . '); ' .
+        'bulk admission is FAIL-CLOSED. Diagnose with `php tools/reset_big_run_state.php --check`; ' .
+        'after draining/quiescing bulk workers recover with `php tools/reset_big_run_state.php --reset`.'
+    );
+}
+
+function big_run_last_state_invalid_reason(): ?string {
+    $reason = $GLOBALS['citation_bot_big_run_last_state_invalid_reason'] ?? null;
+    return is_string($reason) ? $reason : null;
+}
+
+function big_run_clear_last_state_invalid_reason(): void {
+    unset($GLOBALS['citation_bot_big_run_last_state_invalid_reason']);
+}
+
+/**
  * Log a gate-infrastructure failure once per request without reusing the
  * generic token-bucket logger, whose documented fallback is fail-open.
  */
@@ -535,7 +567,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
     $entries = [];
 
     if (is_link($state_path)) {
-        big_run_log('state_invalid', ['reason' => 'state_path_symlink']);
+        big_run_log_state_invalid('state_path_symlink');
         return [$tokens, $updated, $entries, false];
     }
     if (!file_exists($state_path)) {
@@ -544,7 +576,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
 
     $state_stat = @lstat($state_path);
     if (!is_array($state_stat) || (($state_stat['mode'] & 0170000) !== 0100000)) {
-        big_run_log('state_invalid', ['reason' => 'state_path_not_regular']);
+        big_run_log_state_invalid('state_path_not_regular');
         return [$tokens, $updated, $entries, false];
     }
 
@@ -556,15 +588,15 @@ function big_run_read_state_file(string $state_path, float $now): array {
         BIG_RUN_STATE_MAX_BYTES + 1
     );
     if (!is_string($raw_state)) {
-        big_run_log('state_invalid', ['reason' => 'state_unreadable']);
+        big_run_log_state_invalid('state_unreadable');
         return [$tokens, $updated, $entries, false];
     }
     if ($raw_state === '') {
-        big_run_log('state_invalid', ['reason' => 'state_empty']);
+        big_run_log_state_invalid('state_empty');
         return [$tokens, $updated, $entries, false];
     }
     if (mb_strlen($raw_state, '8bit') > BIG_RUN_STATE_MAX_BYTES) {
-        big_run_log('state_invalid', ['reason' => 'state_oversized']);
+        big_run_log_state_invalid('state_oversized');
         return [$tokens, $updated, $entries, false];
     }
 
@@ -572,8 +604,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
         $state = json_decode($raw_state, true, 512, JSON_THROW_ON_ERROR);
     } catch (JsonException $exception) {
         // Keep malformed state fail-closed without logging its contents.
-        big_run_log('state_invalid', [
-            'reason' => 'json_decode',
+        big_run_log_state_invalid('json_decode', [
             'json_error' => $exception->getCode(),
         ]);
         return [$tokens, $updated, $entries, false];
@@ -586,7 +617,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
         !array_key_exists('entries', $state) ||
         !is_array($state['entries'])
     ) {
-        big_run_log('state_invalid', ['reason' => 'top_level_schema']);
+        big_run_log_state_invalid('top_level_schema');
         return [$tokens, $updated, $entries, false];
     }
 
@@ -598,7 +629,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
         $saved_tokens < 0.0 ||
         $saved_updated < 0.0
     ) {
-        big_run_log('state_invalid', ['reason' => 'top_level_numeric']);
+        big_run_log_state_invalid('top_level_numeric');
         return [$tokens, $updated, $entries, false];
     }
 
@@ -619,7 +650,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
             !in_array($entry['tier'], ['small', 'large'], true) ||
             !in_array($entry['phase'], ['probe', 'discovery', 'running'], true)
         ) {
-            big_run_log('state_invalid', ['reason' => 'entry_schema']);
+            big_run_log_state_invalid('entry_schema');
             return [$tokens, $updated, [], false];
         }
 
@@ -633,7 +664,7 @@ function big_run_read_state_file(string $state_path, float $now): array {
             $last_seen_at < $started_at ||
             ($entry['phase'] === 'probe' && $entry['tier'] !== 'small')
         ) {
-            big_run_log('state_invalid', ['reason' => 'entry_value']);
+            big_run_log_state_invalid('entry_value');
             return [$tokens, $updated, [], false];
         }
 
@@ -715,6 +746,248 @@ function big_run_store_state_file(string $state_path, float $tokens, float $upda
 
     @chmod($state_path, 0600);
     return true;
+}
+
+/**
+ * Inspect shared big-run state under the permanent lock without changing it.
+ *
+ * @return array{
+ *   ok: bool,
+ *   reason: string|null,
+ *   state_path: string,
+ *   lease_entries: int|null,
+ *   tokens: float|null
+ * }
+ */
+function big_run_recovery_check(
+    ?string $base_directory = null,
+    ?float $now = null,
+    int $lock_attempts = 2500
+): array {
+    if ($lock_attempts < 1) {
+        throw new InvalidArgumentException('Recovery lock attempts must be positive.');
+    }
+
+    $base_directory = $base_directory ?? request_rate_limit_base_directory();
+    if ($base_directory === '') {
+        return [
+            'ok' => false,
+            'reason' => 'base_directory_empty',
+            'state_path' => '',
+            'lease_entries' => null,
+            'tokens' => null,
+        ];
+    }
+
+    $state_path = big_run_state_path($base_directory);
+    $lock_handle = big_run_open_lock_handle($base_directory);
+    if ($lock_handle === false) {
+        return [
+            'ok' => false,
+            'reason' => 'lock_open_failed',
+            'state_path' => $state_path,
+            'lease_entries' => null,
+            'tokens' => null,
+        ];
+    }
+
+    $locked = false;
+    try {
+        $locked = big_run_try_lock($lock_handle, $lock_attempts);
+        if (!$locked) {
+            return [
+                'ok' => false,
+                'reason' => 'lock_busy',
+                'state_path' => $state_path,
+                'lease_entries' => null,
+                'tokens' => null,
+            ];
+        }
+
+        $now = big_run_resolve_now($now);
+        big_run_clear_last_state_invalid_reason();
+        [$tokens, , $entries, $valid] = big_run_read_state_file($state_path, $now);
+        if (!$valid) {
+            return [
+                'ok' => false,
+                'reason' => big_run_last_state_invalid_reason() ?? 'state_invalid',
+                'state_path' => $state_path,
+                'lease_entries' => null,
+                'tokens' => null,
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'reason' => null,
+            'state_path' => $state_path,
+            'lease_entries' => count($entries),
+            'tokens' => $tokens,
+        ];
+    } finally {
+        if ($locked) {
+            @flock($lock_handle, LOCK_UN);
+        }
+        fclose($lock_handle);
+    }
+}
+
+function big_run_recovery_backup_path(string $state_path): ?string {
+    $timestamp = gmdate('Ymd\THis\Z');
+    $pid = getmypid();
+    $pid_text = is_int($pid) ? (string) $pid : 'pid';
+
+    for ($suffix = 0; $suffix < 100; ++$suffix) {
+        $candidate = $state_path . '.recovery-' . $timestamp . '-' . $pid_text;
+        if ($suffix > 0) {
+            $candidate .= '-' . (string) $suffix;
+        }
+        clearstatcache(true, $candidate);
+        if (@lstat($candidate) === false) {
+            return $candidate;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Operator-requested shared-state reset.
+ *
+ * Caller should drain/quiesce bulk workers first. The permanent lock is held
+ * across backup + reset. Any existing regular snapshot is renamed to a
+ * timestamped same-directory backup before an atomically written fresh state
+ * is installed. On write failure the old snapshot is restored when possible.
+ *
+ * @return array{ok: bool, reason: string|null, state_path: string, backup_path: string|null}
+ */
+function big_run_recovery_reset(
+    ?string $base_directory = null,
+    ?float $now = null,
+    int $lock_attempts = 2500
+): array {
+    if ($lock_attempts < 1) {
+        throw new InvalidArgumentException('Recovery lock attempts must be positive.');
+    }
+
+    $base_directory = $base_directory ?? request_rate_limit_base_directory();
+    if ($base_directory === '') {
+        return [
+            'ok' => false,
+            'reason' => 'base_directory_empty',
+            'state_path' => '',
+            'backup_path' => null,
+        ];
+    }
+
+    $state_path = big_run_state_path($base_directory);
+    $lock_handle = big_run_open_lock_handle($base_directory);
+    if ($lock_handle === false) {
+        return [
+            'ok' => false,
+            'reason' => 'lock_open_failed',
+            'state_path' => $state_path,
+            'backup_path' => null,
+        ];
+    }
+
+    $locked = false;
+    $backup_path = null;
+    try {
+        $locked = big_run_try_lock($lock_handle, $lock_attempts);
+        if (!$locked) {
+            return [
+                'ok' => false,
+                'reason' => 'lock_busy',
+                'state_path' => $state_path,
+                'backup_path' => null,
+            ];
+        }
+
+        if (is_link($state_path)) {
+            return [
+                'ok' => false,
+                'reason' => 'state_path_symlink',
+                'state_path' => $state_path,
+                'backup_path' => null,
+            ];
+        }
+
+        if (file_exists($state_path)) {
+            $state_stat = @lstat($state_path);
+            if (!is_array($state_stat) || (($state_stat['mode'] & 0170000) !== 0100000)) {
+                return [
+                    'ok' => false,
+                    'reason' => 'state_path_not_regular',
+                    'state_path' => $state_path,
+                    'backup_path' => null,
+                ];
+            }
+
+            $backup_path = big_run_recovery_backup_path($state_path);
+            if ($backup_path === null || !@rename($state_path, $backup_path)) {
+                return [
+                    'ok' => false,
+                    'reason' => 'backup_failed',
+                    'state_path' => $state_path,
+                    'backup_path' => null,
+                ];
+            }
+            @chmod($backup_path, 0600);
+        }
+
+        $now = big_run_resolve_now($now);
+        if (
+            !big_run_store_state_file(
+                $state_path,
+                (float) big_run_token_capacity(),
+                $now,
+                []
+            )
+        ) {
+            if ($backup_path !== null) {
+                if (!@rename($backup_path, $state_path)) {
+                    big_run_log_failure(
+                        'operator reset write failed and previous snapshot could not be restored',
+                        'manual_recovery_required'
+                    );
+                    return [
+                        'ok' => false,
+                        'reason' => 'reset_write_and_rollback_failed',
+                        'state_path' => $state_path,
+                        'backup_path' => $backup_path,
+                    ];
+                }
+                @chmod($state_path, 0600);
+                $backup_path = null;
+            }
+
+            return [
+                'ok' => false,
+                'reason' => 'reset_write_failed',
+                'state_path' => $state_path,
+                'backup_path' => null,
+            ];
+        }
+
+        big_run_clear_last_state_invalid_reason();
+        big_run_log('operator_state_reset', [
+            'effect' => 'leases_cleared_tokens_full',
+            'backup' => $backup_path === null ? null : basename($backup_path),
+        ]);
+
+        return [
+            'ok' => true,
+            'reason' => null,
+            'state_path' => $state_path,
+            'backup_path' => $backup_path,
+        ];
+    } finally {
+        if ($locked) {
+            @flock($lock_handle, LOCK_UN);
+        }
+        fclose($lock_handle);
+    }
 }
 
 /**

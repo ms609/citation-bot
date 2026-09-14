@@ -168,7 +168,14 @@ and does not reorder already-arrived FastCGI requests.
   Snapshots are capped at 64 KiB. Every persisted lease entry is mandatory-schema
   data (`started_at`, `tier`, `last_seen_at`, `phase`); any malformed entry makes
   the whole snapshot invalid/fail-closed. Invalid-state logs identify the failure
-  class but must never include raw snapshot contents.
+  class but must never include raw snapshot contents.- **Operator recovery:** never make malformed state self-heal or fail open.
+  `tools/reset_big_run_state.php --check` diagnoses shared state under the
+  permanent lock. `--reset` is an operator-only recovery action: drain/quiesce
+  bulk workers first, acquire `big-run.lock`, preserve the previous regular
+  snapshot as `.recovery-*`, and atomically install fresh empty/full-token
+  state. The reset must refuse symlinked/non-regular state, unsafe state roots,
+  and lock contention. There is intentionally no HTTP reset path. Keep
+  `big-run.lock`; retained recovery snapshots are forensic/operator artifacts.
 - **Liveness:** common cURL hooks renew before/after transfers and from the
   libcurl progress callback while `curl_exec()` is active; page-loop
   hooks remain an additional renewal point. Shared heartbeat interval stays

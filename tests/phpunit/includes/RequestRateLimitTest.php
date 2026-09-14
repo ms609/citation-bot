@@ -1510,4 +1510,101 @@ PHP;
         $this->assertIsArray($state);
         return $state;
     }
+
+    public function testBigRunRecoveryCheckReportsMalformedStateReason(): void {
+        $this->writeBigRunState('{not-json');
+
+        $result = big_run_recovery_check(null, 100.0, 1);
+        $this->assertFalse($result['ok']);
+        $this->assertSame('json_decode', $result['reason']);
+        $this->assertSame($this->bigRunStatePath(), $result['state_path']);
+        $this->assertNull($result['lease_entries']);
+        $this->assertNull($result['tokens']);
+    }
+
+    public function testBigRunRecoveryCheckReportsValidState(): void {
+        $entries = [
+            'active' => [
+                'started_at' => 90.0,
+                'tier' => 'small',
+                'last_seen_at' => 95.0,
+                'phase' => 'running',
+            ],
+        ];
+        $this->writeBigRunState(
+            '{"tokens":123.0,"updated":100.0,"entries":' .
+            json_encode($entries, JSON_THROW_ON_ERROR) . '}'
+        );
+
+        $result = big_run_recovery_check(null, 100.0, 1);
+        $this->assertTrue($result['ok']);
+        $this->assertNull($result['reason']);
+        $this->assertSame(1, $result['lease_entries']);
+        $this->assertSame(123.0, $result['tokens']);
+    }
+
+    public function testBigRunRecoveryResetPreservesSnapshotAndWritesFreshState(): void {
+        $raw = '{not-json';
+        $this->writeBigRunState($raw);
+
+        $result = big_run_recovery_reset(null, 100.0, 1);
+        $this->assertTrue($result['ok']);
+        $this->assertNull($result['reason']);
+        $this->assertIsString($result['backup_path']);
+        $this->assertFileExists($result['backup_path']);
+        $this->assertSame($raw, file_get_contents($result['backup_path']));
+
+        $state = $this->readBigRunState();
+        $this->assertIsArray($state);
+        $this->assertSame((float) big_run_token_capacity(), $state['tokens']);
+        $this->assertSame(100.0, $state['updated']);
+        $this->assertSame([], $state['entries']);
+
+        $state_mode = fileperms($this->bigRunStatePath());
+        $backup_mode = fileperms($result['backup_path']);
+        $directory_mode = fileperms(dirname($this->bigRunStatePath()));
+        $this->assertIsInt($state_mode);
+        $this->assertIsInt($backup_mode);
+        $this->assertIsInt($directory_mode);
+        $this->assertSame(0600, $state_mode & 0777);
+        $this->assertSame(0600, $backup_mode & 0777);
+        $this->assertSame(0700, $directory_mode & 0777);
+    }
+
+    public function testBigRunRecoveryResetRefusesBusyPermanentLock(): void {
+        $lock_handle = big_run_open_lock_handle($this->base_directory);
+        $this->assertIsResource($lock_handle);
+
+        try {
+            $this->assertTrue(flock($lock_handle, LOCK_EX | LOCK_NB));
+            $result = big_run_recovery_reset(null, 100.0, 1);
+            $this->assertFalse($result['ok']);
+            $this->assertSame('lock_busy', $result['reason']);
+        } finally {
+            flock($lock_handle, LOCK_UN);
+            fclose($lock_handle);
+        }
+    }
+
+    public function testBigRunRecoveryResetRejectsSymlinkStatePath(): void {
+        $state_directory = dirname($this->bigRunStatePath());
+        if (!is_dir($state_directory)) {
+            $this->assertTrue(mkdir($state_directory, 0700, true));
+        }
+
+        $outside = $this->base_directory . DIRECTORY_SEPARATOR . 'outside-state';
+        $this->assertNotFalse(file_put_contents($outside, 'do-not-touch'));
+        if (!@symlink($outside, $this->bigRunStatePath())) {
+            @unlink($outside);
+            $this->markTestSkipped('symlink support is required for this recovery test');
+        }
+
+        $result = big_run_recovery_reset(null, 100.0, 1);
+        $this->assertFalse($result['ok']);
+        $this->assertSame('state_path_symlink', $result['reason']);
+        $this->assertSame('do-not-touch', file_get_contents($outside));
+
+        @unlink($this->bigRunStatePath());
+        @unlink($outside);
+    }
 }
