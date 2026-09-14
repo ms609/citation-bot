@@ -77,7 +77,7 @@ final class Zotero {
         return urlencode($url);
     }
 
-    private static function normalize_zotero_result(object $result, string $url): bool {
+    private static function normalize_zotero_result(stdClass $result, string $url): bool {
         $scalar_fields = [
             'title',
             'publicationTitle',
@@ -525,7 +525,7 @@ final class Zotero {
         }
         if (is_array($result)) {
             $result = (object) $result;
-        } elseif (!is_object($result)) {
+        } elseif (!$result instanceof stdClass) {
             report_warning(
                 "Zotero JSON item was not an object for URL " . echoable($url) . ": " .
                 echoable(self::raw_response_excerpt($zotero_response))
