@@ -174,7 +174,7 @@ function request_rate_limit_log_failure(string $bucket, string $reason): void {
     }
 
     $reported[$key] = true;
-    error_log('Citation Bot rate limiter (' . $bucket . '): ' . $reason . '; failing open.');
+    bot_debug_log('Citation Bot rate limiter (' . $bucket . '): ' . $reason . '; failing open.');
 }
 
 // Big-run gate: single-page processing (<= BIG_RUN_PAGE_THRESHOLD pages)
@@ -497,7 +497,7 @@ function big_run_refill_tokens(float $tokens, float $updated, float $now): array
 function big_run_log(string $event, array $fields = []): void {
     $payload = ['event' => $event] + $fields;
     $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES);
-    error_log('Citation Bot big-run gate: ' . (is_string($encoded) ? $encoded : $event));
+    bot_debug_log('Citation Bot big-run gate: ' . (is_string($encoded) ? $encoded : $event));
 }
 
 /**
@@ -517,7 +517,7 @@ function big_run_log_state_invalid(string $reason, array $fields = []): void {
         return;
     }
     $reported[$reason] = true;
-    error_log(
+    bot_debug_log(
         'Citation Bot big-run gate: INVALID SHARED STATE (' . $reason . '); ' .
         'bulk admission is FAIL-CLOSED and no automatic recovery will run. ' .
         'Diagnose with `php tools/reset_big_run_state.php --check`; after draining/quiescing bulk workers ' .
