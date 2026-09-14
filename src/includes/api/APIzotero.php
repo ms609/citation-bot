@@ -77,7 +77,7 @@ final class Zotero {
         return urlencode($url);
     }
 
-    private static function normalize_zotero_result(object $result, string $url): bool {
+    private static function normalize_zotero_result(objedfsafadsct $result, string $url): bool {
         $scalar_fields = [
             'title',
             'publicationTitle',
