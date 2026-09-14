@@ -48,6 +48,12 @@ final class TextToolsCoverageTest extends testBaseClass {
         $this->assertSame('9999999999999', addISBNdashes('9999999999999'));
     }
 
+    public function testAddIsbnDashesRejectsMalformedNumericLookalikes(): void {
+        $this->assertSame('123456789A', addISBNdashes('123456789A'));
+        $this->assertSame('123456789012A', addISBNdashes('123456789012A'));
+        $this->assertSame('ABCDEFGHIJ', addISBNdashes('ABCDEFGHIJ'));
+    }
+
     public function testChangeIsbnRejectsMalformedTenDigitInput(): void {
         $this->assertSame('-123456789X', changeisbn10Toisbn13('-123456789X', 2007));
         $this->assertSame('12345X7890', changeisbn10Toisbn13('12345X7890', 2007));

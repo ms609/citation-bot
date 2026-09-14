@@ -4,6 +4,43 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/constants.php';     // @codeCoverageIgnore
 
+/**
+ * Parse a complete base-10 integer string without relying on PHP's fuzzy
+ * string-to-int cast behavior.
+ */
+function parse_decimal_integer(string $value): ?int {
+    $value = mb_trim($value);
+    if (preg_match('~\A([+-]?)(\d+)\z~D', $value, $matches) !== 1) {
+        return null;
+    }
+
+    // FILTER_VALIDATE_INT rejects otherwise valid decimal strings with
+    // leading zeroes, so normalize those before using it for the range check.
+    $digits = mb_ltrim($matches[2], '0');
+    if ($digits === '') {
+        return 0;
+    }
+    $normalized = ($matches[1] === '-' ? '-' : ($matches[1] === '+' ? '+' : '')) . $digits;
+    $parsed = filter_var($normalized, FILTER_VALIDATE_INT);
+
+    return is_int($parsed) ? $parsed : null;
+}
+
+/**
+ * Explicitly parse a leading base-10 integer from a string.
+ *
+ * This is for inputs where Citation Bot historically and intentionally used
+ * the numeric prefix (for example "12A").  Keeping that parsing explicit
+ * avoids relying on fuzzy casts while preserving the established behavior.
+ */
+function parse_decimal_integer_prefix(string $value): ?int {
+    if (preg_match('~\A[ \t\r\n\f\v]*([+-]?\d+)~D', $value, $matches) !== 1) {
+        return null;
+    }
+
+    return parse_decimal_integer($matches[1]);
+}
+
 function mathml_safe_preg_replace_callback(string $regex, callable $replace, string $old): string {
     $new = @preg_replace_callback($regex, $replace, $old);
     return $new ?? $old;
