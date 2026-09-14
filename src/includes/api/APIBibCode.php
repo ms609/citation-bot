@@ -279,15 +279,21 @@ function expand_by_adsabs(Template $template): void {
     if ($result->numFound === 1) {
         $record = $result->docs[0];
         if (isset($record->year) && $template->year()) {
-            $diff = abs((int) $record->year - (int) $template->year()); // Check for book reviews (fuzzy >2 for arxiv data)
+            $record_year = parse_decimal_integer_prefix((string) $record->year);
+            $template_year = parse_decimal_integer_prefix($template->year());
+            if ($record_year === null || $template_year === null) {
+                return;
+            }
+            // Check for book reviews (difference >2 is allowed for arXiv data).
+            $diff = abs($record_year - $template_year);
             $today = (int) date("Y");
             if ($diff > 2) {
                 return;
             }
-            if ($record->year < $today - 5 && $diff > 1) {
+            if ($record_year < $today - 5 && $diff > 1) {
                 return;
             }
-            if ($record->year < $today - 10 && $diff !== 0) {
+            if ($record_year < $today - 10 && $diff !== 0) {
                 return;
             }
             if ($template->has('doi') && $diff !== 0) {

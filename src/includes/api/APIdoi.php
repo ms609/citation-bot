@@ -204,13 +204,17 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
             $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
-            if ((int) $crossRef->volume > 0) {
-                $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
+            $crossref_volume = (string) $crossRef->volume;
+            $crossref_volume_number = parse_decimal_integer_prefix($crossref_volume);
+            if ($crossref_volume_number !== null && $crossref_volume_number > 0) {
+                $template->add_if_new('volume', $crossref_volume, 'crossref');
             }
-            if (((mb_strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
+            $crossref_issue = (string) $crossRef->issue;
+            $crossref_issue_number = parse_decimal_integer_prefix($crossref_issue);
+            if (mb_strpos($crossref_issue, '-') > 0 || ($crossref_issue_number !== null && $crossref_issue_number > 1)) {
                 // "1" may refer to a journal without issue numbers,
                 //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.    Best ignore.
-                $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
+                $template->add_if_new('issue', $crossref_issue, 'crossref');
             }
             if ($template->blank("page")) {
                 if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
@@ -278,7 +282,7 @@ function query_crossref(string $doi): ?SimpleXMLElement {
             $result = $xml->query_result->body->query;
             if ((string) @$result["status"] === "resolved") {
                 if (mb_stripos($doi, '10.1515/crll') === 0) {
-                    $volume = intval(mb_trim((string) @$result->volume));
+                    $volume = parse_decimal_integer_prefix(mb_trim((string) @$result->volume)) ?? 0;
                     if ($volume > 1820) {
                         if (isset($result->issue)) {
                             /** @psalm-suppress UndefinedPropertyAssignment */
@@ -693,23 +697,33 @@ function get_doi_from_crossref(Template $template): void {
     }
     report_action("Checking CrossRef database for doi. ");
     $page_range = $template->page_range();
+    $year = null;
+    if (preg_match('~\A[ \t\r\n\f\v]*\+?([12]\d{3})~D', $template->year(), $year_match) === 1) {
+        $year = parse_decimal_integer($year_match[1]);
+    }
     $data = [
         'title' => de_wikify($template->get('title')),
         'journal' => de_wikify($template->get('journal')),
         'author' => $template->first_surname(),
-        'year' => (int) preg_replace("~([12]\d{3}).*~", "$1", $template->year()),
+        'year' => $year,
         'volume' => $template->get('volume'),
         'start_page' => (string) @$page_range[1],
         'end_page' => (string) @$page_range[2],
         'issn' => $template->get('issn'),
     ];
 
-    if ($data['year'] < 1900 || $data['year'] > (int) date("Y") + 3) {
+    if ($data['year'] === null || $data['year'] < 1900 || $data['year'] > (int) date("Y") + 3) {
         $data['year'] = null;
     } else {
         $data['year'] = (string) $data['year'];
     }
-    if ((int) $data['end_page'] < (int) $data['start_page']) {
+    $start_page_number = parse_decimal_integer_prefix($data['start_page']);
+    $end_page_number = parse_decimal_integer_prefix($data['end_page']);
+    if (
+        $start_page_number !== null &&
+        $end_page_number !== null &&
+        $end_page_number < $start_page_number
+    ) {
         $data['end_page'] = null;
     }
 

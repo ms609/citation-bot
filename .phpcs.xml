@@ -68,17 +68,22 @@
                 <element key="is_long" value="is_int"/>
                 <element key="lcg_value" value="null"/>
                 <element key="ltrim" value="mb_ltrim"/>
+                <element key="mb_ereg" value="null"/>
                 <element key="mb_ereg_match" value="null"/>
+                <element key="mb_ereg_replace" value="null"/>
                 <element key="mb_ereg_replace_callback" value="null"/>
-                <element key="mb_ereg_replaces" value="null"/>
+                <element key="mb_ereg_search" value="null"/>
                 <element key="mb_ereg_search_getpos" value="null"/>
                 <element key="mb_ereg_search_getregs" value="null"/>
                 <element key="mb_ereg_search_init" value="null"/>
                 <element key="mb_ereg_search_pos" value="null"/>
                 <element key="mb_ereg_search_regs" value="null"/>
-                <element key="mb_ereg" value="null"/>
+                <element key="mb_ereg_search_setpos" value="null"/>
+                <element key="mb_eregi" value="null"/>
                 <element key="mb_eregi_replace" value="null"/>
+                <element key="mb_regex_encoding" value="null"/>
                 <element key="mb_regex_set_options" value="null"/>
+                <element key="mb_split" value="null"/>
                 <element key="mysqli_execute" value="null"/>
                 <element key="mysqli_get_charset" value="null"/>
                 <element key="mysqli_kill" value="null"/>

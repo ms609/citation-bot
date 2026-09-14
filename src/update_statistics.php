@@ -25,8 +25,8 @@ foreach ($argv ?? [] as $arg) {
     if ($arg === '--dry-run' || $arg === '--dry_run') {
         $dry_run = true;
     } elseif (str_starts_with($arg, '--hours=')) {
-        $val = (int) mb_substr($arg, 8);
-        if ($val >= 1 && $val <= 168) {
+        $val = parse_decimal_integer(mb_substr($arg, 8));
+        if ($val !== null && $val >= 1 && $val <= 168) {
             $window_hours = $val;
         }
     } elseif (str_starts_with($arg, '--user=')) {
@@ -98,8 +98,8 @@ $last_rev = 0;
 $read_at = '';
 if ($parsed !== null) {
     [$my_details, $read_at] = $parsed;
-    if (isset($my_details->lastrevid) && is_scalar($my_details->lastrevid)) {
-        $last_rev = (int) $my_details->lastrevid;
+    if (isset($my_details->lastrevid) && is_int($my_details->lastrevid)) {
+        $last_rev = $my_details->lastrevid;
     }
 }
 
