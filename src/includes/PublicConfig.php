@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function initialize_public_config_encoding(): void { // PHAN realizes this should always be false
     // @phpstan-ignore-next-line
-    if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) {
+    if (!mb_internal_encoding('UTF-8')) {
         throw new RuntimeException('Unable to initialize UTF-8 encoding');
     }
 }
