@@ -962,7 +962,6 @@ function big_run_recovery_reset(
                     ];
                 }
                 @chmod($state_path, 0600);
-                $backup_path = null;
             }
 
             return [
