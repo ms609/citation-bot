@@ -523,7 +523,15 @@ final class Zotero {
         } else {
             $result = $zotero_data[0];
         }
-        $result = (object) $result;
+        if (is_array($result)) {
+            $result = (object) $result;
+        } elseif (!is_object($result)) {
+            report_warning(
+                "Zotero JSON item was not an object for URL " . echoable($url) . ": " .
+                echoable(self::raw_response_excerpt($zotero_response))
+            );
+            return;
+        }
 
         if (!self::normalize_zotero_result($result, $url)) {
             return;

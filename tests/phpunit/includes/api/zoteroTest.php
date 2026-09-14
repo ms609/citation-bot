@@ -247,6 +247,35 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    #[DataProvider('zoteroScalarArrayItemProvider')]
+    public function testZoteroResponseRejectsScalarArrayItem(mixed $item): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $zotero_response = json_encode([$item], JSON_THROW_ON_ERROR);
+
+        Zotero::process_zotero_response(
+            $zotero_response,
+            $template,
+            'https://example.test/article',
+            0
+        );
+
+        $this->assertSame($text, $template->parsed_text());
+    }
+
+    /**
+     * @return array<string, array{mixed}>
+     */
+    public static function zoteroScalarArrayItemProvider(): array {
+        return [
+            'integer' => [42],
+            'float' => [12.5],
+            'string' => ['unexpected scalar'],
+            'boolean true' => [true],
+            'boolean false' => [false],
+        ];
+    }
+
     public function testZoteroResponseRejectsMalformedCreatorEntry(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
