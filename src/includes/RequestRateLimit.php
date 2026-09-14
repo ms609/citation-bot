@@ -505,6 +505,7 @@ function big_run_log(string $event, array $fields = []): void {
  *
  * Raw snapshot contents are intentionally never logged.
  *
+ * @param string $reason
  * @param array<string, scalar|null> $fields
  */
 function big_run_log_state_invalid(string $reason, array $fields = []): void {

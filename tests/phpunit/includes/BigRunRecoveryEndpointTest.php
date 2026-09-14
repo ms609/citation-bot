@@ -38,9 +38,9 @@ final class BigRunRecoveryEndpointTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testResetRequiresAuthenticatedPostAndExplicitConfirmation(): void {
-        $auth = strpos($this->source, 'hash_equals($deployPassword, $password_in)');
-        $confirmation = strpos($this->source, "if (\$confirm_reset !== 'yes')");
-        $reset = strpos($this->source, '$result = big_run_recovery_reset();');
+        $auth = mb_strpos($this->source, 'hash_equals($deployPassword, $password_in)');
+        $confirmation = mb_strpos($this->source, "if (\$confirm_reset !== 'yes')");
+        $reset = mb_strpos($this->source, '$result = big_run_recovery_reset();');
 
         $this->assertIsInt($auth);
         $this->assertIsInt($confirmation);
