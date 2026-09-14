@@ -22,6 +22,49 @@ final class pageTest extends testBaseClass {
         ));
     }
 
+    public function testPageDetailsParserNormalizesRevisionId(): void {
+        $page = (object) [
+            'title' => 'Example',
+            'lastrevid' => '000456',
+        ];
+        $parsed = page_details_from_api_response((object) [
+            'curtimestamp' => '2026-09-14T14:00:00Z',
+            'query' => (object) ['pages' => (object) ['1' => $page]],
+        ]);
+
+        $this->assertNotNull($parsed);
+        $this->assertSame(456, $parsed[0]->lastrevid);
+    }
+
+    #[DataProvider('invalidLastRevisionIdProvider')]
+    public function testPageDetailsParserRejectsInvalidRevisionId(mixed $last_revision_id): void {
+        $page = (object) [
+            'title' => 'Example',
+            'lastrevid' => $last_revision_id,
+        ];
+
+        $this->assertNull(page_details_from_api_response((object) [
+            'curtimestamp' => '2026-09-14T14:00:00Z',
+            'query' => (object) ['pages' => (object) ['1' => $page]],
+        ]));
+    }
+
+    /**
+     * @return array<string, array{mixed}>
+     */
+    public static function invalidLastRevisionIdProvider(): array {
+        return [
+            'fuzzy numeric string' => ['456junk'],
+            'fractional string' => ['456.5'],
+            'negative string' => ['-1'],
+            'negative integer' => [-1],
+            'boolean' => [true],
+            'float' => [456.0],
+            'null' => [null],
+            'array' => [[456]],
+        ];
+    }
+
     public function testPageDetailsParserSanitizesTimestamp(): void {
         $page = (object) ['title' => 'Example'];
         $parsed = page_details_from_api_response((object) [
