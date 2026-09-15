@@ -142,7 +142,13 @@ function bot_curl_is_tls_compatibility_error(int $errno): bool {
     return in_array($errno, [
         CURLE_SSL_CONNECT_ERROR,
         CURLE_SSL_CIPHER,
-        CURLE_PEER_FAILED_VERIFICATION,
+        /*
+         * PHP exposes libcurl's certificate-verification failure (error 60)
+         * as CURLE_SSL_CACERT. Modern libcurl calls the same error
+         * CURLE_PEER_FAILED_VERIFICATION, but that alias is not exposed by
+         * every PHP build used by CI and static analysis.
+         */
+        CURLE_SSL_CACERT,
     ], true);
 }
 
@@ -190,7 +196,6 @@ function bot_curl_apply_security_options(CurlHandle $ch): void {
         $options[CURLOPT_SSLVERSION] = CURL_SSLVERSION_TLSv1;
         $options[CURLOPT_SSL_CIPHER_LIST] = 'ALL:@SECLEVEL=0';
         $options[CURLOPT_AUTOREFERER] = false;
-        $options[CURLOPT_REFERER] = '';
     } else {
         /*
          * Re-apply certificate and hostname verification immediately before
@@ -272,7 +277,9 @@ function bot_curl_init(float $time, array $ops, int $max_bytes): CurlHandle {
  * the handle and is re-applied by bot_curl_exec_withFalse(), so it cannot be
  * obtained merely by passing insecure CURLOPT_* values to bot_curl_init().
  *
+ * @param float $time
  * @param array<int, int|string|bool|array<int, string>> $ops
+ * @param int $max_bytes
  */
 function bot_curl_init_legacy_tls_probe(float $time, array $ops, int $max_bytes): CurlHandle {
     $ch = bot_curl_init($time, $ops, $max_bytes);
@@ -294,9 +301,11 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
         /*
          * An unauthenticated legacy HTTPS endpoint should receive as little
          * ambient state as possible.  In particular, do not disclose the
-         * current Wikipedia page through the Referer header.
+         * current Wikipedia page through the Referer header. PHP's cURL type
+         * contract requires a non-empty CURLOPT_REFERER string, so use the
+         * generic Wikipedia origin rather than the current article URL.
          */
-        curl_setopt($ch, CURLOPT_REFERER, '');
+        curl_setopt($ch, CURLOPT_REFERER, 'https://en.wikipedia.org/');
     } else {
         curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
     }

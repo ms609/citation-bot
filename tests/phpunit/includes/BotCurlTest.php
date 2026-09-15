@@ -223,7 +223,12 @@ final class BotCurlTest extends testBaseClass {
 
     public function testLegacyFallbackOnlyClassifiesTlsCompatibilityErrors(): void {
         $this->assertTrue(
-            bot_curl_is_tls_compatibility_error(CURLE_PEER_FAILED_VERIFICATION)
+            /*
+             * PHP exposes libcurl error 60 under this legacy constant name;
+             * CURLE_PEER_FAILED_VERIFICATION is not defined by every PHP
+             * build used by the project.
+             */
+            bot_curl_is_tls_compatibility_error(CURLE_SSL_CACERT)
         );
         $this->assertTrue(
             bot_curl_is_tls_compatibility_error(CURLE_SSL_CONNECT_ERROR)

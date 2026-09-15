@@ -940,6 +940,14 @@ function get_headers_array(string $url): false|array {
      * verified HTTPS.  Check the parsed host instead of using a string prefix
      * so a look-alike such as doi.org.example is never accepted.
      */
+    if ($url === '') {
+        /*
+         * Reject an invalid resolver URL and establish the non-empty-string
+         * invariant required by CURLOPT_URL for the initial request and all
+         * subsequent redirect handling.
+         */
+        report_error("BAD URL in get_headers_array");
+    }
     $initial_parts = parse_url($url);
     if (
         !is_array($initial_parts) ||
