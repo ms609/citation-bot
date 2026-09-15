@@ -76,14 +76,18 @@ function report_inline(string $text): void {
  * @codeCoverageIgnore
  */
 function report_error(string $text): never {
-    if (CI) {
-        trigger_error($text, E_USER_WARNING);
-    } elseif (function_exists('bot_debug_log')) {
-        bot_debug_log($text);  // Code logfile, if defined
-        report_warning($text); // To the user
-    } else {
-        report_warning($text); // To the user
-        trigger_error($text, E_USER_WARNING);  // System Logfile
+    try {
+        if (CI) {
+            trigger_error($text, E_USER_WARNING);
+        } elseif (function_exists('bot_debug_log')) {
+            bot_debug_log($text);  // Code logfile, if defined
+            report_warning($text); // To the user
+        } else {
+            report_warning($text); // To the user
+            trigger_error($text, E_USER_WARNING);  // System Logfile
+        }
+    } catch (Throwable) {
+        ;
     }
     exit(1);
 }
