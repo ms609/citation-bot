@@ -169,9 +169,7 @@ final class ConstantsTest extends testBaseClass {
 
         $new_contents = implode(START_ALPHA, $sections);
 
-        if (preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
-            $this->assertFaker();
-        } else {
+        if (!preg_replace('~\s+~', '', $new_contents) === preg_replace('~\s+~', '', $old_contents)) {
             $message = "\n\n" . ALPHA_FILE . " needs alphabetized as follows\n" . $new_contents . "\n\n\n"; // Parallel tests do not output to log file
             $this->flush();
             bot_debug_log($message);
@@ -317,45 +315,39 @@ final class ConstantsTest extends testBaseClass {
     public function testDead(): void {
         new TestPage(); // Fill page name with test name for debugging
         $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
-        if (empty($overlap)) {
-            $this->assertFaker();
-        } else {
+        if (!empty($overlap)) {
             $this->flush();
             print_r($overlap);
             $this->flush();
             $this->assertNull('testDead Failed - see error array directly above');
         }
+        $this->expectNotToPerformAssertions();
     }
 
     public function testMagazinesAndNot(): void {
         new TestPage(); // Fill page name with test name for debugging
         $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
-        if (empty($overlap)) {
-            $this->assertFaker();
-        } else {
+        if (!empty($overlap)) {
             $this->flush();
             print_r($overlap);
             $this->flush();
             $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
         }
         $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
-        if (empty($overlap)) {
-            $this->assertFaker();
-        } else {
+        if (!empty($overlap)) {
             $this->flush();
             print_r($overlap);
             $this->flush();
             $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
         }
         $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
-        if (empty($overlap)) {
-            $this->assertFaker();
-        } else {
+        if (!empty($overlap)) {
             $this->flush();
             print_r($overlap);
             $this->flush();
             $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
         }
+        $this->expectNotToPerformAssertions();
     }
 
     public function testAuthorsFlat(): void {
