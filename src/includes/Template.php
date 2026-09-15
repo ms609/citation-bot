@@ -2009,6 +2009,8 @@ final class Template
                 if (preg_match(REGEXP_DOI, $value, $doi_match) === 1) {
                     // Salvage the DOI substring first (existing behavior),
                     // then sanitize it: refuse only what cannot be repaired.
+                    // Note: sanitize_doi() may call doi_works(), so malformed
+                    // DOI-shaped input can cost a network lookup here.
                     $value = sanitize_doi($doi_match[0]);
                 }
                 if (!doi_valid($value)) {
