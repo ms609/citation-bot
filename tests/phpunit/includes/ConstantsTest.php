@@ -177,7 +177,6 @@ final class ConstantsTest extends testBaseClass {
             $this->flush();
             $this->assertFailure();
         }
-        $this->expectNotToPerformAssertions();
     }
 
     public function testWhiteList(): void {
