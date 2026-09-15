@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/big_jobs.php';      // @codeCoverageIgnore
+require_once __DIR__ . '/RequestRateLimit.php'; // @codeCoverageIgnore
 
 /**
  * Users allowed to exceed the web page-count limit (MAX_PAGES).
@@ -193,10 +194,168 @@ function process_page_edit_summary_end(string $username, bool $is_html_output, ?
 }
 
 /**
+ * Map an ?edit= request-source value to the big-run gate activation type.
+ *
+ * Mirrors process_page_edit_summary_end's tag mapping so the token weight
+ * matches the edit-summary tag: the default webform POST (no edit parameter)
+ * is #UCB_webform, not #UCB_Other. Unknown non-empty values fall through to
+ * #UCB_Other. 'testing' is deliberately NOT honored here: the edit parameter
+ * is user-controlled, so granting it the testing exemption (which bypasses
+ * the gate entirely) would let anyone mint an unlimited un-gated run, the
+ * same reason process_page_edit_summary_end refuses deprecated tags.
+ */
+function big_run_type_from_edit(?string $edit): string {
+    if ($edit === null || $edit === '') {
+        return 'webform';
+    }
+    if (in_array($edit, ['webform', 'automated_tools', 'toolbar', 'template'], true)) {
+        return $edit;
+    }
+    return 'other';
+}
+
+/**
+ * Whether a caller is exempt from the big-run gate regardless of page count.
+ *
+ * Single rule shared by gate_big_run() and gate_big_run_preflight() so the
+ * two doors cannot disagree: trusted operators (DEV_USERS) and testing runs
+ * are never gated.
+ */
+function big_run_is_exempt(string $run_type, string $username): bool {
+    if (in_array($username, DEV_USERS, true)) {
+        return true;
+    }
+    if ($run_type === 'testing') {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Whether a run must pass through the big-run gate.
+ *
+ * Singles (≤ BIG_RUN_PAGE_THRESHOLD pages), trusted operators (DEV_USERS) and
+ * testing runs are never gated.
+ */
+function big_run_gate_decision(int $page_count, string $run_type, string $username): bool {
+    if ($page_count <= BIG_RUN_PAGE_THRESHOLD) {
+        return false;
+    }
+    return !big_run_is_exempt($run_type, $username);
+}
+
+/**
+ * Humanize a wait in seconds, applying a 30% buffer so users do not retry too early.
+ */
+function big_run_humanize_wait(int $seconds): string {
+    $buffered = max(1, (int) ceil($seconds * 1.3));
+    if ($buffered < 60) {
+        return (string) $buffered . ($buffered === 1 ? ' second' : ' seconds');
+    }
+    $minutes = max(1, (int) round($buffered / 60));
+    return (string) $minutes . ($minutes === 1 ? ' minute' : ' minutes');
+}
+
+/**
+ * Build the busy-page message for a deferred big run.
+ */
+function big_run_busy_page_message(string $reason, ?int $active_count, ?int $retry_after): string {
+    if ($reason === 'tokens') {
+        return 'Citation Bot\'s big-run quota is currently exhausted. Please try again in about ' .
+            big_run_humanize_wait($retry_after ?? 0) . '.';
+    }
+    if ($reason === 'retry_later') {
+        return 'Citation Bot could not check big-run availability right now. Please try again shortly.';
+    }
+    return 'Citation Bot is currently at capacity with other big runs (' .
+        (string) ($active_count ?? 0) . ' in progress). Please try again shortly.';
+}
+
+/**
+ * Render the busy page for a deferred big run (message + footer).
+ *
+ * Sends 503 with Retry-After (when known) and no-store, mirroring the gadget
+ * rate-limit response, so automated clients back off instead of retrying.
+ */
+function big_run_render_busy_page(string $reason, ?int $active_count, ?int $retry_after): void {
+    if (!headers_sent()) {
+        http_response_code(503);
+        if ($retry_after !== null && $retry_after > 0) {
+            @header('Retry-After: ' . $retry_after);
+        }
+        @header('Cache-Control: no-store');
+    }
+    report_warning(big_run_busy_page_message($reason, $active_count, $retry_after));
+    bot_html_footer();
+}
+
+/**
+ * Preflight check for inherently bulk entry points (category, linked-pages).
+ *
+ * Runs BEFORE remote discovery work (category enumeration, link-list fetching)
+ * so a burst of bulk requests does not occupy every worker doing discovery for
+ * runs the full gate would reject. Best effort and side-effect free: no tokens
+ * spent, no slot reserved — the full gate_big_run() after filtering still
+ * decides admission. Exempt callers (DEV_USERS, testing, CLI) skip it, and any
+ * storage/lock problem fails open to discovery.
+ */
+function gate_big_run_preflight(string $run_type, string $username, ?string $base_directory = null, ?float $now = null): void {
+    if (!HTML_OUTPUT) {
+        return;
+    }
+    if (big_run_is_exempt($run_type, $username)) {
+        return;
+    }
+
+    [$room_available, $active_count] = big_run_preflight_check($base_directory, $now);
+    if ($room_available) {
+        return;
+    }
+
+    big_run_render_busy_page('big_full', $active_count, null);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
+ * Gate a big run: admit it (and register release) or render the busy page.
+ *
+ * Web entry point for the big-run gate; safe to call unconditionally because
+ * CLI runs (!HTML_OUTPUT) and exempt runs return early via
+ * big_run_gate_decision(). The authenticated username must be available when
+ * HTML_OUTPUT is true.
+ *
+ * @param int $page_count Effective (post-filter) page count.
+ * @param string $run_type Activation type from big_run_type_from_edit().
+ * @param string $username Authenticated Wikipedia username.
+ * @return string|null Admitted entry id for heartbeating, or null when the
+ *                     gate was skipped (exempt/CLI). A deferred run exits.
+ */
+function gate_big_run(int $page_count, string $run_type, string $username, ?string $base_directory = null, ?float $now = null): ?string {
+    if (!HTML_OUTPUT) {
+        return null;
+    }
+    if (!big_run_gate_decision($page_count, $run_type, $username)) {
+        return null;
+    }
+
+    $result = big_run_try_acquire($page_count, $run_type, $base_directory, $now);
+    if ($result[0]) {
+        $entry_id = $result[2];
+        if ($entry_id !== null) {
+            register_shutdown_function('big_run_release', $entry_id, $base_directory);
+        }
+        return $entry_id;
+    }
+
+    big_run_render_busy_page((string) ($result[3] ?? 'big_full'), $result[4], $result[1]);
+    exit(0); // @codeCoverageIgnore
+}
+
+/**
  * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
-function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end): void {
+function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end, string $run_type = 'other'): void {
     $final_edit_overview = "";
     $pages_in_category = filter_runnable_page_titles($pages_in_category);
     if (empty($pages_in_category)) {
@@ -211,7 +370,18 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         bot_html_footer();
         return;
     }
-    big_jobs_check_overused($total);
+    if (HTML_OUTPUT && $total > BIG_RUN_PAGE_THRESHOLD) {
+        // Per-user big-job rejection first: it costs no shared tokens, while
+        // gate_big_run() spends tokens with no refund. Rejecting here avoids
+        // draining the shared bucket for a run that was always going to exit.
+        big_jobs_check_overused($total);
+        $big_run_entry_id = gate_big_run($total, $run_type, $api->get_the_user());
+        // Only reached if the run was admitted; a deferred run exits above.
+        report_warning('Reminder: the bot will edit these pages automatically. You are responsible for checking its edits — please review the changes it makes.');
+    } else {
+        $big_run_entry_id = null;
+        big_jobs_check_overused($total);
+    }
 
     $page = new Page();
     $done = 0;
@@ -224,6 +394,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     foreach ($pages_in_category as $page_title) {
         flush(); // Only call to flush in normal code, since calling flush breaks headers and sessions
         big_jobs_check_killed();
+        if ($big_run_entry_id !== null) {
+            big_run_heartbeat($big_run_entry_id);
+        }
         $done++;
         $page_result = run_page_with_exception_boundary(
             $page_title,
