@@ -208,6 +208,41 @@ final class BotCurlTest extends testBaseClass {
         $this->addToAssertionCount(1);
     }
 
+    public function testLegacyTlsPolicyRequiresExplicitProbeHandle(): void {
+        $strict = bot_curl_init(1.0, [], 1 * 1024 * 1024);
+        $legacy = bot_curl_init_legacy_tls_probe(1.0, [], 1 * 1024 * 1024);
+
+        $this->assertFalse(bot_curl_is_legacy_tls_probe($strict));
+        $this->assertTrue(bot_curl_is_legacy_tls_probe($legacy));
+
+        // Both policies must remain applicable without executing a request.
+        bot_curl_apply_security_options($strict);
+        bot_curl_apply_security_options($legacy);
+        $this->addToAssertionCount(2);
+    }
+
+    public function testLegacyFallbackOnlyClassifiesTlsCompatibilityErrors(): void {
+        $this->assertTrue(
+            /*
+             * PHP exposes libcurl error 60 under this legacy constant name;
+             * CURLE_PEER_FAILED_VERIFICATION is not defined by every PHP
+             * build used by the project.
+             */
+            bot_curl_is_tls_compatibility_error(CURLE_SSL_CACERT)
+        );
+        $this->assertTrue(
+            bot_curl_is_tls_compatibility_error(CURLE_SSL_CONNECT_ERROR)
+        );
+        $this->assertTrue(
+            bot_curl_is_tls_compatibility_error(CURLE_SSL_CIPHER)
+        );
+
+        // A generic connection failure must not weaken TLS on retry.
+        $this->assertFalse(
+            bot_curl_is_tls_compatibility_error(CURLE_COULDNT_CONNECT)
+        );
+    }
+
     public function testBotCurlExecPreservesTransportFailureMetadata(): void {
         new TestPage();
         $ch = bot_curl_init(1.0, [
