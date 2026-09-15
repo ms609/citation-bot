@@ -1523,6 +1523,29 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(jstor_valid(''));
     }
 
+    public function testHdlValid(): void {
+        $this->assertTrue(hdl_valid('10393/35779'));
+        $this->assertTrue(hdl_valid('20.1000/100'));
+        $this->assertTrue(hdl_valid('2027/mdp.39015064245429?urlappend=%3Bseq=326'));
+        $this->assertFalse(hdl_valid('10393/35 779')); // space
+        $this->assertFalse(hdl_valid('10393/a–b')); // en dash
+        $this->assertFalse(hdl_valid('10393/35779.')); // trailing punctuation
+        $this->assertFalse(hdl_valid(''));
+    }
+
+    public function testOclcValid(): void {
+        $this->assertTrue(oclc_valid('12345678'));
+        $this->assertTrue(oclc_valid('02268454'));
+        $this->assertTrue(oclc_valid('ocm12345678'));
+        $this->assertTrue(oclc_valid('ocn123456789'));
+        $this->assertTrue(oclc_valid('on1234567890'));
+        $this->assertTrue(oclc_valid('(OCoLC)12345678'));
+        $this->assertFalse(oclc_valid('abc'));
+        $this->assertFalse(oclc_valid('ocm1234567')); // ocm needs 8 digits
+        $this->assertFalse(oclc_valid('123 456'));
+        $this->assertFalse(oclc_valid(''));
+    }
+
     public function testArchiveUrlValid(): void {
         $this->assertTrue(archive_url_valid('https://web.archive.org/web/20200101000000/https://example.com'));
         $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));

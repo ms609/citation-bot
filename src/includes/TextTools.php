@@ -1366,6 +1366,47 @@ function jstor_valid(string $value): bool {
 }
 
 /**
+ * Validate a handle identifier against CS1's rules: no spaces or en dashes,
+ * and no trailing punctuation.  Further validation is not performed.
+ */
+function hdl_valid(string $value): bool {
+    if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~[.,;:?!]$~', $value) === 1) {
+        return false;
+    }
+    if ($value === '') {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate an OCLC identifier against CS1's documented forms: ocm followed
+ * by 8 digits, ocn followed by 9 digits, on followed by 10 or more digits,
+ * (OCoLC) followed by digits without leading zeros, or plain digits.
+ */
+function oclc_valid(string $value): bool {
+    if (preg_match('~^ocm\d{8}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^ocn\d{9}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^on\d{10,}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^\(OCoLC\)[1-9]\d*$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^\d+$~', $value) === 1) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * True when a value matches CS1's "Cite uses generic name" triggers
  * (role labels, site names, and generic phrases from the Configuration
  * module's generic_names reject list).

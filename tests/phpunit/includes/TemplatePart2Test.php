@@ -573,6 +573,24 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('7654321', $template->get2('jstor'));
     }
 
+    public function testRefusesHdlWithSpace(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('hdl', '10393/35 779'));
+        $this->assertNull($template->get2('hdl'));
+        $this->assertTrue($template->add_if_new('hdl', '10393/35779'));
+        $this->assertSame('10393/35779', $template->get2('hdl'));
+    }
+
+    public function testRefusesBadOclcPrefix(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('oclc', 'ocm1234567'));
+        $this->assertNull($template->get2('oclc'));
+        $this->assertTrue($template->add_if_new('oclc', 'ocm12345678'));
+        $this->assertSame('ocm12345678', $template->get2('oclc'));
+    }
+
     public function testReplaceBadDOI(): void {
         $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);

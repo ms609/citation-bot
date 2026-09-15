@@ -2359,11 +2359,32 @@ final class Template
                 }
                 return false;
 
-            case 'zbl':
+            case 'hdl':
+                if (!hdl_valid($value)) {
+                    report_inaction("Not adding malformed HDL identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
             case 'oclc':
+                if (!oclc_valid($value)) {
+                    report_inaction("Not adding malformed OCLC identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
+            // ol and lccn are deliberately ungated: subtemplate extraction
+            // legitimately produces bare digits ({{ol|1234}}, {{lccn|1234}}),
+            // so CS1-strict shape checks would break established behavior.
+            case 'zbl':
             case 'mr':
             case 'lccn':
-            case 'hdl':
             case 'ol':
             case 'jfm':
             case 'osti':
