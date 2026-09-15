@@ -151,4 +151,41 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
 
         $this->assertSame([], $violations, implode("\n", $violations));
     }
+
+    public function testInsecureTlsOptionsAreConfinedToCurlWrapper(): void {
+        $violations = [];
+
+        foreach (self::sourceFiles() as $file) {
+            if (self::relativePath($file) === 'src/includes/bot_curl.php') {
+                continue;
+            }
+
+            $source = file_get_contents($file);
+            $this->assertIsString($source);
+
+            /*
+             * Legacy TLS is a deliberate capability, not a caller option.
+             * Keeping all of these settings inside bot_curl.php prevents
+             * future network code from silently creating another insecure
+             * HTTPS path.
+             */
+            $forbidden = [
+                '~CURLOPT_SSL_VERIFYPEER\s*=>\s*false~',
+                '~CURLOPT_SSL_VERIFYHOST\s*=>\s*0~',
+                '~ALL:@SECLEVEL=0~',
+            ];
+
+            foreach ($forbidden as $pattern) {
+                if (preg_match($pattern, $source) === 1) {
+                    $violations[] = sprintf(
+                        '%s contains legacy TLS configuration outside bot_curl.php',
+                        self::relativePath($file)
+                    );
+                    break;
+                }
+            }
+        }
+
+        $this->assertSame([], $violations, implode("\n", $violations));
+    }
 }

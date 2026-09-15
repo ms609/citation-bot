@@ -851,35 +851,50 @@ function check_doi_for_jstor(string $doi, Template $template): void {
 /** @return false|array<string|array<string>> */
 function get_headers_array(string $url): false|array {
     static $last_url = "none yet";
-    // Allow cheap/obsolete journal sites to work.  TLS verification is
-    // intentionally disabled here because DOI/HDL redirects frequently land
-    // on abandoned sites with expired, self-signed, or otherwise obsolete TLS.
-    static $curl_insecure_doi;
-    static $curl_insecure_hdl;
+    static $curl_strict_doi;
+    static $curl_strict_hdl;
+    static $curl_legacy_doi;
+    static $curl_legacy_hdl;
     /** @var array<string|array<string>> $headers */
     static $headers = [];
 
-    if (!isset($curl_insecure_doi)) {
+    if (!isset($curl_strict_doi)) {
         $curl_options = [
             CURLOPT_HEADER => false,
             CURLOPT_NOBODY => false, // get_headers() uses GET by default
-            CURLOPT_MAXREDIRS => 40,
+            /*
+             * Redirects are followed one hop at a time below.  This is the
+             * security boundary that lets doi.org/hdl.handle.net remain fully
+             * authenticated while still permitting a broken downstream
+             * publisher to receive a narrowly scoped legacy-TLS retry.
+             */
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_MAXREDIRS => 0,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => 0,
-            // Permit obsolete TLS versions and weak OpenSSL security levels.
-            CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1,
-            CURLOPT_SSL_CIPHER_LIST => 'ALL:@SECLEVEL=0',
         ];
-        $curl_insecure_doi = bot_curl_init(
+        $curl_strict_doi = bot_curl_init(
             run_type_mods(4, 2, 1, 1, 1) / 4.0, // Give up faster in test suite
             $curl_options, 8 * 1024 * 1024
         );
-        $curl_insecure_hdl = bot_curl_init(
+        $curl_strict_hdl = bot_curl_init(
             run_type_mods(3, 3, 1, 1, 1), // Handles suck
             $curl_options, 8 * 1024 * 1024
         );
-        foreach ([$curl_insecure_hdl, $curl_insecure_doi] as $ch) {
+        /*
+         * Legacy handles are separate objects.  They are never used for the
+         * resolver itself and are selected only after a strict downstream
+         * HTTPS request fails with a TLS/certificate compatibility error.
+         */
+        $curl_legacy_doi = bot_curl_init_legacy_tls_probe(
+            run_type_mods(4, 2, 1, 1, 1) / 4.0,
+            $curl_options, 8 * 1024 * 1024
+        );
+        $curl_legacy_hdl = bot_curl_init_legacy_tls_probe(
+            run_type_mods(3, 3, 1, 1, 1),
+            $curl_options, 8 * 1024 * 1024
+        );
+
+        foreach ([$curl_strict_hdl, $curl_strict_doi, $curl_legacy_hdl, $curl_legacy_doi] as $ch) {
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, static function (CurlHandle $_ch, string $line) use (&$headers): int {
                 $length = mb_strlen($line, '8bit');
                 $line = mb_trim($line);
@@ -906,6 +921,8 @@ function get_headers_array(string $url): false|array {
                 return $length;
             });
             // Preserve GET semantics, but do not retain response bodies in memory.
+            // Some old publisher sites mishandle HEAD, so replacing this with
+            // CURLOPT_NOBODY would reduce the bot's historical-site coverage.
             curl_setopt($ch, CURLOPT_WRITEFUNCTION, static function (CurlHandle $_ch, string $data): int {
                     return mb_strlen($data, '8bit');
             });
@@ -918,21 +935,118 @@ function get_headers_array(string $url): false|array {
     }
     $last_url = $url;
 
-    if (mb_strpos($url, 'https://doi.org') === 0) {
-        $ch = $curl_insecure_doi;
-    } elseif (mb_strpos($url, 'https://hdl.handle.net') === 0) {
-        $ch = $curl_insecure_hdl;
+    /*
+     * The initial resolver URL is trusted infrastructure and must always use
+     * verified HTTPS.  Check the parsed host instead of using a string prefix
+     * so a look-alike such as doi.org.example is never accepted.
+     */
+    $initial_parts = parse_url($url);
+    if (
+        !is_array($initial_parts) ||
+        mb_strtolower((string) ($initial_parts['scheme'] ?? '')) !== 'https'
+    ) {
+        report_error("BAD URL in get_headers_array");
+    }
+    $initial_host = mb_strtolower((string) ($initial_parts['host'] ?? ''));
+
+    if ($initial_host === 'doi.org') {
+        $strict_ch = $curl_strict_doi;
+        $legacy_ch = $curl_legacy_doi;
+    } elseif ($initial_host === 'hdl.handle.net') {
+        $strict_ch = $curl_strict_hdl;
+        $legacy_ch = $curl_legacy_hdl;
     } else {
         report_error("BAD URL in get_headers_array");
     }
 
     $headers = [];
-    /** @var non-empty-string $url */
-    curl_setopt($ch, CURLOPT_URL, $url);
-    if (bot_curl_exec_withFalse($ch) === false) {
-        return false;
+    $current_url = $url;
+    $redirect_count = 0;
+    $first_hop = true;
+
+    while (true) {
+        /*
+         * Every hop is attempted with normal verified TLS first.  If a
+         * downstream historical HTTPS site cannot pass certificate/TLS
+         * validation, only that one hop is retried with the legacy policy.
+         */
+        $headers_before_hop = $headers;
+        curl_setopt($strict_ch, CURLOPT_URL, $current_url);
+        $used_ch = $strict_ch;
+
+        if (bot_curl_exec_withFalse($strict_ch) === false) {
+            $transfer = bot_curl_last_transfer($strict_ch);
+            $current_scheme = parse_url($current_url, PHP_URL_SCHEME);
+            $current_host = parse_url($current_url, PHP_URL_HOST);
+            $current_host = is_string($current_host) ? mb_strtolower($current_host) : '';
+
+            $trusted_resolver =
+                $current_host === 'doi.org' ||
+                $current_host === 'hdl.handle.net';
+
+            /*
+             * Never relax TLS for the original resolver or for a redirect
+             * that returns to trusted resolver infrastructure.  Legacy mode
+             * is solely for downstream publisher/archive HTTPS endpoints.
+             */
+            if (
+                $first_hop ||
+                $trusted_resolver ||
+                !is_string($current_scheme) ||
+                mb_strtolower($current_scheme) !== 'https' ||
+                !bot_curl_is_tls_compatibility_error($transfer['errno'])
+            ) {
+                return false;
+            }
+
+            // Discard any partial headers from the failed strict attempt.
+            $headers = $headers_before_hop;
+            bot_debug_log(
+                'Retrying DOI/HDL redirect with legacy TLS for host: ' .
+                ($current_host !== '' ? $current_host : '[unknown]')
+            );
+
+            curl_setopt($legacy_ch, CURLOPT_URL, $current_url);
+            if (bot_curl_exec_withFalse($legacy_ch) === false) {
+                return false;
+            }
+            $used_ch = $legacy_ch;
+        }
+
+        $redirect_url = curl_getinfo($used_ch, CURLINFO_REDIRECT_URL);
+        if (!is_string($redirect_url) || $redirect_url === '') {
+            return $headers;
+        }
+
+        ++$redirect_count;
+        if ($redirect_count > 40) {
+            bot_debug_log('DOI/HDL redirect limit exceeded');
+            return false;
+        }
+
+        $redirect_scheme = parse_url($redirect_url, PHP_URL_SCHEME);
+        if (!is_string($redirect_scheme)) {
+            return false;
+        }
+        $redirect_scheme = mb_strtolower($redirect_scheme);
+
+        if ($redirect_scheme === 'ftp') {
+            /*
+             * Historical DOI records can legitimately resolve to FTP.  The
+             * resolver's authenticated Location header is sufficient evidence
+             * for the existing DOI/HDL logic; do not start a new primary FTP
+             * transfer, which the global cURL policy intentionally forbids.
+             */
+            return $headers;
+        }
+        if ($redirect_scheme !== 'http' && $redirect_scheme !== 'https') {
+            // Preserve the existing rejection of file:// and other schemes.
+            return false;
+        }
+
+        $current_url = $redirect_url;
+        $first_hop = false;
     }
-    return $headers;
 }
 
 function doi_is_bad (string $doi): bool {

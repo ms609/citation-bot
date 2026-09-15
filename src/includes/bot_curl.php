@@ -113,6 +113,40 @@ function bot_curl_get_max_response_bytes(CurlHandle $ch): int {
 }
 
 /**
+ * Handles in this map are the only cURL handles allowed to relax HTTPS
+ * certificate checks.  Keeping the exception explicit prevents an ordinary
+ * bot_curl_init() caller from accidentally weakening TLS verification.
+ *
+ * @return WeakMap<CurlHandle, bool>
+ */
+function bot_curl_legacy_tls_handles(): WeakMap {
+    static $handles = null;
+    if ($handles === null) {
+        $handles = new WeakMap();
+    }
+    return $handles;
+}
+
+function bot_curl_is_legacy_tls_probe(CurlHandle $ch): bool {
+    return isset(bot_curl_legacy_tls_handles()[$ch]);
+}
+
+/**
+ * Return true only for transport failures for which retrying an obsolete
+ * HTTPS server with the legacy TLS policy can be useful.
+ *
+ * DNS, connection, timeout, HTTP, and application failures must not trigger
+ * the insecure fallback.
+ */
+function bot_curl_is_tls_compatibility_error(int $errno): bool {
+    return in_array($errno, [
+        CURLE_SSL_CONNECT_ERROR,
+        CURLE_SSL_CIPHER,
+        CURLE_PEER_FAILED_VERIFICATION,
+    ], true);
+}
+
+/**
  * @return WeakMap<CurlHandle, array{ok: bool, errno: int, error: string, http_code: int}>
  */
 function bot_curl_transfer_results(): WeakMap {
@@ -134,11 +168,40 @@ function bot_curl_last_transfer(CurlHandle $ch): array {
 }
 
 function bot_curl_apply_security_options(CurlHandle $ch): void {
-    if (!curl_setopt_array($ch, [
+    $options = [
         CURLOPT_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_USE,
         CURLOPT_REDIR_PROTOCOLS => BOT_CURL_ALLOWED_PROTOCOLS_END,
         CURLOPT_PREREQFUNCTION => 'bot_curl_check_destination',
-    ])) {
+    ];
+
+    if (bot_curl_is_legacy_tls_probe($ch)) {
+        /*
+         * This deliberately weak policy exists only for checking historical
+         * publisher sites reached after a DOI/HDL resolver has been contacted
+         * over verified HTTPS.  It must never be used for doi.org,
+         * hdl.handle.net, Crossref, Wikipedia, or other normal bot traffic.
+         *
+         * The legacy probe is still protected by the protocol restrictions
+         * and CURLOPT_PREREQFUNCTION above, so disabling certificate
+         * verification does not disable the bot's SSRF protections.
+         */
+        $options[CURLOPT_SSL_VERIFYPEER] = false;
+        $options[CURLOPT_SSL_VERIFYHOST] = 0;
+        $options[CURLOPT_SSLVERSION] = CURL_SSLVERSION_TLSv1;
+        $options[CURLOPT_SSL_CIPHER_LIST] = 'ALL:@SECLEVEL=0';
+        $options[CURLOPT_AUTOREFERER] = false;
+        $options[CURLOPT_REFERER] = '';
+    } else {
+        /*
+         * Re-apply certificate and hostname verification immediately before
+         * every normal transfer.  Caller-supplied options therefore cannot
+         * accidentally turn HTTPS authentication off.
+         */
+        $options[CURLOPT_SSL_VERIFYPEER] = true;
+        $options[CURLOPT_SSL_VERIFYHOST] = 2;
+    }
+
+    if (!curl_setopt_array($ch, $options)) {
         throw new RuntimeException('Unable to apply mandatory cURL security options.');
     }
 }
@@ -202,13 +265,43 @@ function bot_curl_init(float $time, array $ops, int $max_bytes): CurlHandle {
     return $ch;
 }
 
+/**
+ * Create the narrowly scoped legacy HTTPS probe used by DOI/HDL checking.
+ *
+ * Normal callers must use bot_curl_init().  The legacy policy is marked on
+ * the handle and is re-applied by bot_curl_exec_withFalse(), so it cannot be
+ * obtained merely by passing insecure CURLOPT_* values to bot_curl_init().
+ *
+ * @param array<int, int|string|bool|array<int, string>> $ops
+ */
+function bot_curl_init_legacy_tls_probe(float $time, array $ops, int $max_bytes): CurlHandle {
+    $ch = bot_curl_init($time, $ops, $max_bytes);
+    bot_curl_legacy_tls_handles()[$ch] = true;
+
+    // Apply the legacy policy now as well as immediately before execution.
+    bot_curl_apply_security_options($ch);
+
+    return $ch;
+}
+
 function bot_curl_exec(CurlHandle $ch): string {
     $result = bot_curl_exec_withFalse($ch);
     return $result === false ? '' : (string) $result;
 }
 
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
-    curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
+    if (bot_curl_is_legacy_tls_probe($ch)) {
+        /*
+         * An unauthenticated legacy HTTPS endpoint should receive as little
+         * ambient state as possible.  In particular, do not disclose the
+         * current Wikipedia page through the Referer header.
+         */
+        curl_setopt($ch, CURLOPT_REFERER, '');
+    } else {
+        curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
+    }
+
+    // Re-assert either the strict or explicitly marked legacy policy.
     bot_curl_apply_security_options($ch);
     $result = @curl_exec($ch);  // phpcs:ignore
     bot_curl_transfer_results()[$ch] = [
