@@ -1314,7 +1314,7 @@ function doi_valid(string $value): bool {
     if (preg_match('~[.,;:?!]$~', $value) === 1) {
         return false;
     }
-    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~', $value) !== 1) {
+    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~u', $value) !== 1) {
         return false;
     }
     return true;

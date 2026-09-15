@@ -540,11 +540,20 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20200101000000/https://example.com', $template->get2('archive-url'));
     }
 
-    public function testRefusesDoiWithTrailingDot(): void {
-        // Trailing punctuation is a CS1 "Check |doi= value" error.
+    public function testSanitizesTrailingDotDoiOnAdd(): void {
+        // A trailing dot is stripped before validation, so the salvageable
+        // DOI is added repaired rather than refused outright.
         $text = '{{Cite journal | title=T}}';
         $template = $this->make_citation($text);
-        $this->assertFalse($template->add_if_new('doi', '10.1103/abc.'));
+        $this->assertTrue($template->add_if_new('doi', '10.1103/abc.'));
+        $this->assertSame('10.1103/abc', $template->get2('doi'));
+    }
+
+    public function testRefusesDoiWithSpace(): void {
+        // No salvage possible: the value itself is rejected.
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('doi', '10.1103/Phys Rev'));
         $this->assertNull($template->get2('doi'));
     }
 

@@ -2000,6 +2000,17 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
+                if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+                    // Spaces break substring salvage (it would truncate), so
+                    // refuse outright instead of adding a wrong DOI.
+                    report_inaction("Not adding malformed DOI: " . echoable($value));
+                    return false;
+                }
+                if (preg_match(REGEXP_DOI, $value, $doi_match) === 1) {
+                    // Salvage the DOI substring first (existing behavior),
+                    // then sanitize it: refuse only what cannot be repaired.
+                    $value = sanitize_doi($doi_match[0]);
+                }
                 if (!doi_valid($value)) {
                     report_inaction("Not adding malformed DOI: " . echoable($value));
                     return false;
