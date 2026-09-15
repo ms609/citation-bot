@@ -322,7 +322,7 @@ final class ConstantsTest extends testBaseClass {
             $this->flush();
             $this->assertNull('testDead Failed - see error array directly above');
         }
-        this->expectNotToPerformAssertions();
+        $this->expectNotToPerformAssertions();
     }
 
     public function testMagazinesAndNot(): void {
