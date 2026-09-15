@@ -1379,9 +1379,6 @@ function hdl_valid(string $value): bool {
     if (mb_strpos($value, '/') === false) {
         return false;
     }
-    if ($value === '') {
-        return false;
-    }
     return true;
 }
 
