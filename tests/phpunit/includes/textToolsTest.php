@@ -1551,7 +1551,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(ol_valid('1234W'));
         $this->assertTrue(ol_valid('1234A'));
         $this->assertFalse(ol_valid('1234')); // checker-only; adds stay ungated
-        $this->assertFalse(ol_valid('OL1234M'));
+        $this->assertTrue(ol_valid('OL1234M')); // optional prefix stripped per CS1
         $this->assertFalse(ol_valid('abc'));
         $this->assertFalse(ol_valid(''));
     }
@@ -1574,6 +1574,8 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(doi_registrant_valid('10.1103/PhysRevLett.80.904'));
         $this->assertTrue(doi_registrant_valid('10.10000/abc'));
         $this->assertTrue(doi_registrant_valid('10.1000.10/abc'));
+        $this->assertTrue(doi_registrant_valid('10.100.1/abc')); // short code with subcode
+        $this->assertFalse(doi_registrant_valid('10.40000.1/abc')); // 5-digit subcoded above 39999
         $this->assertFalse(doi_registrant_valid('10.5555/abc')); // test registrant
         $this->assertFalse(doi_registrant_valid('10.123/abc')); // below range
         $this->assertFalse(doi_registrant_valid('10.90000/abc')); // above range

@@ -1311,7 +1311,7 @@ function doi_valid(string $value): bool {
     if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
         return false;
     }
-    if (preg_match('~[.,;:?!]$~', $value) === 1) {
+    if (preg_match('~[.,]$~', $value) === 1) {
         return false;
     }
     if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~u', $value) !== 1) {
@@ -1373,7 +1373,10 @@ function hdl_valid(string $value): bool {
     if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
         return false;
     }
-    if (preg_match('~[.,;:?!]$~', $value) === 1) {
+    if (preg_match('~[.,]$~', $value) === 1) {
+        return false;
+    }
+    if (mb_strpos($value, '/') === false) {
         return false;
     }
     if ($value === '') {
@@ -1413,7 +1416,8 @@ function oclc_valid(string $value): bool {
  * subtemplate extraction produces bare digits ({{ol|1234}}).
  */
 function ol_valid(string $value): bool {
-    if (preg_match('~^\d+[AMW]$~', $value) !== 1) {
+    $value = preg_replace('~^OL~', '', $value);
+    if ($value === null || preg_match('~^\d+[AMW]$~', $value) !== 1) {
         return false;
     }
     return true;
@@ -1465,7 +1469,14 @@ function doi_registrant_valid(string $value): bool {
     if ($main === 5555) {
         return false;
     }
-    return ($main >= 1000 && $main <= 9999) || ($main >= 10000 && $main <= 89999);
+    $has_subcode = count($parts) > 1;
+    if ($main >= 1000 && $main <= 9999) {
+        return true;
+    }
+    if ($main >= 10000 && $main <= 89999) {
+        return !$has_subcode || $main <= 39999;
+    }
+    return $has_subcode && $main >= 100;
 }
 
 /**
