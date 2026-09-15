@@ -183,5 +183,6 @@ jobs:
          PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
          PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
+         NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
+         NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
       run: composer run test
-
