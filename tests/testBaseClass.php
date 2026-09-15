@@ -230,10 +230,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         }
     }
 
-    protected function assertFaker(): void {
-        $this->markTestSkipped('Skipped — requires manual verification');
-    }
-
     protected function assertFailure(): void {
         $this->assertTrue(false);
     }
