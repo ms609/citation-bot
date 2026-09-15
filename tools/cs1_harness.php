@@ -328,6 +328,18 @@ function check_citation(Template $template): array {
     if ($template->has('oclc') && !oclc_valid($template->get('oclc'))) {
         $violations[] = 'oclc-malformed: CS1 "Check |oclc= value"';
     }
+    // Checker-only rules (accepted gaps): ol/lccn adds stay ungated so
+    // bare-digit subtemplate extraction keeps working, and reserved DOI
+    // registrants must stay processable.
+    if ($template->has('ol') && !ol_valid($template->get('ol'))) {
+        $violations[] = 'ol-malformed: CS1 "Check |ol= value"';
+    }
+    if ($template->has('lccn') && !lccn_valid($template->get('lccn'))) {
+        $violations[] = 'lccn-malformed: CS1 "Check |lccn= value"';
+    }
+    if ($template->has('doi') && !doi_registrant_valid($template->get('doi'))) {
+        $violations[] = 'doi-registrant-malformed: CS1 "Check |doi= value"';
+    }
     foreach (['biorxiv', 'medrxiv'] as $param) {
         if ($template->has($param)) {
             $test_value = $template->get($param);
@@ -449,6 +461,9 @@ function build_matrix(): array {
         ['GAP malformed s2cid in input survives tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'gap'],
         ['GAP malformed hdl in input survives tidy', '{{cite journal |title=X |journal=J |hdl=10.1000/abcdef.}}', 'gap'],
         ['GAP malformed oclc in input survives tidy', '{{cite journal |title=X |journal=J |oclc=abc}}', 'gap'],
+        ['GAP bare-digit ol in input survives tidy', '{{cite journal |title=X |journal=J |ol=1234}}', 'gap'],
+        ['GAP short lccn in input survives tidy', '{{cite journal |title=X |journal=J |lccn=1234}}', 'gap'],
+        ['GAP out-of-range doi registrant in input survives tidy', '{{cite journal |title=X |journal=J |doi=10.123/abc}}', 'gap'],
         ['URL-form jstor normalized in tidy', '{{cite journal |title=X |journal=J |jstor=https://www.jstor.org/stable/123}}', 'pass'],
         ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
         ['GAP generic name in input survives tidy', '{{cite journal |title=X |journal=J |last1=CNN}}', 'gap'],

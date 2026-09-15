@@ -1407,6 +1407,68 @@ function oclc_valid(string $value): bool {
 }
 
 /**
+ * Validate an Open Library identifier against CS1's rules: one or more
+ * digits followed by A (authors), M (books), or W (works), without the OL
+ * prefix.  Checker-only: do NOT gate add_if_new with this, since established
+ * subtemplate extraction produces bare digits ({{ol|1234}}).
+ */
+function ol_valid(string $value): bool {
+    if (preg_match('~^\d+[AMW]$~', $value) !== 1) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate a Library of Congress Control Number against CS1's length table:
+ * 8-12 characters whose rightmost eight are always digits, with the leading
+ * characters constrained by total length (8: all digits; 9: one lowercase
+ * letter; 10: two lowercase letters or two digits; 11: one lowercase letter
+ * plus two lowercase letters or two digits; 12: two leading lowercase
+ * letters).  Checker-only: do NOT gate add_if_new with this, since
+ * established subtemplate extraction produces bare digits ({{lccn|1234}}).
+ */
+function lccn_valid(string $value): bool {
+    $length = mb_strlen($value);
+    if ($length < 8 || $length > 12) {
+        return false;
+    }
+    if (preg_match('~^\d{8}$~', mb_substr($value, -8)) !== 1) {
+        return false;
+    }
+    $head = mb_substr($value, 0, $length - 8);
+    switch ($length) {
+        case 8:
+            return $head === '';
+        case 9:
+            return preg_match('~^[a-z]$~', $head) === 1;
+        case 10:
+            return preg_match('~^([a-z]{2}|\d{2})$~', $head) === 1;
+        case 11:
+            return preg_match('~^[a-z]([a-z]{2}|\d{2})$~', $head) === 1;
+        default:
+            return preg_match('~^[a-z]{2}[a-z0-9]{2}$~', $head) === 1;
+    }
+}
+
+/**
+ * Validate a DOI registrant code against CS1's ranges (1000-9999 or
+ * 10000-89999, never 5555).  Checker-only: do NOT gate add_if_new with this,
+ * since reserved/test registrants such as 10.0001 must stay processable.
+ */
+function doi_registrant_valid(string $value): bool {
+    if (preg_match('~^10\.(\d+(?:\.\d+)*)/\S+$~', $value, $match) !== 1) {
+        return false;
+    }
+    $parts = explode('.', $match[1]);
+    $main = intval($parts[0]);
+    if ($main === 5555) {
+        return false;
+    }
+    return ($main >= 1000 && $main <= 9999) || ($main >= 10000 && $main <= 89999);
+}
+
+/**
  * True when a value matches CS1's "Cite uses generic name" triggers
  * (role labels, site names, and generic phrases from the Configuration
  * module's generic_names reject list).

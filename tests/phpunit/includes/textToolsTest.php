@@ -1546,6 +1546,41 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(oclc_valid(''));
     }
 
+    public function testOlValid(): void {
+        $this->assertTrue(ol_valid('1234M'));
+        $this->assertTrue(ol_valid('1234W'));
+        $this->assertTrue(ol_valid('1234A'));
+        $this->assertFalse(ol_valid('1234')); // checker-only; adds stay ungated
+        $this->assertFalse(ol_valid('OL1234M'));
+        $this->assertFalse(ol_valid('abc'));
+        $this->assertFalse(ol_valid(''));
+    }
+
+    public function testLccnValid(): void {
+        $this->assertTrue(lccn_valid('12345678')); // 8: all digits
+        $this->assertTrue(lccn_valid('a12345678')); // 9: letter + 8 digits
+        $this->assertTrue(lccn_valid('ab12345678')); // 10: two letters
+        $this->assertTrue(lccn_valid('20011234')); // 10: leading digits (8+2 overlap)
+        $this->assertTrue(lccn_valid('abc12345678')); // 11: letter + two letters
+        $this->assertTrue(lccn_valid('ab1234567890')); // 12: two letters
+        $this->assertFalse(lccn_valid('1234')); // checker-only; adds stay ungated
+        $this->assertFalse(lccn_valid('1234567')); // too short
+        $this->assertFalse(lccn_valid('1234567890123')); // too long
+        $this->assertFalse(lccn_valid('A12345678')); // uppercase head
+        $this->assertFalse(lccn_valid(''));
+    }
+
+    public function testDoiRegistrantValid(): void {
+        $this->assertTrue(doi_registrant_valid('10.1103/PhysRevLett.80.904'));
+        $this->assertTrue(doi_registrant_valid('10.10000/abc'));
+        $this->assertTrue(doi_registrant_valid('10.1000.10/abc'));
+        $this->assertFalse(doi_registrant_valid('10.5555/abc')); // test registrant
+        $this->assertFalse(doi_registrant_valid('10.123/abc')); // below range
+        $this->assertFalse(doi_registrant_valid('10.90000/abc')); // above range
+        $this->assertFalse(doi_registrant_valid('10.1103')); // no suffix
+        $this->assertFalse(doi_registrant_valid(''));
+    }
+
     public function testArchiveUrlValid(): void {
         $this->assertTrue(archive_url_valid('https://web.archive.org/web/20200101000000/https://example.com'));
         $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));
