@@ -1413,7 +1413,7 @@ function oclc_valid(string $value): bool {
  * subtemplate extraction produces bare digits ({{ol|1234}}).
  */
 function ol_valid(string $value): bool {
-    $value = preg_replace('~^OL~', '', $value);
+    $value = preg_replace('~^OL~i', '', $value);
     if ($value === null || preg_match('~^\d+[AMW]$~', $value) !== 1) {
         return false;
     }

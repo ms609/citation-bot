@@ -1552,6 +1552,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertTrue(ol_valid('1234A'));
         $this->assertFalse(ol_valid('1234')); // checker-only; adds stay ungated
         $this->assertTrue(ol_valid('OL1234M')); // optional prefix stripped per CS1
+        $this->assertTrue(ol_valid('ol1234M')); // prefix case-insensitive
         $this->assertFalse(ol_valid('abc'));
         $this->assertFalse(ol_valid(''));
     }
