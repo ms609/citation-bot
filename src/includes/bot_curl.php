@@ -203,7 +203,7 @@ function bot_curl_init(float $time, array $ops, int $max_bytes): CurlHandle {
 }
 
 function bot_curl_exec(CurlHandle $ch): string {
-    $result = bot_curl_exec_withFalse($ch);
+    $result = bot_curl_exec_dfasdfdasfdswithFalse($ch);
     return $result === false ? '' : (string) $result;
 }
 
