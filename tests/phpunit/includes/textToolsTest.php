@@ -1483,6 +1483,46 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(archive_url_has_timestamp(''));
     }
 
+    public function testDoiValid(): void {
+        $this->assertTrue(doi_valid('10.1103/PhysRevLett.80.904'));
+        $this->assertTrue(doi_valid('10.0001/Rubbish_bot_failure_test')); // structural only; blocklists are separate
+        $this->assertTrue(doi_valid('10.1000.10/abc')); // dotted registrant subcode
+        $this->assertFalse(doi_valid('11.1103/abc')); // wrong directory indicator
+        $this->assertFalse(doi_valid('10.1103')); // no suffix
+        $this->assertFalse(doi_valid('10.1103/Phys Rev')); // space
+        $this->assertFalse(doi_valid('10.1103/a–b')); // en dash
+        $this->assertFalse(doi_valid('10.1103/abc.')); // trailing punctuation
+        $this->assertFalse(doi_valid(''));
+    }
+
+    public function testSsrnValid(): void {
+        $this->assertTrue(ssrn_valid('1234567'));
+        $this->assertTrue(ssrn_valid('100'));
+        $this->assertFalse(ssrn_valid('abc'));
+        $this->assertFalse(ssrn_valid('12.5'));
+        $this->assertFalse(ssrn_valid('99'));
+        $this->assertFalse(ssrn_valid('99999999'));
+        $this->assertFalse(ssrn_valid(''));
+    }
+
+    public function testS2cidValid(): void {
+        $this->assertTrue(s2cid_valid('11733879'));
+        $this->assertTrue(s2cid_valid('1'));
+        $this->assertFalse(s2cid_valid('abc'));
+        $this->assertFalse(s2cid_valid('0'));
+        $this->assertFalse(s2cid_valid('999999999'));
+        $this->assertFalse(s2cid_valid(''));
+    }
+
+    public function testJstorValid(): void {
+        $this->assertTrue(jstor_valid('3511692'));
+        $this->assertTrue(jstor_valid('j.ctt802dw')); // non-numeric stable forms pass; only CS1-documented refusals apply
+        $this->assertFalse(jstor_valid('JSTOR123')); // contains 'jstor'
+        $this->assertFalse(jstor_valid('https://www.jstor.org/stable/123')); // URI scheme
+        $this->assertFalse(jstor_valid('12 34')); // space
+        $this->assertFalse(jstor_valid(''));
+    }
+
     public function testArchiveUrlValid(): void {
         $this->assertTrue(archive_url_valid('https://web.archive.org/web/20200101000000/https://example.com'));
         $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));

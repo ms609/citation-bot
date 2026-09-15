@@ -540,6 +540,39 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20200101000000/https://example.com', $template->get2('archive-url'));
     }
 
+    public function testRefusesDoiWithTrailingDot(): void {
+        // Trailing punctuation is a CS1 "Check |doi= value" error.
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('doi', '10.1103/abc.'));
+        $this->assertNull($template->get2('doi'));
+    }
+
+    public function testRefusesNonNumericSsrn(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('ssrn', 'abc'));
+        $this->assertNull($template->get2('ssrn'));
+        $this->assertTrue($template->add_if_new('ssrn', '1234567'));
+        $this->assertSame('1234567', $template->get2('ssrn'));
+    }
+
+    public function testRefusesNonNumericS2cid(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('s2cid', 'not-an-s2cid'));
+        $this->assertNull($template->get2('s2cid'));
+    }
+
+    public function testRefusesJstorWithScheme(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('jstor', 'https://www.jstor.org/stable/123'));
+        $this->assertNull($template->get2('jstor'));
+        $this->assertTrue($template->add_if_new('jstor', '7654321'));
+        $this->assertSame('7654321', $template->get2('jstor'));
+    }
+
     public function testReplaceBadDOI(): void {
         $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);

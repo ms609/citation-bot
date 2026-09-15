@@ -1300,6 +1300,72 @@ function bibcode_valid(string $value): bool {
 }
 
 /**
+ * Validate a DOI against CS1's structural rules: the 10. directory indicator,
+ * a registrant of digits with optional dot-separated numeric subcodes, a
+ * slash, and a non-empty suffix.  CS1 additionally requires a valid
+ * registrant range; values the bot must still process (test/reserved
+ * registrants such as 10.0001) are left to the blocklists, so no range is
+ * enforced here.  Spaces, en dashes, and trailing punctuation are refused.
+ */
+function doi_valid(string $value): bool {
+    if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~[.,;:?!]$~', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~', $value) !== 1) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate an SSRN identifier against CS1's rules: a simple number without
+ * punctuation or spaces, between 100 and 7500000.
+ */
+function ssrn_valid(string $value): bool {
+    if (preg_match('~^\d+$~', $value) !== 1) {
+        return false;
+    }
+    $number = intval($value);
+    return $number >= 100 && $number <= 7500000;
+}
+
+/**
+ * Validate a Semantic Scholar corpus identifier against CS1's rules: a simple
+ * number without punctuation or spaces, between 1 and 290000000.
+ */
+function s2cid_valid(string $value): bool {
+    if (preg_match('~^\d+$~', $value) !== 1) {
+        return false;
+    }
+    $number = intval($value);
+    return $number >= 1 && $number <= 290000000;
+}
+
+/**
+ * Validate a JSTOR identifier against CS1's documented refusals: the value
+ * must not contain the string 'jstor' (case-insensitive), a URI scheme, or
+ * spaces.  Non-numeric stable forms (e.g. j.ctt802dw) remain acceptable.
+ */
+function jstor_valid(string $value): bool {
+    if (mb_stripos($value, 'jstor') !== false) {
+        return false;
+    }
+    if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*://~', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~\s~u', $value) === 1) {
+        return false;
+    }
+    if ($value === '') {
+        return false;
+    }
+    return true;
+}
+
+/**
  * True when a value matches CS1's "Cite uses generic name" triggers
  * (role labels, site names, and generic phrases from the Configuration
  * module's generic_names reject list).

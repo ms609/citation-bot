@@ -2000,6 +2000,10 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
+                if (!doi_valid($value)) {
+                    report_inaction("Not adding malformed DOI: " . echoable($value));
+                    return false;
+                }
                 if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'], true)) {
                     return false;
                 }
@@ -2047,6 +2051,10 @@ final class Template
                 if (in_array($value, ['11008564'], true)) {
                     return false;
                 } // known bad values
+                if (!s2cid_valid($value)) {
+                    report_inaction("Not adding malformed S2CID: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank(['s2cid', 'S2CID'])) {
                     $this->add($param_name, $value);
                     get_doi_from_semanticscholar($this);
@@ -2332,6 +2340,20 @@ final class Template
                 if ($value === '3511692') {
                     return false;
                 } // common review
+                if (!jstor_valid($value)) {
+                    report_inaction("Not adding malformed JSTOR identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
+            case 'ssrn':
+                if (!ssrn_valid($value)) {
+                    report_inaction("Not adding malformed SSRN identifier: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
@@ -2342,7 +2364,6 @@ final class Template
             case 'mr':
             case 'lccn':
             case 'hdl':
-            case 'ssrn':
             case 'ol':
             case 'jfm':
             case 'osti':
