@@ -124,6 +124,7 @@ config:
       - composer.json
       - composer.lock
       - progpilot-sanitizers.json
+      - progpilot-validators.json
 
 dependencies:
   - changed-files:

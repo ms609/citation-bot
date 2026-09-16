@@ -237,6 +237,38 @@ final class PublicConfigTest extends PHPUnit\Framework\TestCase {
         $this->assertFalse(is_valid_local_return_path("/line\nbreak"));
     }
 
+    public function testSafeRedirectTargetsAllowLocalAndSameOriginAndOAuthUrls(): void {
+        putenv('PUBLIC_BASE_URL=https://public.example/tools');
+        $this->assertTrue(is_safe_redirect_target('/process_page.php?page=Example'));
+        $this->assertTrue(is_safe_redirect_target('https://public.example/tools/'));
+        $this->assertTrue(is_safe_redirect_target('https://public.example/tools/index.php'));
+        $this->assertTrue(is_valid_oauth_authorize_redirect('https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc123'));
+        $this->assertTrue(is_safe_redirect_target('https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc123'));
+
+        $this->assertFalse(is_safe_redirect_target('https://attacker.example/'));
+        $this->assertFalse(is_safe_redirect_target('//attacker.example/callback'));
+        $this->assertFalse(is_safe_redirect_target("/line\nbreak"));
+        $this->assertFalse(is_safe_redirect_target('/back\\slash'));
+        $this->assertFalse(is_safe_redirect_target(''));
+        $this->assertFalse(is_safe_redirect_target(' https://public.example/tools/'));
+        $this->assertFalse(is_safe_redirect_target('https://public.example/tools/ '));
+        $this->assertFalse(is_safe_redirect_target('https://public.example/tools-evil/'));
+        $this->assertFalse(is_safe_redirect_target('https://public.example/tools'));
+        $this->assertFalse(is_safe_redirect_target('https://public.example/tools@evil/'));
+        $this->assertFalse(is_safe_redirect_target('javascript:alert(1)'));
+        $this->assertFalse(is_valid_oauth_authorize_redirect('https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token='));
+        $this->assertFalse(is_valid_oauth_authorize_redirect("https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc\n123"));
+        $this->assertFalse(is_valid_oauth_authorize_redirect("https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc\r123"));
+        $this->assertFalse(is_valid_oauth_authorize_redirect('https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc\\123'));
+        $this->assertFalse(is_valid_oauth_authorize_redirect("https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc\x7f123"));
+        $this->assertFalse(is_valid_oauth_authorize_redirect('https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc123 '));
+        $this->assertFalse(is_valid_oauth_authorize_redirect('http://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=abc123'));
+        $this->assertFalse(is_valid_oauth_authorize_redirect('https://attacker.example/callback'));
+
+        putenv('PUBLIC_BASE_URL');
+        $this->assertFalse(is_safe_redirect_target('https://public.example/tools/'));
+    }
+
     public function testInvalidPublicRequestConfigurationsReturnFalse(): void {
         putenv('PUBLIC_BASE_URL=https://public.example');
         putenv('ALLOWED_HOSTS=public.example');
