@@ -12,7 +12,7 @@ final class Html5EncodingOptionsTest extends PHPUnit\Framework\TestCase {
     ];
 
     public function testAllHtmlEncodingAndDecodingCallsSpecifyHtml5(): void {
-        $source_root = realpath(__DIR__ . '/../../../src');
+        $source_root = realpath(dirname(__DIR__, 3) . '/src');
         $this->assertNotFalse($source_root);
 
         $violations = [];

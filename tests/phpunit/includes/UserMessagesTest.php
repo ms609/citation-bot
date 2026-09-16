@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for user_messages.php
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class UserMessagesTest extends testBaseClass {
@@ -173,7 +173,7 @@ final class UserMessagesTest extends testBaseClass {
             $this->markTestSkipped('exec() is unavailable');
         }
 
-        $user_messages = realpath(__DIR__ . '/../../../src/includes/user_messages.php');
+        $user_messages = realpath(dirname(__DIR__, 3) . '/src/includes/user_messages.php');
         $this->assertNotFalse($user_messages);
 
         $bootstrap =

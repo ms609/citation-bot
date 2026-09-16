@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../src/includes/PublicConfig.php';
-require_once __DIR__ . '/../../../src/includes/request_security.php';
-require_once __DIR__ . '/../../../src/includes/big_jobs.php';
+require_once dirname(__DIR__, 3) . '/src/includes/PublicConfig.php';
+require_once dirname(__DIR__, 3) . '/src/includes/request_security.php';
+require_once dirname(__DIR__, 3) . '/src/includes/big_jobs.php';
 
 final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     /** @var array<string, string|false> */
@@ -344,8 +344,8 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testDebugLogUsesRepositoryRootOutsideSourceTree(): void {
-        $repository_root = realpath(__DIR__ . '/../../..');
-        $source_root = realpath(__DIR__ . '/../../../src');
+        $repository_root = realpath(dirname(__DIR__, 3));
+        $source_root = realpath(dirname(__DIR__, 3) . '/src');
         $this->assertIsString($repository_root);
         $this->assertIsString($source_root);
         if (!is_string($repository_root) || !is_string($source_root)) {
@@ -363,8 +363,8 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testEnvironmentConfigurationIsLoadedFromRepositoryRoot(): void {
-        $repository_root = realpath(__DIR__ . '/../../..');
-        $source_root = realpath(__DIR__ . '/../../../src');
+        $repository_root = realpath(dirname(__DIR__, 3));
+        $source_root = realpath(dirname(__DIR__, 3) . '/src');
         $this->assertIsString($repository_root);
         $this->assertIsString($source_root);
         if (!is_string($repository_root) || !is_string($source_root)) {

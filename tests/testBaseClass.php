@@ -13,7 +13,7 @@ if (getenv('ALLOWED_ORIGINS') === false) {
     putenv('ALLOWED_ORIGINS=https://citations.toolforge.org,https://mdwiki.org,https://*.wikipedia.org');
 }
 
-require_once __DIR__ . '/../src/includes/setup.php';
+require_once dirname(__DIR__) . '/src/includes/setup.php';
 
 /**
  * @phan-constructor-used-for-side-effects

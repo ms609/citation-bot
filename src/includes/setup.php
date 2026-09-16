@@ -16,7 +16,7 @@ if (!mb_internal_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are ver
     exit(0);
 }
 
-$git_pull_lock = __DIR__ . '/../git_pull.lock';
+$git_pull_lock = dirname(__DIR__) . '/git_pull.lock';
 if (file_exists($git_pull_lock)) {
     sleep(5);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Git pull in progress - please retry in a moment</h1></main></body></html>';
@@ -201,7 +201,7 @@ unset($wiki_base);
 require_once __DIR__ . '/constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
-include_once __DIR__ . '/../../vendor/autoload.php';
+include_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 define('CI', (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (mb_strpos((string) @$_SERVER['argv'][0], 'phpunit') !== false));
 define('GITHUB_EVENT_NAME', (string) getenv('GITHUB_EVENT_NAME'));

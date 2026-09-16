@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Template.php
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class templatePart4Test extends testBaseClass { // Lower case "t" to run later in test suite
 

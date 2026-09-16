@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../Template.php'; // @codeCoverageIgnore
+require_once dirname(__DIR__) . '/Template.php'; // @codeCoverageIgnore
 
 /** @todo find a good API to really use these - worldcat used to have one, but they took that away. */
 /* https://api.crossref.org/journals/1469-7793 works for some.  See other crossref API calls that we make */

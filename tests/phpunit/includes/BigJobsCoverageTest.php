@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
 
@@ -20,7 +20,7 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
                                         $GLOBALS['big_jobs_coverage_warning'] = $message;
                                     }, true);
 
-            require_once __DIR__ . '/../../../src/includes/big_jobs.php';
+            require_once dirname(__DIR__, 3) . '/src/includes/big_jobs.php';
 
             $_SESSION = ['citation_bot_user_id' => 'coverage/user'];
             $lock_name = big_jobs_name();
@@ -100,7 +100,7 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
             $this->markTestSkipped('proc_open required');
         }
 
-        $big_jobs_path = realpath(__DIR__ . '/../../../src/includes/big_jobs.php');
+        $big_jobs_path = realpath(dirname(__DIR__, 3) . '/src/includes/big_jobs.php');
         $this->assertIsString($big_jobs_path);
 
         $test_directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR .

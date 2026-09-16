@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for WikipediaBot.php
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
 final class wikipediaBotTest extends testBaseClass {
@@ -16,14 +16,14 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testApiBoundariesCatchThrowable(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/WikipediaBot.php');
         $this->assertIsString($source);
         $this->assertStringNotContainsString('catch (Exception $E)', $source);
         $this->assertGreaterThanOrEqual(2, mb_substr_count($source, 'catch (Throwable $E)'));
     }
 
     public function testOAuthRequestConstructionIsInsideFetchBoundary(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/WikipediaBot.php');
         $this->assertIsString($source);
 
         $fetch_start = mb_strpos($source, 'private function fetch(');
@@ -48,7 +48,7 @@ final class wikipediaBotTest extends testBaseClass {
     }
 
     public function testStatisticsWriteQueryRequestsRevisionTimestamp(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/WikipediaBot.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/WikipediaBot.php');
         $this->assertIsString($source);
 
         $method_start = mb_strpos($source, 'public function write_statistics_page(');

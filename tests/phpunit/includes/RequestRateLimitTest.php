@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../src/includes/RequestRateLimit.php';
+require_once dirname(__DIR__, 3) . '/src/includes/RequestRateLimit.php';
 
 final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
     private string $base_directory;
@@ -806,7 +806,7 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         $previous_probes = getenv('CITATION_BOT_BIG_RUN_MAX_DISCOVERY_PROBES');
         putenv('CITATION_BOT_BIG_RUN_MAX_DISCOVERY_PROBES=3');
 
-        $request_rate_limit = realpath(__DIR__ . '/../../../src/includes/RequestRateLimit.php');
+        $request_rate_limit = realpath(dirname(__DIR__, 3) . '/src/includes/RequestRateLimit.php');
         $this->assertIsString($request_rate_limit);
         $barrier = $this->base_directory . DIRECTORY_SEPARATOR . 'probe-start';
         $child_script = $this->base_directory . DIRECTORY_SEPARATOR . 'probe-child.php';
@@ -1424,7 +1424,7 @@ PHP;
             $this->markTestSkipped('proc_open is required for the concurrency regression test');
         }
 
-        $request_rate_limit = realpath(__DIR__ . '/../../../src/includes/RequestRateLimit.php');
+        $request_rate_limit = realpath(dirname(__DIR__, 3) . '/src/includes/RequestRateLimit.php');
         $this->assertIsString($request_rate_limit);
         $barrier = $this->base_directory . DIRECTORY_SEPARATOR . 'discovery-start';
         $child_script = $this->base_directory . DIRECTORY_SEPARATOR . 'discovery-child.php';

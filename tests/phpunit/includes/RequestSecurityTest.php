@@ -5,8 +5,8 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-require_once __DIR__ . '/../../../src/includes/request_security.php';
-require_once __DIR__ . '/../../../src/includes/PublicConfig.php';
+require_once dirname(__DIR__, 3) . '/src/includes/request_security.php';
+require_once dirname(__DIR__, 3) . '/src/includes/PublicConfig.php';
 
 final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
     private string|false $saved_public_base_url;

@@ -22,7 +22,7 @@ declare(strict_types=1);
 final class StrReplaceArgumentCountTest extends PHPUnit\Framework\TestCase {
     /** @return array<int, string> */
     private static function sourceFiles(): array {
-        $root = realpath(__DIR__ . '/../../../src');
+        $root = realpath(dirname(__DIR__, 3) . '/src');
         if ($root === false) {
             throw new RuntimeException('Could not locate src directory');
         }
@@ -41,7 +41,7 @@ final class StrReplaceArgumentCountTest extends PHPUnit\Framework\TestCase {
     }
 
     private static function relativePath(string $path): string {
-        $root = realpath(__DIR__ . '/../../../');
+        $root = realpath(dirname(__DIR__, 3));
         if ($root === false) {
             return $path;
         }
