@@ -64,6 +64,43 @@ final class DoiToolsCoverageTest extends testBaseClass {
         $this->assertNull(interpret_doi_header($headers, '10.5555/citation-bot-coverage'));
     }
 
+    public function testUnauthenticatedHeadersCannotEstablishNegativeDoiResult(): void {
+        $trusted_negative = [
+            '0' => 'HTTP/1.1 302 Found',
+            '1' => 'HTTP/1.1 404 Not Found',
+            'Location' => 'https://example.com',
+            DOI_HEADER_TRUST_KEY => DOI_HEADER_TRUST_STRICT,
+        ];
+        $untrusted_negative = [
+            '0' => 'HTTP/1.1 302 Found',
+            '1' => 'HTTP/1.1 404 Not Found',
+            'Location' => 'http://example.com',
+            DOI_HEADER_TRUST_KEY => DOI_HEADER_TRUST_UNAUTHENTICATED,
+        ];
+        $untrusted_positive = [
+            '0' => 'HTTP/1.1 302 Found',
+            '1' => 'HTTP/1.1 200 OK',
+            'Location' => 'http://example.com',
+            DOI_HEADER_TRUST_KEY => DOI_HEADER_TRUST_UNAUTHENTICATED,
+        ];
+        $doi = '10.99999/citation-bot-transport-trust-test';
+
+        // A verified 404 can still establish that the DOI is broken.
+        $this->assertFalse(interpret_doi_header($trusted_negative, $doi));
+
+        /*
+         * An HTTP/legacy-TLS attacker could forge a negative response, so the
+         * same observation becomes unknown rather than false.
+         */
+        $this->assertNull(interpret_doi_header($untrusted_negative, $doi));
+
+        /*
+         * Positive reachability remains useful even when transport
+         * authentication is unavailable for an old publisher.
+         */
+        $this->assertTrue(interpret_doi_header($untrusted_positive, $doi));
+    }
+
     public function testCheckDoiForJstorIgnoresEmptyAndNumericValues(): void {
         $template = $this->make_citation('{{cite journal}}');
 
