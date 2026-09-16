@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class BigRunRecoveryEndpointTest extends PHPUnit\Framework\TestCase {
     private string $source;
 
     #[\Override]
     protected function setUp(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/reset_big_run_state.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/reset_big_run_state.php');
         $this->assertIsString($source);
         $this->source = $source;
     }

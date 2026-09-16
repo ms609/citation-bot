@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Format: [✓] ClassName::testName  time
  */
 
-$junitFile = __DIR__ . '/../junit.xml';
+$junitFile = dirname(__DIR__) . '/junit.xml';
 
 if (!file_exists($junitFile)) {
     echo "\nWarning: JUnit XML file not found: $junitFile\n";

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * expose a defect (those are documented separately in the edge audit).
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 use PHPUnit\Framework\Attributes\DataProvider;
 

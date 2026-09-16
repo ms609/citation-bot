@@ -29,7 +29,7 @@ final class killBigJobPageTest extends PHPUnit\Framework\TestCase {
 
         try {
             ob_start();
-            require __DIR__ . '/../../src/kill_big_job.php';
+            require dirname(__DIR__, 2) . '/src/kill_big_job.php';
             $body = (string) ob_get_clean();
         } catch (Throwable $e) {
             ob_end_clean();
@@ -66,7 +66,7 @@ final class killBigJobPageTest extends PHPUnit\Framework\TestCase {
         session_write_close();
 
         ob_start();
-        require __DIR__ . '/../../src/kill_big_job.php';
+        require dirname(__DIR__, 2) . '/src/kill_big_job.php';
         $body = (string) ob_get_clean();
 
         if (session_status() === PHP_SESSION_ACTIVE) {

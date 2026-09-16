@@ -8,8 +8,8 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-require_once __DIR__ . '/../testBaseClass.php';
-require_once __DIR__ . '/../../src/includes/GadgetApi.php';
+require_once dirname(__DIR__) . '/testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/src/includes/GadgetApi.php';
 
 final class gadgetapiTest extends testBaseClass {
 
@@ -44,7 +44,7 @@ final class gadgetapiTest extends testBaseClass {
         ob_start();
         ob_start();
 
-        require __DIR__ . '/../../src/gadgetapi.php';
+        require dirname(__DIR__, 2) . '/src/gadgetapi.php';
 
         $body = ob_get_contents();
         $this->assertIsString($body);
@@ -86,7 +86,7 @@ final class gadgetapiTest extends testBaseClass {
         $_POST['summary'] = 'Something Nice';
         $_SERVER['HTTP_ORIGIN'] = 'https://en.wikipedia.org';
         // Note: gadgetapi.php runs in fast mode by default to prevent timeouts
-        require(__DIR__ . '/../../src/gadgetapi.php');
+        require(dirname(__DIR__, 2) . '/src/gadgetapi.php');
         unset($_SERVER['HTTP_ORIGIN']);
         $json_text = ob_get_contents();
         ob_end_clean();

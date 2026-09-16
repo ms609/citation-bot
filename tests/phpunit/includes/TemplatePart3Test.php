@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Template.php
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
     public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.

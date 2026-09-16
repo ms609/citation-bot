@@ -6,7 +6,7 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
 
     /** @return array<int, string> */
     private static function sourceFiles(): array {
-        $root = realpath(__DIR__ . '/../../../src');
+        $root = realpath(dirname(__DIR__, 3) . '/src');
         if ($root === false) {
             throw new RuntimeException('Could not locate src directory');
         }
@@ -25,7 +25,7 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
     }
 
     private static function relativePath(string $path): string {
-        $root = realpath(__DIR__ . '/../../../');
+        $root = realpath(dirname(__DIR__, 3));
         if ($root === false) {
             return $path;
         }
@@ -142,6 +142,73 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
                 if ($apiPath || $literalNetworkUrl) {
                     $violations[] = sprintf(
                         '%s:%d network file_get_contents() is forbidden; use cURL',
+                        self::relativePath($file),
+                        $token[2]
+                    );
+                }
+            }
+        }
+
+        $this->assertSame([], $violations, implode("\n", $violations));
+    }
+
+    public function testRequireAndIncludePathsDoNotTraverseParentDirectories(): void {
+        $repository_root = realpath(dirname(__DIR__, 3));
+        $this->assertIsString($repository_root);
+        if (!is_string($repository_root)) {
+            throw new RuntimeException('Could not locate repository root');
+        }
+
+        $files = [];
+        foreach (['src', 'tests'] as $relative_directory) {
+            $root = $repository_root . DIRECTORY_SEPARATOR . $relative_directory;
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
+            );
+            foreach ($iterator as $file) {
+                if (
+                    $file instanceof SplFileInfo &&
+                    $file->isFile() &&
+                    $file->getExtension() === 'php'
+                ) {
+                    $files[] = $file->getPathname();
+                }
+            }
+        }
+        sort($files);
+
+        $violations = [];
+        $include_tokens = [T_REQUIRE, T_REQUIRE_ONCE, T_INCLUDE, T_INCLUDE_ONCE];
+
+        foreach ($files as $file) {
+            $source = file_get_contents($file);
+            $this->assertIsString($source);
+            $tokens = token_get_all($source);
+            $count = count($tokens);
+
+            foreach ($tokens as $index => $token) {
+                if (!is_array($token) || !in_array($token[0], $include_tokens, true)) {
+                    continue;
+                }
+
+                $statement = '';
+                for ($i = $index + 1; $i < $count; ++$i) {
+                    $part = $tokens[$i];
+                    if ($part === ';') {
+                        break;
+                    }
+                    if (
+                        is_array($part) &&
+                        in_array($part[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)
+                    ) {
+                        continue;
+                    }
+                    $statement .= self::tokenText($part);
+                }
+
+                if (str_contains($statement, '..')) {
+                    $violations[] = sprintf(
+                        '%s:%d require/include path uses parent traversal; use dirname()',
                         self::relativePath($file),
                         $token[2]
                     );

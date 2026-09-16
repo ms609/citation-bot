@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Parameter.php.
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class parameterTest extends testBaseClass {

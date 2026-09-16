@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for generate_template.php
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once dirname(__DIR__) . '/testBaseClass.php';
 
 final class generate_templateTest extends testBaseClass {
 
@@ -15,7 +15,7 @@ final class generate_templateTest extends testBaseClass {
         ob_start();
         ob_start();
         $_GET['jstor'] = '373737';
-        require(__DIR__ . '/../../src/generate_template.php');
+        require(dirname(__DIR__, 2) . '/src/generate_template.php');
         unset($_GET);
         $template_text = '';
         while (ob_get_level()) {

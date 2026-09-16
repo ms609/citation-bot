@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for constants.php and constants subdirectory.
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_AUTHORS,
                    ...PUBLISHER_ENDINGS, ...BAD_TITLES, ...IN_PRESS_ALIASES, ...NON_PUBLISHERS,
@@ -14,7 +14,7 @@ const BIG_ARRAY = [...HAS_NO_VOLUME, ...BAD_ACCEPTED_MANUSCRIPT_TITLES, ...BAD_A
 
 const START_ALPHA = '/* The following will be automatically updated to alphabetical order */';
 const END_ALPHA = '/* The above will be automatically updated to alphabetical order */';
-const ALPHA_FILE = __DIR__ . '/../../../src/includes/constants/capitalization.php';
+define('ALPHA_FILE', dirname(__DIR__, 3) . '/src/includes/constants/capitalization.php');
 
 final class ConstantsTest extends testBaseClass {
 

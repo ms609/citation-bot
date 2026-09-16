@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
     public function testMbStrrevHonorsExplicitEncoding(): void {
@@ -63,7 +63,7 @@ final class EncodingBoundaryTest extends testBaseClass {
     }
 
     public function testRawBoundaryCallSitesUseEightBitMode(): void {
-        $root = __DIR__ . '/../../../src/';
+        $root = dirname(__DIR__, 3) . '/src/';
         $cases = [
             'includes/api/APIS2.php' => [
                 "mb_stripos(\$response, 'Too Many Requests', 0, '8bit')",
@@ -138,7 +138,7 @@ final class EncodingBoundaryTest extends testBaseClass {
     }
 
     public function testWindows1252HeuristicUsesRawByteLiterals(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/api/APIarchives.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/api/APIarchives.php');
         $this->assertIsString($source);
         foreach (["\\xAE", "\\xA9", "\\x81", "\\x94", "\\x84"] as $literal) {
             $this->assertStringContainsString('"' . $literal . '"', $source);

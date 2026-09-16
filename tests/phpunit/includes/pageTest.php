@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Page.php
  */
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 
@@ -90,7 +90,7 @@ final class pageTest extends testBaseClass {
     }
 
     public function testPageTextCallbacksUseSafePregWrapper(): void {
-        $source = file_get_contents(__DIR__ . '/../../../src/includes/Page.php');
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/Page.php');
         $this->assertIsString($source);
 
         // Direct preg_replace_callback() can return null on a PCRE runtime

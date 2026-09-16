@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-require_once __DIR__ . '/../../testBaseClass.php';
+require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 /**
  * Exercises gate_big_run in a cold web-like environment. HTML_OUTPUT is
@@ -194,8 +194,8 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testBulkEntryPointsAcquireProbeBeforeFirstRemoteDiscoveryCall(): void {
-        $category = file_get_contents(__DIR__ . '/../../../src/category.php');
-        $linked = file_get_contents(__DIR__ . '/../../../src/linked_pages.php');
+        $category = file_get_contents(dirname(__DIR__, 3) . '/src/category.php');
+        $linked = file_get_contents(dirname(__DIR__, 3) . '/src/linked_pages.php');
         $this->assertIsString($category);
         $this->assertIsString($linked);
 

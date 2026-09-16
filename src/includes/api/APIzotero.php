@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../constants.php'; // @codeCoverageIgnoreStart
-require_once __DIR__ . '/../Template.php';
-require_once __DIR__ . '/../URLtools.php';
-require_once __DIR__ . '/../miscTools.php'; // @codeCoverageIgnoreEnd
+require_once dirname(__DIR__) . '/constants.php'; // @codeCoverageIgnoreStart
+require_once dirname(__DIR__) . '/Template.php';
+require_once dirname(__DIR__) . '/URLtools.php';
+require_once dirname(__DIR__) . '/miscTools.php'; // @codeCoverageIgnoreEnd
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";

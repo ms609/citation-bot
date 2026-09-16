@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../../src/includes/PublicConfig.php';
+require_once dirname(__DIR__, 3) . '/src/includes/PublicConfig.php';
 
 final class PublicConfigTest extends PHPUnit\Framework\TestCase {
     /** @var array<string, string|false> */
