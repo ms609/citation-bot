@@ -357,9 +357,8 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             $repository_root . DIRECTORY_SEPARATOR . 'DebugLog.txt',
             $log_path
         );
-        $this->assertStringNotStartsWith(
-            $source_root . DIRECTORY_SEPARATOR,
-            $log_path
+        $this->assertFalse(
+            str_starts_with($log_path, $source_root . DIRECTORY_SEPARATOR)
         );
     }
 }
