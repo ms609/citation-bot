@@ -140,6 +140,11 @@ function gitpull_process_environment(): array {
  */
 function gitpull_run_git(array $arguments): array {
     $command = ['/usr/bin/git', '-C', dirname(__DIR__), ...$arguments];
+    $output_stream = tmpfile();
+    if (!is_resource($output_stream)) {
+        return ['output' => 'Unable to create Git command output stream.', 'status' => 1];
+    }
+
     $pipes = [];
 
     /** @psalm-suppress ForbiddenCode */
@@ -147,8 +152,8 @@ function gitpull_run_git(array $arguments): array {
         $command,
         [
             0 => ['file', '/dev/null', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['redirect', 1],
+            1 => $output_stream,
+            2 => $output_stream,
         ],
         $pipes,
         null,
@@ -156,18 +161,14 @@ function gitpull_run_git(array $arguments): array {
     );
 
     if (!is_resource($process)) {
+        fclose($output_stream);
         return ['output' => 'Unable to start Git command.', 'status' => 1];
     }
 
-    if (!isset($pipes[1]) || !is_resource($pipes[1])) {
-        proc_terminate($process);
-        proc_close($process);
-        return ['output' => 'Unable to capture Git command output.', 'status' => 1];
-    }
-
-    $output = stream_get_contents($pipes[1]);
-    fclose($pipes[1]);
     $status = proc_close($process);
+    rewind($output_stream);
+    $output = stream_get_contents($output_stream);
+    fclose($output_stream);
 
     return [
         'output' => is_string($output) ? $output : '',
