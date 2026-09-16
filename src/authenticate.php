@@ -23,9 +23,16 @@ function death_time(string $err): never {
 
 function return_to_sender(?string $where = null): never {
     if ($where === null) {
-        $where = public_url('/');
+        header("Location: " . public_url('/'));
+        exit(0);
     }
-    if (preg_match('~\s+~', $where)) {
+
+    /*
+     * Validate at the Location-header sink. Progpilot tracks validators
+     * intraprocedurally, so validating only at the caller does not carry the
+     * safe state into this helper.
+     */
+    if (!is_valid_local_return_path($where)) {
         death_time('Error in return_to_sender');
     }
     header("Location: " . $where);
@@ -141,7 +148,8 @@ try {
     if (mb_strpos($authUrl, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=') !== 0 || preg_match('~\s+~', $authUrl)) {
         death_time('Corrupted OAuth URL');
     }
-    return_to_sender($authUrl);
+    header("Location: " . $authUrl);
+    exit(0);
 } catch (Throwable) {
     /** fall through */
 }
