@@ -352,7 +352,6 @@ The gadget MUST:
 │   ├── process_page.php        # Main processor
 │   ├── gadgetapi.php           # Gadget endpoint
 │   ├── generate_template.php   # Single citation generator
-│   ├── env.php.example         # Configuration template
 │   ├── authenticate.php        # OAuth authentication
 │   ├── category.php            # Category processing
 │   ├── linked_pages.php        # Processes pages linking to a given page
@@ -424,6 +423,7 @@ The gadget MUST:
 ├── psalm.xml                   # Psalm configuration
 ├── .phpcs.xml                  # Code style configuration
 ├── progpilot.yml               # Security analysis config
+├── env.php.example             # Configuration template
 └── ...other config files
 ```
 
