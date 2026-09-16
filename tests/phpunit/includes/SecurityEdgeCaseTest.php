@@ -468,4 +468,30 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             $this->assertStringNotContainsString($secret_name, $environment_source);
         }
     }
+
+    public function testGitpullUsesAdvisoryLockAndPropagatesGitFailures(): void {
+        $gitpull = file_get_contents(__DIR__ . '/../../../src/gitpull.php');
+        $setup = file_get_contents(__DIR__ . '/../../../src/includes/setup.php');
+        $this->assertIsString($gitpull);
+        $this->assertIsString($setup);
+        if (!is_string($gitpull) || !is_string($setup)) {
+            throw new RuntimeException('Unable to read deployment sources.');
+        }
+
+        $this->assertStringContainsString('flock($lockHandle, LOCK_EX | LOCK_NB)', $gitpull);
+        $this->assertStringNotContainsString('@mkdir(LOCK_DIR', $gitpull);
+        $this->assertStringContainsString('$git_status = 500;', $gitpull);
+        $this->assertStringContainsString(
+            'gitpull_page($git_hub, false, $git_status);',
+            $gitpull
+        );
+
+        $this->assertStringContainsString(
+            'flock($git_pull_lock_handle, LOCK_SH | LOCK_NB)',
+            $setup
+        );
+        $this->assertStringNotContainsString('sleep(5);', $setup);
+        $this->assertStringContainsString('http_response_code(503);', $setup);
+        $this->assertStringContainsString("header('Retry-After: 5')", $setup);
+    }
 }

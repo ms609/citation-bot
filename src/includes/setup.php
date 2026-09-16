@@ -16,12 +16,57 @@ if (!mb_internal_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are ver
     exit(0);
 }
 
+/*
+ * gitpull.php holds an exclusive advisory lock while the working tree is being
+ * replaced. Probe it with a non-blocking shared lock instead of treating the
+ * lock pathname's existence as state: the file is intentionally permanent, so
+ * a killed deploy process cannot leave the site disabled by a stale sentinel.
+ *
+ * This check is deliberately self-contained and before mutable application
+ * includes, so requests arriving during a deployment do not load a mixed tree.
+ */
 $git_pull_lock = dirname(__DIR__) . '/git_pull.lock';
-if (file_exists($git_pull_lock)) {
-    sleep(5);
+$git_pull_in_progress = true;
+$git_pull_lock_handle = false;
+
+clearstatcache(true, $git_pull_lock);
+if (!is_link($git_pull_lock) && !is_dir($git_pull_lock)) {
+    $git_pull_lock_handle = @fopen($git_pull_lock, 'c+');
+    if ($git_pull_lock_handle !== false) {
+        clearstatcache(true, $git_pull_lock);
+        $held_stat = @fstat($git_pull_lock_handle);
+        $path_stat = @lstat($git_pull_lock);
+        $safe_lock =
+            is_array($held_stat) &&
+            is_array($path_stat) &&
+            (($held_stat['mode'] & 0170000) === 0100000) &&
+            (($path_stat['mode'] & 0170000) === 0100000) &&
+            $held_stat['dev'] === $path_stat['dev'] &&
+            $held_stat['ino'] === $path_stat['ino'];
+
+        if ($safe_lock && function_exists('posix_geteuid')) {
+            $owner = @fileowner($git_pull_lock);
+            $safe_lock = is_int($owner) && $owner === posix_geteuid();
+        }
+
+        if ($safe_lock) {
+            @chmod($git_pull_lock, 0600);
+            if (@flock($git_pull_lock_handle, LOCK_SH | LOCK_NB)) {
+                $git_pull_in_progress = false;
+                @flock($git_pull_lock_handle, LOCK_UN);
+            }
+        }
+        @fclose($git_pull_lock_handle);
+    }
+}
+
+if ($git_pull_in_progress) {
+    http_response_code(503);
+    @header('Retry-After: 5');
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Citation Bot: error</title></head><body><main><h1>Git pull in progress - please retry in a moment</h1></main></body></html>';
     exit(0);
 }
+unset($git_pull_lock, $git_pull_in_progress, $git_pull_lock_handle, $held_stat, $path_stat, $safe_lock, $owner);
 
 /**
  * Keep runtime logs in the Citation Bot repository root, one level above the

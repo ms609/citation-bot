@@ -21,7 +21,7 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 @header('X-Content-Type-Options: nosniff');
 @header("Content-Security-Policy: default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 
-const LOCK_DIR = __DIR__ . '/git_pull.lock';
+const LOCK_FILE = __DIR__ . '/git_pull.lock';
 const GITPULL_CSRF_COOKIE = 'citation_bot_gitpull_csrf';
 const GITPULL_CSRF_TTL = 600;
 
@@ -32,6 +32,45 @@ const GITPULL_CSRF_TTL = 600;
  */
 function gitpull_valid_deploy_token(string $token): bool {
     return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
+}
+
+/** @return resource|false */
+function gitpull_open_lock() {
+    clearstatcache(true, LOCK_FILE);
+    if (is_link(LOCK_FILE) || is_dir(LOCK_FILE)) {
+        return false;
+    }
+
+    $handle = @fopen(LOCK_FILE, 'c+');
+    if ($handle === false) {
+        return false;
+    }
+
+    clearstatcache(true, LOCK_FILE);
+    $held_stat = @fstat($handle);
+    $path_stat = @lstat(LOCK_FILE);
+    if (
+        !is_array($held_stat) ||
+        !is_array($path_stat) ||
+        (($held_stat['mode'] & 0170000) !== 0100000) ||
+        (($path_stat['mode'] & 0170000) !== 0100000) ||
+        $held_stat['dev'] !== $path_stat['dev'] ||
+        $held_stat['ino'] !== $path_stat['ino']
+    ) {
+        @fclose($handle);
+        return false;
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $owner = @fileowner(LOCK_FILE);
+        if (!is_int($owner) || $owner !== posix_geteuid()) {
+            @fclose($handle);
+            return false;
+        }
+    }
+
+    @chmod(LOCK_FILE, 0600);
+    return $handle;
 }
 
 function gitpull_new_browser_nonce(): string {
@@ -176,7 +215,7 @@ function gitpull_run_git(array $arguments): array {
     ];
 }
 
-clearstatcache(true, LOCK_DIR);
+clearstatcache(true, LOCK_FILE);
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
 if (!gitpull_valid_deploy_token($deployToken)) {
@@ -253,33 +292,47 @@ if (!$tokenMatches) {
     gitpull_page('Deployment authorization failed.', false, 403);
 }
 
-if (@mkdir(LOCK_DIR, 0700)) {
-    register_shutdown_function(static function (): void {
-        if (is_dir(LOCK_DIR)) {
-            @rmdir(LOCK_DIR);
-            clearstatcache(true, LOCK_DIR);
+$lockHandle = gitpull_open_lock();
+if ($lockHandle === false) {
+    gitpull_page('Unable to open deployment lock.', false, 503);
+}
+if (!@flock($lockHandle, LOCK_EX | LOCK_NB)) {
+    @fclose($lockHandle);
+    gitpull_page('Please try again - deployment already in progress', false, 409);
+}
+
+$git_status = 200;
+try {
+    // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
+    $fetch = gitpull_run_git(['fetch', '--all']);
+    $git_hub = $fetch['output'];
+    if ($fetch['status'] !== 0) {
+        $git_status = 500;
+        $git_hub =
+            'git fetch --all failed with exit status ' .
+            (string) $fetch['status'] .
+            ".\n" .
+            $git_hub;
+    } else {
+        $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
+        if ($reset['status'] !== 0) {
+            $git_status = 500;
+            $git_hub .=
+                'git reset --hard origin/master failed with exit status ' .
+                (string) $reset['status'] .
+                ".\n";
         }
-    });
-    try {
-        // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
-        $fetch = gitpull_run_git(['fetch', '--all']);
-        $git_hub = $fetch['output'];
-        if ($fetch['status'] === 0) {
-            $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
-            $git_hub .= $reset['output'];
-            unset($reset);
-        }
-        unset($fetch);
-    } finally {
-        @rmdir(LOCK_DIR);
-        clearstatcache(true, LOCK_DIR);
+        $git_hub .= $reset['output'];
+        unset($reset);
     }
-} else {
-    gitpull_page('Please try again - lock file found', false, 409);
+    unset($fetch);
+} finally {
+    @flock($lockHandle, LOCK_UN);
+    @fclose($lockHandle);
 }
 
 if ($browserSubmission) {
-    gitpull_browser_form($git_hub, 200);
+    gitpull_browser_form($git_hub, $git_status);
 }
 
-gitpull_page($git_hub, false, 200);
+gitpull_page($git_hub, false, $git_status);
