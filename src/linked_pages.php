@@ -20,8 +20,6 @@ if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
 session_start(public_session_start_options(true));
 
 bot_admission_buffer_start();
-$api = new WikipediaBot();
-
 bot_html_header();
 
 if (!isset($_POST['csrf_token']) || !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
@@ -30,6 +28,7 @@ if (!isset($_POST['csrf_token']) || !request_has_valid_post_csrf($_SERVER, $_POS
     exit(0);
 }
 
+$api = new WikipediaBot();
 check_blocked();
 
 $page_name = str_replace(' ', '_', mb_trim($page_name));
