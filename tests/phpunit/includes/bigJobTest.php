@@ -7,8 +7,15 @@ require_once __DIR__ . '/../../../src/includes/big_jobs.php';
 final class bigJobTest extends testBaseClass {
 
     public function testName(): void {
+        $previous_user = $_SESSION['citation_bot_user_id'] ?? null;
+        unset($_SESSION['citation_bot_user_id']);
+
         $state_directory = big_jobs_state_directory();
         $job = big_jobs_name();
+
+        if ($previous_user !== null) {
+            $_SESSION['citation_bot_user_id'] = $previous_user;
+        }
 
         $this->assertDirectoryExists($state_directory);
         $base_directory = sys_get_temp_dir();
