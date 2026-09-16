@@ -256,4 +256,17 @@ final class BotCurlTest extends testBaseClass {
         $this->assertGreaterThan(0, $transfer['errno']);
         $this->assertNotSame('', $transfer['error']);
     }
+
+    public function testGateAwareProgressCallbackPreservesResponseLimit(): void {
+        $ch = bot_curl_init(1.0, [], 1000);
+        $this->assertNotFalse($ch);
+        $this->assertSame(
+            0,
+            bot_curl_progress_with_gate_heartbeat($ch, 0, 1000, 0, 0)
+        );
+        $this->assertSame(
+            1,
+            bot_curl_progress_with_gate_heartbeat($ch, 0, 1001, 0, 0)
+        );
+    }
 }

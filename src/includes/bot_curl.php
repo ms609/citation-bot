@@ -296,7 +296,39 @@ function bot_curl_exec(CurlHandle $ch): string {
     return $result === false ? '' : (string) $result;
 }
 
+/** Renew any active admission/large-job leases from common cURL hooks. */
+function bot_curl_gate_heartbeat(): void {
+    if (function_exists('big_jobs_maybe_heartbeat')) {
+        big_jobs_maybe_heartbeat();
+    }
+    if (function_exists('big_run_maybe_heartbeat_current')) {
+        big_run_maybe_heartbeat_current();
+    }
+}
+
+/**
+ * Preserve the mandatory response-size guard while also refreshing request
+ * leases from libcurl's progress callback during long or stalled transfers.
+ */
+function bot_curl_progress_with_gate_heartbeat(
+    CurlHandle $ch,
+    int $download_size = 0,
+    int $downloaded = 0,
+    int $upload_size = 0,
+    int $uploaded = 0
+): int {
+    bot_curl_gate_heartbeat();
+    return curl_limit_page_size(
+        $ch,
+        $download_size,
+        $downloaded,
+        $upload_size,
+        $uploaded
+    );
+}
+
 function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
+    bot_curl_gate_heartbeat();
     if (bot_curl_is_legacy_tls_probe($ch)) {
         /*
          * An unauthenticated legacy HTTPS endpoint should receive as little
@@ -312,7 +344,9 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
 
     // Re-assert either the strict or explicitly marked legacy policy.
     bot_curl_apply_security_options($ch);
+
     $result = @curl_exec($ch);  // phpcs:ignore
+    bot_curl_gate_heartbeat();
     bot_curl_transfer_results()[$ch] = [
         'ok' => $result !== false,
         'errno' => curl_errno($ch),

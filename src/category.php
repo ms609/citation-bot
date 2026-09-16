@@ -79,6 +79,7 @@ if ($from_get) {
 }
 unset($from_get);
 
+bot_admission_buffer_start();
 bot_html_header();
 
 if (!request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
@@ -99,29 +100,57 @@ if (!defined('MAX_PAGES_OVERRIDE') && in_array($api->get_the_user(), DEV_USERS, 
     $dev_user_run = true;
 }
 
-$pages_in_category = array_unique(WikipediaBot::category_members($category));
+// Reserve a small probe slot before the first remote category API call. If
+// discovery proves this is bulk work, atomically move that same lease into the
+// normal total pool before continuing. Tokens are spent only at final admission.
+$effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
+$category_limit = intval($effective_max / 4);
+$default_web_limit = intval(MAX_PAGES / 4);
+$discovery_entry_id = gate_big_run_probe('category', $api->get_the_user());
+$bulk_discovery_signaled = false;
+$pages_in_category = WikipediaBot::category_members_bounded(
+    $category,
+    $category_limit + 1,
+    static function () use (&$discovery_entry_id, &$bulk_discovery_signaled): void {
+        if ($bulk_discovery_signaled) {
+            return;
+        }
+        $bulk_discovery_signaled = true;
+        gate_big_run_probe_to_discovery($discovery_entry_id);
+    },
+    static function () use (&$discovery_entry_id): void {
+        big_jobs_acquire_large_run();
+        // The bulk callback necessarily runs before the large callback.
+        if ($discovery_entry_id !== null) {
+            gate_big_run_discovery_large($discovery_entry_id);
+        }
+    }
+);
 shuffle($pages_in_category);
 $total = count($pages_in_category);
 if ($total === 0) {
+    release_big_run_lease($discovery_entry_id);
     report_warning('Category appears to be empty');
     bot_html_footer();
+    bot_admission_buffer_flush();
     exit(0);
 }
-$effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
-$default_web_limit = intval(MAX_PAGES / 4);
-if ($total > intval($effective_max / 4)) {
-    report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) intval($effective_max / 4));
+if ($total > $category_limit) {
+    release_big_run_lease($discovery_entry_id);
+    report_warning('Category is huge. Cancelling run. Maximum size is ' . (string) $category_limit . '. Displayed page list is truncated to the discovery bound.');
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
         echo echoable(str_replace(' ', '_', (string) $page_title)), "\n";
     }
     echo "\n\n";
     bot_html_footer();
+    bot_admission_buffer_flush();
     exit(0);
 }
 if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
     report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
+
 $request_edit = null;
 if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
     $request_edit = $_REQUEST["edit"];
@@ -134,4 +163,4 @@ $edit_summary_end = category_edit_summary_end(
     $request_edit
 );
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
-edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end, 'category', $discovery_entry_id);
