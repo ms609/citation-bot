@@ -137,7 +137,6 @@ if (!empty($_GET)) {
 
 $headerToken = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? null;
 $browserSubmission = $headerToken === null;
-$tokenIn = null;
 
 if ($browserSubmission) {
     $tokenIn = $_POST['deploy_token'] ?? null;
