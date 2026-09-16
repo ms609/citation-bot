@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 const BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES = 134217728; // 128 MiB
 const BOT_CURL_ALLOWED_PROTOCOLS_USE = CURLPROTO_HTTP | CURLPROTO_HTTPS;
-const BOT_CURL_ALLOWED_PROTOCOLS_END = CURLPROTO_HTTP | CURLPROTO_HTTPS | CURLPROTO_FTP; // Some DOIs resolve to FTP sites, which is okay.  Some resolve to files, which we reject.
+// Redirects stay on HTTP(S). Historical DOI/HDL FTP Location headers are
+// handled explicitly in doiTools.php without fetching the FTP resource.
+const BOT_CURL_ALLOWED_PROTOCOLS_END = CURLPROTO_HTTP | CURLPROTO_HTTPS;
 
 /**
  * Return true only for globally routable IP addresses.
