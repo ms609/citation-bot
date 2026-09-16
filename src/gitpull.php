@@ -102,7 +102,7 @@ function gitpull_page(string $message, bool $show_form, int $status, string $csr
     exit(0);
 }
 
-function gitpull_browser_form(string $message = '', int $status = 200): never {
+function gitpull_browser_form(string $message, int $status): never {
     $nonce = gitpull_new_browser_nonce();
     gitpull_set_browser_nonce($nonce);
     gitpull_page($message, true, $status, $nonce);
@@ -123,7 +123,7 @@ if ($requestMethod === 'GET') {
         @header('Location: gitpull.php', true, 303);
         exit(0);
     }
-    gitpull_browser_form();
+    gitpull_browser_form('', 200);
 }
 
 if ($requestMethod !== 'POST') {
