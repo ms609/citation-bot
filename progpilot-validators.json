@@ -1,0 +1,14 @@
+{
+    "validators": [
+        {
+            "name": "is_valid_local_return_path",
+            "language": "php",
+            "parameters": [
+                {
+                    "id": 1,
+                    "conditions": "valid"
+                }
+            ]
+        }
+    ]
+}

@@ -8,7 +8,8 @@ inputs:
       config_files:  ~
     validators:
       keep_defaults: true
-      config_files:  ~
+      config_files:
+        - "progpilot-validators.json"
     sanitizers:
       keep_defaults: true
       config_files:

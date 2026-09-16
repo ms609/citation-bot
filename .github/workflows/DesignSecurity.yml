@@ -8,6 +8,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'progpilot.json'
+      - 'progpilot-*.json'
       - 'progpilot.yml'
       - '.github/workflows/DesignSecurity.yml'
   pull_request:
@@ -17,6 +18,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'progpilot.json'
+      - 'progpilot-*.json'
       - 'progpilot.yml'
       - '.github/workflows/DesignSecurity.yml'
   schedule:
