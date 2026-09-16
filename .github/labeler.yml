@@ -120,7 +120,7 @@ config:
       - .gitignore
       - .phan/config.php
       - catalog-info.yaml
-      - src/env.php.example
+      - env.php.example
       - composer.json
       - composer.lock
       - progpilot-sanitizers.json
