@@ -268,6 +268,10 @@ Every deployment must configure `PUBLIC_BASE_URL`, the canonical externally visi
 
 The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning variables documented in `src/env.php.example`. Normally leave them unset to use the reviewed defaults; tune them only from measured interactive latency, CPU/memory pressure, and structured deferral reasons.
 
+Runtime diagnostics are written to `DebugLog.txt` in the main Citation Bot
+repository directory, one level above the `src/` web tree. The file is forced
+to mode `0600` and is ignored by Git.
+
 When upgrading from a build that locks `big-run.json` directly to the permanent `big-run.lock` backend, perform a **drained deployment**. Stop the web service and wait for all old php-cgi requests to exit, update the code while the service is stopped, remove the old `big-run.json` snapshot from the configured rate-limit state directory, then restart the web service. Do not use the live `gitpull.php` endpoint for this one-time lock-protocol transition: old and new requests otherwise coordinate on different lock objects. Once every worker is running the new protocol, normal deployments may resume.
 
  To run the bot as a webservice from WM Toolforge:
