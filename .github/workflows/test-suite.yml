@@ -128,7 +128,7 @@ jobs:
 
     - name: Manually look for weird stuff
       if: always()
-      run: /bin/cat ./src/includes/DebugLog.txt
+      run: /bin/cat ./DebugLog.txt
 
     - name: Code Coverage
       if:  ${{ !cancelled() && github.event_name != 'pull_request' }}

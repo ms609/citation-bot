@@ -342,4 +342,23 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->assertStringNotContainsString('\\', basename($path));
         $this->assertStringNotContainsString("\x00", basename($path));
     }
+
+    public function testDebugLogUsesRepositoryRootOutsideSourceTree(): void {
+        $repository_root = realpath(__DIR__ . '/../../..');
+        $source_root = realpath(__DIR__ . '/../../../src');
+        $this->assertIsString($repository_root);
+        $this->assertIsString($source_root);
+        if (!is_string($repository_root) || !is_string($source_root)) {
+            throw new RuntimeException('Unable to resolve Citation Bot paths.');
+        }
+
+        $log_path = bot_debug_log_path();
+        $this->assertSame(
+            $repository_root . DIRECTORY_SEPARATOR . 'DebugLog.txt',
+            $log_path
+        );
+        $this->assertFalse(
+            str_starts_with($log_path, $source_root . DIRECTORY_SEPARATOR)
+        );
+    }
 }

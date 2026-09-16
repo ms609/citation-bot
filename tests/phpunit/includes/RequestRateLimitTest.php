@@ -480,7 +480,7 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testLogFailureReportsDuplicateReasonOnlyOnce(): void {
-        $log_path = __DIR__ . '/../../../src/includes/DebugLog.txt';
+        $log_path = bot_debug_log_path();
         $bucket = 'log-dedupe-' . bin2hex(random_bytes(4));
 
         request_rate_limit_log_failure($bucket, 'duplicate-reason');
