@@ -131,6 +131,24 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $this->assert_confirmation_posts_fields('category.php', $fields, 'Process category');
     }
 
+    public function testLinkedPagesChecksCsrfBeforeAuthenticatingUser(): void {
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/linked_pages.php');
+        $this->assertIsString($source);
+        if (!is_string($source)) {
+            throw new RuntimeException('Unable to read linked_pages.php.');
+        }
+
+        $csrf_check = mb_strpos($source, 'request_has_valid_post_csrf(');
+        $authentication = mb_strpos($source, '$api = new WikipediaBot();');
+        $this->assertIsInt($csrf_check);
+        $this->assertIsInt($authentication);
+        if (!is_int($csrf_check) || !is_int($authentication)) {
+            throw new RuntimeException('Expected linked-pages security markers.');
+        }
+
+        $this->assertLessThan($authentication, $csrf_check);
+    }
+
     /**
      * @param string $script
      * @param array<string, string> $query
