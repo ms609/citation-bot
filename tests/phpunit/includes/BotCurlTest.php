@@ -146,6 +146,12 @@ final class BotCurlTest extends testBaseClass {
         $this->assertFalse(bot_curl_ip_is_public('::ffff:127.0.0.1'));
     }
 
+    public function testIpv6LocalUseTranslationPrefixRejected(): void {
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b:1::'));
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b:1::1'));
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b:1:ffff:ffff:ffff:ffff:ffff'));
+    }
+
     public function testEvenMoreRejectedIP1(): void {
         $this->assertFalse(bot_curl_ip_is_public('0.0.0.0'));
     }

@@ -64,6 +64,19 @@ function bot_curl_ip_is_public(string $ip): bool {
     }
 
     /*
+     * RFC 8215 reserves 64:ff9b:1::/48 for local-use IPv4/IPv6 translation.
+     * PHP's FILTER_FLAG_GLOBAL_RANGE currently classifies this prefix as
+     * global, but a deployment can route it to an internal translator.
+     * Treat the entire local-use translation prefix as non-public.
+     */
+    if (
+        mb_strlen($packed, '8bit') === 16 &&
+        mb_substr($packed, 0, 6, '8bit') === "\x00\x64\xff\x9b\x00\x01"
+    ) {
+        return false;
+    }
+
+    /*
      * FILTER_FLAG_GLOBAL_RANGE still accepts multicast,
      * so explicitly reject it.
      */
