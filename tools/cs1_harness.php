@@ -55,9 +55,9 @@ set_error_handler(static function (int $severity, string $message): bool {
     return mb_strpos($message, 'already defined') !== false;
 });
 $old_error_level = error_reporting(E_ALL & ~E_WARNING);
-if (file_exists(__DIR__ . '/../src/env.php')) {
+if (file_exists(dirname(__DIR__) . '/env.php')) {
     /** @psalm-suppress MissingFile */
-    include_once __DIR__ . '/../src/env.php';
+    include_once dirname(__DIR__) . '/env.php';
 }
 require_once __DIR__ . '/../src/includes/setup.php';
 error_reporting($old_error_level);

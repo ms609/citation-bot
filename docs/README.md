@@ -203,7 +203,7 @@ response buffering are in `src/includes/WebTools.php`; bounded discovery is in
 
 Basic structure of a Citation bot script:
 
-- the `src/env.php` that defines configuration constants (you can create it from `src/env.php.example`)
+- the root-level `env.php` that defines private configuration (you can create it from `env.php.example`)
 - the `src/includes/setup.php` that sets up the functions needed (usually, you don't need to modify this file)
 - the Page functions to fetch/expand/post the page's text
 
@@ -264,13 +264,29 @@ Includes (under `src/includes/`):
 
 The bot requires PHP >= 8.4.
 
-To run the bot from a new environment, you will need to create an `src/env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables.  To do this, you can rename `src/env.php.example` to `src/env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+To run the bot from a new environment, create `env.php` in the repository root
+from `env.php.example`, set the needed authentication tokens, and make sure
+the private file is not group/world readable or writable:
 
-    chmod go-rwx src/env.php
+    cp env.php.example env.php
+    chmod go-rwx env.php
+
+`env.php` deliberately lives outside the `src/` application tree so OAuth
+credentials, API keys, and `DEPLOY_TOKEN` are not stored alongside the normal
+web entry points. Never commit this file.
+
+When upgrading from an older deployment that uses `src/env.php`, first copy
+the existing file to the repository root and protect it, then deploy the new
+code. After the new code is running and verified, delete the old copy:
+
+    cp src/env.php env.php
+    chmod go-rwx env.php
+    # deploy and verify the new code, then:
+    rm src/env.php
 
 Every deployment must configure `PUBLIC_BASE_URL`, the canonical externally visible URL (including any deployment path) used for OAuth callbacks, redirects, HTTP referrers, and User-Agent identification. Web deployments must also configure `ALLOWED_HOSTS` and `ALLOWED_ORIGINS`. `ALLOWED_HOSTS` is a comma-separated list of exact HTTP Host values, including ports where applicable. `ALLOWED_ORIGINS` is a comma-separated CORS allowlist; entries are origins without paths, and a left-most wildcard such as `https://*.wikipedia.org` is supported. The host from `PUBLIC_BASE_URL` must also appear in `ALLOWED_HOSTS`.
 
-The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning variables documented in `src/env.php.example`. Normally leave them unset to use the reviewed defaults; tune them only from measured interactive latency, CPU/memory pressure, and structured deferral reasons.
+The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning variables documented in `env.php.example`. Normally leave them unset to use the reviewed defaults; tune them only from measured interactive latency, CPU/memory pressure, and structured deferral reasons.
 
 Runtime diagnostics are written to `DebugLog.txt` in the main Citation Bot
 repository directory, one level above the `src/` web tree. The file is forced
@@ -290,7 +306,7 @@ Or for testing in the shell:
 
 ## Running on the command line
 
-In order to run on the command line one needs OAuth tokens as documented in `src/env.php.example` (there are additional API keys that are needed to run some functions).  The bot's User-Agent strings (`BOT_USER_AGENT` and `BOT_CROSSREF_USER_AGENT`) are defined in `src/includes/constants.php`. Use Composer to install dependencies:
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  The bot's User-Agent strings (`BOT_USER_AGENT` and `BOT_CROSSREF_USER_AGENT`) are defined in `src/includes/constants.php`. Use Composer to install dependencies:
 
     composer install
 
@@ -313,7 +329,7 @@ To install Composer dependencies, start the container as noted above, then type:
 
     docker compose exec php composer install
 
-To do most bot tasks, you'll need to create an env.php file and populate it with API keys. See src/env.php.example in the src directory.
+To do most bot tasks, create root-level `env.php` from `env.php.example` and populate it with API keys.
 
 ## Debugging when the bot is blocked
 

@@ -361,4 +361,60 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             str_starts_with($log_path, $source_root . DIRECTORY_SEPARATOR)
         );
     }
+
+    public function testEnvironmentConfigurationIsLoadedFromRepositoryRoot(): void {
+        $repository_root = realpath(__DIR__ . '/../../..');
+        $source_root = realpath(__DIR__ . '/../../../src');
+        $this->assertIsString($repository_root);
+        $this->assertIsString($source_root);
+        if (!is_string($repository_root) || !is_string($source_root)) {
+            throw new RuntimeException('Unable to resolve Citation Bot paths.');
+        }
+
+        foreach ([
+            'index.php',
+            'process_page.php',
+            'authenticate.php',
+            'kill_big_job.php',
+            'update_statistics.php',
+            'gitpull.php',
+            'reset_big_run_state.php',
+        ] as $entry_point) {
+            $source = file_get_contents(
+                $source_root . DIRECTORY_SEPARATOR . $entry_point
+            );
+            $this->assertIsString($source);
+            if (!is_string($source)) {
+                throw new RuntimeException('Unable to read ' . $entry_point . '.');
+            }
+            $this->assertStringContainsString(
+                "dirname(__DIR__) . '/env.php'",
+                $source
+            );
+            $this->assertStringNotContainsString(
+                "__DIR__ . '/env.php'",
+                $source
+            );
+        }
+
+        $setup = file_get_contents($source_root . '/includes/setup.php');
+        $this->assertIsString($setup);
+        if (!is_string($setup)) {
+            throw new RuntimeException('Unable to read setup.php.');
+        }
+        $this->assertStringContainsString(
+            "dirname(__DIR__, 2) . '/env.php'",
+            $setup
+        );
+
+        $harness = file_get_contents($repository_root . '/tools/cs1_harness.php');
+        $this->assertIsString($harness);
+        if (!is_string($harness)) {
+            throw new RuntimeException('Unable to read CS1 harness.');
+        }
+        $this->assertStringContainsString(
+            "dirname(__DIR__) . '/env.php'",
+            $harness
+        );
+    }
 }

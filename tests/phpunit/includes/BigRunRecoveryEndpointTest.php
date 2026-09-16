@@ -15,7 +15,7 @@ final class BigRunRecoveryEndpointTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testEndpointMirrorsHardenedGitpullAuthenticationBoundary(): void {
-        $this->assertStringContainsString("require_once __DIR__ . '/env.php';", $this->source);
+        $this->assertStringContainsString("require_once dirname(__DIR__) . '/env.php';", $this->source);
         $this->assertStringContainsString("require_once __DIR__ . '/includes/PublicConfig.php';", $this->source);
         $this->assertStringContainsString('enforce_public_request_configuration(', $this->source);
         $this->assertStringContainsString('send_configured_cors_header(', $this->source);

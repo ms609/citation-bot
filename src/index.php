@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-if (file_exists(__DIR__ . '/env.php')) {
+if (file_exists(dirname(__DIR__) . '/env.php')) {
     /** @psalm-suppress MissingFile */
-    include_once __DIR__ . '/env.php';
+    include_once dirname(__DIR__) . '/env.php';
 }
 require_once __DIR__ . '/includes/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
