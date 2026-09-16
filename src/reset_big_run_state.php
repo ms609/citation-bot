@@ -6,7 +6,7 @@ declare(strict_types=1);
 // even when unrelated application code is unhealthy. Authentication and
 // public-request hardening intentionally mirror gitpull.php.
 /** @psalm-suppress MissingFile */
-require_once __DIR__ . '/env.php';
+require_once dirname(__DIR__) . '/env.php';
 require_once __DIR__ . '/includes/PublicConfig.php';
 require_once __DIR__ . '/includes/RequestRateLimit.php';
 

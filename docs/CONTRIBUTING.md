@@ -35,7 +35,7 @@ $ git commit -m "A brief summary of the commit
 
 ## API keys
 
-Tests can run without private credentials, but credential-dependent sections may be bypassed and reported as passing rather than skipped. For fuller coverage, copy `src/env.php.example` to `src/env.php` and configure your own development credentials; never commit that file.
+Tests can run without private credentials, but credential-dependent sections may be bypassed and reported as passing rather than skipped. For fuller coverage, copy `src/env.php.example` to root-level `env.php` and configure your own development credentials; never commit that file.
 
 ## Coding conventions
 

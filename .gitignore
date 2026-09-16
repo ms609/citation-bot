@@ -5,7 +5,7 @@
 /coverage
 /coverage.xml
 /junit.xml
-/src/env.php
+/env.php
 /DebugLog.txt
 /tmp/*
 /vendor/*

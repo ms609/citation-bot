@@ -10,7 +10,7 @@ declare(strict_types=1);
 // For an iPhone/browser, visit gitpull.php and use Password AutoFill on the form.
 
 /** @psalm-suppress MissingFile */
-require_once __DIR__ . '/env.php';
+require_once dirname(__DIR__) . '/env.php';
 
 require_once __DIR__ . '/includes/PublicConfig.php';
 

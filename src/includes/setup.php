@@ -153,11 +153,11 @@ function reject_setup_request(string $message): never {
     exit(1);
 }
 
-if (file_exists(__DIR__ . '/../env.php')) {
+if (file_exists(dirname(__DIR__, 2) . '/env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
     /** @psalm-suppress MissingFile */
-    include_once __DIR__ . '/../env.php';
+    include_once dirname(__DIR__, 2) . '/env.php';
     $env_output_contents = ob_get_contents();
     $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
     unset($env_output_contents);

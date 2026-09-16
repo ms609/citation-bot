@@ -236,7 +236,7 @@ php src/process_page.php "PageName|Another Page" --slow --savetofiles
 
 ## Configuration
 
-**Required:** Create `src/env.php` from `src/env.php.example`
+**Required:** Create root-level `env.php` from `src/env.php.example`
 
 Must include:
 
@@ -248,7 +248,7 @@ Must include:
 **Security:**
 
 ```bash
-chmod go-rwx src/env.php
+chmod go-rwx env.php
 ```
 
 ## Testing & CI
