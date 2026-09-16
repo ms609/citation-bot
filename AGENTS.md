@@ -153,8 +153,11 @@ and does not reorder already-arrived FastCGI requests.
   defense in depth after the initial probe semaphore.
 - **Large-user lease:** acquire the per-user >=50-page lease as soon as discovery
   reaches 50 runnable pages. The persistent `_guard` serializes takeover and
-  inode ownership is authoritative. Ownership loss is terminal. `/dev/shm` is
-  preferred when writable; otherwise use `sys_get_temp_dir()/citation-bot-big-jobs`.
+  inode ownership is authoritative. Ownership loss is terminal. A private
+  process-owned `citation-bot-big-jobs` directory under `/dev/shm` is preferred
+  when available; otherwise the same private directory is created under `sys_get_temp_dir()`.
+  The first deployment that moves existing leases into this private subdirectory
+  must be drained so old direct-`/dev/shm` leases cannot overlap new leases.
 - **Shared state machine:** `probe -> discovery -> running`. Final promotion
   charges tokens exactly once. Probe-to-discovery promotion checks the normal
   total atomically. Wrong/missing phases fail closed.

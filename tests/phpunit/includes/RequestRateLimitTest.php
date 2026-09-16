@@ -430,6 +430,55 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         }
     }
 
+    public function testStateFileSymlinkFailsOpenWithoutTouchingTarget(): void {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Symlink semantics are platform-specific on Windows.');
+        }
+
+        $state_directory = big_run_prepare_state_directory($this->base_directory);
+        $this->assertIsString($state_directory);
+        if (!is_string($state_directory)) {
+            throw new RuntimeException('Expected private state directory.');
+        }
+
+        $target = $this->base_directory . DIRECTORY_SEPARATOR . 'rate-limit-target';
+        $this->assertNotFalse(file_put_contents($target, 'unchanged'));
+        $state_path = $state_directory . DIRECTORY_SEPARATOR . 'symlink-test.json';
+        $this->assertTrue(symlink($target, $state_path));
+
+        try {
+            $this->assertNull(
+                request_rate_limit_consume(
+                    'symlink-test',
+                    1,
+                    1.0,
+                    $this->base_directory,
+                    100.0
+                )
+            );
+            $this->assertSame('unchanged', file_get_contents($target));
+        } finally {
+            @unlink($state_path);
+            @unlink($target);
+        }
+    }
+
+    public function testStateDirectorySymlinkFailsOpen(): void {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('Symlink semantics are platform-specific on Windows.');
+        }
+
+        $other = $this->base_directory . DIRECTORY_SEPARATOR . 'other-state';
+        $this->assertTrue(mkdir($other, 0700));
+        $state_directory = $this->base_directory . DIRECTORY_SEPARATOR . REQUEST_RATE_LIMIT_STATE_DIRECTORY;
+        $this->assertTrue(symlink($other, $state_directory));
+        $this->assertNull(
+            request_rate_limit_consume('directory-symlink', 1, 1.0, $this->base_directory, 100.0)
+        );
+        @unlink($state_directory);
+        @rmdir($other);
+    }
+
     public function testLogFailureReportsDuplicateReasonOnlyOnce(): void {
         $log_path = __DIR__ . '/../../../src/includes/DebugLog.txt';
         $bucket = 'log-dedupe-' . bin2hex(random_bytes(4));
