@@ -215,7 +215,7 @@ function gitpull_run_git(array $arguments): array {
     ];
 }
 
-clearstatcache(true, LOCK_DIR);
+clearstatcache(true, LOCK_FILE);
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
 if (!gitpull_valid_deploy_token($deployToken)) {
@@ -301,7 +301,6 @@ if (!@flock($lockHandle, LOCK_EX | LOCK_NB)) {
     gitpull_page('Please try again - deployment already in progress', false, 409);
 }
 
-$git_hub = '';
 $git_status = 200;
 try {
     // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
