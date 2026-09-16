@@ -10,33 +10,52 @@ const BIG_JOBS_HEARTBEAT_INTERVAL_SECONDS = 15;
 const BIG_JOBS_FALLBACK_STATE_DIRECTORY = 'citation-bot-big-jobs';
 
 /**
- * Prefer Linux shared memory for compatibility with the production deployment.
- * Platforms without writable /dev/shm (for example macOS) use a private local
- * temporary-state directory instead.
+ * Prefer a private directory under Linux shared memory. Platforms without
+ * writable /dev/shm (for example macOS) use the same private subdirectory
+ * beneath the system temporary directory.
  */
 function big_jobs_state_directory(): string {
     $shared_memory = '/dev/shm';
     if (is_dir($shared_memory) && is_writable($shared_memory)) {
-        return $shared_memory;
+        $base_directory = $shared_memory;
+    } else {
+        $base_directory = sys_get_temp_dir();
     }
 
-    $temporary_directory = sys_get_temp_dir();
-    if (
-        !str_ends_with($temporary_directory, '/') &&
-        !str_ends_with($temporary_directory, '\\')
-    ) {
-        $temporary_directory .= DIRECTORY_SEPARATOR;
+    $directory =
+        mb_rtrim($base_directory, "/\\", '8bit') .
+        DIRECTORY_SEPARATOR .
+        BIG_JOBS_FALLBACK_STATE_DIRECTORY;
+
+    if (is_link($directory)) {
+        throw new RuntimeException('Large-job state directory must not be a symlink.');
     }
-    $directory = $temporary_directory . BIG_JOBS_FALLBACK_STATE_DIRECTORY;
 
     if (
         !is_dir($directory) &&
         !@mkdir($directory, 0700, true) &&
         !is_dir($directory)
     ) {
-        // Return the intended path. Callers that need storage fail closed when
-        // their fopen/touch operation cannot create the lease or guard.
-        return $directory;
+        throw new RuntimeException('Unable to create private large-job state directory.');
+    }
+
+    clearstatcache(true, $directory);
+    $directory_stat = @lstat($directory);
+    if (
+        is_link($directory) ||
+        !is_dir($directory) ||
+        !is_writable($directory) ||
+        !is_array($directory_stat) ||
+        (($directory_stat['mode'] & 0170000) !== 0040000)
+    ) {
+        throw new RuntimeException('Large-job state directory is unsafe.');
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $owner = @fileowner($directory);
+        if (!is_int($owner) || $owner !== posix_geteuid()) {
+            throw new RuntimeException('Large-job state directory has an unexpected owner.');
+        }
     }
 
     @chmod($directory, 0700);
@@ -74,19 +93,51 @@ function big_jobs_guard_name(): string {
 /** @return resource|false */
 function big_jobs_open_guard() {
     $guard_name = big_jobs_guard_name();
-    $guard = @fopen($guard_name, 'c+');
-    if ($guard !== false) {
-        @chmod($guard_name, 0600);
+    clearstatcache(true, $guard_name);
+    if (is_link($guard_name)) {
+        return false;
     }
+
+    $guard = @fopen($guard_name, 'c+');
+    if ($guard === false) {
+        return false;
+    }
+
+    clearstatcache(true, $guard_name);
+    $held_stat = @fstat($guard);
+    $path_stat = @lstat($guard_name);
+    if (
+        !is_array($held_stat) ||
+        !is_array($path_stat) ||
+        (($held_stat['mode'] & 0170000) !== 0100000) ||
+        (($path_stat['mode'] & 0170000) !== 0100000) ||
+        $held_stat['dev'] !== $path_stat['dev'] ||
+        $held_stat['ino'] !== $path_stat['ino']
+    ) {
+        @fclose($guard);
+        return false;
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $owner = @fileowner($guard_name);
+        if (!is_int($owner) || $owner !== posix_geteuid()) {
+            @fclose($guard);
+            return false;
+        }
+    }
+
+    @chmod($guard_name, 0600);
     return $guard;
 }
 
 /** @param resource $lock_file */
 function big_jobs_owns_path($lock_file, string $path): bool {
     $held_stat = @fstat($lock_file);
-    $current_stat = @stat($path);
+    $current_stat = @lstat($path);
     return is_array($held_stat) &&
         is_array($current_stat) &&
+        (($held_stat['mode'] & 0170000) === 0100000) &&
+        (($current_stat['mode'] & 0170000) === 0100000) &&
         $held_stat['dev'] === $current_stat['dev'] &&
         $held_stat['ino'] === $current_stat['ino'];
 }

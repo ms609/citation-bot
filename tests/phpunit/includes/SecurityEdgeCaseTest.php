@@ -335,7 +335,7 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $_SESSION['citation_bot_user_id'] = "../../../../etc/passwd\x00\xff\r\n";
         $path = big_jobs_name();
 
-        $this->assertSame('/dev/shm', dirname($path));
+        $this->assertSame(big_jobs_state_directory(), dirname($path));
         $this->assertMatchesRegularExpression('~\A[A-Za-z0-9+_]*_1\z~D', basename($path));
         $this->assertStringNotContainsString('..', basename($path));
         $this->assertStringNotContainsString('/', basename($path));
