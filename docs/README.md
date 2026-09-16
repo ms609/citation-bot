@@ -268,7 +268,7 @@ To run the bot from a new environment, create `env.php` in the repository root
 from `src/env.php.example`, set the needed authentication tokens, and make sure
 the private file is not group/world readable or writable:
 
-    cp src/env.php.example env.php
+    cp env.php.example env.php
     chmod go-rwx env.php
 
 `env.php` deliberately lives outside the `src/` application tree so OAuth
