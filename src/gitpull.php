@@ -122,7 +122,7 @@ function gitpull_process_environment(): array {
         'PATH' => '/usr/bin:/bin',
     ];
 
-    foreach (['HOME', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR', 'XDG_CONFIG_HOME'] as $name) {
+    foreach (['HOME', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR', 'XDG_CONFIG_HOME', 'GITHUB_PAT'] as $name) {
         $value = getenv($name);
         if (is_string($value) && $value !== '') {
             $environment[$name] = $value;
