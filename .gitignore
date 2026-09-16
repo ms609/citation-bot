@@ -7,7 +7,6 @@
 /junit.xml
 /env.php
 /DebugLog.txt
-/src/git_pull.lock
 /tmp/*
 /vendor/*
 /phpunit.local.xml
