@@ -54,6 +54,47 @@ final class HandleCache {
     }
 }
 
+/*
+ * get_headers_array() records whether every network hop used authenticated
+ * HTTPS.  The marker is deliberately added after network headers are read, so
+ * a remote server cannot forge it with a similarly named HTTP header.
+ *
+ * Missing markers are treated as strict for hand-built/internal header arrays;
+ * every live network result returned by get_headers_array() is explicitly
+ * marked before it is interpreted.
+ */
+const DOI_HEADER_TRUST_KEY = '__citation_bot_transport_trust';
+const DOI_HEADER_TRUST_STRICT = 'strict';
+const DOI_HEADER_TRUST_UNAUTHENTICATED = 'unauthenticated';
+
+/**
+ * @param array<string|array<string>> $headers
+ * @return array<string|array<string>>
+ */
+function doi_headers_mark_transport_trust(array $headers, bool $authenticated): array {
+    $headers[DOI_HEADER_TRUST_KEY] =
+        $authenticated ? DOI_HEADER_TRUST_STRICT : DOI_HEADER_TRUST_UNAUTHENTICATED;
+    return $headers;
+}
+
+/** @param array<string|array<string>> $headers */
+function doi_headers_are_authenticated(array $headers): bool {
+    $trust = $headers[DOI_HEADER_TRUST_KEY] ?? DOI_HEADER_TRUST_STRICT;
+    return is_string($trust) && $trust === DOI_HEADER_TRUST_STRICT;
+}
+
+/**
+ * Negative observations are authoritative only when the complete redirect
+ * chain was authenticated.  HTTP and legacy-TLS responses may prove that an
+ * old site is reachable, but a network attacker could forge a 404 or similar
+ * failure, so those failures become "unknown" rather than "broken".
+ *
+ * @param array<string|array<string>> $headers
+ */
+function doi_negative_header_result(array $headers): ?bool {
+    return doi_headers_are_authenticated($headers) ? false : null;
+}
+
 // ============================================= DOI functions ======================================
 
 /**
@@ -302,13 +343,13 @@ function is_doi_works(string $doi): ?bool {
     if ($headers_test === false) {
         return false;
     }
-    return (bool) interpret_doi_header($headers_test, $doi);
+    return interpret_doi_header($headers_test, $doi);
 }
 
 /** @param array<string|array<string>> $headers_test */
 function interpret_doi_header(array $headers_test, string $doi): ?bool {
     if (empty($headers_test['Location']) && empty($headers_test['location'])) {
-        return false; // leads nowhere
+        return doi_negative_header_result($headers_test); // leads nowhere
     }
     /** @psalm-suppress InvalidArrayOffset */
     /** @var string $resp0 */
@@ -341,7 +382,7 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
         return null;
     }
     if (mb_stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== false || mb_stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== false) {
-        return false; // Bad
+        return doi_negative_header_result($headers_test); // Bad only when authenticated
     }
     if (mb_stripos($resp0, '302 Found') !== false || mb_stripos($resp0, 'HTTP/1.1 302') !== false) {
         return true;    // Good
@@ -356,10 +397,10 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
             if (mb_stripos($resp2, '200 OK') !== false || mb_stripos($resp2, 'HTTP/1.1 200') !== false) {
                 return true;
             } else {
-                return false;
+                return doi_negative_header_result($headers_test);
             }
         } else {
-            return false;
+            return doi_negative_header_result($headers_test);
         }
     }
     report_minor_error("Unexpected response in is_doi_works " . echoable($resp0));
@@ -848,7 +889,12 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     }
 }
 
-/** @return false|array<string|array<string>> */
+/**
+ * Successful results include DOI_HEADER_TRUST_KEY, which records whether the
+ * complete redirect chain was authenticated.
+ *
+ * @return false|array<string|array<string>>
+ */
 function get_headers_array(string $url): false|array {
     static $last_url = "none yet";
     static $curl_strict_doi;
@@ -971,20 +1017,35 @@ function get_headers_array(string $url): false|array {
     $current_url = $url;
     $redirect_count = 0;
     $first_hop = true;
+    $authenticated_chain = true;
 
     while (true) {
         /*
          * Every hop is attempted with normal verified TLS first.  If a
          * downstream historical HTTPS site cannot pass certificate/TLS
          * validation, only that one hop is retried with the legacy policy.
+         *
+         * Trust is monotonic: once the chain crosses plain HTTP or legacy
+         * TLS, later verified-HTTPS hops cannot restore authentication because
+         * the untrusted hop could have selected their destination.
          */
+        $current_scheme = parse_url($current_url, PHP_URL_SCHEME);
+        if (!is_string($current_scheme)) {
+            return false;
+        }
+        $current_scheme = mb_strtolower($current_scheme);
+        if ($current_scheme === 'http') {
+            $authenticated_chain = false;
+        } elseif ($current_scheme !== 'https') {
+            return false;
+        }
+
         $headers_before_hop = $headers;
         curl_setopt($strict_ch, CURLOPT_URL, $current_url);
         $used_ch = $strict_ch;
 
         if (bot_curl_exec_withFalse($strict_ch) === false) {
             $transfer = bot_curl_last_transfer($strict_ch);
-            $current_scheme = parse_url($current_url, PHP_URL_SCHEME);
             $current_host = parse_url($current_url, PHP_URL_HOST);
             $current_host = is_string($current_host) ? mb_strtolower($current_host) : '';
 
@@ -1000,8 +1061,7 @@ function get_headers_array(string $url): false|array {
             if (
                 $first_hop ||
                 $trusted_resolver ||
-                !is_string($current_scheme) ||
-                mb_strtolower($current_scheme) !== 'https' ||
+                $current_scheme !== 'https' ||
                 !bot_curl_is_tls_compatibility_error($transfer['errno'])
             ) {
                 return false;
@@ -1018,12 +1078,18 @@ function get_headers_array(string $url): false|array {
             if (bot_curl_exec_withFalse($legacy_ch) === false) {
                 return false;
             }
+            /*
+             * Certificate verification is intentionally disabled on this one
+             * fallback transfer.  Preserve the observation for reachability,
+             * but do not permit it to establish an authoritative failure.
+             */
+            $authenticated_chain = false;
             $used_ch = $legacy_ch;
         }
 
         $redirect_url = curl_getinfo($used_ch, CURLINFO_REDIRECT_URL);
         if (!is_string($redirect_url) || $redirect_url === '') {
-            return $headers;
+            return doi_headers_mark_transport_trust($headers, $authenticated_chain);
         }
 
         ++$redirect_count;
@@ -1045,7 +1111,7 @@ function get_headers_array(string $url): false|array {
              * for the existing DOI/HDL logic; do not start a new primary FTP
              * transfer, which the global cURL policy intentionally forbids.
              */
-            return $headers;
+            return doi_headers_mark_transport_trust($headers, $authenticated_chain);
         }
         if ($redirect_scheme !== 'http' && $redirect_scheme !== 'https') {
             // Preserve the existing rejection of file:// and other schemes.
