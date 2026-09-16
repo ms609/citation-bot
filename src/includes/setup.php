@@ -23,6 +23,84 @@ if (file_exists($git_pull_lock)) {
     exit(0);
 }
 
+/**
+ * Keep runtime logs in the Citation Bot repository root, one level above the
+ * src/ web tree.
+ */
+function bot_debug_log_path(): string {
+    return dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'DebugLog.txt';
+}
+
+/** @return resource|false */
+function bot_debug_log_open_handle() {
+    $path = bot_debug_log_path();
+    $directory = dirname($path);
+
+    clearstatcache(true, $directory);
+    $directory_stat = @lstat($directory);
+    if (
+        is_link($directory) ||
+        !is_dir($directory) ||
+        !is_writable($directory) ||
+        !is_array($directory_stat) ||
+        (($directory_stat['mode'] & 0170000) !== 0040000)
+    ) {
+        return false;
+    }
+
+    $resolved_directory = @realpath($directory);
+    $source_root = @realpath(dirname(__DIR__));
+    if (
+        !is_string($resolved_directory) ||
+        !is_string($source_root) ||
+        $resolved_directory === $source_root ||
+        str_starts_with($resolved_directory, $source_root . DIRECTORY_SEPARATOR)
+    ) {
+        return false;
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $directory_owner = @fileowner($directory);
+        if (!is_int($directory_owner) || $directory_owner !== posix_geteuid()) {
+            return false;
+        }
+    }
+
+    clearstatcache(true, $path);
+    if (is_link($path)) {
+        return false;
+    }
+    $handle = @fopen($path, 'c+');
+    if ($handle === false) {
+        return false;
+    }
+
+    clearstatcache(true, $path);
+    $held_stat = @fstat($handle);
+    $path_stat = @lstat($path);
+    if (
+        !is_array($held_stat) ||
+        !is_array($path_stat) ||
+        (($held_stat['mode'] & 0170000) !== 0100000) ||
+        (($path_stat['mode'] & 0170000) !== 0100000) ||
+        $held_stat['dev'] !== $path_stat['dev'] ||
+        $held_stat['ino'] !== $path_stat['ino']
+    ) {
+        @fclose($handle);
+        return false;
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $file_owner = @fileowner($path);
+        if (!is_int($file_owner) || $file_owner !== posix_geteuid()) {
+            @fclose($handle);
+            return false;
+        }
+    }
+    @chmod($path, 0600);
+    return $handle;
+}
+
 function bot_debug_log(string $log_this): void {
     if (function_exists('echoable')) {
         // Avoid making a new huge string, so do not combine
@@ -37,11 +115,24 @@ function bot_debug_log(string $log_this): void {
         $user = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(WikipediaBot::get_last_user()));
         $page = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(Page::get_last_title()));
         $message = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable($log_this));
-        file_put_contents(
-            __DIR__ . '/DebugLog.txt',
-            $base . ' :: ' . $user . " :: " . $page . " :: " . $message . "\n",
-            FILE_APPEND | LOCK_EX
-        );
+        $line = $base . ' :: ' . $user . " :: " . $page . " :: " . $message . "\n";
+
+        $handle = bot_debug_log_open_handle();
+        if ($handle === false) {
+            return;
+        }
+        try {
+            if (!@flock($handle, LOCK_EX)) {
+                return;
+            }
+            if (@fseek($handle, 0, SEEK_END) === 0) {
+                @fwrite($handle, $line);
+                @fflush($handle);
+            }
+            @flock($handle, LOCK_UN);
+        } finally {
+            @fclose($handle);
+        }
     }
 }
 
