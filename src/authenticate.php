@@ -25,11 +25,11 @@ function return_to_sender(?string $where = null): never {
     if ($where === null) {
         $where = public_url('/');
     }
-    if (preg_match('~\s+~', $where)) {
-        death_time('Error in return_to_sender');
+    if (is_safe_redirect_target($where)) {
+        header("Location: " . $where);
+        exit(0);
     }
-    header("Location: " . $where);
-    exit(0);
+    death_time('Error in return_to_sender');
 }
 
 set_time_limit(120);
@@ -138,7 +138,7 @@ try {
     [$authUrl, $token] = $client->initiate();
     $_SESSION['request_key'] = $token->key;
     $_SESSION['request_secret'] = $token->secret;
-    if (mb_strpos($authUrl, 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=') !== 0 || preg_match('~\s+~', $authUrl)) {
+    if (!is_string($authUrl) || !is_valid_oauth_authorize_redirect($authUrl)) {
         death_time('Corrupted OAuth URL');
     }
     return_to_sender($authUrl);

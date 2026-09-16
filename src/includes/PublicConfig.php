@@ -249,6 +249,48 @@ function is_valid_local_return_path(string $path): bool {
         !preg_match('~[\x00-\x20\x7f\\\\]~', $path);
 }
 
+function is_valid_oauth_authorize_redirect(string $url): bool {
+    $prefix = 'https://meta.wikimedia.org/w/index.php?title=Special:OAuth/authorize&oauth_token=';
+    if (mb_strpos($url, $prefix) !== 0) {
+        return false;
+    }
+    if ($url !== mb_trim($url)) {
+        return false;
+    }
+    if (preg_match('~[\x00-\x20\x7f\\\\]~', $url)) {
+        return false;
+    }
+    $remainder = mb_substr($url, mb_strlen($prefix));
+    if ($remainder === '') {
+        return false;
+    }
+    return true;
+}
+
+function is_safe_redirect_target(string $target): bool {
+    if (is_valid_local_return_path($target)) {
+        return true;
+    }
+    if (is_valid_oauth_authorize_redirect($target)) {
+        return true;
+    }
+    try {
+        $base_url = public_base_url();
+    } catch (Throwable) {
+        return false;
+    }
+    if ($target !== mb_trim($target)) {
+        return false;
+    }
+    if (preg_match('~[\x00-\x20\x7f\\\\]~', $target)) {
+        return false;
+    }
+    if (mb_strpos($target, $base_url . '/') === 0) {
+        return true;
+    }
+    return false;
+}
+
 function oauth_authentication_url(string $return_path): string {
     if (!is_valid_local_return_path($return_path)) {
         throw new InvalidArgumentException('OAuth return path is invalid');

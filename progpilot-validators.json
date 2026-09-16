@@ -9,6 +9,26 @@
                     "conditions": "valid"
                 }
             ]
+        },
+        {
+            "name": "is_valid_oauth_authorize_redirect",
+            "language": "php",
+            "parameters": [
+                {
+                    "id": 1,
+                    "conditions": "valid"
+                }
+            ]
+        },
+        {
+            "name": "is_safe_redirect_target",
+            "language": "php",
+            "parameters": [
+                {
+                    "id": 1,
+                    "conditions": "valid"
+                }
+            ]
         }
     ]
 }
