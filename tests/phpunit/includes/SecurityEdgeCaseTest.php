@@ -417,4 +417,55 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             $harness
         );
     }
+
+    public function testGitpullSubprocessDoesNotInheritApplicationSecrets(): void {
+        $source = file_get_contents(__DIR__ . '/../../../src/gitpull.php');
+        $this->assertIsString($source);
+        if (!is_string($source)) {
+            throw new RuntimeException('Unable to read gitpull.php.');
+        }
+
+        $this->assertStringNotContainsString('shell_exec(', $source);
+        $this->assertStringContainsString(
+            "\$command = ['/usr/bin/git', '-C', dirname(__DIR__), ...\$arguments];",
+            $source
+        );
+        $this->assertStringContainsString('proc_open(', $source);
+
+        $environment_start = mb_strpos(
+            $source,
+            'function gitpull_process_environment(): array'
+        );
+        $runner_start = mb_strpos(
+            $source,
+            'function gitpull_run_git(array $arguments): array'
+        );
+        $this->assertIsInt($environment_start);
+        $this->assertIsInt($runner_start);
+        if (!is_int($environment_start) || !is_int($runner_start)) {
+            throw new RuntimeException('Unable to locate Git subprocess helpers.');
+        }
+
+        $environment_source = mb_substr(
+            $source,
+            $environment_start,
+            $runner_start - $environment_start
+        );
+
+        foreach ([
+            'DEPLOY_TOKEN',
+            'PHP_ADSABSAPIKEY',
+            'PHP_OAUTH_CONSUMER_TOKEN',
+            'PHP_OAUTH_CONSUMER_SECRET',
+            'PHP_OAUTH_ACCESS_TOKEN',
+            'PHP_OAUTH_ACCESS_SECRET',
+            'PHP_WP_OAUTH_CONSUMER',
+            'PHP_WP_OAUTH_SECRET',
+            'PHP_S2APIKEY',
+            'NLM_APIKEY',
+            'NLM_EMAIL',
+        ] as $secret_name) {
+            $this->assertStringNotContainsString($secret_name, $environment_source);
+        }
+    }
 }

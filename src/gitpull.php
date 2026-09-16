@@ -108,6 +108,73 @@ function gitpull_browser_form(string $message, int $status): never {
     gitpull_page($message, true, $status, $nonce);
 }
 
+/**
+ * Build the deliberately small environment inherited by Git subprocesses.
+ *
+ * env.php populates the PHP process with OAuth credentials, API keys, and the
+ * deployment token. Git does not need those values, so do not pass the parent
+ * environment through wholesale.
+ *
+ * @return array<string, string>
+ */
+function gitpull_process_environment(): array {
+    $environment = [
+        'PATH' => '/usr/bin:/bin',
+    ];
+
+    foreach (['HOME', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR', 'XDG_CONFIG_HOME'] as $name) {
+        $value = getenv($name);
+        if (is_string($value) && $value !== '') {
+            $environment[$name] = $value;
+        }
+    }
+
+    return $environment;
+}
+
+/**
+ * Run Git without a shell and without inheriting application credentials.
+ *
+ * @param array<int, string> $arguments
+ * @return array{output: string, status: int}
+ */
+function gitpull_run_git(array $arguments): array {
+    $command = ['/usr/bin/git', '-C', dirname(__DIR__), ...$arguments];
+    $pipes = [];
+
+    /** @psalm-suppress ForbiddenCode */
+    $process = proc_open( // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
+        $command,
+        [
+            0 => ['file', '/dev/null', 'r'],
+            1 => ['pipe', 'w'],
+            2 => ['redirect', 1],
+        ],
+        $pipes,
+        null,
+        gitpull_process_environment()
+    );
+
+    if (!is_resource($process)) {
+        return ['output' => 'Unable to start Git command.', 'status' => 1];
+    }
+
+    if (!isset($pipes[1]) || !is_resource($pipes[1])) {
+        proc_terminate($process);
+        proc_close($process);
+        return ['output' => 'Unable to capture Git command output.', 'status' => 1];
+    }
+
+    $output = stream_get_contents($pipes[1]);
+    fclose($pipes[1]);
+    $status = proc_close($process);
+
+    return [
+        'output' => is_string($output) ? $output : '',
+        'status' => $status,
+    ];
+}
+
 clearstatcache(true, LOCK_DIR);
 
 $deployToken = (string) @getenv('DEPLOY_TOKEN');
@@ -193,9 +260,15 @@ if (@mkdir(LOCK_DIR, 0700)) {
         }
     });
     try {
-        // Note: gitpull_page() escapes output with htmlspecialchars, so keep raw here to avoid double-encoding.
-        /** @psalm-suppress ForbiddenCode */
-        $git_hub = (string) shell_exec("(/usr/bin/git fetch --all && /usr/bin/git reset --hard origin/master) 2>&1"); // phpcs:ignore
+        // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
+        $fetch = gitpull_run_git(['fetch', '--all']);
+        $git_hub = $fetch['output'];
+        if ($fetch['status'] === 0) {
+            $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
+            $git_hub .= $reset['output'];
+            unset($reset);
+        }
+        unset($fetch);
     } finally {
         @rmdir(LOCK_DIR);
         clearstatcache(true, LOCK_DIR);
