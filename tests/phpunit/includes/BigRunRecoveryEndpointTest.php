@@ -14,14 +14,19 @@ final class BigRunRecoveryEndpointTest extends PHPUnit\Framework\TestCase {
         $this->source = $source;
     }
 
-    public function testEndpointMirrorsGitpullAuthenticationBoundary(): void {
+    public function testEndpointMirrorsHardenedGitpullAuthenticationBoundary(): void {
         $this->assertStringContainsString("require_once __DIR__ . '/env.php';", $this->source);
         $this->assertStringContainsString("require_once __DIR__ . '/includes/PublicConfig.php';", $this->source);
         $this->assertStringContainsString('enforce_public_request_configuration(', $this->source);
         $this->assertStringContainsString('send_configured_cors_header(', $this->source);
-        $this->assertStringContainsString("getenv('DEPLOY_PASSWORD')", $this->source);
+        $this->assertStringContainsString("getenv('DEPLOY_TOKEN')", $this->source);
+        $this->assertStringNotContainsString("getenv('DEPLOY_PASSWORD')", $this->source);
         $this->assertStringContainsString("'HTTP_X_DEPLOY_TOKEN'", $this->source);
-        $this->assertStringContainsString('hash_equals($deployPassword, $password_in)', $this->source);
+        $this->assertStringContainsString('hash_equals($deployToken, $tokenIn)', $this->source);
+        $this->assertStringContainsString("'samesite' => 'Strict'", $this->source);
+        $this->assertStringContainsString("'httponly' => true", $this->source);
+        $this->assertStringContainsString('name="csrf_token"', $this->source);
+        $this->assertStringContainsString('autocomplete="current-password"', $this->source);
         $this->assertStringContainsString("if (\$requestMethod === 'GET')", $this->source);
         $this->assertStringContainsString("if (\$requestMethod !== 'POST')", $this->source);
         $this->assertStringContainsString("@header('Cache-Control: no-store')", $this->source);
@@ -30,15 +35,23 @@ final class BigRunRecoveryEndpointTest extends PHPUnit\Framework\TestCase {
         $this->assertStringContainsString('Content-Security-Policy:', $this->source);
     }
 
-    public function testEndpointNeverAcceptsPasswordOrActionFromQueryString(): void {
+    public function testEndpointNeverAcceptsCredentialsOrActionFromQueryString(): void {
         $this->assertStringNotContainsString("\$_GET['password']", $this->source);
+        $this->assertStringNotContainsString("\$_GET['deploy_token']", $this->source);
         $this->assertStringNotContainsString("\$_GET['action']", $this->source);
         $this->assertStringContainsString('if (!empty($_GET))', $this->source);
         $this->assertStringContainsString("Location: reset_big_run_state.php", $this->source);
     }
 
+    public function testHeaderAutomationDoesNotAcceptBrowserCredentialFields(): void {
+        $this->assertStringContainsString(
+            "\$allowed_fields = ['action', 'confirm_reset'];",
+            $this->source
+        );
+    }
+
     public function testResetRequiresAuthenticatedPostAndExplicitConfirmation(): void {
-        $auth = mb_strpos($this->source, 'hash_equals($deployPassword, $password_in)');
+        $auth = mb_strpos($this->source, 'hash_equals($deployToken, $tokenIn)');
         $confirmation = mb_strpos($this->source, "if (\$confirm_reset !== 'yes')");
         $reset = mb_strpos($this->source, '$result = big_run_recovery_reset();');
 
