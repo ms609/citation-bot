@@ -7,7 +7,6 @@ coverage.xml
 junit.xml
 src/env.php
 src/includes/DebugLog.txt
-src/includes/cookie.txt
 tmp/*
 vendor/*
 phpunit.local.xml
