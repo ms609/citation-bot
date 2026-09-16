@@ -540,6 +540,66 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('https://web.archive.org/web/20200101000000/https://example.com', $template->get2('archive-url'));
     }
 
+    public function testSanitizesTrailingDotDoiOnAdd(): void {
+        // A trailing dot is stripped before validation, so the salvageable
+        // DOI is added repaired rather than refused outright.
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('doi', '10.1103/abc.'));
+        $this->assertSame('10.1103/abc', $template->get2('doi'));
+    }
+
+    public function testRefusesDoiWithSpace(): void {
+        // No salvage possible: the value itself is rejected.
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('doi', '10.1103/Phys Rev'));
+        $this->assertNull($template->get2('doi'));
+    }
+
+    public function testRefusesNonNumericSsrn(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('ssrn', 'abc'));
+        $this->assertNull($template->get2('ssrn'));
+        $this->assertTrue($template->add_if_new('ssrn', '1234567'));
+        $this->assertSame('1234567', $template->get2('ssrn'));
+    }
+
+    public function testRefusesNonNumericS2cid(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('s2cid', 'not-an-s2cid'));
+        $this->assertNull($template->get2('s2cid'));
+    }
+
+    public function testRefusesJstorWithScheme(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('jstor', 'https://www.jstor.org/stable/123'));
+        $this->assertNull($template->get2('jstor'));
+        $this->assertTrue($template->add_if_new('jstor', '7654321'));
+        $this->assertSame('7654321', $template->get2('jstor'));
+    }
+
+    public function testRefusesHdlWithSpace(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('hdl', '10393/35 779'));
+        $this->assertNull($template->get2('hdl'));
+        $this->assertTrue($template->add_if_new('hdl', '10393/35779'));
+        $this->assertSame('10393/35779', $template->get2('hdl'));
+    }
+
+    public function testRefusesBadOclcPrefix(): void {
+        $text = '{{Cite journal | title=T}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('oclc', 'ocm1234567'));
+        $this->assertNull($template->get2('oclc'));
+        $this->assertTrue($template->add_if_new('oclc', 'ocm12345678'));
+        $this->assertSame('ocm12345678', $template->get2('oclc'));
+    }
+
     public function testReplaceBadDOI(): void {
         $text = '{{Cite journal | doi=10.0001/Rubbish_bot_failure_test|doi-broken-date=1999|pmid=<!-- -->|pmc=<!-- -->}}';
         $template = $this->make_citation($text);

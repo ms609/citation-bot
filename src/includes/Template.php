@@ -2000,6 +2000,23 @@ final class Template
                 if (doi_is_bad($value)) {
                     return false;
                 }
+                if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+                    // Spaces break substring salvage (it would truncate), so
+                    // refuse outright instead of adding a wrong DOI.
+                    report_inaction("Not adding malformed DOI: " . echoable($value));
+                    return false;
+                }
+                if (preg_match(REGEXP_DOI, $value, $doi_match) === 1) {
+                    // Salvage the DOI substring first (existing behavior),
+                    // then sanitize it: refuse only what cannot be repaired.
+                    // Note: sanitize_doi() may call doi_works(), so malformed
+                    // DOI-shaped input can cost a network lookup here.
+                    $value = sanitize_doi($doi_match[0]);
+                }
+                if (!doi_valid($value)) {
+                    report_inaction("Not adding malformed DOI: " . echoable($value));
+                    return false;
+                }
                 if (in_array($this->wikiname(), ['cite biorxiv', 'cite medrxiv'], true)) {
                     return false;
                 }
@@ -2047,6 +2064,10 @@ final class Template
                 if (in_array($value, ['11008564'], true)) {
                     return false;
                 } // known bad values
+                if (!s2cid_valid($value)) {
+                    report_inaction("Not adding malformed S2CID: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank(['s2cid', 'S2CID'])) {
                     $this->add($param_name, $value);
                     get_doi_from_semanticscholar($this);
@@ -2332,17 +2353,51 @@ final class Template
                 if ($value === '3511692') {
                     return false;
                 } // common review
+                if (!jstor_valid($value)) {
+                    report_inaction("Not adding malformed JSTOR identifier: " . echoable($value));
+                    return false;
+                }
                 if ($this->blank($param_name)) {
                     return $this->add($param_name, sanitize_string($value));
                 }
                 return false;
 
-            case 'zbl':
+            case 'ssrn':
+                if (!ssrn_valid($value)) {
+                    report_inaction("Not adding malformed SSRN identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
+            case 'hdl':
+                if (!hdl_valid($value)) {
+                    report_inaction("Not adding malformed HDL identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
             case 'oclc':
+                if (!oclc_valid($value)) {
+                    report_inaction("Not adding malformed OCLC identifier: " . echoable($value));
+                    return false;
+                }
+                if ($this->blank($param_name)) {
+                    return $this->add($param_name, sanitize_string($value));
+                }
+                return false;
+
+            // ol and lccn are deliberately ungated: subtemplate extraction
+            // legitimately produces bare digits ({{ol|1234}}, {{lccn|1234}}),
+            // so CS1-strict shape checks would break established behavior.
+            case 'zbl':
             case 'mr':
             case 'lccn':
-            case 'hdl':
-            case 'ssrn':
             case 'ol':
             case 'jfm':
             case 'osti':

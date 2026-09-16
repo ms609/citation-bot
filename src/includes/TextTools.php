@@ -1300,6 +1300,183 @@ function bibcode_valid(string $value): bool {
 }
 
 /**
+ * Validate a DOI against CS1's structural rules: the 10. directory indicator,
+ * a registrant of digits with optional dot-separated numeric subcodes, a
+ * slash, and a non-empty suffix.  CS1 additionally requires a valid
+ * registrant range; values the bot must still process (test/reserved
+ * registrants such as 10.0001) are left to the blocklists, so no range is
+ * enforced here.  Spaces, en dashes, and trailing punctuation are refused.
+ */
+function doi_valid(string $value): bool {
+    if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~[.,]$~', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~^10\.\d+(?:\.\d+)*/\S+$~u', $value) !== 1) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate an SSRN identifier against CS1's rules: a simple number without
+ * punctuation or spaces, between 100 and 7500000.
+ */
+function ssrn_valid(string $value): bool {
+    if (preg_match('~^\d+$~', $value) !== 1) {
+        return false;
+    }
+    $number = intval($value);
+    return $number >= 100 && $number <= 7500000;
+}
+
+/**
+ * Validate a Semantic Scholar corpus identifier against CS1's rules: a simple
+ * number without punctuation or spaces, between 1 and 290000000.
+ */
+function s2cid_valid(string $value): bool {
+    if (preg_match('~^\d+$~', $value) !== 1) {
+        return false;
+    }
+    $number = intval($value);
+    return $number >= 1 && $number <= 290000000;
+}
+
+/**
+ * Validate a JSTOR identifier against CS1's documented refusals: the value
+ * must not contain the string 'jstor' (case-insensitive), a URI scheme, or
+ * spaces.  Non-numeric stable forms (e.g. j.ctt802dw) remain acceptable.
+ */
+function jstor_valid(string $value): bool {
+    if (mb_stripos($value, 'jstor') !== false) {
+        return false;
+    }
+    if (preg_match('~^[a-zA-Z][a-zA-Z0-9+.\-]*://~', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~\s~u', $value) === 1) {
+        return false;
+    }
+    if ($value === '') {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate a handle identifier against CS1's rules: no spaces or en dashes,
+ * and no trailing punctuation.  Further validation is not performed.
+ */
+function hdl_valid(string $value): bool {
+    if (preg_match('~[\s\x{2013}]~u', $value) === 1) {
+        return false;
+    }
+    if (preg_match('~[.,]$~', $value) === 1) {
+        return false;
+    }
+    if (mb_strpos($value, '/') === false) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate an OCLC identifier against CS1's documented forms: ocm followed
+ * by 8 digits, ocn followed by 9 digits, on followed by 10 or more digits,
+ * (OCoLC) followed by digits without leading zeros, or plain digits.
+ */
+function oclc_valid(string $value): bool {
+    if (preg_match('~^ocm\d{8}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^ocn\d{9}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^on\d{10,}$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^\(OCoLC\)[1-9]\d*$~', $value) === 1) {
+        return true;
+    }
+    if (preg_match('~^\d+$~', $value) === 1) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Validate an Open Library identifier against CS1's rules: one or more
+ * digits followed by A (authors), M (books), or W (works), without the OL
+ * prefix.  Checker-only: do NOT gate add_if_new with this, since established
+ * subtemplate extraction produces bare digits ({{ol|1234}}).
+ */
+function ol_valid(string $value): bool {
+    $value = preg_replace('~^OL~i', '', $value);
+    if ($value === null || preg_match('~^\d+[AMW]$~', $value) !== 1) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Validate a Library of Congress Control Number against CS1's length table:
+ * 8-12 characters whose rightmost eight are always digits, with the leading
+ * characters constrained by total length (8: all digits; 9: one lowercase
+ * letter; 10: two lowercase letters or two digits; 11: one lowercase letter
+ * plus two lowercase letters or two digits; 12: two leading lowercase
+ * letters).  Checker-only: do NOT gate add_if_new with this, since
+ * established subtemplate extraction produces bare digits ({{lccn|1234}}).
+ */
+function lccn_valid(string $value): bool {
+    $length = mb_strlen($value);
+    if ($length < 8 || $length > 12) {
+        return false;
+    }
+    if (preg_match('~^\d{8}$~', mb_substr($value, -8)) !== 1) {
+        return false;
+    }
+    $head = mb_substr($value, 0, $length - 8);
+    switch ($length) {
+        case 8:
+            return $head === '';
+        case 9:
+            return preg_match('~^[a-z]$~', $head) === 1;
+        case 10:
+            return preg_match('~^([a-z]{2}|\d{2})$~', $head) === 1;
+        case 11:
+            return preg_match('~^[a-z]([a-z]{2}|\d{2})$~', $head) === 1;
+        default:
+            return preg_match('~^[a-z]{2}[a-z0-9]{2}$~', $head) === 1;
+    }
+}
+
+/**
+ * Validate a DOI registrant code against CS1's ranges (1000-9999 or
+ * 10000-89999, never 5555).  Checker-only: do NOT gate add_if_new with this,
+ * since reserved/test registrants such as 10.0001 must stay processable.
+ */
+function doi_registrant_valid(string $value): bool {
+    if (preg_match('~^10\.(\d+(?:\.\d+)*)/\S+$~', $value, $match) !== 1) {
+        return false;
+    }
+    $parts = explode('.', $match[1]);
+    $main = intval($parts[0]);
+    if ($main === 5555) {
+        return false;
+    }
+    $has_subcode = count($parts) > 1;
+    if ($main >= 1000 && $main <= 9999) {
+        return true;
+    }
+    if ($main >= 10000 && $main <= 89999) {
+        return !$has_subcode || $main <= 39999;
+    }
+    return $has_subcode && $main >= 100;
+}
+
+/**
  * True when a value matches CS1's "Cite uses generic name" triggers
  * (role labels, site names, and generic phrases from the Configuration
  * module's generic_names reject list).

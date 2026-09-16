@@ -1483,6 +1483,107 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(archive_url_has_timestamp(''));
     }
 
+    public function testDoiValid(): void {
+        $this->assertTrue(doi_valid('10.1103/PhysRevLett.80.904'));
+        $this->assertTrue(doi_valid('10.0001/Rubbish_bot_failure_test')); // structural only; blocklists are separate
+        $this->assertTrue(doi_valid('10.1000.10/abc')); // dotted registrant subcode
+        $this->assertFalse(doi_valid('11.1103/abc')); // wrong directory indicator
+        $this->assertFalse(doi_valid('10.1103')); // no suffix
+        $this->assertFalse(doi_valid('10.1103/Phys Rev')); // space
+        $this->assertFalse(doi_valid('10.1103/a–b')); // en dash
+        $this->assertFalse(doi_valid('10.1103/abc.')); // trailing punctuation
+        $this->assertFalse(doi_valid(''));
+    }
+
+    public function testSsrnValid(): void {
+        $this->assertTrue(ssrn_valid('1234567'));
+        $this->assertTrue(ssrn_valid('100'));
+        $this->assertFalse(ssrn_valid('abc'));
+        $this->assertFalse(ssrn_valid('12.5'));
+        $this->assertFalse(ssrn_valid('99'));
+        $this->assertFalse(ssrn_valid('99999999'));
+        $this->assertFalse(ssrn_valid(''));
+    }
+
+    public function testS2cidValid(): void {
+        $this->assertTrue(s2cid_valid('11733879'));
+        $this->assertTrue(s2cid_valid('1'));
+        $this->assertFalse(s2cid_valid('abc'));
+        $this->assertFalse(s2cid_valid('0'));
+        $this->assertFalse(s2cid_valid('999999999'));
+        $this->assertFalse(s2cid_valid(''));
+    }
+
+    public function testJstorValid(): void {
+        $this->assertTrue(jstor_valid('3511692'));
+        $this->assertTrue(jstor_valid('j.ctt802dw')); // non-numeric stable forms pass; only CS1-documented refusals apply
+        $this->assertFalse(jstor_valid('JSTOR123')); // contains 'jstor'
+        $this->assertFalse(jstor_valid('https://www.jstor.org/stable/123')); // URI scheme
+        $this->assertFalse(jstor_valid('12 34')); // space
+        $this->assertFalse(jstor_valid(''));
+    }
+
+    public function testHdlValid(): void {
+        $this->assertTrue(hdl_valid('10393/35779'));
+        $this->assertTrue(hdl_valid('20.1000/100'));
+        $this->assertTrue(hdl_valid('2027/mdp.39015064245429?urlappend=%3Bseq=326'));
+        $this->assertFalse(hdl_valid('10393/35 779')); // space
+        $this->assertFalse(hdl_valid('10393/a–b')); // en dash
+        $this->assertFalse(hdl_valid('10393/35779.')); // trailing punctuation
+        $this->assertFalse(hdl_valid(''));
+    }
+
+    public function testOclcValid(): void {
+        $this->assertTrue(oclc_valid('12345678'));
+        $this->assertTrue(oclc_valid('02268454'));
+        $this->assertTrue(oclc_valid('ocm12345678'));
+        $this->assertTrue(oclc_valid('ocn123456789'));
+        $this->assertTrue(oclc_valid('on1234567890'));
+        $this->assertTrue(oclc_valid('(OCoLC)12345678'));
+        $this->assertFalse(oclc_valid('abc'));
+        $this->assertFalse(oclc_valid('ocm1234567')); // ocm needs 8 digits
+        $this->assertFalse(oclc_valid('123 456'));
+        $this->assertFalse(oclc_valid(''));
+    }
+
+    public function testOlValid(): void {
+        $this->assertTrue(ol_valid('1234M'));
+        $this->assertTrue(ol_valid('1234W'));
+        $this->assertTrue(ol_valid('1234A'));
+        $this->assertFalse(ol_valid('1234')); // checker-only; adds stay ungated
+        $this->assertTrue(ol_valid('OL1234M')); // optional prefix stripped per CS1
+        $this->assertTrue(ol_valid('ol1234M')); // prefix case-insensitive
+        $this->assertFalse(ol_valid('abc'));
+        $this->assertFalse(ol_valid(''));
+    }
+
+    public function testLccnValid(): void {
+        $this->assertTrue(lccn_valid('12345678')); // 8: all digits
+        $this->assertTrue(lccn_valid('a12345678')); // 9: letter + 8 digits
+        $this->assertTrue(lccn_valid('ab12345678')); // 10: two letters
+        $this->assertTrue(lccn_valid('20011234')); // 10: leading digits (8+2 overlap)
+        $this->assertTrue(lccn_valid('abc12345678')); // 11: letter + two letters
+        $this->assertTrue(lccn_valid('ab1234567890')); // 12: two letters
+        $this->assertFalse(lccn_valid('1234')); // checker-only; adds stay ungated
+        $this->assertFalse(lccn_valid('1234567')); // too short
+        $this->assertFalse(lccn_valid('1234567890123')); // too long
+        $this->assertFalse(lccn_valid('A12345678')); // uppercase head
+        $this->assertFalse(lccn_valid(''));
+    }
+
+    public function testDoiRegistrantValid(): void {
+        $this->assertTrue(doi_registrant_valid('10.1103/PhysRevLett.80.904'));
+        $this->assertTrue(doi_registrant_valid('10.10000/abc'));
+        $this->assertTrue(doi_registrant_valid('10.1000.10/abc'));
+        $this->assertTrue(doi_registrant_valid('10.100.1/abc')); // short code with subcode
+        $this->assertFalse(doi_registrant_valid('10.40000.1/abc')); // 5-digit subcoded above 39999
+        $this->assertFalse(doi_registrant_valid('10.5555/abc')); // test registrant
+        $this->assertFalse(doi_registrant_valid('10.123/abc')); // below range
+        $this->assertFalse(doi_registrant_valid('10.90000/abc')); // above range
+        $this->assertFalse(doi_registrant_valid('10.1103')); // no suffix
+        $this->assertFalse(doi_registrant_valid(''));
+    }
+
     public function testArchiveUrlValid(): void {
         $this->assertTrue(archive_url_valid('https://web.archive.org/web/20200101000000/https://example.com'));
         $this->assertTrue(archive_url_valid('https://archive.today/20200101000000/https://example.com'));

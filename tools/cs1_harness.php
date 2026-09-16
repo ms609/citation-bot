@@ -310,6 +310,36 @@ function check_citation(Template $template): array {
     if ($template->has('bibcode') && !bibcode_valid($template->get('bibcode'))) {
         $violations[] = 'bibcode-malformed: CS1 "Check |bibcode= value"';
     }
+    if ($template->has('doi') && !doi_valid($template->get('doi'))) {
+        $violations[] = 'doi-malformed: CS1 "Check |doi= value"';
+    }
+    if ($template->has('ssrn') && !ssrn_valid($template->get('ssrn'))) {
+        $violations[] = 'ssrn-malformed: CS1 "Check |ssrn= value"';
+    }
+    if ($template->has('s2cid') && !s2cid_valid($template->get('s2cid'))) {
+        $violations[] = 's2cid-malformed: CS1 "Check |s2cid= value"';
+    }
+    if ($template->has('jstor') && !jstor_valid($template->get('jstor'))) {
+        $violations[] = 'jstor-malformed: CS1 "Check |jstor= value"';
+    }
+    if ($template->has('hdl') && !hdl_valid($template->get('hdl'))) {
+        $violations[] = 'hdl-malformed: CS1 "Check |hdl= value"';
+    }
+    if ($template->has('oclc') && !oclc_valid($template->get('oclc'))) {
+        $violations[] = 'oclc-malformed: CS1 "Check |oclc= value"';
+    }
+    // Checker-only rules (accepted gaps): ol/lccn adds stay ungated so
+    // bare-digit subtemplate extraction keeps working, and reserved DOI
+    // registrants must stay processable.
+    if ($template->has('ol') && !ol_valid($template->get('ol'))) {
+        $violations[] = 'ol-malformed: CS1 "Check |ol= value"';
+    }
+    if ($template->has('lccn') && !lccn_valid($template->get('lccn'))) {
+        $violations[] = 'lccn-malformed: CS1 "Check |lccn= value"';
+    }
+    if ($template->has('doi') && !doi_registrant_valid($template->get('doi'))) {
+        $violations[] = 'doi-registrant-malformed: CS1 "Check |doi= value"';
+    }
     foreach (['biorxiv', 'medrxiv'] as $param) {
         if ($template->has($param)) {
             $test_value = $template->get($param);
@@ -426,6 +456,15 @@ function build_matrix(): array {
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'pass'],
         ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],
         ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'pass'],
+        ['Trailing-dot doi repaired in tidy', '{{cite journal |title=X |journal=J |doi=10.1103/abc.}}', 'pass'],
+        ['GAP malformed ssrn in input survives tidy', '{{cite journal |title=X |journal=J |ssrn=abc}}', 'gap'],
+        ['GAP malformed s2cid in input survives tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'gap'],
+        ['GAP malformed hdl in input survives tidy', '{{cite journal |title=X |journal=J |hdl=10.1000/abcdef.}}', 'gap'],
+        ['GAP malformed oclc in input survives tidy', '{{cite journal |title=X |journal=J |oclc=abc}}', 'gap'],
+        ['GAP bare-digit ol in input survives tidy', '{{cite journal |title=X |journal=J |ol=1234}}', 'gap'],
+        ['GAP short lccn in input survives tidy', '{{cite journal |title=X |journal=J |lccn=1234}}', 'gap'],
+        ['GAP out-of-range doi registrant in input survives tidy', '{{cite journal |title=X |journal=J |doi=10.123/abc}}', 'gap'],
+        ['URL-form jstor normalized in tidy', '{{cite journal |title=X |journal=J |jstor=https://www.jstor.org/stable/123}}', 'pass'],
         ['GAP generic title in input survives tidy', '{{cite journal |title=No Title |journal=J}}', 'gap'],
         ['GAP generic name in input survives tidy', '{{cite journal |title=X |journal=J |last1=CNN}}', 'gap'],
         ['GAP malformed url in input survives tidy', '{{cite web |url=example.com |title=X}}', 'gap'],
