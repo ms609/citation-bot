@@ -56,28 +56,17 @@ function request_rate_limit_consume(
         return null;
     }
 
-    $state_directory =
-        mb_rtrim($base_directory, "/\\", '8bit') .
-        DIRECTORY_SEPARATOR .
-        REQUEST_RATE_LIMIT_STATE_DIRECTORY;
-
-    if (
-        !is_dir($state_directory) &&
-        !@mkdir($state_directory, 0700, true) &&
-        !is_dir($state_directory)
-    ) {
-        request_rate_limit_log_failure($bucket, 'unable to create state directory');
+    $state_directory = big_run_prepare_state_directory($base_directory);
+    if ($state_directory === null) {
+        request_rate_limit_log_failure($bucket, 'unsafe or unavailable state directory');
         return null;
     }
-    @chmod($state_directory, 0700);
 
-    $state_path = $state_directory . DIRECTORY_SEPARATOR . $bucket . '.json';
-    $handle = @fopen($state_path, 'c+');
+    $handle = request_rate_limit_open_state_handle($state_directory, $bucket);
     if ($handle === false) {
-        request_rate_limit_log_failure($bucket, 'unable to open state file');
+        request_rate_limit_log_failure($bucket, 'unsafe or unavailable state file');
         return null;
     }
-    @chmod($state_path, 0600);
 
     $locked = false;
     try {
@@ -1834,4 +1823,51 @@ function big_run_heartbeat_or_stop(
         big_run_stop_after_lease_loss($entry_id);
     }
     return $status === 'ok';
+}
+
+/**
+ * Open a generic rate-limit state file without following or accepting a
+ * substituted pathname. The directory has already been validated as private
+ * and process-owned by big_run_prepare_state_directory().
+ *
+ * @return resource|false
+ */
+function request_rate_limit_open_state_handle(string $state_directory, string $bucket) {
+    $state_path = $state_directory . DIRECTORY_SEPARATOR . $bucket . '.json';
+    clearstatcache(true, $state_path);
+    if (is_link($state_path)) {
+        return false;
+    }
+
+    $handle = @fopen($state_path, 'c+');
+    if ($handle === false) {
+        return false;
+    }
+
+    clearstatcache(true, $state_path);
+    $held_stat = @fstat($handle);
+    $path_stat = @lstat($state_path);
+    if (
+        !is_array($held_stat) ||
+        !is_array($path_stat) ||
+        (($held_stat['mode'] & 0170000) !== 0100000) ||
+        (($path_stat['mode'] & 0170000) !== 0100000) ||
+        $held_stat['dev'] !== $path_stat['dev'] ||
+        $held_stat['ino'] !== $path_stat['ino']
+    ) {
+        @fclose($handle);
+        return false;
+    }
+
+    if (function_exists('posix_geteuid')) {
+        $owner = @fileowner($state_path);
+        $effective_uid = posix_geteuid();
+        if (!is_int($owner) || $owner !== $effective_uid) {
+            @fclose($handle);
+            return false;
+        }
+    }
+
+    @chmod($state_path, 0600);
+    return $handle;
 }

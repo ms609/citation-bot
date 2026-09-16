@@ -112,8 +112,11 @@ not reorder FastCGI requests after they reach the web server.
   per-user lease. A persistent `_guard` file serializes acquisition, stale
   takeover, kill signaling, heartbeat and shutdown cleanup. Heartbeat verifies
   inode ownership; a resumed stale process cannot refresh or remove a newer
-  replacement lease. Lease files prefer writable `/dev/shm` on Linux and fall
-  back to `sys_get_temp_dir()/citation-bot-big-jobs` elsewhere.
+  replacement lease. Lease files use a private process-owned
+  `/dev/shm/citation-bot-big-jobs` directory on Linux when available and fall
+  back to `sys_get_temp_dir()/citation-bot-big-jobs` elsewhere. The first
+  deployment of this path change must be drained so workers using the previous
+  direct-`/dev/shm` lease names cannot overlap workers using the new directory.
 - **Token bucket:** default capacity 400 and refill 4.0/s. Tokens are charged
   exactly once at direct admission or `discovery -> running` promotion.
   Requester-controlled `?edit=` attribution is normalized inside
