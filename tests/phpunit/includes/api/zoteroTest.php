@@ -1278,10 +1278,11 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroExpansionPII(): void {
         $this->requires_zotero(function (): void {
+            sleep(2);
             $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('doi') === null) {
-                $this->markTestSkipped('Zotero API did not respond');
+                $this->markTestSkipped('Zotero API did not respond for PII URL');
             }
             $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get2('doi'));
         });
@@ -1292,7 +1293,7 @@ final class zoteroTest extends testBaseClass {
             $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';     // Date is before access-date so will expand
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('title') === null) {
-                $this->markTestSkipped('Zotero API did not respond');
+                $this->markTestSkipped('Zotero API did not respond for NBK');
             }
             $this->assertSame('Science, Medicine, and Animals', $expanded->get2('title'));
             $this->assertSame('2004', $expanded->get2('date'));
@@ -1305,7 +1306,7 @@ final class zoteroTest extends testBaseClass {
             $text = '{{Cite journal| hdl=2027/mdp.39015064245429 }}';
             $expanded = $this->process_citation($text);
             if ($expanded->get2('title') === null) {
-                $this->markTestSkipped('Zotero API did not respond');
+                $this->markTestSkipped('Zotero API did not respond for HDL');
             }
             $this->assertSame('The Jewish encyclopedia: A descriptive record of the history, religion, literature, and customs of the Jewish people from the earliest times to the present day', $expanded->get2('title'));
         });
