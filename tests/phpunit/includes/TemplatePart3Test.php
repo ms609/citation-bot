@@ -1933,10 +1933,9 @@ EP - 999 }}';
         // Using 10.1101/063172 published in Human Genetics as 10.1007/s00439-016-1742-y
         // This is a verified conversion (Kutanan et al. 2016) from bioRxiv API
         $biorxiv_doi = '10.1101/063172';
-        sleep(2);
         $expected_published_doi = '10.1007/s00439-016-1742-y';
         $api_status = null;
-
+        sleep(8);
         $published_doi = get_biorxiv_published_doi($biorxiv_doi, 'biorxiv', $api_status);
         if ($published_doi === null) {
             $this->markTestSkipped(

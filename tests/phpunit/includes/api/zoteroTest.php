@@ -1278,7 +1278,7 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroExpansionPII(): void {
         $this->requires_zotero(function (): void {
-            sleep(2);
+            sleep(8);
             $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('doi') === null) {
