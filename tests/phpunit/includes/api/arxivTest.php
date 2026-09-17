@@ -14,6 +14,7 @@ final class arxivTest extends testBaseClass {
 
     public function testGetBadDoiFromArxiv(): void { // If this DOI starts working or arXiv removes it, then this test will fail and not cover code anymore
         $text = '{{citation |arxiv=astro-ph/9708005 |last1=Steeghs |first1=D. |last2=Harlaftis |first2=E. T. |last3=Horne |first3=Keith |title=Spiral structure in the accretion disc of the binary IP Pegasi |year=1997  |doi= |doi-broken-date= }}';
+        sleep(2); // touchy test
         $prepared = $this->process_citation($text);
         if ($prepared->get2('doi') === null || $prepared->get2('doi') === '') {
             $this->markTestSkipped('arXiv API did not respond (rate limit or outage)');
@@ -28,7 +29,7 @@ final class arxivTest extends testBaseClass {
                     . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
                     . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
                     . '{{cite arXiv|eprint=hep-th/0303241}}'; // tests line feeds
-
+        sleep(4); // Doing several at once
         $expanded = $this->process_page($text);
         $templates = $expanded->extract_object('Template');
         if ($templates[0]->wikiname() !== 'cite journal') {
