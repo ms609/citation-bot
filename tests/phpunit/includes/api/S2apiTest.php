@@ -124,7 +124,7 @@ final class S2apiTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testSemanticscholar3(): void {
+    public function testSemanticscholar3a(): void {
         $this->sleep_S2();
         $text = '{{cite web|url=https://pdfs.semanticscholar.org/8805/b4d923bee9c9534373425de81a1ba296d461.pdf }}';
         $template = $this->make_citation($text);
@@ -133,12 +133,20 @@ final class S2apiTest extends testBaseClass {
             $this->markTestSkipped('Semantic Scholar API did not respond (rate limit or outage)');
         }
         $this->assertSame('1090322', $template->get2('s2cid'));
-        $s2cid = $template->get('s2cid');
+    }
+
+    public function testSemanticscholar3b(): void {
         $this->sleep_S2();
-        if (get_semanticscholar_license($s2cid) === null) { // null = rate-limited/outage, not "no DOI"
+        $license = get_semanticscholar_license('1090322');
+        if ($license === null) { // null = rate-limited/outage, not "no DOI"
             $this->markTestSkipped('Semantic Scholar API did not respond converting S2CID to DOI (rate limit or outage)');
         }
-        $template = $this->process_citation('{{cite web|s2cid=' . $s2cid . '}}');
+        $this->assertNotNull($license);  // TODO get correct value
+    }
+
+    public function testSemanticscholar3c(): void {
+        $this->sleep_S2();
+        $template = $this->process_citation('{{cite web|s2cid=1090322}}');
         if ($template->blank('doi')) {
             $this->markTestSkipped('doi_works() did not confirm doi (rate limit or outage)');
         }
