@@ -513,6 +513,7 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText16(): void {
+        sleep(2); // TODO - why is this test so slow
         $text = "<ref>{{arxiv|0806.0013}}</ref>";
         $page = $this->process_page($text);
         if (mb_stripos($page->parsed_text(), 'doi') === false) {
@@ -750,8 +751,8 @@ final class pageTest extends testBaseClass {
         $page = $this->process_page('{{cs1 config|mode=cs2}}
 <ref>https://doi.org/10.1007/s12668-011-0022-5</ref>');
         $parsed = $page->parsed_text();
-        if (mb_strpos($parsed, '|doi=10.1007/s12668-011-0022-5') !== false
-            && mb_strpos($parsed, '|title=') !== false) {
+        if (mb_strpos($parsed, 'doi=10.1007/s12668-011-0022-5') !== false
+            && mb_strpos($parsed, 'title=') !== false) {
             $this->assertStringNotContainsString('{{cite web', $parsed);
         } else {
             $this->markTestSkipped('CrossRef or DOI expansion did not respond (rate limit or outage)');
