@@ -32,8 +32,7 @@
 
 ## GitHub repository details
 
-- The **master** code is implemented at <https://citations.toolforge.org/>, and is intended for public use.
-- When needed, the **development** branch is intended for major restructuring and testing.
+- The **master** branch is the repository's default branch and is intended for public production use at <https://citations.toolforge.org/>.
 
 ## Overview
 
@@ -56,7 +55,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
-- **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, unlimited for CLI); thorough mode can use the full budget
+- **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, 1,000,000 for CLI); thorough mode can use the full budget
 
 ### Citation Expander Gadget (`src/gadgetapi.php`)
 
@@ -175,7 +174,8 @@ not reorder FastCGI requests after they reach the web server.
   `large_full`, `tokens`, `retry_later`, `lease_lost`, promotion failures, and
   invalid-state reasons including `state_unreadable`, `state_empty`,
   `state_oversized`, `json_decode`, `top_level_schema`, `top_level_numeric`,
-  `entry_schema`, and `entry_value`.- **Operator recovery:** strict whole-snapshot validation deliberately does not
+  `entry_schema`, and `entry_value`.
+- **Operator recovery:** strict whole-snapshot validation deliberately does not
   auto-heal malformed state. An invalid snapshot emits a prominent
   `INVALID SHARED STATE (...)` log line while bulk admission remains
   fail-closed. Diagnose with `php tools/reset_big_run_state.php --check`.
@@ -223,6 +223,7 @@ Operational/support endpoints:
 - `src/authenticate.php`: OAuth authorization flow for web users
 - `src/gitpull.php`: password-protected deployment/update endpoint
 - `src/kill_big_job.php`: lets users kill their own long-running batch jobs
+- `src/reset_big_run_state.php`: authenticated manual recovery for shared big-run admission state
 - `src/update_statistics.php`: daily cron to update `User:Citation bot/statistics`
 
 Includes (under `src/includes/`):
@@ -254,7 +255,7 @@ Includes (under `src/includes/`):
 ## Style and structure notes
 
 - Constants and definitions should be provided in `constants.php`.
-- Entry points that do not load `src/includes/setup.php` (currently `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves, as the output helpers in `src/includes/user_messages.php` read them unguarded. `setup.php` defines these based on the run context (CLI vs web); see `src/kill_big_job.php` for a web-only example.
+- Entry points that use `src/includes/user_messages.php` without loading `src/includes/setup.php` (currently `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves, as the output helpers in `src/includes/user_messages.php` read them unguarded. `setup.php` defines these based on the run context (CLI vs web); see `src/kill_big_job.php` for a web-only example.
 - A good balance between splitting functionality into single files and avoiding too many files should be maintained.
 - The code is generally NOT written densely.
 - Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, and action taking place through method calls that take place in assignments or equality checks.
@@ -294,7 +295,7 @@ to mode `0600` and is ignored by Git.
 
 When upgrading from a build that locks `big-run.json` directly to the permanent `big-run.lock` backend, perform a **drained deployment**. Stop the web service and wait for all old php-cgi requests to exit, update the code while the service is stopped, remove the old `big-run.json` snapshot from the configured rate-limit state directory, then restart the web service. Do not use the live `gitpull.php` endpoint for this one-time lock-protocol transition: old and new requests otherwise coordinate on different lock objects. Once every worker is running the new protocol, normal deployments may resume.
 
- To run the bot as a webservice from WM Toolforge:
+To run the bot as a webservice from WM Toolforge:
 
     become citations[-dev]
     webservice stop

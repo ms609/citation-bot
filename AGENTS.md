@@ -68,7 +68,7 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 - Multi-line if/foreach/else statements (with braces)
 - Method calls that modify state often occur within assignments
 - Action can happen through method calls in equality checks
-- String operations need to be multi-byte versions
+- String operations should use multi-byte versions except when byte counts are required, such as HTTP header lengths
 
 **Good (matches project style):**
 
@@ -171,7 +171,8 @@ and does not reorder already-arrived FastCGI requests.
   Snapshots are capped at 64 KiB. Every persisted lease entry is mandatory-schema
   data (`started_at`, `tier`, `last_seen_at`, `phase`); any malformed entry makes
   the whole snapshot invalid/fail-closed. Invalid-state logs identify the failure
-  class but must never include raw snapshot contents.- **Operator recovery:** never make malformed state self-heal or fail open.
+  class but must never include raw snapshot contents.
+- **Operator recovery:** never make malformed state self-heal or fail open.
   `tools/reset_big_run_state.php --check` diagnoses shared state under the
   permanent lock. `--reset` is an operator-only recovery action: drain/quiesce
   bulk workers first, acquire `big-run.lock`, preserve the previous regular
@@ -217,7 +218,7 @@ and does not reorder already-arrived FastCGI requests.
 ```bash
 docker compose up -d
 # Access at http://localhost:8081/src/
-docker exec -it citation-bot-php-1 composer install
+docker compose exec php composer install
 ```
 
 ### Toolforge Deployment
@@ -281,9 +282,9 @@ The project uses extensive automated testing:
 
 The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message. Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
-**Local PHPUnit note:** `phpunit.xml.dist` aborts without a coverage driver; for local runs use the stripped `phpunit.local.xml` (gitignored): `php -d memory_limit=2G vendor/bin/phpunit --configuration phpunit.local.xml <path>`.
+**Local PHPUnit note:** `phpunit.xml.dist` requests coverage. Install PCOV or Xdebug before running focused PHPUnit tests directly, for example: `php -d memory_limit=2G vendor/bin/phpunit <path>`.
 
-All tests must pass before merging. Some tests are network-dependent (Zotero, PubMed, Unpaywall, JSTOR) and may pass/fail with upstream API availability; those are unrelated to local changes.
+All tests must pass before merging. Some tests are network-dependent (Zotero, PubMed, Unpaywall, JSTOR) and may pass/fail with upstream API availability; distinguish upstream failures from local regressions before attributing cause.
 
 ## Common Development Tasks
 
@@ -320,8 +321,8 @@ php tools/cs1_harness.php --slow     # slow mode (bibcode search + URL expansion
 php tools/cs1_harness.php --list     # print the matrix without running
 ```
 
-- **Must-pass cases** (29) must satisfy every checker rule; a violation exits 1.
-- **Known-gap cases** (14) document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
+- **Must-pass cases** must satisfy every checker rule; a violation exits 1.
+- **Known-gap cases** document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
 - When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
 
 ## Important Constraints
@@ -357,6 +358,7 @@ The gadget MUST:
 │   ├── linked_pages.php        # Processes pages linking to a given page
 │   ├── kill_big_job.php        # Kill large batch jobs
 │   ├── gitpull.php             # Password-protected deployment/update endpoint
+│   ├── reset_big_run_state.php # Authenticated big-run state recovery endpoint
 │   ├── update_statistics.php   # Daily cron to update User:Citation bot/statistics
 │   └── includes/
 │       ├── setup.php           # Bootstrap configuration
@@ -493,7 +495,7 @@ Check `src/includes/setup.php` for debug flags and logging configuration.
    - Forgetting multi-byte string functions
    - Not handling API failures gracefully
    - Violating the verbose code style with compact one-liners
-   - Entry points that do not load `setup.php` (e.g. `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves: output helpers in `src/includes/user_messages.php` read `HTML_OUTPUT` unguarded, and an undefined constant fatals mid-page, truncating the output to a blank page. Note that tests extending `testBaseClass.php` load `setup.php` and will mask this failure — use the standalone separate-process pattern in `tests/phpunit/killBigJobPageTest.php` when testing such pages.
+   - Entry points that use `src/includes/user_messages.php` without loading `setup.php` (e.g. `src/kill_big_job.php`) must define the `CI` and `HTML_OUTPUT` constants themselves: output helpers in `src/includes/user_messages.php` read `HTML_OUTPUT` unguarded, and an undefined constant fatals mid-page, truncating the output to a blank page. Note that tests extending `testBaseClass.php` load `setup.php` and will mask this failure — use the standalone separate-process pattern in `tests/phpunit/killBigJobPageTest.php` when testing such pages.
 
 ## Bug Reporting
 
@@ -510,10 +512,10 @@ Include:
 ## Useful Commands
 
 ```bash
-# Run tests
-php vendor/bin/phpunit
-# Local runs (phpunit.xml.dist needs a coverage driver): use the stripped config
-php -d memory_limit=2G vendor/bin/phpunit --configuration phpunit.local.xml <path>
+# Run the full test suite
+composer run test
+# Focused PHPUnit run (requires PCOV or Xdebug because phpunit.xml.dist requests coverage)
+php -d memory_limit=2G vendor/bin/phpunit <path>
 
 # CS1 conformance regression gate (fast + slow)
 php tools/cs1_harness.php
