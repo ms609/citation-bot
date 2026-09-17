@@ -114,7 +114,13 @@ jobs:
       # Verbose logging (-vvv) adds ~5-15 seconds overhead due to detailed package resolution output
       # Keeping verbose for better debugging visibility
 
-    - name: Full test with PHP
+    # Pull-request code must never receive repository secrets.
+    - name: Full test with PHP (pull request, no secrets)
+      if: ${{ github.event_name == 'pull_request' }}
+      run: composer run test
+
+    - name: Full test with PHP (trusted events)
+      if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
@@ -131,7 +137,7 @@ jobs:
       run: /bin/cat ./DebugLog.txt
 
     - name: Code Coverage
-      if:  ${{ !cancelled() && github.event_name != 'pull_request' }}
+      if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'schedule') }}
       uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
       env:
          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
