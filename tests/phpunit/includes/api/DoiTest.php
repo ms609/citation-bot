@@ -325,7 +325,7 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testComplexCrossRef(): void {
-        $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
+        $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv =<!-- -->| bibcode = <!-- --> | doi=10.1007/978-3-642-39206-1_42}}';
         $expanded = $this->process_citation($text);
         if ($expanded->get2('chapter') !== null) {
             $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get2('chapter'));
