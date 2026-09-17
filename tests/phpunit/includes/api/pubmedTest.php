@@ -14,10 +14,14 @@ final class pubmedTest extends testBaseClass {
 
     public function testGetPMIDwitNoDOIorJournal(): void {  // Also has evil colon in the name.   Use wikilinks for code coverage reason
         $this->sleep_pubmed();
-        sleep(5);
+        sleep(9);
         $text = '{{cite journal|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|volume=[[91]]|issue=[[7|7]]|pages=4346|year=2019|last1=Colby}}';
         $template = $this->make_citation($text);
         find_pmid($template);
+        if ($template->get2('pmid') === null) {
+            sleep(14);
+            find_pmid($template);
+        }
         if ($template->get2('pmid') === null) {
             $this->markTestSkipped('PubMed API did not respond (rate limit or outage)');
         }
