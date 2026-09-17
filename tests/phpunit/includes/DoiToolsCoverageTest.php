@@ -64,6 +64,16 @@ final class DoiToolsCoverageTest extends testBaseClass {
         $this->assertNull(interpret_doi_header($headers, '10.5555/citation-bot-coverage'));
     }
 
+    public function testInterpretDoiHeaderHandlesMissingLaterHopStatusLines(): void {
+        $headers = [
+            '0' => 'HTTP/1.1 302 Found',
+            'Location' => 'ftp://example.com/archive',
+            DOI_HEADER_TRUST_KEY => DOI_HEADER_TRUST_STRICT,
+        ];
+
+        $this->assertTrue(interpret_doi_header($headers, '10.5555/citation-bot-one-hop'));
+    }
+
     public function testUnauthenticatedHeadersCannotEstablishNegativeDoiResult(): void {
         $trusted_negative = [
             '0' => 'HTTP/1.1 302 Found',
