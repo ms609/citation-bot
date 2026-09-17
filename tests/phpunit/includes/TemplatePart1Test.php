@@ -1444,7 +1444,7 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testLongAuthorLists(): void {
-        $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf|doi=<!--Do not add-->}}';
+        $text = '{{cite web | arxiv=1003.3124v2 |doi=<!--Do not add-->}}';
         $expanded = $this->process_citation($text);
         if ($expanded->first_author() === '') {
             $this->markTestSkipped('arXiv API did not respond (rate limited)');
