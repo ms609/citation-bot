@@ -216,9 +216,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     protected function sleep_S2(): void {
         if (empty(HEADER_S2)) {
-            sleep(6);
+            sleep(10);
         } else {
-            usleep(100000);
+            sleep(3);
         }
     }
 
