@@ -535,6 +535,10 @@ final class bibcodeTest extends testBaseClass {
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded);
             $found_bibcode = $expanded->get2('bibcode');
+            if ($found_bibcode === null) { // Once more time
+                sleep(22);
+                expand_by_adsabs($expanded);
+            }
             if ($found_bibcode === null) {
                 $this->markTestSkipped('AdsAbs API did not respond (rate limit or outage)');
             }
