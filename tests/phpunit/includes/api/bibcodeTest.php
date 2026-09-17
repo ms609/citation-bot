@@ -531,10 +531,10 @@ final class bibcodeTest extends testBaseClass {
     public function testFindBibcodeNoTitle(): void {
         $this->requires_bibcode(function (): void {
             $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999 |issn = 1463-9076}}";
+            sleep(1);
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded);
             $found_bibcode = $expanded->get2('bibcode');
-
             if ($found_bibcode === null) {
                 $this->markTestSkipped('AdsAbs API did not respond (rate limit or outage)');
             }
