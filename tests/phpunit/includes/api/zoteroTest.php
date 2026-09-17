@@ -1303,12 +1303,12 @@ final class zoteroTest extends testBaseClass {
 
     public function testZoteroExpansion_hdl(): void {
         $this->requires_zotero(function (): void {
-            $text = '{{Cite journal| hdl=2027/mdp.39015064245429 }}';
+            $text = '{{Cite journal| hdl=10125/20269 }}';
             $expanded = $this->process_citation($text);
             if ($expanded->get2('title') === null) {
                 $this->markTestSkipped('Zotero API did not respond for HDL');
             }
-            $this->assertSame('The Jewish encyclopedia: A descriptive record of the history, religion, literature, and customs of the Jewish people from the earliest times to the present day', $expanded->get2('title'));
+            $this->assertSame("Soul searching Singapore's 2011 general election", $expanded->get2('title'));
         });
     }
 
