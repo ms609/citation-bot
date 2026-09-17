@@ -1,9 +1,4 @@
-# Main GEMINI.md file
-
-This is the main content
+# Citation Bot
 
 @../AGENTS.md
-
-More content here
-
 @../docs/CONTRIBUTING.md

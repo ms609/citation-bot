@@ -15,7 +15,7 @@ All code is run through several tests.  The primary test is a suite of example p
 | PHPUnit + ParaTest | Test suite | `composer run test` |
 | PHPLint | Syntax check | `composer run phplint` |
 | PHP CodeSniffer | Code style | `composer run phpcs` |
-| PHPStan (level 6) | Static analysis | `composer run phpstan` |
+| PHPStan (level 7) | Static analysis | `composer run phpstan` |
 | Psalm | Static analysis | `composer run psalm` |
 | Psalm (taint) | Security taint analysis | `composer run psalm-taint` |
 | Phan | Static analysis | `composer run phan` |
@@ -23,7 +23,7 @@ All code is run through several tests.  The primary test is a suite of example p
 
 ## Submitting changes
 
-Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests)). Use `development` only for coordinated restructuring work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit). AI tools can be useful in generating additional tests.
+Please send a GitHub Pull Request against the `master` branch with a clear list of what you've done (read more about [pull requests](https://docs.github.com/en/pull-requests/reference/pull-requests)). Use a feature branch for your work. Including a test case that demonstrates the bug you are trying to fix in the pull request would be much appreciated, to avoid errors resurfacing. Please follow our coding conventions (below) and make sure all of your commits are atomic (one feature per commit). AI tools can be useful in generating additional tests.
 
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
