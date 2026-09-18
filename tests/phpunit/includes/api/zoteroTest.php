@@ -1282,6 +1282,10 @@ final class zoteroTest extends testBaseClass {
             $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('doi') === null) {
+                sleep(15);
+                $expanded = $this->expand_via_zotero($text)
+            }
+            if ($expanded->get2('doi') === null) {
                 $this->markTestSkipped('Zotero API did not respond for PII URL');
             }
             $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get2('doi'));
