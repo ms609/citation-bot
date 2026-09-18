@@ -1283,7 +1283,7 @@ final class zoteroTest extends testBaseClass {
             $expanded = $this->expand_via_zotero($text);
             if ($expanded->get2('doi') === null) {
                 sleep(15);
-                $expanded = $this->expand_via_zotero($text)
+                $expanded = $this->expand_via_zotero($text);
             }
             if ($expanded->get2('doi') === null) {
                 $this->markTestSkipped('Zotero API did not respond for PII URL');
