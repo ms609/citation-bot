@@ -355,15 +355,15 @@ function interpret_doi_header(array $headers_test, string $doi): ?bool {
     // (for example, ftp://), so later response status lines may be absent.
     $resp0 = $headers_test['0'] ?? '';
     if (!is_string($resp0)) {
-        $resp0 = '';
+        $resp0 = implode(' ', $resp0);
     }
     $resp1 = $headers_test['1'] ?? '';
     if (!is_string($resp1)) {
-        $resp1 = '';
+        $resp1 = implode(' ', $resp1);
     }
     $resp2 = $headers_test['2'] ?? '';
     if (!is_string($resp2)) {
-        $resp2 = '';
+        $resp2 = implode(' ', $resp2);
     }
 
     if (mb_strpos($resp0, '302') !== false && mb_strpos($resp1, '301') !== false && mb_strpos($resp2, '404') !== false) {
