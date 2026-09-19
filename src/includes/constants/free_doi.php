@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const DOI_FREE_PREFIX = [
     // Additional free journal DOI prefixes
+    '10.1001/jamahealthforum',
     '10.1001/jamanetworkopen',
     '10.1002/1878-0261',
     '10.1002/2056-4538',
@@ -689,6 +690,7 @@ const DOI_FREE_PREFIX = [
     '10.11647/',
     '10.11648/',
     '10.1176/appi.prcp.',
+    '10.1177/23328584',
     '10.1186/',
     '10.1192/bjo',
     '10.1192/j.eurpsy',
