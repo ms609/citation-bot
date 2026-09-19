@@ -94,7 +94,9 @@ ci:
       - .github/dependabot.yml
       - .github/labeler.yml
       - .github/cffconvert-requirements.txt
+      - .github/codespell-requirements.txt
       - tools/update_cffconvert_lock.sh
+      - tools/update_codespell_lock.sh
       - tools/cs1_harness.php
 
 docker:
@@ -132,7 +134,9 @@ dependencies:
       - composer.json
       - composer.lock
       - .github/cffconvert-requirements.txt
+      - .github/codespell-requirements.txt
       - tools/update_cffconvert_lock.sh
+      - tools/update_codespell_lock.sh
 
 github_actions:
   - changed-files:
