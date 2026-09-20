@@ -1,0 +1,7 @@
+# Hash-pinned codespell 2.4.3 closure for the Codespell workflow (pip --require-hashes).
+# Single package: 2.4.3 has no mandatory dependencies. Both distributions are
+# pinned; pip selects the wheel on ubuntu-latest.
+# Regenerate with `bash tools/update_codespell_lock.sh`, then re-run pip-audit.
+codespell==2.4.3 \
+    --hash=sha256:af2505b335e8573dbd2d384d1c4ef498f4006f4ba2d6fceca01e55b91f52628a \
+    --hash=sha256:cbe085e331227b37bb86ef8bddd08dc768c704ee9a07ca869852c093fa2793e2

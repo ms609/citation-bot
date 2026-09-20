@@ -25,7 +25,15 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.13'
+      # Pinned by hash: Scorecard Pinned-Dependencies requires pip --require-hashes.
       - name: Install codespell
-        run: python -m pip install --disable-pip-version-check codespell==2.4.3
+        run: >-
+          python -m pip install --disable-pip-version-check
+          --require-hashes
+          --no-cache-dir
+          -r .github/codespell-requirements.txt
+
+      - name: Check installed package constraints
+        run: python -m pip check
       - name: Run codespell
         run: codespell
