@@ -2486,6 +2486,12 @@ final class Template
                         $this->rename('at', $param_name);
                         return true;
                     }
+                    if (($at_value = $this->get('at')) !== '') {
+                        if ($this->at_value_is_same_article_number($at_value, $value)) {
+                            $this->rename('at', $param_name, $value);
+                            return true;
+                        }
+                    }
                     return $this->add($param_name, $value); // Do NOT Sanitize
                 }
                 return false;
@@ -2497,6 +2503,42 @@ final class Template
                 return false;
             // @codeCoverageIgnoreEnd
         }
+    }
+
+    private function at_value_is_same_article_number(string $at_value, string $article_value): bool {
+        $at_trim = mb_trim($at_value);
+        $art_trim = mb_trim($article_value);
+        if ($at_trim === '' || $art_trim === '') {
+            return false;
+        }
+        if (str_i_same($at_trim, $art_trim)) {
+            return true;
+        }
+        if (preg_match('~^(note|paper|article)\s+(.+)$~iu', $at_trim, $matches)) {
+            $keyword = mb_strtolower($matches[1]);
+            $note_core = mb_trim($matches[2]);
+            if ($note_core === '') {
+                return false;
+            }
+            if (preg_match('~\d~u', $note_core) !== 1) {
+                return false;
+            }
+            if (preg_match('~\d~u', $art_trim) !== 1) {
+                return false;
+            }
+            $note_compact = mb_strtolower(safe_preg_replace('~\s+~u', '', $note_core));
+            $art_compact = mb_strtolower(safe_preg_replace('~\s+~u', '', $art_trim));
+            if ($note_compact === $art_compact) {
+                return true;
+            }
+            if ($keyword === 'note' && 'n' . $note_compact === $art_compact) {
+                return true;
+            }
+            if ($keyword === 'paper' && 'p' . $note_compact === $art_compact) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function is_url_in_non_url_parameter(string $param_name, string $value): bool {

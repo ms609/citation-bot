@@ -2868,6 +2868,70 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('pages'));
     }
 
+    public function testArticleNumberReplacesEquivalentAtNote(): void {
+        // Talk #40: at=Note 13 vs article-number=N13 (doi 10.37236/1854) should not duplicate
+        $text = "{{cite journal|doi=10.37236/1854|at=Note 13|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'N13'));
+        $this->assertSame('N13', $template->get2('article-number'));
+        $this->assertNull($template->get2('at'));
+    }
+
+    public function testArticleNumberKeepsComplexAt(): void {
+        // Complex at= with extra locator detail must be preserved
+        $text = "{{cite journal|doi=10.37236/1854|at=pp.425-439, see Table 2|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'N13'));
+        $this->assertSame('N13', $template->get2('article-number'));
+        $this->assertSame('pp.425-439, see Table 2', $template->get2('at'));
+    }
+
+    public function testArticleNumberReplacesLowercaseAtNote(): void {
+        $text = "{{cite journal|doi=10.37236/1854|at=note 13|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'n13'));
+        $this->assertSame('n13', $template->get2('article-number'));
+        $this->assertNull($template->get2('at'));
+    }
+
+    public function testArticleNumberReplacesAtPaper(): void {
+        $text = "{{cite journal|doi=10.0000/test|at=Paper 10|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'P10'));
+        $this->assertSame('P10', $template->get2('article-number'));
+        $this->assertNull($template->get2('at'));
+    }
+
+    public function testArticleNumberKeepsMismatchedNotePaperPrefix(): void {
+        // Note must not match P-prefix and Paper must not match N-prefix
+        $text = "{{cite journal|doi=10.0000/test|at=Note 10|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'P10'));
+        $this->assertSame('P10', $template->get2('article-number'));
+        $this->assertSame('Note 10', $template->get2('at'));
+        $text = "{{cite journal|doi=10.0000/test|at=Paper 13|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'N13'));
+        $this->assertSame('N13', $template->get2('article-number'));
+        $this->assertSame('Paper 13', $template->get2('at'));
+    }
+
+    public function testArticleNumberKeepsWordOnlyAtNote(): void {
+        $text = "{{cite journal|doi=10.0000/test|at=Note on methodology|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'N13'));
+        $this->assertSame('N13', $template->get2('article-number'));
+        $this->assertSame('Note on methodology', $template->get2('at'));
+    }
+
+    public function testArticleNumberKeepsAtNoteWithTrailingInfo(): void {
+        $text = "{{cite journal|doi=10.37236/1854|at=Note 13, pages 5-10|title=Test}}";
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('article-number', 'N13'));
+        $this->assertSame('N13', $template->get2('article-number'));
+        $this->assertSame('Note 13, pages 5-10', $template->get2('at'));
+    }
+
     public function testWorkSeriesBecomesSeriesNotTitle(): void {
         // Erxleben-style: title = paper, work = a book series.
         // On cite book conversion the series must land in series=, not title=.
