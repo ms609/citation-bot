@@ -2869,7 +2869,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testArticleNumberReplacesEquivalentAtNote(): void {
-        // Talk #40: at=Note 13 vs article-number=N13 (doi 10.37236/1854) should not duplicate
+        // at=Note 13 vs article-number=N13 (doi 10.37236/1854) should not duplicate
         $text = "{{cite journal|doi=10.37236/1854|at=Note 13|title=Test}}";
         $template = $this->make_citation($text);
         $this->assertTrue($template->add_if_new('article-number', 'N13'));
