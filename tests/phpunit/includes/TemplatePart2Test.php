@@ -3282,6 +3282,53 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Some paper', $expanded->get2('title'));
     }
 
+    public function testIsbnAdditionConvertsTrustedGoogleBooksWebCitation(): void {
+        // A Google Books volume page is the book itself, so the website= guard
+        // must not stop the ISBN conversion; website= becomes via=.
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Google Books}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn'));
+        $this->assertSame('Google Books', $expanded->get2('via'));
+        $this->assertNull($expanded->get2('website'));
+    }
+
+    public function testIsbnAdditionConvertsTrustedScienceDirectWebCitation(): void {
+        $text = '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Some book |website=ScienceDirect}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('isbn', '978-0-306-40615-7'));
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-0-306-40615-7', $expanded->get2('isbn'));
+        $this->assertSame('ScienceDirect', $expanded->get2('via'));
+        $this->assertNull($expanded->get2('website'));
+    }
+
+    public function testIsbnAdditionRefusedForTrustedBookUrlWithConflictingVia(): void {
+        // change_name_to() would decline this conversion, stranding the ISBN.
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Google Books |via=HathiTrust}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testIsbnAdditionRefusedForTrustedBookUrlWithJournal(): void {
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Google Books |journal=Some Journal}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testIsbnAdditionRefusedForTrustedBookUrlWithIssue(): void {
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Google Books |issue=4}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
     public function testChapterAdditionDoesNotCreateAmbiguousBookCitation(): void {
         $text = '{{cite web |url=https://example.com/chapter |title=Landing page |website=Actual Book Title}}';
         $expanded = $this->make_citation($text);

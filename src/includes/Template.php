@@ -3605,11 +3605,22 @@ final class Template
             return false;
         }
 
+        // A URL that is itself a book page (Google Books volume, ScienceDirect
+        // book) is not a generic delivery site, so website= does not block the
+        // conversion; change_name_to() preserves it as via=.
+        $trusted_book_source = $this->has_trusted_book_source_url();
+
         // Most work aliases identify a periodical/site.  Keep the existing
         // ISBN conversion behavior only for work= values already recognized
         // by Citation Bot as book-series metadata.
         foreach (WORK_ALIASES as $work_alias) {
-            if ($work_alias !== 'work' && !$this->blank($work_alias)) {
+            if ($work_alias === 'work') {
+                continue;
+            }
+            if ($work_alias === 'website' && $trusted_book_source) {
+                continue;
+            }
+            if (!$this->blank($work_alias)) {
                 return false;
             }
         }
@@ -3623,7 +3634,45 @@ final class Template
             }
         }
 
+        // change_name_to() must not decline after the ISBN was added, or the
+        // ISBN would be stranded on the cite web.
+        if ($trusted_book_source && !$this->blank('website') && !$this->blank('via') && !str_equivalent($this->get('website'), $this->get('via'))) {
+            return false;
+        }
+        if ($trusted_book_source && (bad_10_1093_doi($this->get('doi')) || mb_strpos($this->get('doi'), '10.13140') !== false)) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * True when url= points at a known book page rather than a site that merely
+     * hosts or describes a book.  Only these hosts may override the website=
+     * guard added for the "web vs book" reports.
+     */
+    private function has_trusted_book_source_url(): bool {
+        $url = $this->get('url');
+        if ($url === '') {
+            return false;
+        }
+        // Google Books volume pages, both the /books/edition/Title/ID path form
+        // and the /books(?about/...)?id= query form.
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.[a-z.]+/books/edition/~i', $url) === 1) {
+            return true;
+        }
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.[a-z.]+/books(?:/about/[^\s?#]+)?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+            return true;
+        }
+        // Old-style Google Books links: books.google.com?id=...
+        if (preg_match('~^https?://books\.google\.[a-z.]+/\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+            return true;
+        }
+        // ScienceDirect book pages: sciencedirect.com/book/978...
+        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/978\d{10}(?:[/?#]|$)~i', $url) === 1) {
+            return true;
+        }
+        return false;
     }
 
     /**

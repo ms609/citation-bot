@@ -407,6 +407,8 @@ function build_matrix(): array {
         ['Najman path: title=book title kept, work=series -> series=', '{{cite web |title=Harness book title beta |work=Lecture notes in mathematics |date=2017 |isbn=978-0-19-852011-5}}', 'pass'],
         ['No-clobber: existing series= preserved', '{{cite web |title=Harness paper gamma |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
         ['Human ISBN on chaptered cite web converts to cite book', '{{cite web |url=https://example.com/book |title=Harness book epsilon |chapter=Harness chapter |website=Harness site |isbn=978-0-306-40615-7}}', 'pass'],
+        ['Google Books volume url with website converts to book', '{{cite web |url=https://books.google.com/books?id=HarnessVolume |title=Harness book eta |website=Google Books |isbn=978-0-306-40615-7}}', 'pass'],
+        ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
         // An ISBN already present in the wikitext is not removed or converted:
         // the bot only declines to create the combination itself.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
