@@ -3329,6 +3329,52 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($expanded->get2('isbn'));
     }
 
+    public function testTrustedBookSourceUrlBoundaries(): void {
+        $positive = [
+            'https://books.google.com/books?id=SjpSkzjIzfsC',
+            'https://books.google.co.uk/books?id=SjpSkzjIzfsC&redir_esc=y',
+            'https://www.google.com/books/edition/Wonderful_Life/SjpSkzjIzfsC',
+            'https://books.google.com?id=SjpSkzjIzfsC',
+            'https://www.sciencedirect.com/book/9780123456789',
+        ];
+        foreach ($positive as $url) {
+            $expanded = $this->make_citation('{{cite web |url=' . $url . ' |title=Some book |website=Example}}');
+            $this->assertTrue($expanded->can_auto_convert_web_to_cite_book(), $url);
+        }
+        $negative = [
+            'https://books.google.com/books?vid=ISBN9780123456789',
+            'https://books.google.com/books/content?id=SjpSkzjIzfsC',
+            'https://books.google.com/books/about/Wonderful_Life.html',
+            'https://www.sciencedirect.com/science/article/pii/1234567890',
+            'https://google.com.evil.example/books/edition/Title/ID',
+            'https://books.google.com.evil.example/books?id=SjpSkzjIzfsC',
+        ];
+        foreach ($negative as $url) {
+            $expanded = $this->make_citation('{{cite web |url=' . $url . ' |title=Some book |website=Example}}');
+            $this->assertFalse($expanded->can_auto_convert_web_to_cite_book(), $url);
+        }
+    }
+
+    public function testIsbnAdditionRefusedForTrustedBookUrlWithGenericWorkAlias(): void {
+        // Audible is in ARE_MANY_THINGS, so change_name_to() would decline the
+        // conversion and strand the ISBN.
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Audible}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testIsbnAdditionRefusedWhenBadDoiWouldBlockConversion(): void {
+        // A bad 10.1093 DOI makes change_name_to() decline, so the ISBN must
+        // not be added even when the rest of the shape looks convertible.
+        $text = '{{cite web |url=https://example.com |title=Some book |doi=10.1093/gmo/bad}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
     public function testChapterAdditionDoesNotCreateAmbiguousBookCitation(): void {
         $text = '{{cite web |url=https://example.com/chapter |title=Landing page |website=Actual Book Title}}';
         $expanded = $this->make_citation($text);

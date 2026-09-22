@@ -53,7 +53,7 @@ final class UrlToolsTest extends testBaseClass {
     public function testGroveMusic3(): void {
         $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}';
         $template = $this->process_citation($text);
-        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- --> |isbn=978-1-56159-263-0 }}', $template->parsed_text());
+        $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |via=Grove Music Online|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}', $template->parsed_text());
     }
 
     public function testGroveMusic4(): void {

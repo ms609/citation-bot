@@ -3600,6 +3600,12 @@ final class Template
             return true;
         }
 
+        // change_name_to() would decline the conversion, stranding book-only
+        // data on the citation, so never start one.
+        if ($this->cite_book_conversion_will_decline()) {
+            return false;
+        }
+
         // cite book does not support issue=/number=.
         if (!$this->blank(ISSUE_ALIASES)) {
             return false;
@@ -3634,16 +3640,35 @@ final class Template
             }
         }
 
-        // change_name_to() must not decline after the ISBN was added, or the
-        // ISBN would be stranded on the cite web.
+        // change_name_to() also requires a website= that can become via=.
         if ($trusted_book_source && !$this->blank('website') && !$this->blank('via') && !str_equivalent($this->get('website'), $this->get('via'))) {
-            return false;
-        }
-        if ($trusted_book_source && (bad_10_1093_doi($this->get('doi')) || mb_strpos($this->get('doi'), '10.13140') !== false)) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * True when change_name_to('cite book') would decline for reasons that do
+     * not depend on the destination template: a DOI known to be bad, or a work
+     * alias value too generic to be moved into a book field.  Callers must not
+     * add book-only data when this holds, or the data is stranded on a cite
+     * web and CS1 reports "periodical has ISBN".
+     */
+    private function cite_book_conversion_will_decline(): bool {
+        if (bad_10_1093_doi($this->get('doi')) || mb_strpos($this->get('doi'), '10.13140') !== false) {
+            return true;
+        }
+        foreach (WORK_ALIASES as $work_alias) {
+            $worky = mb_strtolower($this->get($work_alias));
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $worky, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $worky, $matches)) {
+                $worky = $matches[1]; // Always the wikilink for easier standardization
+            }
+            if (in_array($worky, ARE_MANY_THINGS, true)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -3657,19 +3682,20 @@ final class Template
             return false;
         }
         // Google Books volume pages, both the /books/edition/Title/ID path form
-        // and the /books(?about/...)?id= query form.
-        if (preg_match('~^https?://(?:www\.|books\.)?google\.[a-z.]+/books/edition/~i', $url) === 1) {
+        // and the /books(?about/...)?id= query form.  The host pattern is
+        // bounded to real google.<tld> hosts, not google.<anything>.
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/books/edition/[^\s/?#]~i', $url) === 1) {
             return true;
         }
-        if (preg_match('~^https?://(?:www\.|books\.)?google\.[a-z.]+/books(?:/about/[^\s?#]+)?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/books(?:/about/[^\s?#]+)?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
             return true;
         }
-        // Old-style Google Books links: books.google.com?id=...
-        if (preg_match('~^https?://books\.google\.[a-z.]+/\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+        // Old-style Google Books links: books.google.com?id=... (optional slash)
+        if (preg_match('~^https?://books\.google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
             return true;
         }
-        // ScienceDirect book pages: sciencedirect.com/book/978...
-        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/978\d{10}(?:[/?#]|$)~i', $url) === 1) {
+        // ScienceDirect book pages: sciencedirect.com/book/978... (or 979...)
+        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/97[89]\d{10}(?:[/?#]|$)~i', $url) === 1) {
             return true;
         }
         return false;
@@ -3680,7 +3706,9 @@ final class Template
      * ISBN" maintenance message unless the citation becomes a book template.
      * Adding is safe when the citation already qualifies for a book conversion,
      * including a cite web with a chapter and title, which final_tidy() always
-     * converts to cite book.
+     * converts to cite book.  Only cite web is gated here; an ISBN added to a
+     * cite journal/magazine/news with a periodical parameter can still be
+     * stranded (known scope boundary).
      */
     private function can_add_isbn_identifier(): bool {
         if ($this->wikiname() !== 'cite web') {
