@@ -3326,6 +3326,27 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Google Books', $expanded->get2('via'));
     }
 
+    public function testIsbnAdditionRefusedWhenChapterRepeatsTitle(): void {
+        // tidy_parameter('chapter') drops a chapter equal to the title, so the
+        // cite web never converts to cite book and the ISBN must not be added.
+        $text = '{{cite web |url=https://example.com |title=Some book |chapter=Some book |website=Google Books}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
+        $expanded->final_tidy();
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testIsbnAdditionStillAllowedOnCiteJournalThatConvertsToBook(): void {
+        // Scope boundary: only cite web is gated here; a cite journal without
+        // a journal= still converts to cite book and keeps the ISBN.
+        $text = '{{cite journal |title=Some book}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('isbn', '978-615-5211-93-5'));
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-615-5211-93-5', $expanded->get2('isbn'));
+    }
+
     public function testAsinTidyDoesNotCreateIsbnOnAmbiguousWebCitation(): void {
         // A 10-digit ASIN that looks like an ISBN-10 must not be renamed to
         // isbn= while the citation is a cite web that cannot become a book.

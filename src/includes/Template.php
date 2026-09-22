@@ -3640,7 +3640,15 @@ final class Template
         if ($this->can_auto_convert_web_to_cite_book()) {
             return true;
         }
-        return !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments('title');
+        if (
+            $this->blank_other_than_comments('chapter') ||
+            $this->blank_other_than_comments('title')
+        ) {
+            return false;
+        }
+        // tidy_parameter('chapter') drops a chapter that merely repeats the
+        // title, which would leave the ISBN behind on a cite web.
+        return $this->has('trans-chapter') || !str_equivalent($this->get('chapter'), $this->get('title'));
     }
 
     /**

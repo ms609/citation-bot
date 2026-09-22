@@ -381,7 +381,7 @@ function check_citation(Template $template): array {
     }
 
     // R21: ISBN belongs to books, not to CS1 periodical templates.
-    if (in_array($name, PERIODICAL_TEMPLATES, true) && !$template->blank('isbn')) {
+    if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
         $violations[] = 'isbn-in-periodical: CS1 "periodical has ISBN"';
     }
 
