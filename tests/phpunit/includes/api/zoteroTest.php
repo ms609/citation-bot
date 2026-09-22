@@ -1675,7 +1675,32 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Google Books', $template->get2('website'));
         $this->assertSame('Some chapter', $template->get2('title'));
         $this->assertNull($template->get2('chapter'));
-        $this->assertSame('978-615-5211-93-5', $template->get2('isbn'));
+        // Cite web with website= cannot become a book: no ISBN.
+        $this->assertNull($template->get2('isbn'));
+    }
+
+    public function testBookMismatchDoesNotAddIsbnToAmbiguousWebCitation(): void {
+        $text = '{{cite web |title=Some book |url=https://example.com/book |website=Guide books |date=February 2000}}';
+        $template = $this->make_citation($text);
+        $zotero_data = [
+            (object) [
+                'title' => 'Some book',
+                'ISBN' => '978-0-89871-461-6',
+                'date' => 'February 2000',
+                'itemType' => 'book',
+            ],
+        ];
+
+        Zotero::process_zotero_response(
+            (string) json_encode($zotero_data),
+            $template,
+            'https://example.com/book',
+            0
+        );
+
+        $this->assertSame('cite web', $template->wikiname());
+        $this->assertSame('Guide books', $template->get2('website'));
+        $this->assertNull($template->get2('isbn'));
     }
 
     public function testBookSectionWebsiteMatchRequiresSectionTitleAgreement(): void {

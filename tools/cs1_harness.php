@@ -96,6 +96,9 @@ const NON_PERIODICAL_TEMPLATES = [
     'cite document', 'cite citeseerx', 'cite ssrn', 'cite report', 'cite press release',
 ];
 
+// CS1 periodical templates that report "periodical has ISBN" for any ISBN.
+const PERIODICAL_TEMPLATES = ['cite web', 'cite journal', 'cite magazine', 'cite news'];
+
 const ACCESS_PARAMS = [
     'url-access' => ['url', 'URL'],
     'chapter-url-access' => ['chapter-url', 'chapterurl'],
@@ -377,6 +380,17 @@ function check_citation(Template $template): array {
         }
     }
 
+    // R21: ISBN belongs to books, not to CS1 periodical templates.
+    if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
+        $violations[] = 'isbn-in-periodical: CS1 "periodical has ISBN"';
+    }
+
+    // R22: all-numeric ASIN values are rejected by CS1.
+    $asin = $template->get_without_comments_and_placeholders('asin');
+    if ($asin !== '' && preg_match('~^\d~', $asin) === 1) {
+        $violations[] = 'asin-numeric: CS1 "Check |asin= value"';
+    }
+
     return $violations;
 }
 
@@ -398,7 +412,12 @@ function build_matrix(): array {
         ['Erxleben path: work=series lands in series=', '{{cite web |title=Harness paper alpha |work=Lecture Notes in Computer Science |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
         ['Najman path: title=book title kept, work=series -> series=', '{{cite web |title=Harness book title beta |work=Lecture notes in mathematics |date=2017 |isbn=978-0-19-852011-5}}', 'pass'],
         ['No-clobber: existing series= preserved', '{{cite web |title=Harness paper gamma |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
-        ['ISBN does not force periodical cite web to book', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'pass'],
+        ['Human ISBN on chaptered cite web converts to cite book', '{{cite web |url=https://example.com/book |title=Harness book epsilon |chapter=Harness chapter |website=Harness site |isbn=978-0-306-40615-7}}', 'pass'],
+        ['Google Books volume url with website converts to book', '{{cite web |url=https://books.google.com/books?id=HarnessVolume |title=Harness book eta |website=Google Books |isbn=978-0-306-40615-7}}', 'pass'],
+        ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
+        // Input ISBNs are left in place; the bot only declines to create them.
+        ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
+        ['GAP numeric asin in input survives tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'gap'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
@@ -418,9 +437,9 @@ function build_matrix(): array {
         ['Wildcard archive-url removed', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/*/https://example.com |archive-date=2020-01-01}}', 'pass'],
 
         // --- ISBN validation (merged Tier 1 fix) ---
-        ['Valid ISBN-10 kept', '{{cite journal |title=X |journal=J |isbn=0-306-40615-2}}', 'pass'],
-        ['Valid ISBN-13 kept', '{{cite journal |title=X |journal=J |isbn=978-0-306-40615-7}}', 'pass'],
-        ['Bad ISBN-10 auto-repaired for post-2007 book', '{{cite journal |title=X |journal=J |date=2019 |isbn=0-306-40615-1}}', 'pass'],
+        ['Valid ISBN-10 kept', '{{cite book |title=X |isbn=0-306-40615-2}}', 'pass'],
+        ['Valid ISBN-13 kept', '{{cite book |title=X |isbn=978-0-306-40615-7}}', 'pass'],
+        ['Bad ISBN-10 auto-repaired for post-2007 book', '{{cite book |title=X |date=2019 |isbn=0-306-40615-1}}', 'pass'],
 
         // --- coupled-parameter consistency (bot prevents these) ---
         ['doi-broken-date removed without doi', '{{cite journal |title=X |journal=J |doi-broken-date=2020-01-01}}', 'pass'],

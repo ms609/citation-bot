@@ -1555,7 +1555,11 @@ final class Template
                 // Do not create a book-only field on an ambiguous cite web when
                 // that follow-up conversion would be unsafe.
                 if ($this->wikiname() === 'cite web' && !$this->can_auto_convert_web_to_cite_book()) {
-                    return false;
+                    // final_tidy() converts title+chapter directly, so a bad DOI
+                    // or generic work alias is not a reason to refuse the chapter.
+                    if ($this->blank_other_than_comments('title') || !$this->web_parameters_allow_book_conversion()) {
+                        return false;
+                    }
                 }
                 if ($this->wikiname() === 'citation') {
                     foreach (WORK_ALIASES as $work_alias) {
@@ -2235,6 +2239,10 @@ final class Template
                     }
                 }
                 if ($this->blank($param_name)) {
+                    if (!$this->can_add_isbn_identifier()) {
+                        report_inaction("Not adding ISBN that would trigger CS1 'periodical has ISBN': " . echoable($value));
+                        return false;
+                    }
                     $value = $this->isbn10Toisbn13($value, false);
                     if (mb_strlen($value) === 13 && mb_substr($value, 0, 6) === '978019') {
                         // Oxford
@@ -2260,8 +2268,11 @@ final class Template
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn === $possible_isbn13) {
                             return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
+                        } elseif (!$this->can_add_isbn_identifier()) {
+                            report_inaction("Not adding ASIN that cannot become an ISBN: " . echoable($value));
+                            return false;
                         } else {
-                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn, false));
+                            return $this->add('isbn', $this->isbn10ToIsbn13($possible_isbn, false));
                         }
                     } else {
                         // NOT ISBN
@@ -3591,16 +3602,38 @@ final class Template
             return true;
         }
 
+        if ($this->cite_book_conversion_will_decline()) {
+            return false;
+        }
+
+        return $this->web_parameters_allow_book_conversion();
+    }
+
+    /**
+     * True when the existing cite web parameters can be represented by cite book,
+     * ignoring the destination-independent guards (bad DOI, generic work alias)
+     * that may still decline the conversion.
+     */
+    private function web_parameters_allow_book_conversion(): bool {
         // cite book does not support issue=/number=.
         if (!$this->blank(ISSUE_ALIASES)) {
             return false;
         }
 
+        // A book-source URL overrules the website= delivery-site guard.
+        $trusted_book_source = $this->has_trusted_book_source_url();
+
         // Most work aliases identify a periodical/site.  Keep the existing
         // ISBN conversion behavior only for work= values already recognized
         // by Citation Bot as book-series metadata.
         foreach (WORK_ALIASES as $work_alias) {
-            if ($work_alias !== 'work' && !$this->blank($work_alias)) {
+            if ($work_alias === 'work') {
+                continue;
+            }
+            if ($work_alias === 'website' && $trusted_book_source) {
+                continue;
+            }
+            if (!$this->blank($work_alias)) {
                 return false;
             }
         }
@@ -3614,7 +3647,82 @@ final class Template
             }
         }
 
+        // change_name_to() also requires a website= that can become via=.
+        if ($trusted_book_source && !$this->blank('website') && !$this->blank('via') && !str_equivalent($this->get('website'), $this->get('via'))) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * True when change_name_to('cite book') would decline for reasons that do
+     * not depend on the destination template: a DOI known to be bad, or a work
+     * alias value too generic to move into a book field.
+     */
+    private function cite_book_conversion_will_decline(): bool {
+        if (bad_10_1093_doi($this->get('doi')) || mb_strpos($this->get('doi'), '10.13140') !== false) {
+            return true;
+        }
+        foreach (WORK_ALIASES as $work_alias) {
+            $worky = mb_strtolower($this->get($work_alias));
+            if (preg_match(REGEXP_PLAIN_WIKILINK, $worky, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $worky, $matches)) {
+                $worky = $matches[1];
+            }
+            if (in_array($worky, ARE_MANY_THINGS, true)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * True when url= is a known book page (Google Books volume, ScienceDirect
+     * book) rather than a site that merely hosts or describes one.
+     */
+    private function has_trusted_book_source_url(): bool {
+        $url = $this->get('url');
+        if ($url === '') {
+            return false;
+        }
+        // Google Books volume pages (query and /books/edition/ forms).
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/books/edition/[^\s/?#]~i', $url) === 1) {
+            return true;
+        }
+        if (preg_match('~^https?://(?:www\.|books\.)?google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/books(?:/about/[^\s?#]+)?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+            return true;
+        }
+        // Old-style books.google.com?id=... links.
+        if (preg_match('~^https?://books\.google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
+            return true;
+        }
+        // ScienceDirect book pages.
+        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/978\d{10}(?:[/?#]|$)~i', $url) === 1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * True when an ISBN may be added to this citation.  An ISBN on a CS1
+     * periodical template triggers "periodical has ISBN" unless the citation
+     * becomes a book template; only cite web is gated.
+     */
+    private function can_add_isbn_identifier(): bool {
+        if ($this->wikiname() !== 'cite web') {
+            return true;
+        }
+        if ($this->can_auto_convert_web_to_cite_book()) {
+            return true;
+        }
+        if (
+            $this->blank_other_than_comments('chapter') ||
+            $this->blank_other_than_comments('title')
+        ) {
+            return false;
+        }
+        // tidy_parameter('chapter') drops a chapter equal to the title.
+        return $this->has('trans-chapter') || !str_equivalent($this->get('chapter'), $this->get('title'));
     }
 
     /**
@@ -4851,7 +4959,7 @@ final class Template
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn !== $possible_isbn13) {
                             // It is an ISBN
-                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn, false));
+                            $this->rename('asin', 'isbn', $this->isbn10ToIsbn13($possible_isbn, false));
                         }
                     }
                     return;
