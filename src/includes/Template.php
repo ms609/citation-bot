@@ -2235,6 +2235,13 @@ final class Template
                     }
                 }
                 if ($this->blank($param_name)) {
+                    // An ISBN is book data: on a periodical template it would
+                    // trigger CS1 "periodical has ISBN" unless the citation
+                    // becomes a book template.
+                    if (!$this->can_add_isbn_identifier()) {
+                        report_inaction("Not adding ISBN that would trigger CS1 'periodical has ISBN': " . echoable($value));
+                        return false;
+                    }
                     $value = $this->isbn10Toisbn13($value, false);
                     if (mb_strlen($value) === 13 && mb_substr($value, 0, 6) === '978019') {
                         // Oxford
@@ -2258,8 +2265,10 @@ final class Template
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
-                        if ($possible_isbn === $possible_isbn13) {
-                            return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
+                        if ($possible_isbn === $possible_isbn13 || !$this->can_add_isbn_identifier()) {
+                            // Not an ISBN, or an ISBN that cannot be held by
+                            // this citation: keep it as the ASIN it came in as.
+                            return $this->add('asin', $possible_isbn);
                         } else {
                             return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn, false));
                         }
@@ -3618,6 +3627,23 @@ final class Template
     }
 
     /**
+     * An ISBN added to a CS1 periodical template triggers the "periodical has
+     * ISBN" maintenance message unless the citation becomes a book template.
+     * Adding is safe when the citation already qualifies for a book conversion,
+     * including a cite web with a chapter and title, which final_tidy() always
+     * converts to cite book.
+     */
+    private function can_add_isbn_identifier(): bool {
+        if ($this->wikiname() !== 'cite web') {
+            return true;
+        }
+        if ($this->can_auto_convert_web_to_cite_book()) {
+            return true;
+        }
+        return !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments('title');
+    }
+
+    /**
      * Return true only when an existing arXiv/eprint parameter is structurally
      * valid and can therefore be used as evidence for a template-type change.
      */
@@ -4849,8 +4875,8 @@ final class Template
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
-                        if ($possible_isbn !== $possible_isbn13) {
-                            // It is an ISBN
+                        if ($possible_isbn !== $possible_isbn13 && $this->can_add_isbn_identifier()) {
+                            // It is an ISBN and the citation can hold one
                             $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn, false));
                         }
                     }

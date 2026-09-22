@@ -3226,27 +3226,42 @@ final class TemplatePart2Test extends testBaseClass {
     public function testIsbnAdditionDoesNotConvertWebWithWebsite(): void {
         $text = '{{cite web |url=https://example.com/chapter |title=Some chapter |website=Google Books}}';
         $expanded = $this->make_citation($text);
-        $expanded->add_if_new('isbn', '978-615-5211-93-5');
+        // An ISBN left on a cite web that cannot become a book would make CS1
+        // report "periodical has ISBN", so the addition must be refused.
+        $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('Google Books', $expanded->get2('website'));
         $this->assertNull($expanded->get2('chapter'));
-        $this->assertSame('978-615-5211-93-5', $expanded->get2('isbn'));
+        $this->assertNull($expanded->get2('isbn'));
     }
 
     public function testIsbnAdditionDoesNotConvertWebWithJournal(): void {
         $text = '{{cite web |url=https://example.com/article |title=Some article |journal=Some Journal}}';
         $expanded = $this->make_citation($text);
-        $expanded->add_if_new('isbn', '978-615-5211-93-5');
+        $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('Some Journal', $expanded->get2('journal'));
+        $this->assertNull($expanded->get2('isbn'));
     }
 
     public function testIsbnAdditionDoesNotConvertWebWithIssue(): void {
         $text = '{{cite web |url=https://example.com/article |title=Some article |issue=4}}';
         $expanded = $this->make_citation($text);
-        $expanded->add_if_new('isbn', '978-615-5211-93-5');
+        $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('4', $expanded->get2('issue'));
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testIsbnAdditionRefusedForReportedAmbiguousWebCitation(): void {
+        // Reported case: "periodical has ISBN" introduced when an ISBN was
+        // added to a cite web whose website= identifies a delivery site.
+        $text = '{{cite web |title=Iterative solution of nonlinear equations in several variables |url=https://dl.acm.org/doi/abs/10.5555/335947 |website=Guide books}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-89871-461-6'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+        $this->assertSame('Guide books', $expanded->get2('website'));
     }
 
     public function testIsbnAdditionStillConvertsUnambiguousWebCitation(): void {
@@ -3297,6 +3312,38 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($expanded->get2('website'));
         $this->assertSame('Google Books', $expanded->get2('via'));
         $this->assertSame('Actual Chapter', $expanded->get2('chapter'));
+    }
+
+    public function testIsbnAdditionAllowedWhenChapterWillConvertWebToBook(): void {
+        // final_tidy() converts a cite web with both title= and chapter= to
+        // cite book, so the ISBN can be held there and must not be refused.
+        $text = '{{cite web |url=https://example.com |title=Some book |chapter=Actual Chapter |website=Google Books}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('isbn', '978-615-5211-93-5'));
+        $expanded->final_tidy();
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('978-615-5211-93-5', $expanded->get2('isbn'));
+        $this->assertSame('Google Books', $expanded->get2('via'));
+    }
+
+    public function testAsinTidyDoesNotCreateIsbnOnAmbiguousWebCitation(): void {
+        // A 10-digit ASIN that looks like an ISBN-10 must not be renamed to
+        // isbn= while the citation is a cite web that cannot become a book.
+        $text = '{{cite web |url=https://example.com |title=Some book |website=Amazon |asin=0306406152}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('asin');
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+        $this->assertSame('0306406152', $expanded->get2('asin'));
+    }
+
+    public function testAsinAdditionFallsBackToAsinOnAmbiguousWebCitation(): void {
+        $text = '{{cite web |url=https://example.com |title=Some book |website=Amazon}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('asin', '0306406152'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+        $this->assertSame('0306406152', $expanded->get2('asin'));
     }
 
     public function testDeclinedAmazonConversionKeepsUrl(): void {
