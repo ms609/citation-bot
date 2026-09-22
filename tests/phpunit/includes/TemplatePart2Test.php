@@ -3375,6 +3375,37 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($expanded->get2('isbn'));
     }
 
+    public function testIsbnAdditionRefusedWhenResearchGateDoiWouldBlockConversion(): void {
+        $text = '{{cite web |url=https://example.com |title=Some book |doi=10.13140/RG.2.2.12345}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertNull($expanded->get2('isbn'));
+    }
+
+    public function testChapterAdditionAllowedWhenFinalTidyWillConvert(): void {
+        // A bad DOI blocks change_name_to() but final_tidy() converts a cite
+        // web with title= and chapter= directly, so the chapter is still safe.
+        $text = '{{cite web |url=https://example.com |title=Some book |doi=10.1093/gmo/bad}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('chapter', 'Actual Chapter'));
+        $expanded->final_tidy();
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('Actual Chapter', $expanded->get2('chapter'));
+        $this->assertSame('Some book', $expanded->get2('title'));
+    }
+
+    public function testChapterAdditionAllowedWhenGenericWorkAliasBlocksConversion(): void {
+        // Trusted Google Books URL with website=Audible (ARE_MANY_THINGS):
+        // the structural path is fine, so final_tidy() can still convert.
+        $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Audible}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('chapter', 'Actual Chapter'));
+        $expanded->final_tidy();
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('Actual Chapter', $expanded->get2('chapter'));
+    }
+
     public function testChapterAdditionDoesNotCreateAmbiguousBookCitation(): void {
         $text = '{{cite web |url=https://example.com/chapter |title=Landing page |website=Actual Book Title}}';
         $expanded = $this->make_citation($text);

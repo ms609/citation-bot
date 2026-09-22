@@ -1555,7 +1555,13 @@ final class Template
                 // Do not create a book-only field on an ambiguous cite web when
                 // that follow-up conversion would be unsafe.
                 if ($this->wikiname() === 'cite web' && !$this->can_auto_convert_web_to_cite_book()) {
-                    return false;
+                    // final_tidy() converts a cite web with both title= and
+                    // chapter= directly, bypassing change_name_to(), so a
+                    // destination-independent decline (bad DOI, ARE_MANY_THINGS
+                    // alias) is not by itself a reason to refuse the chapter.
+                    if ($this->blank_other_than_comments('title') || !$this->web_parameters_allow_book_conversion()) {
+                        return false;
+                    }
                 }
                 if ($this->wikiname() === 'citation') {
                     foreach (WORK_ALIASES as $work_alias) {
@@ -3606,6 +3612,17 @@ final class Template
             return false;
         }
 
+        return $this->web_parameters_allow_book_conversion();
+    }
+
+    /**
+     * True when the existing cite web parameters can be represented by cite book
+     * without guessing or dropping data.  Callers that can fall back to the
+     * direct final_tidy() chapter conversion should use this instead of
+     * can_auto_convert_web_to_cite_book() when only the destination-independent
+     * guards (bad DOI, ARE_MANY_THINGS) would decline.
+     */
+    private function web_parameters_allow_book_conversion(): bool {
         // cite book does not support issue=/number=.
         if (!$this->blank(ISSUE_ALIASES)) {
             return false;
@@ -3694,8 +3711,8 @@ final class Template
         if (preg_match('~^https?://books\.google\.(?:[a-z]{2,3}\.)?[a-z]{2,3}/?\?[^\s#]*\bid=[\w-]+~i', $url) === 1) {
             return true;
         }
-        // ScienceDirect book pages: sciencedirect.com/book/978... (or 979...)
-        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/97[89]\d{10}(?:[/?#]|$)~i', $url) === 1) {
+        // ScienceDirect book pages: sciencedirect.com/book/978...
+        if (preg_match('~^https?://(?:www\.)?sciencedirect\.com/book/978\d{10}(?:[/?#]|$)~i', $url) === 1) {
             return true;
         }
         return false;
