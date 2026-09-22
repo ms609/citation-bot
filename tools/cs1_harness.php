@@ -385,6 +385,12 @@ function check_citation(Template $template): array {
         $violations[] = 'isbn-in-periodical: CS1 "periodical has ISBN"';
     }
 
+    // R22: all-numeric ASIN values are rejected by CS1.
+    $asin = $template->get_without_comments_and_placeholders('asin');
+    if ($asin !== '' && preg_match('~^\d~', $asin) === 1) {
+        $violations[] = 'asin-numeric: CS1 "Check |asin= value"';
+    }
+
     return $violations;
 }
 
@@ -411,6 +417,7 @@ function build_matrix(): array {
         ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
         // Input ISBNs are left in place; the bot only declines to create them.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
+        ['GAP numeric asin in input survives tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'gap'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],

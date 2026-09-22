@@ -3461,36 +3461,27 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('978-615-5211-93-5', $expanded->get2('isbn'));
     }
 
-    public function testAsinTidyDoesNotCreateIsbnOnAmbiguousWebCitation(): void {
-        // A 10-digit ASIN must stay an ASIN on this cite web.
-        $text = '{{cite web |url=https://example.com |title=Some book |website=Amazon |asin=0306406152}}';
-        $expanded = $this->make_citation($text);
-        $expanded->tidy_parameter('asin');
-        $this->assertSame('cite web', $expanded->wikiname());
-        $this->assertNull($expanded->get2('isbn'));
-        $this->assertSame('0306406152', $expanded->get2('asin'));
-    }
-
-    public function testAsinAdditionFallsBackToAsinOnAmbiguousWebCitation(): void {
+    public function testAsinAdditionRefusedOnAmbiguousWebCitation(): void {
+        // All-numeric asin= is a CS1 error; the ISBN form cannot be held here.
         $text = '{{cite web |url=https://example.com |title=Some book |website=Amazon}}';
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('asin', '0306406152'));
+        $this->assertFalse($expanded->add_if_new('asin', '0306406152'));
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertNull($expanded->get2('isbn'));
-        $this->assertSame('0306406152', $expanded->get2('asin'));
+        $this->assertNull($expanded->get2('asin'));
     }
 
     public function testDeclinedAmazonConversionKeepsUrl(): void {
         // A cite web with both website= and a conflicting via= declines the
         // book conversion; the Amazon URL must then remain in place, since
-        // cite web requires a url=. (The URL-to-ASIN/ISBN identifier handling
-        // is existing behavior and not what this test is about.)
+        // cite web requires a url=.
         $text = '{{cite web |title=Some book |website=Amazon |via=Goodreads |url=https://www.amazon.com/dp/1234567890}}';
         $expanded = $this->make_citation($text);
         $expanded->get_identifiers_from_url();
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertNotNull($expanded->get2('url'));
-        $this->assertTrue($expanded->has('asin') || $expanded->has('isbn'));
+        $this->assertNull($expanded->get2('asin'));
+        $this->assertNull($expanded->get2('isbn'));
         $this->assertSame('Amazon', $expanded->get2('website'));
         $this->assertSame('Goodreads', $expanded->get2('via'));
     }

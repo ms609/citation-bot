@@ -2266,11 +2266,13 @@ final class Template
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
-                        if ($possible_isbn === $possible_isbn13 || !$this->can_add_isbn_identifier()) {
-                            // Add as the ASIN it came in as.
-                            return $this->add('asin', $possible_isbn);
+                        if ($possible_isbn === $possible_isbn13) {
+                            return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
+                        } elseif (!$this->can_add_isbn_identifier()) {
+                            report_inaction("Not adding ASIN that cannot become an ISBN: " . echoable($value));
+                            return false;
                         } else {
-                            return $this->add('isbn', $this->isbn10Toisbn13($possible_isbn, false));
+                            return $this->add('isbn', $this->isbn10ToIsbn13($possible_isbn, false));
                         }
                     } else {
                         // NOT ISBN
@@ -4955,9 +4957,9 @@ final class Template
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
-                        if ($possible_isbn !== $possible_isbn13 && $this->can_add_isbn_identifier()) {
-                            // It is an ISBN that the citation can hold
-                            $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn, false));
+                        if ($possible_isbn !== $possible_isbn13) {
+                            // It is an ISBN
+                            $this->rename('asin', 'isbn', $this->isbn10ToIsbn13($possible_isbn, false));
                         }
                     }
                     return;
