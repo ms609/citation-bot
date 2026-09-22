@@ -409,8 +409,7 @@ function build_matrix(): array {
         ['Human ISBN on chaptered cite web converts to cite book', '{{cite web |url=https://example.com/book |title=Harness book epsilon |chapter=Harness chapter |website=Harness site |isbn=978-0-306-40615-7}}', 'pass'],
         ['Google Books volume url with website converts to book', '{{cite web |url=https://books.google.com/books?id=HarnessVolume |title=Harness book eta |website=Google Books |isbn=978-0-306-40615-7}}', 'pass'],
         ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
-        // An ISBN already present in the wikitext is not removed or converted:
-        // the bot only declines to create the combination itself.
+        // Input ISBNs are left in place; the bot only declines to create them.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---

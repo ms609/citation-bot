@@ -1037,8 +1037,7 @@ final class Zotero {
             $template->rename('title', 'chapter');
             $template->rename('website', 'title');
             $template->change_name_to('cite book');
-            // add_if_new() declined this ISBN while the template was still an
-            // ambiguous cite web; the corroborated conversion above can hold it.
+            // add_if_new() refused this ISBN before the conversion above.
             if (isset($result->ISBN) && $template->blank('isbn')) {
                 $template->add_if_new('isbn', $result->ISBN);
             }

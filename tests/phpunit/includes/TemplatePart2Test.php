@@ -3226,8 +3226,7 @@ final class TemplatePart2Test extends testBaseClass {
     public function testIsbnAdditionDoesNotConvertWebWithWebsite(): void {
         $text = '{{cite web |url=https://example.com/chapter |title=Some chapter |website=Google Books}}';
         $expanded = $this->make_citation($text);
-        // An ISBN left on a cite web that cannot become a book would make CS1
-        // report "periodical has ISBN", so the addition must be refused.
+        // A stray ISBN on this cite web would trigger "periodical has ISBN".
         $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
         $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('Google Books', $expanded->get2('website'));
@@ -3254,8 +3253,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionRefusedForReportedAmbiguousWebCitation(): void {
-        // Reported case: "periodical has ISBN" introduced when an ISBN was
-        // added to a cite web whose website= identifies a delivery site.
+        // Reported case: ISBN added to a cite web with website=Guide books.
         $text = '{{cite web |title=Iterative solution of nonlinear equations in several variables |url=https://dl.acm.org/doi/abs/10.5555/335947 |website=Guide books}}';
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('isbn', '978-0-89871-461-6'));
@@ -3283,8 +3281,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionConvertsTrustedGoogleBooksWebCitation(): void {
-        // A Google Books volume page is the book itself, so the website= guard
-        // must not stop the ISBN conversion; website= becomes via=.
+        // A Google Books volume page is the book itself: website= becomes via=.
         $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Google Books}}';
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('isbn', '978-0-393-30700-9'));
@@ -3356,8 +3353,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionRefusedForTrustedBookUrlWithGenericWorkAlias(): void {
-        // Audible is in ARE_MANY_THINGS, so change_name_to() would decline the
-        // conversion and strand the ISBN.
+        // Audible is in ARE_MANY_THINGS: change_name_to() would decline.
         $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Audible}}';
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
@@ -3366,8 +3362,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionRefusedWhenBadDoiWouldBlockConversion(): void {
-        // A bad 10.1093 DOI makes change_name_to() decline, so the ISBN must
-        // not be added even when the rest of the shape looks convertible.
+        // A bad 10.1093 DOI makes change_name_to() decline.
         $text = '{{cite web |url=https://example.com |title=Some book |doi=10.1093/gmo/bad}}';
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('isbn', '978-0-393-30700-9'));
@@ -3384,8 +3379,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testChapterAdditionAllowedWhenFinalTidyWillConvert(): void {
-        // A bad DOI blocks change_name_to() but final_tidy() converts a cite
-        // web with title= and chapter= directly, so the chapter is still safe.
+        // final_tidy() converts title+chapter directly, despite the bad DOI.
         $text = '{{cite web |url=https://example.com |title=Some book |doi=10.1093/gmo/bad}}';
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('chapter', 'Actual Chapter'));
@@ -3396,8 +3390,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testChapterAdditionAllowedWhenGenericWorkAliasBlocksConversion(): void {
-        // Trusted Google Books URL with website=Audible (ARE_MANY_THINGS):
-        // the structural path is fine, so final_tidy() can still convert.
+        // Trusted GB URL + website=Audible: final_tidy() still converts.
         $text = '{{cite web |url=https://books.google.com/books?id=SjpSkzjIzfsC |title=Some book |website=Audible}}';
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('chapter', 'Actual Chapter'));
@@ -3439,8 +3432,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionAllowedWhenChapterWillConvertWebToBook(): void {
-        // final_tidy() converts a cite web with both title= and chapter= to
-        // cite book, so the ISBN can be held there and must not be refused.
+        // final_tidy() converts title+chapter, so the ISBN can be held.
         $text = '{{cite web |url=https://example.com |title=Some book |chapter=Actual Chapter |website=Google Books}}';
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('isbn', '978-615-5211-93-5'));
@@ -3451,8 +3443,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionRefusedWhenChapterRepeatsTitle(): void {
-        // tidy_parameter('chapter') drops a chapter equal to the title, so the
-        // cite web never converts to cite book and the ISBN must not be added.
+        // tidy_parameter('chapter') drops a chapter equal to the title.
         $text = '{{cite web |url=https://example.com |title=Some book |chapter=Some book |website=Google Books}}';
         $expanded = $this->make_citation($text);
         $this->assertFalse($expanded->add_if_new('isbn', '978-615-5211-93-5'));
@@ -3462,8 +3453,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testIsbnAdditionStillAllowedOnCiteJournalThatConvertsToBook(): void {
-        // Scope boundary: only cite web is gated here; a cite journal without
-        // a journal= still converts to cite book and keeps the ISBN.
+        // Scope boundary: only cite web is gated; this still converts.
         $text = '{{cite journal |title=Some book}}';
         $expanded = $this->make_citation($text);
         $this->assertTrue($expanded->add_if_new('isbn', '978-615-5211-93-5'));
@@ -3472,8 +3462,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testAsinTidyDoesNotCreateIsbnOnAmbiguousWebCitation(): void {
-        // A 10-digit ASIN that looks like an ISBN-10 must not be renamed to
-        // isbn= while the citation is a cite web that cannot become a book.
+        // A 10-digit ASIN must stay an ASIN on this cite web.
         $text = '{{cite web |url=https://example.com |title=Some book |website=Amazon |asin=0306406152}}';
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('asin');

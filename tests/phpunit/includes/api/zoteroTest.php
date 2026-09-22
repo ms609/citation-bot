@@ -1675,8 +1675,7 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Google Books', $template->get2('website'));
         $this->assertSame('Some chapter', $template->get2('title'));
         $this->assertNull($template->get2('chapter'));
-        // The ISBN must not be added: cite web with website= cannot become a
-        // book citation, so CS1 would report "periodical has ISBN".
+        // Cite web with website= cannot become a book: no ISBN.
         $this->assertNull($template->get2('isbn'));
     }
 
