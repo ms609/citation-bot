@@ -528,7 +528,6 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         ] as $required_environment_setting) {
             $this->assertStringContainsString($required_environment_setting, $environment_source);
         }
-
     }
 
     public function testGitpullUsesAdvisoryLockAndPropagatesGitFailures(): void {
