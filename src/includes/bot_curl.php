@@ -34,6 +34,28 @@ function bot_curl_ip_is_public(string $ip): bool {
     if ($ip === false) {
         return false;
     }
+
+    /*
+     * RFC 6052's well-known NAT64 prefix 64:ff9b::/96 embeds the IPv4
+     * destination in the final 32 bits. FILTER_FLAG_GLOBAL_RANGE classifies
+     * the IPv6 prefix itself as global, which can hide a translated private,
+     * loopback, link-local, documentation, or multicast IPv4 destination.
+     *
+     * Apply the normal IPv4 policy to the embedded address before allowing
+     * the connection. Public IPv4 destinations remain usable through NAT64.
+     */
+    if (
+        mb_strlen($packed, '8bit') === 16 &&
+        mb_substr($packed, 0, 12, '8bit') ===
+            "\x00\x64\xff\x9b" . str_repeat("\0", 8)
+    ) {
+        $embedded_ipv4 = inet_ntop(
+            mb_substr($packed, 12, 4, '8bit')
+        );
+        return $embedded_ipv4 !== false &&
+            bot_curl_ip_is_public($embedded_ipv4);
+    }
+
     /*
      * Reject non-global special-purpose ranges such as:
      *   10.0.0.0/8

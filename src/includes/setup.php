@@ -198,6 +198,26 @@ function reject_setup_request(string $message): never {
     exit(1);
 }
 
+/**
+ * Read an explicit HTTP request parameter without consulting cookies.
+ *
+ * POST intentionally takes precedence over GET, matching Citation Bot's normal
+ * form-submission behavior while avoiding PHP's configurable $_REQUEST merge.
+ */
+function setup_request_value(string $name): mixed {
+    if (isset($_POST[$name])) {
+        return $_POST[$name];
+    }
+    if (isset($_GET[$name])) {
+        return $_GET[$name];
+    }
+    return null;
+}
+
+function setup_request_has(string $name): bool {
+    return isset($_POST[$name]) || isset($_GET[$name]);
+}
+
 if (file_exists(dirname(__DIR__, 2) . '/env.php')) {
     // Set the environment variables with putenv(). Remember to set permissions (not readable!)
     ob_start();
@@ -219,11 +239,12 @@ enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? 
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
 // Should add all these to index.php web interface
 // Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
-if (isset($_REQUEST["wiki_base"])) {
-    if (!is_string($_REQUEST["wiki_base"])) {
+$requested_wiki_base = setup_request_value('wiki_base');
+if ($requested_wiki_base !== null) {
+    if (!is_string($requested_wiki_base)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
-    $wiki_base = mb_trim($_REQUEST["wiki_base"]);
+    $wiki_base = mb_trim($requested_wiki_base);
     if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
@@ -242,6 +263,7 @@ if ($wiki_base === 'mdwiki') {
     define('WIKI_BASE', $wiki_base);
 }
 unset($wiki_base);
+unset($requested_wiki_base);
 
 require_once __DIR__ . '/constants.php';
 
@@ -252,9 +274,12 @@ define('CI', (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPU
 define('GITHUB_EVENT_NAME', (string) getenv('GITHUB_EVENT_NAME'));
 define('TRUST_DOI_GOOD', true); // TODO: this is a bit too trusting
 
-if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
+$setup_request_page = setup_request_value('page');
+$setup_request_page = is_string($setup_request_page) ? $setup_request_page : '';
+if ($setup_request_page . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
     define('EDIT_AS_USER', true);
 }
+unset($setup_request_page);
 
 if (CI || isset($argv)) {
     define("HTML_OUTPUT", false);
@@ -269,7 +294,7 @@ if (setup_is_gadget_request()) {
     define("FLUSHING_OKAY", false);
 }
 
-if (isset($_REQUEST["slow"]) || CI || (isset($argv) && in_array('--slow', $argv, true))) {
+if (setup_request_has('slow') || CI || (isset($argv) && in_array('--slow', $argv, true))) {
     define("SLOW_MODE", true);
 } else {
     define("SLOW_MODE", false);
@@ -284,9 +309,11 @@ if (isset($argv) && in_array('--savetofiles', $argv, true)) {
 ini_set("memory_limit", "3648M"); // Use Megabytes to match memory usage check code
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
-if ((isset($_REQUEST["pcre"]) && $_REQUEST["pcre"] !== '0') || setup_is_gadget_request()) { // Willing to take slight performance penalty on Gadget
+$requested_pcre = setup_request_value('pcre');
+if (($requested_pcre !== null && $requested_pcre !== '0') || setup_is_gadget_request()) { // Willing to take slight performance penalty on Gadget
     ini_set("pcre.jit", "0");
 }
+unset($requested_pcre);
 
 if (isset($_POST['PHP_ADSABSAPIKEY'])) {
     if (!is_string($_POST['PHP_ADSABSAPIKEY'])) {
@@ -341,15 +368,19 @@ unset($nlm_email, $nlm_apikey, $nlm_tool);
 function check_blocked(): void {
     global $argv;
     if (!WikipediaBot::is_valid_user('Citation_bot')) {
-        $the_page = (string) @$_REQUEST["page"] . (string) @$argv[1];
+        $requested_page = setup_request_value('page');
+        $the_page =
+            (is_string($requested_page) ? $requested_page : '') .
+            (string) @$argv[1];
+        $ignore_block_requested = setup_request_has('ignore_block');
         if (mb_strpos($the_page, '|') === false) {
             $the_user = WikipediaBot::get_last_user();
             if ($the_user !== '' && mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
                 define('EDIT_AS_USER', true);
-                unset($_REQUEST["ignore_block"]);
+                $ignore_block_requested = false;
             }
         }
-        if (isset($_REQUEST["ignore_block"])) {
+        if ($ignore_block_requested) {
             report_warning("Running bot anyway, but it will fail to write.");
         } elseif (defined('EDIT_AS_USER')) {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction - so BE CAREFUL.</h1></div><pre>';
@@ -357,6 +388,7 @@ function check_blocked(): void {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
             exit(0);
         }
+        unset($requested_page, $the_page, $ignore_block_requested);
     }
 }
 
