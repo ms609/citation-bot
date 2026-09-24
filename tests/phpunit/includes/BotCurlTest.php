@@ -276,4 +276,5 @@ final class BotCurlTest extends testBaseClass {
             bot_curl_progress_with_gate_heartbeat($ch, 0, 1001, 0, 0)
         );
     }
+    CONFLICT
 }
