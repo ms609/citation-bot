@@ -426,8 +426,9 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         }
 
         $this->assertStringNotContainsString('shell_exec(', $source);
+        $this->assertStringContainsString("'credential.helper='", $source);
         $this->assertStringContainsString(
-            "\$command = ['/usr/bin/git', '-C', dirname(__DIR__), ...\$arguments];",
+            "dirname(__DIR__),\n        ...\$arguments,",
             $source
         );
         $this->assertStringContainsString('proc_open(', $source);
@@ -453,6 +454,9 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         );
 
         foreach ([
+            'HOME',
+            'XDG_CONFIG_HOME',
+            'GITHUB_PAT',
             'DEPLOY_TOKEN',
             'PHP_ADSABSAPIKEY',
             'PHP_OAUTH_CONSUMER_TOKEN',
@@ -464,9 +468,19 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             'PHP_S2APIKEY',
             'NLM_APIKEY',
             'NLM_EMAIL',
-        ] as $secret_name) {
-            $this->assertStringNotContainsString($secret_name, $environment_source);
+        ] as $forbidden_environment_name) {
+            $this->assertStringNotContainsString($forbidden_environment_name, $environment_source);
         }
+
+        foreach ([
+            "'GIT_CONFIG_NOSYSTEM' => '1'",
+            "'GIT_CONFIG_GLOBAL' => '/dev/null'",
+            "'GIT_TERMINAL_PROMPT' => '0'",
+            "'GIT_ASKPASS' => '/bin/false'",
+        ] as $required_environment_setting) {
+            $this->assertStringContainsString($required_environment_setting, $environment_source);
+        }
+
     }
 
     public function testGitpullUsesAdvisoryLockAndPropagatesGitFailures(): void {
@@ -485,6 +499,14 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             'gitpull_page($git_hub, false, $git_status);',
             $gitpull
         );
+        $this->assertStringContainsString(
+            "gitpull_run_git(['remote', 'get-url', '--all', 'origin'])",
+            $gitpull
+        );
+        $this->assertStringContainsString('GITPULL_FETCH_URL', $gitpull);
+        $this->assertStringContainsString("'--no-tags'", $gitpull);
+        $this->assertStringContainsString("'--no-recurse-submodules'", $gitpull);
+        $this->assertStringNotContainsString("['fetch', '--all']", $gitpull);
 
         $this->assertStringContainsString(
             'flock($git_pull_lock_handle, LOCK_SH | LOCK_NB)',

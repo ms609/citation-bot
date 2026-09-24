@@ -24,6 +24,11 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 const LOCK_FILE = __DIR__ . '/git_pull.lock';
 const GITPULL_CSRF_COOKIE = 'citation_bot_gitpull_csrf';
 const GITPULL_CSRF_TTL = 600;
+const GITPULL_FETCH_URL = 'https://github.com/ms609/citation-bot.git';
+const GITPULL_ALLOWED_ORIGIN_URLS = [
+    GITPULL_FETCH_URL,
+    'https://github.com/ms609/citation-bot',
+];
 
 /**
  * Deployment credentials are machine-generated 256-bit values represented as
@@ -32,6 +37,14 @@ const GITPULL_CSRF_TTL = 600;
  */
 function gitpull_valid_deploy_token(string $token): bool {
     return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
+}
+
+function gitpull_origin_is_expected(string $origin): bool {
+    return in_array(
+        mb_trim($origin),
+        GITPULL_ALLOWED_ORIGIN_URLS,
+        true
+    );
 }
 
 /** @return resource|false */
@@ -159,9 +172,13 @@ function gitpull_browser_form(string $message, int $status): never {
 function gitpull_process_environment(): array {
     $environment = [
         'PATH' => '/usr/bin:/bin',
+        'GIT_CONFIG_NOSYSTEM' => '1',
+        'GIT_CONFIG_GLOBAL' => '/dev/null',
+        'GIT_TERMINAL_PROMPT' => '0',
+        'GIT_ASKPASS' => '/bin/false',
     ];
 
-    foreach (['HOME', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR', 'XDG_CONFIG_HOME', 'GITHUB_PAT'] as $name) {
+    foreach (['LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR'] as $name) {
         $value = getenv($name);
         if (is_string($value) && $value !== '') {
             $environment[$name] = $value;
@@ -178,7 +195,14 @@ function gitpull_process_environment(): array {
  * @return array{output: string, status: int}
  */
 function gitpull_run_git(array $arguments): array {
-    $command = ['/usr/bin/git', '-C', dirname(__DIR__), ...$arguments];
+    $command = [
+        '/usr/bin/git',
+        '-c',
+        'credential.helper=',
+        '-C',
+        dirname(__DIR__),
+        ...$arguments,
+    ];
     $output_stream = tmpfile();
     if (!is_resource($output_stream)) {
         return ['output' => 'Unable to create Git command output stream.', 'status' => 1];
@@ -303,29 +327,52 @@ if (!@flock($lockHandle, LOCK_EX | LOCK_NB)) {
 
 $git_status = 200;
 try {
-    // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
-    $fetch = gitpull_run_git(['fetch', '--all']);
-    $git_hub = $fetch['output'];
-    if ($fetch['status'] !== 0) {
+    /*
+     * Validate the configured fetch target before contacting the network.
+     * `git remote get-url` also applies Git's url.*.insteadOf rewriting, so a
+     * local rewrite away from the expected repository fails this check.
+     */
+    $origin = gitpull_run_git(['remote', 'get-url', '--all', 'origin']);
+    if (
+        $origin['status'] !== 0 ||
+        !gitpull_origin_is_expected($origin['output'])
+    ) {
         $git_status = 500;
-        $git_hub =
-            'git fetch --all failed with exit status ' .
-            (string) $fetch['status'] .
-            ".\n" .
-            $git_hub;
+        $git_hub = 'Deployment aborted: repository origin is not the expected Citation Bot repository.';
     } else {
-        $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
-        if ($reset['status'] !== 0) {
+        // gitpull_page() escapes output with htmlspecialchars, so keep raw here.
+        // Fetch one branch from one canonical HTTPS URL. Do not contact other
+        // configured remotes, tags, or submodules.
+        $fetch = gitpull_run_git([
+            'fetch',
+            '--no-tags',
+            '--no-recurse-submodules',
+            GITPULL_FETCH_URL,
+            '+refs/heads/master:refs/remotes/origin/master',
+        ]);
+        $git_hub = $fetch['output'];
+        if ($fetch['status'] !== 0) {
             $git_status = 500;
-            $git_hub .=
-                'git reset --hard origin/master failed with exit status ' .
-                (string) $reset['status'] .
-                ".\n";
+            $git_hub =
+                'git fetch of Citation Bot master failed with exit status ' .
+                (string) $fetch['status'] .
+                ".\n" .
+                $git_hub;
+        } else {
+            $reset = gitpull_run_git(['reset', '--hard', 'origin/master']);
+            if ($reset['status'] !== 0) {
+                $git_status = 500;
+                $git_hub .=
+                    'git reset --hard origin/master failed with exit status ' .
+                    (string) $reset['status'] .
+                    ".\n";
+            }
+            $git_hub .= $reset['output'];
+            unset($reset);
         }
-        $git_hub .= $reset['output'];
-        unset($reset);
+        unset($fetch);
     }
-    unset($fetch);
+    unset($origin);
 } finally {
     @flock($lockHandle, LOCK_UN);
     @fclose($lockHandle);
