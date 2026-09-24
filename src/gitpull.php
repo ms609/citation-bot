@@ -159,15 +159,11 @@ function gitpull_browser_form(string $message, int $status): never {
 function gitpull_process_environment(): array {
     $environment = [
         'PATH' => '/usr/bin:/bin',
+        'LC_CTYPE' => 'en_US.UTF-8',
+        'LC_ALL' => 'en_US.UTF-8',
+        'LANG' => 'en_US.UTF-8',
+        'TMPDIR' => '/tmp',
     ];
-
-    foreach (['HOME', 'LANG', 'LC_ALL', 'LC_CTYPE', 'TMPDIR', 'XDG_CONFIG_HOME', 'GITHUB_PAT'] as $name) {
-        $value = getenv($name);
-        if (is_string($value) && $value !== '') {
-            $environment[$name] = $value;
-        }
-    }
-
     return $environment;
 }
 
