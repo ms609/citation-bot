@@ -63,10 +63,11 @@ function request_rate_limit_client_bucket(
      * Keep the raw address out of filenames/log-visible bucket names. The
      * digest is an opaque rate-limit identifier, not an anonymization boundary.
      */
-    return 'client-' . substr(
+    return 'client-' . mb_substr(
         hash('sha256', $bucket . "\0" . $canonical_address),
         0,
-        32
+        32,
+        '8bit',
     );
 }
 
