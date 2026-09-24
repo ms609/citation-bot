@@ -152,6 +152,15 @@ final class BotCurlTest extends testBaseClass {
         $this->assertFalse(bot_curl_ip_is_public('64:ff9b:1:ffff:ffff:ffff:ffff:ffff'));
     }
 
+    public function testIpv6WellKnownNat64PrefixClassifiesEmbeddedIpv4(): void {
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::7f00:1'));   // 127.0.0.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a00:1'));    // 10.0.0.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a9fe:a9fe')); // 169.254.169.254
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::c000:201')); // 192.0.2.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::e000:1'));   // 224.0.0.1
+        $this->assertTrue(bot_curl_ip_is_public('64:ff9b::808:808'));   // 8.8.8.8
+    }
+
     public function testEvenMoreRejectedIP1(): void {
         $this->assertFalse(bot_curl_ip_is_public('0.0.0.0'));
     }
@@ -276,5 +285,13 @@ final class BotCurlTest extends testBaseClass {
             bot_curl_progress_with_gate_heartbeat($ch, 0, 1001, 0, 0)
         );
     }
-    CONFLICT
+
+    public function testIpv6WellKnownNat64PrefixClassifiesEmbeddedIpv4(): void {
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::7f00:1'));   // 127.0.0.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a00:1'));    // 10.0.0.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a9fe:a9fe')); // 169.254.169.254
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::c000:201')); // 192.0.2.1
+        $this->assertFalse(bot_curl_ip_is_public('64:ff9b::e000:1'));   // 224.0.0.1
+        $this->assertTrue(bot_curl_ip_is_public('64:ff9b::808:808'));   // 8.8.8.8
+    }
 }
