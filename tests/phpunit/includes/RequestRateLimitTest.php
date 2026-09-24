@@ -88,6 +88,12 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
             '2001:4860:4860:0000:0000:0000:0000:8888'
         );
 
+        $this->assertIsString($compressed);
+        $this->assertIsString($expanded);
+        if (!is_string($compressed) || !is_string($expanded)) {
+            throw new RuntimeException('Expected public IP addresses to produce client buckets.');
+        }
+
         $this->assertSame($compressed, $expanded);
         $this->assertMatchesRegularExpression(
             '~\Aclient-[a-f0-9]{32}\z~D',
