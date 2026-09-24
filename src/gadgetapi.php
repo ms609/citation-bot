@@ -23,10 +23,13 @@ try {
 
     [$originalText, $editSummary] = gadget_api_validate_request($_POST);
 
-    $retry_after = request_rate_limit_consume(
+    $retry_after = request_rate_limit_consume_layered(
         'gadgetapi',
         GADGET_API_RATE_LIMIT_CAPACITY,
-        GADGET_API_RATE_LIMIT_REFILL_PER_SECOND
+        GADGET_API_RATE_LIMIT_REFILL_PER_SECOND,
+        GADGET_API_CLIENT_RATE_LIMIT_CAPACITY,
+        GADGET_API_CLIENT_RATE_LIMIT_REFILL_PER_SECOND,
+        is_string($_SERVER['REMOTE_ADDR'] ?? null) ? $_SERVER['REMOTE_ADDR'] : null
     );
     if ($retry_after !== null) {
         @header('Retry-After: ' . $retry_after);

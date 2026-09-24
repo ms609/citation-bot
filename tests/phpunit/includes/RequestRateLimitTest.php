@@ -78,6 +78,117 @@ final class RequestRateLimitTest extends PHPUnit\Framework\TestCase {
         );
     }
 
+    public function testClientBucketCanonicalizesAndHashesRemoteAddress(): void {
+        $compressed = request_rate_limit_client_bucket(
+            'gadgetapi',
+            '2001:4860:4860::8888'
+        );
+        $expanded = request_rate_limit_client_bucket(
+            'gadgetapi',
+            '2001:4860:4860:0000:0000:0000:0000:8888'
+        );
+
+        $this->assertSame($compressed, $expanded);
+        $this->assertMatchesRegularExpression(
+            '~\Aclient-[a-f0-9]{32}\z~D',
+            $compressed
+        );
+        $this->assertStringNotContainsString('2001', $compressed);
+        $this->assertNotSame(
+            $compressed,
+            request_rate_limit_client_bucket(
+                'generate-template',
+                '2001:4860:4860::8888'
+            )
+        );
+    }
+
+    public function testNonDirectClientAddressesSkipClientBucket(): void {
+        $this->assertNull(request_rate_limit_client_bucket('gadgetapi', null));
+        $this->assertNull(request_rate_limit_client_bucket('gadgetapi', ''));
+        $this->assertNull(
+            request_rate_limit_client_bucket('gadgetapi', 'not-an-ip-address')
+        );
+        $this->assertNull(request_rate_limit_client_bucket('gadgetapi', '127.0.0.1'));
+        $this->assertNull(request_rate_limit_client_bucket('gadgetapi', '10.0.0.1'));
+    }
+
+    public function testLayeredLimitPreservesSharedCapacityForOtherClients(): void {
+        for ($request = 0; $request < 2; ++$request) {
+            $this->assertNull(
+                request_rate_limit_consume_layered(
+                    'layered-test',
+                    4,
+                    1.0,
+                    2,
+                    0.25,
+                    '8.8.8.8',
+                    $this->base_directory,
+                    100.0
+                )
+            );
+        }
+
+        $this->assertSame(
+            4,
+            request_rate_limit_consume_layered(
+                'layered-test',
+                4,
+                1.0,
+                2,
+                0.25,
+                '8.8.8.8',
+                $this->base_directory,
+                100.0
+            )
+        );
+
+        // Client A's rejected request did not consume a shared token.
+        for ($request = 0; $request < 2; ++$request) {
+            $this->assertNull(
+                request_rate_limit_consume_layered(
+                    'layered-test',
+                    4,
+                    1.0,
+                    2,
+                    0.25,
+                    '1.1.1.1',
+                    $this->base_directory,
+                    100.0
+                )
+            );
+        }
+
+        // The original global cap still applies across distinct clients.
+        $this->assertSame(
+            1,
+            request_rate_limit_consume_layered(
+                'layered-test',
+                4,
+                1.0,
+                2,
+                0.25,
+                '9.9.9.9',
+                $this->base_directory,
+                100.0
+            )
+        );
+    }
+
+    public function testPublicRateLimitedEntryPointsDoNotTrustForwardedFor(): void {
+        foreach (['gadgetapi.php', 'generate_template.php'] as $entry_point) {
+            $source = file_get_contents(dirname(__DIR__, 3) . '/src/' . $entry_point);
+            $this->assertIsString($source);
+            if (!is_string($source)) {
+                throw new RuntimeException('Unable to read ' . $entry_point . '.');
+            }
+
+            $this->assertStringContainsString('request_rate_limit_consume_layered(', $source);
+            $this->assertStringContainsString("\$_SERVER['REMOTE_ADDR']", $source);
+            $this->assertStringNotContainsString('HTTP_X_FORWARDED_FOR', $source);
+        }
+    }
+
     public function testTokensRefillOverTime(): void {
         $this->assertNull(
             request_rate_limit_consume('refill-test', 1, 0.25, $this->base_directory, 100.0)

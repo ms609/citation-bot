@@ -6,9 +6,13 @@ const REQUEST_RATE_LIMIT_STATE_DIRECTORY = 'citation-bot-rate-limit';
 
 const GADGET_API_RATE_LIMIT_CAPACITY = 40;
 const GADGET_API_RATE_LIMIT_REFILL_PER_SECOND = 2.0;
+const GADGET_API_CLIENT_RATE_LIMIT_CAPACITY = 20;
+const GADGET_API_CLIENT_RATE_LIMIT_REFILL_PER_SECOND = 1.0;
 
 const GENERATE_TEMPLATE_RATE_LIMIT_CAPACITY = 20;
 const GENERATE_TEMPLATE_RATE_LIMIT_REFILL_PER_SECOND = 0.5;
+const GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_CAPACITY = 10;
+const GENERATE_TEMPLATE_CLIENT_RATE_LIMIT_REFILL_PER_SECOND = 0.25;
 
 function request_rate_limit_base_directory(): string {
     $env_val = getenv('PHP_RATE_LIMIT_DIRECTORY');
@@ -16,6 +20,96 @@ function request_rate_limit_base_directory(): string {
         return $env_val;
     }
     return sys_get_temp_dir();
+}
+
+/**
+ * Build an opaque bucket name for one direct, globally routed client.
+ *
+ * REMOTE_ADDR is supplied by the web server and is therefore preferable to
+ * user-controlled forwarding headers. Canonicalizing the address makes
+ * equivalent IPv6 spellings share a bucket. Private, loopback, invalid, or
+ * unavailable peer addresses skip the client layer; those values commonly
+ * identify a reverse proxy, and treating one proxy as one client would
+ * accidentally throttle unrelated users. The global limiter still applies.
+ */
+function request_rate_limit_client_bucket(
+    string $bucket,
+    ?string $remote_address
+): ?string {
+    if (preg_match('~\A[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}\z~D', $bucket) !== 1) {
+        throw new InvalidArgumentException('Invalid rate-limit bucket name.');
+    }
+
+    if (!is_string($remote_address) || $remote_address === '') {
+        return null;
+    }
+    $packed_address = @inet_pton($remote_address);
+    if ($packed_address === false) {
+        return null;
+    }
+    $canonical_address = inet_ntop($packed_address);
+    if (
+        !is_string($canonical_address) ||
+        filter_var(
+            $canonical_address,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_GLOBAL_RANGE
+        ) === false
+    ) {
+        return null;
+    }
+
+    /*
+     * Keep the raw address out of filenames/log-visible bucket names. The
+     * digest is an opaque rate-limit identifier, not an anonymization boundary.
+     */
+    return 'client-' . substr(
+        hash('sha256', $bucket . "\0" . $canonical_address),
+        0,
+        32
+    );
+}
+
+/**
+ * Apply a per-client limiter before the existing process-wide limiter.
+ *
+ * Checking the client bucket first prevents a single client that has already
+ * exhausted its own allowance from continuing to drain the shared bucket.
+ * A request must pass both limits.
+ *
+ * @return int|null Retry-After seconds when limited; null when allowed.
+ */
+function request_rate_limit_consume_layered(
+    string $bucket,
+    int $global_capacity,
+    float $global_refill_per_second,
+    int $client_capacity,
+    float $client_refill_per_second,
+    ?string $remote_address,
+    ?string $base_directory = null,
+    ?float $now = null
+): ?int {
+    $client_bucket = request_rate_limit_client_bucket($bucket, $remote_address);
+    if ($client_bucket !== null) {
+        $client_retry_after = request_rate_limit_consume(
+            $client_bucket,
+            $client_capacity,
+            $client_refill_per_second,
+            $base_directory,
+            $now
+        );
+        if ($client_retry_after !== null) {
+            return $client_retry_after;
+        }
+    }
+
+    return request_rate_limit_consume(
+        $bucket,
+        $global_capacity,
+        $global_refill_per_second,
+        $base_directory,
+        $now
+    );
 }
 
 /**
