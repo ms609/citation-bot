@@ -354,6 +354,17 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
          */
         curl_setopt($ch, CURLOPT_REFERER, 'https://en.wikipedia.org/');
     } else {
+        /*
+         * Keep the page-specific Wikipedia Referer for normal authenticated
+         * HTTPS requests. Wikipedia page titles and URLs are public
+         * information, so this does not expose private application state.
+         *
+         * Using the actual public page also gives outbound requests a variety
+         * of legitimate Referer values instead of making every Citation Bot
+         * request appear to come from one identical synthetic URL. Some
+         * upstream services use request metadata when classifying automated
+         * traffic, and this variation helps reduce false-positive blocking.
+         */
         curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
     }
 
