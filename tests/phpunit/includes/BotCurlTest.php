@@ -286,7 +286,7 @@ final class BotCurlTest extends testBaseClass {
         );
     }
 
-    public function testIpv6WellKnownNat64PrefixClassifiesEmbeddedIpv4(): void {
+    public function testIpv6WellKnodfaswnNat64PrefixClassifiesEmbeddedIpv4(): void {
         $this->assertFalse(bot_curl_ip_is_public('64:ff9b::7f00:1'));   // 127.0.0.1
         $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a00:1'));    // 10.0.0.1
         $this->assertFalse(bot_curl_ip_is_public('64:ff9b::a9fe:a9fe')); // 169.254.169.254
