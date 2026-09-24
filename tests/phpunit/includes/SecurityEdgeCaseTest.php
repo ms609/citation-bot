@@ -362,6 +362,54 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         );
     }
 
+    public function testExecutionControlsDoNotReadFromMergedRequestSuperglobal(): void {
+        $source_root = dirname(__DIR__, 3) . '/src';
+        foreach ([
+            'includes/setup.php',
+            'process_page.php',
+            'category.php',
+        ] as $relative_path) {
+            $source = file_get_contents(
+                $source_root . DIRECTORY_SEPARATOR . $relative_path
+            );
+            $this->assertIsString($source);
+            if (!is_string($source)) {
+                throw new RuntimeException('Unable to read ' . $relative_path . '.');
+            }
+
+            $this->assertStringNotContainsString(
+                '$_REQUEST[',
+                $source,
+                $relative_path . ' must not use PHP\'s merged request input'
+            );
+        }
+
+        $setup = file_get_contents($source_root . '/includes/setup.php');
+        $process_page = file_get_contents($source_root . '/process_page.php');
+        $category = file_get_contents($source_root . '/category.php');
+        $this->assertIsString($setup);
+        $this->assertIsString($process_page);
+        $this->assertIsString($category);
+        if (!is_string($setup) || !is_string($process_page) || !is_string($category)) {
+            throw new RuntimeException('Unable to read request-processing sources.');
+        }
+
+        $this->assertStringContainsString(
+            "if (isset(\$_POST[\$name]))",
+            $setup
+        );
+        $this->assertStringContainsString(
+            "if (isset(\$_GET[\$name]))",
+            $setup
+        );
+        $this->assertStringContainsString(
+            'process_page_confirmation_fields($pages, $_GET)',
+            $process_page
+        );
+        $this->assertStringContainsString("\$_POST['edit'] ?? null", $process_page);
+        $this->assertStringContainsString("\$_POST['edit'] ?? null", $category);
+    }
+
     public function testEnvironmentConfigurationIsLoadedFromRepositoryRoot(): void {
         $repository_root = realpath(dirname(__DIR__, 3));
         $source_root = realpath(dirname(__DIR__, 3) . '/src');

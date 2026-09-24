@@ -83,15 +83,7 @@ if ($from_get) {
     if (!$automated_tools_request) {
         bot_html_header();
     }
-    $fields = ['page' => $pages];
-    foreach (['edit', 'wiki_base', 'pcre'] as $name) {
-        if (isset($_GET[$name]) && is_string($_GET[$name])) {
-            $fields[$name] = $_GET[$name];
-        }
-    }
-    if (isset($_GET['slow'])) {
-        $fields['slow'] = '1';
-    }
+    $fields = process_page_confirmation_fields($pages, $_GET);
     echo post_confirmation_form('process_page.php', $fields, $csrf_token, 'Process page');
     bot_html_footer();
     exit(0);
@@ -112,9 +104,9 @@ $api = new WikipediaBot();
 
 check_blocked();
 
-$request_edit = null;
-if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
-    $request_edit = $_REQUEST["edit"];
+$request_edit = $_POST['edit'] ?? null;
+if (!is_string($request_edit) || $request_edit === '') {
+    $request_edit = null;
 }
 if (HTML_OUTPUT) {
     $edit_summary_end = process_page_edit_summary_end($api->get_the_user(), true, $request_edit);

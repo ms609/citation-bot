@@ -151,9 +151,9 @@ if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
     report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
 
-$request_edit = null;
-if (!empty($_REQUEST["edit"]) && is_string($_REQUEST["edit"])) {
-    $request_edit = $_REQUEST["edit"];
+$request_edit = $_POST['edit'] ?? null;
+if (!is_string($request_edit) || $request_edit === '') {
+    $request_edit = null;
 }
 $edit_summary_end = category_edit_summary_end(
     $api->get_the_user(),
