@@ -4,6 +4,23 @@ declare(strict_types=1);
 
 final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
 
+    /**
+     * file_get_contents() can dereference URL wrappers as well as local paths.
+     * Keep the small set of reviewed production uses explicit so a future
+     * file_get_contents($url) cannot silently create a second network stack
+     * outside the hardened cURL wrapper.
+     *
+     * The count prevents an additional call from hiding behind an already
+     * approved path/argument pair.
+     *
+     * @var array<string, array<string, int>>
+     */
+    private const ALLOWED_LOCAL_FILE_GET_CONTENTS = [
+        'src/includes/RequestRateLimit.php' => ['$state_path' => 1],
+        // $pages is restricted immediately beforehand to page_list.txt/page_list2.txt.
+        'src/process_page.php' => ['$pages' => 1],
+    ];
+
     /** @return array<int, string> */
     private static function sourceFiles(): array {
         $root = realpath(dirname(__DIR__, 3) . '/src');
@@ -34,6 +51,15 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
 
     private static function tokenText(array|string $token): string {
         return is_array($token) ? $token[1] : $token;
+    }
+
+    private static function approvedLocalFileGetContentsCount(
+        string $relative_path,
+        string $first_argument
+    ): int {
+        return self::ALLOWED_LOCAL_FILE_GET_CONTENTS[$relative_path][
+            mb_trim($first_argument)
+        ] ?? 0;
     }
 
     /** @param array<int, array|string> $tokens */
@@ -95,6 +121,7 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
 
     public function testNetworkAccessUsesCurlWrapper(): void {
         $violations = [];
+        $approved_local_reads_seen = [];
 
         foreach (self::sourceFiles() as $file) {
             $source = file_get_contents($file);
@@ -129,27 +156,92 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
                     continue;
                 }
 
-                $first = mb_strtolower($arguments[0] ?? '');
-                $apiPath = str_contains(
-                    str_replace('\\', '/', $file),
-                    '/src/includes/api/'
+                $relative_path = self::relativePath($file);
+                $first_argument = mb_trim($arguments[0] ?? '');
+                $expected_count = self::approvedLocalFileGetContentsCount(
+                    $relative_path,
+                    $first_argument
                 );
-                $literalNetworkUrl =
-                    str_contains($first, 'http://') ||
-                    str_contains($first, 'https://') ||
-                    str_contains($first, 'ftp://');
 
-                if ($apiPath || $literalNetworkUrl) {
+                if ($expected_count === 0) {
                     $violations[] = sprintf(
-                        '%s:%d network file_get_contents() is forbidden; use cURL',
-                        self::relativePath($file),
+                        '%s:%d file_get_contents() is not an approved local-only read; ' .
+                        'use the hardened cURL wrapper for network access',
+                        $relative_path,
                         $token[2]
+                    );
+                    continue;
+                }
+
+                $read_key = $relative_path . "\0" . $first_argument;
+                $approved_local_reads_seen[$read_key] =
+                    ($approved_local_reads_seen[$read_key] ?? 0) + 1;
+                if ($approved_local_reads_seen[$read_key] > $expected_count) {
+                    $violations[] = sprintf(
+                        '%s:%d additional file_get_contents(%s) call is not approved',
+                        $relative_path,
+                        $token[2],
+                        $first_argument
+                    );
+                }
+            }
+        }
+
+        foreach (self::ALLOWED_LOCAL_FILE_GET_CONTENTS as $path => $arguments) {
+            foreach ($arguments as $argument => $expected_count) {
+                $read_key = $path . "\0" . $argument;
+                $actual_count = $approved_local_reads_seen[$read_key] ?? 0;
+                if ($actual_count !== $expected_count) {
+                    $violations[] = sprintf(
+                        '%s approved local file_get_contents(%s) count changed: expected %d, found %d',
+                        $path,
+                        $argument,
+                        $expected_count,
+                        $actual_count
                     );
                 }
             }
         }
 
         $this->assertSame([], $violations, implode("\n", $violations));
+    }
+
+    public function testFileGetContentsAllowlistDoesNotApproveArbitraryDynamicUrls(): void {
+        $this->assertSame(
+            1,
+            self::approvedLocalFileGetContentsCount(
+                'src/process_page.php',
+                '$pages'
+            )
+        );
+        $this->assertSame(
+            1,
+            self::approvedLocalFileGetContentsCount(
+                'src/includes/RequestRateLimit.php',
+                '$state_path'
+            )
+        );
+        $this->assertSame(
+            0,
+            self::approvedLocalFileGetContentsCount(
+                'src/process_page.php',
+                '$url'
+            )
+        );
+        $this->assertSame(
+            0,
+            self::approvedLocalFileGetContentsCount(
+                'src/example.php',
+                '$url'
+            )
+        );
+        $this->assertSame(
+            0,
+            self::approvedLocalFileGetContentsCount(
+                'src/includes/RequestRateLimit.php',
+                '"https://example.invalid/state.json"'
+            )
+        );
     }
 
     public function testRequireAndIncludePathsDoNotTraverseParentDirectories(): void {
