@@ -1434,10 +1434,18 @@ final class Template
                     return false;
                 } // non-journals that are probably same as agency or publisher that come from zotero
                 if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
-                    if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_VOLUME, true)) {
-                        $this->forget('volume');
+                    $lower_value = mb_strtolower(sanitize_string($value));
+                    if (in_array($lower_value, HAS_NO_VOLUME, true)) {
+                        if (in_array($lower_value, NUMBER_IS_PAGE, true)) {
+                            if ($this->blank('issue')) {
+                                $this->rename('volume', 'issue');
+                            }
+                            // Otherwise leave volume for tidy to relocate the stale issue
+                        } else {
+                            $this->forget('volume');
+                        }
                     } // No volumes, just issues.
-                    if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_ISSUE, true)) {
+                    if (in_array($lower_value, HAS_NO_ISSUE, true)) {
                         $this->forget('issue');
                         $this->forget('number');
                     } // No issues, just volumes
@@ -6262,8 +6270,16 @@ final class Template
                         $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
-                    if (in_array($temp_string, HAS_NO_VOLUME, true)) {
-                        $number_is_page = in_array($temp_string, NUMBER_IS_PAGE, true);
+                    $number_is_page = in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true);
+                    if (in_array($temp_string, HAS_NO_VOLUME, true) || $number_is_page) {
+                        if ($number_is_page && !$this->blank('issue')) {
+                            // The existing issue value is really article/page data, not the circular number
+                            if ($this->blank('page') && $this->blank('pages')) {
+                                $this->rename('issue', 'page');
+                            } else {
+                                $this->forget('issue');
+                            }
+                        }
                         if ($this->blank('issue') && ($number_is_page || $this->blank('number'))) {
                             $this->rename('volume', 'issue');
                         } else {
@@ -6393,14 +6409,17 @@ final class Template
                             }
                             return;
                         }
-                        if ($param === 'number' && in_array($temp_string, NUMBER_IS_PAGE, true)) {
+                        if ($param === 'number' && in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
                             if ($this->blank('page') && $this->blank('pages')) {
                                 // IAU Circular/CBET: the number is the article/page number
                                 $this->rename('number', 'page');
-                            } elseif ($this->get('number') === $this->get('page')) {
-                                $this->forget('number');
+                                return;
                             }
-                            return;
+                            if ($this->get('number') === $this->get('page') || $this->get('number') === $this->get('pages')) {
+                                $this->forget('number');
+                                return;
+                            }
+                            // A different non-blank page remains; fall through to the generic tidy below
                         }
                         if (in_array($temp_string, PREFER_VOLUMES, true) && $this->has('volume')) {
                             if ($this->get('volume') === $this->get($param)) {
@@ -8214,6 +8233,23 @@ final class Template
                 }
             }
         }
+    }
+
+    private function normalized_work_name(): string {
+        foreach (['journal', 'series', 'periodical', 'work'] as $param) {
+            $value = mb_trim($this->get($param));
+            if ($value === '') {
+                continue;
+            }
+            $value = mb_strtolower($value);
+            if (mb_substr($value, 0, 2) === "[[" && mb_substr($value, -2) === "]]") {
+                // Wikilinked journal title
+                $value = mb_substr(mb_substr($value, 2), 0, -2); // Remove [[ and ]]
+                $value = (string) preg_replace('~^.+\|~', '', $value); // Remove part before pipe, if it has one
+            }
+            return $value;
+        }
+        return '';
     }
 
     private function volume_issue_demix(string $data, string $param): void {
