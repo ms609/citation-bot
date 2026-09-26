@@ -1664,6 +1664,58 @@ EP - 999 }}';
         $this->assertNull($template->get2('volume'));
     }
 
+    public function testTidyIauCircularVolumeBecomesIssue(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7425 | number=1 | date=May 2000 | page=1 | bibcode=2000IAUC.7425....1E }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7425', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('1', $template->get2('page'));
+    }
+
+    public function testTidyIauCircularNumberBecomesPage(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428 | number=2 | date=May 2000 | bibcode=2000IAUC.7428....2S }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
+    public function testTidyIauCircularSameNumberAndPage(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428 | number=2 | date=May 2000 | page=2 | bibcode=2000IAUC.7428....2S }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('number');
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('number'));
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
+    public function testTidyCBETVolumeBecomesIssue(): void {
+        $text = '{{cite journal | journal=Central Bureau Electronic Telegrams | volume=156 | number=1 | date=May 2005 | page=1 | bibcode=2005CBET..156....1T }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('156', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('1', $template->get2('page'));
+    }
+
+    public function testTidyZooKeysVolumeWithNumberStaysDropped(): void {
+        $text = '{{cite journal|journal=[[zOOkeys]]|volume=333|number=22}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('22', $template->get2('number'));
+    }
+
     public function testDoiInline2(): void {
         $text = '{{citation | title = {{doi-inline|10.1038/nphys806|A transient semimetallic layer in detonating nitromethane}} | doi=10.1038/nphys806 }}';
         $expanded = $this->process_citation($text);

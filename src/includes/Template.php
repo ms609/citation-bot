@@ -6263,7 +6263,8 @@ final class Template
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
                     if (in_array($temp_string, HAS_NO_VOLUME, true)) {
-                        if ($this->blank(ISSUE_ALIASES)) {
+                        $number_is_page = in_array($temp_string, NUMBER_IS_PAGE, true);
+                        if ($this->blank('issue') && ($number_is_page || $this->blank('number'))) {
                             $this->rename('volume', 'issue');
                         } else {
                             $this->forget('volume');
@@ -6389,6 +6390,15 @@ final class Template
                                 $this->rename($param, 'volume');
                             } else {
                                 $this->forget($param);
+                            }
+                            return;
+                        }
+                        if ($param === 'number' && in_array($temp_string, NUMBER_IS_PAGE, true)) {
+                            if ($this->blank('page') && $this->blank('pages')) {
+                                // IAU Circular/CBET: the number is the article/page number
+                                $this->rename('number', 'page');
+                            } elseif ($this->get('number') === $this->get('page')) {
+                                $this->forget('number');
                             }
                             return;
                         }
