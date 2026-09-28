@@ -8257,14 +8257,10 @@ final class Template
                     $this->forget('issue');
                 }
             }
-            if ($this->blank('issue')) {
-                $this->rename('volume', 'issue');
-            } else {
-                $this->forget('volume');
-            }
+            $this->rename('volume', 'issue');
         }
         if ($this->has('number')) {
-            if ($this->get('number') === $this->get('issue') || $this->get('number') === $this->get('volume')) {
+            if ($this->get('number') === $this->get('issue')) {
                 $this->forget('number'); // Duplicate of the circular number
             } elseif ($this->blank(PAGE_ALIASES)) {
                 $this->rename('number', 'page'); // The number is the article/page number
