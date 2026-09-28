@@ -1435,12 +1435,9 @@ final class Template
                 } // non-journals that are probably same as agency or publisher that come from zotero
                 if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
                     $lower_value = mb_strtolower(sanitize_string($value));
-                    if (in_array($lower_value, HAS_NO_VOLUME, true)) {
-                        if (in_array($lower_value, NUMBER_IS_PAGE, true)) {
-                            $this->tidy_iau_circular_locators($lower_value);
-                        } else {
-                            $this->forget('volume');
-                        }
+                    $clean_up_iau_locators = in_array($lower_value, NUMBER_IS_PAGE, true);
+                    if (in_array($lower_value, HAS_NO_VOLUME, true) && !$clean_up_iau_locators) {
+                        $this->forget('volume');
                     } // No volumes, just issues.
                     if (in_array($lower_value, HAS_NO_ISSUE, true)) {
                         $this->forget('issue');
@@ -1458,6 +1455,9 @@ final class Template
                             if (!$this->blank(['pmc', 'doi', 'pmid'])) {
                                 $this->forget('issn');
                             }
+                            if ($clean_up_iau_locators) {
+                                $this->tidy_iau_circular_locators($lower_value);
+                            }
                             return true;
                         } else {
                             return false; // Cannot have both work and journal
@@ -1468,6 +1468,9 @@ final class Template
                             $this->rename('via', $param_name);
                             if (!$this->blank(['pmc', 'doi', 'pmid'])) {
                                 $this->forget('issn');
+                            }
+                            if ($clean_up_iau_locators) {
+                                $this->tidy_iau_circular_locators($lower_value);
                             }
                             return true;
                         }
@@ -1485,6 +1488,9 @@ final class Template
                             $this->quietly_forget('website');
                             if (mb_stripos($this->get('publisher'), 'bbc') !== false && mb_stripos($value, 'bbc') !== false) {
                                 $this->quietly_forget('publisher');
+                            }
+                            if ($clean_up_iau_locators) {
+                                $this->tidy_iau_circular_locators($lower_value);
                             }
                             return true;
                         }
@@ -1504,6 +1510,9 @@ final class Template
                     if (($param_name === 'newspaper' || $param_name === 'journal') && $this->has('publisher') && str_equivalent($this->get('publisher'), $value) && $this->blank('website')) {
                         // Website is an alias for newspaper/work/journal, and did not check above
                         $this->rename('publisher', $param_name);
+                        if ($clean_up_iau_locators) {
+                            $this->tidy_iau_circular_locators($lower_value);
+                        }
                         return true;
                     }
                     if ($this->has('website')) {
@@ -1518,11 +1527,17 @@ final class Template
                         } elseif (!in_array(mb_strtolower($value), ARE_MANY_THINGS, true)) {
                             $this->rename('website', $param_name, $value);
                         }
+                        if ($clean_up_iau_locators) {
+                            $this->tidy_iau_circular_locators($lower_value);
+                        }
                         return true;
                     } else {
                         $my_return = $this->add($param_name, $value);
                         // Avoid running twice
                         $this->tidy_parameter('publisher');
+                        if ($my_return && $clean_up_iau_locators) {
+                            $this->tidy_iau_circular_locators($lower_value);
+                        }
                         return $my_return;
                     }
                 }

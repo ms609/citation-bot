@@ -1768,7 +1768,8 @@ EP - 999 }}';
     public function testAddIfNewIauCircularJournalKeepsCircularNumber(): void {
         $text = '{{cite journal | volume=7428 | number=2 | title=X | date=May 2000 | bibcode=2000IAUC.7428....2S }}';
         $template = $this->make_citation($text);
-        $template->add_if_new('journal', 'IAU Circular');
+        $this->assertTrue($template->add_if_new('journal', 'IAU Circular'));
+        $this->assertSame('IAU Circular', $template->get2('journal'));
         $this->assertNull($template->get2('volume'));
         $this->assertSame('7428', $template->get2('issue'));
     }
@@ -1835,10 +1836,32 @@ EP - 999 }}';
     public function testAddIfNewIauCircularTidiesLocators(): void {
         $text = '{{cite journal |title=X |volume=7428 |issue=5 |date=2020}}';
         $template = $this->make_citation($text);
-        $template->add_if_new('journal', 'IAU Circular');
+        $this->assertTrue($template->add_if_new('journal', 'IAU Circular'));
+        $this->assertSame('IAU Circular', $template->get2('journal'));
         $this->assertNull($template->get2('volume'));
         $this->assertSame('7428', $template->get2('issue'));
         $this->assertSame('5', $template->get2('page'));
+    }
+
+    public function testAddIfNewIauCircularRejectedJournalDoesNotMutate(): void {
+        $text = '{{citation |title=X |work=Nature |volume=7428 |number=2 |date=2020}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('journal', 'IAU Circular'));
+        $this->assertNull($template->get2('issue'));
+        $this->assertNull($template->get2('page'));
+        $this->assertSame('7428', $template->get2('volume'));
+        $this->assertSame('2', $template->get2('number'));
+    }
+
+    public function testTidyIauCircularDottedCBETSpelling(): void {
+        $text = '{{cite journal | journal=Cent. Bur. Electron. Telegr. | volume=156 | number=1 | page=1 | date=May 2005 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('156', $template->get2('issue'));
+        $this->assertSame('1', $template->get2('page'));
     }
 
     public function testTidyIauCircularTrailingPeriodName(): void {

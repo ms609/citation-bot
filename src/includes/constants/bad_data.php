@@ -43,9 +43,8 @@ const HAS_NO_VOLUME = [
 const NUMBER_IS_PAGE = [
     'cbet',
     'cent bur electron telegr',
-    'cent. bur. electron. telegr.',
+    'cent. bur. electron. telegr',
     'central bureau electronic telegrams',
-    'iau circ.',
     'iau circ',
     'iau circular',
     'international astronomical union circular',
