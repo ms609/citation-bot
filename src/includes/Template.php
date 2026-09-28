@@ -6725,12 +6725,13 @@ final class Template
         // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
         // but its page->article-number rename still needs to run via detect_article_number()
         $this->detect_article_number();
+        // IAU Circular/CBET locators need cleanup even for slightly/barely processed templates
+        if (in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
+            $this->tidy_iau_circular_locators();
+        }
         if ($this->should_be_processed()) {
             if ($this->initial_name !== $this->name) {
                 $this->tidy();
-            }
-            if (in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
-                $this->tidy_iau_circular_locators();
             }
             // Sometimes title and chapter come from different databases
             if ($this->has('chapter') && $this->get('chapter') === $this->get('title')) {
@@ -8238,9 +8239,8 @@ final class Template
      * IAU Circular/CBET citations have issues, not volumes: the circular number belongs in
      * |issue=, and |number= or a stale |issue= is really the article/page number.
      */
-    private function tidy_iau_circular_locators(?string $work_name = null): void {
-        $work_name = $work_name ?? $this->normalized_work_name();
-        if (!in_array($work_name, NUMBER_IS_PAGE, true)) {
+    private function tidy_iau_circular_locators(): void {
+        if (!in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
             return;
         }
         if ($this->has('volume')) {

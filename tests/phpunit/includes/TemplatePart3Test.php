@@ -1856,6 +1856,16 @@ EP - 999 }}';
         $this->assertSame('2', $template->get2('number'));
     }
 
+    public function testAddIfNewIauCircularTidiesSlightTemplate(): void {
+        $text = '{{cite news |title=X |volume=7428 |number=2 |date=2020}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('journal', 'IAU Circular'));
+        $template->final_tidy();
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
     public function testTidyIauCircularDottedCBETSpelling(): void {
         $text = '{{cite journal | journal=Cent. Bur. Electron. Telegr. | volume=156 | number=1 | page=1 | date=May 2005 }}';
         $template = $this->make_citation($text);
