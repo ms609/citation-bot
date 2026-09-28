@@ -1437,10 +1437,7 @@ final class Template
                     $lower_value = mb_strtolower(sanitize_string($value));
                     if (in_array($lower_value, HAS_NO_VOLUME, true)) {
                         if (in_array($lower_value, NUMBER_IS_PAGE, true)) {
-                            if ($this->blank('issue')) {
-                                $this->rename('volume', 'issue');
-                            }
-                            // Otherwise leave volume for tidy to relocate the stale issue
+                            $this->tidy_iau_circular_locators($lower_value);
                         } else {
                             $this->forget('volume');
                         }
@@ -6271,16 +6268,10 @@ final class Template
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
                     $number_is_page = in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true);
-                    if (in_array($temp_string, HAS_NO_VOLUME, true) || $number_is_page) {
-                        if ($number_is_page && !$this->blank('issue')) {
-                            // The existing issue value is really article/page data, not the circular number
-                            if ($this->blank('page') && $this->blank('pages')) {
-                                $this->rename('issue', 'page');
-                            } else {
-                                $this->forget('issue');
-                            }
-                        }
-                        if ($this->blank('issue') && ($number_is_page || $this->blank('number'))) {
+                    if ($number_is_page) {
+                        $this->tidy_iau_circular_locators();
+                    } elseif (in_array($temp_string, HAS_NO_VOLUME, true)) {
+                        if ($this->blank(ISSUE_ALIASES)) {
                             $this->rename('volume', 'issue');
                         } else {
                             $this->forget('volume');
@@ -6410,16 +6401,8 @@ final class Template
                             return;
                         }
                         if ($param === 'number' && in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
-                            if ($this->blank('page') && $this->blank('pages')) {
-                                // IAU Circular/CBET: the number is the article/page number
-                                $this->rename('number', 'page');
-                                return;
-                            }
-                            if ($this->get('number') === $this->get('page') || $this->get('number') === $this->get('pages')) {
-                                $this->forget('number');
-                                return;
-                            }
-                            // A different non-blank page remains; fall through to the generic tidy below
+                            $this->tidy_iau_circular_locators();
+                            return;
                         }
                         if (in_array($temp_string, PREFER_VOLUMES, true) && $this->has('volume')) {
                             if ($this->get('volume') === $this->get($param)) {
@@ -8247,9 +8230,53 @@ final class Template
                 $value = mb_substr(mb_substr($value, 2), 0, -2); // Remove [[ and ]]
                 $value = (string) preg_replace('~^.+\|~', '', $value); // Remove part before pipe, if it has one
             }
-            return $value;
+            return mb_strtolower(sanitize_string($value));
         }
         return '';
+    }
+
+    /**
+     * IAU Circular/CBET citations have issues, not volumes: the circular number belongs in
+     * |issue=, and |number= or a stale |issue= is really the article/page number.
+     */
+    private function tidy_iau_circular_locators(?string $work_name = null): void {
+        $work_name = $work_name ?? $this->normalized_work_name();
+        if (!in_array($work_name, NUMBER_IS_PAGE, true)) {
+            return;
+        }
+        if ($this->has('volume')) {
+            if (!$this->blank('issue')) {
+                if ($this->get('issue') === $this->get('volume')) {
+                    $this->forget('issue'); // Duplicate of the circular number
+                } elseif ($this->blank(PAGE_ALIASES)) {
+                    $this->rename('issue', 'page'); // The issue value is really the article/page number
+                } elseif ($this->get('issue') === $this->get('page') || $this->get('issue') === $this->get('pages')) {
+                    $this->forget('issue'); // Duplicate of the article/page number
+                } elseif ($this->blank('article-number')) {
+                    $this->rename('issue', 'article-number'); // Preserve a distinct locator
+                } else {
+                    $this->forget('issue');
+                }
+            }
+            if ($this->blank('issue')) {
+                $this->rename('volume', 'issue');
+            } else {
+                $this->forget('volume');
+            }
+        }
+        if ($this->has('number')) {
+            if ($this->get('number') === $this->get('issue') || $this->get('number') === $this->get('volume')) {
+                $this->forget('number'); // Duplicate of the circular number
+            } elseif ($this->blank(PAGE_ALIASES)) {
+                $this->rename('number', 'page'); // The number is the article/page number
+            } elseif ($this->get('number') === $this->get('page') || $this->get('number') === $this->get('pages')) {
+                $this->forget('number'); // Duplicate of the article/page number
+            } elseif ($this->blank('article-number')) {
+                $this->rename('number', 'article-number'); // Preserve a distinct locator
+            } else {
+                $this->forget('number');
+            }
+        }
     }
 
     private function volume_issue_demix(string $data, string $param): void {

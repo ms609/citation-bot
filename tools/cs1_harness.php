@@ -400,6 +400,7 @@ function check_citation(Template $template): array {
                 $work_name = mb_substr(mb_substr($work_name, 2), 0, -2);
                 $work_name = (string) preg_replace('~^.+\|~', '', $work_name);
             }
+            $work_name = mb_strtolower(sanitize_string($work_name));
             break;
         }
     }
@@ -410,6 +411,17 @@ function check_citation(Template $template): array {
         if ($template->has('number')) {
             $violations[] = 'iau-cbet-number: IAU Circular/CBET article numbers belong in |page=';
         }
+    }
+
+    // R24: page-style locator parameters are mutually exclusive in CS1.
+    $locators = [];
+    foreach (['page', 'p', 'pp', 'pages', 'at', 'sheet', 'sheets'] as $locator) {
+        if ($template->has($locator)) {
+            $locators[] = $locator;
+        }
+    }
+    if (count($locators) > 1) {
+        $violations[] = 'redundant-locator: CS1 "More than one of |page=, |p=, |pp=, and |pages= specified"';
     }
 
     return $violations;
@@ -486,6 +498,9 @@ function build_matrix(): array {
         // --- IAU Circular / CBET locator handling ---
         ['IAU Circular volume becomes issue, number becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |number=2 |date=May 2000 |page=2 |bibcode=2000IAUC.7428....2S}}', 'pass'],
         ['IAU Circular issue+volume: volume becomes issue, old issue becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=4225 |issue=2 |date=June 1986 |pages=2 |bibcode=1986IAUC.4225....2P}}', 'pass'],
+        ['IAU Circular duplicate volume/issue stays a single issue', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=7428 |date=May 2000}}', 'pass'],
+        ['IAU Circular at= kept when issue is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=5 |at=9 |date=May 2000}}', 'pass'],
+        ['IAU Circular at= kept when number is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |number=2 |at=9 |date=May 2000}}', 'pass'],
 
         // --- known gaps (documented current CS1 violations, tracked) ---
         ['GAP bad ISBN-13 check digit survives tidy', '{{cite journal |title=X |journal=J |isbn=978-0-306-40615-8}}', 'gap'],

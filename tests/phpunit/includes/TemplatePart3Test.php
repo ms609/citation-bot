@@ -1783,6 +1783,75 @@ EP - 999 }}';
         $this->assertSame('2', $template->get2('page'));
     }
 
+    public function testTidyIauCircularDuplicateVolumeAndIssue(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428 | issue=7428 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertNull($template->get2('page'));
+    }
+
+    public function testTidyIauCircularAtIsNotOverwritten(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428 | issue=5 | at=9 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertNull($template->get2('page'));
+        $this->assertSame('9', $template->get2('at'));
+        $this->assertSame('5', $template->get2('article-number'));
+    }
+
+    public function testTidyIauCircularNumberWithAtIsNotMadePage(): void {
+        $text = '{{cite journal | journal=IAU Circular | number=2 | at=9 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('number'));
+        $this->assertNull($template->get2('page'));
+        $this->assertSame('9', $template->get2('at'));
+        $this->assertSame('2', $template->get2('article-number'));
+    }
+
+    public function testTidyIauCircularDistinctIssuePreservedAsArticleNumber(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428 | issue=5 | page=9 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('9', $template->get2('page'));
+        $this->assertSame('5', $template->get2('article-number'));
+    }
+
+    public function testTidyIauCircularDistinctNumberPreservedAsArticleNumber(): void {
+        $text = '{{cite journal | journal=IAU Circular | number=2 | page=9 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('9', $template->get2('page'));
+        $this->assertSame('2', $template->get2('article-number'));
+    }
+
+    public function testAddIfNewIauCircularTidiesLocators(): void {
+        $text = '{{cite journal |title=X |volume=7428 |issue=5 |date=2020}}';
+        $template = $this->make_citation($text);
+        $template->add_if_new('journal', 'IAU Circular');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('5', $template->get2('page'));
+    }
+
+    public function testTidyIauCircularTrailingPeriodName(): void {
+        $text = '{{cite journal |journal=IAU Circular. |volume=7428 |number=2 |date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
     public function testDoiInline2(): void {
         $text = '{{citation | title = {{doi-inline|10.1038/nphys806|A transient semimetallic layer in detonating nitromethane}} | doi=10.1038/nphys806 }}';
         $expanded = $this->process_citation($text);
