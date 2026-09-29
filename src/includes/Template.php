@@ -1711,7 +1711,7 @@ final class Template
                         $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
-                    if (in_array($temp_string, HAS_NO_VOLUME, true)) {
+                    if (in_array($temp_string, HAS_NO_VOLUME, true) && !in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
                         // This journal has no volume. This is really the issue number
                         return $this->add_if_new('issue', $value);
                     } else {

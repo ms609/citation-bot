@@ -1888,6 +1888,25 @@ EP - 999 }}';
         $this->assertSame('2', $template->get2('page'));
     }
 
+    public function testTidyIauCircularCombinedVolumeValue(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428, no. 2 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
+    public function testTidyIauCircularCombinedVolumeValueWithNumber(): void {
+        $text = '{{cite journal | journal=IAU Circular | volume=7428, no. 2 | number=7428 | date=May 2000 }}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('volume'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('7428', $template->get2('issue'));
+        $this->assertSame('2', $template->get2('page'));
+    }
+
     public function testDoiInline2(): void {
         $text = '{{citation | title = {{doi-inline|10.1038/nphys806|A transient semimetallic layer in detonating nitromethane}} | doi=10.1038/nphys806 }}';
         $expanded = $this->process_citation($text);
