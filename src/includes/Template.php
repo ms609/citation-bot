@@ -1434,10 +1434,11 @@ final class Template
                     return false;
                 } // non-journals that are probably same as agency or publisher that come from zotero
                 if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
-                    if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_VOLUME, true)) {
+                    $lower_value = mb_strtolower(sanitize_string($value));
+                    if (in_array($lower_value, HAS_NO_VOLUME, true) && !in_array($lower_value, NUMBER_IS_PAGE, true)) {
                         $this->forget('volume');
                     } // No volumes, just issues.
-                    if (in_array(mb_strtolower(sanitize_string($value)), HAS_NO_ISSUE, true)) {
+                    if (in_array($lower_value, HAS_NO_ISSUE, true)) {
                         $this->forget('issue');
                         $this->forget('number');
                     } // No issues, just volumes
@@ -1710,7 +1711,7 @@ final class Template
                         $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
-                    if (in_array($temp_string, HAS_NO_VOLUME, true)) {
+                    if (in_array($temp_string, HAS_NO_VOLUME, true) && !in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
                         // This journal has no volume. This is really the issue number
                         return $this->add_if_new('issue', $value);
                     } else {
@@ -6262,7 +6263,10 @@ final class Template
                         $temp_string = mb_substr(mb_substr($temp_string, 2), 0, -2); // Remove [[ and ]]
                         $temp_string = preg_replace('~^.+\|~', '', $temp_string); // Remove part before pipe, if it has one
                     }
-                    if (in_array($temp_string, HAS_NO_VOLUME, true)) {
+                    $number_is_page = in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true);
+                    if ($number_is_page) {
+                        $this->tidy_iau_circular_locators();
+                    } elseif (in_array($temp_string, HAS_NO_VOLUME, true)) {
                         if ($this->blank(ISSUE_ALIASES)) {
                             $this->rename('volume', 'issue');
                         } else {
@@ -6390,6 +6394,10 @@ final class Template
                             } else {
                                 $this->forget($param);
                             }
+                            return;
+                        }
+                        if ($param === 'number' && in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
+                            $this->tidy_iau_circular_locators();
                             return;
                         }
                         if (in_array($temp_string, PREFER_VOLUMES, true) && $this->has('volume')) {
@@ -6717,6 +6725,10 @@ final class Template
         // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
         // but its page->article-number rename still needs to run via detect_article_number()
         $this->detect_article_number();
+        // IAU Circular/CBET locators need cleanup even for slightly/barely processed templates
+        if (in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
+            $this->tidy_iau_circular_locators();
+        }
         if ($this->should_be_processed()) {
             if ($this->initial_name !== $this->name) {
                 $this->tidy();
@@ -8202,6 +8214,62 @@ final class Template
                     $this->set('title', mb_trim($inline_doi[1]));
                     report_modification("Remove duplicate inline DOI ");
                 }
+            }
+        }
+    }
+
+    private function normalized_work_name(): string {
+        foreach (['journal', 'series', 'periodical', 'work'] as $param) {
+            $value = mb_trim($this->get($param));
+            if ($value === '') {
+                continue;
+            }
+            $value = mb_strtolower($value);
+            if (mb_substr($value, 0, 2) === "[[" && mb_substr($value, -2) === "]]") {
+                // Wikilinked journal title
+                $value = mb_substr(mb_substr($value, 2), 0, -2); // Remove [[ and ]]
+                $value = (string) preg_replace('~^.+\|~', '', $value); // Remove part before pipe, if it has one
+            }
+            return mb_strtolower(sanitize_string($value));
+        }
+        return '';
+    }
+
+    /**
+     * IAU Circular/CBET citations have issues, not volumes: the circular number belongs in
+     * |issue=, and |number= or a stale |issue= is really the article/page number.
+     */
+    private function tidy_iau_circular_locators(): void {
+        if (!in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
+            return;
+        }
+        if ($this->has('volume')) {
+            if (!$this->blank('issue')) {
+                if ($this->get('issue') === $this->get('volume')) {
+                    $this->forget('issue'); // Duplicate of the circular number
+                } elseif ($this->blank(PAGE_ALIASES)) {
+                    $this->rename('issue', 'page'); // The issue value is really the article/page number
+                } elseif ($this->get('issue') === $this->get('page') || $this->get('issue') === $this->get('pages')) {
+                    $this->forget('issue'); // Duplicate of the article/page number
+                } elseif ($this->blank('article-number')) {
+                    $this->rename('issue', 'article-number'); // Preserve a distinct locator
+                } else {
+                    $this->forget('issue');
+                }
+            }
+            $this->rename('volume', 'issue');
+        }
+        if ($this->has('number')) {
+            if ($this->get('number') === $this->get('issue')) {
+                $this->forget('number'); // Duplicate of the circular number
+            } elseif ($this->blank(PAGE_ALIASES)) {
+                $this->rename('number', 'page'); // The number is the article/page number
+            } elseif ($this->get('number') === $this->get('page') || $this->get('number') === $this->get('pages')) {
+                $this->forget('number'); // Duplicate of the article/page number
+            } elseif ($this->blank('article-number')) {
+                $this->rename('number', 'article-number'); // Preserve a distinct locator
+            } else {
+                $this->forget('number');
             }
         }
     }

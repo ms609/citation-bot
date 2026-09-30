@@ -36,6 +36,20 @@ const HAS_NO_VOLUME = [
     'library and archives canada',
 ];
 /**
+ * IAU Circular and Central Bureau Electronic Telegrams have issues, not volumes.
+ * The circular number is the issue, while the "number" parameter is really the
+ * article/page number within that circular (see the NGC 6753 report).
+ */
+const NUMBER_IS_PAGE = [
+    'cbet',
+    'cent bur electron telegr',
+    'cent. bur. electron. telegr',
+    'central bureau electronic telegrams',
+    'iau circ',
+    'iau circular',
+    'international astronomical union circular',
+];
+/**
  * Some journals and book series have volumes only, no issue numbers.
  * Oceanic linguistics special publications has the problem that issues will not show up within templates.
  * Applies to both journal= and series= parameters.
