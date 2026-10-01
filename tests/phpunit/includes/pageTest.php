@@ -156,7 +156,8 @@ final class pageTest extends testBaseClass {
 
     public function testPageChangeSummary10(): void {
         $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-        $this->assertSame('Added contribution-url. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+        $this->assertSame('{{cite journal|contribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234 | mr=1234 }}', $page->parsed_text());
+        $this->assertSame('Add: mr, contribution-url. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
     public function testPageChangeSummary11(): void {
