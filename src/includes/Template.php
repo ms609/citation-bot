@@ -4166,9 +4166,13 @@ final class Template
                                 if ($this->get('work') === 'AP') {
                                        $this->set('work', 'AP News');
                                 } elseif ($this->get('work') === 'Associated Press') {
-                                    $this->set('work', 'Associated Press News');
+                                    $this->set('work', 'AP News');
                                 } elseif ($this->get('work') === '[[Associated Press]]') {
-                                    $this->set('work', '[[Associated Press News]]');
+                                    $this->set('work', '[[AP News]]');
+                                } elseif ($this->get('work') === 'Associated Press News') {
+                                    $this->set('work', 'AP News');
+                                } elseif ($this->get('work') === '[[Associated Press News]]') {
+                                    $this->set('work', '[[AP News]]');
                                 } elseif ($this->get('work') === '[[AP]]') {
                                     $this->set('work', '[[AP News]]');
                                 }
@@ -6121,6 +6125,12 @@ final class Template
                     }
                     if (mb_strtolower($this->get('work')) === 'nytimes' || mb_strtolower($this->get('work')) === 'nytimes.com') {
                         $this->set('work', '[[The New York Times]]');
+                    }
+                    if ($this->get('work') === 'Associated Press News') {
+                        $this->set('work', 'AP News');
+                    }
+                    if ($this->get('work') === '[[Associated Press News]]') {
+                        $this->set('work', '[[AP News]]');
                     }
 
                     switch ($this->wikiname()) {
