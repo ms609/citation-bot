@@ -1347,6 +1347,13 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('2343', $template->get2('mr'));
     }
 
+    public function testTidyContributionUrl(): void {
+        $text = "{{citation|contribution=Paper|contribution-url=https://www.researchgate.net/publication/123456_Some_Title}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('contribution-url');
+        $this->assertSame('https://www.researchgate.net/publication/123456', $template->get2('contribution-url'));
+    }
+
     public function testTidyAgency1(): void {
         $text = "{{cite web|agency=associated press|url=apnews.com}}";
         $template = $this->make_citation($text);

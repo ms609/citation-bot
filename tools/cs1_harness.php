@@ -456,6 +456,7 @@ function build_matrix(): array {
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
         ['Orphaned chapter-url-access removed', '{{cite journal |title=X |journal=J |chapter-url-access=free}}', 'pass'],
         ['Orphaned contribution-url-access removed', '{{cite journal |title=X |journal=J |contribution-url-access=free}}', 'pass'],
+        ['Contribution-url kept for citation contributions', '{{citation |title=Harness volume |contribution=Harness paper |contribution-url=https://example.test/paper |publisher=Harness |year=2020}}', 'pass'],
         ['url-access kept when base uses uppercase URL alias', '{{cite web |URL=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['url-access kept when base uses un-hyphenated alias', '{{cite web |url=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['chapter-url-access kept with chapter-url base', '{{cite book |title=X |chapter-url=https://example.com |chapter-url-access=free |year=2020}}', 'pass'],

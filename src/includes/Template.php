@@ -6673,11 +6673,14 @@ final class Template
                     }
                     return;
 
+                case 'contribution-url':
+                case 'contributionurl':
+                    clean_existing_urls($this, $param);
+                    return;
+
                 case 'article-url':
                 case 'conference-url':
                 case 'conferenceurl':
-                case 'contribution-url':
-                case 'contributionurl':
                 case 'entry-url':
                 case 'event-url':
                 case 'eventurl':
