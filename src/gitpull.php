@@ -137,6 +137,7 @@ function gitpull_page(string $message, bool $show_form, int $status, string $csr
     }
 
     echo '</main></body></html>';
+    echo PHP_EOL;
     flush();
     exit(0);
 }
