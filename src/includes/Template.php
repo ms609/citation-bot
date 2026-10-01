@@ -1952,6 +1952,10 @@ final class Template
                 return $this->add($param_name, $value);
 
             case 'chapter-url':
+            case 'contribution-url':
+                if (!$this->blank($param_name)) {
+                    return false;
+                }
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
                     if (str_i_same($value, $this->get($existing))) {
