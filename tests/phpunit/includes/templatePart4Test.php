@@ -1379,6 +1379,36 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('agency'));
     }
 
+    public function testTidyAgency5(): void {
+        $text = "{{cite news|agency=Associated Press News|url=https://apnews.com/article/example}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('agency');
+        $this->assertSame('AP News', $template->get2('work'));
+        $this->assertNull($template->get2('agency'));
+    }
+
+    public function testTidyAgency6(): void {
+        $text = "{{cite news|agency=[[Associated Press News]]|url=https://apnews.com/article/example}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('agency');
+        $this->assertSame('[[AP News]]', $template->get2('work'));
+        $this->assertNull($template->get2('agency'));
+    }
+
+    public function testTidyWorkAssociatedPressNews(): void {
+        $text = "{{cite news|work=Associated Press News}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('work');
+        $this->assertSame('AP News', $template->get2('work'));
+    }
+
+    public function testTidyWorkLinkedAssociatedPressNews(): void {
+        $text = "{{cite news|work=[[Associated Press News]]}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('work');
+        $this->assertSame('[[AP News]]', $template->get2('work'));
+    }
+
     public function testTidyClass(): void {
         $text = "{{cite web|class=|series=X}}";
         $template = $this->make_citation($text);
