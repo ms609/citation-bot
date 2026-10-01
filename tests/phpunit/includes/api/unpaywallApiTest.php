@@ -169,4 +169,24 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertFalse($template->add_if_new('chapter-url', 'https://new.example/y'));
         $this->assertSame('https://old.example/x', $template->get2('chapter-url'));
     }
+
+    public function testAddIfNewContributionUrlBlockedByChapterUrl(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|chapter-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('contribution-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('contribution-url'));
+        $this->assertSame('https://old.example/x', $template->get2('chapter-url'));
+    }
+
+    public function testAddIfNewChapterUrlBlockedByContributionUrl(): void {
+        $template = $this->make_citation('{{citation|chapter=Paper|contribution-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('chapter-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('chapter-url'));
+        $this->assertSame('https://old.example/x', $template->get2('contribution-url'));
+    }
+
+    public function testAddIfNewContributionUrlBlockedByEntryUrl(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|entry-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('contribution-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('contribution-url'));
+    }
 }

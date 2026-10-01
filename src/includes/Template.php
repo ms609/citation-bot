@@ -1953,7 +1953,7 @@ final class Template
 
             case 'chapter-url':
             case 'contribution-url':
-                if (!$this->blank($param_name)) {
+                if (!$this->blank(CHAPTER_URL_ALIASES)) {
                     return false;
                 }
                 $value = sanitize_string($value);

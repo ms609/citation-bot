@@ -408,6 +408,7 @@ const ARXIV_ALIASES = ['arxiv', 'eprint'];
 const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
 const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
 const CHAPTER_ALIASES_AND_SCRIPT = ['chapter', 'contribution', 'article', 'entry', 'section', 'script-chapter'];
+const CHAPTER_URL_ALIASES = ['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'entry-url', 'entryurl', 'article-url', 'section-url', 'sectionurl'];
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
