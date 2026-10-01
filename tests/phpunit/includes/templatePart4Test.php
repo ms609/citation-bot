@@ -1359,7 +1359,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $text = "{{cite web|agency=Associated Press|url=apnews.com}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
-        $this->assertSame('Associated Press News', $template->get2('work'));
+        $this->assertSame('AP News', $template->get2('work'));
         $this->assertNull($template->get2('agency'));
     }
 
@@ -1368,6 +1368,14 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $template->tidy_parameter('agency');
         $this->assertSame('AP News', $template->get2('work'));
+        $this->assertNull($template->get2('agency'));
+    }
+
+    public function testTidyAgency4(): void {
+        $text = "{{cite news|agency=[[Associated Press]]|url=https://apnews.com/article/example}}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('agency');
+        $this->assertSame('[[AP News]]', $template->get2('work'));
         $this->assertNull($template->get2('agency'));
     }
 
