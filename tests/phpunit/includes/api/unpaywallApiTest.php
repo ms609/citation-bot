@@ -43,6 +43,15 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    public function testZungDoiWithUnrelatedRepositoryHandleIsRejectedWithoutARequest(): void {
+        $doi = '10.1001/archpsyc.1965.01720310065008';
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $this->assertSame('wrong', get_unpaywall_url($template, $doi));
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('hdl'));
+        $this->assertNull($template->get2('hdl-access'));
+    }
+
     public function testOpenAccessLookupSkipsCitationsThatAlreadyHaveEnoughInformation(): void {
         $citations = [
             'missing DOI' => '{{cite journal|title=No DOI}}',
