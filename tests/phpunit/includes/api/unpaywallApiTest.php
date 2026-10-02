@@ -43,6 +43,10 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    public function testBadOaUrlEntriesAreLowercase(): void {
+        $this->assertSame(BAD_OA_URL, array_map('mb_strtolower', BAD_OA_URL));
+    }
+
     public function testResnetDoiWithUnrelatedThesisIsRejectedWithoutARequest(): void {
         foreach (['10.1109/CVPR.2016.90', '10.1109/cvpr.2016.90'] as $doi) {
             $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
