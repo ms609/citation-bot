@@ -43,6 +43,15 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    public function testResnetDoiWithUnrelatedThesisIsRejectedWithoutARequest(): void {
+        foreach (['10.1109/CVPR.2016.90', '10.1109/cvpr.2016.90'] as $doi) {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            $this->assertSame('wrong', get_unpaywall_url($template, $doi));
+            $this->assertNull($template->get2('url'));
+            $this->assertNull($template->get2('chapter-url'));
+        }
+    }
+
     public function testZungDoiWithUnrelatedRepositoryHandleIsRejectedWithoutARequest(): void {
         $doi = '10.1001/archpsyc.1965.01720310065008';
         $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');

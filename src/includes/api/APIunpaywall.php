@@ -58,7 +58,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
     if ($ch_oa === null) {
         $ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT], 4 * 1024 * 1024);
     }
-    if (in_array($doi, BAD_OA_URL, true)) {
+    if (in_array(mb_strtolower($doi), BAD_OA_URL, true)) {
         return 'wrong';
     } // TODO - maybe all ISBN
     set_time_limit(120);
