@@ -1952,6 +1952,10 @@ final class Template
                 return $this->add($param_name, $value);
 
             case 'chapter-url':
+            case 'contribution-url':
+                if (!$this->blank(CHAPTER_URL_ALIASES)) {
+                    return false;
+                }
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
                     if (str_i_same($value, $this->get($existing))) {
@@ -6679,11 +6683,14 @@ final class Template
                     }
                     return;
 
+                case 'contribution-url':
+                case 'contributionurl':
+                    clean_existing_urls($this, $param);
+                    return;
+
                 case 'article-url':
                 case 'conference-url':
                 case 'conferenceurl':
-                case 'contribution-url':
-                case 'contributionurl':
                 case 'entry-url':
                 case 'event-url':
                 case 'eventurl':
@@ -8056,6 +8063,16 @@ final class Template
             if ($par === 'chapter-url' || $par === 'chapterurl') {
                 $this->forgetter('chapter-format', $echo_forgetting);
                 $this->forgetter('chapter-url-access', $echo_forgetting);
+                if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+                    $this->forgetter('accessdate', $echo_forgetting);
+                    $this->forgetter('access-date', $echo_forgetting);
+                    $this->forgetter('archive-url', $echo_forgetting);
+                    $this->forgetter('archiveurl', $echo_forgetting);
+                }
+            }
+            if ($par === 'contribution-url' || $par === 'contributionurl') {
+                $this->forgetter('contribution-format', $echo_forgetting);
+                $this->forgetter('contribution-url-access', $echo_forgetting);
                 if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
                     $this->forgetter('accessdate', $echo_forgetting);
                     $this->forgetter('access-date', $echo_forgetting);

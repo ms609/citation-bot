@@ -30,6 +30,12 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
         } elseif ($template->has('chapterurl')) {
             $url = $template->get('chapterurl'); // @codeCoverageIgnore
             $url_type = 'chapterurl';      // @codeCoverageIgnore
+        } elseif ($template->has('contribution-url')) {
+            $url = $template->get('contribution-url');
+            $url_type = 'contribution-url';
+        } elseif ($template->has('contributionurl')) {
+            $url = $template->get('contributionurl');
+            $url_type = 'contributionurl';
         } else {
             $url = '';
             $url_type = '';

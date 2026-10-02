@@ -140,4 +140,62 @@ final class unpaywallApiTest extends testBaseClass {
         get_unpaywall_url($template, $template->get('doi'));
         $this->assertNull($template->get2('url'));
     }
+
+    public function testUnpaywallOaUrlParameter(): void {
+        $chapter = $this->make_citation('{{citation|chapter=Paper|title=Book}}');
+        $contribution = $this->make_citation('{{citation|contribution=Paper|title=Book}}');
+        $both = $this->make_citation('{{citation|chapter=Paper|contribution=Other|title=Book}}');
+        $plain = $this->make_citation('{{citation|title=Book}}');
+        $blankContribution = $this->make_citation('{{citation|contribution=|title=Book}}');
+        $chapterDoi = '10.1007/978-3-642-03456-5_19';
+        $plainDoi = '10.1000/example';
+        $this->assertSame('chapter-url', unpaywall_oa_url_parameter($chapter, $chapterDoi, 'https://example.test/copy'));
+        $this->assertSame('chapter-url', unpaywall_oa_url_parameter($both, $chapterDoi, 'https://example.test/copy'));
+        $this->assertSame('contribution-url', unpaywall_oa_url_parameter($contribution, $chapterDoi, 'https://example.test/copy'));
+        $this->assertSame('contribution-url', unpaywall_oa_url_parameter($contribution, $plainDoi, 'https://example.test/eprints/123'));
+        $this->assertSame('contribution-url', unpaywall_oa_url_parameter($contribution, $plainDoi, 'https://example.test/chapter/123'));
+        $this->assertSame('url', unpaywall_oa_url_parameter($contribution, $plainDoi, 'https://example.test/copy'));
+        $this->assertSame('url', unpaywall_oa_url_parameter($both, $plainDoi, 'https://example.test/copy'));
+        $this->assertSame('url', unpaywall_oa_url_parameter($plain, $chapterDoi, 'https://example.test/copy'));
+        $this->assertSame('url', unpaywall_oa_url_parameter($blankContribution, $chapterDoi, 'https://example.test/copy'));
+    }
+
+    public function testAddIfNewContributionUrl(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|title=Book}}');
+        $this->assertTrue($template->add_if_new('contribution-url', 'https://example.test/paper'));
+        $this->assertSame('https://example.test/paper', $template->get2('contribution-url'));
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testAddIfNewContributionUrlDoesNotReplaceExisting(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|contribution-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('contribution-url', 'https://new.example/y'));
+        $this->assertSame('https://old.example/x', $template->get2('contribution-url'));
+    }
+
+    public function testAddIfNewChapterUrlDoesNotReplaceExisting(): void {
+        $template = $this->make_citation('{{citation|chapter=Paper|chapter-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('chapter-url', 'https://new.example/y'));
+        $this->assertSame('https://old.example/x', $template->get2('chapter-url'));
+    }
+
+    public function testAddIfNewContributionUrlBlockedByChapterUrl(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|chapter-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('contribution-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('contribution-url'));
+        $this->assertSame('https://old.example/x', $template->get2('chapter-url'));
+    }
+
+    public function testAddIfNewChapterUrlBlockedByContributionUrl(): void {
+        $template = $this->make_citation('{{citation|chapter=Paper|contribution-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('chapter-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('chapter-url'));
+        $this->assertSame('https://old.example/x', $template->get2('contribution-url'));
+    }
+
+    public function testAddIfNewContributionUrlBlockedByEntryUrl(): void {
+        $template = $this->make_citation('{{citation|contribution=Paper|entry-url=https://old.example/x|title=Book}}');
+        $this->assertFalse($template->add_if_new('contribution-url', 'https://new.example/y'));
+        $this->assertNull($template->get2('contribution-url'));
+    }
 }

@@ -36,6 +36,23 @@ function normalize_unpaywall_handle_url(string $url): string {
     return $url;
 }
 
+function unpaywall_oa_url_parameter(Template $template, string $doi, string $oa_url): string {
+    if ($template->blank(['chapter', 'contribution'])) {
+        return 'url';
+    }
+    if (
+        !preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) &&
+        mb_strpos($oa_url, 'eprints') === false &&
+        mb_strpos($oa_url, 'chapter') === false
+    ) {
+        return 'url';
+    }
+    if ($template->blank('chapter')) {
+        return 'contribution-url';
+    }
+    return 'chapter-url';
+}
+
 function get_unpaywall_url(Template $template, string $doi): string {
     static $ch_oa = null;
     if ($ch_oa === null) {
@@ -212,12 +229,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
                     }
                 }
             }
-            $url_type = 'url';
-            if ($template->has('chapter')) {
-                if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) || mb_strpos($oa_url, 'eprints') !== false || mb_strpos($oa_url, 'chapter') !== false) {
-                      $url_type = 'chapter-url';
-                }
-            }
+            $url_type = unpaywall_oa_url_parameter($template, $doi, $oa_url);
             $has_url_already = $template->has($url_type);
             $template->add_if_new($url_type, $oa_url); // Will check for PMCs etc hidden in URL
             if ($template->has($url_type) && !$has_url_already) {

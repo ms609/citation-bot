@@ -147,6 +147,15 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
+    public function testDropContributionUrlThatMatchesFreeDoiProxy(): void {
+        foreach (['contribution-url', 'contributionurl'] as $url_param) {
+            $template = $this->make_citation('{{cite journal|title=Article|journal=Journal|volume=1|issue=1|year=2020|doi=10.7717/peerj.3486|doi-access=free|contribution=Paper|' . $url_param . '=https://doi.library.ubc.ca/10.7717/peerj.3486}}');
+            $templates = [$template];
+            drop_urls_that_match_dois($templates);
+            $this->assertNull($template->get2($url_param));
+        }
+    }
+
     public function testURLCleanUp3(): void {
         $text = '{{cite book|url=https://ieeexplore.ieee.org/arnumber=1}}';
         $template = $this->make_citation($text);
