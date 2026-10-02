@@ -1354,6 +1354,18 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('https://www.researchgate.net/publication/123456', $template->get2('contribution-url'));
     }
 
+    public function testTidyContributionUrlDropsPairedMetadata(): void {
+        foreach (['contribution-url', 'contributionurl'] as $url_param) {
+            $text = "{{citation|contribution=Paper|{$url_param}=https://watermark.silverchair.com/rubbish|contribution-format=PDF|contribution-url-access=free|access-date=2020-01-01}}";
+            $template = $this->make_citation($text);
+            $template->tidy_parameter($url_param);
+            $this->assertNull($template->get2($url_param));
+            $this->assertNull($template->get2('contribution-format'));
+            $this->assertNull($template->get2('contribution-url-access'));
+            $this->assertNull($template->get2('access-date'));
+        }
+    }
+
     public function testTidyAgency1(): void {
         $text = "{{cite web|agency=associated press|url=apnews.com}}";
         $template = $this->make_citation($text);

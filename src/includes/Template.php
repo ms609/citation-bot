@@ -8060,6 +8060,16 @@ final class Template
                     $this->forgetter('archiveurl', $echo_forgetting);
                 }
             }
+            if ($par === 'contribution-url' || $par === 'contributionurl') {
+                $this->forgetter('contribution-format', $echo_forgetting);
+                $this->forgetter('contribution-url-access', $echo_forgetting);
+                if ($this->blank(array_diff(ALL_URL_TYPES, [$par]))) {
+                    $this->forgetter('accessdate', $echo_forgetting);
+                    $this->forgetter('access-date', $echo_forgetting);
+                    $this->forgetter('archive-url', $echo_forgetting);
+                    $this->forgetter('archiveurl', $echo_forgetting);
+                }
+            }
         } // even if blank try to remove
         if ($par === 'doi') {
             foreach (DOI_BROKEN_ALIASES as $broke) {
