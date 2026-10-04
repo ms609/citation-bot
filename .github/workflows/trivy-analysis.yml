@@ -30,12 +30,14 @@ jobs:
           scan-type: 'fs'
           scanners: 'vuln,misconfig,secret'
           ignore-unfixed: true
+          exit-code: '1'
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
           severity: 'CRITICAL'
           trivyignores: '.trivyignore'
 
       - name: Check Trivy scan results existence
+        if: ${{ always() }}
         run: |
           if [ ! -f "${{ env.SARIF_FILE }}" ]; then
             echo "Error: ${{ env.SARIF_FILE }} does not exist."
@@ -44,6 +46,7 @@ jobs:
           ls -lash ${{ env.SARIF_FILE }}
 
       - name: Upload Trivy scan results to GitHub Security tab
+        if: ${{ always() && hashFiles(env.SARIF_FILE) != '' }}
         uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           sarif_file: ${{ env.SARIF_FILE }}
