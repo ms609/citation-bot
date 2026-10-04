@@ -6,6 +6,13 @@ on:
   pull_request:
   workflow_dispatch:
   push:
+    branches: [ master ]
+  schedule:
+    - cron: '55 17 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   SARIF_FILE: 'trivy-results.sarif'
@@ -26,14 +33,13 @@ jobs:
       - name: Run Trivy vulnerability scanner on the cloned repository files
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          version: 'v0.dfsa70.0'
           scan-type: 'fs'
           scanners: 'vuln,misconfig,secret'
           ignore-unfixed: true
           exit-code: '1'
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
-          severity: 'CRITICAL'
+          severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
 
       - name: Check Trivy scan results existence
