@@ -6,18 +6,6 @@ AVD-DS-0026
 
 # --- Docker image scan only (OS packages, not applicable to filesystem scan) ---
 
-# Perl CVEs - no fix available in Debian bookworm (no DSA planned or postponed)
-CVE-2026-8376
-CVE-2026-57433
-CVE-2026-42496
-CVE-2026-13221
-CVE-2026-9538
-CVE-2026-57432
-CVE-2026-48962
-CVE-2026-42497
-CVE-2026-48959
-CVE-2026-48961
-
 # Unbound CVEs - not running as a service in this container
 CVE-2026-50252
 CVE-2026-56444
@@ -43,10 +31,6 @@ CVE-2026-41637
 CVE-2026-40691
 CVE-2026-32665
 CVE-2026-14586
-
-# libxml2 CVEs - postponed by Debian (minor issue)
-CVE-2026-6653
-CVE-2026-11979
 
 # libblkid/util-linux CVEs - integer overflow in DOS partition parser (not exploitable)
 CVE-2026-53615
