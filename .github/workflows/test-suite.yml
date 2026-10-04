@@ -103,7 +103,6 @@ jobs:
         # These settings provide modest speedup while maintaining code coverage capabilities
 
     - name: Cache Composer dependencies
-      id: composer-cache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: vendor
@@ -174,7 +173,6 @@ jobs:
         extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml, pcntl, uopz
 
     - name: Cache Composer dependencies
-      id: composer-cache
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: vendor
