@@ -163,11 +163,7 @@ not reorder FastCGI requests after they reach the web server.
 - **Lock-protocol migration:** the first deployment that changes from locking
   `big-run.json` directly to permanent `big-run.lock` must be drained: stop the
   web service, let old php-cgi requests exit, update while stopped, clear the
-  old state snapshot, then restart. V5.9 does not change the state schema or
-  lock-inode protocol relative to v5.8, so a v5.8 -> v5.9 deployment requires no
-  state deletion or migration. Apply release changes from a clean reviewed tree,
-  quiesce the web service while replacing the gate code, run the validation
-  suite, then restart workers.
+  old state snapshot, then restart.
 - **CLI assumption:** CLI work bypasses the web admission gate only while it
   does not consume the same constrained web-worker envelope.
 - **Observability:** structured reasons distinguish `probe_full`, `total_full`,
