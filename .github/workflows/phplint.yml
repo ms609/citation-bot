@@ -8,6 +8,7 @@ on:
       - '.phplint.yml'
       - 'composer.json'
       - 'composer.lock'
+      - '.github/workflows/phplint.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -15,6 +16,7 @@ on:
       - '.phplint.yml'
       - 'composer.json'
       - 'composer.lock'
+      - '.github/workflows/phplint.yml'
   schedule:
     - cron: '0 18 * * 1'
 

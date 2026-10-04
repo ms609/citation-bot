@@ -8,6 +8,7 @@ on:
       - '.phan/**'
       - 'composer.json'
       - 'composer.lock'
+      - '.github/workflows/phan.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -15,6 +16,7 @@ on:
       - '.phan/**'
       - 'composer.json'
       - 'composer.lock'
+      - '.github/workflows/phan.yml'
   schedule:
     - cron: '5 18 * * 1'
 

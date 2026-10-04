@@ -5,10 +5,12 @@ on:
     branches: [ master ]
     paths:
       - '**/*.sh'
+      - '.github/workflows/shellcheck.yml'
   pull_request:
     branches: [ master ]
     paths:
       - '**/*.sh'
+      - '.github/workflows/shellcheck.yml'
   schedule:
     - cron: '50 17 * * 1'
   workflow_dispatch:

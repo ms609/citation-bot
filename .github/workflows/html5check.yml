@@ -7,12 +7,14 @@ on:
             - 'src/index.php'
             - 'src/preview.html'
             - 'src/assets/**'
+            - '.github/workflows/html5check.yml'
     pull_request:
         branches: [ master ]
         paths:
             - 'src/index.php'
             - 'src/preview.html'
             - 'src/assets/**'
+            - '.github/workflows/html5check.yml'
     schedule:
         - cron: '45 17 * * 1'
 

@@ -11,6 +11,7 @@ on:
       - 'composer.lock'
       - 'src/**'
       - '.trivyignore'
+      - '.github/workflows/docker-build.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -21,6 +22,7 @@ on:
       - 'composer.lock'
       - 'src/**'
       - '.trivyignore'
+      - '.github/workflows/docker-build.yml'
   schedule:
     - cron: '40 17 * * 1'
 
