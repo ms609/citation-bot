@@ -6,6 +6,13 @@ on:
   pull_request:
   workflow_dispatch:
   push:
+    branches: [ master ]
+  schedule:
+    - cron: '55 17 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   SARIF_FILE: 'trivy-results.sarif'
@@ -33,7 +40,7 @@ jobs:
           exit-code: '1'
           format: 'sarif'
           output: ${{ env.SARIF_FILE }}
-          severity: 'CRITICAL'
+          severity: 'CRITICAL,HIGH'
           trivyignores: '.trivyignore'
 
       - name: Check Trivy scan results existence
