@@ -13,7 +13,9 @@ updates:
       semver-patch-days: 3
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/setup-php-composer"
     schedule:
       interval: "weekly"
     cooldown:
