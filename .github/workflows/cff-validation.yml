@@ -29,6 +29,11 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.13'
+
       # cffconvert 2.0.0 validates CFF 1.2.0 and bundles the corresponding
       # JSON schema. Using the CLI here avoids introducing another GitHub
       # Action dependency solely for schema validation.
@@ -37,7 +42,7 @@ jobs:
       # OpenSSF Scorecard's Pinned-Dependencies check requires for pipCommand.
       - name: Install cffconvert
         run: >-
-          python3 -m pip install --disable-pip-version-check
+          python -m pip install --disable-pip-version-check
           --require-hashes
           --no-cache-dir
           -r .github/cffconvert-requirements.txt
@@ -47,7 +52,7 @@ jobs:
       # not re-check constraints, so this guards against a dependency bump that
       # still installs but violates the closure.
       - name: Check installed package constraints
-        run: python3 -m pip check
+        run: python -m pip check
 
       - name: Validate CITATION.cff
         run: cffconvert --validate --infile CITATION.cff
