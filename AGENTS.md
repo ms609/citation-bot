@@ -613,5 +613,5 @@ The bot has reached a stable, feature-complete state. It reliably processes Wiki
 
 ---
 
-**Last updated:** August 2026
+**Last updated:** October 2026
 **Maintained by:** Citation Bot community
