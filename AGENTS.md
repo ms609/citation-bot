@@ -200,10 +200,7 @@ and does not reorder already-arrived FastCGI requests.
 - **Deployment:** local JSON + `flock()` is single-instance/shared-filesystem
   only. Horizontal replicas require shared transactional state. Preserve the
   drained migration procedure for the historical direct-json-lock -> permanent
-  lock-inode transition. V5.9 keeps the v5.8 state schema and lock inode; routine
-  v5.8 -> v5.9 deployment needs no state deletion, but gate-code replacement
-  should occur from a clean reviewed tree with the web workers quiesced and the
-  validation suite run before restart.
+  lock-inode transition.
 - **Code:** state/admission in `RequestRateLimit.php`; web policy/buffering in
   `WebTools.php`; discovery in `WikipediaBot.php`; per-user large ownership in
   `big_jobs.php`.
