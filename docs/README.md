@@ -255,7 +255,7 @@ Includes (under `src/includes/`):
 - A good balance between splitting functionality into single files and avoiding too many files should be maintained.
 - The code is generally NOT written densely.
 - Beware assignments in conditionals, one-line `if`/`foreach`/`else` statements, and action taking place through method calls that take place in assignments or equality checks.
-- Also beware the difference between `else if` and `elseif`.
+- Use `elseif`, not `else if`.
 
 ## Deployment
 
