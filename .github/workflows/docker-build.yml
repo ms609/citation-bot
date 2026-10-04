@@ -58,10 +58,20 @@ jobs:
     - name: Smoke test (verify PHP and Apache are functional)
       run: |
         docker compose exec -T php php -r "echo 'PHP OK';"
-        docker compose exec -T php php -m | grep -q curl && echo 'curl extension OK'
-        docker compose exec -T php php -m | grep -q mbstring && echo 'mbstring extension OK'
-        docker compose exec -T php php -m | grep -q xdebug && echo 'xdebug extension OK'
+        docker compose exec -T php php -r '
+          foreach (["curl", "mbstring", "xdebug"] as $extension) {
+              if (!extension_loaded($extension)) {
+                  fwrite(STDERR, $extension . " extension missing\n");
+                  exit(1);
+              }
+              echo $extension . " extension OK\n";
+          }
+        '
         docker compose exec -T php composer --version
+        curl --fail --silent --show-error \
+          --retry 10 --retry-connrefused --retry-delay 1 \
+          http://localhost:8081/ >/dev/null
+        echo 'Apache HTTP OK'
 
     - name: Tear down container
       if: always()
