@@ -1,11 +1,11 @@
 name: Harden Runner audit
 
-# This workflow is an audit/rollout workflow. It discovers the outbound
-# endpoints needed for a normal Citation Bot Composer setup.
+# This workflow audits outbound endpoints needed for a normal Citation Bot
+# Composer setup. The full test jobs also run Harden Runner in audit mode as
+# their first step so secret-bearing jobs get the same runner instrumentation.
 #
-# After reviewing the StepSecurity egress report, add the same Harden Runner
-# step as the FIRST step of the existing jobs that handle secrets (especially
-# the full-test job). A standalone workflow cannot harden another job's runner.
+# Keep this focused workflow to make dependency-setup egress changes easy to
+# review before tightening policies from audit to block.
 
 on:
   pull_request:
