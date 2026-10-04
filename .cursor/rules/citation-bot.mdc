@@ -1,6 +1,6 @@
 ---
 description: Citation Bot project context and conventions
-globs: "*.php"
+globs: "**/*.php"
 ---
 # Citation Bot
 
