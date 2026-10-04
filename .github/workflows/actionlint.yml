@@ -30,3 +30,9 @@ jobs:
 
     - name: Run actionlint
       uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2.2.0
+      with:
+        # actionlint 1.7.12 predates GitHub's $/ self-repository syntax.
+        # Remove this narrow workaround once rhysd/actionlint#711 is released.
+        flags: >-
+          -ignore
+          specifying[ ]action[ ]"\$/\.github/actions/setup-php-composer"[ ]in[ ]invalid[ ]format[ ]because[ ]ref[ ]is[ ]missing
