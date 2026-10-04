@@ -1,0 +1,51 @@
+name: Setup PHP and Composer
+description: Configure PHP, restore Composer dependencies, validate the lockfile, and install dependencies.
+
+inputs:
+  php-version:
+    description: PHP version to install.
+    required: true
+  coverage:
+    description: Coverage driver passed to setup-php.
+    required: false
+    default: none
+  extensions:
+    description: PHP extensions passed to setup-php.
+    required: false
+    default: ''
+  ini-values:
+    description: PHP ini settings passed to setup-php.
+    required: false
+    default: ''
+  cache-key:
+    description: Exact actions/cache key for the vendor directory.
+    required: true
+  restore-keys:
+    description: Prefixes used to restore compatible Composer caches.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+      with:
+        php-version: ${{ inputs.php-version }}
+        coverage: ${{ inputs.coverage }}
+        extensions: ${{ inputs.extensions }}
+        ini-values: ${{ inputs.ini-values }}
+
+    - name: Cache Composer dependencies
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: vendor
+        key: ${{ inputs.cache-key }}
+        restore-keys: ${{ inputs.restore-keys }}
+
+    - name: Validate composer.json and composer.lock
+      shell: bash
+      run: composer validate
+
+    - name: Install dependencies
+      shell: bash
+      run: composer install --no-interaction --no-progress --prefer-dist

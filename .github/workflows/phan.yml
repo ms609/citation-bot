@@ -9,6 +9,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - '.github/workflows/phan.yml'
+      - '.github/actions/setup-php-composer/**'
   pull_request:
     branches: [ master ]
     paths:
@@ -17,6 +18,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - '.github/workflows/phan.yml'
+      - '.github/actions/setup-php-composer/**'
   schedule:
     - cron: '5 18 * * 1'
 
@@ -38,25 +40,14 @@ jobs:
       with:
         persist-credentials: false
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+    - name: Setup PHP and Composer
+      uses: ./.github/actions/setup-php-composer
       with:
         php-version: '8.4'
         extensions: ast
-        coverage: none
-
-    - name: Cache Composer dependencies
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-      with:
-        path: vendor
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        cache-key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
-    - name: Validate composer.json and composer.lock
-      run: composer validate
-
-    - name: Install dependencies
-      run: composer install -vvv --no-progress
 
     - name: PHP phan
       run: composer run phan
