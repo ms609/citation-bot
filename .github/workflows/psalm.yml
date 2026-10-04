@@ -8,6 +8,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'psalm.xml'
+      - '.github/workflows/psalm.yml'
   pull_request:
     branches: [ master ]
     paths:
@@ -15,6 +16,7 @@ on:
       - 'composer.json'
       - 'composer.lock'
       - 'psalm.xml'
+      - '.github/workflows/psalm.yml'
   schedule:
     - cron: '15 18 * * 1'
 

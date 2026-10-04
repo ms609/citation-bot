@@ -5,12 +5,14 @@ on:
     paths:
       - "composer.json"
       - "composer.lock"
+      - ".github/workflows/composer-audit.yml"
   push:
     branches:
       - master
     paths:
       - "composer.json"
       - "composer.lock"
+      - ".github/workflows/composer-audit.yml"
   schedule:
     - cron: "17 6 * * 1"
   workflow_dispatch:

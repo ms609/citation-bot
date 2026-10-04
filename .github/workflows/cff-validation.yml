@@ -5,12 +5,14 @@ on:
     paths:
       - "CITATION.cff"
       - ".github/cffconvert-requirements.txt"
+      - ".github/workflows/cff-validation.yml"
   push:
     branches:
       - master
     paths:
       - "CITATION.cff"
       - ".github/cffconvert-requirements.txt"
+      - ".github/workflows/cff-validation.yml"
   workflow_dispatch:
 
 permissions: {}
