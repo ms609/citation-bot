@@ -78,6 +78,7 @@ concurrency:
 jobs:
   test-8-4:
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -136,6 +137,7 @@ jobs:
     if: github.event_name == 'schedule'
     continue-on-error: true
     runs-on: ubuntu-24.04
+    timeout-minutes: 90
 
     steps:
     - name: Harden runner (audit outbound calls)
