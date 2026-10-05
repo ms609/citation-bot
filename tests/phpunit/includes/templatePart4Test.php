@@ -2652,6 +2652,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('website'));
         $template->finalize_cookie_absent_citation();
         $this->assertSame('Rebuilt title', $template->get2('title'));
+        $this->assertTrue($template->modifications()['cookie_absent']);
     }
 
     public function testCookieAbsentConflictingDoisLeavesCitationUntouched(): void {

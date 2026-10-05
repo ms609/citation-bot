@@ -360,10 +360,13 @@ final class Template
                 $doi_parameter = $parameter;
             }
         }
-        if ($doi_parameter === null || preg_match('~^10\.\d{4,9}/\S+$~', $clean_doi) !== 1 || doi_works($clean_doi) !== true) {
+        if ($doi_parameter === null || preg_match('~^10\.\d{4,9}/\S+$~', $clean_doi) !== 1) {
             return;
         }
         if (preg_match(REGEXP_DOI_ISSN_ONLY, $clean_doi) || isset(BAD_DOI_ARRAY[$clean_doi]) || mb_strpos($clean_doi, '10.2307') === 0) {
+            return;
+        }
+        if (doi_works($clean_doi) !== true) {
             return;
         }
         if (doi_active($clean_doi) !== true) {
