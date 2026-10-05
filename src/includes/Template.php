@@ -319,7 +319,7 @@ final class Template
 
     private function cookie_absent_url(string $value): bool {
         return preg_match('~^https?://\S+$~i', $value) === 1 &&
-            preg_match('~/action/cookieabsent(?:[/?#&]|$)~i', $value) === 1;
+            preg_match('~/action/cookieabsent(?:[/?#&;]|$)~i', $value) === 1;
     }
 
     private function remove_cookie_absent_citation_junk(): void {
@@ -409,18 +409,29 @@ final class Template
     }
 
     private function cookie_absent_rebuild_succeeded(): bool {
-        $title = $this->get_without_comments_and_placeholders('title');
+        $present = [];
+        $title = '';
+        $title_seen = false;
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            $value = $this->cookie_absent_parameter_value($parameter);
+            if ($name === 'title' && !$title_seen) {
+                $title = $value;
+                $title_seen = true;
+            }
+            if ($value !== '') {
+                $present[$name] = true;
+            }
+        }
         if ($title === '' || str_i_same($title, 'none')) {
             return false;
         }
-        return !$this->blank([
-            ...WORK_ALIASES,
-            ...ALL_URL_TYPES,
-            ...CHAPTER_ALIASES,
-            'book-title',
-            'isbn',
-            'publisher',
-        ]);
+        foreach ([...WORK_ALIASES, ...ALL_URL_TYPES, ...CHAPTER_ALIASES, 'book-title', 'isbn', 'publisher'] as $context_param) {
+            if (isset($present[$context_param])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function finalize_cookie_absent_citation(): void {
@@ -464,8 +475,8 @@ final class Template
                     $this->rename('first', 'author1');
                 }
             }
-            $this->prepare_cookie_absent_citation();
         }
+        $this->prepare_cookie_absent_citation();
         if ($this->should_be_processed()) {
             // Remove empty duplicate parameters by checking the ALL_ALIASES list
             if (!empty($this->param)) {
