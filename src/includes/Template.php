@@ -4848,7 +4848,6 @@ final class Template
                             $this->add_if_new('doi-access', 'free');
                         }
                     }
-                    $this->doi_free_check_annual_reviews($doi);
                     // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
                     $this->doi_free_check_conditional($doi);
                     /** } */
@@ -7770,28 +7769,6 @@ final class Template
                         }
                     }
                 }
-            }
-        }
-    }
-
-    /** Applies the curated Annual Reviews permanent-OA volume rules. */
-    private function doi_free_check_annual_reviews(string $doi): void {
-        if (preg_match('~^10\.1146/annurev-([a-z0-9]+)-~i', $doi, $matches) !== 1) {
-            return;
-        }
-        $pub_year = $this->pub_year_extended();
-        if ($pub_year === 0) {
-            return;
-        }
-        $journal_code = mb_strtolower($matches[1]);
-        foreach ([$journal_code, '*'] as $rule_code) {
-            if (!isset(DOI_FREE_ANNUAL_REVIEWS[$rule_code])) {
-                continue;
-            }
-            $rule = DOI_FREE_ANNUAL_REVIEWS[$rule_code];
-            if ($pub_year >= $rule['from_year'] && $pub_year <= $rule['to_year']) {
-                $this->add_if_new('doi-access', 'free');
-                return;
             }
         }
     }
