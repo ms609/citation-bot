@@ -2548,6 +2548,101 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNotNull($template->get2('title'));
     }
 
+    public function testCookieAbsentPreservesMixedCaseAccessDependencies(): void {
+        HandleCache::$cache_good['10.9999/cookie.case'] = true;
+        HandleCache::$cache_active['10.9999/cookie.case'] = true;
+        $text = '{{cite journal |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |DOI=10.9999/cookie.case |DOI-access=free |PMC=1234567 |pmc-embargo-date=2030-01-01}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('10.9999/cookie.case', $template->get2('doi'));
+        $this->assertSame('free', $template->get2('doi-access'));
+        $this->assertSame('1234567', $template->get2('pmc'));
+        $this->assertSame('2030-01-01', $template->get2('pmc-embargo-date'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testCookieAbsentInLaterDuplicateUrlTriggers(): void {
+        HandleCache::$cache_good['10.9999/cookie.duplicate'] = true;
+        HandleCache::$cache_active['10.9999/cookie.duplicate'] = true;
+        $text = '{{cite web |title=Sage Journals |url=https://example.test/article |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.duplicate}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('10.9999/cookie.duplicate', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentProseDoesNotTrigger(): void {
+        HandleCache::$cache_good['10.9999/cookie.prose'] = true;
+        HandleCache::$cache_active['10.9999/cookie.prose'] = true;
+        $text = '{{cite web |title=Handling cookieAbsent sessions |url=https://example.test/article |doi=10.9999/cookie.prose}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('Handling cookieAbsent sessions', $template->get2('title'));
+        $this->assertSame('https://example.test/article', $template->get2('url'));
+    }
+
+    public function testCookieAbsentEntryurlTriggers(): void {
+        HandleCache::$cache_good['10.9999/cookie.entryurl'] = true;
+        HandleCache::$cache_active['10.9999/cookie.entryurl'] = true;
+        $text = '{{cite book |title=Book |entryurl=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.entryurl}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('entryurl'));
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('title'));
+        $this->assertSame('10.9999/cookie.entryurl', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentUrlValuedWebsiteTriggers(): void {
+        HandleCache::$cache_good['10.9999/cookie.website'] = true;
+        HandleCache::$cache_active['10.9999/cookie.website'] = true;
+        $text = '{{cite web |title=Sage Journals |website=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.website}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('title'));
+        $this->assertSame('10.9999/cookie.website', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentFailedRebuildRestoresOriginalCitation(): void {
+        HandleCache::$cache_good['10.9999/cookie.restore'] = true;
+        HandleCache::$cache_active['10.9999/cookie.restore'] = true;
+        $text = '{{cite web |title=Original title |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.restore}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $template->change_name_to('cite document', true, true);
+        $template->finalize_cookie_absent_citation();
+        $this->assertSame('Original title', $template->get2('title'));
+        $this->assertSame('https://journals.sagepub.com/action/cookieAbsent', $template->get2('url'));
+        $this->assertSame('Sage Journals', $template->get2('website'));
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testCookieAbsentRepeatedFinalizationIsStable(): void {
+        HandleCache::$cache_good['10.9999/cookie.repeat'] = true;
+        HandleCache::$cache_active['10.9999/cookie.repeat'] = true;
+        $text = '{{cite web |title=Original title |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.repeat}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $template->finalize_cookie_absent_citation();
+        $template->finalize_cookie_absent_citation();
+        $this->assertSame('Original title', $template->get2('title'));
+        $this->assertSame('https://journals.sagepub.com/action/cookieAbsent', $template->get2('url'));
+        $this->assertSame('Sage Journals', $template->get2('website'));
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testCookieAbsentCleanupDoesNotRetargetTemplate(): void {
+        HandleCache::$cache_good['10.1093/cookieabsenttest/retarget'] = true;
+        HandleCache::$cache_active['10.1093/cookieabsenttest/retarget'] = true;
+        $text = '{{cite web |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |publisher=Sage |doi=10.1093/cookieabsenttest/retarget}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
     public function testNonCookieAbsentCitationUntouched(): void {
         HandleCache::$cache_good['10.9999/cookie.11'] = true;
         $text = '{{cite web |title=Example |url=https://example.test/article |website=Example |doi=10.9999/cookie.11}}';

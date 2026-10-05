@@ -479,6 +479,7 @@ class Page {
                 $this_template->tidy_parameter('title');
                 // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
             }
+            $this_template->prepare_cookie_absent_citation();
         }
         // BATCH API CALLS
         report_phase('Consult APIs to expand templates');
@@ -547,6 +548,7 @@ class Page {
         report_phase('Remedial work to clean up templates');
         foreach ($our_templates as $this_template) {
             // Clean up:
+            $this_template->finalize_cookie_absent_citation();
             if (!$this_template->initial_author_params()) {
                 $this_template->handle_et_al();
             }
@@ -579,6 +581,7 @@ class Page {
 
         foreach ($our_templates_slight as $this_template) {
             // Record any modifications that have been made:
+            $this_template->finalize_cookie_absent_citation();
             $template_mods = $this_template->modifications();
             foreach (array_keys($template_mods) as $key) {
                 if (!isset($this->modifications[$key])) {
