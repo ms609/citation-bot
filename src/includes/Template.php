@@ -51,6 +51,7 @@ final class Template
     private bool $mod_issue_citebook = false;
     private bool $mod_article_number = false;
     private bool $mod_article_number_iucn = false;
+    private bool $mod_cookie_absent = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -303,7 +304,7 @@ final class Template
         if (!in_array($this->wikiname(), [...TEMPLATES_WE_PROCESS, ...TEMPLATES_WE_SLIGHTLY_PROCESS, ...TEMPLATES_WE_BARELY_PROCESS, ...TEMPLATES_WE_CHAPTER_URL, 'cite magazine', 'cite periodical'], true)) {
             return;
         }
-        $this->remove_cookie_absent_citation_junk();
+        $this->remove_cookie_absent_citation_fields();
     }
 
     private function cookie_absent_parameter_value(Parameter $parameter): string {
@@ -322,7 +323,7 @@ final class Template
             preg_match('~/action/cookieabsent(?:[/?#&;]|$)~i', $value) === 1;
     }
 
-    private function remove_cookie_absent_citation_junk(): void {
+    private function remove_cookie_absent_citation_fields(): void {
         $url_params = [];
         foreach ([...ALL_URL_TYPES, ...CHAPTER_URL_ALIASES, 'archive-url', 'archiveurl', 'website'] as $url_param) {
             $url_params[mb_strtolower($url_param)] = true;
@@ -441,7 +442,8 @@ final class Template
         if ($this->cookie_absent_rebuild_succeeded()) {
             $this->cookie_absent_original_parameters = null;
             $this->cookie_absent_original_name = null;
-            report_modification('Removing cookieAbsent citation junk and rebuilding from the DOI');
+            $this->mod_cookie_absent = true;
+            report_modification('Removing cookieAbsent citation placeholders and rebuilding from the DOI');
             return;
         }
         $this->param = $this->cookie_absent_original_parameters;
@@ -8359,6 +8361,7 @@ final class Template
         $ret['issue_citebook'] = $this->mod_issue_citebook;
         $ret['article_number'] = $this->mod_article_number;
         $ret['article_number_iucn'] = $this->mod_article_number_iucn;
+        $ret['cookie_absent'] = $this->mod_cookie_absent;
         return $ret;
     }
 

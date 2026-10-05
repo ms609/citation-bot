@@ -2343,7 +2343,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('none', $template->get2('ref'));
     }
 
-    public function testCookieAbsentDoiWithQueryJunkIsCleaned(): void {
+    public function testCookieAbsentDoiWithQuerySuffixIsCleaned(): void {
         HandleCache::$cache_good['10.9999/cookie.2'] = true;
         HandleCache::$cache_active['10.9999/cookie.2'] = true;
         $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.2?download=true}}';
@@ -2354,7 +2354,7 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('url'));
     }
 
-    public function testCookieAbsentDoiWithHashJunkIsCleaned(): void {
+    public function testCookieAbsentDoiWithFragmentSuffixIsCleaned(): void {
         HandleCache::$cache_good['10.9999/cookie.3'] = true;
         HandleCache::$cache_active['10.9999/cookie.3'] = true;
         $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.3#d1e139}}';

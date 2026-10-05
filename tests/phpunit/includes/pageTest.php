@@ -185,6 +185,14 @@ final class pageTest extends testBaseClass {
         $this->assertSame('Removed unsupported issue parameter from cite book. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
     }
 
+    public function testPageChangeSummaryCookieAbsent(): void {
+        $page = $this->process_page('{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.1177/0145561320940115}}');
+        if (mb_strpos($page->parsed_text(), 'cookieAbsent') !== false) {
+            $this->markTestSkipped('DOI look-up unavailable');
+        }
+        $this->assertStringContainsString('Rebuilt citation from DOI after removing cookieAbsent link.', $page->edit_summary());
+    }
+
     public function testModificationsMergeAcrossTemplates(): void {
         // Two templates each produce modifications; the merged result must
         // combine array-typed keys (changeonly/additions/deletions) and

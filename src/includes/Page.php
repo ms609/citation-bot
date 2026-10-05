@@ -825,6 +825,9 @@ class Page {
         if ($this->modifications["article_number_iucn"]) {
             $auto_summary .= 'Converted deprecated page parameter to article-number in cite IUCN. ';
         }
+        if ($this->modifications["cookie_absent"]) {
+            $auto_summary .= 'Rebuilt citation from DOI after removing cookieAbsent link. ';
+        }
         if ($this->odnb_sub_removed) {
             $auto_summary .= 'Removed ODNBsub template. ';
         }
@@ -1154,6 +1157,7 @@ class Page {
         $this->modifications['issue_citebook'] = false;
         $this->modifications['article_number'] = false;
         $this->modifications['article_number_iucn'] = false;
+        $this->modifications['cookie_absent'] = false;
     }
 
     public static function get_last_title(): string {
