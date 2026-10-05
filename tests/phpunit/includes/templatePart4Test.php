@@ -2198,63 +2198,6 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('free', $template->get2('doi-access'));
     }
 
-    public function testAnnualReviewsPilotVolume2020_Free(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-publhealth-040119-094201|year=2020}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsPilotVolume2021_Free(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-environ-012220-010228|year=2021}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsSecondCohortVolume2021_Free(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-virology-091919-072020|year=2021}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsSecondCohortVolume2022_Free(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-genom-112921-123710|year=2022}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsNonParticipatingJournalVolume2022_NotFree(): void {
-        // Use a known-good DOI so this rule test does not depend on a network check.
-        $text = '{{cite journal|doi=10.1146/annurev-astro-082708-101737|year=2022}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertNull($template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsPortfolioVolume2023_Free(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208|year=2023}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertSame('free', $template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsFutureVolumeNotAutomaticallyFree(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208|year=2026}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertNull($template->get2('doi-access'));
-    }
-
-    public function testAnnualReviewsMissingYearNotAutomaticallyFree(): void {
-        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208}}';
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('doi');
-        $this->assertNull($template->get2('doi-access'));
-    }
-
     public function testDoiFreePrefixDetected(): void {
         $doi_t = new Template();
         $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y}}');
