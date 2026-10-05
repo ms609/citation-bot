@@ -483,6 +483,8 @@ class Page {
         // Second cookieAbsent pass over all templates now that branch-specific
         // URL and identifier discovery has run.  Only supported citation types
         // with a qualifying DOI are affected; everything else returns untouched.
+        // This must precede batch DOI expansion below: a placeholder title would
+        // otherwise block the rebuilt metadata from being added.
         foreach ($all_templates as $this_template) {
             $this_template->prepare_cookie_absent_citation();
         }
