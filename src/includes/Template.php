@@ -478,6 +478,7 @@ final class Template
                 }
             }
         }
+        // Also check templates that the cleanup block above does not cover
         $this->prepare_cookie_absent_citation();
         if ($this->should_be_processed()) {
             // Remove empty duplicate parameters by checking the ALL_ALIASES list
@@ -6896,6 +6897,7 @@ final class Template
 
     public function final_tidy(): void {
         set_time_limit(120);
+        // Direct callers never reach Page, so settle any pending rebuild here
         $this->finalize_cookie_absent_citation();
         // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
         // but its page->article-number rename still needs to run via detect_article_number()

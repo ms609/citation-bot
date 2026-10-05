@@ -479,6 +479,11 @@ class Page {
                 $this_template->tidy_parameter('title');
                 // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
             }
+        }
+        // Second cookieAbsent pass over all templates now that branch-specific
+        // URL and identifier discovery has run.  Only supported citation types
+        // with a qualifying DOI are affected; everything else returns untouched.
+        foreach ($all_templates as $this_template) {
             $this_template->prepare_cookie_absent_citation();
         }
         // BATCH API CALLS
@@ -548,6 +553,7 @@ class Page {
         report_phase('Remedial work to clean up templates');
         foreach ($our_templates as $this_template) {
             // Clean up:
+            // Settle any pending rebuild before recording changes
             $this_template->finalize_cookie_absent_citation();
             if (!$this_template->initial_author_params()) {
                 $this_template->handle_et_al();
@@ -580,8 +586,9 @@ class Page {
         }
 
         foreach ($our_templates_slight as $this_template) {
-            // Record any modifications that have been made:
+            // Settle any pending rebuild before recording changes
             $this_template->finalize_cookie_absent_citation();
+            // Record any modifications that have been made:
             $template_mods = $this_template->modifications();
             foreach (array_keys($template_mods) as $key) {
                 if (!isset($this->modifications[$key])) {
