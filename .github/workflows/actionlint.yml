@@ -35,4 +35,4 @@ jobs:
         # Remove this narrow workaround once rhysd/actionlint#711 is released.
         flags: >-
           -ignore
-          specifying[ ]action[ ]"\$/\.github/actions/setup-php-composer"[ ]in[ ]invalid[ ]format[ ]because[ ]ref[ ]is[ ]missing
+          specifying\x20action\x20"\$/\.github/actions/setup-php-composer"\x20in\x20invalid\x20format\x20because\x20ref\x20is\x20missing
