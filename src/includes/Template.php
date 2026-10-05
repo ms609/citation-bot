@@ -296,6 +296,59 @@ final class Template
         }
     }
 
+    private function remove_cookie_absent_citation_junk(): void {
+        $has_cookie_absent = false;
+        foreach ([...ALL_URL_TYPES, 'archive-url', 'archiveurl'] as $url_param) {
+            if (mb_stripos($this->get($url_param), 'cookieabsent') !== false) {
+                $has_cookie_absent = true;
+                break;
+            }
+        }
+        if (!$has_cookie_absent && mb_stripos($this->get('title'), 'cookieabsent') !== false) {
+            $has_cookie_absent = true;
+        }
+        if (!$has_cookie_absent) {
+            return;
+        }
+        $doi = mb_trim($this->get_without_comments_and_placeholders('doi'));
+        $clean_doi = mb_trim((string) preg_replace('~[?&#\s].*$~', '', $doi));
+        if ($clean_doi === '' || preg_match('~^10\.\d{4,9}/\S+$~', $clean_doi) !== 1) {
+            return;
+        }
+        if (doi_works($clean_doi) !== true) {
+            return;
+        }
+        if ($clean_doi !== $doi) {
+            $this->set('doi', $clean_doi);
+        }
+        $keep = [];
+        foreach (COOKIE_ABSENT_KEEP_PARAMETERS as $keep_param) {
+            $keep[$keep_param] = true;
+        }
+        foreach (COOKIE_ABSENT_ACCESS_PARAMETERS as $access_param) {
+            $base_param = str_replace('-access', '', $access_param);
+            if ($this->has($base_param)) {
+                $keep[$access_param] = true;
+            }
+        }
+        if ($this->has('pmc')) {
+            $keep['pmc-embargo-date'] = true;
+        }
+        $drop = [];
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            if (!isset($keep[$name])) {
+                $drop[] = $parameter->param;
+            }
+        }
+        foreach ($drop as $param_name) {
+            $this->forget($param_name);
+        }
+        if ($drop !== []) {
+            report_modification('Removing cookieAbsent citation junk and rebuilding from the DOI');
+        }
+    }
+
     public function prepare(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
@@ -321,6 +374,7 @@ final class Template
                     $this->rename('first', 'author1');
                 }
             }
+            $this->remove_cookie_absent_citation_junk();
         }
         if ($this->should_be_processed()) {
             // Remove empty duplicate parameters by checking the ALL_ALIASES list
@@ -4794,6 +4848,7 @@ final class Template
                             $this->add_if_new('doi-access', 'free');
                         }
                     }
+                    $this->doi_free_check_annual_reviews($doi);
                     // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
                     $this->doi_free_check_conditional($doi);
                     /** } */
@@ -7715,6 +7770,28 @@ final class Template
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /** Applies the curated Annual Reviews permanent-OA volume rules. */
+    private function doi_free_check_annual_reviews(string $doi): void {
+        if (preg_match('~^10\.1146/annurev-([a-z0-9]+)-~i', $doi, $matches) !== 1) {
+            return;
+        }
+        $pub_year = $this->pub_year_extended();
+        if ($pub_year === 0) {
+            return;
+        }
+        $journal_code = mb_strtolower($matches[1]);
+        foreach ([$journal_code, '*'] as $rule_code) {
+            if (!isset(DOI_FREE_ANNUAL_REVIEWS[$rule_code])) {
+                continue;
+            }
+            $rule = DOI_FREE_ANNUAL_REVIEWS[$rule_code];
+            if ($pub_year >= $rule['from_year'] && $pub_year <= $rule['to_year']) {
+                $this->add_if_new('doi-access', 'free');
+                return;
             }
         }
     }

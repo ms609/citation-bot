@@ -2198,6 +2198,63 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('free', $template->get2('doi-access'));
     }
 
+    public function testAnnualReviewsPilotVolume2020_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-publhealth-040119-094201|year=2020}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsPilotVolume2021_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-environ-012220-010228|year=2021}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsSecondCohortVolume2021_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-virology-091919-072020|year=2021}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsSecondCohortVolume2022_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-genom-112921-123710|year=2022}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsNonParticipatingJournalVolume2022_NotFree(): void {
+        // Use a known-good DOI so this rule test does not depend on a network check.
+        $text = '{{cite journal|doi=10.1146/annurev-astro-082708-101737|year=2022}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsPortfolioVolume2023_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208|year=2023}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsFutureVolumeNotAutomaticallyFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208|year=2026}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testAnnualReviewsMissingYearNotAutomaticallyFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-psych-020223-012208}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
     public function testDoiFreePrefixDetected(): void {
         $doi_t = new Template();
         $doi_t->parse_text('{{doi|10.1186/s12915-020-00940-y}}');
@@ -2326,5 +2383,135 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $template->handle_et_al();
         $this->assertSame('etal', $template->get2('display-authors'));
+    }
+
+    public function testCookieAbsentCiteWebIsRebuiltFromDoi(): void {
+        HandleCache::$cache_good['10.9999/cookie.1'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |access-date=2026-09-03 |website=Sage Journals |doi=10.9999/cookie.1 |pmid=12345 |ref=none}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('url'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('website'));
+        $this->assertNull($template->get2('access-date'));
+        $this->assertSame('10.9999/cookie.1', $template->get2('doi'));
+        $this->assertSame('12345', $template->get2('pmid'));
+        $this->assertSame('none', $template->get2('ref'));
+    }
+
+    public function testCookieAbsentDoiWithQueryJunkIsCleaned(): void {
+        HandleCache::$cache_good['10.9999/cookie.2'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.2?download=true}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('10.9999/cookie.2', $template->get2('doi'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testCookieAbsentWithoutDoiIsUntouched(): void {
+        $text = '{{cite web |title=Science |url=https://www.science.org/action/cookieAbsent |website=AAAS}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('https://www.science.org/action/cookieAbsent', $template->get2('url'));
+        $this->assertSame('Science', $template->get2('title'));
+    }
+
+    public function testCookieAbsentWithDeadDoiIsUntouched(): void {
+        HandleCache::$cache_hdl_bad['10.9999/cookie.4'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |website=Sage Journals |doi=10.9999/cookie.4}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNotNull($template->get2('url'));
+        $this->assertNotNull($template->get2('title'));
+    }
+
+    public function testCookieAbsentDropsAccessWithoutBase(): void {
+        HandleCache::$cache_good['10.9999/cookie.5'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |hdl-access=free |doi=10.9999/cookie.5}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('hdl-access'));
+        $this->assertSame('10.9999/cookie.5', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentPreservesIdentifiersAndAccess(): void {
+        HandleCache::$cache_good['10.9999/cookie.6'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.6 |pmid=12345678 |pmc=1234567 |hdl=1234/5678 |hdl-access=free |bibcode=2020ApJ...123....1A |jstor=12345 |jstor-access=free |osti=12345 |osti-access=free |ol=OL123456M |ol-access=free |s2cid=789 |ssrn=12345}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('1234/5678', $template->get2('hdl'));
+        $this->assertSame('free', $template->get2('hdl-access'));
+        $this->assertSame('2020ApJ...123....1A', $template->get2('bibcode'));
+        $this->assertSame('12345', $template->get2('jstor'));
+        $this->assertSame('12345', $template->get2('osti'));
+        $this->assertSame('OL123456M', $template->get2('ol'));
+        $this->assertSame('789', $template->get2('s2cid'));
+        $this->assertSame('12345', $template->get2('ssrn'));
+        $this->assertSame('12345678', $template->get2('pmid'));
+        $this->assertSame('1234567', $template->get2('pmc'));
+    }
+
+    public function testCookieAbsentDropsPmcEmbargoWithoutPmc(): void {
+        HandleCache::$cache_good['10.9999/cookie.7'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |pmc-embargo-date=2030-01-01 |doi=10.9999/cookie.7}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('pmc-embargo-date'));
+    }
+
+    public function testCookieAbsentKeepsPmcEmbargoWithPmc(): void {
+        HandleCache::$cache_good['10.9999/cookie.8'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |pmc=1234567 |pmc-embargo-date=2030-01-01 |doi=10.9999/cookie.8}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('1234567', $template->get2('pmc'));
+        $this->assertSame('2030-01-01', $template->get2('pmc-embargo-date'));
+    }
+
+    public function testCookieAbsentInArchiveUrlTriggers(): void {
+        HandleCache::$cache_good['10.9999/cookie.9'] = true;
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://example.test/article |archive-url=https://web.archive.org/web/20200101/https://journals.sagepub.com/action/cookieAbsent |archive-date=2020-01-01 |website=Sage Journals |doi=10.9999/cookie.9}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('archive-url'));
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('10.9999/cookie.9', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentInTitleTriggers(): void {
+        HandleCache::$cache_good['10.9999/cookie.10'] = true;
+        $text = '{{cite web |title=https://www.nejm.org/action/cookieAbsent |website=NEJM |doi=10.9999/cookie.10}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('10.9999/cookie.10', $template->get2('doi'));
+    }
+
+    public function testNonCookieAbsentCitationUntouched(): void {
+        $text = '{{cite web |title=Example |url=https://example.test/article |website=Example |doi=10.9999/cookie.11}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('https://example.test/article', $template->get2('url'));
+        $this->assertSame('Example', $template->get2('title'));
+    }
+
+    public function testCookieAbsentWebarchiveTemplateUntouched(): void {
+        $text = '{{Webarchive |url=https://web.archive.org/web/2020/https://journals.sagepub.com/action/cookieAbsent |date=2020-01-01}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertNotNull($template->get2('url'));
+    }
+
+    public function testCookieAbsentCitationIsRebuiltAsJournal(): void {
+        $text = '{{cite web |title=Sage Journals: Discover world-class research |url=https://journals.sagepub.com/action/cookieAbsent |access-date=2026-09-03 |website=Sage Journals |doi=10.1177/0145561320940115}}';
+        $expanded = $this->process_citation($text);
+        if ($expanded->get2('url') !== null) {
+            $this->markTestSkipped('DOI look-up unavailable');
+        }
+        $this->assertSame('cite journal', $expanded->wikiname());
+        $this->assertNotNull($expanded->get2('title'));
+        $this->assertNotNull($expanded->get2('journal'));
     }
 }
