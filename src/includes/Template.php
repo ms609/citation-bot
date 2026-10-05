@@ -297,29 +297,43 @@ final class Template
     }
 
     private function remove_cookie_absent_citation_junk(): void {
-        $has_cookie_absent = false;
+        $url_params = [];
         foreach ([...ALL_URL_TYPES, 'archive-url', 'archiveurl'] as $url_param) {
-            if (mb_stripos($this->get($url_param), 'cookieabsent') !== false) {
+            $url_params[mb_strtolower($url_param)] = true;
+        }
+        $has_cookie_absent = false;
+        $doi_param_name = null;
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            if ($name === 'doi') {
+                $doi_param_name = $parameter->param;
+            }
+            if ($name !== 'title' && !isset($url_params[$name])) {
+                continue;
+            }
+            if (mb_stripos($this->get_without_comments_and_placeholders($parameter->param), 'cookieabsent') !== false) {
                 $has_cookie_absent = true;
-                break;
             }
         }
-        if (!$has_cookie_absent && mb_stripos($this->get('title'), 'cookieabsent') !== false) {
-            $has_cookie_absent = true;
-        }
-        if (!$has_cookie_absent) {
+        if (!$has_cookie_absent || $doi_param_name === null) {
             return;
         }
-        $doi = mb_trim($this->get_without_comments_and_placeholders('doi'));
-        $clean_doi = mb_trim((string) preg_replace('~[?&#\s].*$~', '', $doi));
+        $doi = $this->get_without_comments_and_placeholders($doi_param_name);
+        $clean_doi = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
         if ($clean_doi === '' || preg_match('~^10\.\d{4,9}/\S+$~', $clean_doi) !== 1) {
             return;
+        }
+        if (preg_match(REGEXP_DOI_ISSN_ONLY, $clean_doi) || isset(BAD_DOI_ARRAY[$clean_doi]) || mb_strpos($clean_doi, '10.2307') === 0) {
+            return; // expand_by_doi() does not rebuild these
         }
         if (doi_works($clean_doi) !== true) {
             return;
         }
+        if (doi_active($clean_doi) !== true) {
+            return; // Impossible to rebuild without CrossRef metadata
+        }
         if ($clean_doi !== $doi) {
-            $this->set('doi', $clean_doi);
+            $this->set($doi_param_name, $clean_doi);
         }
         $keep = [];
         foreach (COOKIE_ABSENT_KEEP_PARAMETERS as $keep_param) {
@@ -344,6 +358,20 @@ final class Template
         foreach ($drop as $param_name) {
             $this->forget($param_name);
         }
+        // forget() renames parameters while it cascades (chapter-url becomes url, website becomes
+        // work for bad 10.1093 DOIs), so keep removing non-kept parameters until none remain.
+        do {
+            $more = [];
+            foreach ($this->param as $parameter) {
+                $name = mb_strtolower($parameter->param);
+                if (!isset($keep[$name])) {
+                    $more[] = $parameter->param;
+                }
+            }
+            foreach ($more as $param_name) {
+                $this->forget($param_name);
+            }
+        } while ($more !== []);
         if ($drop !== []) {
             report_modification('Removing cookieAbsent citation junk and rebuilding from the DOI');
         }
