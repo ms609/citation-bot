@@ -293,6 +293,12 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('zbcder', titles_simple('Chapter 3 - Zbcder'));
     }
 
+    public function testTitlesSimpleNormalizesConnectorsBeforeWhitespaceRemoval(): void {
+        $and = titles_simple('Cats and Dogs and Birds');
+        $this->assertSame($and, titles_simple('Cats & Dogs & Birds'));
+        $this->assertSame($and, titles_simple('Cats / Dogs / Birds'));
+    }
+
     public function testTitlesSimpleStripsTrailingEdition(): void {
         $this->assertSame('exampletitle', titles_simple('Example Title (Third Edition)'));
     }
