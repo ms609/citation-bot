@@ -9,6 +9,10 @@ on:
       - '.dockerignore'
       - 'composer.json'
       - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.js'
+      - 'tests/ui/**'
       - 'src/**'
       - '.trivyignore'
       - '.github/workflows/docker-build.yml'
@@ -20,6 +24,10 @@ on:
       - '.dockerignore'
       - 'composer.json'
       - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'playwright.config.js'
+      - 'tests/ui/**'
       - 'src/**'
       - '.trivyignore'
       - '.github/workflows/docker-build.yml'
@@ -36,16 +44,33 @@ permissions:
 jobs:
   docker:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     permissions:
       contents: read
       security-events: write
 
     steps:
+    - name: Harden runner (audit outbound calls)
+      uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+      with:
+        egress-policy: audit
+
     - name: Checkout Repo
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         persist-credentials: false
+
+    - name: Setup Node for Apache-backed UI smoke test
+      uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      with:
+        node-version: '24'
+        cache: npm
+
+    - name: Install UI-test dependencies without lifecycle scripts
+      run: npm ci --ignore-scripts --no-audit --no-fund
+
+    - name: Install Chromium
+      run: ./node_modules/.bin/playwright install --with-deps chromium
 
     - name: Build Docker image
       run: docker build -t citation-bot .
@@ -56,7 +81,7 @@ jobs:
     - name: Start container
       run: docker compose up -d
 
-    - name: Smoke test (verify PHP and Apache are functional)
+    - name: Smoke test PHP and Apache
       run: |
         docker compose exec -T php php -r "echo 'PHP OK';"
         docker compose exec -T php php -r '
@@ -71,8 +96,24 @@ jobs:
         docker compose exec -T php composer --version
         curl --fail --silent --show-error \
           --retry 10 --retry-connrefused --retry-delay 1 \
-          http://localhost:8081/ >/dev/null
+          http://localhost:8081/src/ >/dev/null
         echo 'Apache HTTP OK'
+
+    - name: Run read-only Playwright smoke test against Apache
+      env:
+        UI_BASE_URL: http://localhost:8081/src/
+      run: npm run test:ui:external
+
+    - name: Upload Apache UI diagnostics
+      if: ${{ failure() && !cancelled() }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: docker-apache-ui-diagnostics
+        path: |
+          playwright-report/
+          test-results/
+        if-no-files-found: ignore
+        retention-days: 7
 
     - name: Tear down container
       if: always()

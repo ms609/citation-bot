@@ -1,3 +1,5 @@
+var botFormSubmitting = false;
+
 function setFieldError(input, errorId, message) {
   input.classList.add("error");
   input.setAttribute("aria-invalid", "true");
@@ -22,77 +24,144 @@ function clearFieldError(input, errorId) {
   }
 }
 
+function setPageButtonText() {
+  var botPage = document.getElementById("botPage");
+  var pageSubmit = document.getElementById("PageSubmit");
+  if (!botPage || !pageSubmit) {
+    return;
+  }
+  pageSubmit.textContent = "Process page" + ((botPage.value.indexOf("|") > -1) ? "s" : "");
+}
+
+function setOperationInputsForSubmit(submitButtonId) {
+  var botPage = document.getElementById("botPage");
+  var botCat = document.getElementById("botCat");
+  var botLinked = document.getElementById("botLinked");
+
+  // A single form contains all three operations. Disable unrelated operation
+  // fields before native form serialization so stale values cannot influence
+  // the selected server endpoint.
+  botPage.disabled = submitButtonId !== "PageSubmit";
+  botCat.disabled = submitButtonId !== "CatSubmit";
+  botLinked.disabled = submitButtonId !== "LinkedSubmit";
+
+  if (botPage.disabled) clearFieldError(botPage, "botPage-error");
+  if (botCat.disabled) clearFieldError(botCat, "botCat-error");
+  if (botLinked.disabled) clearFieldError(botLinked, "botLinked-error");
+}
+
+function setSubmittingState(submitting) {
+  var botForm = document.getElementById("botForm");
+  botFormSubmitting = submitting;
+  if (botForm) {
+    if (submitting) {
+      botForm.setAttribute("aria-busy", "true");
+    } else {
+      botForm.removeAttribute("aria-busy");
+    }
+  }
+}
+
 function ValidateForm(event) {
   var botPage = document.getElementById("botPage");
   var botCat = document.getElementById("botCat");
   var botLinked = document.getElementById("botLinked");
   var submitButton = event.submitter;
 
+  // Programmatic form submission without a submitter has no unambiguous
+  // Citation Bot operation. Fail closed instead of throwing or using the
+  // form's default action.
+  if (!submitButton || !["PageSubmit", "CatSubmit", "LinkedSubmit"].includes(submitButton.id)) {
+    event.preventDefault();
+    return false;
+  }
+
+  if (botFormSubmitting) {
+    event.preventDefault();
+    return false;
+  }
+
   if (submitButton.id === "PageSubmit") {
     if (botPage.value.trim() === "") {
       setFieldError(botPage, "botPage-error", "Page name is required");
-      submitButton.disabled = "disabled";
+      submitButton.disabled = true;
+      event.preventDefault();
       return false;
     }
     document.getElementById("PageSpinner").style.display = "inline-block";
-    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   } else if (submitButton.id === "CatSubmit") {
     if (botCat.value.trim() === "") {
       setFieldError(botCat, "botCat-error", "Category name is required");
-      submitButton.disabled = "disabled";
+      submitButton.disabled = true;
+      event.preventDefault();
       return false;
     }
     document.getElementById("CatSpinner").style.display = "inline-block";
-    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   } else if (submitButton.id === "LinkedSubmit") {
     if (botLinked.value.trim() === "") {
       setFieldError(botLinked, "botLinked-error", "Initial page name is required");
-      submitButton.disabled = "disabled";
+      submitButton.disabled = true;
+      event.preventDefault();
       return false;
     }
     document.getElementById("LinkSpinner").style.display = "inline-block";
-    document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
   }
-  document.getElementById("PageSubmit").disabled = "disabled";
-  document.getElementById("CatSubmit").disabled = "disabled";
-  document.getElementById("LinkedSubmit").disabled = "disabled";
+
+  document.getElementById("botStatus").textContent = "Processing, please wait\u2026";
+  setSubmittingState(true);
+  setOperationInputsForSubmit(submitButton.id);
+  document.getElementById("PageSubmit").disabled = true;
+  document.getElementById("CatSubmit").disabled = true;
+  document.getElementById("LinkedSubmit").disabled = true;
   return true;
 }
 
 function ValidatePageName() {
-  document.getElementById("PageSubmit").innerHTML = "Process page" +
-    ((document.getElementById("botPage").value.indexOf("|") > -1) ? "s" : "");
+  setPageButtonText();
   if (this.value.trim() === "") {
     setFieldError(this, "botPage-error", "Page name is required");
-    document.getElementById("PageSubmit").disabled = "disabled";
+    document.getElementById("PageSubmit").disabled = true;
   } else {
     clearFieldError(this, "botPage-error");
-    document.getElementById("PageSubmit").disabled = false;
+    document.getElementById("PageSubmit").disabled = botFormSubmitting;
   }
 }
 
 function ValidateCategory() {
   if (this.value.trim() === "") {
     setFieldError(this, "botCat-error", "Category name is required");
-    document.getElementById("CatSubmit").disabled = "disabled";
+    document.getElementById("CatSubmit").disabled = true;
   } else {
     clearFieldError(this, "botCat-error");
-    document.getElementById("CatSubmit").disabled = false;
+    document.getElementById("CatSubmit").disabled = botFormSubmitting;
   }
 }
 
 function ValidateLinked() {
   if (this.value.trim() === "") {
     setFieldError(this, "botLinked-error", "Initial page name is required");
-    document.getElementById("LinkedSubmit").disabled = "disabled";
+    document.getElementById("LinkedSubmit").disabled = true;
   } else {
     clearFieldError(this, "botLinked-error");
-    document.getElementById("LinkedSubmit").disabled = false;
+    document.getElementById("LinkedSubmit").disabled = botFormSubmitting;
   }
 }
 
-function InitializeForm() {
-  var botForm = document.getElementById("botForm");
+function submitFieldOnEnter(event, buttonId) {
+  if (event.key !== "Enter" || event.isComposing) {
+    return;
+  }
+  event.preventDefault();
+  if (botFormSubmitting) {
+    return;
+  }
+  var button = document.getElementById(buttonId);
+  if (button && !button.disabled) {
+    document.getElementById("botForm").requestSubmit(button);
+  }
+}
+
+function ResetTransientFormState() {
   var botPage = document.getElementById("botPage");
   var botCat = document.getElementById("botCat");
   var botLinked = document.getElementById("botLinked");
@@ -104,20 +173,17 @@ function InitializeForm() {
   var linkSpinner = document.getElementById("LinkSpinner");
   var botStatus = document.getElementById("botStatus");
 
-  if (botForm) botForm.onsubmit = ValidateForm;
+  setSubmittingState(false);
   if (botPage) {
-    botPage.oninput = ValidatePageName;
-    botPage.value = "";
+    botPage.disabled = false;
     clearFieldError(botPage, "botPage-error");
   }
   if (botCat) {
-    botCat.oninput = ValidateCategory;
-    botCat.value = "";
+    botCat.disabled = false;
     clearFieldError(botCat, "botCat-error");
   }
   if (botLinked) {
-    botLinked.oninput = ValidateLinked;
-    botLinked.value = "";
+    botLinked.disabled = false;
     clearFieldError(botLinked, "botLinked-error");
   }
   if (catSubmit) catSubmit.disabled = false;
@@ -127,7 +193,37 @@ function InitializeForm() {
   if (catSpinner) catSpinner.style.display = "none";
   if (linkSpinner) linkSpinner.style.display = "none";
   if (botStatus) botStatus.textContent = "";
+  setPageButtonText();
 }
 
-window.onload = InitializeForm;
-window.addEventListener('pageshow', InitializeForm);
+function InitializeForm() {
+  var botForm = document.getElementById("botForm");
+  var botPage = document.getElementById("botPage");
+  var botCat = document.getElementById("botCat");
+  var botLinked = document.getElementById("botLinked");
+
+  if (!botForm || botForm.dataset.uiInitialized === "true") {
+    ResetTransientFormState();
+    return;
+  }
+
+  botForm.dataset.uiInitialized = "true";
+  botForm.addEventListener("submit", ValidateForm);
+  if (botPage) {
+    botPage.addEventListener("input", ValidatePageName);
+    botPage.addEventListener("keydown", function (event) { submitFieldOnEnter(event, "PageSubmit"); });
+  }
+  if (botCat) {
+    botCat.addEventListener("input", ValidateCategory);
+    botCat.addEventListener("keydown", function (event) { submitFieldOnEnter(event, "CatSubmit"); });
+  }
+  if (botLinked) {
+    botLinked.addEventListener("input", ValidateLinked);
+    botLinked.addEventListener("keydown", function (event) { submitFieldOnEnter(event, "LinkedSubmit"); });
+  }
+  ResetTransientFormState();
+}
+
+// This script is loaded with defer, so the DOM is parsed before it runs.
+InitializeForm();
+window.addEventListener("pageshow", ResetTransientFormState);

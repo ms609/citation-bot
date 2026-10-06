@@ -1,0 +1,20 @@
+{
+  "name": "citation-bot-ui-tests",
+  "private": true,
+  "type": "module",
+  "description": "Browser interaction tests and coverage reporting for the Citation Bot web interface",
+  "scripts": {
+    "pretest:ui": "node tests/ui/clean-coverage.mjs",
+    "test:ui": "playwright test",
+    "test:ui:headed": "playwright test --headed",
+    "test:ui:cross-browser": "UI_CROSS_BROWSER=1 playwright test",
+    "test:ui:external": "playwright test",
+    "coverage:clean": "node tests/ui/clean-coverage.mjs",
+    "coverage:ui": "node tests/ui/report-coverage.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "v8-to-istanbul": "9.3.0"
+  }
+}
