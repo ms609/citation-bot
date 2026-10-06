@@ -45,6 +45,17 @@ final class JstorTest extends testBaseClass {
         $this->assertSame('Kornbluh', $prepared->get2('last1'));
     }
 
+    public function testJstorReportWithoutSuppliedTitle(): void {
+        $text = "{{Cite book |jstor=resrep26423 }}";
+        $prepared = $this->process_citation($text);
+
+        $this->assertSame(
+            'The War Comes Home: The Evolution of Domestic Terrorism in the United States',
+            $prepared->get2('title')
+        );
+        $this->assertNull($prepared->get2('chapter'));
+    }
+
     public function testJstorExpansion1(): void {
         $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
         $prepared = $this->prepare_citation($text);
