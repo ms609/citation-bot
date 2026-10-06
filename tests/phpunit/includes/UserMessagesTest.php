@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 final class UserMessagesTest extends testBaseClass {
 
@@ -67,6 +69,32 @@ final class UserMessagesTest extends testBaseClass {
     public function testWikiLinkContainsArticleName(): void {
         $result = wiki_link('Test Article');
         $this->assertStringContainsString('Test Article', $result);
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testHtmlLinkAccessibleNamesContainVisibleLabels(): void {
+        try {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', true);
+            $links = [
+                ['PMID 12345678', pubmed_link('pmid', '12345678')],
+                ['2020Natur.123..456A', bibcode_link('2020Natur.123..456A')],
+                ['10.1000/test', doi_link('10.1000/test')],
+                ['JSTOR 12345', jstor_link('12345')],
+                ['Wikipedia page: Test Article', wiki_link('Test Article')],
+            ];
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_redefine('HTML_OUTPUT', false);
+        }
+
+        foreach ($links as [$visible_label, $html]) {
+            $this->assertStringContainsString(
+                'aria-label="' . $visible_label . ' (opens in a new tab)"',
+                $html
+            );
+        }
     }
 
     #[DoesNotPerformAssertions]

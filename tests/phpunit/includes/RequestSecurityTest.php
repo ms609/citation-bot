@@ -139,14 +139,17 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         }
 
         $csrf_check = mb_strpos($source, 'request_has_valid_post_csrf(');
+        $forbidden_response = mb_strpos($source, 'http_response_code(403);');
         $authentication = mb_strpos($source, '$api = new WikipediaBot();');
         $this->assertIsInt($csrf_check);
+        $this->assertIsInt($forbidden_response);
         $this->assertIsInt($authentication);
-        if (!is_int($csrf_check) || !is_int($authentication)) {
+        if (!is_int($csrf_check) || !is_int($forbidden_response) || !is_int($authentication)) {
             throw new RuntimeException('Expected linked-pages security markers.');
         }
 
-        $this->assertLessThan($authentication, $csrf_check);
+        $this->assertLessThan($forbidden_response, $csrf_check);
+        $this->assertLessThan($authentication, $forbidden_response);
     }
 
     /**

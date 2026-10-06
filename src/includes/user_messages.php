@@ -119,32 +119,36 @@ function echoable(?string $string): string {
     return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8') : $string;
 }
 
+function new_tab_aria_label(string $visible_text): string {
+    return echoable($visible_text . ' (opens in a new tab)');
+}
+
 function pubmed_link(string $identifier, string $pm): string {
     return HTML_OUTPUT
-       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank" rel="noopener noreferrer" aria-label="Open PMID in new window">' . mb_strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
+       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank" rel="noopener noreferrer" aria-label="' . new_tab_aria_label(mb_strtoupper($identifier) . ' ' . $pm) . '">' . mb_strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
        : mb_strtoupper($identifier) . ' ' . echoable($pm);
 }
 
 function bibcode_link(string $id): string {
     return HTML_OUTPUT
-    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank" rel="noopener noreferrer" aria-label="Open bibcode in new window">' . echoable($id) . '</a>'   // @codeCoverageIgnore
+    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank" rel="noopener noreferrer" aria-label="' . new_tab_aria_label($id) . '">' . echoable($id) . '</a>'   // @codeCoverageIgnore
     : echoable($id);
 }
 
 function doi_link(string $doi): string {
     return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank" rel="noopener noreferrer" aria-label="Open DOI in new window">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
+    ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank" rel="noopener noreferrer" aria-label="' . new_tab_aria_label($doi) . '">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
     : echoable($doi);
 }
 
 function jstor_link(string $id): string {
     return HTML_OUTPUT
-    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank" rel="noopener noreferrer" aria-label="Open JSTOR in new window">JSTOR ' . echoable($id) . '</a>'    // @codeCoverageIgnore
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank" rel="noopener noreferrer" aria-label="' . new_tab_aria_label('JSTOR ' . $id) . '">JSTOR ' . echoable($id) . '</a>'    // @codeCoverageIgnore
     : "JSTOR " . echoable($id);
 }
 
 function wiki_link(string $page): string {
     return HTML_OUTPUT
-    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank" rel="noopener noreferrer" aria-label="Open wiki in new window">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank" rel="noopener noreferrer" aria-label="' . new_tab_aria_label('Wikipedia page: ' . $page) . '">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : " . echoable($page);
 }
