@@ -372,7 +372,7 @@ final class Zotero {
         return $zotero_response;
     }
 
-    public static function expand_by_zotero(Template $template, ?string $url = null, $do_it_anyway = false): void {
+    public static function expand_by_zotero(Template $template, ?string $url = null, bool $do_it_anyway = false): void {
         $access_date = 0;
         if (is_null($url)) {
             if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
