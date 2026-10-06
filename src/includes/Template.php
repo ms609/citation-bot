@@ -69,6 +69,8 @@ final class Template
     /** @var array<Parameter>|null */
     private ?array $cookie_absent_original_parameters = null;
     private ?string $cookie_absent_original_name = null;
+    /** @var array<string>|null */
+    private ?array $cookie_absent_initial_author_params = null;
 
     public function __construct() {
         // Done in parse_text() and in variable initialization
@@ -389,6 +391,10 @@ final class Template
                 $this->cookie_absent_original_parameters[$key] = clone $parameter;
             }
             $this->cookie_absent_original_name = $this->name;
+            $this->cookie_absent_initial_author_params = $this->initial_author_params();
+            // had_initial_author() blocks API author re-adds, so the stripped
+            // citation must report no initial authors; restored on rollback.
+            $this->initial_author_params_set([]);
         }
         $doi_parameter->val = $clean_doi;
         $keep = [];
@@ -449,9 +455,9 @@ final class Template
         return false;
     }
 
-    // CrossRef re-adds are refused for originally-authored citations (see
-    // had_initial_author()), so a throttled rebuild would otherwise silently
-    // drop authors.  Refuse to commit such rebuilds and keep the original.
+    // had_initial_author() blocks API author re-adds, so a throttled rebuild
+    // would otherwise silently drop authors present in the original.
+    // Refuse to commit such rebuilds and keep the original for a later run.
     /** @param array<Parameter> $parameters */
     private function cookie_absent_had_authors(array $parameters): bool {
         foreach ($parameters as $parameter) {
@@ -474,6 +480,7 @@ final class Template
         ) {
             $this->cookie_absent_original_parameters = null;
             $this->cookie_absent_original_name = null;
+            $this->cookie_absent_initial_author_params = null;
             $this->mod_cookie_absent = true;
             report_modification('Removing cookieAbsent citation placeholders and rebuilding from the DOI');
             return;
@@ -485,8 +492,10 @@ final class Template
         }
         $this->param = $this->cookie_absent_original_parameters;
         $this->name = (string) $this->cookie_absent_original_name;
+        $this->initial_author_params_set((array) $this->cookie_absent_initial_author_params);
         $this->cookie_absent_original_parameters = null;
         $this->cookie_absent_original_name = null;
+        $this->cookie_absent_initial_author_params = null;
     }
 
     public function prepare(): void {
