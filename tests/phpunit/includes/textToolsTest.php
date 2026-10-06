@@ -292,6 +292,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('zbcder', titles_simple('Chapter 3 - Zbcder'));
     }
 
+    public function testTitlesSimpleStripsTrailingEdition(): void {
+        $this->assertSame('exampletitle', titles_simple('Example Title (Third Edition)'));
+    }
+
     public function testArrowAreQuotes1(): void {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, true));

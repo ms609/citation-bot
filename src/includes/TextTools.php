@@ -355,7 +355,7 @@ function titles_simple(string $inTitle): string {
     // Strip trailing Online
     $inTitle = safe_preg_replace('~ Online$~iu', '', $inTitle);
     // Strip trailing (Third Edition)
-    $inTitle = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+    $inTitle = safe_preg_replace('~\([^\s\(\)]+ Edition\)$~iu', '', $inTitle);
     // Strip leading International Symposium on
     $inTitle = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
     // Strip leading the
