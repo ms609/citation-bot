@@ -449,16 +449,39 @@ final class Template
         return false;
     }
 
+    // CrossRef re-adds are refused for originally-authored citations (see
+    // had_initial_author()), so a throttled rebuild would otherwise silently
+    // drop authors.  Refuse to commit such rebuilds and keep the original.
+    /** @param array<Parameter> $parameters */
+    private function cookie_absent_had_authors(array $parameters): bool {
+        foreach ($parameters as $parameter) {
+            if (in_array(mb_strtolower($parameter->param), FLATTENED_AUTHOR_PARAMETERS, true)
+                && $this->cookie_absent_parameter_value($parameter) !== ''
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function finalize_cookie_absent_citation(): void {
         if ($this->cookie_absent_original_parameters === null) {
             return;
         }
-        if ($this->cookie_absent_rebuild_succeeded()) {
+        if ($this->cookie_absent_rebuild_succeeded()
+            && (!$this->cookie_absent_had_authors($this->cookie_absent_original_parameters)
+                || $this->cookie_absent_had_authors($this->param))
+        ) {
             $this->cookie_absent_original_parameters = null;
             $this->cookie_absent_original_name = null;
             $this->mod_cookie_absent = true;
             report_modification('Removing cookieAbsent citation placeholders and rebuilding from the DOI');
             return;
+        }
+        if ($this->cookie_absent_had_authors($this->cookie_absent_original_parameters)
+            && !$this->cookie_absent_had_authors($this->param)
+        ) {
+            report_warning('CookieAbsent rebuild lost authors; keeping original citation');
         }
         $this->param = $this->cookie_absent_original_parameters;
         $this->name = (string) $this->cookie_absent_original_name;

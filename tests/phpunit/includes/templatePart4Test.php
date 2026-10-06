@@ -2746,6 +2746,36 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('url'));
     }
 
+    public function testCookieAbsentAuthorLossRestoresOriginal(): void {
+        HandleCache::$cache_good['10.9999/cookie.authorloss'] = true;
+        HandleCache::$cache_active['10.9999/cookie.authorloss'] = true;
+        $text = '{{cite web |last1=Smith |first1=John |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.authorloss}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $template->finalize_cookie_absent_citation();
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+        $this->assertSame('Sage Journals', $template->get2('title'));
+        $this->assertSame('https://journals.sagepub.com/action/cookieAbsent', $template->get2('url'));
+        $this->assertSame('cite web', $template->wikiname());
+    }
+
+    public function testCookieAbsentAuthoredRebuildIsCommitted(): void {
+        HandleCache::$cache_good['10.9999/cookie.authored'] = true;
+        HandleCache::$cache_active['10.9999/cookie.authored'] = true;
+        $text = '{{cite web |last1=Smith |first1=John |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.authored}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $template->add_if_new('title', 'Rebuilt title');
+        $template->add_if_new('journal', 'Rebuilt Journal');
+        $template->set('last1', 'Doe'); // add_if_new refuses authors the original already had
+        $template->finalize_cookie_absent_citation();
+        $this->assertSame('Rebuilt title', $template->get2('title'));
+        $this->assertSame('Doe', $template->get2('last1'));
+        $this->assertNull($template->get2('url'));
+        $this->assertTrue($template->modifications()['cookie_absent']);
+    }
+
     public function testCookieAbsentCleanupDoesNotRetargetTemplate(): void {
         HandleCache::$cache_good['10.1093/cookieabsenttest/retarget'] = true;
         HandleCache::$cache_active['10.1093/cookieabsenttest/retarget'] = true;
