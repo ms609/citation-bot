@@ -253,7 +253,6 @@ function simplify_google_search(string $url): string {
             case "gs_sm":
             case "imgil":
             case "ins":
-            case "npsic=":
             case "rflfq":
             case "lei":
             case "rlha":

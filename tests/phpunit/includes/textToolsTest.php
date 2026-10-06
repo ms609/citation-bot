@@ -294,9 +294,12 @@ final class textToolsTest extends testBaseClass {
 
     public function testTitlesSimpleNormalizesConnectorsBeforeWhitespaceRemoval(): void {
         $and = titles_simple('Cats and Dogs and Birds');
-
         $this->assertSame($and, titles_simple('Cats & Dogs & Birds'));
         $this->assertSame($and, titles_simple('Cats / Dogs / Birds'));
+    }
+
+    public function testTitlesSimpleStripsTrailingEdition(): void {
+        $this->assertSame('exampletitle', titles_simple('Example Title (Third Edition)'));
     }
 
     public function testArrowAreQuotes1(): void {
@@ -317,6 +320,10 @@ final class textToolsTest extends testBaseClass {
     public function testArrowAreQuotes4(): void {
         $text = "X‹Y›Z";
         $this->assertSame("X'Y'Z", straighten_quotes($text, true));
+    }
+
+    public function testSingleAngleQuoteEntities(): void {
+        $this->assertSame("X'Y'Z", straighten_quotes('X&lsaquo;Y&rsaquo;Z', true));
     }
 
     public function testArrowAreQuotes5(): void {
