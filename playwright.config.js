@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { resolve } from 'node:path';
 
 const srcOrigin = 'http://127.0.0.1:8080';
 const srcBaseURL = `${srcOrigin}/src/`;
@@ -20,7 +21,7 @@ const productionCanary = externalBaseURL ? new URL(externalBaseURL).origin === '
 function localPhpServer({ origin, documentRoot, publicBaseURL, coverage, logName }) {
   const parsed = new URL(origin);
   const coverageOptions = coverage
-    ? '-d xdebug.mode=coverage -d auto_prepend_file=tests/ui/php-coverage-prepend.php '
+    ? '-d xdebug.mode=coverage -d auto_prepend_file="$UI_PHP_COVERAGE_BOOTSTRAP" '
     : '-d xdebug.mode=off ';
   const command = [
     'mkdir -p test-results coverage/php/raw',
@@ -45,6 +46,7 @@ function localPhpServer({ origin, documentRoot, publicBaseURL, coverage, logName
       ALLOWED_HOSTS: parsed.host,
       ALLOWED_ORIGINS: origin,
       UI_PHP_COVERAGE_DIR: coverage ? 'coverage/php/raw' : '',
+      UI_PHP_COVERAGE_BOOTSTRAP: coverage ? resolve('tests/ui/php-coverage-prepend.php') : '',
     },
   };
 }
