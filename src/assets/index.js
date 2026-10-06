@@ -1,9 +1,27 @@
 var botFormSubmitting = false;
 
+function addDescription(input, descriptionId) {
+  var descriptions = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+  if (!descriptions.includes(descriptionId)) {
+    descriptions.push(descriptionId);
+    input.setAttribute("aria-describedby", descriptions.join(" "));
+  }
+}
+
+function removeDescription(input, descriptionId) {
+  var descriptions = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+  descriptions = descriptions.filter(function (id) { return id !== descriptionId; });
+  if (descriptions.length) {
+    input.setAttribute("aria-describedby", descriptions.join(" "));
+  } else {
+    input.removeAttribute("aria-describedby");
+  }
+}
+
 function setFieldError(input, errorId, message) {
   input.classList.add("error");
   input.setAttribute("aria-invalid", "true");
-  input.setAttribute("aria-describedby", errorId);
+  addDescription(input, errorId);
   if (!document.getElementById(errorId)) {
     var span = document.createElement("span");
     span.id = errorId;
@@ -17,7 +35,7 @@ function setFieldError(input, errorId, message) {
 function clearFieldError(input, errorId) {
   input.classList.remove("error");
   input.removeAttribute("aria-invalid");
-  input.removeAttribute("aria-describedby");
+  removeDescription(input, errorId);
   var existing = document.getElementById(errorId);
   if (existing) {
     existing.parentNode.removeChild(existing);
@@ -84,7 +102,6 @@ function ValidateForm(event) {
   if (submitButton.id === "PageSubmit") {
     if (botPage.value.trim() === "") {
       setFieldError(botPage, "botPage-error", "Page name is required");
-      submitButton.disabled = true;
       event.preventDefault();
       return false;
     }
@@ -92,7 +109,6 @@ function ValidateForm(event) {
   } else if (submitButton.id === "CatSubmit") {
     if (botCat.value.trim() === "") {
       setFieldError(botCat, "botCat-error", "Category name is required");
-      submitButton.disabled = true;
       event.preventDefault();
       return false;
     }
@@ -100,7 +116,6 @@ function ValidateForm(event) {
   } else if (submitButton.id === "LinkedSubmit") {
     if (botLinked.value.trim() === "") {
       setFieldError(botLinked, "botLinked-error", "Initial page name is required");
-      submitButton.disabled = true;
       event.preventDefault();
       return false;
     }

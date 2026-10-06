@@ -15,10 +15,10 @@ session_write_close();
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
  <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="license" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
-  <link rel="stylesheet" type="text/css" href="assets/results.css" />
+  <link rel="stylesheet" href="assets/results.css" />
   <title>
    Citation Bot
   </title>
@@ -37,44 +37,38 @@ session_write_close();
       <input type="checkbox" name="slow" id="slow" checked />
       <label for="slow">Thorough mode – a slower but more exhaustive search. Finds bibcodes and expands URLs.</label>
     </p>
-    <p>
-      <input type="hidden" name="edit" id="edit" value="webform" />
-    </p>
+    <input type="hidden" name="edit" id="edit" value="webform" />
     <fieldset>
       <legend>Process a single page</legend>
       <p>
         <label for="botPage">Single page:</label>
-        <input name="page" id="botPage" value="" placeholder="Page name" autocomplete="off" />
+        <input name="page" id="botPage" value="" placeholder="Page name" autocomplete="off" aria-describedby="botPage-help" />
         <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
-        <img style="display:none" src="assets/spinner_18_18.gif" id="PageSpinner" alt="Loading" aria-hidden="true" />
-        <br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)
+        <img class="loading-spinner" src="assets/spinner_18_18.gif" id="PageSpinner" alt="" aria-hidden="true" />
+        <span id="botPage-help" class="field-help">Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)</span>
       </p>
     </fieldset>
-    <p aria-hidden="true">– or –</p>
+    <p>– or –</p>
     <fieldset>
       <legend>Process a category</legend>
       <p>
         <label for="botCat">Category:</label>
         <input name="cat" id="botCat" value="" placeholder="Category name" autocomplete="off" />
         <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
-        <img style="display:none" src="assets/spinner_18_18.gif" id="CatSpinner" alt="Loading" aria-hidden="true" />
-        <br />
+        <img class="loading-spinner" src="assets/spinner_18_18.gif" id="CatSpinner" alt="" aria-hidden="true" />
       </p>
     </fieldset>
-    <p aria-hidden="true">– or –</p>
+    <p>– or –</p>
     <fieldset>
       <legend>Process all linked pages</legend>
       <p>
         <label for="botLinked">Linked pages:</label>
-        <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" autocomplete="off" />
+        <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" autocomplete="off" aria-describedby="botLinked-help" />
         <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
-        <img style="display:none" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="Loading" aria-hidden="true" />
-        <br />
+        <img class="loading-spinner" src="assets/spinner_18_18.gif" id="LinkSpinner" alt="" aria-hidden="true" />
       </p>
-      <p>Only user pages (<code>User:...</code>) can be used with this feature.</p>
+      <p id="botLinked-help" class="field-help">Only user pages (<code>User:...</code>) can be used with this feature.</p>
     </fieldset>
-    <p>
-    </p>
     <p>
       <label for="wiki_base">Wiki to run on:</label>
       <select name="wiki_base" id="wiki_base">
@@ -87,8 +81,8 @@ session_write_close();
         <!-- <option value="mdwiki">MDWiki.org</option> still not authorized -->
       </select>
     </p>
-    <div role="status" aria-live="polite" id="botStatus" class="sr-only"></div>
   </form>
+  <div role="status" aria-live="polite" id="botStatus" class="sr-only"></div>
   </main>
   <footer>
     <p>

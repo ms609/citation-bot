@@ -93,6 +93,8 @@ test.describe('Citation Bot web interface', () => {
     expect(await page.evaluate(() => typeof InitializeForm === 'function')).toBe(true);
     expect(await page.locator('link[rel="stylesheet"]').evaluate((link) => Boolean(link.sheet))).toBe(true);
     expect(await page.locator('#PageSpinner').evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
+    await expect(page.locator('#PageSpinner')).toHaveAttribute('alt', '');
+    await expect(page.locator('#botForm #botStatus')).toHaveCount(0);
   });
 
   const validationCases = [
@@ -102,6 +104,7 @@ test.describe('Citation Bot web interface', () => {
       button: '#PageSubmit',
       error: '#botPage-error',
       errorId: 'botPage-error',
+      helpId: 'botPage-help',
       message: 'Page name is required',
       validValue: 'Ada Lovelace',
     },
@@ -111,6 +114,7 @@ test.describe('Citation Bot web interface', () => {
       button: '#CatSubmit',
       error: '#botCat-error',
       errorId: 'botCat-error',
+      helpId: null,
       message: 'Category name is required',
       validValue: 'Scientists',
     },
@@ -120,6 +124,7 @@ test.describe('Citation Bot web interface', () => {
       button: '#LinkedSubmit',
       error: '#botLinked-error',
       errorId: 'botLinked-error',
+      helpId: 'botLinked-help',
       message: 'Initial page name is required',
       validValue: 'User:Example/Test',
     },
@@ -131,17 +136,22 @@ test.describe('Citation Bot web interface', () => {
 
       await page.locator(scenario.button).click();
 
+      const errorDescription = [scenario.helpId, scenario.errorId].filter(Boolean).join(' ');
       await expect(page).toHaveURL('http://127.0.0.1:8080/src/');
       await expect(page.locator(scenario.input)).toHaveAttribute('aria-invalid', 'true');
-      await expect(page.locator(scenario.input)).toHaveAttribute('aria-describedby', scenario.errorId);
+      await expect(page.locator(scenario.input)).toHaveAttribute('aria-describedby', errorDescription);
       await expect(page.locator(scenario.error)).toHaveAttribute('role', 'alert');
       await expect(page.locator(scenario.error)).toHaveText(scenario.message);
-      await expect(page.locator(scenario.button)).toBeDisabled();
+      await expect(page.locator(scenario.button)).toBeEnabled();
 
       await page.locator(scenario.input).fill(scenario.validValue);
 
       await expect(page.locator(scenario.input)).not.toHaveAttribute('aria-invalid');
-      await expect(page.locator(scenario.input)).not.toHaveAttribute('aria-describedby');
+      if (scenario.helpId) {
+        await expect(page.locator(scenario.input)).toHaveAttribute('aria-describedby', scenario.helpId);
+      } else {
+        await expect(page.locator(scenario.input)).not.toHaveAttribute('aria-describedby');
+      }
       await expect(page.locator(scenario.error)).toHaveCount(0);
       await expect(page.locator(scenario.button)).toBeEnabled();
     });
@@ -379,11 +389,12 @@ test.describe('Citation Bot web interface', () => {
 
     await expect(page.locator('#PageSpinner')).toBeHidden();
     await expect(page.locator('#botStatus')).toHaveText('Processing, please wait…');
+    await expect(page.locator('#botStatus')).toBeVisible();
     await expect(page.locator('#PageSubmit')).toBeDisabled();
   });
 
   test('core controls fit a narrow mobile viewport without horizontal overflow', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 });
+    await page.setViewportSize({ width: 320, height: 667 });
     await openHome(page);
 
     await expect(page.getByLabel('Single page:')).toBeVisible();
@@ -444,16 +455,21 @@ test.describe('Citation Bot web interface', () => {
 
   test('initial and validation-error states have no serious automated accessibility violations', async ({ page }) => {
     await openHome(page);
+    await page.evaluate(() => {
+      const fixture = document.createElement('div');
+      fixture.id = 'progress-text-contrast-fixture';
+      fixture.innerHTML = '<span class="boring">Routine progress</span> <span class="subsubitem">Additional detail</span>';
+      document.getElementById('main-form').appendChild(fixture);
+    });
+
     let results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa'])
-      .disableRules(['color-contrast'])
       .analyze();
     expect(results.violations).toEqual([]);
 
     await page.locator('#PageSubmit').click();
     results = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa'])
-      .disableRules(['color-contrast'])
       .analyze();
     expect(results.violations).toEqual([]);
   });

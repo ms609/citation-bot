@@ -23,6 +23,7 @@ bot_admission_buffer_start();
 bot_html_header();
 
 if (!isset($_POST['csrf_token']) || !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
+    http_response_code(403);
     report_warning('Invalid CSRF token.');
     bot_html_footer();
     exit(0);

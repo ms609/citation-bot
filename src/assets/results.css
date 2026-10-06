@@ -53,6 +53,10 @@ input[type="checkbox"] {
   min-height: 24px;
 }
 
+.loading-spinner {
+  display: none;
+}
+
 input.error {
   background-color: #f1e545;
   border: 2px solid #9a7200;
@@ -63,18 +67,12 @@ header a, footer a { text-decoration: none; }
 a { color: #0a5f8f; }
 
 span.added      { color: #008060; font-weight: bold;}
-/* DELIBERATE WCAG 1.4.3 NON-COMPLIANCE: .boring colour (#bbb, ~1.84:1 on white) does not meet the 4.5:1
-   AA ratio. This is an intentional design decision: these items are incidental progress noise that
-   users are not expected to read, and de-emphasising them reduces visual clutter. */
-span.boring     { color: #bbb; }
+span.boring     { color: #767676; }
 span.changed    { color: #0070a8; font-weight: bold;}
 span.reddish    { color: #8c3f6e; }
 span.removed    { color: #8a5800; font-weight: bold;}
 span.subitem    { color: #666; }
-/* DELIBERATE WCAG 1.4.3 NON-COMPLIANCE: .subsubitem colour (#999, ~2.77:1 on white) does not meet the
-   4.5:1 AA ratio. This is an intentional design decision: these items are supplementary sub-items
-   that represent incidental progress noise, and de-emphasising them reduces visual clutter. */
-span.subsubitem { color: #999; }
+span.subsubitem { color: #767676; }
 span.warning    { color: #b34700; }
 
 /* Visible focus outline for keyboard navigation (WCAG 2.4.7) */
@@ -115,12 +113,16 @@ a:focus-visible {
   border: 0;
 }
 
-/* Inline error message beneath invalid form fields (WCAG 3.3.1) */
+/* Inline help and error text beneath form fields */
+.field-help,
+.field-error {
+  display: block;
+  margin-top: 0.25em;
+}
+
 .field-error {
   color: #b34700;
   font-size: 0.875em;
-  display: block;
-  margin-top: 0.25em;
 }
 
 /* Fieldset grouping for mutually-exclusive form sections */
@@ -143,9 +145,19 @@ pre {
   word-wrap: break-word;
 }
 
-/* Respect user preference for reduced motion; hide animated spinners (WCAG 2.2.2) */
+/* Respect user preference for reduced motion; replace animation with visible text feedback. */
 @media (prefers-reduced-motion: reduce) {
-  img[id$="Spinner"] {
+  .loading-spinner {
     display: none !important;
+  }
+
+  #botStatus:not(:empty) {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0 1em 1em;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 }
