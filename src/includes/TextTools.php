@@ -510,7 +510,7 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
  * Converts to title case, unless obviously a url
  */
 function title_case(string $text): string {
-    if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false) {
+    if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false || mb_stripos($text, 'https://') !== false) {
         return $text; // Who knows - duplicate code below
     }
     return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
@@ -529,7 +529,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                                              // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
     }
 
-    if (mb_stripos($new_case, 'www.') !== false || mb_stripos($new_case, 'www-') !== false || mb_stripos($new_case, 'http://') !== false) {
+    if (mb_stripos($new_case, 'www.') !== false || mb_stripos($new_case, 'www-') !== false || mb_stripos($new_case, 'http://') !== false || mb_stripos($new_case, 'https://') !== false) {
         return $new_case; // Who knows - duplicate code above
     }
 
