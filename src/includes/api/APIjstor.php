@@ -34,7 +34,7 @@ function jstor_response_is_ris(string $data): bool {
 
 function jstor_fallback_to_zotero(Template $template, string $jstor, string $reason): void {
     report_info($reason . ' for ' . jstor_link($jstor) . '; trying Citoid/Zotero.');
-    Zotero::expand_by_zotero($template, 'https://www.jstor.org/stable/' . $jstor);
+    Zotero::expand_by_zotero($template, 'https://www.jstor.org/stable/' . $jstor, true);
 }
 
 function expand_by_jstor(Template $template): void {
