@@ -312,6 +312,10 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame("X'Y'Z", straighten_quotes($text, true));
     }
 
+    public function testSingleAngleQuoteEntities(): void {
+        $this->assertSame("X'Y'Z", straighten_quotes('X&lsaquo;Y&rsaquo;Z', true));
+    }
+
     public function testArrowAreQuotes5(): void {
         $text = "This » That";
         $this->assertSame($text, straighten_quotes($text, false));
