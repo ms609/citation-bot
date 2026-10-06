@@ -503,6 +503,7 @@ final class bibcodeTest extends testBaseClass {
 
     public function testBadBibcodeARXIVPages(): void {
         $this->requires_bibcode(function (): void {
+            sleep(1);
             $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
             $expanded = $this->process_citation($text);
             $pages = (string) $expanded->get2('pages');
@@ -513,6 +514,7 @@ final class bibcodeTest extends testBaseClass {
 
     public function testNoBibcodesForArxiv(): void {
         $this->requires_bibcode(function (): void {
+            sleep(1);
             $text = "{{Cite arXiv|last1=Sussillo|first1=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
             $expanded = $this->process_citation($text);
             $this->assertNull($expanded->get2('bibcode'));  // If this eventually gets a journal, we will have to change the test
@@ -521,6 +523,7 @@ final class bibcodeTest extends testBaseClass {
 
     public function testNoBibcodesForBookReview(): void {
         $this->requires_bibcode(function (): void {      // don't add isbn. It causes early exit
+            sleep(1);
             $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded); // Won't expand because of bookish stuff
@@ -549,6 +552,7 @@ final class bibcodeTest extends testBaseClass {
 
     public function testFindBibcodeForBook(): void {
         $this->requires_bibcode(function (): void {
+            sleep(1);
             $text = "{{Cite journal | doi=10.2277/0521815363}}";
             $expanded = $this->make_citation($text);
             expand_by_adsabs($expanded);
