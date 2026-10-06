@@ -19,6 +19,35 @@ final class JstorRisCoverageTest extends testBaseClass {
         return [$template, $ris];
     }
 
+    public function testJstorResponseClassifierAcceptsRis(): void {
+        $ris = <<<RIS
+Provider: JSTOR http://www.jstor.org
+TY - RPRT
+T1 - Example report
+ER -
+RIS;
+
+        $this->assertTrue(jstor_response_is_ris($ris));
+    }
+
+    public function testJstorResponseClassifierRejectsHtmlChallenge(): void {
+        $html = <<<'HTML'
+<!doctype html>
+<html>
+<head><title>Access challenge</title></head>
+<body>Verify you are human</body>
+</html>
+HTML;
+
+        $this->assertFalse(jstor_response_is_ris($html));
+    }
+
+    public function testJstorResponseClassifierRejectsJstorErrorText(): void {
+        $this->assertFalse(
+            jstor_response_is_ris('No RIS data found for resrep26423')
+        );
+    }
+
     public function testChapterRisMapsT1ToChapterAndT2ToTitle(): void {
         $ris = <<<RIS
 TY - CHAP
