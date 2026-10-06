@@ -1,0 +1,280 @@
+name: Browser UI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/index.php'
+      - 'src/includes/PublicConfig.php'
+      - 'src/includes/setup.php'
+      - 'src/assets/**'
+      - 'tests/ui/**'
+      - 'playwright.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/browser-ui.yml'
+  pull_request:
+    branches: [ master ]
+  merge_group:
+  schedule:
+    - cron: '15 19 * * 1'
+  workflow_dispatch:
+    inputs:
+      production_canary:
+        description: Run the read-only Toolforge production canary
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Determine UI test scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      ui: ${{ steps.scope.outputs.ui }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Determine whether browser tests are required
+        id: scope
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+            echo 'ui=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          printf '%s\n' "$changed"
+          if grep -Eq '^(src/index\.php|src/includes/(PublicConfig|setup)\.php|src/assets/|tests/ui/|playwright\.config\.js$|package(-lock)?\.json$|\.github/workflows/browser-ui\.yml$)' <<<"$changed"; then
+            echo 'ui=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ui=false' >> "$GITHUB_OUTPUT"
+          fi
+
+  browser-ui:
+    name: Chromium UI, layouts, and coverage
+    needs: changes
+    if: needs.changes.outputs.ui == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Harden runner (audit outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP with Xdebug coverage
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: '8.4'
+          coverage: xdebug
+          extensions: mbstring
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install browser-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install Chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run Chromium UI, root-layout, and no-JavaScript tests
+        run: npm run test:ui
+
+      - name: Build and validate UI coverage reports
+        if: ${{ !cancelled() }}
+        run: |
+          npm run coverage:ui
+          cat coverage/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload PHP UI coverage to Codecov
+        if: ${{ success() && (github.event_name == 'push' || github.event_name == 'schedule') }}
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: coverage/php/lcov.info
+          disable_search: true
+          flags: ui-php
+          name: browser-ui-php
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload JavaScript UI coverage to Codecov
+        if: ${{ success() && (github.event_name == 'push' || github.event_name == 'schedule') }}
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: coverage/browser/lcov.info
+          disable_search: true
+          flags: ui-js
+          name: browser-ui-js
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload UI coverage
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-ui-coverage
+          path: coverage/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload browser-test diagnostics
+        if: ${{ failure() && !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-ui-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  browser-ui-gate:
+    name: Browser UI gate
+    if: always()
+    needs: [changes, browser-ui]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require UI tests only when relevant
+        shell: bash
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          UI_REQUIRED: ${{ needs.changes.outputs.ui }}
+          UI_RESULT: ${{ needs.browser-ui.result }}
+        run: |
+          set -euo pipefail
+          if [[ "$CHANGES_RESULT" != "success" ]]; then
+            echo "UI scope detection failed: $CHANGES_RESULT" >&2
+            exit 1
+          fi
+          if [[ "$UI_REQUIRED" == "true" && "$UI_RESULT" != "success" ]]; then
+            echo "Browser UI tests were required but result was: $UI_RESULT" >&2
+            exit 1
+          fi
+          echo "Browser UI gate passed (required=$UI_REQUIRED, result=$UI_RESULT)."
+
+  browser-ui-cross-browser:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Harden runner (audit outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
+        with:
+          php-version: '8.4'
+          coverage: none
+          extensions: mbstring
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install browser-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install Firefox and WebKit
+        run: ./node_modules/.bin/playwright install --with-deps firefox webkit
+
+      - name: Run Firefox and WebKit deployment-layout smoke tests
+        run: npm run test:ui:cross-browser
+
+      - name: Upload cross-browser diagnostics
+        if: ${{ failure() && !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-ui-cross-browser-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  production-ui-canary:
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.production_canary)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Harden runner (audit outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install browser-test dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Install Chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run read-only Toolforge UI canary
+        env:
+          UI_BASE_URL: https://citations.toolforge.org/
+        run: npm run test:ui:external
+
+      - name: Upload production-canary diagnostics
+        if: ${{ failure() && !cancelled() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-ui-canary-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -17,12 +17,20 @@ if (!is_string($repository_root) || !is_string($source_root)) {
     return;
 }
 
-if (function_exists('xdebug_set_filter')) {
-    xdebug_set_filter(
-        XDEBUG_FILTER_CODE_COVERAGE,
-        XDEBUG_PATH_INCLUDE,
-        [$source_root . DIRECTORY_SEPARATOR]
-    );
+if (
+    function_exists('xdebug_set_filter') &&
+    defined('XDEBUG_FILTER_CODE_COVERAGE') &&
+    defined('XDEBUG_PATH_INCLUDE')
+) {
+    $coverage_filter = constant('XDEBUG_FILTER_CODE_COVERAGE');
+    $path_include = constant('XDEBUG_PATH_INCLUDE');
+    if (is_int($coverage_filter) && is_int($path_include)) {
+        xdebug_set_filter(
+            $coverage_filter,
+            $path_include,
+            [$source_root . DIRECTORY_SEPARATOR]
+        );
+    }
 }
 
 $coverage_flags = defined('XDEBUG_CC_UNUSED') ? XDEBUG_CC_UNUSED : 0;
@@ -46,7 +54,7 @@ register_shutdown_function(static function () use ($repository_root, $source_roo
         $relative = str_replace(
             DIRECTORY_SEPARATOR,
             '/',
-            substr($real_filename, strlen($repository_root) + 1)
+            mb_substr($real_filename, mb_strlen($repository_root) + 1)
         );
         $filtered[$relative] = $lines;
     }
@@ -62,7 +70,10 @@ register_shutdown_function(static function () use ($repository_root, $source_roo
         return;
     }
 
-    $request_uri = is_string($_SERVER['REQUEST_URI'] ?? null) ? $_SERVER['REQUEST_URI'] : '';
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (!is_string($request_uri)) {
+        $request_uri = '';
+    }
     $request_path = parse_url($request_uri, PHP_URL_PATH);
     if (!is_string($request_path)) {
         $request_path = '';
@@ -85,6 +96,8 @@ register_shutdown_function(static function () use ($repository_root, $source_roo
     } catch (Throwable) {
         $suffix = str_replace('.', '-', uniqid('', true));
     }
-    $path = $directory . DIRECTORY_SEPARATOR . getmypid() . '-' . $suffix . '.json';
+    $process_id = getmypid();
+    $process_label = is_int($process_id) ? (string) $process_id : 'unknown';
+    $path = $directory . DIRECTORY_SEPARATOR . $process_label . '-' . $suffix . '.json';
     @file_put_contents($path, $payload, LOCK_EX);
 });

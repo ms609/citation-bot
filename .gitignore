@@ -9,5 +9,8 @@
 /DebugLog.txt
 /tmp/*
 /vendor/*
+/node_modules/
+/playwright-report/
+/test-results/
 /phpunit.local.xml
 /.worktrees/
