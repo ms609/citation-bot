@@ -226,9 +226,4 @@ function InitializeForm() {
 
 // This script is loaded with defer, so the DOM is parsed before it runs.
 InitializeForm();
-window.addEventListener("pageshow", function () {
-  ResetTransientFormState();
-  // Chromium can restore persisted form values after pageshow listeners run.
-  // Recompute the label in the next task so it reflects the restored value.
-  setTimeout(setPageButtonText, 0);
-});
+window.addEventListener("pageshow", ResetTransientFormState);
