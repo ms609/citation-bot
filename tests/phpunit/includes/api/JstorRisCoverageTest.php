@@ -71,7 +71,7 @@ RIS;
 
         [$template] = $this->parseRis(
             $ris,
-            '{{cite journal|jstor=resrep26423}}'
+            '{{Cite book |jstor=resrep26423 }}'
         );
 
         $this->assertSame(
