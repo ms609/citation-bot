@@ -59,6 +59,49 @@ RIS;
         );
     }
 
+    public function testReportRisMapsT1ToTitleNotChapter(): void {
+        $ris = <<<RIS
+TY - RPRT
+T1 - The War Comes Home: The Evolution of Domestic Terrorism in the United States
+AU - Jones, Seth G.
+PY - 2020
+PB - Center for Strategic and International Studies
+ER -
+RIS;
+
+        [$template] = $this->parseRis(
+            $ris,
+            '{{cite journal|jstor=resrep26423}}'
+        );
+
+        $this->assertSame(
+            'The War Comes Home: The Evolution of Domestic Terrorism in the United States',
+            $template->get2('title')
+        );
+        $this->assertNull($template->get2('chapter'));
+        $this->assertSame(
+            'Center for Strategic and International Studies',
+            $template->get2('publisher')
+        );
+    }
+
+    public function testReportRisMapsTiToTitleWhenT2Exists(): void {
+        $ris = <<<RIS
+TY - RPRT
+TI - Report Title
+T2 - Report Series
+ER -
+RIS;
+
+        [$template] = $this->parseRis(
+            $ris,
+            '{{cite journal|jstor=resrep26423}}'
+        );
+
+        $this->assertSame('Report Title', $template->get2('title'));
+        $this->assertNull($template->get2('chapter'));
+    }
+
     public function testFullBookIgnoresT1AndUsesT2AsTitle(): void {
         $ris = <<<RIS
 TY - BOOK

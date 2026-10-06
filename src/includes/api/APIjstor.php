@@ -157,6 +157,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     $ris_publisher = false;
     $ris_book = false;
     $ris_fullbook = false;
+    $ris_report = false;
     $has_T2 = false;
     $bad_EP = false;
     $bad_SP = false;
@@ -173,10 +174,14 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     foreach ($ris as $ris_line) {
         $ris_part = ris_line_parts($ris_line);
         if (mb_trim($ris_part[0]) === "TY") {
-            if (in_array(mb_trim($ris_part[1]), RIS_IS_BOOK, true)) {
+            $ris_type = mb_trim($ris_part[1]);
+            if ($ris_type === "RPRT") {
+                $ris_report = true;
+            }
+            if (in_array($ris_type, RIS_IS_BOOK, true)) {
                   $ris_book = true; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
             }
-            if (in_array(mb_trim($ris_part[1]), RIS_IS_FULL_BOOK, true)) {
+            if (in_array($ris_type, RIS_IS_FULL_BOOK, true)) {
                 $ris_fullbook = true;
             }
         } elseif (mb_trim($ris_part[0]) === "T2") {
@@ -193,7 +198,9 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
         $ris_parameter = false;
         switch (mb_trim($ris_part[0])) {
             case "T1":
-                if ($ris_fullbook) {
+                if ($ris_report) {
+                    $ris_parameter = "title";
+                } elseif ($ris_fullbook) {
                     // Sub-title of main title most likely
                 } elseif ($ris_book) {
                     $ris_parameter = "chapter";
@@ -203,7 +210,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                 break;
             case "TI":
                 $ris_parameter = "title";
-                if ($ris_book && $has_T2) {
+                if ($ris_book && !$ris_report && $has_T2) {
                     $ris_parameter = "chapter";
                 }
                 break;
