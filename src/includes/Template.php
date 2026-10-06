@@ -318,7 +318,7 @@ final class Template
         return mb_trim($value);
     }
 
-    private function cookie_absent_url(string $value): bool {
+    private function is_cookie_absent_url(string $value): bool {
         return preg_match('~^https?://\S+$~i', $value) === 1 &&
             preg_match('~/action/cookieabsent(?:[/?#&;]|$)~i', $value) === 1;
     }
@@ -336,9 +336,9 @@ final class Template
             if ($name === 'doi') {
                 $doi_parameters[] = [$parameter, $value];
             }
-            if (isset($url_params[$name]) && $this->cookie_absent_url($value)) {
+            if (isset($url_params[$name]) && $this->is_cookie_absent_url($value)) {
                 $has_cookie_absent = true;
-            } elseif ($name === 'title' && $this->cookie_absent_url($value)) {
+            } elseif ($name === 'title' && $this->is_cookie_absent_url($value)) {
                 $has_cookie_absent = true;
             }
         }
