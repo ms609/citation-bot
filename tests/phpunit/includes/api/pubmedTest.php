@@ -57,6 +57,7 @@ final class pubmedTest extends testBaseClass {
         // Non-existent PMC: NCBI returns 404, early-return fires → PDF URL kept, rename skipped.
         // If NCBI returns 200 instead (e.g. a soft-404 page), the URL is dropped and the test is skipped.
         $this->sleep_pubmed();
+        $this->sleep_pubmed(); // super picky test
         $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC99999999/pdf/nonexistent.pdf}}";
         $expanded = $this->process_citation($text);
         $this->assertSame('99999999', $expanded->get2('pmc'));
