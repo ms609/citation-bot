@@ -351,7 +351,10 @@ final class Template
             if ($doi === '') {
                 continue;
             }
-            $candidate = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
+            $candidate = mb_trim($doi);
+            if (preg_match('~^10\.\d{4,9}/\S+$~', $candidate) !== 1 || doi_works($candidate) !== true) {
+                $candidate = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
+            }
             if ($clean_doi !== '' && $candidate !== $clean_doi) {
                 return;
             }

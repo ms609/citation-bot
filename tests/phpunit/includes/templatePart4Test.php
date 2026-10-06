@@ -2710,6 +2710,29 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('10.9999/cookie.thesis', $template->get2('doi'));
     }
 
+    public function testCookieAbsentPreservesQuote(): void {
+        HandleCache::$cache_good['10.9999/cookie.quote'] = true;
+        HandleCache::$cache_active['10.9999/cookie.quote'] = true;
+        $text = '{{cite web |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |quote=Important finding |doi=10.9999/cookie.quote}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('Important finding', $template->get2('quote'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('10.9999/cookie.quote', $template->get2('doi'));
+    }
+
+    public function testCookieAbsentResolvingFullDoiIsKeptAsIs(): void {
+        HandleCache::$cache_good['10.9999/cookie.fullfirst?x=1'] = true;
+        HandleCache::$cache_active['10.9999/cookie.fullfirst?x=1'] = true;
+        $text = '{{cite web |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.fullfirst?x=1}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('10.9999/cookie.fullfirst?x=1', $template->get2('doi'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('url'));
+    }
+
     public function testCookieAbsentCleanupDoesNotRetargetTemplate(): void {
         HandleCache::$cache_good['10.1093/cookieabsenttest/retarget'] = true;
         HandleCache::$cache_active['10.1093/cookieabsenttest/retarget'] = true;
