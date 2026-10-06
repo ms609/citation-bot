@@ -455,10 +455,12 @@ final class Template
         return false;
     }
 
-    // had_initial_author() blocks API author re-adds, so a throttled rebuild
-    // would otherwise silently drop authors present in the original.
-    // Refuse to commit such rebuilds and keep the original for a later run.
-    /** @param array<Parameter> $parameters */
+    /**
+     * Determine whether any author parameter is present.
+     * had_initial_author() blocks API author re-adds, so a throttled rebuild
+     * would otherwise silently drop authors present in the original.
+     * @param array<Parameter> $parameters
+     */
     private function cookie_absent_had_authors(array $parameters): bool {
         foreach ($parameters as $parameter) {
             if (in_array(mb_strtolower($parameter->param), FLATTENED_AUTHOR_PARAMETERS, true)
