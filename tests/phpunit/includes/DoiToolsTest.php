@@ -32,7 +32,11 @@ final class DoiToolsTest extends testBaseClass {
 
     public function testExtractDoiOvidTildeSuffix(): void {
         HandleCache::$cache_hdl_bad['10.1097/01.jac.0000264606.50123.6d~the-role-of-community-health-centers-in-delivering-primary'] = true;
+        HandleCache::$cache_hdl_bad['10.1097/01.jac.0000264606.50123'] = true;
+        HandleCache::$cache_hdl_bad['10.1097/01.jac.0000264606'] = true;
+        HandleCache::$cache_hdl_bad['10.1097/01.jac'] = true;
         HandleCache::$cache_hdl_bad['10.1097/01'] = true;
+        HandleCache::$cache_hdl_bad['10.1097'] = true;
         HandleCache::$cache_good['10.1097/01.jac.0000264606.50123.6d'] = true;
         $the_return = extract_doi('10.1097/01.jac.0000264606.50123.6d~the-role-of-community-health-centers-in-delivering-primary?redirectionsource=fulltextview');
         $this->assertSame('10.1097/01.jac.0000264606.50123.6d', $the_return[1]);
