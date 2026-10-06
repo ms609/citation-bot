@@ -315,8 +315,9 @@ final class DoiTest extends testBaseClass {
 
     /** https://publications.europa.eu/en/ */
     public function testExpansion_doi_not_from_crossref_europa_monograph(): void {
-         $expanded = $this->make_citation('{{Cite journal}}');
-         expand_doi_with_dx($expanded, '10.2788/14231');
+        $expanded = $this->make_citation('{{Cite journal}}');
+        sleep(3);
+        expand_doi_with_dx($expanded, '10.2788/14231');
         if ($expanded->has('author1')) {
             $this->assertSame('{{Cite journal| author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | date=2007 | publisher=Publications Office }}', $expanded->parsed_text());
         } else {
