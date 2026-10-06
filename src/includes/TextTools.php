@@ -366,6 +366,9 @@ function titles_simple(string $inTitle): string {
     $inTitle = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
     // Reduce punctuation
     $inTitle = straighten_quotes(mb_strtolower($inTitle), true);
+    // Normalize equivalent connectors before spaces are removed
+    $inTitle = str_replace(" & ", " and ", $inTitle);
+    $inTitle = str_replace(" / ", " and ", $inTitle);
     $inTitle = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
     $inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
     // Retracted
@@ -376,9 +379,6 @@ function titles_simple(string $inTitle): string {
     $inTitle = str_replace(["'", '"'], "", $inTitle);
     // Strip trailing periods
     $inTitle = mb_trim(mb_rtrim($inTitle, '.'));
-    // &
-    $inTitle = str_replace(" & ", " and ", $inTitle);
-    $inTitle = str_replace(" / ", " and ", $inTitle);
     // greek
     $inTitle = strip_diacritics($inTitle);
     return str_remove_irrelevant_bits($inTitle);
