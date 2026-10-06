@@ -48,6 +48,7 @@ final class textToolsTest extends testBaseClass {
 
     public function testCapitalization5(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
+        $this->assertSame('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', title_capitalization('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', true));
     }
 
     public function testCapitalization6(): void {
@@ -658,6 +659,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('Www', title_case('www'));
         $this->assertSame('www.', title_case('www.'));
         $this->assertSame('http://', title_case('http://'));
+        $this->assertSame('https://example.com/CaseSensitivePath', title_case('https://example.com/CaseSensitivePath'));
         $this->assertSame('abx www-x', title_case('abx www-x'));
         $this->assertSame('Hello There', title_case('hello there'));
     }
