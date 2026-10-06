@@ -2723,12 +2723,25 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
     }
 
     public function testCookieAbsentResolvingFullDoiIsKeptAsIs(): void {
+        HandleCache::$cache_hdl_bad['10.9999/cookie.fullfirst'] = true;
         HandleCache::$cache_good['10.9999/cookie.fullfirst?x=1'] = true;
         HandleCache::$cache_active['10.9999/cookie.fullfirst?x=1'] = true;
         $text = '{{cite web |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.fullfirst?x=1}}';
         $template = $this->make_citation($text);
         $template->prepare();
         $this->assertSame('10.9999/cookie.fullfirst?x=1', $template->get2('doi'));
+        $this->assertNull($template->get2('title'));
+        $this->assertNull($template->get2('url'));
+    }
+
+    public function testCookieAbsentEquivalentDoisProceed(): void {
+        HandleCache::$cache_good['10.9999/cookie.equiv'] = true;
+        HandleCache::$cache_active['10.9999/cookie.equiv'] = true;
+        HandleCache::$cache_good['10.9999/cookie.equiv?x=1'] = true;
+        $text = '{{cite web |title=Sage Journals |url=https://journals.sagepub.com/action/cookieAbsent |doi=10.9999/cookie.equiv?x=1 |doi=10.9999/cookie.equiv}}';
+        $template = $this->make_citation($text);
+        $template->prepare();
+        $this->assertSame('10.9999/cookie.equiv', $template->get2('doi'));
         $this->assertNull($template->get2('title'));
         $this->assertNull($template->get2('url'));
     }

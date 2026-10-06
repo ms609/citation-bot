@@ -347,19 +347,27 @@ final class Template
         }
         $doi_parameter = null;
         $clean_doi = '';
+        $clean_stripped = '';
         foreach ($doi_parameters as [$parameter, $doi]) {
             if ($doi === '') {
                 continue;
             }
-            $candidate = mb_trim($doi);
-            if (preg_match('~^10\.\d{4,9}/\S+$~', $candidate) !== 1 || doi_works($candidate) !== true) {
-                $candidate = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
-            }
-            if ($clean_doi !== '' && $candidate !== $clean_doi) {
+            $stripped = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
+            if ($clean_stripped !== '' && $stripped !== $clean_stripped) {
                 return;
             }
             if ($clean_doi === '') {
-                $clean_doi = $candidate;
+                if ($stripped !== '' && preg_match('~^10\.\d{4,9}/\S+$~', $stripped) === 1 && doi_works($stripped) === true) {
+                    $clean_doi = $stripped;
+                } else {
+                    $full = mb_trim($doi);
+                    if ($full !== $stripped && preg_match('~^10\.\d{4,9}/\S+$~', $full) === 1 && doi_works($full) === true) {
+                        $clean_doi = $full;
+                    } else {
+                        $clean_doi = $stripped;
+                    }
+                }
+                $clean_stripped = $stripped;
                 $doi_parameter = $parameter;
             }
         }
