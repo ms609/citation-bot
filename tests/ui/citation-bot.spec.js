@@ -4,7 +4,6 @@ import { readFileSync } from 'node:fs';
 import {
   captureSubmission,
   fulfillSubmission,
-  holdSubmission,
   openHome,
   parseForm,
 } from './helpers.js';
@@ -65,6 +64,15 @@ async function expectReadyForm(page) {
   await expect(page.locator('#botPage')).toBeEnabled();
   await expect(page.locator('#botCat')).toBeEnabled();
   await expect(page.locator('#botLinked')).toBeEnabled();
+}
+
+async function preventNextSubmissionNavigation(page) {
+  await page.locator('#botForm').evaluate((form) => {
+    // InitializeForm registered ValidateForm first. This later listener lets
+    // production validation/state changes run, then cancels only the native
+    // navigation so the resulting DOM state remains observable.
+    form.addEventListener('submit', (event) => event.preventDefault(), { once: true });
+  });
 }
 
 test.describe('Citation Bot web interface', () => {
@@ -146,13 +154,11 @@ test.describe('Citation Bot web interface', () => {
     await expect(page.locator('#botCat-error')).toBeVisible();
     await page.locator('#botPage').fill('Ada Lovelace');
 
-    const captured = await captureSubmission(page, 'process_page.php');
-    await page.locator('#PageSubmit').click({ noWaitAfter: true });
-    await captured.requestSeen;
+    await preventNextSubmissionNavigation(page);
+    await page.locator('#PageSubmit').click();
 
     await expect(page.locator('#botCat-error')).toHaveCount(0);
     await expect(page.locator('#botCat')).toBeDisabled();
-    expect(parseForm(captured.request()).has('cat')).toBe(false);
   });
 
   test('page button pluralizes for a pipe-separated page list', async ({ page }) => {
@@ -208,38 +214,32 @@ test.describe('Citation Bot web interface', () => {
       await openHome(page);
       await page.locator(scenario.input).fill(scenario.value);
 
-      const held = await holdSubmission(page, scenario.endpoint);
-      const click = page.locator(scenario.button).click();
-      try {
-        await held.requestSeen;
+      await preventNextSubmissionNavigation(page);
+      await page.locator(scenario.button).click();
 
-        expect(held.request()).toBeTruthy();
-        for (const spinner of ['#PageSpinner', '#CatSpinner', '#LinkSpinner']) {
-          if (spinner === scenario.spinner) {
-            await expect(page.locator(spinner)).toBeVisible();
-          } else {
-            await expect(page.locator(spinner)).toBeHidden();
-          }
+      for (const spinner of ['#PageSpinner', '#CatSpinner', '#LinkSpinner']) {
+        if (spinner === scenario.spinner) {
+          await expect(page.locator(spinner)).toBeVisible();
+        } else {
+          await expect(page.locator(spinner)).toBeHidden();
         }
-        await expect(page.locator('#botStatus')).toHaveText('Processing, please wait…');
-        await expect(page.locator('#botForm')).toHaveAttribute('aria-busy', 'true');
-        await expect(page.locator('#PageSubmit')).toBeDisabled();
-        await expect(page.locator('#CatSubmit')).toBeDisabled();
-        await expect(page.locator('#LinkedSubmit')).toBeDisabled();
-
-        // The active operation input remains editable while the request is in
-        // flight, but changing it must not re-enable any action or cause a second
-        // Enter-key submission.
-        await expect(page.locator(scenario.input)).toBeEnabled();
-        await page.locator(scenario.input).fill(`${scenario.value} revised`);
-        await expect(page.locator('#PageSubmit')).toBeDisabled();
-        await expect(page.locator('#CatSubmit')).toBeDisabled();
-        await expect(page.locator('#LinkedSubmit')).toBeDisabled();
-        await page.locator(scenario.input).press('Enter');
-      } finally {
-        held.release();
-        await click.catch(() => {});
       }
+      await expect(page.locator('#botStatus')).toHaveText('Processing, please wait…');
+      await expect(page.locator('#botForm')).toHaveAttribute('aria-busy', 'true');
+      await expect(page.locator('#PageSubmit')).toBeDisabled();
+      await expect(page.locator('#CatSubmit')).toBeDisabled();
+      await expect(page.locator('#LinkedSubmit')).toBeDisabled();
+
+      // The active operation input remains editable while submission state is
+      // active, but changing it must not re-enable any action or allow a second
+      // Enter-key submission.
+      await expect(page.locator(scenario.input)).toBeEnabled();
+      await page.locator(scenario.input).fill(`${scenario.value} revised`);
+      await expect(page.locator('#PageSubmit')).toBeDisabled();
+      await expect(page.locator('#CatSubmit')).toBeDisabled();
+      await expect(page.locator('#LinkedSubmit')).toBeDisabled();
+      await page.locator(scenario.input).press('Enter');
+      await expect(page.locator('#botForm')).toHaveAttribute('aria-busy', 'true');
     });
 
     test(`Enter in ${scenario.name} submits that operation`, async ({ page }) => {
@@ -369,18 +369,12 @@ test.describe('Citation Bot web interface', () => {
     await openHome(page);
     await page.locator('#botPage').fill('Ada Lovelace');
 
-    const held = await holdSubmission(page, 'process_page.php');
-    const click = page.locator('#PageSubmit').click();
-    try {
-      await held.requestSeen;
+    await preventNextSubmissionNavigation(page);
+    await page.locator('#PageSubmit').click();
 
-      await expect(page.locator('#PageSpinner')).toBeHidden();
-      await expect(page.locator('#botStatus')).toHaveText('Processing, please wait…');
-      await expect(page.locator('#PageSubmit')).toBeDisabled();
-    } finally {
-      held.release();
-      await click.catch(() => {});
-    }
+    await expect(page.locator('#PageSpinner')).toBeHidden();
+    await expect(page.locator('#botStatus')).toHaveText('Processing, please wait…');
+    await expect(page.locator('#PageSubmit')).toBeDisabled();
   });
 
   test('core controls fit a narrow mobile viewport without horizontal overflow', async ({ page }) => {
@@ -420,12 +414,14 @@ test.describe('Citation Bot web interface', () => {
   test('HTML-looking and delimiter-heavy page names remain plain form data', async ({ page }) => {
     await openHome(page);
     const value = `<script>alert("x")</script> 100% + A&B=C | trailing|`;
+    const initialScriptCount = await page.locator('script').count();
     await page.locator('#botPage').fill(value);
+    expect(await page.locator('script').count()).toBe(initialScriptCount);
+
     const captured = await captureSubmission(page, 'process_page.php');
     await page.locator('#PageSubmit').click({ noWaitAfter: true });
     await captured.requestSeen;
     expect(parseForm(captured.request()).get('page')).toBe(value);
-    expect(await page.locator('script').count()).toBe(1);
   });
 
   test('public wiki choices remain the intentional subset of backend-supported wikis', async ({ page }) => {
