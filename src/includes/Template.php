@@ -51,6 +51,7 @@ final class Template
     private bool $mod_issue_citebook = false;
     private bool $mod_article_number = false;
     private bool $mod_article_number_iucn = false;
+    private bool $mod_cookie_absent = false;
     private bool $no_initial_doi = false;
     private bool $held_work_done = false;
     /** @var array<array<string>> */
@@ -65,6 +66,11 @@ final class Template
     ];
     /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
+    /** @var array<Parameter>|null */
+    private ?array $cookie_absent_original_parameters = null;
+    private ?string $cookie_absent_original_name = null;
+    /** @var array<string>|null */
+    private ?array $cookie_absent_initial_author_params = null;
 
     public function __construct() {
         // Done in parse_text() and in variable initialization
@@ -296,6 +302,204 @@ final class Template
         }
     }
 
+    public function prepare_cookie_absent_citation(): void {
+        if (!in_array($this->wikiname(), [...TEMPLATES_WE_PROCESS, ...TEMPLATES_WE_SLIGHTLY_PROCESS, ...TEMPLATES_WE_BARELY_PROCESS, ...TEMPLATES_WE_CHAPTER_URL, 'cite magazine', 'cite periodical'], true)) {
+            return;
+        }
+        $this->remove_cookie_absent_citation_fields();
+    }
+
+    private function cookie_absent_parameter_value(Parameter $parameter): string {
+        $value = $parameter->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $value, $matches)) {
+            $value = mb_trim($matches[1]);
+        }
+        $value = (string) safe_preg_replace('~<!--.*?-->~su', '', $value);
+        $value = (string) safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $value);
+        $value = str_replace("\xc2\xa0", ' ', $value);
+        return mb_trim($value);
+    }
+
+    private function is_cookie_absent_url(string $value): bool {
+        return preg_match('~^https?://\S+$~i', $value) === 1 &&
+            preg_match('~/action/cookieabsent(?:[/?#&;]|$)~i', $value) === 1;
+    }
+
+    private function remove_cookie_absent_citation_fields(): void {
+        $url_params = [];
+        foreach ([...ALL_URL_TYPES, ...CHAPTER_URL_ALIASES, 'archive-url', 'archiveurl', 'website'] as $url_param) {
+            $url_params[mb_strtolower($url_param)] = true;
+        }
+        $has_cookie_absent = false;
+        $doi_parameters = [];
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            $value = $this->cookie_absent_parameter_value($parameter);
+            if ($name === 'doi') {
+                $doi_parameters[] = [$parameter, $value];
+            }
+            if (isset($url_params[$name]) && $this->is_cookie_absent_url($value)) {
+                $has_cookie_absent = true;
+            } elseif ($name === 'title' && $this->is_cookie_absent_url($value)) {
+                $has_cookie_absent = true;
+            }
+        }
+        if (!$has_cookie_absent || $doi_parameters === []) {
+            return;
+        }
+        $doi_parameter = null;
+        $clean_doi = '';
+        $clean_stripped = '';
+        foreach ($doi_parameters as [$parameter, $doi]) {
+            if ($doi === '') {
+                continue;
+            }
+            $stripped = mb_trim((string) preg_replace('~[?#\s].*$~', '', $doi));
+            if ($clean_stripped !== '' && $stripped !== $clean_stripped) {
+                return;
+            }
+            if ($clean_doi === '') {
+                if ($stripped !== '' && preg_match('~^10\.\d{4,9}/\S+$~', $stripped) === 1 && doi_works($stripped) === true) {
+                    $clean_doi = $stripped;
+                } else {
+                    $full = mb_trim($doi);
+                    if ($full !== $stripped && preg_match('~^10\.\d{4,9}/\S+$~', $full) === 1 && doi_works($full) === true) {
+                        $clean_doi = $full;
+                    } else {
+                        $clean_doi = $stripped;
+                    }
+                }
+                $clean_stripped = $stripped;
+                $doi_parameter = $parameter;
+            }
+        }
+        if ($doi_parameter === null || preg_match('~^10\.\d{4,9}/\S+$~', $clean_doi) !== 1) {
+            return;
+        }
+        if (preg_match(REGEXP_DOI_ISSN_ONLY, $clean_doi) || isset(BAD_DOI_ARRAY[$clean_doi]) || mb_strpos($clean_doi, '10.2307') === 0) {
+            return;
+        }
+        if (doi_works($clean_doi) !== true) {
+            return;
+        }
+        if (doi_active($clean_doi) !== true) {
+            return;
+        }
+        if ($this->cookie_absent_original_parameters === null) {
+            $this->cookie_absent_original_parameters = [];
+            foreach ($this->param as $key => $parameter) {
+                $this->cookie_absent_original_parameters[$key] = clone $parameter;
+            }
+            $this->cookie_absent_original_name = $this->name;
+            $this->cookie_absent_initial_author_params = $this->initial_author_params();
+            // had_initial_author() blocks API author re-adds, so the stripped
+            // citation must report no initial authors; restored on rollback.
+            $this->initial_author_params_set([]);
+        }
+        $doi_parameter->val = $clean_doi;
+        $keep = [];
+        foreach (COOKIE_ABSENT_KEEP_PARAMETERS as $keep_param) {
+            $keep[$keep_param] = true;
+        }
+        $present = [];
+        foreach ($this->param as $parameter) {
+            if ($this->cookie_absent_parameter_value($parameter) !== '') {
+                $present[mb_strtolower($parameter->param)] = true;
+            }
+        }
+        foreach (COOKIE_ABSENT_ACCESS_PARAMETERS as $access_param) {
+            $base_param = str_replace('-access', '', $access_param);
+            if (isset($present[$base_param])) {
+                $keep[$access_param] = true;
+            }
+        }
+        if (isset($present['pmc'])) {
+            $keep['pmc-embargo-date'] = true;
+        }
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            if (isset($keep[$name]) && mb_stripos($parameter->param, 'http') === false && mb_strlen($parameter->param) < 30) {
+                $parameter->param = $name;
+            }
+        }
+        foreach (array_keys($this->param) as $key) {
+            if (!isset($keep[mb_strtolower($this->param[$key]->param)])) {
+                unset($this->param[$key]);
+            }
+        }
+    }
+
+    private function cookie_absent_rebuild_succeeded(): bool {
+        $present = [];
+        $title = '';
+        $title_seen = false;
+        foreach ($this->param as $parameter) {
+            $name = mb_strtolower($parameter->param);
+            $value = $this->cookie_absent_parameter_value($parameter);
+            if ($name === 'title' && !$title_seen) {
+                $title = $value;
+                $title_seen = true;
+            }
+            if ($value !== '') {
+                $present[$name] = true;
+            }
+        }
+        if ($title === '' || str_i_same($title, 'none')) {
+            return false;
+        }
+        foreach ([...WORK_ALIASES, ...ALL_URL_TYPES, ...CHAPTER_ALIASES, 'book-title', 'isbn', 'publisher'] as $context_param) {
+            if (isset($present[$context_param])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine whether any author parameter is present.
+     * had_initial_author() blocks API author re-adds, so a throttled rebuild
+     * would otherwise silently drop authors present in the original.
+     * @param array<Parameter> $parameters
+     */
+    private function cookie_absent_had_authors(array $parameters): bool {
+        foreach ($parameters as $parameter) {
+            if (in_array(mb_strtolower($parameter->param), FLATTENED_AUTHOR_PARAMETERS, true)
+                && $this->cookie_absent_parameter_value($parameter) !== ''
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function finalize_cookie_absent_citation(): void {
+        if ($this->cookie_absent_original_parameters === null) {
+            return;
+        }
+        if ($this->cookie_absent_rebuild_succeeded()
+            && (!$this->cookie_absent_had_authors($this->cookie_absent_original_parameters)
+                || $this->cookie_absent_had_authors($this->param))
+        ) {
+            $this->cookie_absent_original_parameters = null;
+            $this->cookie_absent_original_name = null;
+            $this->cookie_absent_initial_author_params = null;
+            $this->mod_cookie_absent = true;
+            report_modification('Removing cookieAbsent citation placeholders and rebuilding from the DOI');
+            return;
+        }
+        if ($this->cookie_absent_had_authors($this->cookie_absent_original_parameters)
+            && !$this->cookie_absent_had_authors($this->param)
+        ) {
+            report_warning('CookieAbsent rebuild lost authors; keeping original citation');
+        }
+        $this->param = $this->cookie_absent_original_parameters;
+        $this->name = (string) $this->cookie_absent_original_name;
+        $this->initial_author_params_set((array) $this->cookie_absent_initial_author_params);
+        $this->cookie_absent_original_parameters = null;
+        $this->cookie_absent_original_name = null;
+        $this->cookie_absent_initial_author_params = null;
+    }
+
     public function prepare(): void {
         set_time_limit(120);
         if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, true)) {
@@ -322,6 +526,8 @@ final class Template
                 }
             }
         }
+        // Also check templates that the cleanup block above does not cover
+        $this->prepare_cookie_absent_citation();
         if ($this->should_be_processed()) {
             // Remove empty duplicate parameters by checking the ALL_ALIASES list
             if (!empty($this->param)) {
@@ -6739,6 +6945,8 @@ final class Template
 
     public function final_tidy(): void {
         set_time_limit(120);
+        // Direct callers never reach Page, so settle any pending rebuild here
+        $this->finalize_cookie_absent_citation();
         // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
         // but its page->article-number rename still needs to run via detect_article_number()
         $this->detect_article_number();
@@ -8203,6 +8411,7 @@ final class Template
         $ret['issue_citebook'] = $this->mod_issue_citebook;
         $ret['article_number'] = $this->mod_article_number;
         $ret['article_number_iucn'] = $this->mod_article_number_iucn;
+        $ret['cookie_absent'] = $this->mod_cookie_absent;
         return $ret;
     }
 

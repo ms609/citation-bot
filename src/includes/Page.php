@@ -480,6 +480,14 @@ class Page {
                 // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
             }
         }
+        // Second cookieAbsent pass over all templates now that branch-specific
+        // URL and identifier discovery has run.  Only supported citation types
+        // with a qualifying DOI are affected; everything else returns untouched.
+        // This must precede batch DOI expansion below: a placeholder title would
+        // otherwise block the rebuilt metadata from being added.
+        foreach ($all_templates as $this_template) {
+            $this_template->prepare_cookie_absent_citation();
+        }
         // BATCH API CALLS
         report_phase('Consult APIs to expand templates');
         set_time_limit(120);
@@ -547,6 +555,8 @@ class Page {
         report_phase('Remedial work to clean up templates');
         foreach ($our_templates as $this_template) {
             // Clean up:
+            // Settle any pending rebuild before recording changes
+            $this_template->finalize_cookie_absent_citation();
             if (!$this_template->initial_author_params()) {
                 $this_template->handle_et_al();
             }
@@ -578,6 +588,8 @@ class Page {
         }
 
         foreach ($our_templates_slight as $this_template) {
+            // Settle any pending rebuild before recording changes
+            $this_template->finalize_cookie_absent_citation();
             // Record any modifications that have been made:
             $template_mods = $this_template->modifications();
             foreach (array_keys($template_mods) as $key) {
@@ -821,6 +833,9 @@ class Page {
         }
         if ($this->modifications["article_number_iucn"]) {
             $auto_summary .= 'Converted deprecated page parameter to article-number in cite IUCN. ';
+        }
+        if ($this->modifications["cookie_absent"]) {
+            $auto_summary .= 'Rebuilt citation from DOI after removing cookieAbsent link. ';
         }
         if ($this->odnb_sub_removed) {
             $auto_summary .= 'Removed ODNBsub template. ';
@@ -1151,6 +1166,7 @@ class Page {
         $this->modifications['issue_citebook'] = false;
         $this->modifications['article_number'] = false;
         $this->modifications['article_number_iucn'] = false;
+        $this->modifications['cookie_absent'] = false;
     }
 
     public static function get_last_title(): string {
