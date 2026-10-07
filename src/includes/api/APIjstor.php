@@ -342,6 +342,11 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
             $ris_report_title = $ris_report_t1;
         }
     }
+    if ($ris_report_title !== null && $template->add_if_new('title', $ris_report_title)) {
+        foreach ($ris_report_title_lines as $ris_line) {
+            $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+        }
+    }
 
     foreach ($ris as $ris_line) {
         $ris_part = ris_line_parts($ris_line);
@@ -363,7 +368,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                     break;
                 }
                 $ris_parameter = "title";
-                if ($ris_book && !$ris_report && $has_T2) {
+                if ($ris_book && $has_T2) {
                     $ris_parameter = "chapter";
                 }
                 break;
@@ -457,11 +462,6 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
         }
         unset($ris_part[0]);
         if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $template->add_if_new($ris_parameter, mb_trim(implode($ris_part))))) {
-            $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
-        }
-    }
-    if ($ris_report_title !== null && $template->add_if_new('title', $ris_report_title)) {
-        foreach ($ris_report_title_lines as $ris_line) {
             $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
         }
     }
