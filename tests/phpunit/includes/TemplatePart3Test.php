@@ -1276,11 +1276,22 @@ EP - 999 }}';
 
     public function testJunkData(): void {
         $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|journal=JSTOR|pmid=1974135}} " .
-                        "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
                         "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
                         "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
                         "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
                         "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
+        $page = $this->process_page($text);
+        if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
+            sleep(run_type_mods(-1, 4, 3, 3, 3));
+            $text = $page->parsed_text();
+            $page = $this->process_page($text);
+        }
+        $this->assertSame(0, mb_substr_count($page->parsed_text(), 'JSTOR'));
+    }
+
+    public function testJunkDataJstor(): void {
+        $this->require_live_jstor_ris();
+        $text = "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}";
         $page = $this->process_page($text);
         if (mb_substr_count($page->parsed_text(), 'JSTOR') !== 0) {
             sleep(run_type_mods(-1, 4, 3, 3, 3));
@@ -1931,6 +1942,7 @@ EP - 999 }}';
     }
 
     public function testInvoke2(): void {
+        $this->require_live_jstor_ris();
         $text = "{{#invoke:Cite|web| jstor=1701972 |s2cid= <!-- --> }}";
         $expanded = $this->process_citation($text);
         $this->assertSame('{{#invoke:Cite|journal| jstor=1701972 |s2cid= <!-- --> |title= Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec |last1= Labandeira |first1= Conrad C. |last2= Beall |first2= Bret S. |last3= Hueber |first3= Francis M. |journal= Science |date= 1988 |volume= 242 |issue= 4880 |pages= 913–916 |doi= 10.1126/science.242.4880.913 }}', $expanded->parsed_text());

@@ -115,6 +115,26 @@ HTML;
         $this->assertFalse(jstor_response_is_ris($html));
     }
 
+    public function testJstorClientChallengeClassifierRecognizesFastlyChallenge(): void {
+        $html = <<<'HTML'
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Client Challenge</title></head>
+<body>
+<script src="/_fs-ch-1T1wmsGaOgGaSxcX/script.js?reload=true"></script>
+</body>
+</html>
+HTML;
+
+        $this->assertTrue(jstor_response_is_client_challenge($html));
+        $this->assertFalse(jstor_response_is_ris($html));
+        $this->assertFalse(
+            jstor_response_is_client_challenge(
+                '<html><head><title>Client Challenge</title></head></html>'
+            )
+        );
+    }
+
     public function testJstorResponseClassifierRejectsJstorErrorText(): void {
         $this->assertFalse(
             jstor_response_is_ris('No RIS data found for resrep26423')

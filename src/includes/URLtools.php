@@ -1334,11 +1334,9 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
 }
 
 function find_identifiers_in_urls_INSIDE(Template $template, string $url, string $url_type, bool $url_sent): bool {
-    static $ch_jstor;
     static $ch_pmc;
-    if ($ch_jstor === null) {
+    if ($ch_pmc === null) {
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
-        $ch_jstor = bot_curl_init($time, [], 2 * 1024 * 1024);
         $ch_pmc = bot_curl_init($time, [], 2 * 1024 * 1024);
     }
 
@@ -1486,20 +1484,11 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     }
                 }
                 return false;
-            } elseif ($template->blank('jstor')) {
-                curl_setopt($ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
-                $dat = bot_curl_exec($ch_jstor);
-                $transfer = bot_curl_last_transfer($ch_jstor);
-                if ($dat !== '' &&
-                        $transfer['http_code'] >= 200 &&
-                        $transfer['http_code'] < 300 &&
-                        jstor_response_is_ris($dat)) {
-                    if (!$url_sent && $template->has_good_free_copy()) {
-                        $template->forget($url_type);
-                    }
-                    return $template->add_if_new('jstor', $matches[1]);
+            } elseif ($template->blank('jstor') && jstor_valid($matches[1])) {
+                if (!$url_sent && $template->has_good_free_copy()) {
+                    $template->forget($url_type);
                 }
-                unset($dat);
+                return $template->add_if_new('jstor', $matches[1]);
             }
         }
         if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
@@ -1511,7 +1500,9 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             return false;
         }
     } // JSTOR
-    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/([\w.]+?)(?:\.pdf)?$~i', $url, $matches) && $template->blank('jstor')) {
+    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/((?:10\.\d{4,9}/[^?#]+?)|[\w.]+?)(?:\.pdf)?$~i', $url, $matches) &&
+            $template->blank('jstor') &&
+            jstor_valid($matches[1])) {
         $template->add_if_new('jstor', $matches[1]);
     }
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {

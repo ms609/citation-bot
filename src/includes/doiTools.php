@@ -859,9 +859,8 @@ function get_possible_dois(string $doi): array {
 
 function check_doi_for_jstor(string $doi, Template $template): void {
     static $ch = null;
-    if ($ch === null) {
-        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
-    }
+    static $client_challenge_seen = false;
+
     if ($template->has('jstor')) {
         return;
     }
@@ -873,16 +872,42 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     if (preg_match('~^\d+$~', $doi)) {
         return; // Just numbers - this WILL match a JSTOR, but who knows what it really is!
     }
-    if (mb_strpos($doi, '10.2307') === 0) { // special case
-        $doi = mb_substr($doi, 8);
-    }
+
     $pos = mb_strpos($doi, '?');
-    if ($pos) {
+    if ($pos !== false) {
         $doi = mb_substr($doi, 0, $pos);
     }
+
+    // 10.2307 is JSTOR's DOI prefix, so this mapping is deterministic and
+    // does not need a network round-trip.
+    if (preg_match('~^10\.2307/(.+)$~i', $doi, $matches) === 1) {
+        if (jstor_valid($matches[1])) {
+            $template->add_if_new('jstor', $matches[1]);
+        }
+        return;
+    }
+
+    // Some JSTOR stable IDs are publisher DOIs rather than 10.2307 IDs. Keep
+    // the old verification path for those when the endpoint works, but stop
+    // retrying it after JSTOR presents the browser-only challenge.
+    if ($client_challenge_seen) {
+        return;
+    }
+    if ($ch === null) {
+        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
+    }
+
     curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
-    $ris = bot_curl_exec($ch);
+    try {
+        $ris = bot_curl_exec($ch);
+    } catch (Throwable) {
+        return;
+    }
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if (jstor_response_is_client_challenge($ris)) {
+        $client_challenge_seen = true;
+        return;
+    }
     if ($httpCode === 200 &&
             jstor_response_is_ris($ris) &&
             mb_stripos($ris, $doi) !== false) {

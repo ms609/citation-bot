@@ -10,6 +10,7 @@ require_once dirname(__DIR__) . '/testBaseClass.php';
 final class generate_templateTest extends testBaseClass {
 
     public function testGenTemplate(): void {
+        $this->require_live_jstor_ris();
         new TestPage(); // Fill page name with test name for debugging
         // Run API
         ob_start();

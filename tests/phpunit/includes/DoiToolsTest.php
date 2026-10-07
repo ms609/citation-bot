@@ -70,6 +70,12 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('3241423', $template->get2('jstor'));
     }
 
+    public function testNonJstorDoiIsNotInventedAsJstorId(): void {
+        $template = $this->prepare_citation('{{cite journal|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
+        check_doi_for_jstor('10.1016/j.example.2026.12345', $template);
+        $this->assertNull($template->get2('jstor'));
+    }
+
     public function testJstorInDoi2(): void {
         $template = $this->prepare_citation('{{cite journal|jstor=3111111|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         $doi = '10.2307/3241423?junk';
