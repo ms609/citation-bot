@@ -273,6 +273,10 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
     $ris_book = false;
     $ris_fullbook = false;
     $ris_report = false;
+    $ris_report_ti = null;
+    $ris_report_t1 = null;
+    $ris_report_title = null;
+    $ris_report_title_lines = [];
     $has_T2 = false;
     $bad_EP = false;
     $bad_SP = false;
@@ -301,10 +305,41 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
             }
         } elseif (mb_trim($ris_part[0]) === "T2") {
             $has_T2 = true;
+        } elseif (mb_trim($ris_part[0]) === "TI") {
+            $value = mb_trim($ris_part[1]);
+            if ($value !== '') {
+                if ($ris_report_ti === null) {
+                    $ris_report_ti = $value;
+                }
+                $ris_report_title_lines[] = $ris_line;
+            }
+        } elseif (mb_trim($ris_part[0]) === "T1") {
+            $value = mb_trim($ris_part[1]);
+            if ($value !== '') {
+                if ($ris_report_t1 === null) {
+                    $ris_report_t1 = $value;
+                }
+                $ris_report_title_lines[] = $ris_line;
+            }
         } elseif (mb_trim($ris_part[0]) === "SP" && (mb_trim($ris_part[1]) === 'i' || mb_trim($ris_part[1]) === '1')) {
             $bad_SP = true;
         } elseif (mb_trim($ris_part[0]) === "EP" && preg_match('~^\d{3,}$~', mb_trim($ris_part[1]))) {
             $bad_EP = true;
+        }
+    }
+
+    if ($ris_report) {
+        if ($ris_report_ti !== null && $ris_report_t1 !== null) {
+            if (mb_strtolower($ris_report_ti) === mb_strtolower($ris_report_t1)) {
+                $ris_report_title = $ris_report_ti;
+            } else {
+                $separator = str_ends_with($ris_report_ti, ':') ? ' ' : ': ';
+                $ris_report_title = $ris_report_ti . $separator . $ris_report_t1;
+            }
+        } elseif ($ris_report_ti !== null) {
+            $ris_report_title = $ris_report_ti;
+        } elseif ($ris_report_t1 !== null) {
+            $ris_report_title = $ris_report_t1;
         }
     }
 
@@ -314,7 +349,7 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
         switch (mb_trim($ris_part[0])) {
             case "T1":
                 if ($ris_report) {
-                    $ris_parameter = "title";
+                    break;
                 } elseif ($ris_fullbook) {
                     // Sub-title of main title most likely
                 } elseif ($ris_book) {
@@ -324,6 +359,9 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
                 }
                 break;
             case "TI":
+                if ($ris_report) {
+                    break;
+                }
                 $ris_parameter = "title";
                 if ($ris_book && !$ris_report && $has_T2) {
                     $ris_parameter = "chapter";
@@ -419,6 +457,11 @@ function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {
         }
         unset($ris_part[0]);
         if ($ris_parameter && (($ris_parameter === 'url' && !$add_url) || $template->add_if_new($ris_parameter, mb_trim(implode($ris_part))))) {
+            $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
+        }
+    }
+    if ($ris_report_title !== null && $template->add_if_new('title', $ris_report_title)) {
+        foreach ($ris_report_title_lines as $ris_line) {
             $dat = mb_trim(str_replace("\n" . $ris_line, "", "\n" . $dat));
         }
     }
