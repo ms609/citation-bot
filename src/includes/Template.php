@@ -3877,13 +3877,17 @@ final class Template
             $new_name_mapped = $new_name;
             if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
                 foreach (ALL_TEMPLATES_MAP as $map_array) {
-                    if (in_array(mb_strtolower($this->name), $map_array, true)) {
+                    if (isset($map_array[mb_strtolower($this->name)])) {
+                        // Current name is foreign in this map: render the new name in the same language
                         foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
                                  $new_name_mapped = $map_in;
+                                 break;
                             }
                         }
+                        break;
                     }
+                    // An already-English name on a non-English wiki keeps its English name
                 }
             }
             $new_name_mapped = str_replace('arxiv', 'arXiv', $new_name_mapped); // Without the capital X is the alias
