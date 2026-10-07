@@ -914,6 +914,7 @@ function check_doi_for_jstor(string $doi, Template $template): void {
         $template->add_if_new('jstor', $doi);
     }
 }
+
 /**
  * Successful results include DOI_HEADER_TRUST_KEY, which records whether the
  * complete redirect chain was authenticated.
