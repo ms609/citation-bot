@@ -19,32 +19,59 @@ final class JstorRisCoverageTest extends testBaseClass {
         return [$template, $ris];
     }
 
+    private function jstorFixture(string $filename): string {
+        $contents = file_get_contents(
+            dirname(__DIR__, 3) . '/fixtures/jstor/' . $filename
+        );
+        if ($contents === false) {
+            throw new RuntimeException('Unable to read JSTOR RIS fixture: ' . $filename);
+        }
+        return $contents;
+    }
+
     public function testJstorResponseClassifierAcceptsActualJstorRis(): void {
-        $ris = <<<'RIS'
-Provider: JSTOR http://www.jstor.org
-Database: JSTOR
-Content: text/plain; charset="UTF-8"
-
-
-TY  - JOUR
-TI  - Bronze Age Class A Cauldrons: Typology, Origins and Chronology
-AU  - Gerloff, Sabine
-AB  - [Twenty-nine Class A cauldrons are catalogued. A revised classification is presented.]
-C1  - Full publication date: 1986
-DB  - JSTOR
-EP  - 115
-PB  - Royal Society of Antiquaries of Ireland
-PY  - 1986
-SN  - 00359106
-SP  - 84
-T2  - The Journal of the Royal Society of Antiquaries of Ireland
-UR  - http://www.jstor.org/stable/25508908
-VL  - 116
-Y2  - 2026/10/07/
-ER  -
-RIS;
-
+        $ris = $this->jstorFixture('10.2307_25508908.ris');
         $this->assertTrue(jstor_response_is_ris($ris));
+    }
+
+    public function testActualJstorJournalFixtureParses(): void {
+        $ris = $this->jstorFixture('10.2307_25508908.ris');
+        [$template] = $this->parseRis($ris);
+
+        $this->assertSame(
+            'Bronze Age Class A Cauldrons: Typology, Origins and Chronology',
+            $template->get2('title')
+        );
+        $this->assertSame('Gerloff', $template->get2('last1'));
+        $this->assertSame('Sabine', $template->get2('first1'));
+        $this->assertSame(
+            'The Journal of the Royal Society of Antiquaries of Ireland',
+            $template->get2('journal')
+        );
+        $this->assertSame('116', $template->get2('volume'));
+        $this->assertSame('84–115', $template->get2('pages'));
+    }
+
+    public function testActualJstorReportFixtureCombinesTiAndT1(): void {
+        $ris = $this->jstorFixture('10.2307_resrep26423.ris');
+        $this->assertTrue(jstor_response_is_ris($ris));
+
+        [$template] = $this->parseRis(
+            $ris,
+            '{{Cite book |jstor=resrep26423 }}'
+        );
+
+        $this->assertSame(
+            'The War Comes Home: The Evolution of Domestic Terrorism in the United States',
+            $template->get2('title')
+        );
+        $this->assertNull($template->get2('chapter'));
+        $this->assertSame('Jones', $template->get2('last1'));
+        $this->assertSame('Suber', $template->get2('last5'));
+        $this->assertSame(
+            'Center for Strategic and International Studies (CSIS)',
+            $template->get2('publisher')
+        );
     }
 
     public function testJstorResponseClassifierAcceptsParserCompatibleOneSpaceRis(): void {

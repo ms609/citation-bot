@@ -25,6 +25,17 @@ final class TextToolsCoverageTest extends testBaseClass {
         $this->assertSame('This ppm Code', title_capitalization('This PPM Code', true));
         $this->assertSame('This-ppm, Code', title_capitalization('This-PPM, Code', true));
         $this->assertSame('Journal Series A Notes', title_capitalization('Journal Series a Notes', true));
+        $this->assertSame(
+            'Bronze Age Class A Cauldrons: Typology, Origins and Chronology',
+            title_capitalization(
+                'Bronze Age Class A Cauldrons: Typology, Origins and Chronology',
+                true
+            )
+        );
+        $this->assertSame(
+            'Bronze Age Class a Cauldrons',
+            title_capitalization('Bronze Age Class a Cauldrons', true)
+        );
         $this->assertSame('netWorker', title_capitalization('NetWorker', true));
         $this->assertSame('MELUS', title_capitalization('Melus', true));
     }
