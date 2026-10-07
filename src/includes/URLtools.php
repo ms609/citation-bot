@@ -1489,11 +1489,11 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             } elseif ($template->blank('jstor')) {
                 curl_setopt($ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
                 $dat = bot_curl_exec($ch_jstor);
-                if ($dat &&
-                        mb_stripos($dat, 'No RIS data found for') === false &&
-                        mb_stripos($dat, 'Block Reference') === false &&
-                        mb_stripos($dat, 'A problem occurred trying to deliver RIS data') === false &&
-                        mb_substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
+                $transfer = bot_curl_last_transfer($ch_jstor);
+                if ($dat !== '' &&
+                        $transfer['http_code'] >= 200 &&
+                        $transfer['http_code'] < 300 &&
+                        jstor_response_is_ris($dat)) {
                     if (!$url_sent && $template->has_good_free_copy()) {
                         $template->forget($url_type);
                     }

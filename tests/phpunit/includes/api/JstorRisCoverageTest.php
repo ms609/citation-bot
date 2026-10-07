@@ -19,15 +19,61 @@ final class JstorRisCoverageTest extends testBaseClass {
         return [$template, $ris];
     }
 
-    public function testJstorResponseClassifierAcceptsRis(): void {
-        $ris = <<<RIS
+    public function testJstorResponseClassifierAcceptsActualJstorRis(): void {
+        $ris = <<<'RIS'
 Provider: JSTOR http://www.jstor.org
-TY - RPRT
-T1 - Example report
-ER -
+Database: JSTOR
+Content: text/plain; charset="UTF-8"
+
+
+TY  - JOUR
+TI  - Bronze Age Class A Cauldrons: Typology, Origins and Chronology
+AU  - Gerloff, Sabine
+AB  - [Twenty-nine Class A cauldrons are catalogued. A revised classification is presented.]
+C1  - Full publication date: 1986
+DB  - JSTOR
+EP  - 115
+PB  - Royal Society of Antiquaries of Ireland
+PY  - 1986
+SN  - 00359106
+SP  - 84
+T2  - The Journal of the Royal Society of Antiquaries of Ireland
+UR  - http://www.jstor.org/stable/25508908
+VL  - 116
+Y2  - 2026/10/07/
+ER  -
 RIS;
 
         $this->assertTrue(jstor_response_is_ris($ris));
+    }
+
+    public function testJstorResponseClassifierAcceptsParserCompatibleOneSpaceRis(): void {
+        $this->assertTrue(
+            jstor_response_is_ris("TY - RPRT\nT1 - Example report\nER -")
+        );
+    }
+
+    public function testJstorResponseClassifierAcceptsUtf8Bom(): void {
+        $this->assertTrue(
+            jstor_response_is_ris("\xEF\xBB\xBFTY  - JOUR\nTI  - Example\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierAcceptsCrLf(): void {
+        $this->assertTrue(
+            jstor_response_is_ris("TY  - JOUR\r\nTI  - Example\r\nER  -\r\n")
+        );
+    }
+
+    public function testJstorResponseClassifierAllowsErrorWordsInsideValidMetadata(): void {
+        $ris = "TY  - JOUR\nAB  - Text mentioning Block Reference without being an error page\nER  -";
+        $this->assertTrue(jstor_response_is_ris($ris));
+    }
+
+    public function testJstorResponseClassifierAllowsUnknownWellFormedRisTag(): void {
+        $this->assertTrue(
+            jstor_response_is_ris("TY  - JOUR\nZZ  - Extension field\nER  -")
+        );
     }
 
     public function testJstorResponseClassifierRejectsHtmlChallenge(): void {
@@ -45,6 +91,103 @@ HTML;
     public function testJstorResponseClassifierRejectsJstorErrorText(): void {
         $this->assertFalse(
             jstor_response_is_ris('No RIS data found for resrep26423')
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsMissingEndRecord(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nTI  - Truncated response")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsMissingType(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TI  - No type\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsFieldBeforeType(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TI  - Too early\nTY  - JOUR\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsEndBeforeType(): void {
+        $this->assertFalse(jstor_response_is_ris("ER  -\nTY  - JOUR"));
+    }
+
+    public function testJstorResponseClassifierRejectsDuplicateType(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nTY  - BOOK\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsSecondRecord(): void {
+        $ris = "TY  - JOUR\nER  -\n\nTY  - BOOK\nER  -";
+        $this->assertFalse(jstor_response_is_ris($ris));
+    }
+
+    public function testJstorResponseClassifierRejectsFieldAfterEnd(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nER  -\nTI  - Too late")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsGarbageAfterEnd(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nER  -\n<html>challenge</html>")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsNonEmptyEndRecord(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nER  - unexpected")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsEmptyType(): void {
+        $this->assertFalse(jstor_response_is_ris("TY  -\nER  -"));
+    }
+
+    public function testJstorResponseClassifierRejectsMalformedTypeToken(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - jour\nER  -")
+        );
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - <html>\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsMultilineFakeType(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY\n-\nJOUR\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsMalformedSeparator(): void {
+        $this->assertFalse(jstor_response_is_ris("TY-JOUR\nER  -"));
+    }
+
+    public function testJstorResponseClassifierRejectsMalformedLineInsideRecord(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nnot an RIS field\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsUnexpectedPreamble(): void {
+        $ris = "This is not a JSTOR RIS header\nTY  - JOUR\nER  -";
+        $this->assertFalse(jstor_response_is_ris($ris));
+    }
+
+    public function testJstorResponseClassifierRejectsInvalidUtf8(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nTI  - bad \xFF byte\nER  -")
+        );
+    }
+
+    public function testJstorResponseClassifierRejectsControlBytes(): void {
+        $this->assertFalse(
+            jstor_response_is_ris("TY  - JOUR\nTI  - bad \x00 byte\nER  -")
         );
     }
 

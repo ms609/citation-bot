@@ -884,12 +884,8 @@ function check_doi_for_jstor(string $doi, Template $template): void {
     $ris = bot_curl_exec($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($httpCode === 200 &&
-            mb_stripos($ris, $doi) !== false &&
-            mb_strpos($ris, 'Provider') !== false &&
-            mb_stripos($ris, 'No RIS data found for') === false &&
-            mb_stripos($ris, 'Block Reference') === false &&
-            mb_stripos($ris, 'A problem occurred trying to deliver RIS data') === false &&
-            mb_substr_count($ris, '-') > 3) { // It is actually a working JSTOR
+            jstor_response_is_ris($ris) &&
+            mb_stripos($ris, $doi) !== false) {
         $template->add_if_new('jstor', $doi);
     }
 }

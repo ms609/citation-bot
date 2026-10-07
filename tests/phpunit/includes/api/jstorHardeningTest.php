@@ -9,6 +9,18 @@ final class jstorHardeningTest extends testBaseClass {
         $this->assertSame('TY', mb_trim($tag));
         $this->assertSame('JOUR', mb_trim($value));
 
+        [$tag, $value] = ris_line_parts("TY  - JOUR\r");
+        $this->assertSame('TY', mb_trim($tag));
+        $this->assertSame('JOUR', mb_trim($value));
+
+        [$tag, $value] = ris_line_parts("\xEF\xBB\xBFTY  - BOOK");
+        $this->assertSame('TY', mb_trim($tag));
+        $this->assertSame('BOOK', mb_trim($value));
+
+        [$tag, $value] = ris_line_parts("ER  -\r");
+        $this->assertSame('ER', mb_trim($tag));
+        $this->assertSame('', mb_trim($value));
+
         $this->assertSame(['', ''], ris_line_parts('malformed upstream line'));
         $this->assertSame(['', ''], ris_line_parts(''));
     }
