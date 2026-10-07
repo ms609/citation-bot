@@ -40,12 +40,14 @@ final class JstorTest extends testBaseClass {
     }
 
     public function testJstorGoofyRIS(): void {
+        $this->require_live_jstor_ris();
         $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
         $prepared = $this->process_citation($text);
         $this->assertSame('Kornbluh', $prepared->get2('last1'));
     }
 
     public function testJstorReportWithoutSuppliedTitle(): void {
+        $this->require_live_jstor_ris();
         $text = "{{Cite book |jstor=resrep26423 }}";
         $prepared = $this->process_citation($text);
 
@@ -73,6 +75,7 @@ final class JstorTest extends testBaseClass {
     }
 
     public function testJstorExpansion4(): void {
+        $this->require_live_jstor_ris();
         $text = '{{cite web | via = UTF8 characters from JSTOR | url = https://www.jstor.org/stable/27695659}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Mórdha', $expanded->get2('last1'));
@@ -85,6 +88,7 @@ final class JstorTest extends testBaseClass {
     }
 
     public function testRISJstorExpansion(): void {
+        $this->require_live_jstor_ris();
         $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
         $page = $this->process_page($text);
         $expanded = $this->reference_to_template($page->parsed_text());
@@ -108,6 +112,7 @@ final class JstorTest extends testBaseClass {
     }
 
     public function testExpansionJstorBook(): void {
+        $this->require_live_jstor_ris();
         $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
         $expanded = $this->process_citation($text);
         $this->assertSame('Verstraete', $expanded->get2('last1'));

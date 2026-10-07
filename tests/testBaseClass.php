@@ -184,6 +184,46 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         return 'Date is ' . $input->get2('date') . ' and year is ' . $input->get2('year');
     }
 
+    /**
+     * Legacy integration tests below intentionally require JSTOR's live RIS
+     * exporter. Skip them when JSTOR presents its browser challenge; parser
+     * behavior remains covered by checked-in RIS fixtures.
+     */
+    protected function require_live_jstor_ris(): void {
+        static $available = null;
+
+        if ($available === null) {
+            $ch = bot_curl_init(
+                1.0,
+                [
+                    CURLOPT_HTTPHEADER => [
+                        'Accept: application/x-research-info-systems, text/plain;q=0.9, */*;q=0.1',
+                        'Cache-Control: no-cache',
+                    ],
+                ],
+                128 * 1024
+            );
+            curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/832414');
+
+            try {
+                $data = bot_curl_exec($ch);
+                $transfer = bot_curl_last_transfer($ch);
+                $available =
+                    $transfer['http_code'] >= 200 &&
+                    $transfer['http_code'] < 300 &&
+                    jstor_response_is_ris($data);
+            } catch (Throwable) {
+                $available = false;
+            }
+        }
+
+        if (!$available) {
+            $this->markTestSkipped(
+                'JSTOR live RIS endpoint is unavailable or returned a browser client challenge'
+            );
+        }
+    }
+
     protected function expand_via_zotero(string $text): Template {
         $expanded = $this->make_citation($text);
         Zotero::expand_by_zotero($expanded);

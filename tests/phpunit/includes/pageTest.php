@@ -419,12 +419,14 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText0(): void {
+        $this->require_live_jstor_ris();
         $text = "<ref>{{doi|10.2307/962034}}</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 }}</ref>', $page->parsed_text());
     }
 
     public function testUrlReferencesWithText1(): void {
+        $this->require_live_jstor_ris();
         $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=|||||||||3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
         $page = $this->process_page($text);
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 | url=https://www.jstor.org/stable/962034 }}</ref>', $page->parsed_text());
@@ -538,12 +540,14 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText18(): void {
+        $this->require_live_jstor_ris();
         $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
         $page = $this->process_page($text);
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testUrlReferencesWithText19(): void {
+        $this->require_live_jstor_ris();
         $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
         $page = $this->process_page($text);
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));

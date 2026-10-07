@@ -101,6 +101,18 @@ function jstor_response_is_ris(string $data): bool {
     return $state === 'after';
 }
 
+/**
+ * Return true for JSTOR/Fastly's browser-only JavaScript challenge.
+ *
+ * The challenge is returned with HTTP 200 to some non-browser clients and is
+ * not metadata. Keep this deliberately specific so ordinary HTML/error pages
+ * continue to use the generic non-RIS handling below.
+ */
+function jstor_response_is_client_challenge(string $data): bool {
+    return preg_match('~<title>\s*Client Challenge\s*</title>~i', $data) === 1 &&
+        stripos($data, '/_fs-ch-') !== false;
+}
+
 function jstor_fallback_to_zotero(Template $template, string $jstor, string $reason): void {
     report_info($reason . ' for ' . jstor_link($jstor) . '; trying Citoid/Zotero.');
     Zotero::expand_by_zotero($template, 'https://www.jstor.org/stable/' . $jstor, true);
@@ -108,6 +120,7 @@ function jstor_fallback_to_zotero(Template $template, string $jstor, string $rea
 
 function expand_by_jstor(Template $template): void {
     static $ch = null;
+    static $client_challenge_seen = false;
     if ($ch === null) {
         $ch = bot_curl_init(1.0, [
             CURLOPT_HTTPHEADER => [
@@ -138,12 +151,30 @@ function expand_by_jstor(Template $template): void {
     if (mb_substr($jstor, 0, 1) === 'i') {
         return; // We do not want i12342 kind
     }
+
+    // The stable URL itself is authoritative for its JSTOR identifier. Do not
+    // make successful identifier extraction depend on the RIS endpoint.
+    if ($template->blank('jstor') && jstor_valid($jstor)) {
+        $template->add_if_new('jstor', $jstor);
+    }
+
+    // Once this process has seen JSTOR's JavaScript challenge, do not keep
+    // hammering the same browser-only endpoint for every citation.
+    if ($client_challenge_seen) {
+        jstor_fallback_to_zotero(
+            $template,
+            $jstor,
+            'JSTOR RIS endpoint is presenting a browser client challenge'
+        );
+        return;
+    }
+
     curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
     try {
         $dat = bot_curl_exec($ch);
     } catch (Throwable $e) {
         bot_debug_log('JSTOR request failed: ' . $e::class . ': ' . $e->getMessage());
-        report_warning("JSTOR request failed; continuing without JSTOR metadata.");
+        jstor_fallback_to_zotero($template, $jstor, 'JSTOR RIS request failed');
         return;
     }
     $transfer = bot_curl_last_transfer($ch);
@@ -169,7 +200,10 @@ function expand_by_jstor(Template $template): void {
         return; // @codeCoverageIgnore
     }
     if (!jstor_response_is_ris($dat)) {
-        if (mb_stripos($dat, 'No RIS data found for') !== false) {
+        if (jstor_response_is_client_challenge($dat)) {
+            $client_challenge_seen = true;
+            $reason = 'JSTOR RIS endpoint returned a browser client challenge';
+        } elseif (mb_stripos($dat, 'No RIS data found for') !== false) {
             $reason = 'JSTOR RIS endpoint found no data';
         } elseif (mb_stripos($dat, 'Block Reference') !== false) {
             $reason = 'JSTOR RIS endpoint blocked the bot';
