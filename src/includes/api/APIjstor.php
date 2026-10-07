@@ -19,17 +19,86 @@ function query_jstor_api(array $_ids, array &$templates): void {  // Pointer to 
  * @return array{0: string, 1: string}
  */
 function ris_line_parts(string $ris_line): array {
+    if (str_starts_with($ris_line, "\xEF\xBB\xBF")) {
+        $ris_line = mb_substr($ris_line, 3, null, '8bit');
+    }
+    if (str_ends_with($ris_line, "\r")) {
+        $ris_line = mb_substr($ris_line, 0, -1, '8bit');
+    }
     $parts = explode(" - ", $ris_line . " ", 2);
     return isset($parts[1]) ? [$parts[0], $parts[1]] : ['', ''];
 }
 
 /**
- * Return true only when the response has the minimum shape of an RIS record.
- * JSTOR can return HTML block/challenge pages with HTTP 200, which must not be
- * passed to the RIS parser as if they were successful metadata responses.
+ * Return true only for one complete RIS record in the shape accepted by this
+ * parser. JSTOR can return HTML or challenge pages with HTTP 200, so callers
+ * must not treat a merely non-empty response as metadata.
  */
 function jstor_response_is_ris(string $data): bool {
-    return preg_match('~(?:\A|\R)TY\s*-\s*\S+~', $data) === 1;
+    if (str_starts_with($data, "\xEF\xBB\xBF")) {
+        $data = mb_substr($data, 3, null, '8bit');
+    }
+    if (
+        $data === '' ||
+        !mb_check_encoding($data, 'UTF-8') ||
+        preg_match('~[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]~', $data) === 1
+    ) {
+        return false;
+    }
+
+    $state = 'before';
+    $jstor_preamble = [
+        'Provider: JSTOR http://www.jstor.org',
+        'Database: JSTOR',
+        'Content: text/plain; charset="UTF-8"',
+    ];
+
+    foreach (explode("\n", $data) as $ris_line) {
+        $line = mb_trim($ris_line);
+        if ($line === '') {
+            continue;
+        }
+
+        [$tag, $value] = ris_line_parts($ris_line);
+        $tag = mb_trim($tag);
+        $value = mb_trim($value);
+
+        if ($tag === '') {
+            if ($state === 'before' && in_array($line, $jstor_preamble, true)) {
+                continue;
+            }
+            return false;
+        }
+        if (preg_match('~^[A-Z][A-Z0-9]$~D', $tag) !== 1) {
+            return false;
+        }
+
+        if ($tag === 'TY') {
+            if (
+                $state !== 'before' ||
+                $value === '' ||
+                preg_match('~^[A-Z0-9]+$~D', $value) !== 1
+            ) {
+                return false;
+            }
+            $state = 'record';
+            continue;
+        }
+
+        if ($tag === 'ER') {
+            if ($state !== 'record' || $value !== '') {
+                return false;
+            }
+            $state = 'after';
+            continue;
+        }
+
+        if ($state !== 'record') {
+            return false;
+        }
+    }
+
+    return $state === 'after';
 }
 
 function jstor_fallback_to_zotero(Template $template, string $jstor, string $reason): void {
@@ -99,44 +168,25 @@ function expand_by_jstor(Template $template): void {
         );
         return; // @codeCoverageIgnore
     }
-    if (mb_stripos($dat, 'No RIS data found for') !== false) {
-        jstor_fallback_to_zotero( // @codeCoverageIgnore
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint found no data'
-        );
-        return; // @codeCoverageIgnore
-    }
-    if (mb_stripos($dat, 'Block Reference') !== false) {
-        jstor_fallback_to_zotero( // @codeCoverageIgnore
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint blocked the bot'
-        );
-        return; // @codeCoverageIgnore
-    }
-    if (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
-        jstor_fallback_to_zotero(
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint reported a delivery problem'
-        );
-        return;
-    }
     if (!jstor_response_is_ris($dat)) {
-        $content_type = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        $effective_url = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        bot_debug_log(
-            'JSTOR returned a non-RIS response: HTTP ' . (string) $status .
-            '; content-type=' . $content_type .
-            '; effective-url=' . $effective_url .
-            '; bytes=' . (string) mb_strlen($dat, '8bit')
-        );
-        jstor_fallback_to_zotero(
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint returned a non-RIS response'
-        );
+        if (mb_stripos($dat, 'No RIS data found for') !== false) {
+            $reason = 'JSTOR RIS endpoint found no data';
+        } elseif (mb_stripos($dat, 'Block Reference') !== false) {
+            $reason = 'JSTOR RIS endpoint blocked the bot';
+        } elseif (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
+            $reason = 'JSTOR RIS endpoint reported a delivery problem';
+        } else {
+            $reason = 'JSTOR RIS endpoint returned a non-RIS response';
+            $content_type = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $effective_url = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+            bot_debug_log(
+                'JSTOR returned a non-RIS response: HTTP ' . (string) $status .
+                '; content-type=' . $content_type .
+                '; effective-url=' . $effective_url .
+                '; bytes=' . (string) mb_strlen($dat, '8bit')
+            );
+        }
+        jstor_fallback_to_zotero($template, $jstor, $reason);
         return;
     }
     if ($template->has('title')) {
