@@ -616,7 +616,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = mb_ucfirst(mb_trim($new_case));
 
     // Solitary 'a' should be lowercase
+    $preserve_class_a = preg_match('~\b(?i:class) A\b~u', $in) === 1;
     $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
+    if ($preserve_class_a) {
+        $new_case = safe_preg_replace('~\b([Cc]lass) a\b~u', '$1 A', $new_case);
+    }
     // but not in "U S A"
     $new_case = mb_trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
