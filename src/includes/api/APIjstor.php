@@ -113,22 +113,17 @@ function jstor_response_is_client_challenge(string $data): bool {
         mb_stripos($data, '/_fs-ch-') !== false;
 }
 
-function jstor_fallback_to_zotero(Template $template, string $jstor, string $reason): void {
-    report_info($reason . ' for ' . jstor_link($jstor) . '; trying Citoid/Zotero.');
-    Zotero::expand_by_zotero($template, 'https://www.jstor.org/stable/' . $jstor, true);
+function jstor_expand_via_zotero(Template $template, string $jstor): void {
+    Zotero::expand_by_zotero(
+        $template,
+        'https://www.jstor.org/stable/' . $jstor,
+        true,
+        true,
+        true
+    );
 }
 
 function expand_by_jstor(Template $template): void {
-    static $ch = null;
-    static $client_challenge_seen = false;
-    if ($ch === null) {
-        $ch = bot_curl_init(1.0, [
-            CURLOPT_HTTPHEADER => [
-                'Accept: application/x-research-info-systems, text/plain;q=0.9, */*;q=0.1',
-                'Cache-Control: no-cache',
-            ],
-        ], 4 * 1024 * 1024);
-    }
     set_time_limit(120);
     if ($template->incomplete() === false) {
         return;
@@ -151,152 +146,25 @@ function expand_by_jstor(Template $template): void {
     if (mb_substr($jstor, 0, 1) === 'i') {
         return; // We do not want i12342 kind
     }
+    if (!jstor_valid($jstor)) {
+        return;
+    }
 
-    // The stable URL itself is authoritative for its JSTOR identifier. Do not
-    // make successful identifier extraction depend on the RIS endpoint.
-    if ($template->blank('jstor') && jstor_valid($jstor)) {
+    // The stable URL itself is authoritative for its JSTOR identifier. Keep
+    // identifier discovery independent of whether Citoid/Zotero can retrieve
+    // metadata for the item.
+    if ($template->blank('jstor')) {
         $template->add_if_new('jstor', $jstor);
     }
 
-    // Once this process has seen JSTOR's JavaScript challenge, do not keep
-    // hammering the same browser-only endpoint for every citation.
-    if ($client_challenge_seen) {
-        jstor_fallback_to_zotero(
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint is presenting a browser client challenge'
-        );
-        return;
-    }
-
-    curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
-    try {
-        $dat = bot_curl_exec($ch);
-    } catch (Throwable $e) {
-        bot_debug_log('JSTOR request failed: ' . $e::class . ': ' . $e->getMessage());
-        jstor_fallback_to_zotero($template, $jstor, 'JSTOR RIS request failed');
-        return;
-    }
-    $transfer = bot_curl_last_transfer($ch);
-    $status = $transfer['http_code'];
-    if ($dat === '') {
-        jstor_fallback_to_zotero( // @codeCoverageIgnore
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint returned no data'
-        );
-        return; // @codeCoverageIgnore
-    }
-    if ($status < 200 || $status >= 300) {
-        bot_debug_log(
-            'JSTOR RIS request returned HTTP ' . (string) $status .
-            ' for identifier ' . $jstor
-        );
-        jstor_fallback_to_zotero( // @codeCoverageIgnore
-            $template,
-            $jstor,
-            'JSTOR RIS endpoint returned HTTP ' . (string) $status
-        );
-        return; // @codeCoverageIgnore
-    }
-    if (!jstor_response_is_ris($dat)) {
-        if (jstor_response_is_client_challenge($dat)) {
-            $client_challenge_seen = true;
-            $reason = 'JSTOR RIS endpoint returned a browser client challenge';
-        } elseif (mb_stripos($dat, 'No RIS data found for') !== false) {
-            $reason = 'JSTOR RIS endpoint found no data';
-        } elseif (mb_stripos($dat, 'Block Reference') !== false) {
-            $reason = 'JSTOR RIS endpoint blocked the bot';
-        } elseif (mb_stripos($dat, 'A problem occurred trying to deliver RIS data') !== false) {
-            $reason = 'JSTOR RIS endpoint reported a delivery problem';
-        } else {
-            $reason = 'JSTOR RIS endpoint returned a non-RIS response';
-            $content_type = (string) curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-            $effective_url = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-            bot_debug_log(
-                'JSTOR returned a non-RIS response: HTTP ' . (string) $status .
-                '; content-type=' . $content_type .
-                '; effective-url=' . $effective_url .
-                '; bytes=' . (string) mb_strlen($dat, '8bit')
-            );
-        }
-        jstor_fallback_to_zotero($template, $jstor, $reason);
-        return;
-    }
-    if ($template->has('title')) {
-        $bad_data = true;
-        $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
-        foreach ($ris as $ris_line) {
-            $ris_part = ris_line_parts($ris_line);
-            switch (mb_trim($ris_part[0])) {
-                case "T1":
-                case "TI":
-                case "T2":
-                case "BT":
-                    $new_title = mb_trim($ris_part[1]);
-                    foreach (THINGS_THAT_ARE_TITLES as $possible) {
-                        if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
-                            $bad_data = false;
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        if ($bad_data) { // Now for TI: T1 existing titles (title followed by sub-title)
-            $got_count = 0;
-            $new_title = ': ';
-            foreach ($ris as $ris_line) {
-                $ris_part = ris_line_parts($ris_line);
-                switch (mb_trim($ris_part[0])) {
-                    case "T1":
-                        $new_title .= mb_trim($ris_part[1]);
-                        $got_count += 10;
-                        break;
-                    case "TI":
-                        $new_title = mb_trim($ris_part[1]) . $new_title;
-                        $got_count += 100;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            if ($got_count === 110) { // Exactly one of each
-                foreach (THINGS_THAT_ARE_TITLES as $possible) {
-                    if ($template->has($possible) && titles_are_similar(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible)), $new_title)) {
-                        $bad_data = false;
-                    }
-                }
-            }
-        }
-        if ($bad_data) {
-            report_info('Old title did not match for ' . jstor_link($jstor));
-            foreach ($ris as $ris_line) {
-                $ris_part = ris_line_parts($ris_line);
-                switch (mb_trim($ris_part[0])) {
-                    case "T1":
-                    case "TI":
-                    case "T2":
-                    case "BT":
-                        $new_title = mb_trim($ris_part[1]);
-                        if ($new_title) {
-                            report_info("    Possible new title: " . echoable($new_title));
-                        }
-                        break;
-                    default: // @codeCoverageIgnore
-                }
-            }
-            foreach (THINGS_THAT_ARE_TITLES as $possible) {
-                if ($template->has($possible)) {
-                    report_info("    Existing old title: " . echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
-                }
-            }
-            return;
-        }
-    }
-    expand_by_RIS($template, $dat, false);
-    return;
+    // JSTOR's RIS endpoint now presents a browser-only JavaScript challenge to
+    // server-side clients. Citoid already runs Zotero's JSTOR translator, which
+    // understands numeric IDs, non-DOI JSTOR IDs, books/reports and publisher
+    // DOI-shaped stable IDs. The caller already applied JSTOR's historical
+    // incomplete() gate, so bypass Zotero's stricter profoundly_incomplete()
+    // gate here; when a title already exists, require title agreement before
+    // accepting any returned metadata.
+    jstor_expand_via_zotero($template, $jstor);
 }
 
 function expand_by_RIS(Template $template, string &$dat, bool $add_url): void {

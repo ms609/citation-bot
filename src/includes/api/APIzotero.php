@@ -372,7 +372,13 @@ final class Zotero {
         return $zotero_response;
     }
 
-    public static function expand_by_zotero(Template $template, ?string $url = null, bool $do_it_anyway = false): void {
+    public static function expand_by_zotero(
+        Template $template,
+        ?string $url = null,
+        bool $do_it_anyway = false,
+        bool $require_title_match = false,
+        bool $allow_non_profoundly_incomplete = false
+    ): void {
         $access_date = 0;
         if (is_null($url)) {
             if (in_array($template->get('url-status'), BAD_URL_STATUS, true)) {
@@ -411,7 +417,7 @@ final class Zotero {
             }
         }
 
-        if (!$template->profoundly_incomplete($url)) {
+        if (!$allow_non_profoundly_incomplete && !$template->profoundly_incomplete($url)) {
             return; // Only risk unvetted data if there's little good data to sully
         }
 
@@ -446,15 +452,43 @@ final class Zotero {
             self::$zotero_announced = 0;
         }
         $zotero_response = self::zotero_request($url);
-        self::process_zotero_response($zotero_response, $template, $url, $access_date);
+        self::process_zotero_response(
+            $zotero_response,
+            $template,
+            $url,
+            $access_date,
+            $require_title_match,
+            $allow_non_profoundly_incomplete
+        );
         return;
     }
 
-    public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date): void {
+    public static function process_zotero_response(
+        string $zotero_response,
+        Template $template,
+        string $url,
+        int $access_date,
+        bool $require_title_match = false,
+        bool $allow_non_profoundly_incomplete = false
+    ): void {
         ExternalApiResponseGuard::run(
             'Citoid/Zotero',
-            static function () use ($zotero_response, $template, $url, $access_date): void {
-                self::process_zotero_response_unchecked($zotero_response, $template, $url, $access_date);
+            static function () use (
+                $zotero_response,
+                $template,
+                $url,
+                $access_date,
+                $require_title_match,
+                $allow_non_profoundly_incomplete
+            ): void {
+                self::process_zotero_response_unchecked(
+                    $zotero_response,
+                    $template,
+                    $url,
+                    $access_date,
+                    $require_title_match,
+                    $allow_non_profoundly_incomplete
+                );
             }
         );
     }
@@ -471,7 +505,59 @@ final class Zotero {
             : mb_substr($response, 0, $limit, '8bit');
     }
 
-    private static function process_zotero_response_unchecked(string $zotero_response, Template $template, string $url, int $access_date): void {
+    /**
+     * Preserve the old JSTOR-RIS safety check when JSTOR metadata is obtained
+     * through Citoid/Zotero. The old JSTOR path only performed this check
+     * when |title= was already present; in that case, accept the response only
+     * if one of Zotero's title/container-title fields agrees.
+     */
+    private static function response_title_matches_template(stdClass $result, Template $template): bool {
+        if (!$template->has('title')) {
+            return true;
+        }
+        $existing_titles = [];
+        foreach (THINGS_THAT_ARE_TITLES as $possible) {
+            if ($template->has($possible)) {
+                $title = preg_replace(
+                    "~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \\d+ # # #~i",
+                    "�",
+                    $template->get($possible)
+                );
+                $existing_titles[] = is_string($title) ? $title : $template->get($possible);
+            }
+        }
+        if ($existing_titles === []) {
+            return true;
+        }
+
+        $candidate_titles = [];
+        foreach (['title', 'bookTitle', 'publicationTitle'] as $field) {
+            if (isset($result->{$field}) && mb_trim((string) $result->{$field}) !== '') {
+                $candidate_titles[] = (string) $result->{$field};
+            }
+        }
+        if ($candidate_titles === []) {
+            return false;
+        }
+
+        foreach ($existing_titles as $existing_title) {
+            foreach ($candidate_titles as $candidate_title) {
+                if (titles_are_similar($existing_title, $candidate_title)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static function process_zotero_response_unchecked(
+        string $zotero_response,
+        Template $template,
+        string $url,
+        int $access_date,
+        bool $require_title_match,
+        bool $allow_non_profoundly_incomplete
+    ): void {
         if ($zotero_response === self::ERROR_DONE) {
             return;  // Error message already printed in zotero_request()
         }
@@ -546,6 +632,11 @@ final class Zotero {
                 $result->title = $result->nameOfAct;
             }
         }
+        if ($require_title_match && !self::response_title_matches_template($result, $template)) {
+            report_info("Citoid/Zotero title did not match existing citation for URL " . echoable($url));
+            return;
+        }
+
         if (!isset($result->title)) {
             $the_url = mb_substr(echoable(mb_substr($url, 0, 500)), 0, 600); // Limit length
             if (mb_strpos($zotero_response, 'unknown_error', 0, '8bit') !== false) { // @codeCoverageIgnoreStart
@@ -956,7 +1047,7 @@ final class Zotero {
                 if (mb_stripos($url, 'jstor')) {
                     check_doi_for_jstor($template->get('doi'), $template);
                 }
-                if (!$template->profoundly_incomplete()) {
+                if (!$allow_non_profoundly_incomplete && !$template->profoundly_incomplete()) {
                     return;
                 }
             }

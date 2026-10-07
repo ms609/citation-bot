@@ -39,6 +39,83 @@ final class JstorTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testJstorZoteroTitleGuardRejectsMismatchedTitle(): void {
+        $template = $this->make_citation(
+            '{{cite journal|jstor=4059223|title=This is not the right title}}'
+        );
+        $response = <<<'JSON'
+[
+  {
+    "itemType": "journalArticle",
+    "title": "The Actual Article Title",
+    "publicationTitle": "Example Journal",
+    "date": "2020",
+    "volume": "12",
+    "issue": "3",
+    "creators": [
+      {
+        "creatorType": "author",
+        "firstName": "Alice",
+        "lastName": "Smith"
+      }
+    ]
+  }
+]
+JSON;
+
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://www.jstor.org/stable/4059223',
+            0,
+            true
+        );
+
+        $this->assertSame('This is not the right title', $template->get2('title'));
+        $this->assertNull($template->get2('journal'));
+        $this->assertNull($template->get2('last1'));
+    }
+
+    public function testJstorZoteroTitleGuardAcceptsMatchingTitle(): void {
+        $template = $this->make_citation(
+            '{{cite journal|jstor=4059223|title=The Actual Article Title}}'
+        );
+        $response = <<<'JSON'
+[
+  {
+    "itemType": "journalArticle",
+    "title": "The Actual Article Title",
+    "publicationTitle": "Example Journal",
+    "date": "2020",
+    "volume": "12",
+    "issue": "3",
+    "creators": [
+      {
+        "creatorType": "author",
+        "firstName": "Alice",
+        "lastName": "Smith"
+      }
+    ]
+  }
+]
+JSON;
+
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://www.jstor.org/stable/4059223',
+            0,
+            true
+        );
+
+        $this->assertSame('The Actual Article Title', $template->get2('title'));
+        $this->assertSame('Example Journal', $template->get2('journal'));
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('Alice', $template->get2('first1'));
+        $this->assertSame('12', $template->get2('volume'));
+        $this->assertSame('3', $template->get2('issue'));
+    }
+
     public function testJstorGoofyRIS(): void {
         $this->require_live_jstor_ris();
         $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
