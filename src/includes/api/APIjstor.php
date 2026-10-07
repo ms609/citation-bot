@@ -110,7 +110,7 @@ function jstor_response_is_ris(string $data): bool {
  */
 function jstor_response_is_client_challenge(string $data): bool {
     return preg_match('~<title>\s*Client Challenge\s*</title>~i', $data) === 1 &&
-        stripos($data, '/_fs-ch-') !== false;
+        mb_stripos($data, '/_fs-ch-') !== false;
 }
 
 function jstor_fallback_to_zotero(Template $template, string $jstor, string $reason): void {
