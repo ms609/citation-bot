@@ -71,7 +71,7 @@ final class DoiToolsTest extends testBaseClass {
     }
 
     public function testNonJstorDoiIsNotInventedAsJstorId(): void {
-        $template = $this->prepare_citation('{{cite journal|jstor=|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
+        $template = $this->prepare_citation('{{cite journal|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}');
         check_doi_for_jstor('10.1016/j.example.2026.12345', $template);
         $this->assertNull($template->get2('jstor'));
     }
