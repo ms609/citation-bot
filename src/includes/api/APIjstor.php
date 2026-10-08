@@ -117,9 +117,10 @@ function jstor_expand_via_zotero(Template $template, string $jstor): void {
     Zotero::expand_by_zotero(
         $template,
         'https://www.jstor.org/stable/' . $jstor,
-        true,
-        true,
-        true
+        true,  // Explicit JSTOR URL bypasses Zotero's URL exclusion list.
+        true,  // Reject metadata whose title does not match the citation.
+        true,  // Use JSTOR's historical incomplete() policy.
+        true   // JSTOR metadata must not trigger additional Crossref enrichment.
     );
 }
 

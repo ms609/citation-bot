@@ -377,7 +377,8 @@ final class Zotero {
         ?string $url = null,
         bool $do_it_anyway = false,
         bool $require_title_match = false,
-        bool $allow_non_profoundly_incomplete = false
+        bool $allow_non_profoundly_incomplete = false,
+        bool $skip_doi_expansion = false
     ): void {
         $access_date = 0;
         if (is_null($url)) {
@@ -458,7 +459,8 @@ final class Zotero {
             $url,
             $access_date,
             $require_title_match,
-            $allow_non_profoundly_incomplete
+            $allow_non_profoundly_incomplete,
+            $skip_doi_expansion
         );
         return;
     }
@@ -469,7 +471,8 @@ final class Zotero {
         string $url,
         int $access_date,
         bool $require_title_match = false,
-        bool $allow_non_profoundly_incomplete = false
+        bool $allow_non_profoundly_incomplete = false,
+        bool $skip_doi_expansion = false
     ): void {
         ExternalApiResponseGuard::run(
             'Citoid/Zotero',
@@ -479,7 +482,8 @@ final class Zotero {
                 $url,
                 $access_date,
                 $require_title_match,
-                $allow_non_profoundly_incomplete
+                $allow_non_profoundly_incomplete,
+                $skip_doi_expansion
             ): void {
                 self::process_zotero_response_unchecked(
                     $zotero_response,
@@ -487,7 +491,8 @@ final class Zotero {
                     $url,
                     $access_date,
                     $require_title_match,
-                    $allow_non_profoundly_incomplete
+                    $allow_non_profoundly_incomplete,
+                    $skip_doi_expansion
                 );
             }
         );
@@ -505,14 +510,23 @@ final class Zotero {
             : mb_substr($response, 0, $limit, '8bit');
     }
 
+    /** Known invalid titles are not evidence that the returned article is different. */
+    private static function jstor_title_is_placeholder(Template $template): bool {
+        return $template->has('title') && in_array(
+            mb_strtolower(mb_trim($template->get('title'))),
+            ['[no title found]', 'jstor'],
+            true
+        );
+    }
+
     /**
      * Preserve the old JSTOR-RIS safety check when JSTOR metadata is obtained
-     * through Citoid/Zotero. The old JSTOR path only performed this check
-     * when |title= was already present; in that case, accept the response only
-     * if one of Zotero's title/container-title fields agrees.
+     * through Citoid/Zotero. A real existing title must match an incoming title
+     * or container title; known invalid placeholder titles cannot establish a
+     * mismatch and may be replaced after response validation.
      */
     private static function response_title_matches_template(stdClass $result, Template $template): bool {
-        if (!$template->has('title')) {
+        if (!$template->has('title') || self::jstor_title_is_placeholder($template)) {
             return true;
         }
         $existing_titles = [];
@@ -556,7 +570,8 @@ final class Zotero {
         string $url,
         int $access_date,
         bool $require_title_match,
-        bool $allow_non_profoundly_incomplete
+        bool $allow_non_profoundly_incomplete,
+        bool $skip_doi_expansion
     ): void {
         if ($zotero_response === self::ERROR_DONE) {
             return;  // Error message already printed in zotero_request()
@@ -1043,7 +1058,11 @@ final class Zotero {
             }
             if (doi_works($possible_doi)) {
                 $template->add_if_new('doi', $possible_doi);
-                expand_by_doi($template);
+                // JSTOR's Citoid response is the metadata source. Avoid
+                // invoking Crossref merely because Zotero supplied a DOI.
+                if (!$skip_doi_expansion) {
+                    expand_by_doi($template);
+                }
                 if (mb_stripos($url, 'jstor')) {
                     check_doi_for_jstor($template->get('doi'), $template);
                 }
@@ -1134,6 +1153,14 @@ final class Zotero {
             }
         }
 
+        // Discard only known invalid JSTOR placeholders once Zotero's item has
+        // passed validation. Never overwrite an unrelated, meaningful title.
+        if ($require_title_match && self::jstor_title_is_placeholder($template)) {
+            $template->forget('title');
+        }
+        if ($require_title_match && str_i_same(mb_trim($template->get('journal')), 'JSTOR')) {
+            $template->forget('journal');
+        }
         if ($template->has('title')) {
             if (isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
                 unset($result->title);
