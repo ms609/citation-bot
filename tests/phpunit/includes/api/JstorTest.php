@@ -123,6 +123,22 @@ final class JstorTest extends testBaseClass {
         $this->assertNull($jstor->get2('last1'));
     }
 
+    public function testJstorTranslationDoesNotPreventValidEnrichment(): void {
+        $template = $this->make_citation('{{cite journal|jstor=4059223|title=Le titre original|trans-title=The Original Title}}');
+        $response = '[{"itemType":"journalArticle","title":"Le titre original","publicationTitle":"Example Journal"}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertSame('Example Journal', $template->get2('journal'));
+        $this->assertSame('The Original Title', $template->get2('trans-title'));
+    }
+
+    public function testJstorTranslationOnlyDoesNotAuthorizeMismatchedMetadata(): void {
+        $template = $this->make_citation('{{cite journal|jstor=4059223|trans-title=An Unrelated Translation}}');
+        $response = '[{"itemType":"journalArticle","title":"Different Original Article","publicationTitle":"Example Journal"}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertNull($template->get2('journal'));
+        $this->assertSame('An Unrelated Translation', $template->get2('trans-title'));
+    }
+
     public function testJstorZoteroTitleGuardRejectsMismatchedTitle(): void {
         $template = $this->make_citation(
             '{{cite journal|jstor=4059223|title=This is not the right title}}'

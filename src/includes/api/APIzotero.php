@@ -611,6 +611,7 @@ final class Zotero {
     }
 
     private static function response_title_matches_template(stdClass $result, Template $template): bool {
+        $original_title_matched = false;
         if ($template->has('title') && !self::jstor_title_is_placeholder($template)) {
             $candidate = $result->title ?? '';
             if ($result->itemType === 'bookSection' && $template->wikiname() === 'cite book' && isset($result->bookTitle)) {
@@ -619,12 +620,21 @@ final class Zotero {
             if ($candidate === '' || !self::citoid_title_field_matches($template, 'title', $candidate)) {
                 return false;
             }
+            $original_title_matched = true;
         }
-        foreach (['chapter' => 'title', 'contribution' => 'title', 'book-title' => 'bookTitle', 'trans-title' => 'title'] as $existing => $returned) {
-            if ($template->has($existing) &&
-                (!isset($result->{$returned}) || !self::citoid_title_field_matches($template, $existing, $result->{$returned}))) {
-                return false;
+        foreach (['chapter' => 'title', 'contribution' => 'title', 'book-title' => 'bookTitle'] as $existing => $returned) {
+            if ($template->has($existing)) {
+                if (!isset($result->{$returned}) || !self::citoid_title_field_matches($template, $existing, $result->{$returned})) {
+                    return false;
+                }
+                $original_title_matched = true;
             }
+        }
+        // A translated title need not match Citoid's original title. Preserve
+        // the conservative comparison when it is the only available title.
+        if (!$original_title_matched && $template->has('trans-title') &&
+            (!isset($result->title) || !self::citoid_title_field_matches($template, 'trans-title', $result->title))) {
+            return false;
         }
         // A series name alone cannot verify that an article is the same work.
         if (!$template->has('title') && !$template->has('chapter') && $template->has('series')) {
@@ -1548,12 +1558,12 @@ final class Zotero {
                             switch ($creatorType) {
                                 case 'author':
                                 case 'contributor':
-                                    // Keep legacy non-JSTOR contributor handling unchanged.
+                                case 'artist':
+                                    // Only omit JSTOR contributors; preserve other author roles.
                                     if ($creatorType === 'contributor' && $require_title_match) {
                                         $authorParam = '';
                                         break;
                                     }
-                                case 'artist':
                                     ++$author_i;
                                     $authorParam = 'author' . (string) $author_i;
                                     break;
