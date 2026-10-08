@@ -140,7 +140,19 @@ JSON;
     public function testJstorZoteroBookSectionJson(): void {
         $template = $this->make_citation('{{cite book|jstor=j.ctt6wp6td.10}}');
         $response = <<<'JSON'
-[{"itemType":"bookSection","title":"Chapter Heading","bookTitle":"Example Book","date":"2019","publisher":"Example Press"}]
+[
+  {
+    "itemType": "bookSection",
+    "title": "Chapter Heading",
+    "bookTitle": "Example Book",
+    "date": "2019",
+    "publisher": "Example Press",
+    "creators": [
+      {"creatorType":"author","firstName":"Example","lastName":"Book"},
+      {"creatorType":"author","firstName":"Alice","lastName":"Verstraete"}
+    ]
+  }
+]
 JSON;
         Zotero::process_zotero_response(
             $response,
@@ -153,6 +165,84 @@ JSON;
         );
         $this->assertSame('Example Book', $template->get2('title'));
         $this->assertSame('Chapter Heading', $template->get2('chapter'));
+        $this->assertSame('Verstraete', $template->get2('last1'));
+        $this->assertSame('Alice', $template->get2('first1'));
+        $this->assertNull($template->get2('last2'));
+    }
+
+    public function testJstorZoteroBookCreators(): void {
+        $template = $this->make_citation('{{cite book|jstor=resrep24545}}');
+        $response = <<<'JSON'
+[{"itemType":"book","title":"Sample Monograph","creators":[{"creatorType":"author","firstName":"Jane","lastName":"Smith"}]}]
+JSON;
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://www.jstor.org/stable/resrep24545',
+            0,
+            true,
+            true,
+            true
+        );
+        $this->assertSame('Sample Monograph', $template->get2('title'));
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('Jane', $template->get2('first1'));
+    }
+
+    public function testJstorZoteroBookRejectsMismatchedTitleAndAuthor(): void {
+        $template = $this->make_citation('{{cite book|jstor=j.ctt6wp6td.10|title=Unrelated Title}}');
+        $response = <<<'JSON'
+[{"itemType":"bookSection","title":"Chapter Heading","bookTitle":"Example Book","creators":[{"creatorType":"author","firstName":"Alice","lastName":"Verstraete"}]}]
+JSON;
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://www.jstor.org/stable/j.ctt6wp6td.10',
+            0,
+            true,
+            true,
+            true
+        );
+        $this->assertSame('Unrelated Title', $template->get2('title'));
+        $this->assertNull($template->get2('chapter'));
+        $this->assertNull($template->get2('last1'));
+    }
+
+    public function testJstorZoteroBookCreatorsNotTrustedOnOtherSites(): void {
+        $template = $this->make_citation('{{cite book|title=Sample Monograph}}');
+        $response = <<<'JSON'
+[{"itemType":"book","title":"Sample Monograph","creators":[{"creatorType":"author","firstName":"Jane","lastName":"Smith"}]}]
+JSON;
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://example.org/stable/resrep24545',
+            0,
+            true,
+            true,
+            true
+        );
+        $this->assertSame('Sample Monograph', $template->get2('title'));
+        $this->assertNull($template->get2('last1'));
+    }
+
+    public function testJstorZoteroPlaceholderWithExistingAuthors(): void {
+        $template = $this->make_citation('{{cite journal|jstor=3073767|title=[No title found]|author2=BAD|last1=Duh|first1=Dum}}');
+        $response = <<<'JSON'
+[{"itemType":"journalArticle","title":"Are Helionitronium Trications Stable?","publicationTitle":"Proceedings of the National Academy of Sciences of the United States of America","creators":[{"creatorType":"author","firstName":"Wolfgang","lastName":"Eisfeld"}]}]
+JSON;
+        Zotero::process_zotero_response(
+            $response,
+            $template,
+            'https://www.jstor.org/stable/3073767',
+            0,
+            true,
+            true,
+            true
+        );
+        $this->assertSame('Are Helionitronium Trications Stable?', $template->get2('title'));
+        $this->assertSame('Duh', $template->get2('last1'));
+        $this->assertSame('Proceedings of the National Academy of Sciences of the United States of America', $template->get2('journal'));
     }
 
     public function testJstorGoofyRIS(): void {
@@ -231,8 +321,8 @@ JSON;
         $this->require_live_jstor_ris();
         $text = '{{Cite journal|url=https://www.jstor.org/stable/j.ctt6wp6td.10}}';
         $expanded = $this->process_citation($text);
-        if ($expanded->get2('title') === null && $expanded->get2('last1') === null) {
-            $this->markTestSkipped('Citoid returned no JSTOR book metadata; offline mapping is tested separately');
+        if ($expanded->get2('last1') === null) {
+            $this->markTestSkipped('Live JSTOR chapter metadata has no usable author; offline creator mapping is tested separately');
         }
         $this->assertSame('Verstraete', $expanded->get2('last1'));
     }

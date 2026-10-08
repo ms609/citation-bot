@@ -1433,9 +1433,14 @@ final class Zotero {
                     report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url)); // @codeCoverageIgnore
             }
 
-            if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], true)) {
+            // Generic book-page creators are unreliable. Only canonical JSTOR
+            // stable URL responses may supply book or chapter creators.
+            $jstor_book_creators = $require_title_match &&
+                preg_match('~^https://www[.]jstor[.]org/stable/~i', $url) === 1 &&
+                in_array($result->itemType, ['book', 'bookSection'], true);
+            if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], true) ||
+                $jstor_book_creators) {
                 // Websites often have non-authors listed in metadata
-                // "Books" are often bogus
                 $i = 0;
                 $author_i = 0;
                 $editor_i = 0;
