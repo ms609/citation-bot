@@ -90,6 +90,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $this->flush();
     }
 
+    #[\PHPUnit\Framework\Attributes\After]
+    protected function block_zotero_after_test(): void {
+        Zotero::block_zotero();
+    }
+
     protected function requires_secrets(callable $function): void {
         if ($this->testing_skip_wiki) {
             $this->markTestSkipped('Skipping part/all of a test because of no wiki secrets');
@@ -185,43 +190,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     /**
-     * Legacy integration tests below intentionally require JSTOR's live RIS
-     * exporter. Skip them when JSTOR presents its browser challenge; parser
-     * behavior remains covered by checked-in RIS fixtures.
+     * Legacy name retained for the JSTOR integration tests. JSTOR metadata is
+     * now retrieved through Citoid/Zotero instead of JSTOR's browser-only RIS
+     * endpoint, so selectively enable Zotero for these otherwise network-light
+     * tests. setUp() blocks Zotero again before every test.
      */
     protected function require_live_jstor_ris(): void {
-        static $available = null;
-
-        if ($available === null) {
-            $ch = bot_curl_init(
-                1.0,
-                [
-                    CURLOPT_HTTPHEADER => [
-                        'Accept: application/x-research-info-systems, text/plain;q=0.9, */*;q=0.1',
-                        'Cache-Control: no-cache',
-                    ],
-                ],
-                128 * 1024
-            );
-            curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/832414');
-
-            try {
-                $data = bot_curl_exec($ch);
-                $transfer = bot_curl_last_transfer($ch);
-                $available =
-                    $transfer['http_code'] >= 200 &&
-                    $transfer['http_code'] < 300 &&
-                    jstor_response_is_ris($data);
-            } catch (Throwable) {
-                $available = false;
-            }
-        }
-
-        if (!$available) {
-            $this->markTestSkipped(
-                'JSTOR live RIS endpoint is unavailable or returned a browser client challenge'
-            );
-        }
+        usleep(300000); // Match requires_zotero(): reduce transient Citoid failures.
+        Zotero::unblock_zotero();
     }
 
     protected function expand_via_zotero(string $text): Template {

@@ -17,6 +17,15 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame(1000000, Zotero::retry_delay_microseconds(100));
     }
 
+    public function testCitoidHttpStatusRequiresSuccessfulResponse(): void {
+        foreach ([0, 199, 300, 400, 403, 404, 429, 500, 520] as $status) {
+            $this->assertFalse(Zotero::citoid_http_success($status));
+        }
+        foreach ([200, 201, 206, 299] as $status) {
+            $this->assertTrue(Zotero::citoid_http_success($status));
+        }
+    }
+
     public function testZoteroUrlEncodingPreservesAuthority(): void {
         $this->assertSame(
             'https%3A%2F%2Fexample-domain.test%2Fpath%2Dsegment%3Fquery%2Dkey%3Dquery%2Dvalue',

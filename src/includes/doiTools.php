@@ -858,9 +858,6 @@ function get_possible_dois(string $doi): array {
 }
 
 function check_doi_for_jstor(string $doi, Template $template): void {
-    static $ch = null;
-    static $client_challenge_seen = false;
-
     if ($template->has('jstor')) {
         return;
     }
@@ -887,32 +884,10 @@ function check_doi_for_jstor(string $doi, Template $template): void {
         return;
     }
 
-    // Some JSTOR stable IDs are publisher DOIs rather than 10.2307 IDs. Keep
-    // the old verification path for those when the endpoint works, but stop
-    // retrying it after JSTOR presents the browser-only challenge.
-    if ($client_challenge_seen) {
-        return;
-    }
-    if ($ch === null) {
-        $ch = bot_curl_init(1.0, [], 1 * 1024 * 1024);
-    }
-
-    curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
-    try {
-        $ris = bot_curl_exec($ch);
-    } catch (Throwable) {
-        return;
-    }
-    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if (jstor_response_is_client_challenge($ris)) {
-        $client_challenge_seen = true;
-        return;
-    }
-    if ($httpCode === 200 &&
-            jstor_response_is_ris($ris) &&
-            mb_stripos($ris, $doi) !== false) {
-        $template->add_if_new('jstor', $doi);
-    }
+    // A publisher DOI can also be a JSTOR stable identifier, but that cannot
+    // be inferred from the DOI alone without probing JSTOR's browser-only RIS
+    // endpoint. Genuine JSTOR stable URLs are handled by URL identifier
+    // extraction, so do not invent a |jstor= value here.
 }
 
 /**
