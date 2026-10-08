@@ -136,9 +136,7 @@ function expand_by_jstor(Template $template): void {
     } else {
         return;
     }
-    if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
-        $jstor = $match[1]; // remove ?seq= stuff
-    }
+    $jstor = explode('#', explode('?', $jstor, 2)[0], 2)[0]; // Strip query and fragment.
     /** @psalm-taint-escape ssrf */
     $jstor = mb_trim($jstor);
     if (mb_strpos($jstor, ' ') !== false) {

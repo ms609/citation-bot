@@ -39,6 +39,77 @@ final class JstorTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testJstorStableUrlFragmentIsIgnored(): void {
+        $template = $this->make_citation('{{cite journal|url=https://www.jstor.org/stable/4059223#metadata_info_tab_contents}}');
+        expand_by_jstor($template);
+        $this->assertSame('4059223', $template->get2('jstor'));
+    }
+
+    public function testJstorCitoidRejectsProblemJson(): void {
+        foreach (['{"type":"about:blank","title":"Bad Request"}', '[{"title":"Bad Request"}]'] as $response) {
+            $template = $this->make_citation('{{cite journal|jstor=4059223}}');
+            Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+            $this->assertNull($template->get2('title'));
+        }
+    }
+
+    public function testJstorCitoidRejectsJournalAsArticleTitle(): void {
+        $template = $this->make_citation('{{cite journal|jstor=4059223|title=Example Journal}}');
+        $response = '[{"itemType":"journalArticle","title":"Different Article","publicationTitle":"Example Journal","volume":"12","creators":[{"creatorType":"author","firstName":"Jane","lastName":"Smith"}]}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertSame('Example Journal', $template->get2('title'));
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('volume'));
+    }
+
+    public function testJstorCitoidIdentityGuard(): void {
+        foreach (['https://www.jstor.org/stable/99999', 'https://www.jstor.org/stable/4059223', 'https://www.jstor.org/stable/10.2307/4059223', 'https://publisher.example/article'] as $returned_url) {
+            $template = $this->make_citation('{{cite journal|jstor=4059223}}');
+            $response = json_encode(['itemType' => 'journalArticle', 'url' => $returned_url, 'title' => 'Verified Article', 'volume' => '12']);
+            Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+            $this->assertSame($returned_url === 'https://www.jstor.org/stable/99999' ? null : 'Verified Article', $template->get2('title'));
+        }
+    }
+
+    public function testJstorCitoidDoiWithoutResolverRequest(): void {
+        foreach (['10.0001/example.valid', 'not-a-doi', '10.0001/a|injected=1', '10.0001/a{bad}'] as $doi) {
+            $template = $this->make_citation('{{cite journal|jstor=4059223}}');
+            $response = json_encode(['itemType' => 'journalArticle', 'title' => 'Verified Article', 'DOI' => $doi]);
+            Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+            $this->assertSame(doi_valid($doi) && preg_match('~[|{}<>]~', $doi) === 0 ? $doi : null, $template->get2('doi'));
+            $this->assertSame('Verified Article', $template->get2('title'));
+        }
+    }
+
+    public function testJstorCitoidRejectsMalformedIdentityField(): void {
+        $template = $this->make_citation('{{cite journal|jstor=4059223}}');
+        $response = '[{"itemType":"journalArticle","url":{"unexpected":"object"},"title":"A Title"}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertNull($template->get2('title'));
+    }
+
+    public function testJstorBookAndChapterMustBothAgree(): void {
+        $template = $this->make_citation('{{cite book|jstor=4059223|title=Example Book|chapter=Original Chapter}}');
+        $response = '[{"itemType":"bookSection","title":"Different Chapter","bookTitle":"Example Book","publisher":"Wrong Publisher"}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertSame('Original Chapter', $template->get2('chapter'));
+        $this->assertNull($template->get2('publisher'));
+    }
+
+    public function testJstorCitoidCreatorRoles(): void {
+        $template = $this->make_citation('{{cite book|jstor=resrep24545}}');
+        $response = json_encode(['itemType' => 'book', 'title' => 'Example Book', 'creators' => [
+            ['creatorType' => 'contributor', 'firstName' => 'Jane', 'lastName' => 'Brown'],
+            ['creatorType' => 'bookAuthor', 'firstName' => 'John', 'lastName' => 'Taylor'],
+            ['creatorType' => 'editor', 'firstName' => 'Alice', 'lastName' => 'Jones'],
+            ['creatorType' => 'author', 'firstName' => 'Mary', 'lastName' => 'Smith'],
+        ]]);
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/resrep24545', 0, true, true, true);
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertNull($template->get2('last2'));
+        $this->assertStringContainsString('Jones', (string) $template->get2('editor1'));
+    }
+
     public function testJstorZoteroTitleGuardRejectsMismatchedTitle(): void {
         $template = $this->make_citation(
             '{{cite journal|jstor=4059223|title=This is not the right title}}'

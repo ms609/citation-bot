@@ -305,6 +305,51 @@ final class Zotero {
     }
 
     /**
+     * Share Citoid's documented one-request-per-second budget between workers
+     * using the same PHP account. If locking fails, pace this worker anyway.
+     */
+    private static function throttle_citoid_requests(): void {
+        $directory = sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+        if (!is_dir($directory)) {
+            @mkdir($directory, 0700);
+        }
+        $permissions = is_dir($directory) ? fileperms($directory) : false;
+        if ($permissions === false || is_link($directory) || ($permissions & 0077) !== 0) {
+            usleep(1000000);
+            return;
+        }
+        $lock = @fopen($directory . '/rate.lock', 'c+');
+        if ($lock === false) {
+            usleep(1000000);
+            return;
+        }
+        try {
+            if (!flock($lock, LOCK_EX)) {
+                usleep(1000000);
+                return;
+            }
+            $last_request = (float) stream_get_contents($lock);
+            $now = microtime(true);
+            $wait = $last_request + 1.0 - $now;
+            if ($wait > 0 && $wait <= 1.0) {
+                usleep((int) ceil($wait * 1000000));
+            }
+            rewind($lock);
+            ftruncate($lock, 0);
+            fwrite($lock, (string) microtime(true));
+            fflush($lock);
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+    }
+
+    /** A successful Citoid citation response must be HTTP 2xx. */
+    public static function citoid_http_success(int $status): bool {
+        return $status >= 200 && $status < 300;
+    }
+
+    /**
      * @performance Keeps track of errors and adds small delays (0.1-0.2 seconds) when things go wrong.
      * After 5 errors in a row, pauses for 100 tries to avoid overloading the service. Tries again once if it times out.
      */
@@ -329,6 +374,7 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
+        self::throttle_citoid_requests();
         try {
             $zotero_response = bot_curl_exec(self::$zotero_ch);
         } catch (Throwable $e) {
@@ -338,7 +384,7 @@ final class Zotero {
             return self::ERROR_DONE;
         }
         $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE);
-        if ($zotero_response === '' && $response_code !== 429 && $response_code < 500) {
+        if ($zotero_response === '' && self::citoid_http_success($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
                 $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
@@ -360,6 +406,12 @@ final class Zotero {
             self::record_zotero_failure();
             return self::ERROR_DONE;
             // @codeCoverageIgnoreEnd
+        }
+        // An HTTP 4xx response can be a valid JSON problem object with a
+        // "title" property. It is never citation metadata.
+        if (!self::citoid_http_success($response_code)) {
+            report_info('Citoid returned HTTP ' . (string) $response_code . ' for URL ' . echoable($url));
+            return self::ERROR_DONE;
         }
         if ($zotero_response === '') {
             // @codeCoverageIgnoreStart
@@ -519,49 +571,65 @@ final class Zotero {
         );
     }
 
-    /**
-     * Preserve the old JSTOR-RIS safety check when JSTOR metadata is obtained
-     * through Citoid/Zotero. A real existing title must match an incoming title
-     * or container title; known invalid placeholder titles cannot establish a
-     * mismatch and may be replaced after response validation.
-     */
-    private static function response_title_matches_template(stdClass $result, Template $template): bool {
-        if (!$template->has('title') || self::jstor_title_is_placeholder($template)) {
-            return true;
+    /** The stable identifier in a canonical JSTOR URL, if present. */
+    private static function jstor_stable_id(string $url): ?string {
+        $parts = parse_url($url);
+        if (!is_array($parts) || !in_array(mb_strtolower($parts['host'] ?? ''), ['jstor.org', 'www.jstor.org'], true)) {
+            return null;
         }
-        $existing_titles = [];
-        foreach (THINGS_THAT_ARE_TITLES as $possible) {
-            if ($template->has($possible)) {
-                $title = preg_replace(
-                    "~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \\d+ # # #~i",
-                    "�",
-                    $template->get($possible)
-                );
-                $existing_titles[] = is_string($title) ? $title : $template->get($possible);
-            }
+        if (preg_match('~^/stable/(.+)$~', $parts['path'] ?? '', $matches) !== 1) {
+            return null;
         }
-        if ($existing_titles === []) {
-            return true;
-        }
+        return preg_replace('~^10\.2307/~i', '', rawurldecode($matches[1]));
+    }
 
-        $candidate_titles = [];
-        foreach (['title', 'bookTitle', 'publicationTitle'] as $field) {
-            if (isset($result->{$field}) && mb_trim((string) $result->{$field}) !== '') {
-                $candidate_titles[] = (string) $result->{$field};
+    /** Do not combine metadata from two explicitly different JSTOR items. */
+    private static function jstor_result_conflicts_with_url(stdClass $result, string $url): bool {
+        if (!isset($result->url)) {
+            return false; // Citoid sometimes returns a publisher URL instead.
+        }
+        if (!is_string($result->url)) {
+            return true; // A malformed identity field must not be trusted.
+        }
+        $requested = self::jstor_stable_id($url);
+        $returned = self::jstor_stable_id($result->url);
+        return $requested !== null && $returned !== null && $requested !== $returned;
+    }
+
+    /**
+     * Compare like citation fields, not a journal name against an article title.
+     * For a book section, cite book's title is the book title, not the chapter.
+     */
+    private static function citoid_title_field_matches(Template $template, string $field, string $candidate): bool {
+        $existing = safe_preg_replace(
+            '~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i',
+            '�',
+            $template->get($field)
+        );
+        return titles_are_similar($existing, $candidate);
+    }
+
+    private static function response_title_matches_template(stdClass $result, Template $template): bool {
+        if ($template->has('title') && !self::jstor_title_is_placeholder($template)) {
+            $candidate = $result->title ?? '';
+            if ($result->itemType === 'bookSection' && $template->wikiname() === 'cite book' && isset($result->bookTitle)) {
+                $candidate = $result->bookTitle;
+            }
+            if ($candidate === '' || !self::citoid_title_field_matches($template, 'title', $candidate)) {
+                return false;
             }
         }
-        if ($candidate_titles === []) {
+        foreach (['chapter' => 'title', 'contribution' => 'title', 'book-title' => 'bookTitle', 'trans-title' => 'title'] as $existing => $returned) {
+            if ($template->has($existing) &&
+                (!isset($result->{$returned}) || !self::citoid_title_field_matches($template, $existing, $result->{$returned}))) {
+                return false;
+            }
+        }
+        // A series name alone cannot verify that an article is the same work.
+        if (!$template->has('title') && !$template->has('chapter') && $template->has('series')) {
             return false;
         }
-
-        foreach ($existing_titles as $existing_title) {
-            foreach ($candidate_titles as $candidate_title) {
-                if (titles_are_similar($existing_title, $candidate_title)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return true;
     }
 
     private static function process_zotero_response_unchecked(
@@ -635,6 +703,16 @@ final class Zotero {
         }
 
         if (!self::normalize_zotero_result($result, $url)) {
+            return;
+        }
+        // Citoid problem JSON also has a title, but not a Zotero itemType.
+        if ((isset($result->type) && !isset($result->itemType)) ||
+            ($require_title_match && (!isset($result->itemType) || $result->itemType === ''))) {
+            report_info('Citoid returned no citation itemType for URL ' . echoable($url));
+            return;
+        }
+        if ($require_title_match && self::jstor_result_conflicts_with_url($result, $url)) {
+            report_info('Citoid returned metadata for a different JSTOR item: ' . echoable($url));
             return;
         }
 
@@ -1048,7 +1126,9 @@ final class Zotero {
             if (preg_match('~^(?:https://|http://|)(?:dx\.|)doi\.org/(.+)$~i', $result->DOI, $matches)) {
                     $result->DOI = $matches[1];
             }
-            $possible_doi = sanitize_doi($result->DOI);
+            $possible_doi = $skip_doi_expansion
+                ? mb_trim(safe_preg_replace('~^(?:https?://(?:dx\.)?doi\.org/|doi:)~i', '', $result->DOI))
+                : sanitize_doi($result->DOI);
             // SSRN Zotero translator returns DOIs under the SSRN prefix (10.2139/...).
             // The ssrn= parameter is the canonical identifier; the DOI is redundant,
             // and {{cite SSRN}} doesn't support the doi parameter.
@@ -1056,13 +1136,20 @@ final class Zotero {
                 $template->wikiname() === 'cite ssrn') {
                 $possible_doi = '';
             }
-            if (doi_works($possible_doi)) {
-                $template->add_if_new('doi', $possible_doi);
-                // JSTOR's Citoid response is the metadata source. Avoid
-                // invoking Crossref merely because Zotero supplied a DOI.
-                if (!$skip_doi_expansion) {
-                    expand_by_doi($template);
+            // Citoid already supplied the DOI. For JSTOR do not depend on a
+            // second live doi.org request; still require structural validity.
+            if ($skip_doi_expansion) {
+                // Both sanitize_doi() and add_if_new('doi') can call the live
+                // DOI resolver. Accept only a clean, structurally valid DOI
+                // from this already checked Citoid record, without either call.
+                if (doi_valid($possible_doi) && !doi_is_bad($possible_doi) &&
+                    mb_strlen($possible_doi) <= HandleCache::MAX_HDL_SIZE &&
+                    preg_match('~[|{}<>\x00-\x1F]~', $possible_doi) === 0) {
+                    $template->set('doi', $possible_doi);
                 }
+            } elseif (doi_works($possible_doi)) {
+                $template->add_if_new('doi', $possible_doi);
+                expand_by_doi($template);
                 if (mb_stripos($url, 'jstor')) {
                     check_doi_for_jstor($template->get('doi'), $template);
                 }
@@ -1459,10 +1546,13 @@ final class Zotero {
                             // Increment counter only after validation passes, based on creator type
                             switch ($creatorType) {
                                 case 'author':
-                                case 'contributor':
                                 case 'artist':
                                     ++$author_i;
                                     $authorParam = 'author' . (string) $author_i;
+                                    break;
+                                case 'contributor': // Zotero marks contributors as non-cited.
+                                case 'bookAuthor': // Not necessarily the chapter author.
+                                    $authorParam = '';
                                     break;
                                 case 'editor':
                                     ++$editor_i;
