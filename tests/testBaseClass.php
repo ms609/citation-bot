@@ -90,6 +90,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         $this->flush();
     }
 
+    #[\PHPUnit\Framework\Attributes\After]
+    protected function block_zotero_after_test(): void {
+        Zotero::block_zotero();
+    }
+
     protected function requires_secrets(callable $function): void {
         if ($this->testing_skip_wiki) {
             $this->markTestSkipped('Skipping part/all of a test because of no wiki secrets');
