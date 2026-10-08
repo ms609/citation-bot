@@ -110,6 +110,19 @@ final class JstorTest extends testBaseClass {
         $this->assertStringContainsString('Jones', (string) $template->get2('editor1'));
     }
 
+    public function testNonJstorContributorBehaviorIsPreserved(): void {
+        $template = $this->make_citation('{{cite journal}}');
+        $response = json_encode(['itemType' => 'journalArticle', 'title' => 'Example Article', 'creators' => [
+            ['creatorType' => 'contributor', 'firstName' => 'Jane', 'lastName' => 'Brown'],
+        ]]);
+        Zotero::process_zotero_response($response, $template, 'https://example.org/article', 0);
+        $this->assertSame('Brown', $template->get2('last1'));
+
+        $jstor = $this->make_citation('{{cite journal|jstor=4059223}}');
+        Zotero::process_zotero_response($response, $jstor, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+        $this->assertNull($jstor->get2('last1'));
+    }
+
     public function testJstorZoteroTitleGuardRejectsMismatchedTitle(): void {
         $template = $this->make_citation(
             '{{cite journal|jstor=4059223|title=This is not the right title}}'

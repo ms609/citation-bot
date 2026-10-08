@@ -387,6 +387,7 @@ final class Zotero {
         if ($zotero_response === '' && self::citoid_http_success($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
+                self::throttle_citoid_requests(); // Every HTTP attempt, including retries, consumes the shared budget.
                 $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
             } catch (Throwable $e) {
                 bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
@@ -1546,11 +1547,16 @@ final class Zotero {
                             // Increment counter only after validation passes, based on creator type
                             switch ($creatorType) {
                                 case 'author':
+                                case 'contributor':
+                                    // Keep legacy non-JSTOR contributor handling unchanged.
+                                    if ($creatorType === 'contributor' && $require_title_match) {
+                                        $authorParam = '';
+                                        break;
+                                    }
                                 case 'artist':
                                     ++$author_i;
                                     $authorParam = 'author' . (string) $author_i;
                                     break;
-                                case 'contributor': // Zotero marks contributors as non-cited.
                                 case 'bookAuthor': // Not necessarily the chapter author.
                                     $authorParam = '';
                                     break;
