@@ -107,7 +107,7 @@ jobs:
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
       if: ${{ github.event_name == 'pull_request' }}
-      run: composer run test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
 
     - name: Full test with PHP (trusted events)
       if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
@@ -122,7 +122,7 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: composer run test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
 
     - name: Manually look for weird stuff
       if: always()
@@ -174,4 +174,4 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: composer run test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
