@@ -10,6 +10,8 @@ The archive is outside the production source loader and PHPUnit discovery tree.
 - `tests/` preserves the retired RIS-only PHPUnit classes and an unmodified
   copy of `TextToolsCoverageTest.php` (including its three RIS date methods).
 - `fixtures/` preserves the original `.ris` files via Git renames.
+- `tests/LegacyTemplatePart3RisTest.php` retains the former inline `testRIS()`
+  cases, which are no longer executed in active PHPUnit runs.
 
 The active `JstorTest` live integration tests remain in CI under updated names,
 because they now test Citoid metadata and page expansion rather than RIS.
