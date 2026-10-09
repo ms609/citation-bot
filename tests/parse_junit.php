@@ -13,17 +13,25 @@ if (!file_exists($junitFile)) {
     exit(0); // Don't fail the build if timing report can't be generated
 }
 
-$xml = simplexml_load_file($junitFile);
-if ($xml === false) {
+// Never fetch DTDs or external entities when parsing a potentially partial
+// report. A malformed report must not hide the original ParaTest failure.
+$xml = @simplexml_load_file($junitFile, SimpleXMLElement::class, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING);
+if (!$xml instanceof SimpleXMLElement) {
     echo "\nWarning: Failed to parse JUnit XML file\n";
     echo "Test timing report cannot be generated.\n";
-    exit(0); // Don't fail the build if timing report can't be generated
+    exit(0); // Don't replace the original test exit code with a report error.
+}
+
+$cases = $xml->xpath('//testcase');
+if ($cases === false) {
+    echo "\nWarning: Failed to read JUnit test cases\n";
+    exit(0);
 }
 
 $tests = [];
 
 // Parse all test cases from all test suites
-foreach ($xml->xpath('//testcase') as $testcase) {
+foreach ($cases as $testcase) {
     $class = (string)$testcase['class'];
     $name = (string)$testcase['name'];
     $time = (float)$testcase['time'];
