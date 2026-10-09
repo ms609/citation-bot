@@ -120,6 +120,9 @@ final class zoteroTest extends testBaseClass {
                         $statuses[$pid] = $status;
                         unset($remaining[$key]);
                     } elseif ($waited === -1) {
+                        // PHPUnit/ParaTest can install a SIGCHLD handler that
+                        // reaps the child first. A successful child records its
+                        // timestamp independently; verify that below instead.
                         unset($remaining[$key]);
                     }
                 }
@@ -132,7 +135,9 @@ final class zoteroTest extends testBaseClass {
                 pcntl_waitpid($pid, $status);
             }
             $this->assertSame([], array_values($remaining), 'Citoid throttle worker timed out');
-            $this->assertCount(2, $statuses, 'Both Citoid throttle workers must exit');
+            // Only inspect exit codes that we actually reaped ourselves.
+            // In particular, waitpid() returning -1 does not mean the worker
+            // failed: a SIGCHLD handler may already have reaped that process.
             foreach ($statuses as $status) {
                 $this->assertTrue(pcntl_wifexited($status) && pcntl_wexitstatus($status) === 0);
             }
@@ -142,7 +147,10 @@ final class zoteroTest extends testBaseClass {
             }
             $timestamps = array_map('floatval', $lines);
             sort($timestamps);
-            $this->assertCount(2, $timestamps);
+            // A line is written only after the throttle succeeds; requiring
+            // two distinct, serialized timestamps protects the core assertion
+            // even if exit statuses were reaped by an external handler.
+            $this->assertCount(2, $timestamps, 'Both Citoid workers must complete successfully');
             $this->assertGreaterThanOrEqual(0.85, $timestamps[1] - $timestamps[0]);
         } finally {
             @unlink($output);
