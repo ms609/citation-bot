@@ -87,7 +87,7 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testCitoidThrottleSerializesSeparateProcesses(): void {
-        if (!function_exists('pcntl_fork') || !function_exists('pcntl_waitpid')) {
+        if (!function_exists('pcntl_fork') || !function_exists('pcntl_waitpid') || !function_exists('posix_kill')) {
             $this->markTestSkipped('pcntl required for cross-process throttle test');
         }
         $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
@@ -108,8 +108,32 @@ final class zoteroTest extends testBaseClass {
                 }
                 $pids[] = $pid;
             }
-            foreach ($pids as $pid) {
+            // A hung child must fail promptly, not hold the entire ParaTest run
+            // until the GitHub Actions 90-minute timeout.
+            $statuses = [];
+            $remaining = $pids;
+            $deadline = microtime(true) + 15.0;
+            while ($remaining && microtime(true) < $deadline) {
+                foreach ($remaining as $key => $pid) {
+                    $waited = pcntl_waitpid($pid, $status, WNOHANG);
+                    if ($waited === $pid) {
+                        $statuses[$pid] = $status;
+                        unset($remaining[$key]);
+                    } elseif ($waited === -1) {
+                        unset($remaining[$key]);
+                    }
+                }
+                if ($remaining) {
+                    usleep(100000);
+                }
+            }
+            foreach ($remaining as $pid) {
+                @posix_kill($pid, SIGKILL);
                 pcntl_waitpid($pid, $status);
+            }
+            $this->assertSame([], array_values($remaining), 'Citoid throttle worker timed out');
+            $this->assertCount(2, $statuses, 'Both Citoid throttle workers must exit');
+            foreach ($statuses as $status) {
                 $this->assertTrue(pcntl_wifexited($status) && pcntl_wexitstatus($status) === 0);
             }
             $lines = file($output, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
