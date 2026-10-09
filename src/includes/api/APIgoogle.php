@@ -229,6 +229,11 @@ function google_book_details(Template $template, string $gid): void {
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     curl_setopt($ch, CURLOPT_URL, $google_book_url);
     $data = bot_curl_exec($ch);
+    apply_google_book_details($template, $data);
+}
+
+/** Apply a Google Books feed response without requiring a live HTTP request. */
+function apply_google_book_details(Template $template, string $data): void {
     if ($data === '') {
         return;
     }
