@@ -355,19 +355,43 @@ final class TemplatePart1Test extends testBaseClass {
     }
 
     public function testDropBadData2(): void {
-        $this->require_live_jstor_ris();
+        // Offline regression: invalid existing fields must be cleaned while
+        // Citoid metadata enriches the citation. testDropBadData() still checks
+        // the same JSTOR article through the live service.
         $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2005}}";
-        $expanded = $this->process_citation($text);
-        if ($expanded->get2('title') === '[No title found]' && $expanded->get2('journal') === null) {
-            $this->markTestSkipped('Live JSTOR enrichment yielded no article metadata; offline mapping is tested separately');
-        }
+        $expanded = $this->prepare_citation($text);
+        $response = <<<'JSON'
+[{
+  "itemType": "journalArticle",
+  "title": "Are Helionitronium Trications Stable?",
+  "publicationTitle": "Proceedings of the National Academy of Sciences of the United States of America",
+  "volume": "99",
+  "issue": "24",
+  "pages": "15303–15307",
+  "date": "2002",
+  "creators": [
+    {"creatorType": "author", "firstName": "Jeffrey S.", "lastName": "Francisco"},
+    {"creatorType": "author", "firstName": "Wolfgang", "lastName": "Eisfeld"}
+  ]
+}]
+JSON;
+        Zotero::process_zotero_response(
+            $response,
+            $expanded,
+            'https://www.jstor.org/stable/3073767',
+            0,
+            true,
+            true,
+            true
+        );
+        $expanded->tidy();
+
         $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
         $this->assertSame('99', $expanded->get2('volume'));
         $this->assertSame('24', $expanded->get2('issue'));
-        $this->assertSame('Duh', $expanded->get2('last1')); // We have a bad author2, so no fixed them
+        $this->assertSame('Duh', $expanded->get2('last1')); // Existing malformed author2 blocks author replacement.
         $this->assertSame('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get2('journal'));
         $this->assertSame('15303–15307', $expanded->get2('pages'));
-        // JSTOR gives up these, but we do not add since we get journal title and URL is simply jstor stable
         $this->assertNull($expanded->get2('publisher'));
         $this->assertNull($expanded->get2('issn'));
         $this->assertNull($expanded->get2('url'));
