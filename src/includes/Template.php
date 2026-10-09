@@ -3057,11 +3057,6 @@ final class Template
                 }
             }
 
-            if (preg_match("~^TY\s+-\s+[A-Z]+~", $dat)) {
-                // RIS formatted data:
-                expand_by_RIS($this, $dat, true);
-            }
-
             $doi = extract_doi($dat);
             if ($doi[1] !== '') {
                 $this->add_if_new('doi', $doi[1]);

@@ -345,7 +345,7 @@ JSON;
         $this->assertSame('Proceedings of the National Academy of Sciences of the United States of America', $template->get2('journal'));
     }
 
-    public function testJstorGoofyRIS(): void {
+    public function testJstorReportCreatorsViaCitoid(): void {
         $this->require_live_jstor_ris();
         $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
         $prepared = $this->process_citation($text);
@@ -393,7 +393,7 @@ JSON;
         $this->assertSame('10.7249/mg1078a.10', $expanded->get2('jstor'));
     }
 
-    public function testRISJstorExpansion(): void {
+    public function testJstorTemplateExpansionViaCitoid(): void {
         $this->require_live_jstor_ris();
         $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
         $page = $this->process_page($text);
