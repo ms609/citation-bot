@@ -52,7 +52,7 @@ final class zoteroTest extends testBaseClass {
             chmod($dir, 0700);
             file_put_contents($dir . '/rate.lock', 'broken-timestamp');
             $this->assertFalse($method->invoke(null, $dir));
-            file_put_contents($dir . '/rate.lock', (string) (microtime(true) + 600));
+            file_put_contents($dir . '/rate.lock', (string) (microtime(true) + 600.0));
             $this->assertFalse($method->invoke(null, $dir));
         } finally {
             @chmod($dir, 0700);
@@ -112,7 +112,11 @@ final class zoteroTest extends testBaseClass {
                 pcntl_waitpid($pid, $status);
                 $this->assertTrue(pcntl_wifexited($status) && pcntl_wexitstatus($status) === 0);
             }
-            $timestamps = array_map('floatval', file($output, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+            $lines = file($output, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            if ($lines === false) {
+                throw new RuntimeException('Citoid throttle workers did not record timestamps');
+            }
+            $timestamps = array_map('floatval', $lines);
             sort($timestamps);
             $this->assertCount(2, $timestamps);
             $this->assertGreaterThanOrEqual(0.85, $timestamps[1] - $timestamps[0]);

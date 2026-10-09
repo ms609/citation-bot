@@ -344,7 +344,7 @@ final class Zotero {
                 return false;
             }
             if ($wait > 0) {
-                usleep((int) ceil($wait * 1000000));
+                usleep((int) ceil($wait * 1000000.0));
             }
             $stamp = (string) microtime(true);
             rewind($lock);
