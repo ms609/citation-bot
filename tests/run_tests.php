@@ -17,7 +17,7 @@ $memory_limit = (getenv('GITHUB_ACTIONS') || getenv('CI')) ? '1G' : '2G';
 
 $paratest_command = PHP_BINARY . ' -d memory_limit=' . $memory_limit . ' vendor/bin/paratest'
     . ' --processes=auto --runner=WrapperRunner --enforce-time-limit'
-    . ' --default-time-limit=60000 --cache-directory=.phpunit.cache'
+    . ' --default-time-limit=1200 --cache-directory=.phpunit.cache'
     . ' --coverage-clover=coverage.xml --log-junit=junit.xml --verbose --display-skipped';
 
 // Send paratest's output to stderr, keeping stdout for the timing report
