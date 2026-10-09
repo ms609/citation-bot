@@ -501,16 +501,16 @@ final class bibcodeTest extends testBaseClass {
         $queries = [];
         $lookup = static function (string $query) use (&$queries, $title): stdClass {
             $queries[] = $query;
-            return (object) [
-                'numFound' => 1,
-                'docs' => [(object) [
-                    'bibcode' => '2020bisy.book..211G',
-                    'title' => [$title],
-                    'year' => '2020',
-                    'doctype' => 'book',
-                    'author' => ['Gandu, Bharath'],
-                ]],
-            ];
+            $response = new stdClass();
+            $response->numFound = 1;
+            $response->docs = [(object) [
+                'bibcode' => '2020bisy.book..211G',
+                'title' => [$title],
+                'year' => '2020',
+                'doctype' => 'book',
+                'author' => ['Gandu, Bharath'],
+            ]];
+            return $response;
         };
         expand_by_adsabs($template, $lookup);
         $this->assertSame('2020bisy.book..211G', $template->get2('bibcode'));
@@ -520,11 +520,15 @@ final class bibcodeTest extends testBaseClass {
 
     public function testBibcodesFindBooksRejectsAmbiguousSearch(): void {
         $template = $this->make_citation('{{cite book|title=Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview|year=2020}}');
-        $lookup = static fn (string $query): stdClass => (object) [
-            'numFound' => 2,
-            'docs' => [(object) ['title' => ['Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview'], 'bibcode' => '2020bisy.book..211G'],
-                       (object) ['title' => ['Another Book'], 'bibcode' => '2020demo.book..211G']],
-        ];
+        $lookup = static function (string $_query): stdClass {
+            $response = new stdClass();
+            $response->numFound = 2;
+            $response->docs = [
+                (object) ['title' => ['Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview'], 'bibcode' => '2020bisy.book..211G'],
+                (object) ['title' => ['Another Book'], 'bibcode' => '2020demo.book..211G'],
+            ];
+            return $response;
+        };
         expand_by_adsabs($template, $lookup);
         $this->assertNull($template->get2('bibcode'));
     }
