@@ -73,8 +73,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseded pull-request commits can be cancelled. Preserve all trusted runs.
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test-8-4:
@@ -107,7 +108,7 @@ jobs:
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
       if: ${{ github.event_name == 'pull_request' }}
-      run: composer Conglurun test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
 
     - name: Full test with PHP (trusted events)
       if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
@@ -122,11 +123,24 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: composer run test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
 
-    - name: Manually look for weird stuff
-      if: always()
-      run: /bin/cat ./DebugLog.txt
+    # Do not print DebugLog.txt: trusted runs may contain API credentials.
+    - name: Prepare safe PHP 8.4 test diagnostics
+      if: ${{ !cancelled() }}
+      shell: bash
+      run: |
+        python3 .github/scripts/ci_test_report.py --php-version 8.4
+        cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload PHP 8.4 test diagnostics
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: php-8.4-test-diagnostics
+        path: test-diagnostics/
+        if-no-files-found: warn
+        retention-days: 7
 
     - name: Code Coverage
       if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'schedule') }}
@@ -174,4 +188,21 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: composer run test
+      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
+
+    # Scheduled PHP 8.5 runs must produce diagnostics, too.
+    - name: Prepare safe PHP 8.5 test diagnostics
+      if: ${{ !cancelled() }}
+      shell: bash
+      run: |
+        python3 .github/scripts/ci_test_report.py --php-version 8.5
+        cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload PHP 8.5 test diagnostics
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: php-8.5-test-diagnostics
+        path: test-diagnostics/
+        if-no-files-found: warn
+        retention-days: 7
