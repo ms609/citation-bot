@@ -515,7 +515,7 @@ final class bibcodeTest extends testBaseClass {
         expand_by_adsabs($template, $lookup);
         $this->assertSame('2020bisy.book..211G', $template->get2('bibcode'));
         $this->assertCount(1, $queries);
-        $this->assertStringContainsString('year', $queries[0]);
+        $this->assertStringContainsString('year', implode(' ', $queries));
     }
 
     public function testBibcodesFindBooksRejectsAmbiguousSearch(): void {

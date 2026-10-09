@@ -96,7 +96,10 @@ function is_a_book_bibcode(string $id): bool {
     return ($check !== $id);
 }
 
-/** @param null|callable(string): stdClass $lookup */
+/**
+ * @param Template $template
+ * @param null|callable(string): stdClass $lookup
+ */
 function expand_by_adsabs(Template $template, ?callable $lookup = null): void {
     static $needs_told = true;
     // Offline tests inject a fixed ADS response; production uses the live service.
