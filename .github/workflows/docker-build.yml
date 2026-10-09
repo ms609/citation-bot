@@ -73,6 +73,7 @@ jobs:
       run: ./node_modules/.bin/playwright install --with-deps chromium
 
     - name: Build Docker image
+      id: build_image
       run: docker build -t citation-bot .
 
     - name: Validate compose file
@@ -119,12 +120,15 @@ jobs:
       if: always()
       run: docker compose down
 
+    # Scan the image even if later smoke tests fail, but do not scan an
+    # image that was never built. Never start expensive scans on cancellation.
     - name: Export Docker image for scanning
-      if: always()
+      id: export_image
+      if: ${{ !cancelled() && steps.build_image.outcome == 'success' }}
       run: docker save citation-bot -o citation-bot.tar
 
     - name: Run Trivy vulnerability scanner on Docker image
-      if: always()
+      if: ${{ !cancelled() && steps.export_image.outcome == 'success' }}
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
         input: citation-bot.tar
