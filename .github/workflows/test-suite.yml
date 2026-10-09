@@ -105,10 +105,13 @@ jobs:
           ${{ runner.os }}-composer-8.4-
           ${{ runner.os }}-composer-
 
+    - name: Verify test watchdog behavior
+      run: python3 -m unittest discover -s .github/scripts -p test_ci_test_watchdog.py
+
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
       if: ${{ github.event_name == 'pull_request' }}
-      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
+      run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
 
     - name: Full test with PHP (trusted events)
       if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
@@ -123,7 +126,7 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
+      run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
 
     # Do not print DebugLog.txt: trusted runs may contain API credentials.
     - name: Prepare safe PHP 8.4 test diagnostics
@@ -188,7 +191,7 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
-      run: timeout --verbose --signal=TERM --kill-after=30s 80m composer run test
+      run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
 
     # Scheduled PHP 8.5 runs must produce diagnostics, too.
     - name: Prepare safe PHP 8.5 test diagnostics
