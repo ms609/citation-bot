@@ -96,8 +96,14 @@ function is_a_book_bibcode(string $id): bool {
     return ($check !== $id);
 }
 
-function expand_by_adsabs(Template $template): void {
+/**
+ * @param Template $template
+ * @param null|callable(string): stdClass $lookup
+ */
+function expand_by_adsabs(Template $template, ?callable $lookup = null): void {
     static $needs_told = true;
+    // Offline tests inject a fixed ADS response; production uses the live service.
+    $lookup ??= static fn (string $options): stdClass => query_adsabs($options);
     set_time_limit(120);
     if ($template->has('bibcode') && $template->blank('doi')) {
         $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
@@ -161,11 +167,11 @@ function expand_by_adsabs(Template $template): void {
         ($template->has('year') || $template->has('date'));
     report_action("Checking AdsAbs database");
     if ($template->has('doi') && preg_match(REGEXP_DOI, $template->get_without_comments_and_placeholders('doi'), $doi)) {
-        $result = query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"')); // In DOI we trust
+        $result = $lookup("identifier:" . urlencode('"' . $doi[0] . '"')); // In DOI we trust
     } elseif ($template->has('eprint')) {
-        $result = query_adsabs("identifier:" . urlencode('"' . $template->get('eprint') . '"'));
+        $result = $lookup("identifier:" . urlencode('"' . $template->get('eprint') . '"'));
     } elseif ($template->has('arxiv')) {
-        $result = query_adsabs("identifier:" . urlencode('"' . $template->get('arxiv') . '"')); // @codeCoverageIgnore
+        $result = $lookup("identifier:" . urlencode('"' . $template->get('arxiv') . '"')); // @codeCoverageIgnore
     } else {
         $result = (object) ["numFound" => 0];
     }
@@ -221,7 +227,7 @@ function expand_by_adsabs(Template $template): void {
         if (!$have_more) {
             return; // A title is not enough
         }
-        $result = query_adsabs($the_query);
+        $result = $lookup($the_query);
         if ($result->numFound === 0) {
             return;
         }
@@ -253,7 +259,7 @@ function expand_by_adsabs(Template $template): void {
         if ($template->blank('volume') && !$template->year()) {
             return;
         }
-        $result = query_adsabs(
+        $result = $lookup(
         ($template->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($template->get('issn'))) .
         ($template->year() ? "&fq=year:" . urlencode($template->year()) : '') .
         ($template->has('volume') ? "&fq=volume:" . urlencode('"' . $template->get('volume') . '"') : '') .

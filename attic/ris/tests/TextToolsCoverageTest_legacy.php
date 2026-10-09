@@ -113,6 +113,16 @@ final class TextToolsCoverageTest extends testBaseClass {
         return $template;
     }
 
+    private function processRisDate(
+        string $date,
+        string $citation = '{{cite journal}}'
+    ): Template {
+        $template = $this->make_citation($citation);
+        $ris = "TY - JOUR\nY1 - " . $date . "\nER -";
+        expand_by_RIS($template, $ris, false);
+        return $template;
+    }
+
     public function testDoiDatePartsUsesIssuedYear(): void {
         $template = $this->processDoiDate([
             'issued' => ['date-parts' => [[2024, 6, 15]]],
@@ -248,4 +258,18 @@ final class TextToolsCoverageTest extends testBaseClass {
         $this->assertSame(tidy_date('1800-02-03'), $template->get2('date'));
     }
 
+    public function testRisDateUsesNormalDateTidying(): void {
+        $template = $this->processRisDate('2024-06-15');
+
+        $this->assertSame('15 June 2024', $template->get2('date'));
+    }
+
+    public function testRisDateDoesNotOverwriteExistingDate(): void {
+        $template = $this->processRisDate(
+            '2024',
+            '{{cite journal|date=1999}}'
+        );
+
+        $this->assertSame('1999', $template->get2('date'));
+    }
 }

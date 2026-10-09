@@ -29,6 +29,7 @@ on:
       - '.github/workflows/openssf-scorecard.yml'
       - '.github/workflows/zizmor.yml'
       - '.github/workflows/codespell.yml'
+      - '.github/workflows/browser-ui.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
