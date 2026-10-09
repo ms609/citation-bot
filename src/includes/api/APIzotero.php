@@ -308,6 +308,8 @@ final class Zotero {
      * Pace the shared Citoid request budget. Fail closed if shared coordination
      * is unavailable; sleeping independently would allow a worker stampede.
      * An alternate directory is accepted only by isolated regression tests.
+     *
+     * @phpstan-impure
      */
     private static function throttle_citoid_requests(?string $directory = null): bool {
         $directory ??= sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
