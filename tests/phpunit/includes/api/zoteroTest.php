@@ -26,6 +26,103 @@ final class zoteroTest extends testBaseClass {
         }
     }
 
+    /** The private production lock function is invoked with a test-only path. */
+    public function testCitoidThrottlePacesSharedState(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        try {
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertTrue($method->invoke(null, $dir));
+            $begin = microtime(true);
+            $this->assertTrue($method->invoke(null, $dir));
+            $this->assertGreaterThanOrEqual(0.85, microtime(true) - $begin);
+        } finally {
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleFailsClosedOnUnsafeDirectoryAndState(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        try {
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            chmod($dir, 0755);
+            $this->assertFalse($method->invoke(null, $dir));
+            chmod($dir, 0700);
+            file_put_contents($dir . '/rate.lock', 'broken-timestamp');
+            $this->assertFalse($method->invoke(null, $dir));
+            file_put_contents($dir . '/rate.lock', (string) (microtime(true) + 600));
+            $this->assertFalse($method->invoke(null, $dir));
+        } finally {
+            @chmod($dir, 0700);
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRejectsSymlinkedLockFile(): void {
+        if (!function_exists('symlink') || PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('Symlink support required');
+        }
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        $target = tempnam(sys_get_temp_dir(), 'citoid-throttle-target-');
+        if ($target === false) {
+            throw new RuntimeException('Unable to create Citoid test fixture');
+        }
+        try {
+            file_put_contents($target, 'unchanged');
+            if (!@symlink($target, $dir . '/rate.lock')) {
+                $this->markTestSkipped('Filesystem does not allow symlinks');
+            }
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertFalse($method->invoke(null, $dir));
+            $this->assertSame('unchanged', file_get_contents($target));
+        } finally {
+            @unlink($dir . '/rate.lock');
+            @unlink($target);
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleSerializesSeparateProcesses(): void {
+        if (!function_exists('pcntl_fork') || !function_exists('pcntl_waitpid')) {
+            $this->markTestSkipped('pcntl required for cross-process throttle test');
+        }
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        $output = $dir . '/timestamps';
+        try {
+            $pids = [];
+            for ($i = 0; $i < 2; ++$i) {
+                $pid = pcntl_fork();
+                $this->assertNotSame(-1, $pid);
+                if ($pid === 0) {
+                    $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+                    $ok = $method->invoke(null, $dir);
+                    if ($ok) {
+                        file_put_contents($output, (string) microtime(true) . "\n", FILE_APPEND | LOCK_EX);
+                    }
+                    exit($ok ? 0 : 1);
+                }
+                $pids[] = $pid;
+            }
+            foreach ($pids as $pid) {
+                pcntl_waitpid($pid, $status);
+                $this->assertTrue(pcntl_wifexited($status) && pcntl_wexitstatus($status) === 0);
+            }
+            $timestamps = array_map('floatval', file($output, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES));
+            sort($timestamps);
+            $this->assertCount(2, $timestamps);
+            $this->assertGreaterThanOrEqual(0.85, $timestamps[1] - $timestamps[0]);
+        } finally {
+            @unlink($output);
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
     public function testZoteroUrlEncodingPreservesAuthority(): void {
         $this->assertSame(
             'https%3A%2F%2Fexample-domain.test%2Fpath%2Dsegment%3Fquery%2Dkey%3Dquery%2Dvalue',

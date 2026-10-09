@@ -96,6 +96,25 @@ final class JstorTest extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
+    public function testJstorCitoidRejectsConflictingBookChapterMetadata(): void {
+        $template = $this->make_citation('{{cite book|jstor=resrep24545|title=Known Book|chapter=Existing Chapter}}');
+        $response = '[{"itemType":"bookSection","bookTitle":"Known Book","title":"Wrong Chapter","publisher":"Do Not Import"}]';
+        Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/resrep24545', 0, true, true, true);
+        $this->assertSame('Existing Chapter', $template->get2('chapter'));
+        $this->assertNull($template->get2('publisher'));
+    }
+
+    public function testJstorCitoidRejectsNonItemResponseAndPreservesOriginal(): void {
+        $template = $this->make_citation('{{cite journal|jstor=4059223|title=Original Title}}');
+        foreach (['{"type":"about:blank","title":"429 Too Many Requests"}',
+                  '[{"type":"https://example.test/problem","title":"Server Unavailable"}]',
+                  '[]'] as $response) {
+            Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/4059223', 0, true, true, true);
+            $this->assertSame('Original Title', $template->get2('title'));
+            $this->assertNull($template->get2('publisher'));
+        }
+    }
+
     public function testJstorCitoidCreatorRoles(): void {
         $template = $this->make_citation('{{cite book|jstor=resrep24545}}');
         $response = json_encode(['itemType' => 'book', 'title' => 'Example Book', 'creators' => [

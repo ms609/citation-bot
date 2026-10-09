@@ -305,39 +305,53 @@ final class Zotero {
     }
 
     /**
-     * Share Citoid's documented one-request-per-second budget between workers
-     * using the same PHP account. If locking fails, pace this worker anyway.
+     * Pace the shared Citoid request budget. Fail closed if shared coordination
+     * is unavailable; sleeping independently would allow a worker stampede.
+     * An alternate directory is accepted only by isolated regression tests.
      */
-    private static function throttle_citoid_requests(): void {
-        $directory = sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+    private static function throttle_citoid_requests(?string $directory = null): bool {
+        $directory ??= sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
         if (!is_dir($directory)) {
             @mkdir($directory, 0700);
         }
         $permissions = is_dir($directory) ? fileperms($directory) : false;
         if ($permissions === false || is_link($directory) || ($permissions & 0077) !== 0) {
-            usleep(1000000);
-            return;
+            return false;
         }
-        $lock = @fopen($directory . '/rate.lock', 'c+');
+        $lock_path = $directory . '/rate.lock';
+        if (is_link($lock_path)) {
+            return false;
+        }
+        $lock = @fopen($lock_path, 'c+');
         if ($lock === false) {
-            usleep(1000000);
-            return;
+            return false;
         }
         try {
             if (!flock($lock, LOCK_EX)) {
-                usleep(1000000);
-                return;
+                return false;
             }
-            $last_request = (float) stream_get_contents($lock);
-            $now = microtime(true);
-            $wait = $last_request + 1.0 - $now;
-            if ($wait > 0 && $wait <= 1.0) {
+            $raw = stream_get_contents($lock);
+            if ($raw === false) {
+                return false;
+            }
+            $raw = mb_trim($raw);
+            if ($raw !== '' && (!is_numeric($raw) || !is_finite((float) $raw))) {
+                return false;
+            }
+            $last = $raw === '' ? 0.0 : (float) $raw;
+            $wait = $last + 1.0 - microtime(true);
+            if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
+                return false;
+            }
+            if ($wait > 0) {
                 usleep((int) ceil($wait * 1000000));
             }
+            $stamp = (string) microtime(true);
             rewind($lock);
-            ftruncate($lock, 0);
-            fwrite($lock, (string) microtime(true));
-            fflush($lock);
+            if (!ftruncate($lock, 0) || fwrite($lock, $stamp) !== mb_strlen($stamp)) {
+                return false;
+            }
+            return fflush($lock);
         } finally {
             flock($lock, LOCK_UN);
             fclose($lock);
@@ -374,7 +388,11 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
-        self::throttle_citoid_requests();
+        if (!self::throttle_citoid_requests()) {
+            report_warning('Citoid rate-limit coordination failed; skipping unpaced request.');
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+        }
         try {
             $zotero_response = bot_curl_exec(self::$zotero_ch);
         } catch (Throwable $e) {
@@ -387,7 +405,11 @@ final class Zotero {
         if ($zotero_response === '' && self::citoid_http_success($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
-                self::throttle_citoid_requests(); // Every HTTP attempt, including retries, consumes the shared budget.
+                if (!self::throttle_citoid_requests()) {
+                    report_warning('Citoid rate-limit coordination failed on retry.');
+                    self::record_zotero_failure();
+                    return self::ERROR_DONE;
+                }
                 $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
             } catch (Throwable $e) {
                 bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
