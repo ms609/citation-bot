@@ -18,7 +18,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame($text, $expanded->parsed_text());
     }
 
-    public function testRIS(): void {
+    public function testRIS(): void {sdfs
         $text = '{{Cite journal   | TY - JOUR
 AU - Shannon, Claude E.
 PY - 1948/07//
