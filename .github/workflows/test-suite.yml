@@ -107,7 +107,7 @@ jobs:
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
       if: ${{ github.event_name == 'pull_request' }}
-      run: composer run test
+      run: composer Conglurun test
 
     - name: Full test with PHP (trusted events)
       if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
