@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript', 'actions' ]
+        language: [ 'javascript', 'python', 'actions' ]
         # PHP is intentionally omitted — CodeQL does not support it.
         # PHP SAST coverage is handled by PHPStan (level 7), Psalm (taint),
         # Phan, Progpilot, and two dependency security checkers.
