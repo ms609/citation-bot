@@ -525,7 +525,7 @@ final class Template
                     $this->rename('first', 'author1');
                 }
             }
-            // Drop invalid hhhJSTOR locators BEFORE Citoid/Zotero enrichment.
+            // Drop invalid JSTOR locators BEFORE Citoid/Zotero enrichment.
             // add_if_new() intentionally preserves non-blank existing values,
             // so late cleanup in final_tidy() cannot replace placeholders.
             // Do not alter unrelated journals (e.g. arXiv), whose invalid
