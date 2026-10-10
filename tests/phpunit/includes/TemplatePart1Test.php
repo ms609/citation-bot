@@ -401,6 +401,15 @@ JSON;
         $this->assertNull($expanded->get2('url'));
     }
 
+    public function testJstorCleanupPreservesUnrelatedJournalLocators(): void {
+        $jstor = $this->prepare_citation('{{cite journal|jstor=3073767|volume=n/a|issue=0}}');
+        $this->assertNull($jstor->get2('volume'));
+        $this->assertNull($jstor->get2('issue'));
+
+        $other = $this->prepare_citation('{{Cite journal|journal=arXiv|volume=n/a}}');
+        $this->assertSame('n/a', $other->get2('volume'));
+    }
+
     public function testDropBadData3(): void {
         $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda|pmid=<!-- -->|pmc=<!-- -->|arxiv=<!-- -->}}";
         $expanded = $this->process_citation($text);
