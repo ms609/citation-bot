@@ -309,6 +309,8 @@ final class Zotero {
      * This detects symlink swaps and inode replacement before each check.
      *
      * @param resource $handle
+     * Filesystem state can change between calls (inode replacement).
+     * @phpstan-impure
      */
     private static function citoid_lock_file_matches_path($handle, string $path): bool {
         $open_file = @fstat($handle);
@@ -412,7 +414,7 @@ final class Zotero {
             }
             $stamp = (string) microtime(true);
             rewind($lock);
-            if (!ftruncate($lock, 0) || fwrite($lock, $stamp) !== strlen($stamp)) {
+            if (!ftruncate($lock, 0) || fwrite($lock, $stamp) !== mb_strlen($stamp)) {
                 return false;
             }
             return fflush($lock);
