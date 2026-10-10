@@ -32,6 +32,7 @@ on:
       - '.github/workflows/zizmor.yml'
       - '.github/workflows/codespell.yml'
       - '.github/workflows/browser-ui.yml'
+      - '.github/workflows/python-lint.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
@@ -69,6 +70,7 @@ on:
       - '.lycheeignore'
       - '.github/workflows/cs1-harness.yml'
       - '.codespellrc'
+      - 'ruff.toml'
 
   schedule:
     - cron: '30 18 * * 1'

@@ -1,0 +1,43 @@
+name: Python lint (Ruff)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/scripts/**/*.py'
+      - '.github/workflows/python-lint.yml'
+      - 'ruff.toml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/scripts/**/*.py'
+      - '.github/workflows/python-lint.yml'
+      - 'ruff.toml'
+  schedule:
+    - cron: '15 17 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ruff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint Python
+        uses: astral-sh/ruff-action@278981a28ce3188b1e39527901f38254bf3aac89 # v4.1.0
+        with:
+          version: '0.16.10'
+          src: '.github/scripts'
+          args: 'check --output-format=github'
+
+      # Report any pre-existing formatting drift before making it a hard gate.
+      - name: Audit Python formatting (advisory)
+        continue-on-error: true
+        run: ruff format --check .github/scripts
