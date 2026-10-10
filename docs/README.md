@@ -32,7 +32,6 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎)
 
-
 ## GitHub repository details
 
 - The **master** branch is the repository's default branch and is intended for public production use at <https://citations.toolforge.org/>.
