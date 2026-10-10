@@ -1,0 +1,5 @@
+# The test image deliberately upgrades OS packages and installs distributions'
+# latest security-patched packages rather than pinning vulnerable patch builds.
+ignored:
+  - DL3005 # apt-get upgrade is intentional for the CI-only image
+  - DL3008 # apt package versions are intentionally not pinned
