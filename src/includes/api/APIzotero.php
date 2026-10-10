@@ -305,41 +305,123 @@ final class Zotero {
     }
 
     /**
-     * Share Citoid's documented one-request-per-second budget between workers
-     * using the same PHP account. If locking fails, pace this worker anyway.
+     * Check that the locked descriptor is still the intended private regular file.
+     * This detects symlink swaps and inode replacement before each check.
+     *
+     * @param resource $handle
+     * Filesystem state can change between calls (inode replacement).
+     * @phpstan-impure
      */
-    private static function throttle_citoid_requests(): void {
-        $directory = sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+    private static function citoid_lock_file_matches_path($handle, string $path): bool {
+        $open_file = @fstat($handle);
+        clearstatcache(true, $path);
+        $named_file = @lstat($path);
+        if ($open_file === false || $named_file === false) {
+            return false;
+        }
+        if (($open_file['mode'] & 0170000) !== 0100000 ||
+            ($named_file['mode'] & 0170000) !== 0100000 ||
+            $open_file['nlink'] !== 1 ||
+            $open_file['dev'] !== $named_file['dev'] ||
+            $open_file['ino'] !== $named_file['ino']) {
+            return false;
+        }
+        return !function_exists('posix_geteuid') || $open_file['uid'] === posix_geteuid();
+    }
+
+    /**
+     * Pace the Citoid request budget, failing closed if coordination is unsafe.
+     * CITOID_RATE_LIMIT_DIR must refer to the SAME flock-capable filesystem on
+     * every replica; a private sys_get_temp_dir() works only for one instance.
+     * The optional directory/timeout arguments are for isolated regression tests.
+     *
+     * @phpstan-impure
+     */
+    private static function throttle_citoid_requests(
+        ?string $directory = null,
+        ?float $lock_timeout_seconds = null
+    ): bool {
+        $configured = getenv('CITOID_RATE_LIMIT_DIR');
+        if ($directory === null && ($configured === false || $configured === '') &&
+            getenv('KUBERNETES_SERVICE_HOST') !== false) {
+            // Separate pod /tmp volumes cannot enforce a cluster-wide budget.
+            return false;
+        }
+        $directory ??= ($configured !== false && $configured !== '')
+            ? $configured : sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+        // Use an absolute path, never a caller-relative lock namespace.
+        if ($directory === '' || $directory[0] !== '/') {
+            return false;
+        }
+        $timeout = $lock_timeout_seconds ?? 15.0;
+        if (!is_finite($timeout) || $timeout < 0.0 || $timeout > 60.0) {
+            return false;
+        }
         if (!is_dir($directory)) {
             @mkdir($directory, 0700);
         }
-        $permissions = is_dir($directory) ? fileperms($directory) : false;
-        if ($permissions === false || is_link($directory) || ($permissions & 0077) !== 0) {
-            usleep(1000000);
-            return;
+        clearstatcache(true, $directory);
+        $dir_stat = @lstat($directory);
+        if ($dir_stat === false || ($dir_stat['mode'] & 0170000) !== 0040000 ||
+            ($dir_stat['mode'] & 0077) !== 0 ||
+            (function_exists('posix_geteuid') && $dir_stat['uid'] !== posix_geteuid())) {
+            return false;
         }
-        $lock = @fopen($directory . '/rate.lock', 'c+');
+        $lock_path = $directory . '/rate.lock';
+        if (is_link($lock_path)) {
+            return false;
+        }
+        $lock = @fopen($lock_path, 'c+');
         if ($lock === false) {
-            usleep(1000000);
-            return;
+            return false;
         }
+        $locked = false;
         try {
-            if (!flock($lock, LOCK_EX)) {
-                usleep(1000000);
-                return;
+            // A blocking flock can hang an entire PHP/ParaTest worker. Bound
+            // acquisition using a monotonic timer, not the adjustable wall clock.
+            $deadline = hrtime(true) + (int) ceil($timeout * 1000000000.0);
+            do {
+                if (@flock($lock, LOCK_EX | LOCK_NB)) {
+                    $locked = true;
+                    break;
+                }
+                if (hrtime(true) >= $deadline) {
+                    return false;
+                }
+                usleep(50000);
+            } while (true);
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                return false;
             }
-            $last_request = (float) stream_get_contents($lock);
-            $now = microtime(true);
-            $wait = $last_request + 1.0 - $now;
-            if ($wait > 0 && $wait <= 1.0) {
-                usleep((int) ceil($wait * 1000000));
+            $raw = stream_get_contents($lock);
+            if ($raw === false) {
+                return false;
             }
+            $raw = mb_trim($raw);
+            if ($raw !== '' && (!is_numeric($raw) || !is_finite((float) $raw))) {
+                return false;
+            }
+            $last = $raw === '' ? 0.0 : (float) $raw;
+            $wait = $last + 1.0 - microtime(true);
+            if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
+                return false;
+            }
+            if ($wait > 0) {
+                usleep((int) ceil($wait * 1000000.0));
+            }
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                return false;
+            }
+            $stamp = (string) microtime(true);
             rewind($lock);
-            ftruncate($lock, 0);
-            fwrite($lock, (string) microtime(true));
-            fflush($lock);
+            if (!ftruncate($lock, 0) || fwrite($lock, $stamp) !== mb_strlen($stamp)) {
+                return false;
+            }
+            return fflush($lock);
         } finally {
-            flock($lock, LOCK_UN);
+            if ($locked) {
+                flock($lock, LOCK_UN);
+            }
             fclose($lock);
         }
     }
@@ -374,7 +456,11 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
-        self::throttle_citoid_requests();
+        if (!self::throttle_citoid_requests()) {
+            report_warning('Citoid rate-limit coordination failed; skipping unpaced request.');
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+        }
         try {
             $zotero_response = bot_curl_exec(self::$zotero_ch);
         } catch (Throwable $e) {
@@ -387,7 +473,11 @@ final class Zotero {
         if ($zotero_response === '' && self::citoid_http_success($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
-                self::throttle_citoid_requests(); // Every HTTP attempt, including retries, consumes the shared budget.
+                if (!self::throttle_citoid_requests()) {
+                    report_warning('Citoid rate-limit coordination failed on retry.');
+                    self::record_zotero_failure();
+                    return self::ERROR_DONE;
+                }
                 $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
             } catch (Throwable $e) {
                 bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
