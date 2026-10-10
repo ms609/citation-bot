@@ -30,7 +30,7 @@ on:
       - '.github/workflows/zizmor.yml'
       - '.github/workflows/codespell.yml'
       - '.github/workflows/browser-ui.yml'
-      - '.github/workflows/python-lint.yml'‎
+      - '.github/workflows/python-lint.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'
