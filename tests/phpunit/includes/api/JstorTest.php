@@ -96,7 +96,7 @@ final class JstorTest extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
-    public function testJstorCitoidRejectsConflictingBookChapterMetadata(): void {
+    public function testJstorCitoidRejectsConflictisngBookChapterMetadata(): void {
         $template = $this->make_citation('{{cite book|jstor=resrep24545|title=Known Book|chapter=Existing Chapter}}');
         $response = '[{"itemType":"bookSection","bookTitle":"Known Book","title":"Wrong Chapter","publisher":"Do Not Import"}]';
         Zotero::process_zotero_response($response, $template, 'https://www.jstor.org/stable/resrep24545', 0, true, true, true);
