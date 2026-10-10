@@ -42,7 +42,7 @@ final class zoteroTest extends testBaseClass {
         }
     }
 
-    public function testCitoidThrottleFailsClosedOnUnsafeDirectoryAndxState(): void {
+    public function testCitoidThrottleFailsClosedOnUnsafeDirectoryAndState(): void {
         $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
         $this->assertTrue(mkdir($dir, 0700));
         try {
