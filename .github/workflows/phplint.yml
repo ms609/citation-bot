@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
       - '**/*.php'
+      - 'env.php.example'
       - '.phplint.yml'
       - 'composer.json'
       - 'composer.lock'
@@ -14,6 +15,7 @@ on:
     branches: [ master ]
     paths:
       - '**/*.php'
+      - 'env.php.example'
       - '.phplint.yml'
       - 'composer.json'
       - 'composer.lock'
@@ -47,3 +49,7 @@ jobs:
 
     - name: PHP Lint test
       run: composer run phplint
+
+    # The executable example file is not matched by the .php extension filter.
+    - name: Validate PHP example configuration
+      run: php -l env.php.example

@@ -1,0 +1,61 @@
+name: Dockerfile and configuration checks
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.hadolint.yaml'
+      - '.phpcs.xml'
+      - 'psalm.xml'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/config-lint.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.hadolint.yaml'
+      - '.phpcs.xml'
+      - 'psalm.xml'
+      - 'phpunit.xml.dist'
+      - '.github/workflows/config-lint.yml'
+  schedule:
+    - cron: '25 17 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dockerfile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Hadolint Dockerfile
+        uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+
+  configurations:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check XML configuration well-formedness
+        run: |
+          python3 - <<'PY'
+          from xml.etree import ElementTree
+          for name in ('.phpcs.xml', 'psalm.xml', 'phpunit.xml.dist'):
+              ElementTree.parse(name)
+              print(f'{name}: valid XML')
+          PY
+      - name: Validate Docker Compose schema and references
+        run: docker compose config --quiet

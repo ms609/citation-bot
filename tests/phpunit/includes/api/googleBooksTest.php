@@ -107,10 +107,34 @@ final class googleBooksTest extends testBaseClass {
     }
 
     public function testGoogleBooksExpansionA2(): void {
+        // Verify HTML-entity URL normalization without depending on a live
+        // Google Books feed. testGoogleBooksExpansion() keeps the live check.
         $text = "{{Cite web | http://books.google.com/books?id&#61;SjpSkzjIzfsC&redir_esc&#61;y}}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame('cite book', $expanded->wikiname());
+        $expanded = $this->prepare_citation($text);
+        clean_google_books($expanded);
         $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksDetailsFromFixture(): void {
+        // Representative Atom/Google Books feed fields. This is a synthetic
+        // fixture: it tests enrichment, not current Google Books availability.
+        $response = <<<'XML'
+<entry xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title>Wonderful Life: The Burgess Shale and the Nature of History</title>
+  <dc:identifier>ISBN 978-0-393-30700-9</dc:identifier>
+  <dc:creator>Stephen Jay Gould</dc:creator>
+  <dc:date>1989</dc:date>
+</entry>
+XML;
+        $template = $this->make_citation('{{cite web|url=https://books.google.com/books?id=SjpSkzjIzfsC}}');
+        apply_google_book_details($template, $response);
+
+        $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $template->get2('title'));
+        $this->assertSame('978-0-393-30700-9', $template->get2('isbn'));
+        $this->assertSame('Gould', $template->get2('last1'));
+        $this->assertSame('Stephen Jay', $template->get2('first1'));
+        $this->assertSame('1989', $template->get2('date'));
+        $this->assertNull($template->get2('pages'));
     }
 
     public function testGoogleBooksExpansion2(): void {
