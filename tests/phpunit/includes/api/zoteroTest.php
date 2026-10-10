@@ -174,7 +174,7 @@ final class zoteroTest extends testBaseClass {
                 $logs[] = $log;
                 // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed-argument test subprocess.
                 $process = @proc_open(
-                    [PHP_BINARY, __DIR__ . '/citoidThrottleWorker.php', $dir, $output],
+                    [PHP_BINARY, dirname(__DIR__, 3) . '/fixtures/citoidThrottleWorker.php', $dir, $output],
                     [
                         0 => ['file', '/dev/null', 'r'],
                         1 => ['file', '/dev/null', 'w'],
