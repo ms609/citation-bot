@@ -360,6 +360,9 @@ final class TemplatePart1Test extends testBaseClass {
         // the same JSTOR article through the live service.
         $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2005}}";
         $expanded = $this->prepare_citation($text);
+        // Sanitization must precede the "add if new" metadata mapping.
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
         $response = <<<'JSON'
 [{
   "itemType": "journalArticle",
@@ -384,7 +387,8 @@ JSON;
             true,
             true
         );
-        $expanded->tidy();
+        // Match Page::expand_text(): final cleanup follows API enrichment.
+        $expanded->final_tidy();
 
         $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
         $this->assertSame('99', $expanded->get2('volume'));

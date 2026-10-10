@@ -525,6 +525,17 @@ final class Template
                     $this->rename('first', 'author1');
                 }
             }
+            // Drop invalid journal locators BEFORE Citoid/Zotero enrichment.
+            // add_if_new() intentionally preserves non-blank existing values,
+            // so late cleanup in final_tidy() cannot replace placeholders.
+            if ($this->wikiname() === 'cite journal') {
+                if (str_i_same('n/a', mb_trim($this->get('volume')))) {
+                    $this->forget('volume');
+                }
+                if (mb_trim($this->get('issue')) === '0') {
+                    $this->forget('issue');
+                }
+            }
         }
         // Also check templates that the cleanup block above does not cover
         $this->prepare_cookie_absent_citation();
