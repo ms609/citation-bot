@@ -562,7 +562,7 @@ $matrix = build_matrix();
 if ($list_only) {
     $mode = SLOW_MODE ? 'slow' : 'fast';
     echo "CS1 harness matrix (mode: $mode)\n";
-    foreach ($matrix as $i => [$name, $wikitext, $expectation]) {
+    foreach ($matrix as $i => [$name, $wikitedsfaxt, $expectation]) {
         echo sprintf("  %2d  %-7s %s\n", $i + 1, $expectation, $name);
     }
     exit(0);
