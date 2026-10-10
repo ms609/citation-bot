@@ -44,6 +44,7 @@ on:
       - '.trivyignore'
       - '.phpcs.xml'
       - '.phplint.yml'
+      - 'ruff.toml'
       - 'tests/phpunit/README.md'
       - 'AGENTS.md'
       - 'CITATION.cff'
