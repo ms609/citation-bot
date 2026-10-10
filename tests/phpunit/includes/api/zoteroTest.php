@@ -86,6 +86,76 @@ final class zoteroTest extends testBaseClass {
         }
     }
 
+    public function testCitoidThrottleLockAcquisitionHasDeadline(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        $holder = fopen($dir . '/rate.lock', 'c+');
+        if ($holder === false) {
+            throw new RuntimeException('Unable to create test lock file');
+        }
+        try {
+            $this->assertTrue(flock($holder, LOCK_EX | LOCK_NB));
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $begin = microtime(true);
+            $this->assertFalse($method->invoke(null, $dir, 0.2));
+            $this->assertLessThan(2.0, microtime(true) - $begin);
+        } finally {
+            flock($holder, LOCK_UN);
+            fclose($holder);
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRejectsReplacedLockInode(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        $path = $dir . '/rate.lock';
+        $holder = fopen($path, 'c+');
+        if ($holder === false) {
+            throw new RuntimeException('Unable to create test lock file');
+        }
+        try {
+            $check = new ReflectionMethod(Zotero::class, 'citoid_lock_file_matches_path');
+            $this->assertTrue($check->invoke(null, $holder, $path));
+            $this->assertTrue(rename($path, $path . '.old'));
+            $this->assertNotFalse(file_put_contents($path, ''));
+            $this->assertFalse($check->invoke(null, $holder, $path));
+        } finally {
+            fclose($holder);
+            @unlink($path . '.old');
+            @unlink($path);
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRejectsRelativeDirectory(): void {
+        $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+        $this->assertFalse($method->invoke(null, 'citation-bot-relative-lock-test', 0.0));
+    }
+
+    public function testCitoidThrottleRejectsUnconfiguredKubernetesNamespace(): void {
+        $original_kube = getenv('KUBERNETES_SERVICE_HOST');
+        $original_dir = getenv('CITOID_RATE_LIMIT_DIR');
+        try {
+            putenv('KUBERNETES_SERVICE_HOST=cluster.internal');
+            putenv('CITOID_RATE_LIMIT_DIR');
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertFalse($method->invoke(null));
+        } finally {
+            if ($original_kube === false) {
+                putenv('KUBERNETES_SERVICE_HOST');
+            } else {
+                putenv('KUBERNETES_SERVICE_HOST=' . $original_kube);
+            }
+            if ($original_dir === false) {
+                putenv('CITOID_RATE_LIMIT_DIR');
+            } else {
+                putenv('CITOID_RATE_LIMIT_DIR=' . $original_dir);
+            }
+        }
+    }
+
     public function testCitoidThrottleSerializesSeparateProcesses(): void {
         if (!function_exists('pcntl_fork') || !function_exists('pcntl_waitpid') || !function_exists('posix_kill')) {
             $this->markTestSkipped('pcntl required for cross-process throttle test');
