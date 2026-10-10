@@ -31,6 +31,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎)
 
 ## GitHub repository details
 
