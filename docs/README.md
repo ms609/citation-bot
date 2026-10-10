@@ -29,6 +29,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
 
 ## GitHub repository details
