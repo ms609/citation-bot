@@ -44,7 +44,6 @@ on:
       - '.trivyignore'
       - '.phpcs.xml'
       - '.phplint.yml'
-      - 'ruff.toml'
       - 'tests/phpunit/README.md'
       - 'AGENTS.md'
       - 'CITATION.cff'
@@ -67,6 +66,7 @@ on:
       - '.lycheeignore'
       - '.github/workflows/cs1-harness.yml'
       - '.codespellrc'
+      - 'ruff.toml'
 
   schedule:
     - cron: '30 18 * * 1'
