@@ -165,7 +165,8 @@ function expand_citation(string $wikitext): array {
     $page->parse_text($wikitext);
     $page->expand_text();
     $templates = [];
-    foreach ($page->extract_object(Template::class) as $template) {
+    foreach ($page->extract_object('Template') as $template) {
+        assert(get_class($template) === Template::class, 'Non-Template returned');  // Make static tools happy
         /** @var Template $template */
         $wikiname = $template->wikiname();
         if (mb_strpos($wikiname, 'cite ') === 0 || $wikiname === 'citation') {
