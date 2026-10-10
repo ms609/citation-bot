@@ -38,6 +38,7 @@
     </rule>
     <file>./src</file>
     <file>./tests</file>
+    <file>./tools</file>
 	<arg name="bootstrap" value="./vendor/mediawiki/mediawiki-codesniffer/utils/bootstrap-ci.php"/>
 	<arg name="extensions" value="php"/>
 	<arg name="encoding" value="UTF-8"/>
