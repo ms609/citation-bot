@@ -175,7 +175,10 @@ function expand_citation(string $wikitext): array {
     return $templates;
 }
 
-/** @param list<string> $names */
+/**
+ * @param Template $template
+ * @param list<string> $names
+ */
 function has_any(Template $template, array $names): bool {
     foreach ($names as $name) {
         if ($template->has($name)) {
