@@ -157,72 +157,71 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testCitoidThrottleSerializesSeparateProcesses(): void {
-        if (!function_exists('pcntl_fork') || !function_exists('pcntl_waitpid') || !function_exists('posix_kill')) {
-            $this->markTestSkipped('pcntl required for cross-process throttle test');
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('proc_get_status') || !function_exists('proc_terminate')) {
+            $this->markTestSkipped('POSIX PHP subprocesses required for cross-process throttle test');
         }
         $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
         $this->assertTrue(mkdir($dir, 0700));
         $output = $dir . '/timestamps';
+        $processes = [];
+        $logs = [];
         try {
-            $pids = [];
+            // Forking an active PHPUnit/ParaTest worker inherits its PHP state,
+            // signal handlers and open connections. Start fresh interpreters.
             for ($i = 0; $i < 2; ++$i) {
-                $pid = pcntl_fork();
-                $this->assertNotSame(-1, $pid);
-                if ($pid === 0) {
-                    $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
-                    $ok = $method->invoke(null, $dir);
-                    if ($ok) {
-                        file_put_contents($output, (string) microtime(true) . "\n", FILE_APPEND | LOCK_EX);
-                    }
-                    exit($ok ? 0 : 1);
-                }
-                $pids[] = $pid;
+                $log = $dir . '/worker-' . $i . '.stderr';
+                $logs[] = $log;
+                $process = @proc_open(
+                    [PHP_BINARY, __DIR__ . '/citoidThrottleWorker.php', $dir, $output],
+                    [
+                        0 => ['file', '/dev/null', 'r'],
+                        1 => ['file', '/dev/null', 'w'],
+                        2 => ['file', $log, 'w'],
+                    ],
+                    $pipes
+                );
+                $this->assertTrue(is_resource($process), 'Unable to start Citoid throttle worker');
+                $processes[] = $process;
             }
-            // A hung child must fail promptly, not hold the entire ParaTest run
-            // until the GitHub Actions 90-minute timeout.
-            $statuses = [];
-            $remaining = $pids;
+
+            $remaining = array_keys($processes);
+            $exit_codes = [];
             $deadline = microtime(true) + 15.0;
             while ($remaining && microtime(true) < $deadline) {
-                foreach ($remaining as $key => $pid) {
-                    $waited = pcntl_waitpid($pid, $status, WNOHANG);
-                    if ($waited === $pid) {
-                        $statuses[$pid] = $status;
-                        unset($remaining[$key]);
-                    } elseif ($waited === -1) {
-                        // PHPUnit/ParaTest can install a SIGCHLD handler that
-                        // reaps the child first. A successful child records its
-                        // timestamp independently; verify that below instead.
+                foreach ($remaining as $key => $index) {
+                    $status = proc_get_status($processes[$index]);
+                    if (!$status['running']) {
+                        $exit_codes[$index] = $status['exitcode'];
                         unset($remaining[$key]);
                     }
                 }
                 if ($remaining) {
-                    usleep(100000);
+                    usleep(50000);
                 }
             }
-            foreach ($remaining as $pid) {
-                @posix_kill($pid, SIGKILL);
-                pcntl_waitpid($pid, $status);
-            }
-            $this->assertSame([], array_values($remaining), 'Citoid throttle worker timed out');
-            // Only inspect exit codes that we actually reaped ourselves.
-            // In particular, waitpid() returning -1 does not mean the worker
-            // failed: a SIGCHLD handler may already have reaped that process.
-            foreach ($statuses as $status) {
-                $this->assertTrue(pcntl_wifexited($status) && pcntl_wexitstatus($status) === 0);
-            }
+            $this->assertSame([], array_values($remaining), 'Citoid throttle subprocess timed out');
+            $this->assertSame([0, 0], array_values($exit_codes), 'Citoid throttle subprocess failed');
+
             $lines = file($output, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
             if ($lines === false) {
                 throw new RuntimeException('Citoid throttle workers did not record timestamps');
             }
             $timestamps = array_map('floatval', $lines);
             sort($timestamps);
-            // A line is written only after the throttle succeeds; requiring
-            // two distinct, serialized timestamps protects the core assertion
-            // even if exit statuses were reaped by an external handler.
             $this->assertCount(2, $timestamps, 'Both Citoid workers must complete successfully');
             $this->assertGreaterThanOrEqual(0.85, $timestamps[1] - $timestamps[0]);
         } finally {
+            // Even a stalled worker must not keep the test runner alive.
+            foreach ($processes as $process) {
+                if (proc_get_status($process)['running']) {
+                    @proc_terminate($process, 9);
+                }
+                proc_close($process);
+            }
+            foreach ($logs as $log) {
+                @unlink($log);
+            }
             @unlink($output);
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
