@@ -9,6 +9,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm-security.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/psalm.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml)
@@ -29,7 +30,9 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/YamlJson.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/html5check.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/codespell.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/config-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml‎)
 
 ## GitHub repository details
 

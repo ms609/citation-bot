@@ -112,6 +112,11 @@ jobs:
 
       - name: Build and validate UI coverage reports
         if: ${{ success() }}
+        env:
+          # Baseline (2026-10-09): lines 94.7%, functions 100%, branches 58.6%.
+          UI_JS_MIN_LINES: '90'
+          UI_JS_MIN_FUNCTIONS: '90'
+          UI_JS_MIN_BRANCHES: '50'
         run: |
           npm run coverage:ui
           cat coverage/summary.md >> "$GITHUB_STEP_SUMMARY"

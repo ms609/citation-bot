@@ -166,6 +166,7 @@ function expand_citation(string $wikitext): array {
     $page->expand_text();
     $templates = [];
     foreach ($page->extract_object('Template') as $template) {
+        /** @var Template $template */
         $wikiname = $template->wikiname();
         if (mb_strpos($wikiname, 'cite ') === 0 || $wikiname === 'citation') {
             $templates[] = $template;
@@ -174,6 +175,7 @@ function expand_citation(string $wikitext): array {
     return $templates;
 }
 
+/** @param list<string> $names */
 function has_any(Template $template, array $names): bool {
     foreach ($names as $name) {
         if ($template->has($name)) {
@@ -562,7 +564,7 @@ $matrix = build_matrix();
 if ($list_only) {
     $mode = SLOW_MODE ? 'slow' : 'fast';
     echo "CS1 harness matrix (mode: $mode)\n";
-    foreach ($matrix as $i => [$name, $wikitext, $expectation]) {
+    foreach ($matrix as $i => [$name, $_wikitext, $expectation]) {
         echo sprintf("  %2d  %-7s %s\n", $i + 1, $expectation, $name);
     }
     exit(0);
