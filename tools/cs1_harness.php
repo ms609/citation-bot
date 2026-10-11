@@ -96,6 +96,16 @@ const NON_PERIODICAL_TEMPLATES = [
     'cite document', 'cite citeseerx', 'cite ssrn', 'cite report', 'cite press release',
 ];
 
+// CS1 templates that ignore |chapter= (and its contribution/article/entry/
+// section aliases): cite web, cite news, cite journal, cite magazine, cite
+// press release, cite podcast, cite newsgroup, and {{citation}} with work.
+const CHAPTER_IGNORING_TEMPLATES = [
+    'cite web', 'cite news', 'cite newspaper', 'cite journal', 'cite magazine',
+    'cite periodical', 'cite press release', 'cite podcast', 'cite newsgroup',
+];
+
+const CHAPTER_PARAMS = ['chapter', 'contribution', 'article', 'entry', 'section'];
+
 // CS1 periodical templates that report "periodical has ISBN" for any ISBN.
 const PERIODICAL_TEMPLATES = ['cite web', 'cite journal', 'cite magazine', 'cite news'];
 
@@ -262,6 +272,20 @@ function check_citation(Template $template): array {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
 
+    // R21: chapter parameters are ignored in templates without chapters.
+    // {{citation}} counts when it uses |work= or any of its aliases.
+    $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
+    if (!$chapter_ignored && $name === 'citation') {
+        $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
+    }
+    if ($chapter_ignored) {
+        foreach (CHAPTER_PARAMS as $param) {
+            if ($template->has($param)) {
+                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
+            }
+        }
+    }
+
     // R10: identifier templates require their identifier.
     if ($name === 'cite arxiv' && !$template->has('arxiv') && !$template->has('eprint')) {
         $violations[] = 'arxiv-required: CS1 "|arxiv= required"';
@@ -385,18 +409,18 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R21: ISBN belongs to books, not to CS1 periodical templates.
+    // R22: ISBN belongs to books, not to CS1 periodical templates.
     if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
         $violations[] = 'isbn-in-periodical: CS1 "periodical has ISBN"';
     }
 
-    // R22: all-numeric ASIN values are rejected by CS1.
+    // R23: all-numeric ASIN values are rejected by CS1.
     $asin = $template->get_without_comments_and_placeholders('asin');
     if ($asin !== '' && preg_match('~^\d~', $asin) === 1) {
         $violations[] = 'asin-numeric: CS1 "Check |asin= value"';
     }
 
-    // R23: IAU Circular/CBET have issues, not volumes; article numbers belong in page/pages.
+    // R24: IAU Circular/CBET have issues, not volumes; article numbers belong in page/pages.
     $work_name = '';
     foreach (['journal', 'series', 'periodical', 'work'] as $work_param) {
         if ($template->has($work_param)) {
@@ -518,6 +542,11 @@ function build_matrix(): array {
         ['Orphaned trans-chapter removed', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'pass'],
         ['Orphaned trans-entry removed', '{{cite journal |title=X |journal=J |trans-entry=Y}}', 'pass'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
+        ['GAP news chapter left as-is', '{{cite news |newspaper=N |date=2020 |chapter=C}}', 'gap'],
+        ['GAP magazine chapter left as-is', '{{cite magazine |magazine=M |date=2020 |chapter=C}}', 'gap'],
+        ['GAP news chapter left as-is with title', '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C}}', 'gap'],
+        ['GAP news chapter kept with newspaper', '{{cite news |title=T |newspaper=N |date=2020 |chapter=C}}', 'gap'],
+        ['GAP citation work chapter left as-is', '{{citation |title=T |work=W |date=2020 |chapter=C}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'pass'],
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'pass'],
         ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],

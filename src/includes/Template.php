@@ -1771,6 +1771,14 @@ final class Template
                 if ($this->has('contribution') || $this->has('contribution-url')) {
                     return false;
                 }
+                // cite news/magazine (& kin) ignore |chapter= and have no
+                // downstream repair path, so refuse the add outright rather
+                // than create the error.  (wikiname() already canonicalizes
+                // newspaper to news and periodical to magazine.)
+                if (in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true)) {
+                    report_inaction("Not adding chapter to " . $this->wikiname() . " (ignored there)");
+                    return false;
+                }
                 // Adding a chapter immediately triggers tidy_parameter('chapter').
                 // Do not create a book-only field on an ambiguous cite web when
                 // that follow-up conversion would be unsafe.
