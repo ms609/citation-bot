@@ -70,12 +70,26 @@ The unit tests cover configuration selection, timeout, symlink and inode
 substitution, but do not prove correct multi-replica behavior. Validate
 shared-fs locking on the real deployment before merging or scaling out.
 
-State publication is crash-consistent across normal exit, SIGTERM, SIGKILL,
-SIGHUP termination, and SIGSEGV, provided the filesystem supplies atomic
-same-directory rename and working flock semantics. The permanent `rate.lock`
+Process termination during a pending write cannot expose a partial published
+record when the filesystem supplies atomic same-directory rename and working
+flock semantics. Host crash / power-loss durability additionally requires
+successful synchronization of the file **and its containing directory**.
+The PHP worker must be able to open the private directory and `fsync()` its
+file descriptor; unsupported or unsuccessful directory fsync fails closed.
+After rename but before directory sync, a record may be visible even though
+admission returns failure. Do not attempt to roll it back: later readers must
+continue to honor that visible state. The deployment filesystem must guarantee
+atomic rename, durable directory sync, and correct cross-host `flock` semantics.
+Test those guarantees on the actual mount; local CI does not prove them.
+The permanent `rate.lock`
 inode is only the mutex: newer workers read a checksummed `rate.state` which
-is published by creating, flushing and syncing a unique temporary file, then
-renaming it while holding the mutex. A terminated writer can leave an ignored
+is published by creating a unique temporary file, checking complete writes,
+flushing, syncing and closing the file, then renaming and syncing the containing
+directory while holding the mutex. The code checks lock and directory inode
+identity before publication and after directory synchronization. These
+pathname checks cannot eliminate every race against a malicious actor who can
+rename directory entries; keep the lock directory and its parents protected.
+A terminated writer can leave an ignored
 `rate.pending.*` file but cannot expose a partially written published timestamp.
 When `rate.state` is absent, the old timestamp inside `rate.lock` is checked
 for valid legacy syntax, but **always** triggers a full one-second cooldown.

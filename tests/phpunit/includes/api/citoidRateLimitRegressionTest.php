@@ -213,4 +213,67 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $this->assertSame([], self::pendingFiles($directory));
         $this->assertTrue(self::admit($directory), 'The original committed state must remain usable');
     }
+
+    /** A replaced directory pathname must not validate an older open descriptor. */
+    public function testCitoidDirectoryDescriptorDetectsReplacement(): void {
+        $directory = $this->freshDirectory();
+        $handle = fopen($directory, 'rb');
+        $this->assertNotFalse($handle);
+        $check = new ReflectionMethod(Zotero::class, 'citoid_directory_matches_path');
+        try {
+            $this->assertTrue($check->invoke(null, $handle, $directory));
+            $this->assertTrue(rename($directory, $directory . '.moved'));
+            $this->assertTrue(mkdir($directory, 0700));
+            $this->assertFalse($check->invoke(null, $handle, $directory));
+        } finally {
+            fclose($handle);
+            @rmdir($directory);
+            @rename($directory . '.moved', $directory);
+        }
+    }
+
+    /** Exercise the publication function, not merely the earlier state reader. */
+    public function testCitoidCommitRejectsNonRegularPublishedTarget(): void {
+        $directory = $this->freshDirectory();
+        $lock_path = $directory . '/rate.lock';
+        $this->assertSame(0, file_put_contents($lock_path, ''));
+        $this->assertTrue(mkdir($directory . '/rate.state', 0700));
+        $handle = fopen($lock_path, 'c+');
+        $this->assertNotFalse($handle);
+        try {
+            $this->assertTrue(flock($handle, LOCK_EX | LOCK_NB));
+            $commit = new ReflectionMethod(Zotero::class, 'citoid_commit_state');
+            $this->assertFalse($commit->invoke(null, $handle, $lock_path, $directory));
+            $this->assertDirectoryExists($directory . '/rate.state');
+            $this->assertSame([], self::pendingFiles($directory));
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+        }
+    }
+
+    public function testCitoidCommitDoesNotReplaceSymlinkedPublishedState(): void {
+        if (!function_exists('symlink') || PHP_OS_FAMILY === 'Windows') {
+            $this->markTestSkipped('POSIX symlinks required');
+        }
+        $directory = $this->freshDirectory();
+        $target = $directory . '/unrelated';
+        $this->assertSame(8, file_put_contents($target, 'outside!'));
+        $this->assertTrue(symlink($target, $directory . '/rate.state'));
+        $lock_path = $directory . '/rate.lock';
+        $handle = fopen($lock_path, 'c+');
+        $this->assertNotFalse($handle);
+        try {
+            $this->assertTrue(flock($handle, LOCK_EX | LOCK_NB));
+            $commit = new ReflectionMethod(Zotero::class, 'citoid_commit_state');
+            $this->assertFalse($commit->invoke(null, $handle, $lock_path, $directory));
+            $this->assertSame('outside!', file_get_contents($target));
+            $this->assertTrue(is_link($directory . '/rate.state'));
+            $this->assertSame([], self::pendingFiles($directory));
+        } finally {
+            flock($handle, LOCK_UN);
+            fclose($handle);
+            @unlink($target);
+        }
+    }
 }

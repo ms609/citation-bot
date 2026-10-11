@@ -427,40 +427,117 @@ final class Zotero {
     }
 
     /**
-     * Publish a complete state record with rename(), never by truncating the
-     * flock-protected inode. A signal/crash can leave only an unused temp file.
+     * Verify an opened directory still names the same private inode.
+     * A directory descriptor also lets us sync rename metadata after publish.
+     *
+     * @param resource $handle
+     * @phpstan-impure
+     */
+    private static function citoid_directory_matches_path($handle, string $directory): bool {
+        $opened = @fstat($handle);
+        clearstatcache(true, $directory);
+        $named = @lstat($directory);
+        if ($opened === false || $named === false) {
+            return false;
+        }
+        if (($opened['mode'] & 0170000) !== 0040000 ||
+            ($named['mode'] & 0170000) !== 0040000 ||
+            ($named['mode'] & 0077) !== 0 || ($opened['mode'] & 0077) !== 0 ||
+            $opened['dev'] !== $named['dev'] || $opened['ino'] !== $named['ino']) {
+            return false;
+        }
+        return !function_exists('posix_geteuid') ||
+            ($opened['uid'] === posix_geteuid() && $named['uid'] === posix_geteuid());
+    }
+
+    /**
+     * Do not replace a directory, symlink or an untrusted published state.
+     * @phpstan-impure
+     */
+    private static function citoid_state_target_safe(string $path): bool {
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false) {
+            return !file_exists($path) && !is_link($path);
+        }
+        return ($named['mode'] & 0170000) === 0100000 &&
+            ($named['mode'] & 0077) === 0 && $named['nlink'] === 1 &&
+            (!function_exists('posix_geteuid') || $named['uid'] === posix_geteuid());
+    }
+
+    /**
+     * Publish a complete state record without changing the stable lock inode.
+     * The file is synced and closed before rename; directory fsync makes the
+     * rename durable where the filesystem supports that guarantee.
+     * Unsupported directory fsync fails closed, even after visible publication.
      *
      * @param resource $lock
      * @phpstan-impure
      */
     private static function citoid_commit_state($lock, string $lock_path, string $directory): bool {
-        try {
-            $temporary_path = $directory . '/rate.pending.' . bin2hex(random_bytes(12));
-        } catch (Throwable) {
+        $directory_handle = @fopen($directory, 'rb');
+        if ($directory_handle === false) {
             return false;
         }
-        $pending = @fopen($temporary_path, 'x+b');
-        if ($pending === false) {
-            return false;
-        }
+        $temporary_path = null;
+        $durable = false;
         try {
-            $stamp = sprintf('%.6F', microtime(true));
-            $payload = 'CB1|' . $stamp . '|' . mb_substr(hash('sha256', $stamp), 0, 16, '8bit') . "\n";
-            if (!@chmod($temporary_path, 0600) ||
-                @fwrite($pending, $payload) !== mb_strlen($payload, '8bit') ||
-                !@fflush($pending) || !@fsync($pending) ||
+            if (!self::citoid_directory_matches_path($directory_handle, $directory) ||
                 !self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
             }
-            return @rename($temporary_path, $directory . '/rate.state');
+            try {
+                $temporary_path = $directory . '/rate.pending.' . bin2hex(random_bytes(12));
+            } catch (Throwable) {
+                return false;
+            }
+            $pending = @fopen($temporary_path, 'x+b');
+            if ($pending === false) {
+                return false;
+            }
+            $write_ok = false;
+            try {
+                $stamp = sprintf('%.6F', microtime(true));
+                $payload = 'CB1|' . $stamp . '|' . mb_substr(hash('sha256', $stamp), 0, 16, '8bit') . "\n";
+                if (!@chmod($temporary_path, 0600) ||
+                    !self::citoid_lock_file_matches_path($pending, $temporary_path)) {
+                    return false;
+                }
+                $length = mb_strlen($payload, '8bit');
+                $offset = 0;
+                while ($offset < $length) {
+                    $written = @fwrite($pending, mb_substr($payload, $offset, null, '8bit'));
+                    if ($written === false || $written === 0) {
+                        return false;
+                    }
+                    $offset += $written;
+                }
+                $write_ok = @fflush($pending) && @fsync($pending);
+            } finally {
+                $write_ok = @fclose($pending) && $write_ok;
+            }
+            if (!$write_ok ||
+                !self::citoid_lock_file_matches_path($lock, $lock_path) ||
+                !self::citoid_directory_matches_path($directory_handle, $directory) ||
+                !self::citoid_state_target_safe($directory . '/rate.state')) {
+                return false;
+            }
+            if (!@rename($temporary_path, $directory . '/rate.state')) {
+                return false;
+            }
+            // fsync() on a directory is supported by the target Linux runtime.
+            // If it fails, the record may be visible but admission must fail.
+            $durable = @fsync($directory_handle) &&
+                self::citoid_directory_matches_path($directory_handle, $directory) &&
+                self::citoid_lock_file_matches_path($lock, $lock_path);
         } finally {
-            fclose($pending);
-            // A killed process can leave this unique name behind; readers
-            // never use pending files, so such leftovers cannot affect pacing.
-            if (is_file($temporary_path)) {
+            if ($temporary_path !== null) {
+                // Unlink only our unique pending pathname (rename removed it on success).
                 @unlink($temporary_path);
             }
+            $directory_closed = @fclose($directory_handle);
         }
+        return $durable && $directory_closed;
     }
 
     /**
