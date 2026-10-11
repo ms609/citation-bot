@@ -625,4 +625,15 @@ final class DoiTest extends testBaseClass {
         ]);
         $this->assertSame('5', $template->get2('issue'));
     }
+
+    public function testDoiJsonSkipsArrayFormRstlBackfileIssue(): void {
+        // Guard must normalize the same single-element arrays that try_to_add_it unwraps.
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
+        process_doi_json($template, '10.1098/rstl.1873.0014', [
+            'type' => 'journal-article',
+            'issue' => ['163'],
+            'title' => ['XIII. Results'],
+        ]);
+        $this->assertNull($template->get2('issue'));
+    }
 }
