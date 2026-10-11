@@ -3165,63 +3165,30 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('2020-01-01', $template->get2('archive-date'));
     }
 
-    public function testNewsChapterBecomesTitleWhenTitleBlank(): void {
-        // cite news ignores |chapter= (CS1 "chapter ignored"); with no title,
-        // the chapter content must move to title=, mirroring cite journal.
-        $text = '{{cite news |newspaper=N |date=2020 |chapter=C}}';
+    public function testNewsRefusesChapterAdd(): void {
+        // cite news ignores |chapter= and has no downstream repair path, so
+        // the bot must not add one (guard, not repair).
+        $text = '{{cite news |title=T |newspaper=N |date=2020}}';
         $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('C', $template->get2('title'));
+        $this->assertFalse($template->add_if_new('chapter', 'C'));
         $this->assertNull($template->get2('chapter'));
         $this->assertSame('cite news', $template->wikiname());
     }
 
-    public function testMagazineChapterBecomesTitleWhenTitleBlank(): void {
-        // Same repair for cite magazine.
-        $text = '{{cite magazine |magazine=M |date=2020 |chapter=C}}';
+    public function testMagazineRefusesChapterAdd(): void {
+        // Same guard for cite magazine.
+        $text = '{{cite magazine |title=T |magazine=M |date=2020}}';
         $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('C', $template->get2('title'));
+        $this->assertFalse($template->add_if_new('chapter', 'C'));
         $this->assertNull($template->get2('chapter'));
     }
 
-    public function testNewsChapterConvertsToBookWithoutPeriodical(): void {
-        // With a title but no periodical evidence, cite news + chapter
-        // converts to cite book rather than keeping the CS1 error.
-        $text = '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C}}';
+    public function testJournalStillAcceptsChapterAdd(): void {
+        // cite journal has a downstream repair path (rename/convert), so the
+        // add must keep working there.
+        $text = '{{cite journal |title=T |journal=J |date=2020}}';
         $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('cite book', $template->wikiname());
-        $this->assertSame('C', $template->get2('chapter'));
-    }
-
-    public function testNewsChapterKeptWithNewspaper(): void {
-        // With newspaper= present, converting to book would strand a
-        // periodical param (error-for-error), so the citation stays put.
-        $text = '{{cite news |title=T |newspaper=N |date=2020 |chapter=C}}';
-        $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('cite news', $template->wikiname());
-        $this->assertSame('C', $template->get2('chapter'));
-    }
-
-    public function testNewsChapterKeptWithIssue(): void {
-        // issue= is dropped on books, so converting would lose data: stay put.
-        $text = '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C |issue=5}}';
-        $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('cite news', $template->wikiname());
-        $this->assertSame('5', $template->get2('issue'));
-        $this->assertSame('C', $template->get2('chapter'));
-    }
-
-    public function testNewsChapterKeptWithDepartment(): void {
-        // department= is news-only: converting would strand it.
-        $text = '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C |department=D}}';
-        $template = $this->make_citation($text);
-        $template->tidy();
-        $this->assertSame('cite news', $template->wikiname());
-        $this->assertSame('D', $template->get2('department'));
+        $this->assertTrue($template->add_if_new('chapter', 'C'));
         $this->assertSame('C', $template->get2('chapter'));
     }
 

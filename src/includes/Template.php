@@ -1771,6 +1771,14 @@ final class Template
                 if ($this->has('contribution') || $this->has('contribution-url')) {
                     return false;
                 }
+                // cite news/magazine (& kin) ignore |chapter= and have no
+                // downstream repair path, so refuse the add outright rather
+                // than create the error.  (wikiname() already canonicalizes
+                // newspaper to news and periodical to magazine.)
+                if (in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true)) {
+                    report_inaction("Not adding chapter to " . $this->wikiname() . " (ignored there)");
+                    return false;
+                }
                 // Adding a chapter immediately triggers tidy_parameter('chapter').
                 // Do not create a book-only field on an ambiguous cite web when
                 // that follow-up conversion would be unsafe.
@@ -4618,17 +4626,6 @@ final class Template
                             $this->forget('chapter');
                             return;
                         }
-                        // cite news/magazine (& kin) ignore |chapter=: with no
-                        // title, move the content there (CS1's own repair).
-                        // (wikiname() already canonicalizes newspaper to news
-                        // and periodical to magazine, so only those appear.)
-                        if (
-                            in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true) &&
-                            $this->blank('title')
-                        ) {
-                            $this->rename('chapter', 'title');
-                            return;
-                        }
                     }
                     if (
                         $this->has('chapter') &&
@@ -4636,18 +4633,6 @@ final class Template
                         $this->can_auto_convert_web_to_cite_book()
                     ) {
                         $this->change_name_to('cite book');
-                    }
-                    if (
-                        $this->has('chapter') &&
-                        !$this->blank('title') &&
-                        in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true) &&
-                        $this->blank(['newspaper', 'magazine', 'journal', 'work', 'periodical', 'encyclopedia', 'issue', 'department', 'agency'])
-                    ) {
-                        // Nothing present that the conversion would strand
-                        // (periodical params, issue dropped on books, or
-                        // news-only department/agency): convert rather than
-                        // keep the ignored chapter.
-                        $this->change_name_to('cite book', true, true);
                     }
                     return;
 
