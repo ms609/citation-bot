@@ -267,8 +267,7 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R9: cite web (and cite podcast/mailing list) requires |url= or
-    // |archive-url=; CS1 only errors when both are missing.
+    // R9: cite web errors only when both |url= and |archive-url= are missing.
     if ($name === 'cite web' && !has_any($template, URL_PARAMS) && !has_any($template, ARCHIVE_URL_PARAMS)) {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
@@ -410,18 +409,14 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R22: ISBN in a periodical template.  Not a CS1 error: the module emits
-    // no message (maint_periodical_has_isbn, message = nil) and files it in
-    // the hidden 'CS1 maint: periodical has ISBN' category.  Tracked here as
-    // maintenance, not as an error.
+    // R22: maint only (maint_periodical_has_isbn has no message; hidden category).
+    // Not a CS1 error.
     if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
         $violations[] = 'isbn-in-periodical: CS1 maint "periodical has ISBN"';
     }
 
-    // R23: ASIN shape per Module:Citation/CS1/Identifiers (asin function):
-    // exactly 10 uppercase alphanumerics; a 10-digit numeric value (terminal
-    // X allowed) must checksum as ISBN-10 and start 630/631, else it errors
-    // (use |isbn= instead); mixed values must start with an uppercase letter.
+    // R23: ASIN shape per Identifiers.asin: 10 uppercase alphanumerics;
+    // numeric-10 must checksum and start 630/631; mixed must start uppercase.
     $asin = $template->get_without_comments_and_placeholders('asin');
     if ($asin !== '') {
         $asin_bad = false;
