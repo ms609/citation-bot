@@ -445,7 +445,13 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('year', doi_json_get($json, ['created', 'date-parts', 0, 0]));
         $try_to_add_it('year', doi_json_get($json, ['published-print', 'date-parts', 0, 0]));
     }
-    $try_to_add_it('issue', @$json['issue']);
+    $dx_issue = doi_json_scalar($json['issue'] ?? null) ?? '';
+    $dx_volume = doi_json_scalar($json['volume'] ?? null) ?? '';
+    if (should_skip_crossref_issue_as_volume_match($doi, $dx_volume, $dx_issue, $template->get_without_comments_and_placeholders('volume'))) {
+        report_warning("CrossRef issue matches existing volume with no record volume; skipping issue for DOI: " . echoable($doi));
+    } else {
+        $try_to_add_it('issue', @$json['issue']);
+    }
     $try_to_add_it('pages', @$json['pages']);
     $try_to_add_it('page', @$json['pages']);
     $try_to_add_it('volume', @$json['volume']);
