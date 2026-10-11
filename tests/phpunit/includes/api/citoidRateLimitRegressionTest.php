@@ -85,6 +85,92 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         return $paths === false ? [] : $paths;
     }
 
+    /** A denied admission must never call the supplied HTTP transport. */
+    public function testGuardedDispatchDeniesWithoutInvokingTransport(): void {
+        $directory = $this->freshDirectory(false);
+        $sent = 0;
+        $reason = null;
+        $dispatch = new ReflectionMethod(Zotero::class, 'citoid_guarded_send');
+        $callback = static function () use (&$sent): string {
+            ++$sent;
+            return 'unexpected';
+        };
+        $result = $dispatch->invokeArgs(null, [$callback, &$reason, $directory]);
+        $this->assertFalse($result);
+        $this->assertSame('directory-unavailable', $reason);
+        $this->assertSame(0, $sent);
+    }
+
+    /** Invalid state blocks the dispatch even when a lock can be acquired. */
+    public function testGuardedDispatchRejectsCorruptStateWithoutTransport(): void {
+        $directory = $this->freshDirectory();
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        $this->writeState($directory, 'invalid-checksum');
+        $sent = 0;
+        $reason = null;
+        $dispatch = new ReflectionMethod(Zotero::class, 'citoid_guarded_send');
+        $callback = static function () use (&$sent): string {
+            ++$sent;
+            return 'unexpected';
+        };
+        $result = $dispatch->invokeArgs(null, [$callback, &$reason, $directory]);
+        $this->assertFalse($result);
+        $this->assertSame('state-invalid', $reason);
+        $this->assertSame(0, $sent);
+    }
+
+    /** Both request paths share a guard that invokes a transport only on admission. */
+    public function testGuardedDispatchAllowsExactlyOneTransportInvocation(): void {
+        $directory = $this->freshDirectory();
+        $sent = 0;
+        $reason = 'stale';
+        $dispatch = new ReflectionMethod(Zotero::class, 'citoid_guarded_send');
+        $callback = static function () use (&$sent): string {
+            ++$sent;
+            return 'metadata';
+        };
+        $result = $dispatch->invokeArgs(null, [$callback, &$reason, $directory]);
+        $this->assertSame('metadata', $result);
+        $this->assertNull($reason);
+        $this->assertSame(1, $sent);
+    }
+
+    /** Even a second dispatch attempt cannot bypass a corrupted shared state. */
+    public function testGuardedDispatchRetryAlsoRequiresAdmission(): void {
+        $directory = $this->freshDirectory();
+        $sent = 0;
+        $reason = null;
+        $dispatch = new ReflectionMethod(Zotero::class, 'citoid_guarded_send');
+        $callback = static function () use (&$sent): string {
+            ++$sent;
+            return 'metadata';
+        };
+        $this->assertSame('metadata', $dispatch->invokeArgs(null, [$callback, &$reason, $directory]));
+        $this->assertSame(1, $sent);
+        $this->writeState($directory, 'invalid-checksum');
+        $result = $dispatch->invokeArgs(null, [$callback, &$reason, $directory]);
+        $this->assertFalse($result);
+        $this->assertSame('state-invalid', $reason);
+        $this->assertSame(1, $sent);
+    }
+
+    /** A held mutex reports contention without calling the transport. */
+    public function testThrottleReportsLockTimeoutCategory(): void {
+        $directory = $this->freshDirectory();
+        $holder = fopen($directory . '/rate.lock', 'c+');
+        $this->assertNotFalse($holder);
+        try {
+            $this->assertTrue(flock($holder, LOCK_EX | LOCK_NB));
+            $reason = null;
+            $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertFalse($throttle->invokeArgs(null, [$directory, 0.0, &$reason]));
+            $this->assertSame('lock-timeout', $reason);
+        } finally {
+            flock($holder, LOCK_UN);
+            fclose($holder);
+        }
+    }
+
     public function testValidClockRollbackRequiresConservativeRecovery(): void {
         $directory = $this->freshDirectory();
         $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));

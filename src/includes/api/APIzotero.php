@@ -584,12 +584,15 @@ final class Zotero {
      * The local temp directory is allowed only by explicit opt-in on one instance.
      * The optional directory/timeout arguments are for isolated regression tests.
      *
+     * @param-out string|null $failure_reason
      * @phpstan-impure
      */
     private static function throttle_citoid_requests(
         ?string $directory = null,
-        ?float $lock_timeout_seconds = null
+        ?float $lock_timeout_seconds = null,
+        ?string &$failure_reason = null
     ): bool {
+        $failure_reason = null;
         // Never create an implicit local mutex if the configured directory
         // is absent. Creation is permitted only for explicitly opted-in
         // single-instance fallback, not a test-only directory override.
@@ -598,6 +601,7 @@ final class Zotero {
         $namespace_id = $configured ? self::citoid_config_value('CITOID_RATE_LIMIT_NAMESPACE_ID') : '';
         // Resolve absent configuration once; every later check receives a string.
         if ($namespace_id === false) {
+            $failure_reason = 'namespace-invalid';
             return false;
         }
         $allow_local_creation = $directory === null &&
@@ -606,20 +610,24 @@ final class Zotero {
         $directory = self::citoid_rate_limit_directory($directory);
         // Use an absolute path, never a caller-relative lock namespace.
         if ($directory === null || $directory === '' || $directory[0] !== '/') {
+            $failure_reason = ($directory === null && !$configured) ? 'configuration-missing' : 'configuration-invalid';
             return false;
         }
         $timeout = $lock_timeout_seconds ?? 15.0;
         if (!is_finite($timeout) || $timeout < 0.0 || $timeout > 60.0) {
+            $failure_reason = 'timeout-invalid';
             return false;
         }
         if (!is_dir($directory)) {
             if (!$allow_local_creation) {
+                $failure_reason = 'directory-unavailable';
                 return false;
             }
             // A concurrent initializer may have created it already.
             if (!@mkdir($directory, 0700)) {
                 clearstatcache(true, $directory);
                 if (!is_dir($directory)) {
+                    $failure_reason = 'directory-unavailable';
                     return false;
                 }
             }
@@ -629,20 +637,24 @@ final class Zotero {
         if ($dir_stat === false || ($dir_stat['mode'] & 0170000) !== 0040000 ||
             ($dir_stat['mode'] & 0077) !== 0 ||
             (function_exists('posix_geteuid') && $dir_stat['uid'] !== posix_geteuid())) {
+            $failure_reason = 'directory-unsafe';
             return false;
         }
         // The configured namespace must be provisioned on the intended mount.
         // An existing directory alone is insufficient: a missing mount can
         // expose an unrelated directory with the same absolute pathname.
         if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+            $failure_reason = 'namespace-invalid';
             return false;
         }
         $lock_path = $directory . '/rate.lock';
         if (is_link($lock_path)) {
+            $failure_reason = 'lock-unavailable';
             return false;
         }
         $lock = @fopen($lock_path, 'c+');
         if ($lock === false) {
+            $failure_reason = 'lock-unavailable';
             return false;
         }
         $locked = false;
@@ -659,16 +671,22 @@ final class Zotero {
                 // budget. A zero timeout still performs one nonblocking try.
                 $remaining = $deadline - hrtime(true);
                 if ($remaining <= 0) {
+                    $failure_reason = 'lock-timeout';
                     return false;
                 }
                 usleep((int) min(50000, max(1, ceil($remaining / 1000.0))));
             } while (true);
-            if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
-                ($configured && !self::citoid_namespace_matches($directory, $namespace_id))) {
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                $failure_reason = 'lock-integrity';
+                return false;
+            }
+            if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+                $failure_reason = 'namespace-invalid';
                 return false;
             }
             $previous = self::citoid_read_state($lock, $directory);
             if ($previous === false) {
+                $failure_reason = 'state-invalid';
                 return false;
             }
             [$last, $full_cooldown] = $previous;
@@ -688,17 +706,45 @@ final class Zotero {
                     usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
                 }
             }
-            if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
-                ($configured && !self::citoid_namespace_matches($directory, $namespace_id))) {
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                $failure_reason = 'lock-integrity';
                 return false;
             }
-            return self::citoid_commit_state($lock, $lock_path, $directory);
+            if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+                $failure_reason = 'namespace-invalid';
+                return false;
+            }
+            if (!self::citoid_commit_state($lock, $lock_path, $directory)) {
+                $failure_reason = 'publication-failed';
+                return false;
+            }
+            return true;
         } finally {
             if ($locked) {
                 flock($lock, LOCK_UN);
             }
             fclose($lock);
         }
+    }
+
+    /**
+     * Both the initial attempt and retry use this identical admission gate.
+     * The test-only directory argument permits transport-free regression tests.
+     *
+     * @param callable():string $dispatch
+     * @param-out string|null $failure_reason
+     * @phpstan-impure
+     */
+    private static function citoid_guarded_send(
+        callable $dispatch,
+        ?string &$failure_reason = null,
+        ?string $directory = null
+    ): string|false {
+        $failure_reason = null;
+        if (!self::throttle_citoid_requests($directory, null, $failure_reason)) {
+            return false;
+        }
+        return $dispatch();
     }
 
     /** A successful Citoid citation response must be HTTP 2xx. */
@@ -731,16 +777,20 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
-        if (!self::throttle_citoid_requests()) {
-            report_warning('Citoid rate-limit coordination failed; skipping unpaced request.');
-            self::record_zotero_failure();
-            return self::ERROR_DONE;
-        }
+        $failure_reason = null;
         try {
-            $zotero_response = bot_curl_exec(self::$zotero_ch);
+            $zotero_response = self::citoid_guarded_send(
+                static fn (): string => bot_curl_exec(self::$zotero_ch),
+                $failure_reason
+            );
         } catch (Throwable $e) {
             bot_debug_log('Citoid/Zotero request failed: ' . $e::class . ': ' . $e->getMessage());
             report_warning("Citoid/Zotero request failed; continuing without URL metadata.");
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+        }
+        if ($zotero_response === false) {
+            report_warning('Citoid admission denied (' . ($failure_reason ?? 'unknown') . '); skipping unpaced request.');
             self::record_zotero_failure();
             return self::ERROR_DONE;
         }
@@ -748,12 +798,16 @@ final class Zotero {
         if ($zotero_response === '' && self::citoid_http_success($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
-                if (!self::throttle_citoid_requests()) {
-                    report_warning('Citoid rate-limit coordination failed on retry.');
+                $failure_reason = null;
+                $zotero_response = self::citoid_guarded_send(
+                    static fn (): string => bot_curl_exec(self::$zotero_ch),
+                    $failure_reason
+                ); // @codeCoverageIgnore
+                if ($zotero_response === false) {
+                    report_warning('Citoid retry admission denied (' . ($failure_reason ?? 'unknown') . ').');
                     self::record_zotero_failure();
                     return self::ERROR_DONE;
                 }
-                $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
             } catch (Throwable $e) {
                 bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
                 report_warning("Citoid/Zotero retry failed; continuing without URL metadata.");

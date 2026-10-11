@@ -76,6 +76,23 @@ workers before upgrading. Without both, Citoid enrichment fails closed.
 
 The rate-limit check fails closed on invalid paths, non-regular/replaced lock
 files, malformed or corrupt timestamps, or a lock held for more than 15 seconds.
+Every denied admission now reports a fixed category, without filesystem paths,
+marker values, request URLs or stack traces. The admission categories are:
+
+- `configuration-missing`: no explicit shared directory or single-instance opt-in.
+- `configuration-invalid`, `timeout-invalid`: invalid paths or timeouts.
+- `directory-unavailable`, `directory-unsafe`: absent or unsafe directory.
+- `namespace-invalid`: missing, mismatched or unsafe shared namespace marker.
+- `lock-unavailable`, `lock-timeout`, `lock-integrity`: missing/unsafe mutex,
+  acquisition deadline, or changed lock identity.
+- `state-invalid`: missing trusted format, bad checksum or corrupt timestamp.
+- `publication-failed`: state write, sync, rename or integrity check failed.
+
+Treat all categories as skipped enrichment, never as permission to send an
+unpaced HTTP request. Both initial and retry dispatches use the same admission
+gate. Investigate the category, stop or drain all writers before repairing a
+shared directory, and never unlink an active lock file. Categories are local
+observability hints, not claims that distributed filesystem locking is sound.
 A valid, checksummed `rate.state` timestamp ahead of the worker's wall clock
 may indicate clock rollback: under the shared mutex, the worker waits one full
 second measured with `hrtime()` and publishes a fresh record. An unchecksummed
