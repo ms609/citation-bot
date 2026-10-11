@@ -93,14 +93,22 @@ unpaced HTTP request. Both initial and retry dispatches use the same admission
 gate. Investigate the category, stop or drain all writers before repairing a
 shared directory, and never unlink an active lock file. Categories are local
 observability hints, not claims that distributed filesystem locking is sound.
-A valid, checksummed `rate.state` timestamp ahead of the worker's wall clock
-may indicate clock rollback: under the shared mutex, the worker waits one full
-second measured with `hrtime()` and publishes a fresh record. An unchecksummed
-future-dated legacy timestamp is still rejected. The monotonic wait is safe
-against local clock adjustment, but cannot guarantee global pacing if different
-hosts' clocks are out of sync. Synchronize clocks on all replicas. The timestamp
-records admission time and does not guarantee that actual HTTP start times on
-different workers are one second apart. Severe contention can skip enrichment.
+The rate limiter validates `rate.state` for format, ownership and checksum,
+but does **not** compare shared timestamps to a worker's wall clock for pacing.
+Instead, **every admission holds the shared exclusive mutex for at least one
+full second** measured using that worker's monotonic `hrtime()` clock, including
+when there was a long idle period. Consequently, clocks that differ between
+hosts cannot shorten the interval between completed admissions, provided the
+filesystem actually enforces cross-host `flock`. This trades an extra second
+of latency on otherwise idle requests for a clock-skew-independent guarantee.
+A valid, checksummed record dated in the future remains recoverable after the
+conservative wait. An unchecksummed future-dated legacy timestamp is still
+rejected. Synchronize clocks for reliable logs and other application behavior.
+The timestamp remains useful for state validation and diagnostics, but is not
+used to authorize earlier admission. As before, PHP scheduling between mutex
+release and actual HTTP dispatch means this is an admission-spacing guarantee,
+not a hard guarantee about actual HTTP request start times. Severe contention
+can skip enrichment.
 
 ## Contention and bounded waiting
 
@@ -109,8 +117,9 @@ monotonic `hrtime()` for up to **15 seconds by default** (60 seconds is the
 maximum accepted by the test-only timeout parameter). A zero timeout makes one
 attempt without sleeping. Poll sleeps are limited to the remaining deadline,
 so a worker never deliberately sleeps a full polling interval beyond it.
-After the lock is acquired, rate-budget pacing can add up to **one second**;
-filesystem I/O and PHP scheduling introduce additional, unbounded overhead.
+After the lock is acquired, rate-budget pacing **always adds at least one
+second**; filesystem I/O and PHP scheduling introduce additional, unbounded
+overhead. The mutex remains held throughout this pacing interval.
 This is an **acquisition timeout**, not a hard wall-clock HTTP deadline.
 
 At sustained demand greater than one admission per second, workers may time
@@ -177,8 +186,8 @@ all Citoid writers on every host** and verify that none can restart while
 cleaning. Then, with the same UID that owns the private directory, run:
 
 ```sh
-php tools/cleanup-citoid-pending.php --offline --dry-run /absolute/private/lock-dir
-php tools/cleanup-citoid-pending.php --offline --delete /absolute/private/lock-dir
+php -d uopz.exit=1 tools/cleanup-citoid-pending.php --offline --dry-run /absolute/private/lock-dir
+php -d uopz.exit=1 tools/cleanup-citoid-pending.php --offline --delete /absolute/private/lock-dir
 ```
 
 The tool refuses noncanonical paths, unsafe directory or lock ownership,

@@ -684,27 +684,24 @@ final class Zotero {
                 $failure_reason = 'namespace-invalid';
                 return false;
             }
-            $previous = self::citoid_read_state($lock, $directory);
-            if ($previous === false) {
+            // Keep validating the existing checksummed/legacy state, but never
+            // use a timestamp from another host to decide how long to wait.
+            // A fast peer clock can otherwise allow admissions less than one
+            // real second apart. Hold the common mutex for a full monotonic
+            // second on EVERY admission, including after idle periods.
+            if (self::citoid_read_state($lock, $directory) === false) {
                 $failure_reason = 'state-invalid';
                 return false;
             }
-            [$last, $full_cooldown] = $previous;
-            $wait = $full_cooldown ? 1.0 : $last + 1.0 - microtime(true);
-            if ($wait > 1.0) {
-                // rate.state passed its format and checksum checks, but our
-                // wall clock may have moved backward since publication. A
-                // complete cooldown under the same mutex prevents a burst
-                // without blocking requests until the old clock time returns.
-                $wait = 1.0;
-            }
-            if ($wait > 0.0) {
-                // Measure the wait with a monotonic clock. Repeat if a signal
-                // interrupts usleep(), so no admission happens prematurely.
-                $deadline = hrtime(true) + (int) ceil($wait * 1000000000.0);
-                while (($remaining = $deadline - hrtime(true)) > 0) {
-                    usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
-                }
+            // hrtime() is local monotonic elapsed time, not a shared epoch.
+            // Because the exclusive lock spans this entire delay, peer wall
+            // clocks cannot shorten the global admission interval. Repeat
+            // after interrupted sleeps until the whole second has elapsed.
+            $deadline = hrtime(true) + 1000000000;
+            $remaining = $deadline - hrtime(true);
+            while ($remaining > 0) {
+                usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
+                $remaining = $deadline - hrtime(true);
             }
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 $failure_reason = 'lock-integrity';

@@ -188,6 +188,37 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         );
     }
 
+    /** A peer with an old wall clock must not grant an immediate admission. */
+    public function testOldCommittedTimestampStillRequiresFullMonotonicWait(): void {
+        $directory = $this->freshDirectory();
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        // Simulate a peer publishing with a clock one hour behind this host.
+        $this->writeState($directory, self::record(microtime(true) - 3600.0));
+
+        $start = hrtime(true);
+        $this->assertTrue(self::admit($directory));
+        $elapsed = (hrtime(true) - $start) / 1e9;
+        $this->assertGreaterThanOrEqual(0.85, $elapsed, 'Stale peer wall time cannot eliminate pacing');
+        $this->assertLessThan(4.0, $elapsed);
+    }
+
+    /** Switching between fast and slow peer timestamps must not cause a burst. */
+    public function testAlternatingHostClockOffsetsNeverBypassSharedCooldown(): void {
+        $directory = $this->freshDirectory();
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        $this->writeState($directory, self::record(microtime(true) + 3600.0));
+
+        $start = hrtime(true);
+        $this->assertTrue(self::admit($directory));
+        // Represent another worker publishing an earlier timestamp after its
+        // clock steps backward. A checksum-valid record still requires pacing.
+        $this->writeState($directory, self::record(microtime(true) - 3600.0));
+        $this->assertTrue(self::admit($directory));
+        $elapsed = (hrtime(true) - $start) / 1e9;
+        $this->assertGreaterThanOrEqual(1.85, $elapsed, 'Both admitted sends must be paced');
+        $this->assertLessThan(7.0, $elapsed);
+    }
+
     public function testCorruptFutureStateNeverAuthorizesRecovery(): void {
         $directory = $this->freshDirectory();
         $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
@@ -447,9 +478,11 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
     /** @return array{int, string, string} */
     private static function runPendingCleanup(string $directory, string $mode): array {
         $script = dirname(__DIR__, 4) . '/tools/cleanup-citoid-pending.php';
+        // A child PHP interpreter does not inherit the runner's uopz.exit flag.
+        // Without this -d setting the offline tool intentionally exits 255.
         // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed offline maintenance test subprocess.
         $process = proc_open(
-            [PHP_BINARY, $script, '--offline', $mode, $directory],
+            [PHP_BINARY, '-d', 'uopz.exit=1', $script, '--offline', $mode, $directory],
             [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
             $pipes
         );
@@ -536,14 +569,16 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $this->assertTrue(touch($old, time() - 600));
         try {
             $this->assertTrue(flock($lock, LOCK_EX | LOCK_NB));
-            [$code] = self::runPendingCleanup($directory, '--delete');
-            $this->assertNotSame(0, $code);
+            [$code, , $stderr] = self::runPendingCleanup($directory, '--delete');
+            $this->assertSame(2, $code, $stderr);
+            $this->assertStringContainsString('Lock is held', $stderr);
             $this->assertFileExists($old);
             $this->assertTrue(flock($lock, LOCK_UN));
             $link = $directory . '/rate.pending.' . str_repeat('d', 24);
             $this->assertTrue(symlink($old, $link));
-            [$code] = self::runPendingCleanup($directory, '--delete');
-            $this->assertNotSame(0, $code);
+            [$code, , $stderr] = self::runPendingCleanup($directory, '--delete');
+            $this->assertSame(2, $code, $stderr);
+            $this->assertStringContainsString('Unsafe pending entry', $stderr);
             $this->assertFileExists($old);
             $this->assertTrue(is_link($link));
         } finally {
