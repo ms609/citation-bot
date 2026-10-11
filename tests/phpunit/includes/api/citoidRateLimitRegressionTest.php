@@ -72,12 +72,12 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
 
     private static function record(float $timestamp): string {
         $stamp = sprintf('%.6F', $timestamp);
-        return 'CB1|' . $stamp . '|' . substr(hash('sha256', $stamp), 0, 16) . "\n";
+        return 'CB1|' . $stamp . '|' . mb_substr(hash('sha256', $stamp), 0, 16, '8bit') . "\n";
     }
 
     private function writeState(string $directory, string $payload): void {
         $path = $directory . '/rate.state';
-        $this->assertSame(strlen($payload), file_put_contents($path, $payload));
+        $this->assertSame(mb_strlen($payload, '8bit'), file_put_contents($path, $payload));
         $this->assertTrue(chmod($path, 0600));
     }
 
@@ -120,7 +120,7 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         // The legacy stamp can be old even if the missing published state was
         // recent. Its age is not evidence that a new request is safe.
         $legacy = (string) (microtime(true) - 3600.0);
-        $this->assertSame(strlen($legacy), file_put_contents($directory . '/rate.lock', $legacy));
+        $this->assertSame(mb_strlen($legacy, '8bit'), file_put_contents($directory . '/rate.lock', $legacy));
         $this->writeState($directory, self::record(microtime(true)));
         $this->assertTrue(unlink($directory . '/rate.state'));
 
@@ -191,6 +191,7 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         // RLIMIT_FSIZE limits the pending record to 16 bytes, forcing fwrite
         // to fail or complete only partially before publication can occur.
         $fixture = dirname(__DIR__, 3) . '/fixtures/citoidShortWriteWorker.php';
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed fault-injection subprocess.
         $process = proc_open(
             [PHP_BINARY, $fixture, $directory],
             [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
