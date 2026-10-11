@@ -214,7 +214,11 @@ function expand_by_doi(Template $template, bool $force = false): void {
             if (mb_strpos($crossref_issue, '-') > 0 || ($crossref_issue_number !== null && $crossref_issue_number > 1)) {
                 // "1" may refer to a journal without issue numbers,
                 //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.    Best ignore.
-                $template->add_if_new('issue', $crossref_issue, 'crossref');
+                if (should_skip_crossref_issue_as_volume_match($doi, (string) $crossRef->volume, $crossref_issue, $template->get_without_comments_and_placeholders('volume'))) {
+                    report_warning("CrossRef issue matches existing volume with no record volume; skipping issue for DOI: " . echoable($doi));
+                } else {
+                    $template->add_if_new('issue', $crossref_issue, 'crossref');
+                }
             }
             if ($template->blank("page")) {
                 if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
@@ -647,6 +651,23 @@ function isCrossRefReviewConfusion(Template $template, object $msg): bool {
         return false;
     }
     return true;
+}
+
+/**
+ * Royal Society backfile records (10.1098/rstl.*, 10.1098/rspl.*) file the
+ * volume number in the issue field with no volume of their own (#29).
+ * Skip such an issue when it textually matches the citation's volume.
+ * Scoped to the affected family so no other DOI can be touched by this.
+ */
+function should_skip_crossref_issue_as_volume_match(string $doi, string $crossref_volume, string $crossref_issue, string $citation_volume): bool {
+    $doi_lower = mb_strtolower($doi);
+    if (mb_strpos($doi_lower, '10.1098/rstl') !== 0 && mb_strpos($doi_lower, '10.1098/rspl') !== 0) {
+        return false;
+    }
+    if (mb_trim($crossref_volume) !== '' || mb_trim($crossref_issue) === '' || mb_trim($citation_volume) === '') {
+        return false;
+    }
+    return mb_strtolower(mb_trim($crossref_issue)) === mb_strtolower(mb_trim($citation_volume));
 }
 
 /**
