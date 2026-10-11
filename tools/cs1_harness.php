@@ -96,6 +96,16 @@ const NON_PERIODICAL_TEMPLATES = [
     'cite document', 'cite citeseerx', 'cite ssrn', 'cite report', 'cite press release',
 ];
 
+// CS1 templates that ignore |chapter= (and its contribution/article/entry/
+// section aliases): cite web, cite news, cite journal, cite magazine, cite
+// press release, cite podcast, cite newsgroup, and {{citation}} with work.
+const CHAPTER_IGNORING_TEMPLATES = [
+    'cite web', 'cite news', 'cite newspaper', 'cite journal', 'cite magazine',
+    'cite periodical', 'cite press release', 'cite podcast', 'cite newsgroup',
+];
+
+const CHAPTER_PARAMS = ['chapter', 'contribution', 'article', 'entry', 'section'];
+
 // CS1 periodical templates that report "periodical has ISBN" for any ISBN.
 const PERIODICAL_TEMPLATES = ['cite web', 'cite journal', 'cite magazine', 'cite news'];
 
@@ -260,6 +270,15 @@ function check_citation(Template $template): array {
     // R9: cite web requires a url.
     if ($name === 'cite web' && !has_any($template, URL_PARAMS)) {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
+    }
+
+    // R21: chapter parameters are ignored in templates without chapters.
+    if (in_array($name, CHAPTER_IGNORING_TEMPLATES, true)) {
+        foreach (CHAPTER_PARAMS as $param) {
+            if ($template->has($param)) {
+                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
+            }
+        }
     }
 
     // R10: identifier templates require their identifier.
@@ -518,6 +537,10 @@ function build_matrix(): array {
         ['Orphaned trans-chapter removed', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'pass'],
         ['Orphaned trans-entry removed', '{{cite journal |title=X |journal=J |trans-entry=Y}}', 'pass'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
+        ['News chapter becomes title when title blank', '{{cite news |newspaper=N |date=2020 |chapter=C}}', 'pass'],
+        ['Magazine chapter becomes title when title blank', '{{cite magazine |magazine=M |date=2020 |chapter=C}}', 'pass'],
+        ['News chapter converts to book without periodical', '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C}}', 'pass'],
+        ['GAP news chapter kept with newspaper', '{{cite news |title=T |newspaper=N |date=2020 |chapter=C}}', 'gap'],
         ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'pass'],
         ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'pass'],
         ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],

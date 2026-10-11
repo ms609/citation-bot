@@ -4618,6 +4618,15 @@ final class Template
                             $this->forget('chapter');
                             return;
                         }
+                        // cite news/magazine (& kin) ignore |chapter=: with no
+                        // title, move the content there (CS1's own repair).
+                        if (
+                            in_array($this->wikiname(), ['cite news', 'cite newspaper', 'cite magazine', 'cite periodical', 'cite press release'], true) &&
+                            $this->blank('title')
+                        ) {
+                            $this->rename('chapter', 'title');
+                            return;
+                        }
                     }
                     if (
                         $this->has('chapter') &&
@@ -4625,6 +4634,16 @@ final class Template
                         $this->can_auto_convert_web_to_cite_book()
                     ) {
                         $this->change_name_to('cite book');
+                    }
+                    if (
+                        $this->has('chapter') &&
+                        !$this->blank('title') &&
+                        in_array($this->wikiname(), ['cite news', 'cite newspaper', 'cite magazine', 'cite periodical', 'cite press release'], true) &&
+                        $this->blank(['newspaper', 'magazine', 'journal', 'work', 'periodical'])
+                    ) {
+                        // No periodical evidence to strand: convert rather
+                        // than keep the ignored chapter.
+                        $this->change_name_to('cite book', true, true);
                     }
                     return;
 
