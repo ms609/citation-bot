@@ -10,13 +10,14 @@ declare(strict_types=1);
  * @return string|false
  */
 function citoid_cleanup_canonical_directory(string $path): string|false {
+    $canonical = realpath($path);
     if ($path === '' || $path[0] !== '/' ||
         preg_match('~\A/[a-zA-Z0-9._/-]+\z~D', $path) !== 1 ||
         preg_match('~(?:\A|/)\.{1,2}(?:/|\z)~D', $path) === 1 ||
-        realpath($path) !== $path || !function_exists('posix_geteuid')) {
+        $canonical === false || $canonical !== $path || !function_exists('posix_geteuid')) {
         return false;
     }
-    return $path;
+    return $canonical;
 }
 
 /**
