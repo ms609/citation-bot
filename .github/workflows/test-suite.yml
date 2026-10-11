@@ -165,6 +165,7 @@ jobs:
       shell: bash
       run: |
         python3 .github/scripts/ci_test_report.py --php-version 8.4
+        python3 .github/scripts/ci_coverage_gaps.py coverage.xml test-diagnostics/coverage-gaps.md
         cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload PHP 8.4 test diagnostics
@@ -246,6 +247,7 @@ jobs:
       shell: bash
       run: |
         python3 .github/scripts/ci_test_report.py --php-version 8.5
+        python3 .github/scripts/ci_coverage_gaps.py coverage.xml test-diagnostics/coverage-gaps.md
         cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload PHP 8.5 test diagnostics
