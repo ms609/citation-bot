@@ -330,9 +330,42 @@ final class Zotero {
     }
 
     /**
+     * Read process-local config before FastCGI/SAPI config. PHP-FPM may prefer
+     * SAPI variables in getenv() even after an env.php putenv() assignment.
+     * Preserve empty string values: an explicit empty path must fail closed.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_config_value(string $name): string|false {
+        // PHP-FPM/FastCGI can prefer a SAPI-supplied value over putenv().
+        // An explicit env.php assignment should take precedence, including ''.
+        $local = getenv($name, true);
+        return $local !== false ? $local : getenv($name);
+    }
+
+    /**
+     * Resolve the explicit rate-limit lock namespace; never infer topology.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_rate_limit_directory(?string $directory = null): ?string {
+        if ($directory !== null) {
+            return $directory; // Test-only override, not used by production calls.
+        }
+        $configured = self::citoid_config_value('CITOID_RATE_LIMIT_DIR');
+        if ($configured !== false) {
+            return $configured === '' ? null : $configured;
+        }
+        if (self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1') {
+            return sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+        }
+        return null; // Missing configuration must never imply local-only use.
+    }
+
+    /**
      * Pace the Citoid request budget, failing closed if coordination is unsafe.
-     * CITOID_RATE_LIMIT_DIR must refer to the SAME flock-capable filesystem on
-     * every replica; a private sys_get_temp_dir() works only for one instance.
+     * All replicas must use the SAME shared, flock-capable lock directory.
+     * The local temp directory is allowed only by explicit opt-in on one instance.
      * The optional directory/timeout arguments are for isolated regression tests.
      *
      * @phpstan-impure
@@ -341,16 +374,9 @@ final class Zotero {
         ?string $directory = null,
         ?float $lock_timeout_seconds = null
     ): bool {
-        $configured = getenv('CITOID_RATE_LIMIT_DIR');
-        if ($directory === null && ($configured === false || $configured === '') &&
-            getenv('KUBERNETES_SERVICE_HOST') !== false) {
-            // Separate pod /tmp volumes cannot enforce a cluster-wide budget.
-            return false;
-        }
-        $directory ??= ($configured !== false && $configured !== '')
-            ? $configured : sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+        $directory = self::citoid_rate_limit_directory($directory);
         // Use an absolute path, never a caller-relative lock namespace.
-        if ($directory === '' || $directory[0] !== '/') {
+        if ($directory === null || $directory === '' || $directory[0] !== '/') {
             return false;
         }
         $timeout = $lock_timeout_seconds ?? 15.0;
@@ -393,8 +419,9 @@ final class Zotero {
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
             }
-            $raw = stream_get_contents($lock);
-            if ($raw === false) {
+            // Never read an unbounded amount of shared filesystem state.
+            $raw = stream_get_contents($lock, 65);
+            if ($raw === false || strlen($raw) > 64) {
                 return false;
             }
             $raw = mb_trim($raw);
@@ -402,7 +429,12 @@ final class Zotero {
                 return false;
             }
             $last = $raw === '' ? 0.0 : (float) $raw;
-            $wait = $last + 1.0 - microtime(true);
+            if ($raw !== '' && $last <= 0.0) {
+                return false;
+            }
+            // Empty state can mean initial creation or a crash after truncation.
+            // Cool down for one second before admitting another request.
+            $wait = $raw === '' ? 1.0 : $last + 1.0 - microtime(true);
             if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
                 return false;
             }

@@ -156,6 +156,141 @@ final class zoteroTest extends testBaseClass {
         }
     }
 
+    public function testCitoidThrottleRequiresExplicitLockConfiguration(): void {
+        $names = ['KUBERNETES_SERVICE_HOST', 'CITOID_RATE_LIMIT_DIR', 'CITOID_ALLOW_LOCAL_FALLBACK'];
+        $original = [];
+        foreach ($names as $name) {
+            // Preserve only the process-local value that putenv() can change.
+            // Ordinary getenv() can return SAPI-provided values on PHP-FPM.
+            $original[$name] = getenv($name, true);
+        }
+        try {
+            foreach ($names as $name) {
+                putenv($name);
+            }
+            $resolve = new ReflectionMethod(Zotero::class, 'citoid_rate_limit_directory');
+            $config = new ReflectionMethod(Zotero::class, 'citoid_config_value');
+            $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+
+            // Neither setting present: no unsafe default, even without Kubernetes.
+            $this->assertNull($resolve->invoke(null));
+            $this->assertFalse($throttle->invoke(null));
+            putenv('KUBERNETES_SERVICE_HOST=cluster.internal');
+            $this->assertNull($resolve->invoke(null));
+            $this->assertFalse($throttle->invoke(null));
+
+            // Only the exact value '1' authorizes a single-instance fallback.
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');
+            $this->assertSame('1', $config->invoke(null, 'CITOID_ALLOW_LOCAL_FALLBACK'));
+            $this->assertSame(
+                sys_get_temp_dir() . '/citation-bot-citoid-rate-limit',
+                $resolve->invoke(null)
+            );
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=');
+            $this->assertNull($resolve->invoke(null));
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=01');
+            $this->assertNull($resolve->invoke(null));
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=true');
+            $this->assertNull($resolve->invoke(null));
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=0');
+            $this->assertNull($resolve->invoke(null));
+
+            // An explicitly empty directory is invalid, not a fallback request.
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');
+            putenv('CITOID_RATE_LIMIT_DIR=');
+            $this->assertNull($resolve->invoke(null));
+            $this->assertFalse($throttle->invoke(null));
+            putenv('CITOID_RATE_LIMIT_DIR=relative/path');
+            $this->assertFalse($throttle->invoke(null)); // Never fall back from an invalid path.
+
+            // A configured directory is used in production, even without Kubernetes.
+            $dir = sys_get_temp_dir() . '/citation-bot-env-test-' . bin2hex(random_bytes(8));
+            $this->assertTrue(mkdir($dir, 0700));
+            try {
+                putenv('CITOID_ALLOW_LOCAL_FALLBACK');
+                putenv('KUBERNETES_SERVICE_HOST');
+                putenv('CITOID_RATE_LIMIT_DIR=' . $dir);
+                $this->assertSame($dir, $resolve->invoke(null));
+                $this->assertTrue($throttle->invoke(null));
+                putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');
+                $this->assertSame($dir, $resolve->invoke(null));
+                $this->assertSame('/isolated/test', $resolve->invoke(null, '/isolated/test'));
+            } finally {
+                @unlink($dir . '/rate.lock');
+                @rmdir($dir);
+            }
+        } finally {
+            foreach ($original as $name => $value) {
+                putenv($value === false ? $name : $name . '=' . $value);
+            }
+        }
+    }
+
+    public function testCitoidExampleDocumentsOptInWithoutChangingExistingConfiguration(): void {
+        $example_path = dirname(__DIR__, 4) . '/env.php.example';
+        $source = file_get_contents($example_path);
+        $this->assertNotFalse($source);
+        $this->assertStringContainsString(
+            "// @putenv('CITOID_RATE_LIMIT_DIR=/absolute/shared/flock-capable/path');", $source
+        );
+        $this->assertStringContainsString(
+            "// @putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');", $source
+        );
+        $names = ['PHP_OAUTH_CONSUMER_TOKEN', 'CITOID_ALLOW_LOCAL_FALLBACK', 'CITOID_RATE_LIMIT_DIR'];
+        $original = [];
+        foreach ($names as $name) {
+            $original[$name] = getenv($name, true);
+        }
+        try {
+            putenv('PHP_OAUTH_CONSUMER_TOKEN=citoid-test');
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK');
+            putenv('CITOID_RATE_LIMIT_DIR');
+            include $example_path;
+            $this->assertFalse(getenv('CITOID_ALLOW_LOCAL_FALLBACK', true));
+            $this->assertFalse(getenv('CITOID_RATE_LIMIT_DIR', true));
+
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');
+            putenv('CITOID_RATE_LIMIT_DIR=/configured/shared/path');
+            include $example_path;
+            $this->assertSame('1', getenv('CITOID_ALLOW_LOCAL_FALLBACK', true));
+            $this->assertSame('/configured/shared/path', getenv('CITOID_RATE_LIMIT_DIR', true));
+        } finally {
+            foreach ($original as $name => $value) {
+                putenv($value === false ? $name : $name . '=' . $value);
+            }
+        }
+    }
+
+    public function testCitoidThrottleWaitsAfterEmptyLockFile(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        try {
+            $this->assertNotFalse(file_put_contents($dir . '/rate.lock', ''));
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $begin = microtime(true);
+            $this->assertTrue($method->invoke(null, $dir));
+            $this->assertGreaterThanOrEqual(0.85, microtime(true) - $begin);
+        } finally {
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRejectsNonPositiveAndOversizedState(): void {
+        $dir = sys_get_temp_dir() . '/citation-bot-throttle-test-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        try {
+            $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            foreach (['-1', '0', str_repeat('9', 65)] as $invalid) {
+                $this->assertNotFalse(file_put_contents($dir . '/rate.lock', $invalid));
+                $this->assertFalse($method->invoke(null, $dir, 0.0));
+            }
+        } finally {
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
     public function testCitoidThrottleSerializesSeparateProcesses(): void {
         if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
             !function_exists('proc_get_status') || !function_exists('proc_terminate')) {
