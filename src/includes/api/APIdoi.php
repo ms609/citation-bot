@@ -673,10 +673,8 @@ function isCrossRefReviewConfusion(Template $template, object $msg): bool {
 }
 
 /**
- * Royal Society backfile records (10.1098/rstl.*, 10.1098/rspl.*) file the
- * volume number in the issue field with no volume of their own (#29).
+ * Royal Society backfile records file the volume number in the issue field with no volume.
  * Skip such an issue when it textually matches the citation's volume.
- * Scoped to the affected family so no other DOI can be touched by this.
  */
 function should_skip_crossref_issue_as_volume_match(string $doi, string $crossref_volume, string $crossref_issue, string $citation_volume): bool {
     $doi_lower = mb_strtolower($doi);

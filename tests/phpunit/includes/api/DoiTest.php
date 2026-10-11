@@ -565,7 +565,6 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testCrossRefIssueMatchingVolumeIsSkippedForRstlBackfile(): void {
-        // 10.1098/rstl.1873.0014 carries the volume number in the issue field with no volume (#29)
         $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1873.0014', '', '163', '163'));
     }
 
@@ -594,8 +593,6 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testDoiJsonSkipsRstlBackfileIssueMatchingVolume(): void {
-        // 10.1098/rstl.1873.0014 carries the volume number in the issue field with no volume (#29).
-        // The dx.doi.org JSON path must apply the same guard as the OpenURL XML path.
         $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
         process_doi_json($template, '10.1098/rstl.1873.0014', [
             'type' => 'journal-article',
@@ -627,7 +624,6 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testDoiJsonSkipsArrayFormRstlBackfileIssue(): void {
-        // Guard must normalize the same single-element arrays that try_to_add_it unwraps.
         $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
         process_doi_json($template, '10.1098/rstl.1873.0014', [
             'type' => 'journal-article',

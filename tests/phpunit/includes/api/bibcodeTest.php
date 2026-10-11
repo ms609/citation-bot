@@ -815,8 +815,6 @@ final class bibcodeTest extends testBaseClass {
     }
 
     public function testAdsSkipsRstlBackfileIssueMatchingVolume(): void {
-        // 10.1098/rstl.1873.0014 carries the volume number in the issue field with no volume (#29).
-        // The ADS path must apply the same guard as the CrossRef paths.
         $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
         $record = (object) [
             'title' => ['XIII. Results'],
