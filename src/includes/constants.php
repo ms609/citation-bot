@@ -72,7 +72,7 @@ const BAD_OA_URL = [
     '10.1017/9781108859745', // Unpaywall Durham repository location is disputed
     '10.1001/archpsyc.1965.01720310065008', // Unpaywall maps to an unrelated repository handle
     '10.1109/cvpr.2016.90', // Unpaywall maps to an unrelated thesis
-    '10.1007/3-540-27596-7', // Unpaywall maps to an unrelated same-title thesis on figshare (#17)
+    '10.1007/3-540-27596-7', // Unpaywall maps to an unrelated same-title thesis on figshare
 ];
 const REMOVE_SEMI = ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
 const REMOVE_PERIOD = ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
