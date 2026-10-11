@@ -67,7 +67,13 @@ const BAD_NEW_PAGES = ['0', '0-0', '0–0'];
 const BAD_ISBN = ['9780918678072', '978-0-918678-07-2', '0918678072', '0-918678-07-2'];
 const SHORT_STRING = ['the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't', 'an', 'as', 'at', 'but', 'how', 'why', 'by', 'when', 'with', 'who', 'where', ''];
 const GOOD_FREE = ['publisher', 'projectmuse', 'have free'];
-const BAD_OA_URL = ['10.4135/9781529742343', '10.1017/9781108859745', '10.1001/archpsyc.1965.01720310065008', '10.1109/cvpr.2016.90'];
+const BAD_OA_URL = [
+    '10.4135/9781529742343', // Unpaywall gave a bad OA URL for this closed SAGE ebook
+    '10.1017/9781108859745', // Unpaywall Durham repository location is disputed
+    '10.1001/archpsyc.1965.01720310065008', // Unpaywall maps to an unrelated repository handle
+    '10.1109/cvpr.2016.90', // Unpaywall maps to an unrelated thesis
+    '10.1007/3-540-27596-7', // Unpaywall maps to an unrelated same-title thesis on figshare
+];
 const REMOVE_SEMI = ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
 const REMOVE_PERIOD = ['date', 'year', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume'];
 const LINK_LIST = ['authorlink', 'chapterlink', 'contributorlink', 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink', 'subjectlink', 'titlelink', 'translatorlink'];
