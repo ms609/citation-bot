@@ -421,7 +421,7 @@ final class Zotero {
             }
             // Never read an unbounded amount of shared filesystem state.
             $raw = stream_get_contents($lock, 65);
-            if ($raw === false || strlen($raw) > 64) {
+            if ($raw === false || mb_strlen($raw, '8bit') > 64) {
                 return false;
             }
             $raw = mb_trim($raw);
