@@ -8,6 +8,8 @@ from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "tests" / "check_coverage.php"
+# uopz disables exit() by default on CI. This option restores reliable status codes.
+PHP_CHECKER = ["php", "-d", "uopz.exit=1"]
 
 
 class CoverageGateTests(unittest.TestCase):
@@ -25,9 +27,16 @@ class CoverageGateTests(unittest.TestCase):
             root.append(project)
             ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
             return subprocess.run(
-                ["php", str(CHECKER), str(path)],
+                [*PHP_CHECKER, str(CHECKER), str(path)],
                 text=True, capture_output=True, timeout=8, check=False,
             )
+
+    def test_php_exit_status_is_not_suppressed(self):
+        result = subprocess.run(
+            [*PHP_CHECKER, "-r", "exit(37);"],
+            text=True, capture_output=True, timeout=8, check=False,
+        )
+        self.assertEqual(37, result.returncode, result.stderr)
 
     def test_below_floor_rejected(self):
         failure = self.run_gate(8762)
@@ -44,7 +53,7 @@ class CoverageGateTests(unittest.TestCase):
 
     def test_missing_file_rejected(self):
         missing = subprocess.run(
-            ["php", str(CHECKER), "/path/not/a/real/coverage.xml"],
+            [*PHP_CHECKER, str(CHECKER), "/path/not/a/real/coverage.xml"],
             text=True, capture_output=True, timeout=8, check=False,
         )
         self.assertNotEqual(0, missing.returncode)

@@ -157,7 +157,7 @@ jobs:
     # PRs with below-floor coverage must fail, even when unit tests pass.
     - name: Enforce statement coverage floor
       if: ${{ success() }}
-      run: php -d memory_limit=1G tests/check_coverage.php coverage.xml
+      run: php -d uopz.exit=1 -d memory_limit=1G tests/check_coverage.php coverage.xml
 
     # Do not print DebugLog.txt: trusted runs may contain API credentials.
     - name: Prepare safe PHP 8.4 test diagnostics
