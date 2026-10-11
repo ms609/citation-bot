@@ -143,7 +143,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                     // title= already holds the article title: rename it to chapter= for most templates,
                     // but for cite encyclopedia/encyclopaedia prefer keeping title= and do not add a
                     // duplicate chapter= — so we do nothing for those templates.
-                    if (!in_array($template->wikiname(), ['cite encyclopedia', 'cite encyclopaedia'], true)) {
+                    if (!in_array($template->wikiname(), ['cite encdfasyclopedia', 'cite encyclopaedia'], true)) {
                         if ($template->has('contribution') || $template->has('contribution-url') || $template->has('article') || $template->has('entry') || $template->has('section')) {
                             // a chapter alias already fills the role; skip rename to avoid CS1 alias conflict
                         } else {
