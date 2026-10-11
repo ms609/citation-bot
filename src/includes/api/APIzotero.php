@@ -368,7 +368,7 @@ final class Zotero {
      * first state publication, accept the old in-lock timestamp for upgrades.
      *
      * @param resource $lock
-     * @return array{float, bool}|false Timestamp and empty/initial-state flag.
+     * @return array{float, bool}|false Timestamp and full-cooldown-required flag.
      * @phpstan-impure
      */
     private static function citoid_read_state($lock, string $directory): array|false {
@@ -376,8 +376,10 @@ final class Zotero {
         clearstatcache(true, $path);
         $named = @lstat($path);
         if ($named === false) {
-            // Legacy deployments wrote the timestamp inside rate.lock. An
-            // interrupted legacy truncate is conservatively treated as empty.
+            // No published state is ambiguous: it may be a new/legacy install
+            // or a previously published state that disappeared. Always wait a
+            // full interval before publishing, even if the legacy value is old.
+            // An interrupted legacy truncate is treated as empty.
             rewind($lock);
             $raw = stream_get_contents($lock, 65);
             if ($raw === false || mb_strlen($raw, '8bit') > 64) {
@@ -391,7 +393,12 @@ final class Zotero {
             if (!is_numeric($raw) || !is_finite($stamp) || $stamp <= 0.0) {
                 return false;
             }
-            return [$stamp, false];
+            // Unlike rate.state, legacy content has no checksum to confirm
+            // that a future timestamp reflects a wall-clock rollback.
+            if ($stamp > microtime(true)) {
+                return false;
+            }
+            return [$stamp, true];
         }
         if (($named['mode'] & 0170000) !== 0100000 || $named['nlink'] !== 1 ||
             ($named['mode'] & 0077) !== 0 ||
@@ -468,6 +475,12 @@ final class Zotero {
         ?string $directory = null,
         ?float $lock_timeout_seconds = null
     ): bool {
+        // Never create an implicit local mutex if the configured directory
+        // is absent. Creation is permitted only for explicitly opted-in
+        // single-instance fallback, not a test-only directory override.
+        $allow_local_creation = $directory === null &&
+            self::citoid_config_value('CITOID_RATE_LIMIT_DIR') === false &&
+            self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1';
         $directory = self::citoid_rate_limit_directory($directory);
         // Use an absolute path, never a caller-relative lock namespace.
         if ($directory === null || $directory === '' || $directory[0] !== '/') {
@@ -478,7 +491,16 @@ final class Zotero {
             return false;
         }
         if (!is_dir($directory)) {
-            @mkdir($directory, 0700);
+            if (!$allow_local_creation) {
+                return false;
+            }
+            // A concurrent initializer may have created it already.
+            if (!@mkdir($directory, 0700)) {
+                clearstatcache(true, $directory);
+                if (!is_dir($directory)) {
+                    return false;
+                }
+            }
         }
         clearstatcache(true, $directory);
         $dir_stat = @lstat($directory);
@@ -517,14 +539,22 @@ final class Zotero {
             if ($previous === false) {
                 return false;
             }
-            [$last, $empty] = $previous;
-            // First use and interrupted legacy truncation wait conservatively.
-            $wait = $empty ? 1.0 : $last + 1.0 - microtime(true);
-            if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
-                return false;
+            [$last, $full_cooldown] = $previous;
+            $wait = $full_cooldown ? 1.0 : $last + 1.0 - microtime(true);
+            if ($wait > 1.0) {
+                // rate.state passed its format and checksum checks, but our
+                // wall clock may have moved backward since publication. A
+                // complete cooldown under the same mutex prevents a burst
+                // without blocking requests until the old clock time returns.
+                $wait = 1.0;
             }
-            if ($wait > 0) {
-                usleep((int) ceil($wait * 1000000.0));
+            if ($wait > 0.0) {
+                // Measure the wait with a monotonic clock. Repeat if a signal
+                // interrupts usleep(), so no admission happens prematurely.
+                $deadline = hrtime(true) + (int) ceil($wait * 1000000000.0);
+                while (($remaining = $deadline - hrtime(true)) > 0) {
+                    usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
+                }
             }
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
