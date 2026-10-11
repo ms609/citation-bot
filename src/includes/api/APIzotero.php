@@ -509,6 +509,7 @@ final class Zotero {
                     return false;
                 }
                 usleep(50000);
+            } while (true);
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
             }
@@ -521,6 +522,9 @@ final class Zotero {
             $wait = $empty ? 1.0 : $last + 1.0 - microtime(true);
             if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
                 return false;
+            }
+            if ($wait > 0) {
+                usleep((int) ceil($wait * 1000000.0));
             }
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
