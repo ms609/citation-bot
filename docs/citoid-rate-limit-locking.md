@@ -85,6 +85,30 @@ hosts' clocks are out of sync. Synchronize clocks on all replicas. The timestamp
 records admission time and does not guarantee that actual HTTP start times on
 different workers are one second apart. Severe contention can skip enrichment.
 
+## Contention and bounded waiting
+
+A worker makes a nonblocking attempt to acquire `rate.lock`, then polls using
+monotonic `hrtime()` for up to **15 seconds by default** (60 seconds is the
+maximum accepted by the test-only timeout parameter). A zero timeout makes one
+attempt without sleeping. Poll sleeps are limited to the remaining deadline,
+so a worker never deliberately sleeps a full polling interval beyond it.
+After the lock is acquired, rate-budget pacing can add up to **one second**;
+filesystem I/O and PHP scheduling introduce additional, unbounded overhead.
+This is an **acquisition timeout**, not a hard wall-clock HTTP deadline.
+
+At sustained demand greater than one admission per second, workers may time
+out. They **fail closed** and skip Citoid enrichment rather than bypassing
+pacing; the upstream error-handling path records a failure. Do not increase
+worker concurrency or retry admission in a tight loop to evade this budget.
+The mutex remains held during the pacing interval in this version. A future
+reservation/queue implementation would need its own cancellation and crash
+handling, so it is intentionally outside this change.
+
+The `citoid-stress` test exercises ten fresh PHP processes by default. Repeat
+with `CITOID_STRESS_WORKERS=20` and `CITOID_STRESS_WORKERS=50` to observe
+bounded denials under heavier load. This tests local filesystem coordination,
+not a real multi-host distributed mount.
+
 **Manual recovery of damaged state:** stop or drain all writers, check file
 ownership, permissions and whether any workers still hold the lock, inspect
 the shared state, then correct it while all writers are stopped. Never unlink
@@ -128,3 +152,27 @@ small (maximum 64 bytes) and detects malformed data with a checksum. A manual
 restart should keep `rate.lock` and `rate.state`; do not unlink either while
 workers may be active. The atomic rename guarantee does not apply to cross-
 filesystem temporary files; temporary records are created beside the state.
+
+## Offline cleanup of abandoned pending writes
+
+Do not remove pending files from a live request path. **First stop or drain
+all Citoid writers on every host** and verify that none can restart while
+cleaning. Then, with the same UID that owns the private directory, run:
+
+```sh
+php tools/cleanup-citoid-pending.php --offline --dry-run /absolute/private/lock-dir
+php tools/cleanup-citoid-pending.php --offline --delete /absolute/private/lock-dir
+```
+
+The tool refuses noncanonical paths, unsafe directory or lock ownership,
+replaced inodes, and a lock held by another process. It never creates or
+removes `rate.lock`, `rate.state`, or `rate.namespace`. It only examines
+regular, single-link, owner-private `rate.pending.` entries with exactly 24
+lowercase hexadecimal characters after the dot; it removes those older than
+five minutes and leaves newer or unrecognized names untouched. A symlink or
+otherwise unsafe matching entry aborts cleanup without changing that entry.
+The dry run lists eligible files without removing them.
+
+An advisory lock cannot prevent writers from starting **after** the utility
+exits. The `--offline` argument is an explicit operator assertion, not proof
+that all hosts are drained. Verify the namespace and storage mount separately.

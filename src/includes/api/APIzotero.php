@@ -655,10 +655,13 @@ final class Zotero {
                     $locked = true;
                     break;
                 }
-                if (hrtime(true) >= $deadline) {
+                // Bound each poll by the remaining monotonic acquisition
+                // budget. A zero timeout still performs one nonblocking try.
+                $remaining = $deadline - hrtime(true);
+                if ($remaining <= 0) {
                     return false;
                 }
-                usleep(50000);
+                usleep((int) min(50000, max(1, ceil($remaining / 1000.0))));
             } while (true);
             if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
                 ($configured && !self::citoid_namespace_matches($directory, $namespace_id))) {

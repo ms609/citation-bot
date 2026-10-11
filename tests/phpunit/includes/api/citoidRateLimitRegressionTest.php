@@ -342,4 +342,193 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
             @unlink($target);
         }
     }
+
+    public function testZeroTimeoutPerformsOneNonblockingAttempt(): void {
+        $directory = $this->freshDirectory();
+        $lock = fopen($directory . '/rate.lock', 'c+');
+        $this->assertNotFalse($lock);
+        try {
+            $this->assertTrue(flock($lock, LOCK_EX | LOCK_NB));
+            $start = hrtime(true);
+            $this->assertFalse(self::admit($directory, 0.0));
+            $this->assertLessThan(0.5, (hrtime(true) - $start) / 1e9);
+        } finally {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+    }
+
+    /** @return array{int, string, string} */
+    private static function runPendingCleanup(string $directory, string $mode): array {
+        $script = dirname(__DIR__, 4) . '/tools/cleanup-citoid-pending.php';
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed offline maintenance test subprocess.
+        $process = proc_open(
+            [PHP_BINARY, $script, '--offline', $mode, $directory],
+            [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes
+        );
+        if (!is_resource($process)) {
+            throw new RuntimeException('Unable to start offline cleanup subprocess');
+        }
+        $output = stream_get_contents($pipes[1]);
+        $errors = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        return [proc_close($process), (string) $output, (string) $errors];
+    }
+
+    public function testOfflineCleanupPreservesLockStateAndRecentWrites(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('posix_geteuid')) {
+            $this->markTestSkipped('POSIX CLI cleanup is required');
+        }
+        $directory = $this->freshDirectory();
+        $lock_path = $directory . '/rate.lock';
+        $this->assertSame(0, file_put_contents($lock_path, ''));
+        $this->writeState($directory, self::record(microtime(true) - 10.0));
+        $state = file_get_contents($directory . '/rate.state');
+        $inode = fileinode($lock_path);
+        $old = $directory . '/rate.pending.' . str_repeat('a', 24);
+        $recent = $directory . '/rate.pending.' . str_repeat('b', 24);
+        $unrecognized = $directory . '/rate.pending.crash-fixture';
+        foreach ([$old, $recent, $unrecognized] as $path) {
+            $this->assertSame(6, file_put_contents($path, 'orphan'));
+            $this->assertTrue(chmod($path, 0600));
+        }
+        $this->assertTrue(touch($old, time() - 600));
+        $this->assertTrue(touch($unrecognized, time() - 600));
+
+        [$code, $stdout] = self::runPendingCleanup($directory, '--dry-run');
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('Would delete', $stdout);
+        $this->assertFileExists($old);
+
+        [$code, $stdout] = self::runPendingCleanup($directory, '--delete');
+        $this->assertSame(0, $code);
+        $this->assertStringContainsString('Deleted', $stdout);
+        $this->assertFileDoesNotExist($old);
+        $this->assertFileExists($recent);
+        $this->assertFileExists($unrecognized);
+        $this->assertSame($state, file_get_contents($directory . '/rate.state'));
+        clearstatcache(true, $lock_path);
+        $this->assertSame($inode, fileinode($lock_path));
+    }
+
+    public function testOfflineCleanupRejectsHeldLockAndUnsafePendingFile(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('posix_geteuid') || !function_exists('symlink')) {
+            $this->markTestSkipped('POSIX CLI cleanup and symlinks are required');
+        }
+        $directory = $this->freshDirectory();
+        $lock_path = $directory . '/rate.lock';
+        $lock = fopen($lock_path, 'c+');
+        $this->assertNotFalse($lock);
+        $old = $directory . '/rate.pending.' . str_repeat('c', 24);
+        $this->assertSame(6, file_put_contents($old, 'orphan'));
+        $this->assertTrue(touch($old, time() - 600));
+        try {
+            $this->assertTrue(flock($lock, LOCK_EX | LOCK_NB));
+            [$code] = self::runPendingCleanup($directory, '--delete');
+            $this->assertNotSame(0, $code);
+            $this->assertFileExists($old);
+            $this->assertTrue(flock($lock, LOCK_UN));
+            $link = $directory . '/rate.pending.' . str_repeat('d', 24);
+            $this->assertTrue(symlink($old, $link));
+            [$code] = self::runPendingCleanup($directory, '--delete');
+            $this->assertNotSame(0, $code);
+            $this->assertFileExists($old);
+            $this->assertTrue(is_link($link));
+        } finally {
+            fclose($lock);
+        }
+    }
+
+    /**
+     * Burst test: bounded lock waits allow a few paced admissions and reject
+     * the rest. Run CITOID_STRESS_WORKERS=20 or 50 for heavier local testing.
+     */
+    #[Group('citoid-stress')]
+    public function testContentionBurstPacesAdmissionsAndBoundsDenials(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('proc_terminate') || !function_exists('proc_get_status')) {
+            $this->markTestSkipped('Independent POSIX subprocesses required');
+        }
+        $workers = getenv('CITOID_STRESS_WORKERS') ?: '10';
+        $this->assertContains($workers, ['10', '20', '50']);
+        $count = (int) $workers;
+        $directory = $this->freshDirectory();
+        $fixture = dirname(__DIR__, 3) . '/fixtures/citoidContentionWorker.php';
+        $start = $directory . '/start';
+        $processes = [];
+        $success = [];
+        $denied = 0;
+        try {
+            for ($i = 0; $i < $count; ++$i) {
+                $ready = $directory . '/ready-' . $i;
+                // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed load-test subprocess.
+                $process = proc_open(
+                    [PHP_BINARY, $fixture, $directory, $ready, $start, '2.2'],
+                    [0 => ['file', '/dev/null', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+                    $pipes
+                );
+                $this->assertTrue(is_resource($process));
+                $processes[] = ['process' => $process, 'pipes' => $pipes];
+            }
+            $deadline = hrtime(true) + 40000000000;
+            do {
+                $ready_count = 0;
+                for ($i = 0; $i < $count; ++$i) {
+                    $ready_path = $directory . '/ready-' . $i;
+                    clearstatcache(true, $ready_path);
+                    $ready_count += (int) is_file($ready_path);
+                }
+                if ($ready_count === $count) {
+                    break;
+                }
+                usleep(20000);
+            } while (hrtime(true) < $deadline);
+            $this->assertSame($count, $ready_count, 'Subprocess startup timed out');
+            $this->assertNotFalse(file_put_contents($start, 'go'));
+            $deadline = hrtime(true) + 10000000000;
+            foreach ($processes as $worker) {
+                $process = $worker['process'];
+                while (proc_get_status($process)['running'] && hrtime(true) < $deadline) {
+                    usleep(20000);
+                }
+                $this->assertFalse(proc_get_status($process)['running'], 'Contention worker stalled');
+                $output = stream_get_contents($worker['pipes'][1]);
+                $error = stream_get_contents($worker['pipes'][2]);
+                $this->assertMatchesRegularExpression('/^[01] [0-9]+\.[0-9]{6}\n$/', (string) $output, (string) $error);
+                [$granted, $timestamp] = explode(' ', mb_trim((string) $output));
+                if ($granted === '1') {
+                    $success[] = (float) $timestamp;
+                } else {
+                    ++$denied;
+                }
+            }
+            $this->assertGreaterThanOrEqual(1, count($success));
+            $this->assertGreaterThan(0, $denied, 'Overloaded workers must fail closed');
+            sort($success);
+            for ($i = 1; $i < count($success); ++$i) {
+                $this->assertGreaterThanOrEqual(0.85, $success[$i] - $success[$i - 1]);
+            }
+        } finally {
+            foreach ($processes as $worker) {
+                $process = $worker['process'];
+                if (proc_get_status($process)['running']) {
+                    @proc_terminate($process, 9);
+                }
+                foreach ($worker['pipes'] as $pipe) {
+                    if (is_resource($pipe)) {
+                        fclose($pipe);
+                    }
+                }
+                proc_close($process);
+            }
+            for ($i = 0; $i < $count; ++$i) {
+                @unlink($directory . '/ready-' . $i);
+            }
+            @unlink($start);
+        }
+    }
 }
