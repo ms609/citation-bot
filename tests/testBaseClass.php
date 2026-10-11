@@ -196,6 +196,21 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
      * tests. setUp() blocks Zotero again before every test.
      */
     protected function require_live_jstor_ris(): void {
+        // PR CI does not configure a cross-worker Citoid limiter. The
+        // production client intentionally fails closed without one. These
+        // tests assert live response content; offline JSTOR mapping is tested
+        // separately, so skip rather than asserting on an unpaced request.
+        $directory = getenv('CITOID_RATE_LIMIT_DIR', true);
+        if ($directory === false) {
+            $directory = getenv('CITOID_RATE_LIMIT_DIR');
+        }
+        $local = getenv('CITOID_ALLOW_LOCAL_FALLBACK', true);
+        if ($local === false) {
+            $local = getenv('CITOID_ALLOW_LOCAL_FALLBACK');
+        }
+        if ($directory === '' || ($directory === false && $local !== '1')) {
+            $this->markTestSkipped('Live JSTOR Citoid requires configured rate-limit coordination');
+        }
         usleep(300000); // Match requires_zotero(): reduce transient Citoid failures.
         Zotero::unblock_zotero();
     }

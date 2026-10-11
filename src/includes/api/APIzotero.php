@@ -363,6 +363,100 @@ final class Zotero {
     }
 
     /**
+     * Read a completed timestamp record. rate.lock is the stable flock mutex;
+     * rate.state is atomically replaced while that mutex is held. Until the
+     * first state publication, accept the old in-lock timestamp for upgrades.
+     *
+     * @param resource $lock
+     * @return array{float, bool}|false Timestamp and empty/initial-state flag.
+     * @phpstan-impure
+     */
+    private static function citoid_read_state($lock, string $directory): array|false {
+        $path = $directory . '/rate.state';
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false) {
+            // Legacy deployments wrote the timestamp inside rate.lock. An
+            // interrupted legacy truncate is conservatively treated as empty.
+            rewind($lock);
+            $raw = stream_get_contents($lock, 65);
+            if ($raw === false || strlen($raw) > 64) {
+                return false;
+            }
+            $raw = mb_trim($raw);
+            if ($raw === '') {
+                return [0.0, true];
+            }
+            $stamp = (float) $raw;
+            if (!is_numeric($raw) || !is_finite($stamp) || $stamp <= 0.0) {
+                return false;
+            }
+            return [$stamp, false];
+        }
+        if (($named['mode'] & 0170000) !== 0100000 || $named['nlink'] !== 1 ||
+            ($named['mode'] & 0077) !== 0 ||
+            (function_exists('posix_geteuid') && $named['uid'] !== posix_geteuid())) {
+            return false;
+        }
+        $state = @fopen($path, 'rb');
+        if ($state === false) {
+            return false;
+        }
+        try {
+            if (!self::citoid_lock_file_matches_path($state, $path)) {
+                return false;
+            }
+            $raw = @stream_get_contents($state, 65);
+            if ($raw === false || strlen($raw) > 64 ||
+                preg_match('/^CB1\|([0-9]{10,12}\.[0-9]{6})\|([0-9a-f]{16})\n$/D', $raw, $match) !== 1 ||
+                !hash_equals(substr(hash('sha256', $match[1]), 0, 16), $match[2])) {
+                return false;
+            }
+            $stamp = (float) $match[1];
+            return is_finite($stamp) && $stamp > 0.0 ? [$stamp, false] : false;
+        } finally {
+            fclose($state);
+        }
+    }
+
+    /**
+     * Publish a complete state record with rename(), never by truncating the
+     * flock-protected inode. A signal/crash can leave only an unused temp file.
+     *
+     * @param resource $lock
+     * @phpstan-impure
+     */
+    private static function citoid_commit_state($lock, string $lock_path, string $directory): bool {
+        try {
+            $temporary_path = $directory . '/rate.pending.' . bin2hex(random_bytes(12));
+        } catch (Throwable) {
+            return false;
+        }
+        $pending = @fopen($temporary_path, 'x+b');
+        if ($pending === false) {
+            return false;
+        }
+        try {
+            $stamp = sprintf('%.6F', microtime(true));
+            $payload = 'CB1|' . $stamp . '|' . substr(hash('sha256', $stamp), 0, 16) . "\n";
+            if (!@chmod($temporary_path, 0600) ||
+                @fwrite($pending, $payload) !== strlen($payload) ||
+                !@fflush($pending) || !@fsync($pending) ||
+                !self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                return false;
+            }
+            return @rename($temporary_path, $directory . '/rate.state');
+        } finally {
+            fclose($pending);
+            // A killed process can leave this unique name behind; readers
+            // never use pending files, so such leftovers cannot affect pacing.
+            if (is_file($temporary_path)) {
+                @unlink($temporary_path);
+            }
+        }
+    }
+
+    /**
      * Pace the Citoid request budget, failing closed if coordination is unsafe.
      * All replicas must use the SAME shared, flock-capable lock directory.
      * The local temp directory is allowed only by explicit opt-in on one instance.
@@ -415,41 +509,23 @@ final class Zotero {
                     return false;
                 }
                 usleep(50000);
-            } while (true);
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
             }
-            // Never read an unbounded amount of shared filesystem state.
-            $raw = stream_get_contents($lock, 65);
-            if ($raw === false || mb_strlen($raw, '8bit') > 64) {
+            $previous = self::citoid_read_state($lock, $directory);
+            if ($previous === false) {
                 return false;
             }
-            $raw = mb_trim($raw);
-            if ($raw !== '' && (!is_numeric($raw) || !is_finite((float) $raw))) {
-                return false;
-            }
-            $last = $raw === '' ? 0.0 : (float) $raw;
-            if ($raw !== '' && $last <= 0.0) {
-                return false;
-            }
-            // Empty state can mean initial creation or a crash after truncation.
-            // Cool down for one second before admitting another request.
-            $wait = $raw === '' ? 1.0 : $last + 1.0 - microtime(true);
+            [$last, $empty] = $previous;
+            // First use and interrupted legacy truncation wait conservatively.
+            $wait = $empty ? 1.0 : $last + 1.0 - microtime(true);
             if ($wait > 1.0) { // Unreasonably future-dated/corrupt shared state.
                 return false;
             }
-            if ($wait > 0) {
-                usleep((int) ceil($wait * 1000000.0));
-            }
             if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;
             }
-            $stamp = (string) microtime(true);
-            rewind($lock);
-            if (!ftruncate($lock, 0) || fwrite($lock, $stamp) !== mb_strlen($stamp)) {
-                return false;
-            }
-            return fflush($lock);
+            return self::citoid_commit_state($lock, $lock_path, $directory);
         } finally {
             if ($locked) {
                 flock($lock, LOCK_UN);

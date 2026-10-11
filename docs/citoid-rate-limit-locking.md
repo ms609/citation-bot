@@ -58,7 +58,20 @@ The unit tests cover configuration selection, timeout, symlink and inode
 substitution, but do not prove correct multi-replica behavior. Validate
 shared-fs locking on the real deployment before merging or scaling out.
 
-The lock file is read with a 64-byte cap; oversized and nonpositive timestamps
-are rejected. An empty lock file (first creation or interrupted write) causes
-a conservative one-second cooldown rather than immediate admission. This
-means the first request can incur a one-second initialization delay.
+State publication is crash-consistent across normal exit, SIGTERM, SIGKILL,
+SIGHUP termination, and SIGSEGV, provided the filesystem supplies atomic
+same-directory rename and working flock semantics. The permanent `rate.lock`
+inode is only the mutex: newer workers read a checksummed `rate.state` which
+is published by creating, flushing and syncing a unique temporary file, then
+renaming it while holding the mutex. A terminated writer can leave an ignored
+`rate.pending.*` file but cannot expose a partially written published timestamp.
+The old timestamp within `rate.lock` is read on first use when `rate.state`
+is absent, so upgrading does not reset the budget. Drain all old workers before
+rolling out the new state format; mixed old/new workers would not share timing
+state even though they share the mutex. An empty legacy lock causes a
+conservative one-second cooldown; corrupt published state fails closed and
+requires operator investigation after draining writers. The state record is
+small (maximum 64 bytes) and detects malformed data with a checksum. A manual
+restart should keep `rate.lock` and `rate.state`; do not unlink either while
+workers may be active. The atomic rename guarantee does not apply to cross-
+filesystem temporary files; temporary records are created beside the state.

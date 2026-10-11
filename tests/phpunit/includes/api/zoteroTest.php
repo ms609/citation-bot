@@ -37,6 +37,7 @@ final class zoteroTest extends testBaseClass {
             $this->assertTrue($method->invoke(null, $dir));
             $this->assertGreaterThanOrEqual(0.85, microtime(true) - $begin);
         } finally {
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
         }
@@ -56,6 +57,7 @@ final class zoteroTest extends testBaseClass {
             $this->assertFalse($method->invoke(null, $dir));
         } finally {
             @chmod($dir, 0700);
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
         }
@@ -80,6 +82,7 @@ final class zoteroTest extends testBaseClass {
             $this->assertFalse($method->invoke(null, $dir));
             $this->assertSame('unchanged', file_get_contents($target));
         } finally {
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @unlink($target);
             @rmdir($dir);
@@ -102,6 +105,7 @@ final class zoteroTest extends testBaseClass {
         } finally {
             flock($holder, LOCK_UN);
             fclose($holder);
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
         }
@@ -216,6 +220,7 @@ final class zoteroTest extends testBaseClass {
                 $this->assertSame($dir, $resolve->invoke(null));
                 $this->assertSame('/isolated/test', $resolve->invoke(null, '/isolated/test'));
             } finally {
+                @unlink($dir . '/rate.state');
                 @unlink($dir . '/rate.lock');
                 @rmdir($dir);
             }
@@ -271,6 +276,7 @@ final class zoteroTest extends testBaseClass {
             $this->assertTrue($method->invoke(null, $dir));
             $this->assertGreaterThanOrEqual(0.85, microtime(true) - $begin);
         } finally {
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
         }
@@ -286,8 +292,111 @@ final class zoteroTest extends testBaseClass {
                 $this->assertFalse($method->invoke(null, $dir, 0.0));
             }
         } finally {
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottlePublishesAtomicStateAndPreservesMutex(): void {
+        $dir = sys_get_temp_dir() . '/citoid-atomic-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        $lock = $dir . '/rate.lock';
+        $state = $dir . '/rate.state';
+        try {
+            // Upgrade from the previous timestamp-in-lock format without
+            // ever replacing or truncating the stable flock inode.
+            $legacy = (string) (microtime(true) - 5.0);
+            $this->assertNotFalse(file_put_contents($lock, $legacy));
+            $inode = fileinode($lock);
+            $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertTrue($throttle->invoke(null, $dir));
+            clearstatcache(true, $lock);
+            $this->assertSame($inode, fileinode($lock));
+            $this->assertSame($legacy, file_get_contents($lock));
+            $first = file_get_contents($state);
+            $this->assertMatchesRegularExpression('/^CB1\|[0-9]{10,12}\.[0-9]{6}\|[0-9a-f]{16}\n$/', $first);
+            $this->assertTrue($throttle->invoke(null, $dir));
+            $this->assertNotSame($first, file_get_contents($state));
+        } finally {
+            @unlink($state);
+            @unlink($lock);
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRejectsDamagedPublishedStateAndIgnoresPendingWrites(): void {
+        $dir = sys_get_temp_dir() . '/citoid-atomic-' . bin2hex(random_bytes(8));
+        $this->assertTrue(mkdir($dir, 0700));
+        try {
+            $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+            $this->assertTrue($throttle->invoke(null, $dir));
+            $state = $dir . '/rate.state';
+            $committed = file_get_contents($state);
+            // Simulate a SIGTERM/SIGKILL/SIGHUP/SIGSEGV during a temporary
+            // write: an orphan is harmless and the committed state survives.
+            $orphan = $dir . '/rate.pending.interrupted-test';
+            $this->assertNotFalse(file_put_contents($orphan, 'CB1|partial'));
+            $this->assertTrue($throttle->invoke(null, $dir));
+            $this->assertNotSame($committed, file_get_contents($state));
+            $this->assertSame('CB1|partial', file_get_contents($orphan));
+            $this->assertNotFalse(file_put_contents($state, 'CB1|bad'));
+            $this->assertFalse($throttle->invoke(null, $dir, 0.0));
+        } finally {
+            @unlink($dir . '/rate.pending.interrupted-test');
+            @unlink($dir . '/rate.state');
+            @unlink($dir . '/rate.lock');
+            @rmdir($dir);
+        }
+    }
+
+    public function testCitoidThrottleRecoversAfterTerminatingSignals(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('proc_terminate')) {
+            $this->markTestSkipped('POSIX subprocess signals are required');
+        }
+        foreach (['exit' => 0, 'term' => 15, 'kill' => 9, 'hup' => 1, 'segv' => 11] as $name => $signal) {
+            $dir = sys_get_temp_dir() . '/citoid-signal-' . bin2hex(random_bytes(8));
+            $this->assertTrue(mkdir($dir, 0700));
+            $process = null;
+            try {
+                $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+                $this->assertTrue($throttle->invoke(null, $dir));
+                $committed = file_get_contents($dir . '/rate.state');
+                $process = proc_open(
+                    [PHP_BINARY, dirname(__DIR__, 3) . '/fixtures/citoidCrashWorker.php', $dir, $name],
+                    [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'],
+                     2 => ['file', '/dev/null', 'w']], $pipes
+                );
+                $this->assertTrue(is_resource($process));
+                $deadline = microtime(true) + 5.0;
+                while (!is_file($dir . '/ready') && microtime(true) < $deadline) {
+                    usleep(20000);
+                }
+                $this->assertFileExists($dir . '/ready');
+                if ($signal !== 0) {
+                    $this->assertFalse($throttle->invoke(null, $dir, 0.0));
+                    $this->assertTrue(proc_terminate($process, $signal));
+                }
+                while (proc_get_status($process)['running'] && microtime(true) < $deadline) {
+                    usleep(20000);
+                }
+                $this->assertFalse(proc_get_status($process)['running']);
+                $this->assertSame($committed, file_get_contents($dir . '/rate.state'));
+                $this->assertTrue($throttle->invoke(null, $dir));
+            } finally {
+                if (is_resource($process)) {
+                    if (proc_get_status($process)['running']) {
+                        @proc_terminate($process, 9);
+                    }
+                    proc_close($process);
+                }
+                @unlink($dir . '/ready');
+                @unlink($dir . '/rate.pending.crash-fixture');
+                @unlink($dir . '/rate.state');
+                @unlink($dir . '/rate.lock');
+                @rmdir($dir);
+            }
         }
     }
 
@@ -359,6 +468,7 @@ final class zoteroTest extends testBaseClass {
                 @unlink($log);
             }
             @unlink($output);
+            @unlink($dir . '/rate.state');
             @unlink($dir . '/rate.lock');
             @rmdir($dir);
         }
