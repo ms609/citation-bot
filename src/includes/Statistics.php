@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 const STATISTICS_PAGE = 'User:Citation bot/statistics';
 const STATISTICS_UNTAGGED_LABEL = 'Untagged';
-
+conflict
 const KNOWN_UCB_TYPES = [
     '#UCB_automated_tools',
     '#UCB_toolbar',
