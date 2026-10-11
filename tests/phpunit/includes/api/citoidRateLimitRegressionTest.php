@@ -174,7 +174,7 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $directory);
         $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', str_repeat('a', 31));
         $this->assertFalse(self::admit(null));
-        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', strtoupper($id));
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', mb_strtoupper($id, 'UTF-8'));
         $this->assertFalse(self::admit(null));
         $wrong = $id === str_repeat('0', 32) ? str_repeat('1', 32) : str_repeat('0', 32);
         $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $wrong);

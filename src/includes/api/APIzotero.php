@@ -595,7 +595,11 @@ final class Zotero {
         // single-instance fallback, not a test-only directory override.
         $configured = $directory === null &&
             self::citoid_config_value('CITOID_RATE_LIMIT_DIR') !== false;
-        $namespace_id = $configured ? self::citoid_config_value('CITOID_RATE_LIMIT_NAMESPACE_ID') : false;
+        $namespace_id = $configured ? self::citoid_config_value('CITOID_RATE_LIMIT_NAMESPACE_ID') : '';
+        // Resolve absent configuration once; every later check receives a string.
+        if ($namespace_id === false) {
+            return false;
+        }
         $allow_local_creation = $directory === null &&
             self::citoid_config_value('CITOID_RATE_LIMIT_DIR') === false &&
             self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1';
@@ -630,8 +634,7 @@ final class Zotero {
         // The configured namespace must be provisioned on the intended mount.
         // An existing directory alone is insufficient: a missing mount can
         // expose an unrelated directory with the same absolute pathname.
-        if ($configured && ($namespace_id === false ||
-            !self::citoid_namespace_matches($directory, $namespace_id))) {
+        if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
             return false;
         }
         $lock_path = $directory . '/rate.lock';
@@ -658,8 +661,7 @@ final class Zotero {
                 usleep(50000);
             } while (true);
             if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
-                ($configured && ($namespace_id === false ||
-                    !self::citoid_namespace_matches($directory, $namespace_id)))) {
+                ($configured && !self::citoid_namespace_matches($directory, $namespace_id))) {
                 return false;
             }
             $previous = self::citoid_read_state($lock, $directory);
@@ -684,8 +686,7 @@ final class Zotero {
                 }
             }
             if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
-                ($configured && ($namespace_id === false ||
-                    !self::citoid_namespace_matches($directory, $namespace_id)))) {
+                ($configured && !self::citoid_namespace_matches($directory, $namespace_id))) {
                 return false;
             }
             return self::citoid_commit_state($lock, $lock_path, $directory);
