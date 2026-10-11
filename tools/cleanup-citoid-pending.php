@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+// A suppressed exit() can make a failed safety check appear successful.
+// PHP uopz defaults to disabling exit, so refuse to run unless CLI exit
+// statuses are reliable. Throwing before any I/O exits nonzero even under uopz.
+if (extension_loaded('uopz') && ini_get('uopz.exit') !== '1') {
+    throw new RuntimeException('Run this offline utility with php -d uopz.exit=1');
+}
+
 /**
  * Return an explicitly validated CLI directory, never an unchecked path.
  * Whitelist literal pathname characters, reject traversal and glob syntax,
@@ -55,18 +62,24 @@ final class CitoidPendingCleanup {
         $lock_path = $directory . '/rate.lock';
         // Never open an untrusted lock type (including a FIFO that could
         // block indefinitely). A missing lock may indicate a wrong mount.
-        if (self::privateFile($lock_path, 0100000, $owner, true) === false) {
-            self::error('Missing or unsafe permanent rate.lock');
+        $lock_stat = self::privateFile($lock_path, 0100000, $owner, true);
+        if ($lock_stat === false || ($lock_stat['mode'] & 0200) === 0) {
+            self::error('Missing, owner-unwritable or unsafe permanent rate.lock');
             return 2;
         }
-        $lock = @fopen($lock_path, 'rb');
+        // r+b does not create/truncate the mutex; it permits exclusive flock
+        // on Linux NFS, where a read-only descriptor cannot take that lock.
+        $lock = @fopen($lock_path, 'r+b');
         if ($lock === false) {
-            self::error('Missing or unreadable permanent rate.lock');
+            self::error('Missing or unwritable permanent rate.lock');
             return 2;
         }
         try {
-            if (!@flock($lock, LOCK_EX | LOCK_NB)) {
-                self::error('Lock is held: workers have not been drained');
+            $would_block = 0;
+            if (!@flock($lock, LOCK_EX | LOCK_NB, $would_block)) {
+                self::error($would_block === 1 ?
+                    'Lock is held: workers have not been drained' :
+                    'Unable to acquire permanent lock: locking error');
                 return 2;
             }
             if (!self::identityMatches($lock, $lock_path, $owner) ||
@@ -162,6 +175,7 @@ final class CitoidPendingCleanup {
         $named = self::privateFile($path, 0100000, $owner, true);
         $opened = @fstat($handle);
         return $named !== false && $opened !== false &&
+            ($named['mode'] & 0200) !== 0 && ($opened['mode'] & 0200) !== 0 &&
             ($opened['mode'] & 0170000) === 0100000 && $opened['nlink'] === 1 &&
             $opened['uid'] === $owner && $opened['dev'] === $named['dev'] &&
             $opened['ino'] === $named['ino'];

@@ -22,13 +22,13 @@ runtime UID; directory mode 0700 is required.
 On **host A**, start a bounded hold:
 
 ```sh
-php tools/verify-citoid-shared-flock.php --offline --hold /absolute/shared/citoid-dir 20
+php -d uopz.exit=1 tools/verify-citoid-shared-flock.php --offline --hold /absolute/shared/citoid-dir 20
 ```
 
 When host A prints `LOCK_HELD`, immediately run on **host B**:
 
 ```sh
-php tools/verify-citoid-shared-flock.php --offline --expect-busy /absolute/shared/citoid-dir
+php -d uopz.exit=1 tools/verify-citoid-shared-flock.php --offline --expect-busy /absolute/shared/citoid-dir
 ```
 
 Host B must print `PASS: remote holder excluded this host` and exit 0. If it
@@ -38,7 +38,7 @@ cross-host `flock` exclusion: **do not deploy**.
 After host A prints `LOCK_RELEASED` and exits, run on host B:
 
 ```sh
-php tools/verify-citoid-shared-flock.php --offline --expect-free /absolute/shared/citoid-dir
+php -d uopz.exit=1 tools/verify-citoid-shared-flock.php --offline --expect-free /absolute/shared/citoid-dir
 ```
 
 Host B must print `PASS: lock is available after the holder exits` and exit 0.
@@ -46,11 +46,24 @@ Repeat with host roles reversed. Compare the expected inode and marker identitie
 using deployment tooling; do not infer shared identity solely from matching
 pathnames. Do not run the probe against a live tenant without draining writers.
 
-The script only opens the **existing** `rate.lock` read-only; it does not create,
-truncate, replace, unlink, or modify `rate.state`. It refuses noncanonical
-paths, symlinks, nonprivate directories, unsafe lock permissions, and unexpected
-inode changes. The local CI test only proves two **processes on one host** can
-exclude each other; it is not a substitute for the two-host procedure above.
+Use `php -d uopz.exit=1` when invoking the offline utilities so a failed
+verification cannot be reported as a successful exit under the `uopz` PHP
+extension. The scripts refuse to run before filesystem access when `uopz` is
+loaded with suppressed exit codes. The same flag applies to cleanup commands
+in `docs/citoid-rate-limit-locking.md`.
+
+The script opens the **existing** `rate.lock` read-write (`r+b`) because
+Linux NFS requires write access for an exclusive `flock()`. This mode does **not**
+create or truncate the lock, and the probe never writes to it. It does not
+replace, unlink, or modify `rate.state`. Run it as the lock owner, with the
+owner-write permission bit set; modes `0600` and `0644` are allowed, but
+group/other write access is not. A missing file or write permission fails
+closed. `--expect-busy` passes **only** when `flock()` reports genuine
+contention; locking errors (including unsupported operations) fail the probe.
+It also refuses noncanonical paths, symlinks, nonprivate directories and
+unexpected inode changes. The local CI test only proves that two **processes
+on one host** can exclude each other; it is not a substitute for the two-host
+procedure above.
 
 ## 3. Controlled failure and recovery exercises
 

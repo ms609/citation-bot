@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+// A suppressed exit() can make a failed safety check appear successful.
+// PHP uopz defaults to disabling exit, so refuse to run unless CLI exit
+// statuses are reliable. Throwing before any I/O exits nonzero even under uopz.
+if (extension_loaded('uopz') && ini_get('uopz.exit') !== '1') {
+    throw new RuntimeException('Run this offline utility with php -d uopz.exit=1');
+}
+
 /**
  * Offline, cross-host smoke check of PHP flock on an existing Citoid mutex.
  * Never creates, truncates or unlinks rate.lock or rate.state.
@@ -46,11 +53,14 @@ final class CitoidSharedFlockSmoke {
         }
         $path = $directory . '/rate.lock';
         $named = self::privateEntry($path, 0100000, $owner);
-        if ($named === false || ($named['mode'] & 0022) !== 0 || $named['nlink'] !== 1) {
-            self::error('Missing, writable-by-others or unsafe permanent lock');
+        if ($named === false || ($named['mode'] & 0022) !== 0 ||
+            ($named['mode'] & 0200) === 0 || $named['nlink'] !== 1) {
+            self::error('Missing, owner-unwritable or unsafe permanent lock');
             return self::EXIT_INVALID;
         }
-        $handle = @fopen($path, 'rb');
+        // Exclusive flock on Linux NFS requires an open-for-writing descriptor.
+        // r+b opens only an existing file and never truncates it.
+        $handle = @fopen($path, 'r+b');
         if ($handle === false) {
             self::error('Unable to open the permanent lock');
             return self::EXIT_INVALID;
@@ -61,22 +71,27 @@ final class CitoidSharedFlockSmoke {
                 self::error('Lock or directory identity changed');
                 return self::EXIT_INVALID;
             }
-            $acquired = @flock($handle, LOCK_EX | LOCK_NB);
-            if ($mode === '--expect-busy') {
-                if ($acquired) {
-                    self::error('FAIL: lock was unexpectedly available on this host');
-                    return 1;
-                }
-                echo "PASS: remote holder excluded this host\n";
-                return 0;
+            $would_block = 0;
+            $acquired = @flock($handle, LOCK_EX | LOCK_NB, $would_block);
+            // Only EWOULDBLOCK is evidence of another lock holder. An I/O or
+            // unsupported-locking failure must NEVER pass --expect-busy.
+            if (!self::matches($handle, $path, $named, $owner) ||
+                !self::directoryMatches($directory, $directory_stat, $owner)) {
+                self::error('Lock or directory identity changed during acquisition');
+                return self::EXIT_INVALID;
             }
             if (!$acquired) {
-                self::error('FAIL: lock could not be acquired');
+                if ($mode === '--expect-busy' && $would_block === 1) {
+                    echo "PASS: remote holder excluded this host\n";
+                    return 0;
+                }
+                self::error($would_block === 1 ?
+                    'FAIL: lock remains held' : 'FAIL: exclusive locking failed (not contention)');
                 return 1;
             }
-            if (!self::matches($handle, $path, $named, $owner)) {
-                self::error('Lock was replaced during acquisition');
-                return self::EXIT_INVALID;
+            if ($mode === '--expect-busy') {
+                self::error('FAIL: lock was unexpectedly available on this host');
+                return 1;
             }
             if ($mode === '--expect-free') {
                 echo "PASS: lock is available after the holder exits\n";
@@ -124,7 +139,7 @@ final class CitoidSharedFlockSmoke {
             ($opened['mode'] & 0170000) === 0100000 && $opened['nlink'] === 1 &&
             $opened['uid'] === $owner && $opened['dev'] === $current['dev'] &&
             $opened['ino'] === $current['ino'] && $current['dev'] === $original['dev'] &&
-            $current['ino'] === $original['ino'] && ($current['mode'] & 0022) === 0;
+            $current['ino'] === $original['ino'] && ($current['mode'] & 0022) === 0 && ($current['mode'] & 0200) !== 0;
     }
 
     /** @param string $path
