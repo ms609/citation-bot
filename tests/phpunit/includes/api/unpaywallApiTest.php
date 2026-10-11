@@ -66,7 +66,7 @@ final class unpaywallApiTest extends testBaseClass {
     }
 
     public function testCoxeterDoiWithUnrelatedThesisUrlIsRejectedWithoutARequest(): void {
-        // Unpaywall maps this book DOI to an unrelated same-title undergraduate thesis on figshare (#17)
+        // Unpaywall maps this book DOI to an unrelated same-title undergraduate thesis on figshare
         $doi = '10.1007/3-540-27596-7';
         $template = $this->make_citation(
             '{{citation|last1=Bjorner|first1=Anders|last2=Brenti|first2=Francesco|' .
