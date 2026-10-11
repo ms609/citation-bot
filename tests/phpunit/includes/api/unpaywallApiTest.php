@@ -65,6 +65,17 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertNull($template->get2('hdl-access'));
     }
 
+    public function testCoxeterDoiWithUnrelatedThesisUrlIsRejectedWithoutARequest(): void {
+        // Unpaywall maps this book DOI to an unrelated same-title undergraduate thesis on figshare
+        $doi = '10.1007/3-540-27596-7';
+        $template = $this->make_citation(
+            '{{citation|last1=Bjorner|first1=Anders|last2=Brenti|first2=Francesco|' .
+            'title=Combinatorics of Coxeter groups|publisher=Springer|year=2005|doi=' . $doi . '}}'
+        );
+        $this->assertSame('wrong', get_unpaywall_url($template, $doi));
+        $this->assertNull($template->get2('url'));
+    }
+
     public function testOpenAccessLookupSkipsCitationsThatAlreadyHaveEnoughInformation(): void {
         $citations = [
             'missing DOI' => '{{cite journal|title=No DOI}}',
