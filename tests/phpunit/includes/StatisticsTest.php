@@ -24,6 +24,21 @@ final class StatisticsTest extends testBaseClass {
         $this->assertSame('#UCB_toolbar', statistics_ucb_from_comment('#UCB_toolbar and #UCB_Category'));
     }
 
+    public function testUcbFromCommentInvalidTruncated(): void {
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | Suggested by X | Linked from Foo | #UCB_webform_lin'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | Suggested by X | Linked from Foo | #UCB_webform_l'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | Suggested by X | Linked from Foo | #UCB_webform_li'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB_web'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB_webf'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB_Foo'));
+    }
+
+    public function testUcbFromCommentInvalidBareFragment(): void {
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB_'));
+        $this->assertSame(STATISTICS_INVALID_LABEL, statistics_ucb_from_comment('Add: lots | #UCB '));
+    }
+
     public function testAggregate(): void {
         $edits = [
             (object) ['comment' => 'Add: title | #UCB_toolbar'],

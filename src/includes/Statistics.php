@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 const STATISTICS_PAGE = 'User:Citation bot/statistics';
 const STATISTICS_UNTAGGED_LABEL = 'Untagged';
+const STATISTICS_INVALID_LABEL = 'Invalid UCB tag';
 
 const KNOWN_UCB_TYPES = [
     '#UCB_automated_tools',
@@ -31,12 +32,21 @@ const KNOWN_UCB_TYPES = [
 
 /**
  * Extract the first #UCB_* token from an edit summary comment.
- * Returns the token (e.g. "#UCB_toolbar") or STATISTICS_UNTAGGED_LABEL
- * when no tag is present. Matching is case-sensitive (tags are canonical).
+ * Returns the token (e.g. "#UCB_toolbar") when it is a known type,
+ * STATISTICS_INVALID_LABEL when a #UCB_* token is present but not a
+ * known type (usually truncated by the edit-summary length limit),
+ * or STATISTICS_UNTAGGED_LABEL when no tag is present.
+ * Matching is case-sensitive (tags are canonical).
  */
 function statistics_ucb_from_comment(string $comment): string {
     if (preg_match('~#UCB_[A-Za-z0-9_]+~', $comment, $m)) {
-        return $m[0];
+        if (in_array($m[0], KNOWN_UCB_TYPES, true)) {
+            return $m[0];
+        }
+        return STATISTICS_INVALID_LABEL;
+    }
+    if (preg_match('~#UCB(?:_[A-Za-z0-9_]*)?\s*$~', $comment)) {
+        return STATISTICS_INVALID_LABEL;
     }
     return STATISTICS_UNTAGGED_LABEL;
 }
@@ -140,6 +150,7 @@ function statistics_generate_wikitext(array $counts, int $total, DateTimeImmutab
     $out .= "|}\n\n";
     $out .= "<small>Breakdown by <code>#UCB</code> tag in edit summary. ";
     $out .= "\"" . STATISTICS_UNTAGGED_LABEL . "\" counts edits with no <code>#UCB_</code> tag. ";
+    $out .= "\"" . STATISTICS_INVALID_LABEL . "\" counts edits whose <code>#UCB_</code> tag is not a known type (usually truncated by the edit-summary length limit). ";
     $out .= "Data via <code>list=usercontribs</code> for user <code>Citation_bot</code>.</small>\n";
     return $out;
 }
