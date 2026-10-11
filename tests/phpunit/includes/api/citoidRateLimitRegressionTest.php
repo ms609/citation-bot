@@ -385,6 +385,9 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $directory = $this->freshDirectory();
         $lock_path = $directory . '/rate.lock';
         $this->assertSame(0, file_put_contents($lock_path, ''));
+        // Production's c+ lock creation may leave mode 0644 with a 0022 umask.
+        // Read-only group/other bits do not let another UID replace the mutex.
+        $this->assertTrue(chmod($lock_path, 0644));
         $this->writeState($directory, self::record(microtime(true) - 10.0));
         $state = file_get_contents($directory . '/rate.state');
         $inode = fileinode($lock_path);
@@ -412,6 +415,25 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $this->assertSame($state, file_get_contents($directory . '/rate.state'));
         clearstatcache(true, $lock_path);
         $this->assertSame($inode, fileinode($lock_path));
+    }
+
+    public function testOfflineCleanupRejectsWritableLockAndUnsafeDirectoryArgument(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
+            !function_exists('posix_geteuid')) {
+            $this->markTestSkipped('POSIX CLI cleanup is required');
+        }
+        $directory = $this->freshDirectory();
+        $lock_path = $directory . '/rate.lock';
+        $this->assertSame(0, file_put_contents($lock_path, ''));
+        $this->assertTrue(chmod($lock_path, 0666));
+        [$code] = self::runPendingCleanup($directory, '--dry-run');
+        $this->assertSame(2, $code, 'A group/other-writable mutex must be refused');
+
+        $this->assertTrue(chmod($lock_path, 0600));
+        [$code] = self::runPendingCleanup($directory . '/../' . basename($directory), '--dry-run');
+        $this->assertSame(2, $code, 'A traversal alias must be refused');
+        [$code] = self::runPendingCleanup($directory . '/*', '--dry-run');
+        $this->assertSame(2, $code, 'A glob expression must be refused');
     }
 
     public function testOfflineCleanupRejectsHeldLockAndUnsafePendingFile(): void {

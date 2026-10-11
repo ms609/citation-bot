@@ -13,6 +13,13 @@
             "prevent": [
                 "xss"
             ]
+        },
+        {
+            "name": "citoid_cleanup_canonical_directory",
+            "language": "php",
+            "prevent": [
+                "path_traversal"
+            ]
         }
     ]
 }
