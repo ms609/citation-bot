@@ -5,8 +5,7 @@ declare(strict_types=1);
 /*
  * Test-first regressions for the Citoid rate limiter in PR #6120.
  * These use only isolated local files; no Citoid HTTP requests are sent.
- * The clock-rollback, missing legacy state and missing shared directory cases
- * deliberately fail until the follow-up production fixes are applied.
+ * Includes mount-marker regressions for configured shared namespaces.
  */
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
@@ -40,7 +39,7 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
                     @unlink($file);
                 }
             }
-            foreach (['rate.state', 'rate.lock', 'rate.lock.replaced'] as $name) {
+            foreach (['rate.state', 'rate.lock', 'rate.lock.replaced', 'rate.namespace'] as $name) {
                 @unlink($directory . '/' . $name);
             }
             @rmdir($directory . '/rate.state');
@@ -140,6 +139,73 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         // shared filesystem must not silently become an independent local lock.
         $this->assertFalse(self::admit(null));
         $this->assertDirectoryDoesNotExist($directory);
+    }
+
+    /** Provision a marker exactly as the configured shared filesystem requires. */
+    private function writeNamespace(string $directory, string $id): void {
+        $path = $directory . '/rate.namespace';
+        $value = 'CBNS1|' . $id . "\n";
+        $this->assertSame(mb_strlen($value, '8bit'), file_put_contents($path, $value));
+        $this->assertTrue(chmod($path, 0600));
+    }
+
+    public function testSharedNamespaceRequiresPreprovisionedMarker(): void {
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $directory);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->assignEnvironment('CITOID_ALLOW_LOCAL_FALLBACK', '1');
+
+        // A missing mount may expose an existing but unrelated local directory.
+        $this->assertFalse(self::admit(null));
+        $this->assertFileDoesNotExist($directory . '/rate.lock');
+        $this->writeNamespace($directory, $id);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', '');
+        $this->assertFalse(self::admit(null), 'Empty namespace configuration must fail closed');
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->assertTrue(self::admit(null));
+        $this->assertFileExists($directory . '/rate.state');
+    }
+
+    public function testSharedNamespaceRejectsWrongOrInvalidIdentifier(): void {
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $this->writeNamespace($directory, $id);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $directory);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', str_repeat('a', 31));
+        $this->assertFalse(self::admit(null));
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', strtoupper($id));
+        $this->assertFalse(self::admit(null));
+        $wrong = $id === str_repeat('0', 32) ? str_repeat('1', 32) : str_repeat('0', 32);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $wrong);
+        $this->assertFalse(self::admit(null));
+        $this->assertFileDoesNotExist($directory . '/rate.lock');
+    }
+
+    public function testSharedNamespaceRejectsSymlinkAndUnsafePermissions(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('symlink')) {
+            $this->markTestSkipped('POSIX symlinks required');
+        }
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $path = $directory . '/rate.namespace';
+        $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $directory);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->writeNamespace($directory, $id);
+        $this->assertTrue(chmod($path, 0644));
+        $this->assertFalse(self::admit(null));
+        $this->assertTrue(chmod($path, 0600));
+        $this->assertTrue(rename($path, $path . '.original'));
+        try {
+            if (!@symlink($path . '.original', $path)) {
+                $this->markTestSkipped('Filesystem does not permit symlinks');
+            }
+            $this->assertFalse(self::admit(null));
+        } finally {
+            @unlink($path);
+            $this->assertTrue(rename($path . '.original', $path));
+        }
+        $this->assertFileDoesNotExist($directory . '/rate.lock');
     }
 
     public function testFailedPublishCannotReplaceStateDirectory(): void {

@@ -427,6 +427,44 @@ final class Zotero {
     }
 
     /**
+     * Require an administrator-provisioned marker for configured shared locks.
+     * Its absence detects many missing-mount cases where a local directory
+     * already exists at the expected path. It cannot prove cross-host flock.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_namespace_matches(string $directory, string $expected): bool {
+        if (preg_match('~\A[0-9a-f]{32}\z~D', $expected) !== 1) {
+            return false;
+        }
+        $path = $directory . '/rate.namespace';
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false || ($named['mode'] & 0170000) !== 0100000 ||
+            ($named['mode'] & 0077) !== 0 || $named['nlink'] !== 1 || $named['size'] !== 39 ||
+            (function_exists('posix_geteuid') && $named['uid'] !== posix_geteuid())) {
+            return false;
+        }
+        $handle = @fopen($path, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+        try {
+            if (!self::citoid_lock_file_matches_path($handle, $path)) {
+                return false;
+            }
+            $contents = @stream_get_contents($handle, 65);
+            clearstatcache(true, $path);
+            $after = @lstat($path);
+            return $contents === 'CBNS1|' . $expected . "\n" &&
+                $after !== false && ($after['mode'] & 0077) === 0 &&
+                self::citoid_lock_file_matches_path($handle, $path);
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    /**
      * Verify an opened directory still names the same private inode.
      * A directory descriptor also lets us sync rename metadata after publish.
      *
@@ -555,6 +593,9 @@ final class Zotero {
         // Never create an implicit local mutex if the configured directory
         // is absent. Creation is permitted only for explicitly opted-in
         // single-instance fallback, not a test-only directory override.
+        $configured = $directory === null &&
+            self::citoid_config_value('CITOID_RATE_LIMIT_DIR') !== false;
+        $namespace_id = $configured ? self::citoid_config_value('CITOID_RATE_LIMIT_NAMESPACE_ID') : false;
         $allow_local_creation = $directory === null &&
             self::citoid_config_value('CITOID_RATE_LIMIT_DIR') === false &&
             self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1';
@@ -586,6 +627,13 @@ final class Zotero {
             (function_exists('posix_geteuid') && $dir_stat['uid'] !== posix_geteuid())) {
             return false;
         }
+        // The configured namespace must be provisioned on the intended mount.
+        // An existing directory alone is insufficient: a missing mount can
+        // expose an unrelated directory with the same absolute pathname.
+        if ($configured && ($namespace_id === false ||
+            !self::citoid_namespace_matches($directory, $namespace_id))) {
+            return false;
+        }
         $lock_path = $directory . '/rate.lock';
         if (is_link($lock_path)) {
             return false;
@@ -609,7 +657,9 @@ final class Zotero {
                 }
                 usleep(50000);
             } while (true);
-            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
+                ($configured && ($namespace_id === false ||
+                    !self::citoid_namespace_matches($directory, $namespace_id)))) {
                 return false;
             }
             $previous = self::citoid_read_state($lock, $directory);
@@ -633,7 +683,9 @@ final class Zotero {
                     usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
                 }
             }
-            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path) ||
+                ($configured && ($namespace_id === false ||
+                    !self::citoid_namespace_matches($directory, $namespace_id)))) {
                 return false;
             }
             return self::citoid_commit_state($lock, $lock_path, $directory);

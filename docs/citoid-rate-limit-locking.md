@@ -32,11 +32,34 @@ literal value `1` enables local fallback; values such as `true` do not.
 
 The explicitly configured `CITOID_RATE_LIMIT_DIR` must exist before workers
 start. If the pathname is missing, the limiter fails closed rather than
-creating a private replacement. This cannot detect an existing but incorrect
-local directory at that pathname: validate mount identity and cross-host flock
-semantics separately. Automatic directory creation is reserved for
-`CITOID_ALLOW_LOCAL_FALLBACK=1` on a verified single-instance deployment.
-The test-only directory override does not permit creation either.
+creating a private replacement. Multi-instance deployments must also set
+`CITOID_RATE_LIMIT_NAMESPACE_ID` to exactly 32 lowercase hexadecimal characters
+and pre-provision `rate.namespace` inside the shared directory with the exact
+content `CBNS1|<namespace-id>\n` (where `\n` is a single newline).
+The file must be a regular, singly-linked file, owned by the PHP worker UID,
+with permissions `0600`. The namespace ID is a deployment identifier, **not a
+secret**. Create it once on the intended shared mount and use the same ID on
+all replicas. Do not generate independent IDs for each replica. Never overwrite
+or rotate an active marker; drain every worker before a deliberate change.
+
+For example, before starting workers, run the following as the PHP worker UID
+on the mounted shared filesystem (after the directory is provisioned with
+mode `0700`):
+
+```sh
+id=$(openssl rand -hex 16)
+printf 'CBNS1|%s\n' "$id" > /absolute/shared/flock-capable/path/rate.namespace
+chmod 600 /absolute/shared/flock-capable/path/rate.namespace
+# Set CITOID_RATE_LIMIT_NAMESPACE_ID=$id for every PHP worker.
+```
+
+A missing mount that reveals an existing local directory without this marker
+will fail closed. **The marker is not proof of a shared filesystem**: a copied
+marker, stale local mount, or an incorrect deployment can still defeat the
+intended shared budget. Validate the actual mount identity and cross-host
+`flock` semantics before serving traffic. No namespace marker is required for
+an explicitly opted-in single-instance local fallback. Test-only directory
+overrides bypass the deployment namespace requirement.
 
 `KUBERNETES_SERVICE_HOST` is deliberately not used to decide whether a local
 fallback is safe. Some PHP-FPM setups remove inherited environment variables
@@ -47,7 +70,9 @@ this avoids FastCGI values masking an explicit local assignment. A locally
 assigned **empty** directory still fails closed. Verify that whichever setting
 you choose is visible to **the PHP worker**, not just the container or web
 server process. Do not point different replicas at private directories merely
-to make requests succeed.
+to make requests succeed. Rolling out the namespace requirement is a breaking
+configuration change: deploy the marker and environment variable to all
+workers before upgrading. Without both, Citoid enrichment fails closed.
 
 The rate-limit check fails closed on invalid paths, non-regular/replaced lock
 files, malformed or corrupt timestamps, or a lock held for more than 15 seconds.

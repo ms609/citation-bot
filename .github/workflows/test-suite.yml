@@ -126,7 +126,12 @@ jobs:
         lock_dir="$RUNNER_TEMP/citation-bot-citoid-lock"
         mkdir -p "$lock_dir"
         chmod 700 "$lock_dir"
+        umask 077
+        namespace_id="$(openssl rand -hex 16)"
+        printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace"
+        chmod 600 "$lock_dir/rate.namespace"
         printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
+        printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
 
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
@@ -208,7 +213,12 @@ jobs:
         lock_dir="$RUNNER_TEMP/citation-bot-citoid-lock"
         mkdir -p "$lock_dir"
         chmod 700 "$lock_dir"
+        umask 077
+        namespace_id="$(openssl rand -hex 16)"
+        printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace"
+        chmod 600 "$lock_dir/rate.namespace"
         printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
+        printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
 
     - name: Full test with PHP
       env:

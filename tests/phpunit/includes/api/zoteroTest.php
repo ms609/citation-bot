@@ -158,7 +158,8 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testCitoidThrottleRequiresExplicitLockConfiguration(): void {
-        $names = ['KUBERNETES_SERVICE_HOST', 'CITOID_RATE_LIMIT_DIR', 'CITOID_ALLOW_LOCAL_FALLBACK'];
+        $names = ['KUBERNETES_SERVICE_HOST', 'CITOID_RATE_LIMIT_DIR',
+                  'CITOID_RATE_LIMIT_NAMESPACE_ID', 'CITOID_ALLOW_LOCAL_FALLBACK'];
         $original = [];
         foreach ($names as $name) {
             // Preserve only the process-local value that putenv() can change.
@@ -208,6 +209,11 @@ final class zoteroTest extends testBaseClass {
             $dir = sys_get_temp_dir() . '/citation-bot-env-test-' . bin2hex(random_bytes(8));
             $this->assertTrue(mkdir($dir, 0700));
             try {
+                $id = bin2hex(random_bytes(16));
+                $marker = $dir . '/rate.namespace';
+                $this->assertNotFalse(file_put_contents($marker, 'CBNS1|' . $id . "\n"));
+                $this->assertTrue(chmod($marker, 0600));
+                putenv('CITOID_RATE_LIMIT_NAMESPACE_ID=' . $id);
                 putenv('CITOID_ALLOW_LOCAL_FALLBACK');
                 putenv('KUBERNETES_SERVICE_HOST');
                 putenv('CITOID_RATE_LIMIT_DIR=' . $dir);
@@ -217,6 +223,7 @@ final class zoteroTest extends testBaseClass {
                 $this->assertSame($dir, $resolve->invoke(null));
                 $this->assertSame('/isolated/test', $resolve->invoke(null, '/isolated/test'));
             } finally {
+                @unlink($dir . '/rate.namespace');
                 @unlink($dir . '/rate.state');
                 @unlink($dir . '/rate.lock');
                 @rmdir($dir);
@@ -238,7 +245,11 @@ final class zoteroTest extends testBaseClass {
         $this->assertStringContainsString(
             "// @putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');", $source
         );
-        $names = ['PHP_OAUTH_CONSUMER_TOKEN', 'CITOID_ALLOW_LOCAL_FALLBACK', 'CITOID_RATE_LIMIT_DIR'];
+        $this->assertStringContainsString(
+            "// @putenv('CITOID_RATE_LIMIT_NAMESPACE_ID=0123456789abcdef0123456789abcdef');", $source
+        );
+        $names = ['PHP_OAUTH_CONSUMER_TOKEN', 'CITOID_ALLOW_LOCAL_FALLBACK',
+                  'CITOID_RATE_LIMIT_DIR', 'CITOID_RATE_LIMIT_NAMESPACE_ID'];
         $original = [];
         foreach ($names as $name) {
             $original[$name] = getenv($name, true);
@@ -247,15 +258,21 @@ final class zoteroTest extends testBaseClass {
             putenv('PHP_OAUTH_CONSUMER_TOKEN=citoid-test');
             putenv('CITOID_ALLOW_LOCAL_FALLBACK');
             putenv('CITOID_RATE_LIMIT_DIR');
+            putenv('CITOID_RATE_LIMIT_NAMESPACE_ID');
             include $example_path;
             $this->assertFalse(getenv('CITOID_ALLOW_LOCAL_FALLBACK', true));
             $this->assertFalse(getenv('CITOID_RATE_LIMIT_DIR', true));
+            $this->assertFalse(getenv('CITOID_RATE_LIMIT_NAMESPACE_ID', true));
 
             putenv('CITOID_ALLOW_LOCAL_FALLBACK=1');
             putenv('CITOID_RATE_LIMIT_DIR=/configured/shared/path');
+            putenv('CITOID_RATE_LIMIT_NAMESPACE_ID=0123456789abcdef0123456789abcdef');
             include $example_path;
             $this->assertSame('1', getenv('CITOID_ALLOW_LOCAL_FALLBACK', true));
             $this->assertSame('/configured/shared/path', getenv('CITOID_RATE_LIMIT_DIR', true));
+            $this->assertSame(
+                '0123456789abcdef0123456789abcdef', getenv('CITOID_RATE_LIMIT_NAMESPACE_ID', true)
+            );
         } finally {
             foreach ($original as $name => $value) {
                 putenv($value === false ? $name : $name . '=' . $value);
