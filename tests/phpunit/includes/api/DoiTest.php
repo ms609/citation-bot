@@ -563,4 +563,33 @@ final class DoiTest extends testBaseClass {
         ];
         $this->assertTrue(isCrossRefReviewConfusion($template, $crossRefMsg), 'CrossRef Nature hit for book title should be flagged as review');
     }
+
+    public function testCrossRefIssueMatchingVolumeIsSkippedForRstlBackfile(): void {
+        // 10.1098/rstl.1873.0014 carries the volume number in the issue field with no volume (#29)
+        $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1873.0014', '', '163', '163'));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIsSkippedForRsplBackfile(): void {
+        $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/rspl.1850.0001', '', '6', '6'));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIsKeptWhenRecordHasVolume(): void {
+        $this->assertFalse(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1867.0001', '157', '157', '157'));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIsKeptOutsideFamily(): void {
+        $this->assertFalse(should_skip_crossref_issue_as_volume_match('10.1002/andp.201800355', '', '5', '5'));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIsKeptWithoutCitationVolume(): void {
+        $this->assertFalse(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1873.0014', '', '163', ''));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIsKeptWhenDifferent(): void {
+        $this->assertFalse(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1873.0014', '', '163', '164'));
+    }
+
+    public function testCrossRefIssueMatchingVolumeIgnoresCaseAndWhitespace(): void {
+        $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/RSTL.1873.0014', '', ' 163 ', '163'));
+    }
 }

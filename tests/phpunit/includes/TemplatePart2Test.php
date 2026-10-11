@@ -3165,6 +3165,33 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('2020-01-01', $template->get2('archive-date'));
     }
 
+    public function testNewsRefusesChapterAdd(): void {
+        // cite news ignores |chapter= and has no downstream repair path, so
+        // the bot must not add one (guard, not repair).
+        $text = '{{cite news |title=T |newspaper=N |date=2020}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('chapter', 'C'));
+        $this->assertNull($template->get2('chapter'));
+        $this->assertSame('cite news', $template->wikiname());
+    }
+
+    public function testMagazineRefusesChapterAdd(): void {
+        // Same guard for cite magazine.
+        $text = '{{cite magazine |title=T |magazine=M |date=2020}}';
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->add_if_new('chapter', 'C'));
+        $this->assertNull($template->get2('chapter'));
+    }
+
+    public function testJournalStillAcceptsChapterAdd(): void {
+        // cite journal has a downstream repair path (rename/convert), so the
+        // add must keep working there.
+        $text = '{{cite journal |title=T |journal=J |date=2020}}';
+        $template = $this->make_citation($text);
+        $this->assertTrue($template->add_if_new('chapter', 'C'));
+        $this->assertSame('C', $template->get2('chapter'));
+    }
+
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {
         // The base url param may use its non-hyphenated alias (contributionurl),
         // so an access param must not be dropped when that alias is present.
