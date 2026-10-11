@@ -380,7 +380,7 @@ final class Zotero {
             // interrupted legacy truncate is conservatively treated as empty.
             rewind($lock);
             $raw = stream_get_contents($lock, 65);
-            if ($raw === false || strlen($raw) > 64) {
+            if ($raw === false || mb_strlen($raw, '8bit') > 64) {
                 return false;
             }
             $raw = mb_trim($raw);
@@ -407,9 +407,9 @@ final class Zotero {
                 return false;
             }
             $raw = @stream_get_contents($state, 65);
-            if ($raw === false || strlen($raw) > 64 ||
-                preg_match('/^CB1\|([0-9]{10,12}\.[0-9]{6})\|([0-9a-f]{16})\n$/D', $raw, $match) !== 1 ||
-                !hash_equals(substr(hash('sha256', $match[1]), 0, 16), $match[2])) {
+            if ($raw === false || mb_strlen($raw, '8bit') > 64 ||
+                preg_match('~^CB1\|([0-9]{10,12}\.[0-9]{6})\|([0-9a-f]{16})\n$~D', $raw, $match) !== 1 ||
+                !hash_equals(mb_substr(hash('sha256', $match[1]), 0, 16, '8bit'), $match[2])) {
                 return false;
             }
             $stamp = (float) $match[1];
@@ -438,9 +438,9 @@ final class Zotero {
         }
         try {
             $stamp = sprintf('%.6F', microtime(true));
-            $payload = 'CB1|' . $stamp . '|' . substr(hash('sha256', $stamp), 0, 16) . "\n";
+            $payload = 'CB1|' . $stamp . '|' . mb_substr(hash('sha256', $stamp), 0, 16, '8bit') . "\n";
             if (!@chmod($temporary_path, 0600) ||
-                @fwrite($pending, $payload) !== strlen($payload) ||
+                @fwrite($pending, $payload) !== mb_strlen($payload, '8bit') ||
                 !@fflush($pending) || !@fsync($pending) ||
                 !self::citoid_lock_file_matches_path($lock, $lock_path)) {
                 return false;

@@ -139,23 +139,20 @@ final class zoteroTest extends testBaseClass {
     }
 
     public function testCitoidThrottleRejectsUnconfiguredKubernetesNamespace(): void {
-        $original_kube = getenv('KUBERNETES_SERVICE_HOST');
-        $original_dir = getenv('CITOID_RATE_LIMIT_DIR');
+        $names = ['KUBERNETES_SERVICE_HOST', 'CITOID_RATE_LIMIT_DIR', 'CITOID_ALLOW_LOCAL_FALLBACK'];
+        $original = [];
+        foreach ($names as $name) {
+            $original[$name] = getenv($name, true);
+        }
         try {
             putenv('KUBERNETES_SERVICE_HOST=cluster.internal');
             putenv('CITOID_RATE_LIMIT_DIR');
+            putenv('CITOID_ALLOW_LOCAL_FALLBACK');
             $method = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
             $this->assertFalse($method->invoke(null));
         } finally {
-            if ($original_kube === false) {
-                putenv('KUBERNETES_SERVICE_HOST');
-            } else {
-                putenv('KUBERNETES_SERVICE_HOST=' . $original_kube);
-            }
-            if ($original_dir === false) {
-                putenv('CITOID_RATE_LIMIT_DIR');
-            } else {
-                putenv('CITOID_RATE_LIMIT_DIR=' . $original_dir);
+            foreach ($original as $name => $value) {
+                putenv($value === false ? $name : $name . '=' . $value);
             }
         }
     }
@@ -352,7 +349,8 @@ final class zoteroTest extends testBaseClass {
 
     public function testCitoidThrottleRecoversAfterTerminatingSignals(): void {
         if (PHP_OS_FAMILY === 'Windows' || !function_exists('proc_open') ||
-            !function_exists('proc_terminate')) {
+            !function_exists('proc_terminate') || !function_exists('proc_get_status') ||
+            !function_exists('posix_kill')) {
             $this->markTestSkipped('POSIX subprocess signals are required');
         }
         foreach (['exit' => 0, 'term' => 15, 'kill' => 9, 'hup' => 1, 'segv' => 11] as $name => $signal) {
@@ -363,6 +361,7 @@ final class zoteroTest extends testBaseClass {
                 $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
                 $this->assertTrue($throttle->invoke(null, $dir));
                 $committed = file_get_contents($dir . '/rate.state');
+                // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- Fixed test fixture subprocess.
                 $process = proc_open(
                     [PHP_BINARY, dirname(__DIR__, 3) . '/fixtures/citoidCrashWorker.php', $dir, $name],
                     [0 => ['file', '/dev/null', 'r'], 1 => ['file', '/dev/null', 'w'],
@@ -374,14 +373,22 @@ final class zoteroTest extends testBaseClass {
                     usleep(20000);
                 }
                 $this->assertFileExists($dir . '/ready');
-                if ($signal !== 0) {
-                    $this->assertFalse($throttle->invoke(null, $dir, 0.0));
-                    $this->assertTrue(proc_terminate($process, $signal));
-                }
-                while (proc_get_status($process)['running'] && microtime(true) < $deadline) {
+                // Check the mutex before signalling; both paths must recover.
+                $this->assertFalse($throttle->invoke(null, $dir, 0.0));
+                $this->assertNotFalse(file_put_contents($dir . '/proceed', 'go'));
+                $deadline = microtime(true) + 5.0;
+                do {
+                    $status = proc_get_status($process);
+                    if (!$status['running']) {
+                        break;
+                    }
                     usleep(20000);
+                } while (microtime(true) < $deadline);
+                $this->assertFalse($status['running'], $name . ' worker failed to exit');
+                if ($signal !== 0) {
+                    $this->assertTrue($status['signaled'], $name . ' worker did not die from a signal');
+                    $this->assertSame($signal, $status['termsig']);
                 }
-                $this->assertFalse(proc_get_status($process)['running']);
                 $this->assertSame($committed, file_get_contents($dir . '/rate.state'));
                 $this->assertTrue($throttle->invoke(null, $dir));
             } finally {
@@ -392,6 +399,7 @@ final class zoteroTest extends testBaseClass {
                     proc_close($process);
                 }
                 @unlink($dir . '/ready');
+                @unlink($dir . '/proceed');
                 @unlink($dir . '/rate.pending.crash-fixture');
                 @unlink($dir . '/rate.state');
                 @unlink($dir . '/rate.lock');

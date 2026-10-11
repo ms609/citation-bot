@@ -200,17 +200,20 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         // production client intentionally fails closed without one. These
         // tests assert live response content; offline JSTOR mapping is tested
         // separately, so skip rather than asserting on an unpaced request.
-        $directory = getenv('CITOID_RATE_LIMIT_DIR', true);
-        if ($directory === false) {
-            $directory = getenv('CITOID_RATE_LIMIT_DIR');
-        }
-        $local = getenv('CITOID_ALLOW_LOCAL_FALLBACK', true);
-        if ($local === false) {
-            $local = getenv('CITOID_ALLOW_LOCAL_FALLBACK');
-        }
-        if ($directory === '' || ($directory === false && $local !== '1')) {
+        // Only truly absent configuration warrants skipping live tests.
+        // Explicitly empty or invalid directories must fail instead.
+        $config = new ReflectionMethod(Zotero::class, 'citoid_config_value');
+        if ($config->invoke(null, 'CITOID_RATE_LIMIT_DIR') === false &&
+            $config->invoke(null, 'CITOID_ALLOW_LOCAL_FALLBACK') !== '1') {
             $this->markTestSkipped('Live JSTOR Citoid requires configured rate-limit coordination');
         }
+        // A variable can be present but unusable (relative path, permissions,
+        // invalid state, etc.). Do not silently skip a broken integration setup.
+        $throttle = new ReflectionMethod(Zotero::class, 'throttle_citoid_requests');
+        $this->assertTrue(
+            $throttle->invoke(null),
+            'Configured Citoid rate-limit coordination is not usable by this PHP worker'
+        );
         usleep(300000); // Match requires_zotero(): reduce transient Citoid failures.
         Zotero::unblock_zotero();
     }
