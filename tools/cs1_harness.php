@@ -267,8 +267,8 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R9: cite web requires a url.
-    if ($name === 'cite web' && !has_any($template, URL_PARAMS)) {
+    // R9: cite web errors only when both |url= and |archive-url= are missing.
+    if ($name === 'cite web' && !has_any($template, URL_PARAMS) && !has_any($template, ARCHIVE_URL_PARAMS)) {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
 
@@ -409,36 +409,28 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R22: ISBN belongs to books, not to CS1 periodical templates.
+    // R22: maint only (maint_periodical_has_isbn has no message; hidden category).
+    // Not a CS1 error.
     if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
-        $violations[] = 'isbn-in-periodical: CS1 "periodical has ISBN"';
+        $violations[] = 'isbn-in-periodical: CS1 maint "periodical has ISBN"';
     }
 
-    // R23: all-numeric ASIN values are rejected by CS1.
+    // R23: ASIN shape per Identifiers.asin: 10 uppercase alphanumerics;
+    // numeric-10 must checksum and start 630/631; mixed must start uppercase.
     $asin = $template->get_without_comments_and_placeholders('asin');
-    if ($asin !== '' && preg_match('~^\d~', $asin) === 1) {
-        $violations[] = 'asin-numeric: CS1 "Check |asin= value"';
-    }
-
-    // R24: IAU Circular/CBET have issues, not volumes; article numbers belong in page/pages.
-    $work_name = '';
-    foreach (['journal', 'series', 'periodical', 'work'] as $work_param) {
-        if ($template->has($work_param)) {
-            $work_name = mb_strtolower($template->get_without_comments_and_placeholders($work_param));
-            if (mb_substr($work_name, 0, 2) === '[[' && mb_substr($work_name, -2) === ']]') {
-                $work_name = mb_substr(mb_substr($work_name, 2), 0, -2);
-                $work_name = (string) preg_replace('~^.+\|~', '', $work_name);
+    if ($asin !== '') {
+        $asin_bad = false;
+        if (preg_match('~^[0-9A-Z]{10}$~', $asin) !== 1) {
+            $asin_bad = true;
+        } elseif (preg_match('~^\d{9}[\dX]$~', $asin) === 1) {
+            if (!isbn_valid($asin) || preg_match('~^63[01]~', $asin) !== 1) {
+                $asin_bad = true;
             }
-            $work_name = mb_strtolower(sanitize_string($work_name));
-            break;
+        } elseif (preg_match('~^[A-Z][0-9A-Z]*$~', $asin) !== 1) {
+            $asin_bad = true;
         }
-    }
-    if (in_array($work_name, NUMBER_IS_PAGE, true)) {
-        if ($template->has('volume')) {
-            $violations[] = 'iau-cbet-volume: IAU Circular/CBET citations must use |issue=, not |volume=';
-        }
-        if ($template->has('number')) {
-            $violations[] = 'iau-cbet-number: IAU Circular/CBET article numbers belong in |page=';
+        if ($asin_bad) {
+            $violations[] = 'asin-malformed: CS1 "Check |asin= value"';
         }
     }
 
@@ -480,6 +472,7 @@ function build_matrix(): array {
         // Input ISBNs are left in place; the bot only declines to create them.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
         ['GAP numeric asin in input survives tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'gap'],
+        ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],

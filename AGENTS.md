@@ -277,7 +277,7 @@ The project uses extensive automated testing:
 - **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
 - **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error, or if a known-gap case unexpectedly resolves (XPASS)
 
-The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message. Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
+The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message or an explicitly-tracked maintenance category (e.g. `CS1 maint: periodical has ISBN`, which emits no error message). Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
 **Local PHPUnit note:** `phpunit.xml.dist` requests coverage. Install PCOV or Xdebug before running focused PHPUnit tests directly, for example: `php -d memory_limit=2G vendor/bin/phpunit <path>`.
 
@@ -320,7 +320,8 @@ php tools/cs1_harness.php --list     # print the matrix without running
 
 - **Must-pass cases** must satisfy every checker rule; a violation exits 1.
 - **Known-gap cases** document current CS1 violations the bot leaves in place; while still a known gap they are reported but don't fail the run. A gap that stops violating prints `RESOLVED` and **fails the run** (XPASS), forcing it to be converted to a must-pass case or confirmed intentional.
-- When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
+- When adding identifier validation or parameter handling, mirror the existing validators in `src/includes/TextTools.php` (`arxiv_id_valid`, `pmid_valid`, `pmc_valid`, `rxiv_id_valid`, `bibcode_valid`, `isbn_valid`, `doi_valid`, `ssrn_valid`, `s2cid_valid`, `jstor_valid`, `hdl_valid`, `oclc_valid`, `url_valid`, `archive_url_valid`) and the `report_inaction` gate pattern in `Template::add_if_new`.
+- Every new harness checker rule must cite its `Help:CS1 errors` section or `Module:Citation/CS1` anchor in a comment. Rules that mirror bot behavior rather than CS1 documentation do not belong in the checker: maintenance categories must be labeled `CS1 maint`, never quoted as `CS1 "…"` errors.
 
 ## Important Constraints
 
