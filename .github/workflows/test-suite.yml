@@ -116,8 +116,8 @@ jobs:
           ${{ runner.os }}-composer-8.4-
           ${{ runner.os }}-composer-
 
-    - name: Verify test watchdog behavior
-      run: python3 -m unittest discover -s .github/scripts -p test_ci_test_watchdog.py
+    - name: Verify watchdog, coverage gate and offline flock smoke
+      run: python3 -m unittest discover -s .github/scripts -p 'test_ci_*.py'
 
     - name: Configure Citoid lock for trusted integration tests
       if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
@@ -152,6 +152,12 @@ jobs:
          NLM_APIKEY: ${{ secrets.NLM_APIKEY }}
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
       run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
+
+    # Enforce coverage independently of Composer's exit-status propagation.
+    # PRs with below-floor coverage must fail, even when unit tests pass.
+    - name: Enforce statement coverage floor
+      if: ${{ success() }}
+      run: php -d memory_limit=1G tests/check_coverage.php coverage.xml
 
     # Do not print DebugLog.txt: trusted runs may contain API credentials.
     - name: Prepare safe PHP 8.4 test diagnostics
