@@ -3205,6 +3205,26 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('C', $template->get2('chapter'));
     }
 
+    public function testNewsChapterKeptWithIssue(): void {
+        // issue= is dropped on books, so converting would lose data: stay put.
+        $text = '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C |issue=5}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite news', $template->wikiname());
+        $this->assertSame('5', $template->get2('issue'));
+        $this->assertSame('C', $template->get2('chapter'));
+    }
+
+    public function testNewsChapterKeptWithDepartment(): void {
+        // department= is news-only: converting would strand it.
+        $text = '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C |department=D}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('cite news', $template->wikiname());
+        $this->assertSame('D', $template->get2('department'));
+        $this->assertSame('C', $template->get2('chapter'));
+    }
+
     public function testTidyKeepsAccessWhenAliasBasePresent(): void {
         // The base url param may use its non-hyphenated alias (contributionurl),
         // so an access param must not be dropped when that alias is present.

@@ -4620,8 +4620,10 @@ final class Template
                         }
                         // cite news/magazine (& kin) ignore |chapter=: with no
                         // title, move the content there (CS1's own repair).
+                        // (wikiname() already canonicalizes newspaper to news
+                        // and periodical to magazine, so only those appear.)
                         if (
-                            in_array($this->wikiname(), ['cite news', 'cite newspaper', 'cite magazine', 'cite periodical', 'cite press release'], true) &&
+                            in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true) &&
                             $this->blank('title')
                         ) {
                             $this->rename('chapter', 'title');
@@ -4638,11 +4640,13 @@ final class Template
                     if (
                         $this->has('chapter') &&
                         !$this->blank('title') &&
-                        in_array($this->wikiname(), ['cite news', 'cite newspaper', 'cite magazine', 'cite periodical', 'cite press release'], true) &&
-                        $this->blank(['newspaper', 'magazine', 'journal', 'work', 'periodical'])
+                        in_array($this->wikiname(), ['cite news', 'cite magazine', 'cite press release'], true) &&
+                        $this->blank(['newspaper', 'magazine', 'journal', 'work', 'periodical', 'encyclopedia', 'issue', 'department', 'agency'])
                     ) {
-                        // No periodical evidence to strand: convert rather
-                        // than keep the ignored chapter.
+                        // Nothing present that the conversion would strand
+                        // (periodical params, issue dropped on books, or
+                        // news-only department/agency): convert rather than
+                        // keep the ignored chapter.
                         $this->change_name_to('cite book', true, true);
                     }
                     return;
