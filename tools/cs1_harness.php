@@ -519,12 +519,14 @@ function build_matrix(): array {
         // --- book review confusion guard (Turnbull 1939) ---
         ['Turnbull book stays book (no journal/doi/bibcode pollution)', '{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}', 'pass'],
 
-        // --- IAU Circular / CBET locator handling ---
+        // --- IAU Circular / CBET / ATel locator handling ---
         ['IAU Circular volume becomes issue, number becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |number=2 |date=May 2000 |page=2 |bibcode=2000IAUC.7428....2S}}', 'pass'],
         ['IAU Circular issue+volume: volume becomes issue, old issue becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=4225 |issue=2 |date=June 1986 |pages=2 |bibcode=1986IAUC.4225....2P}}', 'pass'],
         ['IAU Circular duplicate volume/issue stays a single issue', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=7428 |date=May 2000}}', 'pass'],
         ['IAU Circular at= kept when issue is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=5 |at=9 |date=May 2000}}', 'pass'],
         ['IAU Circular at= kept when number is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |number=2 |at=9 |date=May 2000}}', 'pass'],
+        ['ATel volume becomes issue, number becomes page', "{{cite journal |title=Broadband photometry |journal=The Astronomer's Telegram |volume=3073 |number=1 |date=2010 |page=1 |bibcode=2010ATel.3073....1H}}", 'pass'],
+        ['ATel duplicate volume/issue stays a single issue', "{{cite journal |title=Broadband photometry |journal=The Astronomer's Telegram |volume=3073 |issue=3073 |date=2010}}", 'pass'],
 
         // --- known gaps (documented current CS1 violations, tracked) ---
         ['GAP bad ISBN-13 check digit survives tidy', '{{cite journal |title=X |journal=J |isbn=978-0-306-40615-8}}', 'gap'],

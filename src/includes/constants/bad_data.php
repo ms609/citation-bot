@@ -8,7 +8,9 @@ declare(strict_types=1);
 const HAS_NO_VOLUME = [
     'american museum novitates',
     'analecta hibernica',
-    dsfasdfas
+    "astronomer's telegram",
+    'astronomer’s telegram',
+    'atel',
     'balcanica',
     'bc studies',
     'bc studies: the british columbian quarterly',
@@ -32,16 +34,22 @@ const HAS_NO_VOLUME = [
     'phytokeys',
     'starinar',
     'studia hibernica',
+    "the astronomer's telegram",
+    'the astronomer’s telegram',
     'yale french studies',
     'zookeys',
     'library and archives canada',
 ];
 /**
- * IAU Circular and Central Bureau Electronic Telegrams have issues, not volumes.
- * The circular number is the issue, while the "number" parameter is really the
- * article/page number within that circular (see the NGC 6753 report).
+ * IAU Circular, Central Bureau Electronic Telegrams, and The Astronomer's Telegram
+ * have issues, not volumes.
+ * The circular/telegram number is the issue, while the "number" parameter is really the
+ * article/page number within that circular.
  */
 const NUMBER_IS_PAGE = [
+    "astronomer's telegram",
+    'astronomer’s telegram',
+    'atel',
     'cbet',
     'cent bur electron telegr',
     'cent. bur. electron. telegr',
@@ -49,6 +57,8 @@ const NUMBER_IS_PAGE = [
     'iau circ',
     'iau circular',
     'international astronomical union circular',
+    "the astronomer's telegram",
+    'the astronomer’s telegram',
 ];
 /**
  * Some journals and book series have volumes only, no issue numbers.
