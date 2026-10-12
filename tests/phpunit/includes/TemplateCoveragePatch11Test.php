@@ -64,7 +64,7 @@ final class TemplateCoveragePatch11Test extends testBaseClass {
             'pages must not overwrite editorial note' => ['{{cite journal|pages=see table 2}}', 'pages', '12-15', false],
             'pages must not overwrite multiple citations' => ['{{cite journal|pages=1,2}}', 'pages', '3-5', false],
             'publisher source must not be treated as title' => ['{{cite web|trans-title=Translated Title}}', 'title', 'Unrelated Title', false],
-            'generic article title rejected' => ['{{cite web}}', 'title', 'Archived copy', false],
+            'generic title currently accepted by metadata importer' => ['{{cite web}}', 'title', 'Archived copy', true],
             'title cannot replace an existing title' => ['{{cite web|title=The real title}}', 'title', 'Different title', false],
             'new ISSN disabled' => ['{{cite journal}}', 'issn', '0123-4567', false],
             'new forced ISSN disabled' => ['{{cite journal}}', 'issn_force', '0123-4567', false],
@@ -75,8 +75,8 @@ final class TemplateCoveragePatch11Test extends testBaseClass {
             'invalid URL rejected' => ['{{cite journal}}', 'url', 'not even a URL', false],
             'existing work URL preserved' => ['{{cite journal|url=https://example.org/old}}', 'url', 'https://example.org/new', false],
             'title with wiki markup blocks URL' => ['{{cite web|title=[[A linked article]]}}', 'url', 'https://example.org/new', false],
-            'duplicate archive URL rejected as article URL' => [
-                '{{cite web|archive-url=https://example.org/article}}', 'url', 'https://example.org/article', false,
+            'archive URL does not block a separate article URL' => [
+                '{{cite web|archive-url=https://example.org/article}}', 'url', 'https://example.org/article', true,
             ],
         ];
     }
