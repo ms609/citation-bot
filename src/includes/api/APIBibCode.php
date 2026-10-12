@@ -818,7 +818,14 @@ function process_bibcode_data(Template $this_template, object $record): void {
         $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
     }
     if (isset($record->issue)) {
-        $this_template->add_if_new('issue', (string) $record->issue, 'adsabs');
+        $ads_issue = (string) $record->issue;
+        $ads_volume = isset($record->volume) ? (string) $record->volume : '';
+        $ads_doi = $this_template->get_without_comments_and_placeholders('doi');
+        if (should_skip_crossref_issue_as_volume_match($ads_doi, $ads_volume, $ads_issue, $this_template->get_without_comments_and_placeholders('volume'))) {
+            report_warning("ADS issue matches existing volume with no record volume; skipping issue for DOI: " . echoable($ads_doi));
+        } else {
+            $this_template->add_if_new('issue', $ads_issue, 'adsabs');
+        }
     }
     if (isset($record->year)) {
         $this_template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year), 'adsabs');
