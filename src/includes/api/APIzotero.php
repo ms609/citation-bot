@@ -1405,9 +1405,8 @@ final class Zotero {
 
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
-        // Citoid sometimes returns the same author more than once (e.g. Reuters
-        // newspaperArticle responses repeat every creator).  Skip exact duplicates
-        // so that authors 1-2 are not repeated as authors 3-4.
+        // Citoid sometimes returns the same author more than once. Skip exact duplicates
+        // so that for example authors 1-2 are not repeated as authors 3-4.
         $author_number = 0;
         $seen_zotero_authors = [];
         $i = 0;
