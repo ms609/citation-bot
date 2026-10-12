@@ -89,16 +89,16 @@ regression and contention tests for local fault injection.
 
 Do not release a multi-replica deployment until an operator has confirmed:
 
-- [ ] All hosts use the intended mount, the same namespace ID, and the proper
+* [ ] All hosts use the intended mount, the same namespace ID, and the proper
       worker UID, directory permissions, and existing permanent lock inode.
-- [ ] Cross-host `flock` exclusion and release pass in **both directions**;
+* [ ] Cross-host `flock` exclusion and release pass in **both directions**;
       locking errors must not count as contention.
-- [ ] The deployment filesystem's same-directory rename and directory `fsync`
+* [ ] The deployment filesystem's same-directory rename and directory `fsync`
       semantics have been validated separately; the two-host mutex test alone
       does not prove crash or power-loss durability.
-- [ ] Workers have been drained for rollout, no old/new mixed writers remain,
+* [ ] Workers have been drained for rollout, no old/new mixed writers remain,
       and rollback likewise requires a complete drain.
-- [ ] After restart, sanitized admission categories are monitored; a missing
+* [ ] After restart, sanitized admission categories are monitored; a missing
       mount or invalid marker must fail closed, not fall back to private `/tmp`.
 
 See [rollout and rollback](citoid-rate-limit-locking.md#multi-replica-rollout-and-rollback)
