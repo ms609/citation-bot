@@ -356,6 +356,7 @@ function expand_by_adsabs(Template $template, ?callable $lookup = null): void {
 /**
  * @param array<string> $ids
  * @param array<Template> &$templates
+ * @param string $identifier
  * @param (Closure(array<array-key, mixed>, string): stdClass)|null $response_provider
  */
 function adsabs_api(

@@ -213,6 +213,9 @@ final class zoteroTest extends testBaseClass {
                 $marker = $dir . '/rate.namespace';
                 $this->assertNotFalse(file_put_contents($marker, 'CBNS1|' . $id . "\n"));
                 $this->assertTrue(chmod($marker, 0600));
+                // Configured shared lock files are provisioned, never created by workers.
+                $this->assertSame(0, file_put_contents($dir . '/rate.lock', ''));
+                $this->assertTrue(chmod($dir . '/rate.lock', 0600));
                 putenv('CITOID_RATE_LIMIT_NAMESPACE_ID=' . $id);
                 putenv('CITOID_ALLOW_LOCAL_FALLBACK');
                 putenv('KUBERNETES_SERVICE_HOST');

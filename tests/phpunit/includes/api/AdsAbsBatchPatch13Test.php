@@ -32,19 +32,24 @@ final class AdsAbsBatchPatch13Test extends testBaseClass {
         $this->assertSame(1, $invocations);
         $this->assertSame($corrected, $template->get('bibcode'));
         $this->assertSame('Offline astronomy reference', $template->get('title'));
-        $this->assertSame('2024', $template->get('year'));
+        $this->assertSame('2024', $template->year());
     }
 
     public function testOfflineBatchCorrectsIdentifierCaseAndSkipsUnmatched(): void {
         $bibcode = '2024FakeJ....00003C';
         $template = $this->make_citation('{{cite journal|bibcode=' . mb_strtolower($bibcode) . '}}');
         $templates = [$template];
-        $provider = static fn (array $options, string $url): stdClass => (object) ['docs' => [(object) [
-            'bibcode' => $bibcode,
-            'title' => ['Offline case-sensitive identifier'],
-            'pub' => 'Journal of Synthetic Astronomy',
-            'year' => '2024',
-        ]]];
+        $provider = static function (array $options, string $url) use ($bibcode): stdClass {
+            if (!isset($options[CURLOPT_POSTFIELDS]) || !str_contains($url, 'bigquery')) {
+                throw new RuntimeException('Unexpected ADS batch request');
+            }
+            return (object) ['docs' => [(object) [
+                'bibcode' => $bibcode,
+                'title' => ['Offline case-sensitive identifier'],
+                'pub' => 'Journal of Synthetic Astronomy',
+                'year' => '2024',
+            ]]];
+        };
         adsabs_api([mb_strtolower($bibcode)], $templates, 'bibcode', $provider);
         $this->assertSame($bibcode, $template->get('bibcode'));
         $this->assertSame('Offline case-sensitive identifier', $template->get('title'));
@@ -53,6 +58,9 @@ final class AdsAbsBatchPatch13Test extends testBaseClass {
     public function testOfflineBatchRejectsEmptyAndCompleteInputsBeforeDispatch(): void {
         $sent = 0;
         $provider = static function (array $options, string $url) use (&$sent): stdClass {
+            if (!isset($options[CURLOPT_POSTFIELDS]) || !str_contains($url, 'bigquery')) {
+                throw new RuntimeException('Unexpected ADS batch request');
+            }
             ++$sent;
             return (object) ['docs' => []];
         };
@@ -71,6 +79,9 @@ final class AdsAbsBatchPatch13Test extends testBaseClass {
         $templates = [$template];
         $sent = 0;
         $provider = static function (array $options, string $url) use (&$sent): stdClass {
+            if (!isset($options[CURLOPT_POSTFIELDS]) || !str_contains($url, 'bigquery')) {
+                throw new RuntimeException('Unexpected ADS batch request');
+            }
             ++$sent;
             return (object) ['docs' => []];
         };
