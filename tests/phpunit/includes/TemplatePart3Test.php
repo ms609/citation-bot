@@ -1850,6 +1850,48 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('2', $template->get2('page'));
     }
 
+    public function testTidyATelVolumeBecomesIssue(): void {
+        $text = "{{cite journal | journal=The Astronomer's Telegram | volume=3073 | number=1 | date=2010 | page=1 | bibcode=2010ATel.3073....1H }}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('3073', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('1', $template->get2('page'));
+    }
+
+    public function testTidyATelNumberBecomesPage(): void {
+        $text = "{{cite journal | journal=The Astronomer's Telegram | volume=3073 | number=1 | date=2010 | bibcode=2010ATel.3073....1H }}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('3073', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('1', $template->get2('page'));
+    }
+
+    public function testTidyATelDuplicateVolumeAndIssue(): void {
+        $text = "{{cite journal | journal=The Astronomer's Telegram | volume=3073 | issue=3073 | date=2010 }}";
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('3073', $template->get2('issue'));
+        $this->assertNull($template->get2('page'));
+    }
+
+    public function testTidyATelAbbreviationVolumeBecomesIssue(): void {
+        $text = '{{cite journal | journal=ATel | volume=3073 | number=1 | date=2010 }}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('volume');
+        $template->tidy_parameter('number');
+        $this->assertNull($template->get2('volume'));
+        $this->assertSame('3073', $template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertSame('1', $template->get2('page'));
+    }
+
     public function testDoiInline2(): void {
         $text = '{{citation | title = {{doi-inline|10.1038/nphys806|A transient semimetallic layer in detonating nitromethane}} | doi=10.1038/nphys806 }}';
         $expanded = $this->process_citation($text);

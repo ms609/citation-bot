@@ -6505,7 +6505,7 @@ final class Template
                     }
                     $number_is_page = in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true);
                     if ($number_is_page) {
-                        $this->tidy_iau_circular_locators();
+                        $this->tidy_number_is_page_locators();
                     } elseif (in_array($temp_string, HAS_NO_VOLUME, true)) {
                         if ($this->blank(ISSUE_ALIASES)) {
                             $this->rename('volume', 'issue');
@@ -6637,7 +6637,7 @@ final class Template
                             return;
                         }
                         if ($param === 'number' && in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
-                            $this->tidy_iau_circular_locators();
+                            $this->tidy_number_is_page_locators();
                             return;
                         }
                         if (in_array($temp_string, PREFER_VOLUMES, true) && $this->has('volume')) {
@@ -6970,9 +6970,9 @@ final class Template
         // Run before should_be_processed() guard: cite IUCN is not in TEMPLATES_WE_PROCESS
         // but its page->article-number rename still needs to run via detect_article_number()
         $this->detect_article_number();
-        // IAU Circular/CBET locators need cleanup even for slightly/barely processed templates
+        // IAU Circular/CBET/ATel locators need cleanup even for slightly/barely processed templates
         if (in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
-            $this->tidy_iau_circular_locators();
+            $this->tidy_number_is_page_locators();
         }
         if ($this->should_be_processed()) {
             if ($this->initial_name !== $this->name) {
@@ -8495,10 +8495,10 @@ final class Template
     }
 
     /**
-     * IAU Circular/CBET citations have issues, not volumes: the circular number belongs in
-     * |issue=, and |number= or a stale |issue= is really the article/page number.
+     * IAU Circular/CBET/ATel citations have issues, not volumes: the circular/telegram
+     * number belongs in |issue=, and |number= or a stale |issue= is really the article/page number.
      */
-    private function tidy_iau_circular_locators(): void {
+    private function tidy_number_is_page_locators(): void {
         if (!in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
             return;
         }
