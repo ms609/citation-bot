@@ -1549,9 +1549,8 @@ final class Zotero {
             if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], true) ||
                 $jstor_book_creators) {
                 // Websites often have non-authors listed in metadata
-                // Citoid sometimes returns the same creator more than once (e.g. Reuters
-                // newspaperArticle responses repeat every creator).  Skip exact duplicates
-                // so that authors 1-2 are not repeated as authors 3-4.
+                // Citoid sometimes returns the same creator more than once. Skip exact duplicates
+                // so that for example authors 1-2 are not repeated as authors 3-4.
                 $seen_creators = [];
                 $i = 0;
                 $author_i = 0;
