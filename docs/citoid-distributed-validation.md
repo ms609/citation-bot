@@ -1,4 +1,4 @@
-# Citoid distributed deployment validation (Patch 07)
+# Citoid distributed deployment validation
 
 The passing pull-request unit tests do **not** prove cross-host advisory locking,
 shared-mount availability, or power-loss durability. Perform these checks on
@@ -85,7 +85,26 @@ loss, atomic rename, and directory `fsync()` durability must be exercised and
 verified on the actual filesystem separately. Use the existing rate-limit
 regression and contention tests for local fault injection.
 
-## 4. CI coverage and expected skips
+## 4. Deployment sign-off (manual, on the actual shared mount)
+
+Do not release a multi-replica deployment until an operator has confirmed:
+
+- [ ] All hosts use the intended mount, the same namespace ID, and the proper
+      worker UID, directory permissions, and existing permanent lock inode.
+- [ ] Cross-host `flock` exclusion and release pass in **both directions**;
+      locking errors must not count as contention.
+- [ ] The deployment filesystem's same-directory rename and directory `fsync`
+      semantics have been validated separately; the two-host mutex test alone
+      does not prove crash or power-loss durability.
+- [ ] Workers have been drained for rollout, no old/new mixed writers remain,
+      and rollback likewise requires a complete drain.
+- [ ] After restart, sanitized admission categories are monitored; a missing
+      mount or invalid marker must fail closed, not fall back to private `/tmp`.
+
+See [rollout and rollback](citoid-rate-limit-locking.md#multi-replica-rollout-and-rollback)
+for the deployment sequence.
+
+## 5. CI coverage and expected skips
 
 A pull-request runner intentionally lacks production API secrets and configured
 live Citoid coordination. Live API integration tests may therefore skip on PRs;
@@ -96,7 +115,7 @@ gate conditionally skips when relevant UI paths are unchanged.
 CI now independently executes `tests/check_coverage.php` after the full suite
 passes, in addition to the existing coverage check inside `tests/run_tests.php`.
 Both must enforce the same **88.80% statement coverage floor**. A successful
-PHPUnit run with permitted skips is not enough to override that floor. The
-October 11 PR run reported **87.62%** (15,213 / 17,362); **do not lower the
-threshold merely to turn CI green**. Investigate actual uncovered branches,
+PHPUnit run with permitted skips is not enough to override that floor. **Do not
+lower the threshold merely to turn CI green.** Investigate uncovered branches,
 new code, and effects of unavailable services, then add meaningful tests.
+Coverage success does not validate cross-host locking or filesystem durability.

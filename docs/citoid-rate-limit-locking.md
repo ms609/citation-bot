@@ -1,7 +1,8 @@
 # Citoid rate-limit coordination (PR #6120)
 
-The Citoid limiter coordinates workers using an advisory `flock` on a timestamp
-file (`rate.lock`). **This does not provide cluster-wide coordination unless
+The Citoid limiter coordinates workers using an advisory `flock` on a
+permanent mutex file (`rate.lock`); its checksummed pacing state is published
+separately in `rate.state`. **This does not provide cluster-wide coordination unless
 all PHP workers use the same directory on a filesystem that supports working
 cross-host `flock` semantics.** Separate Kubernetes `/tmp` directories each
 get their own independent allowance, violating the intended global budget.
@@ -44,20 +45,27 @@ secret**. Create it once on the intended shared mount and use the same ID on
 all replicas. Do not generate independent IDs for each replica. Never overwrite
 or rotate an active marker; drain every worker before a deliberate change.
 
-For example, before starting workers, run the following as the PHP worker UID
-on the mounted shared filesystem (after the directory is provisioned with
-mode `0700`):
+For a **first installation only**, stop all Citoid writers, verify the actual
+shared mount, and pre-create the private directory with mode `0700`. Then run
+these commands **as the PHP worker UID** on that mount:
 
 ```sh
+set -eu
+dir=/absolute/shared/flock-capable/path
 id=$(openssl rand -hex 16)
-printf 'CBNS1|%s\n' "$id" > /absolute/shared/flock-capable/path/rate.namespace
-chmod 600 /absolute/shared/flock-capable/path/rate.namespace
-# First install only: fail instead of overwriting an existing inode.
-# Abort if rate.lock already exists; verify the mount is shared first.
-( umask 077; set -C; : > /absolute/shared/flock-capable/path/rate.lock )
-chmod 600 /absolute/shared/flock-capable/path/rate.lock
-# Set CITOID_RATE_LIMIT_NAMESPACE_ID=$id for every PHP worker.
+# Both creations fail if the path already exists; neither truncates a live file.
+( umask 077; set -C; printf 'CBNS1|%s\n' "$id" > "$dir/rate.namespace" )
+( umask 077; set -C; : > "$dir/rate.lock" )
+# Both new files are mode 0600. Save id for every PHP worker's configuration.
 ```
+
+`set -C` enables shell noclobber; `umask 077` creates the files owner-private.
+If either pathname already exists, **stop and inspect it** instead of rerunning
+these creation commands or overwriting it. A partially provisioned directory
+must remain offline until checked. On upgrades, preserve the existing
+`rate.lock` inode and `rate.state`; create **only** a missing namespace marker
+with an agreed deployment ID while all writers are stopped. Never generate a
+new ID when a valid marker already exists.
 
 A missing mount that reveals an existing local directory without this marker
 will fail closed. **The marker is not proof of a shared filesystem**: a copied
@@ -76,9 +84,37 @@ this avoids FastCGI values masking an explicit local assignment. A locally
 assigned **empty** directory still fails closed. Verify that whichever setting
 you choose is visible to **the PHP worker**, not just the container or web
 server process. Do not point different replicas at private directories merely
-to make requests succeed. Rolling out the namespace requirement is a breaking
-configuration change: deploy the marker and environment variable to all
-workers before upgrading. Without both, Citoid enrichment fails closed.
+to make requests succeed.
+
+## Multi-replica rollout and rollback
+
+This is a **breaking configuration change**. Do not operate old and new Citoid
+writers simultaneously: although they can use the same mutex, their pacing
+state and safety assumptions differ.
+
+1. **Drain:** stop all Citoid writers on **every** host or replica, prevent
+   automatic restarts, and confirm no process remains able to issue requests.
+2. **Provision/inspect:** verify the intended shared, flock-capable mount and
+   canonical directory (worker UID, mode `0700`); retain any existing
+   `rate.lock` and `rate.state`. Create a missing `rate.lock` once and a missing
+   `rate.namespace` once, with the **same** 32-hex deployment ID for all hosts.
+   Never truncate, rotate, or unlink an existing lock or state file.
+3. **Configure:** set `CITOID_RATE_LIMIT_DIR` and
+   `CITOID_RATE_LIMIT_NAMESPACE_ID` in **every PHP worker**, not only the
+   web-server or pod environment. Do not enable local fallback for replicas.
+4. **Verify while drained:** run the bidirectional cross-host mutex probe and
+   filesystem checks in [distributed deployment validation](citoid-distributed-validation.md).
+   Confirm atomic same-directory rename and directory `fsync` durability on
+   the **actual mount**; local CI cannot establish these properties.
+5. **Upgrade and resume:** deploy the new code to all hosts while writers are
+   still stopped, then restart them. Confirm sanitized admission results and
+   that Citoid enrichment fails closed if the shared mount is unavailable.
+6. **Rollback:** if necessary, drain **all** new workers before starting any
+   older version. Preserve the current lock, marker, and published state for
+   inspection; do not use mixed versions or reset the mutex as a workaround.
+
+An unavailable or invalid directory, marker, or mutex refuses Citoid enrichment
+rather than permitting an unpaced request.
 
 The rate-limit check fails closed on invalid paths, non-regular/replaced lock
 files, malformed or corrupt timestamps, or a lock held for more than 15 seconds.
