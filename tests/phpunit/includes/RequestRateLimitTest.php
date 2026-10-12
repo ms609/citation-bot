@@ -1765,4 +1765,217 @@ PHP;
         @unlink($this->bigRunStatePath());
         @unlink($outside);
     }
+
+    /** Recovery endpoints must reject invalid operator input before any filesystem mutation. */
+    public function testRecoveryCommandsRejectInvalidLockAttempts(): void {
+        foreach (['big_run_recovery_check', 'big_run_recovery_reset'] as $operation) {
+            try {
+                $operation($this->base_directory, 100.0, 0);
+                $this->fail($operation . ' accepted a zero lock-attempt budget');
+            } catch (InvalidArgumentException $exception) {
+                $this->assertStringContainsString('positive', $exception->getMessage());
+            }
+        }
+    }
+
+    public function testRecoveryCommandsRejectEmptyBaseDirectory(): void {
+        $check = big_run_recovery_check('', 100.0, 1);
+        $this->assertFalse($check['ok']);
+        $this->assertSame('base_directory_empty', $check['reason']);
+        $this->assertSame('', $check['state_path']);
+        $this->assertNull($check['lease_entries']);
+        $this->assertNull($check['tokens']);
+
+        $reset = big_run_recovery_reset('', 100.0, 1);
+        $this->assertFalse($reset['ok']);
+        $this->assertSame('base_directory_empty', $reset['reason']);
+        $this->assertSame('', $reset['state_path']);
+        $this->assertNull($reset['backup_path']);
+    }
+
+    /** A missing snapshot is a legitimate fresh install, not corrupt shared state. */
+    public function testRecoveryCheckSeesFreshPoolWithNoSnapshot(): void {
+        $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+        $this->assertTrue($check['ok']);
+        $this->assertNull($check['reason']);
+        $this->assertSame(0, $check['lease_entries']);
+        $this->assertSame((float) big_run_token_capacity(), $check['tokens']);
+        $this->assertSame($this->bigRunStatePath(), $check['state_path']);
+        $this->assertFileDoesNotExist($this->bigRunStatePath());
+    }
+
+    /** Inspection must neither rewrite a valid snapshot nor replace its inode. */
+    public function testRecoveryCheckNeverMutatesValidSnapshot(): void {
+        $raw = '{"tokens":25.0,"updated":90.0,"entries":{}}';
+        $this->writeBigRunState($raw);
+        $path = $this->bigRunStatePath();
+        clearstatcache(true, $path);
+        $inode = fileinode($path);
+        $this->assertIsInt($inode);
+        $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+        $this->assertTrue($check['ok']);
+        $this->assertSame(25.0, $check['tokens']);
+        $this->assertSame(0, $check['lease_entries']);
+        $this->assertSame($raw, file_get_contents($path));
+        clearstatcache(true, $path);
+        $this->assertSame($inode, fileinode($path));
+    }
+
+    /** A first operator reset must not invent a nonexistent backup. */
+    public function testRecoveryResetWithoutOldSnapshotHasNoBackup(): void {
+        $reset = big_run_recovery_reset($this->base_directory, 100.0, 1);
+        $this->assertTrue($reset['ok']);
+        $this->assertNull($reset['reason']);
+        $this->assertNull($reset['backup_path']);
+        $this->assertSame($this->bigRunStatePath(), $reset['state_path']);
+        $state = $this->readBigRunState();
+        $this->assertSame([], $state['entries']);
+        $this->assertSame(100.0, $state['updated']);
+    }
+
+    /** Fail closed rather than rename an operator-created directory over the state file. */
+    public function testRecoveryResetRejectsDirectoryInPlaceOfStateFile(): void {
+        $state_path = $this->bigRunStatePath();
+        $this->assertTrue(mkdir(dirname($state_path), 0700, true));
+        $this->assertTrue(mkdir($state_path, 0700));
+        try {
+            $reset = big_run_recovery_reset($this->base_directory, 100.0, 1);
+            $this->assertFalse($reset['ok']);
+            $this->assertSame('state_path_not_regular', $reset['reason']);
+            $this->assertNull($reset['backup_path']);
+            $this->assertDirectoryExists($state_path);
+        } finally {
+            $this->assertTrue(rmdir($state_path));
+        }
+    }
+
+    /** Read-only recovery checks must never mutate a locked snapshot. */
+    public function testRecoveryCheckRejectsBusyLockAndPreservesState(): void {
+        $raw = '{not-json';
+        $this->writeBigRunState($raw);
+        $lock_handle = big_run_open_lock_handle($this->base_directory);
+        $this->assertIsResource($lock_handle);
+        try {
+            $this->assertTrue(flock($lock_handle, LOCK_EX | LOCK_NB));
+            $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+            $this->assertFalse($check['ok']);
+            $this->assertSame('lock_busy', $check['reason']);
+            $this->assertNull($check['lease_entries']);
+            $this->assertNull($check['tokens']);
+            $this->assertSame($raw, file_get_contents($this->bigRunStatePath()));
+        } finally {
+            flock($lock_handle, LOCK_UN);
+            fclose($lock_handle);
+        }
+    }
+
+    /** Never overwrite an existing backup with the same second and process ID. */
+    public function testRecoveryBackupPathAvoidsExistingBackupName(): void {
+        $state_path = $this->bigRunStatePath();
+        $this->assertTrue(mkdir(dirname($state_path), 0700, true));
+        // Construct the precise filename for this UTC second so the second
+        // allocation must exercise the collision branch, not just produce
+        // a different filename when the wall clock ticks to the next second.
+        $collision_tested = false;
+        for ($attempt = 0; $attempt < 3; ++$attempt) {
+            $stamp = gmdate('Ymd\THis\Z');
+            $pid = getmypid();
+            $pid_text = is_int($pid) ? (string) $pid : 'pid';
+            $first = $state_path . '.recovery-' . $stamp . '-' . $pid_text;
+            $this->assertSame(4, file_put_contents($first, 'keep'));
+            $second = big_run_recovery_backup_path($state_path);
+            if (gmdate('Ymd\THis\Z') === $stamp) {
+                $this->assertSame($first . '-1', $second);
+                $this->assertFileDoesNotExist($second);
+                $this->assertSame('keep', file_get_contents($first));
+                $collision_tested = true;
+                break;
+            }
+            $this->assertTrue(unlink($first));
+        }
+        if (!$collision_tested) {
+            $this->markTestSkipped('Clock changed during all collision checks');
+        }
+    }
+
+    /** A corrupted or unexpectedly typed snapshot must fail closed under the real recovery lock. */
+    public function testRecoveryCheckRejectsEmptyAndOversizedSnapshots(): void {
+        $this->writeBigRunState('');
+        $empty = big_run_recovery_check($this->base_directory, 100.0, 1);
+        $this->assertFalse($empty['ok']);
+        $this->assertSame('state_empty', $empty['reason']);
+        $this->assertSame('', file_get_contents($this->bigRunStatePath()));
+
+        $oversized = str_repeat('X', BIG_RUN_STATE_MAX_BYTES + 1);
+        $this->writeBigRunState($oversized);
+        $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+        $this->assertFalse($check['ok']);
+        $this->assertSame('state_oversized', $check['reason']);
+        $this->assertSame($oversized, file_get_contents($this->bigRunStatePath()));
+    }
+
+    public function testRecoveryCheckRejectsDirectorySnapshot(): void {
+        $state_path = $this->bigRunStatePath();
+        $this->assertTrue(mkdir(dirname($state_path), 0700, true));
+        $this->assertTrue(mkdir($state_path, 0700));
+        try {
+            $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+            $this->assertFalse($check['ok']);
+            $this->assertSame('state_path_not_regular', $check['reason']);
+            $this->assertDirectoryExists($state_path);
+        } finally {
+            $this->assertTrue(rmdir($state_path));
+        }
+    }
+
+    public function testRecoveryCheckRejectsSymlinkSnapshot(): void {
+        $state_path = $this->bigRunStatePath();
+        $this->assertTrue(mkdir(dirname($state_path), 0700, true));
+        if (!function_exists('symlink')) {
+            $this->markTestSkipped('Symlinks are unavailable');
+        }
+        $outside = $this->base_directory . DIRECTORY_SEPARATOR . 'outside-snapshot';
+        $this->assertSame(9, file_put_contents($outside, 'preserved'));
+        // phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged -- Filesystems may forbid symlinks.
+        if (!@symlink($outside, $state_path)) {
+            $this->assertTrue(unlink($outside));
+            $this->markTestSkipped('This filesystem does not permit symlinks');
+        }
+        try {
+            $check = big_run_recovery_check($this->base_directory, 100.0, 1);
+            $this->assertFalse($check['ok']);
+            $this->assertSame('state_path_symlink', $check['reason']);
+            $this->assertSame('preserved', file_get_contents($outside));
+        } finally {
+            $this->assertTrue(unlink($state_path));
+        }
+    }
+
+    public function testRecoveryCommandsRejectUnusableBaseDirectory(): void {
+        $blocked = $this->base_directory . DIRECTORY_SEPARATOR . 'not-a-directory';
+        $this->assertSame(7, file_put_contents($blocked, 'blocked'));
+        foreach (['big_run_recovery_check', 'big_run_recovery_reset'] as $operation) {
+            $result = $operation($blocked, 100.0, 1);
+            $this->assertFalse($result['ok']);
+            $this->assertSame('lock_open_failed', $result['reason']);
+            $this->assertSame('blocked', file_get_contents($blocked));
+        }
+    }
+
+    /** Invalid encoded snapshots must be refused without touching the destination. */
+    public function testBigRunStateWriterRejectsUnencodableAndOversizedSnapshots(): void {
+        $state_path = $this->bigRunStatePath();
+        $original = '{"tokens":25,"updated":100,"entries":{}}';
+        $this->writeBigRunState($original);
+        $this->assertFalse(big_run_store_state_file($state_path, INF, 100.0, []));
+        $this->assertSame($original, file_get_contents($state_path));
+        $entry = [
+            'started_at' => 100.0,
+            'tier' => str_repeat('X', BIG_RUN_STATE_MAX_BYTES),
+            'last_seen_at' => 100.0,
+            'phase' => 'running',
+        ];
+        $this->assertFalse(big_run_store_state_file($state_path, 10.0, 100.0, ['oversized' => $entry]));
+        $this->assertSame($original, file_get_contents($state_path));
+    }
 }
