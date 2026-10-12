@@ -7067,7 +7067,7 @@ final class Template
                     $possible_volume = mb_trim((string) @$crossRef->volume);
                     $doi_crossref = mb_trim((string) @$crossRef->doi);
                     unset($crossRef);
-                    if ($possible_issue !== $possible_volume) {
+                    if ($possible_issueCONFLIC !== $possible_volume) {
                         // They don't match
                         if ((mb_strpos($possible_issue, '-') > 0 || (int) $possible_issue > 1) && (int) $possible_volume > 0) {
                             // Legit data
