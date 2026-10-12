@@ -92,6 +92,7 @@ jobs:
     concurrency:
       group: ${{ github.event_name == 'pull_request' && github.ref || 'citation-bot-live-citoid' }}
       cancel-in-progress: false
+      queue: max
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -128,8 +129,11 @@ jobs:
         chmod 700 "$lock_dir"
         umask 077
         namespace_id="$(openssl rand -hex 16)"
-        printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace"
+        # Both files are first-install-only; never truncate or replace an existing inode.
+        ( umask 077; set -C; printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace" )
         chmod 600 "$lock_dir/rate.namespace"
+        ( umask 077; set -C; : > "$lock_dir/rate.lock" )
+        chmod 600 "$lock_dir/rate.lock"
         printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
         printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
 
@@ -191,6 +195,7 @@ jobs:
     concurrency:
       group: citation-bot-live-citoid
       cancel-in-progress: false
+      queue: max
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -222,8 +227,11 @@ jobs:
         chmod 700 "$lock_dir"
         umask 077
         namespace_id="$(openssl rand -hex 16)"
-        printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace"
+        # Both files are first-install-only; never truncate or replace an existing inode.
+        ( umask 077; set -C; printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace" )
         chmod 600 "$lock_dir/rate.namespace"
+        ( umask 077; set -C; : > "$lock_dir/rate.lock" )
+        chmod 600 "$lock_dir/rate.lock"
         printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
         printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
 
