@@ -92,7 +92,6 @@ jobs:
     concurrency:
       group: ${{ github.event_name == 'pull_request' && github.ref || 'citation-bot-live-citoid' }}
       cancel-in-progress: false
-      queue: max
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -195,7 +194,6 @@ jobs:
     concurrency:
       group: citation-bot-live-citoid
       cancel-in-progress: false
-      queue: max
 
     steps:
     - name: Harden runner (audit outbound calls)

@@ -77,6 +77,7 @@ final class CitoidS2OfflinePatch17Test extends testBaseClass {
         try {
             $assertions();
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('semanticscholar_request');
         }
     }
@@ -134,6 +135,7 @@ final class CitoidS2OfflinePatch17Test extends testBaseClass {
         try {
             $this->assertSame('', semanticscholar_request($handle));
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('bot_curl_exec');
         }
     }
@@ -163,6 +165,7 @@ final class CitoidS2OfflinePatch17Test extends testBaseClass {
             $template->get_identifiers_from_url();
             $this->assertSame('987654', $template->get2('s2cid'));
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('getS2CID');
         }
     }
