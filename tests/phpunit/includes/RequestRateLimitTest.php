@@ -1886,7 +1886,7 @@ PHP;
             $second = big_run_recovery_backup_path($state_path);
             if (gmdate('Ymd\THis\Z') === $stamp) {
                 $this->assertSame($first . '-1', $second);
-                $this->assertFileDoesNotExist($second);
+                $this->assertFileDoesNotExist($first . '-1');
                 $this->assertSame('keep', file_get_contents($first));
                 $collision_tested = true;
                 break;
