@@ -720,6 +720,80 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame('Jackson', $template->get2('author3'));
     }
 
+    public function testDuplicateCreatorsNotAddedTwice(): void {
+        // Citoid sometimes repeats every creator (seen with Reuters newspaperArticle
+        // responses).  Each person must only be added once.  Repeats use
+        // case/whitespace variants to lock case-insensitive deduplication.
+        $text = '{{cite web}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://www.reuters.com/world/middle-east/lufthansa-air-india-suspend-flights-riyadh-after-houthi-attacks-2026-10-08/';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'Gianluca Lo', 'lastName' => 'Nostro'];
+        $creators[1] = (object) ['creatorType' => 'author', 'firstName' => 'Vallari', 'lastName' => 'Srivastava'];
+        $creators[2] = (object) ['creatorType' => 'author', 'firstName' => 'gianluca lo', 'lastName' => 'nostro'];
+        $creators[3] = (object) ['creatorType' => 'author', 'firstName' => 'vallari ', 'lastName' => ' srivastava'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) [
+            'title' => 'Lufthansa, Indian airlines suspend flights to Riyadh after Houthi attacks',
+            'itemType' => 'newspaperArticle',
+            'publicationTitle' => 'Reuters',
+            'creators' => $creators,
+        ];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Nostro', $template->get2('last1'));
+        $this->assertSame('Gianluca Lo', $template->get2('first1'));
+        $this->assertSame('Srivastava', $template->get2('last2'));
+        $this->assertSame('Vallari', $template->get2('first2'));
+        $this->assertNull($template->get2('last3'));
+        $this->assertNull($template->get2('first3'));
+        $this->assertNull($template->get2('last4'));
+        $this->assertNull($template->get2('first4'));
+    }
+
+    public function testDuplicateZoteroAuthorsNotAddedTwice(): void {
+        // Same deduplication for the Zotero author array shape.
+        // Repeats use case variants to lock case-insensitive deduplication.
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $author = [];
+        $author[0] = [0 => 'Gianluca Lo', 1 => 'Nostro'];
+        $author[1] = [0 => 'Vallari', 1 => 'Srivastava'];
+        $author[2] = [0 => 'gianluca lo', 1 => 'nostro'];
+        $author[3] = [0 => 'vallari', 1 => 'srivastava'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'webpage', 'author' => $author];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Nostro', $template->get2('last1'));
+        $this->assertSame('Srivastava', $template->get2('last2'));
+        $this->assertNull($template->get2('last3'));
+        $this->assertNull($template->get2('last4'));
+    }
+
+    public function testSameNameDifferentRolesPreserved(): void {
+        // Same name in different roles must not collapse: author vs editor
+        // use separate counters and both must be kept.  Author roles land
+        // in last1/first1 while editors land in editor1.
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = '';
+        $creators = [];
+        $creators[0] = (object) ['creatorType' => 'author', 'firstName' => 'John', 'lastName' => 'Smith'];
+        $creators[1] = (object) ['creatorType' => 'editor', 'firstName' => 'John', 'lastName' => 'Smith'];
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'Billy', 'itemType' => 'report', 'creators' => $creators];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('John', $template->get2('first1'));
+        $this->assertStringContainsString('Smith', (string) $template->get2('editor1'));
+    }
+
     public function testZoteroResponse31(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);
