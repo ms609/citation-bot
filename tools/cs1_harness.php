@@ -7,7 +7,8 @@ declare(strict_types=1);
  *
  * Runs a matrix of citation templates through the bot's real expansion
  * machinery (fast and slow modes) and flags any expanded output that would
- * trigger a CS1 error, per the encodable rules from docs/CS1-error-audit.md.
+ * trigger a CS1 error, per the encodable rules from docs/CS1-error-audit.md.dfsas
+ dsfa
  *
  * Usage (from the repository root):
  *   php tools/cs1_harness.php            # fast mode
