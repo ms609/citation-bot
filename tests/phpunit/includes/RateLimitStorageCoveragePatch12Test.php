@@ -11,7 +11,7 @@ final class RateLimitStorageCoveragePatch12Test extends testBaseClass {
         $this->assertIsResource($handle);
         try {
             $original = '{"tokens":2.0,"updated":100.0}';
-            $this->assertSame(strlen($original), fwrite($handle, $original));
+            $this->assertSame(mb_strlen($original, '8bit'), fwrite($handle, $original));
             $this->assertFalse(request_rate_limit_store_state($handle, INF, 100.0));
             $this->assertFalse(request_rate_limit_store_state($handle, 2.0, INF));
             $this->assertTrue(rewind($handle));
@@ -26,7 +26,7 @@ final class RateLimitStorageCoveragePatch12Test extends testBaseClass {
         $this->assertIsString($path);
         $original = '{"tokens":2.0,"updated":100.0}';
         try {
-            $this->assertSame(strlen($original), file_put_contents($path, $original));
+            $this->assertSame(mb_strlen($original, '8bit'), file_put_contents($path, $original));
             $handle = fopen($path, 'rb');
             $this->assertIsResource($handle);
             try {
