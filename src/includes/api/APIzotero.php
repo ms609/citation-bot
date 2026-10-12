@@ -652,7 +652,10 @@ final class Zotero {
             $failure_reason = 'lock-unavailable';
             return false;
         }
-        $lock = @fopen($lock_path, 'c+');
+        // A missing mutex on a configured shared mount is a deployment error:
+        // c+ would silently create a different inode on a disconnected host.
+        // Only explicit single-instance fallback and test overrides create it.
+        $lock = @fopen($lock_path, $configured ? 'r+b' : 'c+');
         if ($lock === false) {
             $failure_reason = 'lock-unavailable';
             return false;
@@ -749,6 +752,11 @@ final class Zotero {
         return $status >= 200 && $status < 300;
     }
 
+    /** 204/205 intentionally contain no body; neither should trigger a retry. */
+    public static function citoid_empty_body_retryable(int $status): bool {
+        return self::citoid_http_success($status) && $status !== 204 && $status !== 205;
+    }
+
     /**
      * @performance Keeps track of errors and adds small delays (0.1-0.2 seconds) when things go wrong.
      * After 5 errors in a row, pauses for 100 tries to avoid overloading the service. Tries again once if it times out.
@@ -792,7 +800,13 @@ final class Zotero {
             return self::ERROR_DONE;
         }
         $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE);
-        if ($zotero_response === '' && self::citoid_http_success($response_code)) {
+        if ($zotero_response === '' && ($response_code === 204 || $response_code === 205)) {
+            // Valid no-content reply: no metadata is available, but the service
+            // did not fail and another paced HTTP attempt would be wasteful.
+            self::$zotero_failures_count = 0;
+            return self::ERROR_DONE;
+        }
+        if ($zotero_response === '' && self::citoid_empty_body_retryable($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
                 $failure_reason = null;

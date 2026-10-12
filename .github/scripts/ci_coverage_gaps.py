@@ -7,6 +7,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 SAFE_SOURCE = re.compile(r"^src/[A-Za-z0-9_./-]+\.php$")
+MAX_CLOVER_BYTES = 64 * 1024 * 1024
 
 
 def coverage_gaps(source: Path, root: Path, limit: int = 25) -> str:
@@ -14,7 +15,14 @@ def coverage_gaps(source: Path, root: Path, limit: int = 25) -> str:
     if not source.is_file():
         return "Clover coverage file was not generated.\n"
     try:
-        tree = ET.parse(source)
+        if source.stat().st_size > MAX_CLOVER_BYTES:
+            return "Clover coverage file exceeds the diagnostic size limit.\n"
+        raw = source.read_bytes()
+        if len(raw) > MAX_CLOVER_BYTES:
+            return "Clover coverage file exceeds the diagnostic size limit.\n"
+        if b"<!DOCTYPE" in raw.upper():
+            return "Clover coverage DTD is not permitted.\n"
+        tree = ET.ElementTree(ET.fromstring(raw))
     except (ET.ParseError, OSError, ValueError):
         return "Clover coverage file could not be parsed.\n"
 

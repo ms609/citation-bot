@@ -280,6 +280,9 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
         $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', '');
         $this->assertFalse(self::admit(null), 'Empty namespace configuration must fail closed');
         $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->assertFalse(self::admit(null), 'Configured shared lock must be provisioned, not created implicitly');
+        $this->assertFileDoesNotExist($directory . '/rate.lock');
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
         $this->assertTrue(self::admit(null));
         $this->assertFileExists($directory . '/rate.state');
     }

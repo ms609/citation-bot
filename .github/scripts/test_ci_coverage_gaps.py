@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ci_coverage_gaps import coverage_gaps
+from ci_coverage_gaps import MAX_CLOVER_BYTES, coverage_gaps
 
 
 class CoverageGapsTests(unittest.TestCase):
@@ -33,6 +33,25 @@ class CoverageGapsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             self.assertIn("not generated", coverage_gaps(root / "missing.xml", root))
+
+    def test_internal_entity_dtd_is_rejected(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "coverage.xml"
+            source.write_text(
+                '<!DOCTYPE coverage [<!ENTITY x "EXPANSION">]>'
+                '<coverage><project>&x;</project></coverage>',
+                encoding="utf-8",
+            )
+            self.assertIn("DTD is not permitted", coverage_gaps(source, root))
+
+    def test_oversized_clover_is_rejected_without_parsing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "coverage.xml"
+            with source.open("wb") as stream:
+                stream.truncate(MAX_CLOVER_BYTES + 1)
+            self.assertIn("size limit", coverage_gaps(source, root))
 
 
 if __name__ == "__main__":

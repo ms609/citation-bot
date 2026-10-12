@@ -30,9 +30,11 @@ is invalid and fails closed even if the local fallback flag is set. When both
 variables are set, a nonempty `CITOID_RATE_LIMIT_DIR` takes precedence. Only the
 literal value `1` enables local fallback; values such as `true` do not.
 
-The explicitly configured `CITOID_RATE_LIMIT_DIR` must exist before workers
-start. If the pathname is missing, the limiter fails closed rather than
-creating a private replacement. Multi-instance deployments must also set
+The explicitly configured `CITOID_RATE_LIMIT_DIR` and its permanent
+`rate.lock` mutex must exist before workers start. If either is missing,
+the limiter fails closed rather than creating a private replacement. Never
+replace or unlink `rate.lock` while any worker is active; doing so splits
+lock ownership across different inodes. Multi-instance deployments must also set
 `CITOID_RATE_LIMIT_NAMESPACE_ID` to exactly 32 lowercase hexadecimal characters
 and pre-provision `rate.namespace` inside the shared directory with the exact
 content `CBNS1|<namespace-id>\n` (where `\n` is a single newline).
@@ -50,6 +52,10 @@ mode `0700`):
 id=$(openssl rand -hex 16)
 printf 'CBNS1|%s\n' "$id" > /absolute/shared/flock-capable/path/rate.namespace
 chmod 600 /absolute/shared/flock-capable/path/rate.namespace
+# First install only: fail instead of overwriting an existing inode.
+# Abort if rate.lock already exists; verify the mount is shared first.
+( umask 077; set -C; : > /absolute/shared/flock-capable/path/rate.lock )
+chmod 600 /absolute/shared/flock-capable/path/rate.lock
 # Set CITOID_RATE_LIMIT_NAMESPACE_ID=$id for every PHP worker.
 ```
 
