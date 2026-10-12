@@ -565,7 +565,6 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testCrossRefIssueMatchingVolumeIsSkippedForRstlBackfile(): void {
-        // 10.1098/rstl.1873.0014 carries the volume number in the issue field with no volume (#29)
         $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/rstl.1873.0014', '', '163', '163'));
     }
 
@@ -591,5 +590,46 @@ final class DoiTest extends testBaseClass {
 
     public function testCrossRefIssueMatchingVolumeIgnoresCaseAndWhitespace(): void {
         $this->assertTrue(should_skip_crossref_issue_as_volume_match('10.1098/RSTL.1873.0014', '', ' 163 ', '163'));
+    }
+
+    public function testDoiJsonSkipsRstlBackfileIssueMatchingVolume(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
+        process_doi_json($template, '10.1098/rstl.1873.0014', [
+            'type' => 'journal-article',
+            'issue' => '163',
+            'title' => ['XIII. Results'],
+        ]);
+        $this->assertNull($template->get2('issue'));
+    }
+
+    public function testDoiJsonKeepsIssueWhenRecordHasVolume(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1867.0001|volume=157|title=Test}}');
+        process_doi_json($template, '10.1098/rstl.1867.0001', [
+            'type' => 'journal-article',
+            'issue' => '157',
+            'volume' => '157',
+            'title' => ['Test'],
+        ]);
+        $this->assertSame('157', $template->get2('issue'));
+    }
+
+    public function testDoiJsonKeepsIssueOutsideFamily(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1002/andp.201800355|volume=5|title=Test}}');
+        process_doi_json($template, '10.1002/andp.201800355', [
+            'type' => 'journal-article',
+            'issue' => '5',
+            'title' => ['Test'],
+        ]);
+        $this->assertSame('5', $template->get2('issue'));
+    }
+
+    public function testDoiJsonSkipsArrayFormRstlBackfileIssue(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
+        process_doi_json($template, '10.1098/rstl.1873.0014', [
+            'type' => 'journal-article',
+            'issue' => ['163'],
+            'title' => ['XIII. Results'],
+        ]);
+        $this->assertNull($template->get2('issue'));
     }
 }

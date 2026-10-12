@@ -7067,7 +7067,10 @@ final class Template
                     $possible_volume = mb_trim((string) @$crossRef->volume);
                     $doi_crossref = mb_trim((string) @$crossRef->doi);
                     unset($crossRef);
-                    if ($possible_issueCONFLIC !== $possible_volume) {
+                    if (should_skip_crossref_issue_as_volume_match($doi_template, $possible_volume, $possible_issue, $orig_data)) {
+                        $this->forget('issue');
+                        report_action('CrossRef issue matches volume with no record volume for Royal Society backfile; removing issue for DOI: ' . echoable($doi_template));
+                    } elseif ($possible_issue !== $possible_volume) {
                         // They don't match
                         if ((mb_strpos($possible_issue, '-') > 0 || (int) $possible_issue > 1) && (int) $possible_volume > 0) {
                             // Legit data

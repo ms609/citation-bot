@@ -445,7 +445,25 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         $try_to_add_it('year', doi_json_get($json, ['created', 'date-parts', 0, 0]));
         $try_to_add_it('year', doi_json_get($json, ['published-print', 'date-parts', 0, 0]));
     }
-    $try_to_add_it('issue', @$json['issue']);
+    $dx_unwrap = static function ($data): string {
+        while (is_array($data)) {
+            if (!isset($data['0']) || isset($data['1'])) {
+                return '';
+            }
+            $data = $data['0'];
+        }
+        if (!is_scalar($data)) {
+            return '';
+        }
+        return (string) $data;
+    };
+    $dx_issue = $dx_unwrap($json['issue'] ?? null);
+    $dx_volume = $dx_unwrap($json['volume'] ?? null);
+    if (should_skip_crossref_issue_as_volume_match($doi, $dx_volume, $dx_issue, $template->get_without_comments_and_placeholders('volume'))) {
+        report_warning("CrossRef issue matches existing volume with no record volume; skipping issue for DOI: " . echoable($doi));
+    } else {
+        $try_to_add_it('issue', @$json['issue']);
+    }
     $try_to_add_it('pages', @$json['pages']);
     $try_to_add_it('page', @$json['pages']);
     $try_to_add_it('volume', @$json['volume']);
@@ -655,10 +673,8 @@ function isCrossRefReviewConfusion(Template $template, object $msg): bool {
 }
 
 /**
- * Royal Society backfile records (10.1098/rstl.*, 10.1098/rspl.*) file the
- * volume number in the issue field with no volume of their own (#29).
+ * Royal Society backfile records file the volume number in the issue field with no volume.
  * Skip such an issue when it textually matches the citation's volume.
- * Scoped to the affected family so no other DOI can be touched by this.
  */
 function should_skip_crossref_issue_as_volume_match(string $doi, string $crossref_volume, string $crossref_issue, string $citation_volume): bool {
     $doi_lower = mb_strtolower($doi);

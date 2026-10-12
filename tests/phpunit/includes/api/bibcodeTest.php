@@ -814,4 +814,33 @@ final class bibcodeTest extends testBaseClass {
         $this->assertTrue(isAdsBookReviewConfusion($template, $record));
     }
 
+    public function testAdsSkipsRstlBackfileIssueMatchingVolume(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1873.0014|volume=163|title=XIII. Results}}');
+        $record = (object) [
+            'title' => ['XIII. Results'],
+            'pub' => 'Philosophical Transactions of the Royal Society of London',
+            'issue' => '163',
+            'year' => '1873',
+            'doi' => ['10.1098/rstl.1873.0014'],
+            'doctype' => 'article',
+        ];
+        process_bibcode_data($template, $record);
+        $this->assertNull($template->get2('issue'));
+    }
+
+    public function testAdsKeepsIssueWhenRecordHasVolume(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1098/rstl.1867.0001|volume=157|title=Test}}');
+        $record = (object) [
+            'title' => ['Test'],
+            'pub' => 'Philosophical Transactions of the Royal Society of London',
+            'volume' => '157',
+            'issue' => '2',
+            'year' => '1867',
+            'doi' => ['10.1098/rstl.1867.0001'],
+            'doctype' => 'article',
+        ];
+        process_bibcode_data($template, $record);
+        $this->assertSame('2', $template->get2('issue'));
+    }
+
 }
