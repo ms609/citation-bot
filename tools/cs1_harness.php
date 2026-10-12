@@ -7,8 +7,8 @@ declare(strict_types=1);
  *
  * Runs a matrix of citation templates through the bot's real expansion
  * machinery (fast and slow modes) and flags any expanded output that would
- * trigger a CS1 error, per the encodable rules from docs/CS1-error-audit.md.dfsas
- dsfa
+ * trigger a CS1 error, per the encodable rules from Help:CS1 errors and
+ * Module:Citation/CS1.  Every checker rule cites its source; see AGENTS.md.
  *
  * Usage (from the repository root):
  *   php tools/cs1_harness.php            # fast mode
@@ -90,12 +90,15 @@ Zotero::create_ch_zotero();
 // CS1 rule data (mirrors the audit and the bot's own coupled-parameter logic)
 // ---------------------------------------------------------------------------
 
-const PERIODICAL_PARAMS = ['work', 'journal', 'newspaper', 'magazine', 'website', 'periodical', 'encyclopedia', 'encyclopaedia'];
+const PERIODICAL_PARAMS = ['work', 'journal', 'newspaper', 'magazine', 'website', 'periodical'];
 
-const NON_PERIODICAL_TEMPLATES = [
-    'cite book', 'cite thesis', 'cite arxiv', 'cite biorxiv', 'cite medrxiv',
-    'cite document', 'cite citeseerx', 'cite ssrn', 'cite report', 'cite press release',
-];
+// Module:Citation/CS1 emits err_periodical_ignored only for cite book and
+// cite encyclopedia with a periodical set (plus {{citation}} with both
+// encyclopedia and a periodical).  Other templates silently drop the param.
+// encyclopedia/encyclopaedia elsewhere emit the *different*
+// err_parameter_ignored ("Unknown parameter"), which this checker does not
+// track.  Script-/trans-periodical variants are unchecked (known hole).
+const PERIODICAL_IGNORING_TEMPLATES = ['cite book', 'cite encyclopedia', 'cite encyclopaedia'];
 
 // CS1 templates that ignore |chapter= (and its contribution/article/entry/
 // section aliases): cite web, cite news, cite journal, cite magazine, cite
@@ -212,8 +215,9 @@ function check_citation(Template $template): array {
     $violations = [];
     $name = $template->wikiname();
 
-    // R1: title (or script-title) present and non-empty.
-    if (!$template->has('title') && !$template->has('script-title')) {
+    // R1: title, trans-title, or script-title present and non-empty.
+    // CS1 only errors when all three are missing.
+    if (!$template->has('title') && !$template->has('trans-title') && !$template->has('script-title')) {
         $violations[] = 'title-empty: CS1 "Missing or empty |title="';
     }
 
@@ -247,8 +251,9 @@ function check_citation(Template $template): array {
         $violations[] = 'archive-url-without-url: CS1 "|archive-url= requires |url="';
     }
 
-    // R6: access-date requires url or archive-url (alias spellings included).
-    if (has_any($template, ACCESS_DATE_PARAMS) && !has_any($template, URL_PARAMS) && !has_any($template, ARCHIVE_URL_PARAMS)) {
+    // R6: access-date requires url or chapter-url (alias spellings included).
+    // CS1 does NOT accept archive-url as satisfying (Module:Citation/CS1).
+    if (has_any($template, ACCESS_DATE_PARAMS) && !has_any($template, URL_PARAMS) && !has_any($template, CHAPTER_URL_PARAMS)) {
         $violations[] = 'access-date-orphaned: CS1 "|access-date= requires |url="';
     }
 
@@ -259,8 +264,12 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R8: periodical parameters are ignored in templates without a periodical.
-    if (in_array($name, NON_PERIODICAL_TEMPLATES, true)) {
+    // R8: periodical parameters are ignored in cite book/encyclopedia only.
+    $periodical_ignored = in_array($name, PERIODICAL_IGNORING_TEMPLATES, true);
+    if (!$periodical_ignored && $name === 'citation') {
+        $periodical_ignored = $template->has('encyclopedia') && has_any($template, PERIODICAL_PARAMS);
+    }
+    if ($periodical_ignored) {
         foreach (PERIODICAL_PARAMS as $param) {
             if ($template->has($param)) {
                 $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
@@ -538,15 +547,16 @@ function build_matrix(): array {
         ['Orphaned trans-chapter removed', '{{cite journal |title=X |journal=J |trans-chapter=Y}}', 'pass'],
         ['Orphaned trans-entry removed', '{{cite journal |title=X |journal=J |trans-entry=Y}}', 'pass'],
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
+        ['Work in cite ssrn is not a periodical error', '{{cite ssrn |ssrn=1234567 |title=X |work=Y}}', 'pass'],
         ['GAP news chapter left as-is', '{{cite news |newspaper=N |date=2020 |chapter=C}}', 'gap'],
         ['GAP magazine chapter left as-is', '{{cite magazine |magazine=M |date=2020 |chapter=C}}', 'gap'],
         ['GAP news chapter left as-is with title', '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C}}', 'gap'],
         ['GAP news chapter kept with newspaper', '{{cite news |title=T |newspaper=N |date=2020 |chapter=C}}', 'gap'],
         ['GAP citation work chapter left as-is', '{{citation |title=T |work=W |date=2020 |chapter=C}}', 'gap'],
-        ['GAP malformed arxiv in input survives tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'pass'],
-        ['GAP malformed pmc in input survives tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'pass'],
-        ['GAP malformed arxiv/eprint in input survives tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],
-        ['GAP malformed bibcode in input survives tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'pass'],
+        ['Malformed arxiv in input removed in tidy', '{{cite journal |title=X |journal=J |arxiv=bogus}}', 'pass'],
+        ['Malformed pmc in input removed in tidy', '{{cite journal |title=X |journal=J |pmc=notnumeric}}', 'pass'],
+        ['Malformed arxiv/eprint in input removed in tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],
+        ['Malformed bibcode in input removed in tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'pass'],
         ['Trailing-dot doi repaired in tidy', '{{cite journal |title=X |journal=J |doi=10.1103/abc.}}', 'pass'],
         ['GAP malformed ssrn in input survives tidy', '{{cite journal |title=X |journal=J |ssrn=abc}}', 'gap'],
         ['GAP malformed s2cid in input survives tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'gap'],
