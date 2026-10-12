@@ -44,7 +44,7 @@ const HAS_NO_VOLUME = [
  * IAU Circular, Central Bureau Electronic Telegrams, and The Astronomer's Telegram
  * have issues, not volumes.
  * The circular/telegram number is the issue, while the "number" parameter is really the
- * article/page number within that circular (see the NGC 6753 report).
+ * article/page number within that circular.
  */
 const NUMBER_IS_PAGE = [
     "astronomer's telegram",
