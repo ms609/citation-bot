@@ -401,6 +401,33 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('45', $expanded->get2('issue'));
     }
 
+    public function testEJTOldHandVolumeBecomesIssue(): void {
+        // Old-style numbers are issues: hand-written volume with blank issue is corrected
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|volume=467|doi=10.5852/ejt.2018.467}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertSame('467', $expanded->get2('issue'));
+    }
+
+    public function testEJTOldVolumeMismatchPreserved(): void {
+        // Fail open when the volume does not match the old DOI number
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|volume=99|doi=10.5852/ejt.2018.467}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $this->assertSame('99', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
+    public function testEJTNoDOIVolumePreservedInTidy(): void {
+        // No DOI means no era corroboration: preserve user data as-is
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|volume=467}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $this->assertSame('467', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
