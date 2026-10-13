@@ -74,18 +74,30 @@ def run(command: list[str], idle: float, maximum: float, warn: float, grace: flo
                 elapsed = now - start
                 silent = now - last_output
                 if received_signal:
-                    print("CI test watchdog: termination requested; stopping test workers.", file=sys.stderr, flush=True)
+                    print(
+                        "CI test watchdog: termination requested; stopping test workers.", file=sys.stderr, flush=True
+                    )
                     stop_group(process, grace)
                     return 128 + received_signal
                 if elapsed >= maximum or silent >= idle:
-                    reason = (f"80-minute maximum exceeded ({elapsed:.0f}s)" if elapsed >= maximum
-                              else f"no test output for {silent:.0f}s (limit {idle:.0f}s)")
-                    print(f"::error::CI test watchdog: {reason}. {describe(workers, progress)}", file=sys.stderr, flush=True)
+                    reason = (
+                        f"80-minute maximum exceeded ({elapsed:.0f}s)"
+                        if elapsed >= maximum
+                        else f"no test output for {silent:.0f}s (limit {idle:.0f}s)"
+                    )
+                    print(
+                        f"::error::CI test watchdog: {reason}. {describe(workers, progress)}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                     stop_group(process, grace)
                     return 124
                 if silent >= warn and now - last_warning >= warn:
-                    print(f"::warning::CI test watchdog: no test output for {silent:.0f}s. "
-                          f"{describe(workers, progress)}", file=sys.stderr, flush=True)
+                    print(
+                        f"::warning::CI test watchdog: no test output for {silent:.0f}s. {describe(workers, progress)}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
                     last_warning = now
 
                 for key, _ in selector.select(timeout=min(1.0, maximum - elapsed, idle - silent)):
@@ -126,11 +138,12 @@ def main() -> int:
     command = arguments.command
     if command and command[0] == "--":
         command = command[1:]
-    if not command or min(arguments.idle_seconds, arguments.max_seconds,
-                          arguments.warn_seconds, arguments.grace_seconds) <= 0:
+    if (
+        not command
+        or min(arguments.idle_seconds, arguments.max_seconds, arguments.warn_seconds, arguments.grace_seconds) <= 0
+    ):
         parser.error("a command and positive deadlines are required")
-    return run(command, arguments.idle_seconds, arguments.max_seconds,
-               arguments.warn_seconds, arguments.grace_seconds)
+    return run(command, arguments.idle_seconds, arguments.max_seconds, arguments.warn_seconds, arguments.grace_seconds)
 
 
 if __name__ == "__main__":

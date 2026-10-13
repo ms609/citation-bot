@@ -13,15 +13,15 @@ class CoverageGapsTests(unittest.TestCase):
             root = Path(folder)
             path = root / "clover.xml"
             path.write_text(
-                '<coverage><project>'
+                "<coverage><project>"
                 f'<file name="{root / "src" / "demo.php"}">'
                 '<line num="7" type="stmt" count="0"/>'
                 '<line num="8" type="stmt" count="3"/>'
-                '</file>'
+                "</file>"
                 '<file name="/outside/secret.php">'
                 '<line num="1" type="stmt" count="0"/>'
-                '</file>'
-                '</project></coverage>',
+                "</file>"
+                "</project></coverage>",
                 encoding="utf-8",
             )
             result = coverage_gaps(path, root)
@@ -39,8 +39,7 @@ class CoverageGapsTests(unittest.TestCase):
             root = Path(folder)
             source = root / "coverage.xml"
             source.write_text(
-                '<!DOCTYPE coverage [<!ENTITY x "EXPANSION">]>'
-                '<coverage><project>&x;</project></coverage>',
+                '<!DOCTYPE coverage [<!ENTITY x "EXPANSION">]><coverage><project>&x;</project></coverage>',
                 encoding="utf-8",
             )
             self.assertIn("DTD is not permitted", coverage_gaps(source, root))

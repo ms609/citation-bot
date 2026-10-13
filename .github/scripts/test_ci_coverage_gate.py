@@ -18,8 +18,11 @@ class CoverageGateTests(unittest.TestCase):
             path = Path(folder) / "clover.xml"
             project = ET.Element("project")
             ET.SubElement(
-                project, "metrics", {
-                    "files": "2", "statements": str(total),
+                project,
+                "metrics",
+                {
+                    "files": "2",
+                    "statements": str(total),
                     "coveredstatements": str(covered),
                 },
             )
@@ -28,13 +31,19 @@ class CoverageGateTests(unittest.TestCase):
             ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
             return subprocess.run(
                 [*PHP_CHECKER, str(CHECKER), str(path)],
-                text=True, capture_output=True, timeout=8, check=False,
+                text=True,
+                capture_output=True,
+                timeout=8,
+                check=False,
             )
 
     def test_php_exit_status_is_not_suppressed(self):
         result = subprocess.run(
             [*PHP_CHECKER, "-r", "exit(37);"],
-            text=True, capture_output=True, timeout=8, check=False,
+            text=True,
+            capture_output=True,
+            timeout=8,
+            check=False,
         )
         self.assertEqual(37, result.returncode, result.stderr)
 
@@ -54,7 +63,10 @@ class CoverageGateTests(unittest.TestCase):
     def test_missing_file_rejected(self):
         missing = subprocess.run(
             [*PHP_CHECKER, str(CHECKER), "/path/not/a/real/coverage.xml"],
-            text=True, capture_output=True, timeout=8, check=False,
+            text=True,
+            capture_output=True,
+            timeout=8,
+            check=False,
         )
         self.assertNotEqual(0, missing.returncode)
 

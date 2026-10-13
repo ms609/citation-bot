@@ -97,9 +97,7 @@ def debug_metadata(source: Path) -> str:
         return "DebugLog.txt: metadata unavailable. Raw debug content is never uploaded."
 
 
-def write_report(
-    junit: Path, coverage: Path, debug: Path, destination: Path, version: str
-) -> None:
+def write_report(junit: Path, coverage: Path, debug: Path, destination: Path, version: str) -> None:
     destination.mkdir(parents=True, exist_ok=True)
     cases, warning = read_cases(junit)
     failures = [c for c in cases if c[3] in ("failure", "error")]
@@ -124,56 +122,68 @@ def write_report(
             lines.append(f"- …and {len(failures) - MAX_FAILURES} additional failures")
         lines.append("")
 
-    lines.extend([
-        "**Slowest test cases:**",
-        "",
-        "| Test | Case time |",
-        "| --- | ---: |",
-    ])
+    lines.extend(
+        [
+            "**Slowest test cases:**",
+            "",
+            "| Test | Case time |",
+            "| --- | ---: |",
+        ]
+    )
     for classname, name, seconds, _ in sorted(cases, key=lambda c: c[2], reverse=True)[:MAX_SLOW]:
         lines.append(f"| `{classname}::{name}` | {seconds:.3f}s |")
     if not cases:
         lines.append("| No case timings available | — |")
 
-    lines.extend([
-        "",
-        f"Summed case time: {total_time:.3f}s (not wall-clock duration).",
-        "",
-        "**Coverage:** " + " ".join(coverage_metrics(coverage)),
-        "",
-        debug_metadata(debug),
-        "",
-        "Raw JUnit assertion text and debug logs are deliberately excluded to protect credentials.",
-    ])
+    lines.extend(
+        [
+            "",
+            f"Summed case time: {total_time:.3f}s (not wall-clock duration).",
+            "",
+            "**Coverage:** " + " ".join(coverage_metrics(coverage)),
+            "",
+            debug_metadata(debug),
+            "",
+            "Raw JUnit assertion text and debug logs are deliberately excluded to protect credentials.",
+        ]
+    )
     (destination / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     sorted_cases = sorted(cases, key=lambda c: c[2], reverse=True)
     timing_lines = [
-        f"{seconds:9.3f}s {classname}::{name} [{status}]"
-        for classname, name, seconds, status in sorted_cases
+        f"{seconds:9.3f}s {classname}::{name} [{status}]" for classname, name, seconds, status in sorted_cases
     ]
-    (destination / "timings.txt").write_text(
-        "\n".join(timing_lines) + ("\n" if timing_lines else ""), encoding="utf-8"
-    )
+    (destination / "timings.txt").write_text("\n".join(timing_lines) + ("\n" if timing_lines else ""), encoding="utf-8")
 
     # Re-create the JUnit report from safe fields; never copy failure bodies or
     # arbitrary names/attributes from original JUnit output.
     if not warning:
         root = ET.Element("testsuites")
-        suite = ET.SubElement(root, "testsuite", {
-            "name": f"PHP {version}", "tests": str(len(cases)),
-            "failures": str(failed), "errors": str(errors),
-            "skipped": str(skipped), "time": f"{total_time:.3f}",
-        })
+        suite = ET.SubElement(
+            root,
+            "testsuite",
+            {
+                "name": f"PHP {version}",
+                "tests": str(len(cases)),
+                "failures": str(failed),
+                "errors": str(errors),
+                "skipped": str(skipped),
+                "time": f"{total_time:.3f}",
+            },
+        )
         for classname, name, seconds, status in cases:
-            case = ET.SubElement(suite, "testcase", {
-                "classname": classname, "name": name, "time": f"{seconds:.3f}",
-            })
+            case = ET.SubElement(
+                suite,
+                "testcase",
+                {
+                    "classname": classname,
+                    "name": name,
+                    "time": f"{seconds:.3f}",
+                },
+            )
             if status != "passed":
                 ET.SubElement(case, status, {"message": "Details omitted; see CI test step."})
-        ET.ElementTree(root).write(
-            destination / "junit.xml", encoding="utf-8", xml_declaration=True
-        )
+        ET.ElementTree(root).write(destination / "junit.xml", encoding="utf-8", xml_declaration=True)
 
 
 def main() -> None:

@@ -26,13 +26,19 @@ class CitoidSharedFlockSmokeTests(unittest.TestCase):
     def run_probe(self, mode, *extra):
         return subprocess.run(
             [*PHP, str(PROBE), "--offline", mode, str(self.directory), *extra],
-            text=True, capture_output=True, timeout=12, check=False,
+            text=True,
+            capture_output=True,
+            timeout=12,
+            check=False,
         )
 
     def run_cleanup(self, mode="--dry-run"):
         return subprocess.run(
             [*PHP, str(CLEANUP), "--offline", mode, str(self.directory)],
-            text=True, capture_output=True, timeout=12, check=False,
+            text=True,
+            capture_output=True,
+            timeout=12,
+            check=False,
         )
 
     def test_exclusion_and_release_across_independent_interpreters(self):
@@ -40,7 +46,9 @@ class CitoidSharedFlockSmokeTests(unittest.TestCase):
         original_contents = self.lock.read_bytes()
         holder = subprocess.Popen(
             [*PHP, str(PROBE), "--offline", "--hold", str(self.directory), "2"],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
         try:
             self.assertEqual("LOCK_HELD", holder.stdout.readline().strip())
@@ -109,7 +117,9 @@ class CitoidSharedFlockSmokeTests(unittest.TestCase):
         original_bytes = self.lock.read_bytes()
         holder = subprocess.Popen(
             [*PHP, str(PROBE), "--offline", "--hold", str(self.directory), "2"],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
         )
         try:
             self.assertEqual("LOCK_HELD", holder.stdout.readline().strip())
@@ -134,7 +144,10 @@ class CitoidSharedFlockSmokeTests(unittest.TestCase):
         # PHP's uopz defaults to disabling exit() and can hide a failed probe.
         enabled = subprocess.run(
             ["php", "-r", "echo (int) (extension_loaded('uopz') && ini_get('uopz.exit') !== '1');"],
-            text=True, capture_output=True, timeout=8, check=False,
+            text=True,
+            capture_output=True,
+            timeout=8,
+            check=False,
         )
         self.assertEqual(0, enabled.returncode, enabled.stderr)
         if enabled.stdout.strip() != "1":
@@ -156,7 +169,10 @@ class CitoidSharedFlockSmokeTests(unittest.TestCase):
     def test_rejects_noncanonical_paths(self):
         result = subprocess.run(
             [*PHP, str(PROBE), "--offline", "--expect-free", str(self.directory) + "/../" + self.directory.name],
-            capture_output=True, text=True, timeout=8, check=False,
+            capture_output=True,
+            text=True,
+            timeout=8,
+            check=False,
         )
         self.assertEqual(2, result.returncode)
 
