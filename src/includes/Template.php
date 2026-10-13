@@ -6534,6 +6534,19 @@ final class Template
                             $this->forget('volume');
                             return;
                         }
+                    } elseif ($temp_string === 'european journal of taxonomy') {
+                        // EJT changed numbering models around 2020: old "No." numbers are issues.
+                        // Only trust the DOI itself; without one, preserve user data as-is.
+                        $ejt_doi = $this->get_without_comments_and_placeholders('doi');
+                        $ejt_doi = (string) safe_preg_replace('~^https?://(dx\.)?doi\.org/~i', '', $ejt_doi);
+                        if (preg_match('~^10\.5852/ejt\.\d{4}\.(\d+)$~i', $ejt_doi, $ejt_matches)) {
+                            if ($this->blank(ISSUE_ALIASES) && mb_trim($this->get($param)) === $ejt_matches[1]) {
+                                // Hand-written volume matching an old-style DOI number belongs in issue
+                                report_action('European Journal of Taxonomy old-style volume matches DOI number; moving to issue for DOI: ' . echoable($ejt_doi));
+                                $this->rename($param, 'issue');
+                                return;
+                            }
+                        }
                     }
                     if (in_array($temp_string, PREFER_VOLUMES, true) && $this->has('volume')) {
                         if ($this->get('volume') === $this->get('issue')) {
