@@ -357,6 +357,14 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($expanded->get2('issue'));
     }
 
+    public function testEJTStaleIssueHealsWithCommentedDOI(): void {
+        $text = '{{Cite journal|journal=[[European Journal of Taxonomy]]|issue=921|doi=10.5852/ejt.2024.921.2417<!-- verify -->}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('volume', '921'));
+        $this->assertSame('921', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
     public function testEJTOldIssuePreserved(): void {
         $text = '{{Cite journal|journal=European Journal of Taxonomy|issue=359|doi=10.5852/ejt.2017.359}}';
         $expanded = $this->make_citation($text);

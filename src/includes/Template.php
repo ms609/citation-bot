@@ -1944,7 +1944,7 @@ final class Template
                     } elseif ($temp_string === 'european journal of taxonomy') {
                         // EJT changed numbering models around 2020: older "No." citations are issues,
                         // but new DOIs carry the volume in the suffix.  Only trust the DOI itself.
-                        $ejt_doi = mb_trim((string) $this->get('doi'));
+                        $ejt_doi = $this->get_without_comments_and_placeholders('doi');
                         $ejt_doi = (string) safe_preg_replace('~^https?://(dx\.)?doi\.org/~i', '', $ejt_doi);
                         if (preg_match('~^10\.5852/ejt\.\d{4}\.(\d+)\.\d+$~i', $ejt_doi, $ejt_matches)) {
                             $ejt_volume = $ejt_matches[1];
