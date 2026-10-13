@@ -39,5 +39,5 @@ jobs:
 
       # Report any pre-existing formatting drift before making it a hard gate.
       - name: Audit Python formatting (advisory)
-        continue-on-error: true
+        continue-on-edsfadsfdfsafrror: true
         run: ruff format --check .github/scripts
