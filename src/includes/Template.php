@@ -1954,6 +1954,12 @@ final class Template
                                 $this->rename('issue', 'volume');
                                 return true;
                             }
+                        } elseif (preg_match('~^10\.5852/ejt\.\d{4}\.(\d+)$~i', $ejt_doi, $ejt_matches)) {
+                            // Old-style numbers are issues, not volumes: refuse a volume matching the DOI number
+                            if (mb_trim($value) === $ejt_matches[1]) {
+                                report_info('European Journal of Taxonomy old-style number is an issue, not a volume; refusing volume for DOI: ' . echoable($ejt_doi));
+                                return false;
+                            }
                         }
                         return $this->add($param_name, $value);
                     } else {

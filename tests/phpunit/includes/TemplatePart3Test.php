@@ -383,6 +383,24 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($expanded->get2('issue'));
     }
 
+    public function testEJTOldStyleVolumeRefused(): void {
+        // Old-style EJT numbers are issues, not volumes (#12 follow-up)
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|issue=45|doi=10.5852/ejt.2013.45}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('volume', '45'));
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertSame('45', $expanded->get2('issue'));
+    }
+
+    public function testEJTOldStyleDifferentVolumeAllowed(): void {
+        // Fail open when the value does not match the DOI number
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|issue=45|doi=10.5852/ejt.2013.45}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('volume', '46'));
+        $this->assertSame('46', $expanded->get2('volume'));
+        $this->assertSame('45', $expanded->get2('issue'));
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
