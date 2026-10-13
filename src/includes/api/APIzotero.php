@@ -1405,10 +1405,19 @@ final class Zotero {
 
         // Use a dedicated counter for author numbering to ensure contiguous numbering
         // Do not rely on array indices, as they may have gaps if authors were filtered
+        // Citoid sometimes returns the same author more than once. Skip exact duplicates
+        // so that for example authors 1-2 are not repeated as authors 3-4.
         $author_number = 0;
+        $seen_zotero_authors = [];
         $i = 0;
         while (isset($result->author[$i])) {
             if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) {
+                $author_key = mb_strtolower(mb_trim((string) @$result->author[$i][0])) . '|' . mb_strtolower(mb_trim((string) @$result->author[$i][1]));
+                if (isset($seen_zotero_authors[$author_key])) {
+                    $i++;
+                    continue;
+                }
+                $seen_zotero_authors[$author_key] = true;
                 ++$author_number;  // Pre-increment before adding
                 $template->validate_and_add('author' . (string) $author_number, (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                                                 isset($result->rights) ? (string) $result->rights : '', false);
@@ -1420,6 +1429,7 @@ final class Zotero {
             $i++;
         }
         unset($i);
+        unset($seen_zotero_authors);
 
         if ((mb_stripos($url, '/sfdb.org') !== false || mb_stripos($url, '.sfdb.org') !== false) && $template->blank(WORK_ALIASES)) {
                 $template->add_if_new('website', 'sfdb.org');
@@ -1539,6 +1549,9 @@ final class Zotero {
             if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], true) ||
                 $jstor_book_creators) {
                 // Websites often have non-authors listed in metadata
+                // Citoid sometimes returns the same creator more than once. Skip exact duplicates
+                // so that for example authors 1-2 are not repeated as authors 3-4.
+                $seen_creators = [];
                 $i = 0;
                 $author_i = 0;
                 $editor_i = 0;
@@ -1552,6 +1565,15 @@ final class Zotero {
                             $i++;
                             continue;
                         }
+                        $creator_first = mb_strtolower(mb_trim((string) $result->creators[$i]->firstName));
+                        $creator_last = mb_strtolower(mb_trim((string) $result->creators[$i]->lastName));
+                        $creator_role = mb_strtolower(mb_trim((string) $creatorType));
+                        $creator_key = $creator_first . '|' . $creator_last . '|' . $creator_role;
+                        if (isset($seen_creators[$creator_key])) {
+                            $i++;
+                            continue;
+                        }
+                        $seen_creators[$creator_key] = true;
                         // Only process if author passes validation
                         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
                             // Increment counter only after validation passes, based on creator type
@@ -1628,6 +1650,8 @@ final class Zotero {
                     }
                     $i++;
                 }
+                unset($i);
+                unset($seen_creators);
             }
             if (mb_stripos(mb_trim($template->get('publisher')), 'Associated Press') !== false &&
                 mb_stripos($url, 'ap.org') === false  ) {
