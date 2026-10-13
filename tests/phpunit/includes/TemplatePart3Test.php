@@ -324,6 +324,57 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('33', $expanded->get2('issue'));
     }
 
+    public function testEJTVolumePreserved(): void {
+        $text = '{{Cite journal|journal=[[European Journal of Taxonomy]]|volume=720|issue=1}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $expanded->tidy_parameter('issue');
+        $this->assertSame('720', $expanded->get2('volume'));
+        $this->assertSame('1', $expanded->get2('issue'));
+    }
+
+    public function testEJTVolumeOnly(): void {
+        $text = '{{Cite journal|journal=[[European Journal of Taxonomy]]|volume=720}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $this->assertSame('720', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
+    public function testEJTAddVolume(): void {
+        $text = '{{Cite journal|journal=[[European Journal of Taxonomy]]}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('volume', '720'));
+        $this->assertSame('720', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
+    public function testEJTStaleIssueHeals(): void {
+        $text = '{{Cite journal|journal=[[European Journal of Taxonomy]]|issue=921|doi=https://doi.org/10.5852/ejt.2024.921.2417}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('volume', '921'));
+        $this->assertSame('921', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
+    public function testEJTOldIssuePreserved(): void {
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|issue=359|doi=10.5852/ejt.2017.359}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $expanded->tidy_parameter('issue');
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertSame('359', $expanded->get2('issue'));
+    }
+
+    public function testEJTNoDOIVolumePreserved(): void {
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|volume=720}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $expanded->tidy_parameter('issue');
+        $this->assertSame('720', $expanded->get2('volume'));
+        $this->assertNull($expanded->get2('issue'));
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);

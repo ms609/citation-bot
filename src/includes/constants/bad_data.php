@@ -22,7 +22,6 @@ const HAS_NO_VOLUME = [
     'cent. bur. electron. telegr.',
     'central bureau electronic telegrams',
     'der spiegel',
-    'european journal of taxonomy',
     'iau circ.',
     'iau circ',
     'iau circular',
