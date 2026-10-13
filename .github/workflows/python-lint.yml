@@ -37,7 +37,6 @@ jobs:
           src: '.github/scripts'
           args: 'check --output-format=github'
 
-      # Report any pre-existing formatting drift before making it a hard gate.
-      - name: Audit Python formatting (advisory)
-        continue-on-edsfadsfdfsafrror: true
+      # Formatting violations are errors and must fail this workflow.
+      - name: Check Python formatting
         run: ruff format --check .github/scripts

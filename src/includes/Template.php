@@ -1941,6 +1941,21 @@ final class Template
                     if (in_array($temp_string, HAS_NO_VOLUME, true) && !in_array($this->normalized_work_name(), NUMBER_IS_PAGE, true)) {
                         // This journal has no volume. This is really the issue number
                         return $this->add_if_new('issue', $value);
+                    } elseif ($temp_string === 'european journal of taxonomy') {
+                        // EJT changed numbering models around 2020: older "No." citations are issues,
+                        // but new DOIs carry the volume in the suffix.  Only trust the DOI itself.
+                        $ejt_doi = $this->get_without_comments_and_placeholders('doi');
+                        $ejt_doi = (string) safe_preg_replace('~^https?://(dx\.)?doi\.org/~i', '', $ejt_doi);
+                        if (preg_match('~^10\.5852/ejt\.\d{4}\.(\d+)\.\d+$~i', $ejt_doi, $ejt_matches)) {
+                            $ejt_volume = $ejt_matches[1];
+                            if ($this->blank('volume') && $value === $ejt_volume && mb_trim($this->get('issue')) === $ejt_volume) {
+                                // Stale volume misfiled as issue (e.g. |issue=921| for 10.5852/ejt.2024.921.2417); move it back
+                                report_action('European Journal of Taxonomy issue matches DOI volume; moving to volume for DOI: ' . echoable($ejt_doi));
+                                $this->rename('issue', 'volume');
+                                return true;
+                            }
+                        }
+                        return $this->add($param_name, $value);
                     } else {
                         return $this->add($param_name, $value);
                     }
