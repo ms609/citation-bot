@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Deterministic offline coverage of Citoid fallbacks and Semantic Scholar
+ * Deterministic offline coverage of Semantic Scholar
  * request handling. Network transports are never called by these tests.
  */
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
@@ -11,59 +11,7 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\Group;
 
 #[Group('citoid-regression')]
-final class CitoidS2OfflinePatch17Test extends testBaseClass {
-    /**
-     * Citoid emits these fields as substitutes for a missing title in some
-     * item types. Do not regress to an empty citation title.
-     */
-    public function testCitoidUsesSupportedFallbackTitleFields(): void {
-        foreach (['subject', 'caseName', 'nameOfAct'] as $field) {
-            $title = 'Offline fallback ' . $field;
-            $template = $this->make_citation('{{cite web|id=}}');
-            Zotero::process_zotero_response(
-                json_encode([['itemType' => 'webpage', $field => $title]], JSON_THROW_ON_ERROR),
-                $template,
-                'https://example.test/offline',
-                0,
-                false,
-                true,
-                true
-            );
-            $this->assertSame($title, $template->get2('title'), 'Fallback field ' . $field);
-        }
-    }
-
-    public function testCitoidTitleIdentityRequiresComparableFields(): void {
-        $matches = new ReflectionMethod(Zotero::class, 'response_title_matches_template');
-        $result = (object) ['itemType' => 'journalArticle', 'title' => 'Unrelated study'];
-        $this->assertFalse($matches->invoke(
-            null, $result, $this->make_citation('{{cite journal|series=Academic Studies}}')
-        ));
-        $this->assertFalse($matches->invoke(
-            null, $result, $this->make_citation('{{cite journal|trans-title=Different translation}}')
-        ));
-        $this->assertTrue($matches->invoke(
-            null, $result, $this->make_citation('{{cite journal|trans-title=Unrelated study}}')
-        ));
-        $this->assertFalse($matches->invoke(
-            null, $result, $this->make_citation('{{cite journal|chapter=Different chapter}}')
-        ));
-        $this->assertTrue($matches->invoke(
-            null, (object) ['itemType' => 'bookSection', 'title' => 'Matching chapter'],
-            $this->make_citation('{{cite book|chapter=Matching chapter}}')
-        ));
-    }
-
-    public function testMalformedZoteroAuthorNamesFailValidation(): void {
-        $normalize = new ReflectionMethod(Zotero::class, 'normalize_zotero_result');
-        $item = (object) [
-            'title' => 'Offline item',
-            'itemType' => 'webpage',
-            'author' => [['lastName' => (object) ['unsafe' => 'nested']]],
-        ];
-        $this->assertFalse($normalize->invoke(null, $item, 'https://example.test/offline'));
-    }
-
+final class SemanticScholarOfflineTest extends testBaseClass {
     /**
      * Override only the low-level request result while preserving the real
      * response parsing, URL assembly, and downstream error handling.

@@ -677,4 +677,56 @@ final class citoidRateLimitRegressionTest extends testBaseClass {
             @unlink($start);
         }
     }
+
+    /** Configured shared locks must be owner-writable but not writable by others. */
+    public function testConfiguredSharedMutexRejectsGroupWritableModeAndAccepts0644(): void {
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $this->writeNamespace($directory, $id);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $directory);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        $this->assertTrue(chmod($directory . '/rate.lock', 0666));
+        $this->assertFalse(self::admit(null));
+        $this->assertFileDoesNotExist($directory . '/rate.state');
+        $this->assertTrue(chmod($directory . '/rate.lock', 0644));
+        $this->assertTrue(self::admit(null, 2.0));
+        $this->assertFileExists($directory . '/rate.state');
+    }
+
+    /** Absolute aliases must not masquerade as the provisioned shared path. */
+    public function testConfiguredSharedDirectoryRejectsDotDotAlias(): void {
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $this->writeNamespace($directory, $id);
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        $alias = $directory . '/../' . basename($directory);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $alias);
+        $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+        $this->assertFalse(self::admit(null));
+        $this->assertFileDoesNotExist($directory . '/rate.state');
+    }
+
+    /** A symlinked directory alias must be refused before opening the mutex. */
+    public function testConfiguredSharedDirectoryRejectsSymlinkAlias(): void {
+        if (PHP_OS_FAMILY === 'Windows' || !function_exists('symlink')) {
+            $this->markTestSkipped('POSIX symlinks required');
+        }
+        $directory = $this->freshDirectory();
+        $id = bin2hex(random_bytes(16));
+        $this->writeNamespace($directory, $id);
+        $this->assertSame(0, file_put_contents($directory . '/rate.lock', ''));
+        $alias = $directory . '-alias';
+        if (!@symlink($directory, $alias)) {
+            $this->markTestSkipped('Cannot construct symlink alias');
+        }
+        try {
+            $this->assignEnvironment('CITOID_RATE_LIMIT_DIR', $alias);
+            $this->assignEnvironment('CITOID_RATE_LIMIT_NAMESPACE_ID', $id);
+            $this->assertFalse(self::admit(null));
+            $this->assertFileDoesNotExist($directory . '/rate.state');
+        } finally {
+            @unlink($alias);
+        }
+    }
 }

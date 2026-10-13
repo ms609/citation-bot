@@ -321,6 +321,9 @@ final class Zotero {
         }
         if (($open_file['mode'] & 0170000) !== 0100000 ||
             ($named_file['mode'] & 0170000) !== 0100000 ||
+            // Keep production validation consistent with offline mutex tools.
+            ($open_file['mode'] & 0022) !== 0 ||
+            ($named_file['mode'] & 0022) !== 0 ||
             $open_file['nlink'] !== 1 ||
             $open_file['dev'] !== $named_file['dev'] ||
             $open_file['ino'] !== $named_file['ino']) {
@@ -631,6 +634,12 @@ final class Zotero {
                     return false;
                 }
             }
+        }
+        // Shared deployments must not resolve aliases to different mutex paths.
+        // Preserve the existing local-fallback behavior.
+        if ($configured && realpath($directory) !== $directory) {
+            $failure_reason = 'configuration-invalid';
+            return false;
         }
         clearstatcache(true, $directory);
         $dir_stat = @lstat($directory);

@@ -76,8 +76,11 @@ HTTP requests:
   one-second pacing interval, including failures and retries.
 * Terminate a writer during a pending-record write: a partial `rate.pending.*`
   file must not become `rate.state`; the stable `rate.lock` inode must survive.
-* Simulate a delayed/missing state publication: all callers fail closed rather
-  than issuing an unpaced request. Recover offline; preserve published state.
+* Simulate delayed or missing state publication: an absent `rate.state`
+  can recover only after a worker holds the permanent mutex for a full
+  one-second cooldown and successfully publishes new state. Corrupt or unsafe
+  published state, or unsuccessful publication, must deny admission rather
+  than dispatch an unpaced request. Investigate unexpected state loss offline.
 * Restore service on all hosts, then monitor sanitized rate-limit diagnostics.
 
 The first two-host check proves mutex exclusion **only**. Host crashes, power
@@ -94,8 +97,10 @@ Do not release a multi-replica deployment until an operator has confirmed:
 * [ ] Cross-host `flock` exclusion and release pass in **both directions**;
       locking errors must not count as contention.
 * [ ] The deployment filesystem's same-directory rename and directory `fsync`
-      semantics have been validated separately; the two-host mutex test alone
-      does not prove crash or power-loss durability.
+      semantics have been validated separately, using filesystem-appropriate
+      failure/restart testing on the real mount; record the method, host, mount,
+      outcome and operator sign-off. The two-host mutex test alone does not
+      prove crash or power-loss durability.
 * [ ] Workers have been drained for rollout, no old/new mixed writers remain,
       and rollback likewise requires a complete drain.
 * [ ] After restart, sanitized admission categories are monitored; a missing
@@ -110,7 +115,9 @@ A pull-request runner intentionally lacks production API secrets and configured
 live Citoid coordination. Live API integration tests may therefore skip on PRs;
 this is **not proof they passed**. Trusted push/scheduled jobs supply integration
 configuration. PHP 8.5 and cross-browser jobs are scheduled; the Chromium UI
-gate conditionally skips when relevant UI paths are unchanged.
+gate conditionally skips when relevant UI paths are unchanged. A green
+workflow may therefore contain skipped live integration, PHP 8.5 or browser
+test jobs; inspect the individual job and test results before claiming they ran.
 
 CI now independently executes `tests/check_coverage.php` after the full suite
 passes, in addition to the existing coverage check inside `tests/run_tests.php`.

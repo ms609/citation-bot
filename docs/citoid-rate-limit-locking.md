@@ -23,7 +23,7 @@ get their own independent allowance, violating the intended global budget.
 
 If neither is configured, Citoid requests **fail closed** instead of silently
 using potentially private storage. Neither setting is assigned a value by the
-unchanged `env.php.example`; uncomment one option in the deployed `env.php` or
+provided `env.php.example`; uncomment one option in the deployed `env.php` or
 provide it through the PHP worker environment. `putenv()` examples are
 unconditional overrides, so leave them commented when deployment already sets
 the corresponding variable. An explicitly empty `CITOID_RATE_LIMIT_DIR`
@@ -33,8 +33,10 @@ literal value `1` enables local fallback; values such as `true` do not.
 
 The explicitly configured `CITOID_RATE_LIMIT_DIR` and its permanent
 `rate.lock` mutex must exist before workers start. If either is missing,
-the limiter fails closed rather than creating a private replacement. Never
-replace or unlink `rate.lock` while any worker is active; doing so splits
+the limiter fails closed rather than creating a private replacement. The mutex
+must be an owner-writable regular, singly linked file owned by the worker UID;
+modes `0600` and `0644` are permitted, but group/other write bits are forbidden.
+Never replace or unlink `rate.lock` while any worker is active; doing so splits
 lock ownership across different inodes. Multi-instance deployments must also set
 `CITOID_RATE_LIMIT_NAMESPACE_ID` to exactly 32 lowercase hexadecimal characters
 and pre-provision `rate.namespace` inside the shared directory with the exact
@@ -185,7 +187,8 @@ inodes. Resume workers only after confirming one shared inode.
 
 The unit tests cover configuration selection, timeout, symlink and inode
 substitution, but do not prove correct multi-replica behavior. Validate
-shared-fs locking on the real deployment before merging or scaling out.
+shared-fs locking on the real deployment before enabling multi-replica
+production Citoid enrichment.
 
 Process termination during a pending write cannot expose a partial published
 record when the filesystem supplies atomic same-directory rename and working
