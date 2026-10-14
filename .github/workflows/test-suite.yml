@@ -87,6 +87,11 @@ jobs:
   test-8-4:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    # Only one trusted Citoid integration runner may issue requests at a time.
+    # PR runners remain fail-closed with no live Citoid lock configuration.
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && github.ref || 'citation-bot-live-citoid' }}
+      cancel-in-progress: false
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -111,8 +116,25 @@ jobs:
           ${{ runner.os }}-composer-8.4-
           ${{ runner.os }}-composer-
 
-    - name: Verify test watchdog behavior
-      run: python3 -m unittest discover -s .github/scripts -p test_ci_test_watchdog.py
+    - name: Verify watchdog, coverage gate and offline flock smoke
+      run: python3 -m unittest discover -s .github/scripts -p 'test_ci_*.py'
+
+    - name: Configure Citoid lock for trusted integration tests
+      if: ${{ github.event_name == 'push' || github.event_name == 'schedule' }}
+      shell: bash
+      run: |
+        lock_dir="$RUNNER_TEMP/citation-bot-citoid-lock"
+        mkdir -p "$lock_dir"
+        chmod 700 "$lock_dir"
+        umask 077
+        namespace_id="$(openssl rand -hex 16)"
+        # Both files are first-install-only; never truncate or replace an existing inode.
+        ( umask 077; set -C; printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace" )
+        chmod 600 "$lock_dir/rate.namespace"
+        ( umask 077; set -C; : > "$lock_dir/rate.lock" )
+        chmod 600 "$lock_dir/rate.lock"
+        printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
+        printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
 
     # Pull-request code must never receive repository secrets.
     - name: Full test with PHP (pull request, no secrets)
@@ -134,12 +156,19 @@ jobs:
          NLM_EMAIL: ${{ secrets.NLM_EMAIL }}
       run: python3 .github/scripts/ci_test_watchdog.py --idle-seconds 1200 --max-seconds 4800 -- composer run test
 
+    # Enforce coverage independently of Composer's exit-status propagation.
+    # PRs with below-floor coverage must fail, even when unit tests pass.
+    - name: Enforce statement coverage floor
+      if: ${{ success() }}
+      run: php -d uopz.exit=1 -d memory_limit=1G tests/check_coverage.php coverage.xml
+
     # Do not print DebugLog.txt: trusted runs may contain API credentials.
     - name: Prepare safe PHP 8.4 test diagnostics
       if: ${{ !cancelled() }}
       shell: bash
       run: |
         python3 .github/scripts/ci_test_report.py --php-version 8.4
+        python3 .github/scripts/ci_coverage_gaps.py coverage.xml test-diagnostics/coverage-gaps.md
         cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload PHP 8.4 test diagnostics
@@ -162,6 +191,9 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-24.04
     timeout-minutes: 90
+    concurrency:
+      group: citation-bot-live-citoid
+      cancel-in-progress: false
 
     steps:
     - name: Harden runner (audit outbound calls)
@@ -185,6 +217,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-composer-8.5-
 
+    - name: Configure Citoid lock for scheduled PHP 8.5 integration tests
+      shell: bash
+      run: |
+        lock_dir="$RUNNER_TEMP/citation-bot-citoid-lock"
+        mkdir -p "$lock_dir"
+        chmod 700 "$lock_dir"
+        umask 077
+        namespace_id="$(openssl rand -hex 16)"
+        # Both files are first-install-only; never truncate or replace an existing inode.
+        ( umask 077; set -C; printf 'CBNS1|%s\n' "$namespace_id" > "$lock_dir/rate.namespace" )
+        chmod 600 "$lock_dir/rate.namespace"
+        ( umask 077; set -C; : > "$lock_dir/rate.lock" )
+        chmod 600 "$lock_dir/rate.lock"
+        printf 'CITOID_RATE_LIMIT_DIR=%s\n' "$lock_dir" >> "$GITHUB_ENV"
+        printf 'CITOID_RATE_LIMIT_NAMESPACE_ID=%s\n' "$namespace_id" >> "$GITHUB_ENV"
+
     - name: Full test with PHP
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
@@ -205,6 +253,7 @@ jobs:
       shell: bash
       run: |
         python3 .github/scripts/ci_test_report.py --php-version 8.5
+        python3 .github/scripts/ci_coverage_gaps.py coverage.xml test-diagnostics/coverage-gaps.md
         cat test-diagnostics/summary.md >> "$GITHUB_STEP_SUMMARY"
 
     - name: Upload PHP 8.5 test diagnostics

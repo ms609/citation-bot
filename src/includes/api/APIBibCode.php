@@ -356,8 +356,15 @@ function expand_by_adsabs(Template $template, ?callable $lookup = null): void {
 /**
  * @param array<string> $ids
  * @param array<Template> &$templates
+ * @param string $identifier
+ * @param (Closure(array<array-key, mixed>, string): stdClass)|null $response_provider
  */
-function adsabs_api(array $ids, array &$templates, string $identifier): void {  // Pointer to save memory
+function adsabs_api(
+    array $ids,
+    array &$templates,
+    string $identifier,
+    ?Closure $response_provider = null
+): void {  // Pointer to save memory; optional offline transport for tests
     set_time_limit(120);
     if (count($ids) === 0) {
         return;
@@ -391,7 +398,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         }
     }
     if ($NONE_IS_INCOMPLETE ||
-        AdsAbsControl::big_gave_up_yet() || !PHP_ADSABSAPIKEY) {
+        ($response_provider === null && (AdsAbsControl::big_gave_up_yet() || !PHP_ADSABSAPIKEY))) {
         return;
     }
 
@@ -409,7 +416,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier): void {  
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => "{$identifier}\n" . implode("\n", $ids),
     ];
-    $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
+    $response = $response_provider === null
+        ? Bibcode_Response_Processing($curl_opts, $adsabs_url)
+        : $response_provider($curl_opts, $adsabs_url);
     if (!isset($response->docs)) {
         return;
     }

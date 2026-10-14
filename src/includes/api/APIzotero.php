@@ -305,48 +305,465 @@ final class Zotero {
     }
 
     /**
-     * Share Citoid's documented one-request-per-second budget between workers
-     * using the same PHP account. If locking fails, pace this worker anyway.
+     * Check that the locked descriptor is still the intended private regular file.
+     * This detects symlink swaps and inode replacement before each check.
+     *
+     * @param resource $handle
+     * Filesystem state can change between calls (inode replacement).
+     * @phpstan-impure
      */
-    private static function throttle_citoid_requests(): void {
-        $directory = sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
-        if (!is_dir($directory)) {
-            @mkdir($directory, 0700);
+    private static function citoid_lock_file_matches_path($handle, string $path): bool {
+        $open_file = @fstat($handle);
+        clearstatcache(true, $path);
+        $named_file = @lstat($path);
+        if ($open_file === false || $named_file === false) {
+            return false;
         }
-        $permissions = is_dir($directory) ? fileperms($directory) : false;
-        if ($permissions === false || is_link($directory) || ($permissions & 0077) !== 0) {
-            usleep(1000000);
-            return;
+        if (($open_file['mode'] & 0170000) !== 0100000 ||
+            ($named_file['mode'] & 0170000) !== 0100000 ||
+            // Keep production validation consistent with offline mutex tools.
+            ($open_file['mode'] & 0022) !== 0 ||
+            ($named_file['mode'] & 0022) !== 0 ||
+            $open_file['nlink'] !== 1 ||
+            $open_file['dev'] !== $named_file['dev'] ||
+            $open_file['ino'] !== $named_file['ino']) {
+            return false;
         }
-        $lock = @fopen($directory . '/rate.lock', 'c+');
-        if ($lock === false) {
-            usleep(1000000);
-            return;
+        return !function_exists('posix_geteuid') || $open_file['uid'] === posix_geteuid();
+    }
+
+    /**
+     * Read process-local config before FastCGI/SAPI config. PHP-FPM may prefer
+     * SAPI variables in getenv() even after an env.php putenv() assignment.
+     * Preserve empty string values: an explicit empty path must fail closed.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_config_value(string $name): string|false {
+        // PHP-FPM/FastCGI can prefer a SAPI-supplied value over putenv().
+        // An explicit env.php assignment should take precedence, including ''.
+        $local = getenv($name, true);
+        return $local !== false ? $local : getenv($name);
+    }
+
+    /**
+     * Resolve the explicit rate-limit lock namespace; never infer topology.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_rate_limit_directory(?string $directory = null): ?string {
+        if ($directory !== null) {
+            return $directory; // Test-only override, not used by production calls.
+        }
+        $configured = self::citoid_config_value('CITOID_RATE_LIMIT_DIR');
+        if ($configured !== false) {
+            return $configured === '' ? null : $configured;
+        }
+        if (self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1') {
+            return sys_get_temp_dir() . '/citation-bot-citoid-rate-limit';
+        }
+        return null; // Missing configuration must never imply local-only use.
+    }
+
+    /**
+     * Read a completed timestamp record. rate.lock is the stable flock mutex;
+     * rate.state is atomically replaced while that mutex is held. Until the
+     * first state publication, accept the old in-lock timestamp for upgrades.
+     *
+     * @param resource $lock
+     * @return array{float, bool}|false Timestamp and full-cooldown-required flag.
+     * @phpstan-impure
+     */
+    private static function citoid_read_state($lock, string $directory): array|false {
+        $path = $directory . '/rate.state';
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false) {
+            // No published state is ambiguous: it may be a new/legacy install
+            // or a previously published state that disappeared. Always wait a
+            // full interval before publishing, even if the legacy value is old.
+            // An interrupted legacy truncate is treated as empty.
+            rewind($lock);
+            $raw = stream_get_contents($lock, 65);
+            if ($raw === false || mb_strlen($raw, '8bit') > 64) {
+                return false;
+            }
+            $raw = mb_trim($raw);
+            if ($raw === '') {
+                return [0.0, true];
+            }
+            $stamp = (float) $raw;
+            if (!is_numeric($raw) || !is_finite($stamp) || $stamp <= 0.0) {
+                return false;
+            }
+            // Unlike rate.state, legacy content has no checksum to confirm
+            // that a future timestamp reflects a wall-clock rollback.
+            if ($stamp > microtime(true)) {
+                return false;
+            }
+            return [$stamp, true];
+        }
+        if (($named['mode'] & 0170000) !== 0100000 || $named['nlink'] !== 1 ||
+            ($named['mode'] & 0077) !== 0 ||
+            (function_exists('posix_geteuid') && $named['uid'] !== posix_geteuid())) {
+            return false;
+        }
+        $state = @fopen($path, 'rb');
+        if ($state === false) {
+            return false;
         }
         try {
-            if (!flock($lock, LOCK_EX)) {
-                usleep(1000000);
-                return;
+            if (!self::citoid_lock_file_matches_path($state, $path)) {
+                return false;
             }
-            $last_request = (float) stream_get_contents($lock);
-            $now = microtime(true);
-            $wait = $last_request + 1.0 - $now;
-            if ($wait > 0 && $wait <= 1.0) {
-                usleep((int) ceil($wait * 1000000));
+            $raw = @stream_get_contents($state, 65);
+            if ($raw === false || mb_strlen($raw, '8bit') > 64 ||
+                preg_match('~^CB1\|([0-9]{10,12}\.[0-9]{6})\|([0-9a-f]{16})\n$~D', $raw, $match) !== 1 ||
+                !hash_equals(mb_substr(hash('sha256', $match[1]), 0, 16, '8bit'), $match[2])) {
+                return false;
             }
-            rewind($lock);
-            ftruncate($lock, 0);
-            fwrite($lock, (string) microtime(true));
-            fflush($lock);
+            $stamp = (float) $match[1];
+            return is_finite($stamp) && $stamp > 0.0 ? [$stamp, false] : false;
         } finally {
-            flock($lock, LOCK_UN);
+            fclose($state);
+        }
+    }
+
+    /**
+     * Require an administrator-provisioned marker for configured shared locks.
+     * Its absence detects many missing-mount cases where a local directory
+     * already exists at the expected path. It cannot prove cross-host flock.
+     *
+     * @phpstan-impure
+     */
+    private static function citoid_namespace_matches(string $directory, string $expected): bool {
+        if (preg_match('~\A[0-9a-f]{32}\z~D', $expected) !== 1) {
+            return false;
+        }
+        $path = $directory . '/rate.namespace';
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false || ($named['mode'] & 0170000) !== 0100000 ||
+            ($named['mode'] & 0077) !== 0 || $named['nlink'] !== 1 || $named['size'] !== 39 ||
+            (function_exists('posix_geteuid') && $named['uid'] !== posix_geteuid())) {
+            return false;
+        }
+        $handle = @fopen($path, 'rb');
+        if ($handle === false) {
+            return false;
+        }
+        try {
+            if (!self::citoid_lock_file_matches_path($handle, $path)) {
+                return false;
+            }
+            $contents = @stream_get_contents($handle, 65);
+            clearstatcache(true, $path);
+            $after = @lstat($path);
+            return $contents === 'CBNS1|' . $expected . "\n" &&
+                $after !== false && ($after['mode'] & 0077) === 0 &&
+                self::citoid_lock_file_matches_path($handle, $path);
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Verify an opened directory still names the same private inode.
+     * A directory descriptor also lets us sync rename metadata after publish.
+     *
+     * @param resource $handle
+     * @phpstan-impure
+     */
+    private static function citoid_directory_matches_path($handle, string $directory): bool {
+        $opened = @fstat($handle);
+        clearstatcache(true, $directory);
+        $named = @lstat($directory);
+        if ($opened === false || $named === false) {
+            return false;
+        }
+        if (($opened['mode'] & 0170000) !== 0040000 ||
+            ($named['mode'] & 0170000) !== 0040000 ||
+            ($named['mode'] & 0077) !== 0 || ($opened['mode'] & 0077) !== 0 ||
+            $opened['dev'] !== $named['dev'] || $opened['ino'] !== $named['ino']) {
+            return false;
+        }
+        return !function_exists('posix_geteuid') ||
+            ($opened['uid'] === posix_geteuid() && $named['uid'] === posix_geteuid());
+    }
+
+    /**
+     * Do not replace a directory, symlink or an untrusted published state.
+     * @phpstan-impure
+     */
+    private static function citoid_state_target_safe(string $path): bool {
+        clearstatcache(true, $path);
+        $named = @lstat($path);
+        if ($named === false) {
+            return !file_exists($path) && !is_link($path);
+        }
+        return ($named['mode'] & 0170000) === 0100000 &&
+            ($named['mode'] & 0077) === 0 && $named['nlink'] === 1 &&
+            (!function_exists('posix_geteuid') || $named['uid'] === posix_geteuid());
+    }
+
+    /**
+     * Publish a complete state record without changing the stable lock inode.
+     * The file is synced and closed before rename; directory fsync makes the
+     * rename durable where the filesystem supports that guarantee.
+     * Unsupported directory fsync fails closed, even after visible publication.
+     *
+     * @param resource $lock
+     * @phpstan-impure
+     */
+    private static function citoid_commit_state($lock, string $lock_path, string $directory): bool {
+        $directory_handle = @fopen($directory, 'rb');
+        if ($directory_handle === false) {
+            return false;
+        }
+        $temporary_path = null;
+        $durable = false;
+        try {
+            if (!self::citoid_directory_matches_path($directory_handle, $directory) ||
+                !self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                return false;
+            }
+            try {
+                $temporary_path = $directory . '/rate.pending.' . bin2hex(random_bytes(12));
+            } catch (Throwable) {
+                return false;
+            }
+            $pending = @fopen($temporary_path, 'x+b');
+            if ($pending === false) {
+                return false;
+            }
+            $write_ok = false;
+            try {
+                $stamp = sprintf('%.6F', microtime(true));
+                $payload = 'CB1|' . $stamp . '|' . mb_substr(hash('sha256', $stamp), 0, 16, '8bit') . "\n";
+                if (!@chmod($temporary_path, 0600) ||
+                    !self::citoid_lock_file_matches_path($pending, $temporary_path)) {
+                    return false;
+                }
+                $length = mb_strlen($payload, '8bit');
+                $offset = 0;
+                while ($offset < $length) {
+                    $written = @fwrite($pending, mb_substr($payload, $offset, null, '8bit'));
+                    if ($written === false || $written === 0) {
+                        return false;
+                    }
+                    $offset += $written;
+                }
+                $write_ok = @fflush($pending) && @fsync($pending);
+            } finally {
+                $write_ok = @fclose($pending) && $write_ok;
+            }
+            if (!$write_ok ||
+                !self::citoid_lock_file_matches_path($lock, $lock_path) ||
+                !self::citoid_directory_matches_path($directory_handle, $directory) ||
+                !self::citoid_state_target_safe($directory . '/rate.state')) {
+                return false;
+            }
+            if (!@rename($temporary_path, $directory . '/rate.state')) {
+                return false;
+            }
+            // fsync() on a directory is supported by the target Linux runtime.
+            // If it fails, the record may be visible but admission must fail.
+            $durable = @fsync($directory_handle) &&
+                self::citoid_directory_matches_path($directory_handle, $directory) &&
+                self::citoid_lock_file_matches_path($lock, $lock_path);
+        } finally {
+            if ($temporary_path !== null) {
+                // Unlink only our unique pending pathname (rename removed it on success).
+                @unlink($temporary_path);
+            }
+            $directory_closed = @fclose($directory_handle);
+        }
+        return $durable && $directory_closed;
+    }
+
+    /**
+     * Pace the Citoid request budget, failing closed if coordination is unsafe.
+     * All replicas must use the SAME shared, flock-capable lock directory.
+     * The local temp directory is allowed only by explicit opt-in on one instance.
+     * The optional directory/timeout arguments are for isolated regression tests.
+     *
+     * @param-out string|null $failure_reason
+     * @phpstan-impure
+     */
+    private static function throttle_citoid_requests(
+        ?string $directory = null,
+        ?float $lock_timeout_seconds = null,
+        ?string &$failure_reason = null
+    ): bool {
+        $failure_reason = null;
+        // Never create an implicit local mutex if the configured directory
+        // is absent. Creation is permitted only for explicitly opted-in
+        // single-instance fallback, not a test-only directory override.
+        $configured = $directory === null &&
+            self::citoid_config_value('CITOID_RATE_LIMIT_DIR') !== false;
+        $namespace_id = $configured ? self::citoid_config_value('CITOID_RATE_LIMIT_NAMESPACE_ID') : '';
+        // Resolve absent configuration once; every later check receives a string.
+        if ($namespace_id === false) {
+            $failure_reason = 'namespace-invalid';
+            return false;
+        }
+        $allow_local_creation = $directory === null &&
+            self::citoid_config_value('CITOID_RATE_LIMIT_DIR') === false &&
+            self::citoid_config_value('CITOID_ALLOW_LOCAL_FALLBACK') === '1';
+        $directory = self::citoid_rate_limit_directory($directory);
+        // Use an absolute path, never a caller-relative lock namespace.
+        if ($directory === null || $directory === '' || $directory[0] !== '/') {
+            $failure_reason = ($directory === null && !$configured) ? 'configuration-missing' : 'configuration-invalid';
+            return false;
+        }
+        $timeout = $lock_timeout_seconds ?? 15.0;
+        if (!is_finite($timeout) || $timeout < 0.0 || $timeout > 60.0) {
+            $failure_reason = 'timeout-invalid';
+            return false;
+        }
+        if (!is_dir($directory)) {
+            if (!$allow_local_creation) {
+                $failure_reason = 'directory-unavailable';
+                return false;
+            }
+            // A concurrent initializer may have created it already.
+            if (!@mkdir($directory, 0700)) {
+                clearstatcache(true, $directory);
+                if (!is_dir($directory)) {
+                    $failure_reason = 'directory-unavailable';
+                    return false;
+                }
+            }
+        }
+        // Shared deployments must not resolve aliases to different mutex paths.
+        // Preserve the existing local-fallback behavior.
+        if ($configured && realpath($directory) !== $directory) {
+            $failure_reason = 'configuration-invalid';
+            return false;
+        }
+        clearstatcache(true, $directory);
+        $dir_stat = @lstat($directory);
+        if ($dir_stat === false || ($dir_stat['mode'] & 0170000) !== 0040000 ||
+            ($dir_stat['mode'] & 0077) !== 0 ||
+            (function_exists('posix_geteuid') && $dir_stat['uid'] !== posix_geteuid())) {
+            $failure_reason = 'directory-unsafe';
+            return false;
+        }
+        // The configured namespace must be provisioned on the intended mount.
+        // An existing directory alone is insufficient: a missing mount can
+        // expose an unrelated directory with the same absolute pathname.
+        if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+            $failure_reason = 'namespace-invalid';
+            return false;
+        }
+        $lock_path = $directory . '/rate.lock';
+        if (is_link($lock_path)) {
+            $failure_reason = 'lock-unavailable';
+            return false;
+        }
+        // A missing mutex on a configured shared mount is a deployment error:
+        // c+ would silently create a different inode on a disconnected host.
+        // Only explicit single-instance fallback and test overrides create it.
+        $lock = @fopen($lock_path, $configured ? 'r+b' : 'c+');
+        if ($lock === false) {
+            $failure_reason = 'lock-unavailable';
+            return false;
+        }
+        $locked = false;
+        try {
+            // A blocking flock can hang an entire PHP/ParaTest worker. Bound
+            // acquisition using a monotonic timer, not the adjustable wall clock.
+            $deadline = hrtime(true) + (int) ceil($timeout * 1000000000.0);
+            do {
+                if (@flock($lock, LOCK_EX | LOCK_NB)) {
+                    $locked = true;
+                    break;
+                }
+                // Bound each poll by the remaining monotonic acquisition
+                // budget. A zero timeout still performs one nonblocking try.
+                $remaining = $deadline - hrtime(true);
+                if ($remaining <= 0) {
+                    $failure_reason = 'lock-timeout';
+                    return false;
+                }
+                usleep((int) min(50000, max(1, ceil($remaining / 1000.0))));
+            } while (true);
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                $failure_reason = 'lock-integrity';
+                return false;
+            }
+            if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+                $failure_reason = 'namespace-invalid';
+                return false;
+            }
+            // Keep validating the existing checksummed/legacy state, but never
+            // use a timestamp from another host to decide how long to wait.
+            // A fast peer clock can otherwise allow admissions less than one
+            // real second apart. Hold the common mutex for a full monotonic
+            // second on EVERY admission, including after idle periods.
+            if (self::citoid_read_state($lock, $directory) === false) {
+                $failure_reason = 'state-invalid';
+                return false;
+            }
+            // hrtime() is local monotonic elapsed time, not a shared epoch.
+            // Because the exclusive lock spans this entire delay, peer wall
+            // clocks cannot shorten the global admission interval. Repeat
+            // after interrupted sleeps until the whole second has elapsed.
+            $deadline = hrtime(true) + 1000000000;
+            $remaining = $deadline - hrtime(true);
+            while ($remaining > 0) {
+                usleep((int) min(1000000, max(1, ceil($remaining / 1000.0))));
+                $remaining = $deadline - hrtime(true);
+            }
+            if (!self::citoid_lock_file_matches_path($lock, $lock_path)) {
+                $failure_reason = 'lock-integrity';
+                return false;
+            }
+            if ($configured && !self::citoid_namespace_matches($directory, $namespace_id)) {
+                $failure_reason = 'namespace-invalid';
+                return false;
+            }
+            if (!self::citoid_commit_state($lock, $lock_path, $directory)) {
+                $failure_reason = 'publication-failed';
+                return false;
+            }
+            return true;
+        } finally {
+            if ($locked) {
+                flock($lock, LOCK_UN);
+            }
             fclose($lock);
         }
+    }
+
+    /**
+     * Both the initial attempt and retry use this identical admission gate.
+     * The test-only directory argument permits transport-free regression tests.
+     *
+     * @param callable():string $dispatch
+     * @param-out string|null $failure_reason
+     * @phpstan-impure
+     */
+    private static function citoid_guarded_send(
+        callable $dispatch,
+        ?string &$failure_reason = null,
+        ?string $directory = null
+    ): string|false {
+        $failure_reason = null;
+        if (!self::throttle_citoid_requests($directory, null, $failure_reason)) {
+            return false;
+        }
+        return $dispatch();
     }
 
     /** A successful Citoid citation response must be HTTP 2xx. */
     public static function citoid_http_success(int $status): bool {
         return $status >= 200 && $status < 300;
+    }
+
+    /** 204/205 intentionally contain no body; neither should trigger a retry. */
+    public static function citoid_empty_body_retryable(int $status): bool {
+        return self::citoid_http_success($status) && $status !== 204 && $status !== 205;
     }
 
     /**
@@ -374,21 +791,43 @@ final class Zotero {
         $delay = min($delay, self::ZOTERO_MAX_DELAY_MICROSECONDS);
         self::$zotero_retry_after_microseconds = 0;
         usleep($delay);
-        self::throttle_citoid_requests();
+        $failure_reason = null;
         try {
-            $zotero_response = bot_curl_exec(self::$zotero_ch);
+            $zotero_response = self::citoid_guarded_send(
+                static fn (): string => bot_curl_exec(self::$zotero_ch),
+                $failure_reason
+            );
         } catch (Throwable $e) {
             bot_debug_log('Citoid/Zotero request failed: ' . $e::class . ': ' . $e->getMessage());
             report_warning("Citoid/Zotero request failed; continuing without URL metadata.");
             self::record_zotero_failure();
             return self::ERROR_DONE;
         }
+        if ($zotero_response === false) {
+            report_warning('Citoid admission denied (' . ($failure_reason ?? 'unknown') . '); skipping unpaced request.');
+            self::record_zotero_failure();
+            return self::ERROR_DONE;
+        }
         $response_code = (int) curl_getinfo(self::$zotero_ch, CURLINFO_RESPONSE_CODE);
-        if ($zotero_response === '' && self::citoid_http_success($response_code)) {
+        if ($zotero_response === '' && ($response_code === 204 || $response_code === 205)) {
+            // Valid no-content reply: no metadata is available, but the service
+            // did not fail and another paced HTTP attempt would be wasteful.
+            self::$zotero_failures_count = 0;
+            return self::ERROR_DONE;
+        }
+        if ($zotero_response === '' && self::citoid_empty_body_retryable($response_code)) {
             sleep(2); // @codeCoverageIgnore
             try {
-                self::throttle_citoid_requests(); // Every HTTP attempt, including retries, consumes the shared budget.
-                $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
+                $failure_reason = null;
+                $zotero_response = self::citoid_guarded_send(
+                    static fn (): string => bot_curl_exec(self::$zotero_ch),
+                    $failure_reason
+                ); // @codeCoverageIgnore
+                if ($zotero_response === false) {
+                    report_warning('Citoid retry admission denied (' . ($failure_reason ?? 'unknown') . ').');
+                    self::record_zotero_failure();
+                    return self::ERROR_DONE;
+                }
             } catch (Throwable $e) {
                 bot_debug_log('Citoid/Zotero retry failed: ' . $e::class . ': ' . $e->getMessage());
                 report_warning("Citoid/Zotero retry failed; continuing without URL metadata.");

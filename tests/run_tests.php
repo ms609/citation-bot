@@ -41,7 +41,7 @@ $paratest_exit_code = proc_close($process);
 $coverage_exit_code = 0;
 if ($paratest_exit_code === 0) {
     passthru(
-        PHP_BINARY . ' -d memory_limit=' . $memory_limit . ' tests/check_coverage.php coverage.xml',
+        PHP_BINARY . ' -d uopz.exit=1 -d memory_limit=' . $memory_limit . ' tests/check_coverage.php coverage.xml',
         $coverage_exit_code
     );
 }
