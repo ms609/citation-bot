@@ -2047,6 +2047,24 @@ final class Template
                         return false;
                     }
                 }
+                // EJT article IDs are not page numbers: refuse bare numbers matching a new-style DOI article ID
+                $ejt_pages_journal = mb_strtolower($this->get('journal'));
+                if (mb_substr($ejt_pages_journal, 0, 2) === "[[" && mb_substr($ejt_pages_journal, -2) === "]]") {
+                    // Wikilinked journal title
+                    $ejt_pages_journal = mb_substr(mb_substr($ejt_pages_journal, 2), 0, -2); // Remove [[ and ]]
+                    $ejt_pages_journal = (string) preg_replace('~^.+\|~', '', $ejt_pages_journal); // Remove part before pipe, if it has one
+                }
+                if ($ejt_pages_journal === 'european journal of taxonomy') {
+                    $ejt_article_doi = $this->get_without_comments_and_placeholders('doi');
+                    $ejt_article_doi = (string) safe_preg_replace('~^https?://(dx\.)?doi\.org/~i', '', $ejt_article_doi);
+                    if (preg_match('~^10\.5852/ejt\.\d{4}\.\d+\.(\d+)$~i', $ejt_article_doi, $ejt_article_matches)
+                        && ctype_digit(mb_trim($value))
+                        && mb_trim($value) === $ejt_article_matches[1]
+                    ) {
+                        report_warning("Rejecting page value that is the article ID for European Journal of Taxonomy: " . echoable($value));
+                        return false;
+                    }
+                }
                 $pages_value = $this->get('pages');
                 $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
                 $en_dash = ["\u{2013}", chr(150), chr(226), '-', '&ndash;'];
@@ -7637,9 +7655,27 @@ final class Template
         $match_found = false;
         $issue_value = $this->get('issue');
 
+        // EJT new-style article IDs are short digits: match against the DOI article number
+        $ejt_detect_journal = mb_strtolower($this->get('journal'));
+        if (mb_substr($ejt_detect_journal, 0, 2) === "[[" && mb_substr($ejt_detect_journal, -2) === "]]") {
+            // Wikilinked journal title
+            $ejt_detect_journal = mb_substr(mb_substr($ejt_detect_journal, 2), 0, -2); // Remove [[ and ]]
+            $ejt_detect_journal = (string) preg_replace('~^.+\|~', '', $ejt_detect_journal); // Remove part before pipe, if it has one
+        }
+        if ($ejt_detect_journal === 'european journal of taxonomy') {
+            $ejt_detect_doi = $this->get_without_comments_and_placeholders('doi');
+            $ejt_detect_doi = (string) safe_preg_replace('~^https?://(dx\.)?doi\.org/~i', '', $ejt_detect_doi);
+            if (preg_match('~^10\.5852/ejt\.\d{4}\.\d+\.(\d+)$~i', $ejt_detect_doi, $ejt_detect_matches)
+                && ctype_digit($pages_value)
+                && $pages_value === $ejt_detect_matches[1]
+            ) {
+                $match_found = true;
+            }
+        }
+
         if (ctype_digit($pages_value)) {
             // Digit-only
-            if ((int) $pages_value < 10000) {
+            if ((int) $pages_value < 10000 && !$match_found) {
                 return false;
             }
 

@@ -428,6 +428,41 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($expanded->get2('issue'));
     }
 
+    public function testEJTArticleIdPagesRejected(): void {
+        // Bare EJT article IDs are not page ranges: refuse, keeping the real range
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|pages=1–51|doi=10.5852/ejt.2024.961.2681}}';
+        $expanded = $this->make_citation($text);
+        $this->assertFalse($expanded->add_if_new('pages', '2681'));
+        $this->assertSame('1–51', $expanded->get2('pages'));
+        $this->assertNull($expanded->get2('page'));
+    }
+
+    public function testEJTArticleIdPageConverts(): void {
+        // Existing bare EJT article ID in page= belongs in article-number
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|page=2681|doi=10.5852/ejt.2024.961.2681}}';
+        $expanded = $this->make_citation($text);
+        $expanded->final_tidy();
+        $this->assertNull($expanded->get2('page'));
+        $this->assertSame('2681', $expanded->get2('article-number'));
+    }
+
+    public function testEJTRangeAddUnaffected(): void {
+        // Ordinary ranges still add normally on blank page slots
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|doi=10.5852/ejt.2024.961.2681}}';
+        $expanded = $this->make_citation($text);
+        $this->assertTrue($expanded->add_if_new('pages', '1-51'));
+        $this->assertSame('1–51', $expanded->get2('pages'));
+    }
+
+    public function testNonEJTArticleIdPageUntouched(): void {
+        // EJT-scoped logic must not touch other journals
+        $text = '{{Cite journal|journal=Nature|page=2681|doi=10.1038/nature12373}}';
+        $expanded = $this->make_citation($text);
+        $expanded->final_tidy();
+        $this->assertSame('2681', $expanded->get2('page'));
+        $this->assertNull($expanded->get2('article-number'));
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
