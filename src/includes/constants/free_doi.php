@@ -700,6 +700,8 @@ const DOI_FREE_PREFIX = [
     '10.1210/jendso',
     '10.1215/21573689',
     '10.1215/21573698',
+    '10.1242/bio',
+    '10.1242/dmm',
     '10.1257/jep',
     '10.12688/',
     '10.12703/',
@@ -1006,6 +1008,16 @@ const DOI_FREE_CONDITIONAL = [
     ],
     [   // Journal of Experimental Biology: free after 12 months (https://journals.biologists.com/jeb/pages/about)
         'prefix' => '10.1242/jeb',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '12',
+    ],
+    [   // Development: free after 12 months (https://www.biologists.com/open-access/)
+        'prefix' => '10.1242/dev',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '12',
+    ],
+    [   // Journal of Cell Science: free after 12 months (https://www.biologists.com/open-access/)
+        'prefix' => '10.1242/jcs',
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '12',
     ],
