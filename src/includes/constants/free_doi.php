@@ -1004,4 +1004,9 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'AFTER_DATE',
         'value'  => '2026-01-01',
     ],
+    [   // Journal of Experimental Biology: free after 12 months (https://journals.biologists.com/jeb/pages/about)
+        'prefix' => '10.1242/jeb',
+        'type'   => 'EMBARGO_MONTHS',
+        'value'  => '12',
+    ],
 ];
