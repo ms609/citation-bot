@@ -463,6 +463,24 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($expanded->get2('article-number'));
     }
 
+    public function testEJTPluralArticleIdConverts(): void {
+        // Same conversion through the plural slot
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|pages=2681|doi=10.5852/ejt.2024.961.2681}}';
+        $expanded = $this->make_citation($text);
+        $expanded->final_tidy();
+        $this->assertNull($expanded->get2('pages'));
+        $this->assertSame('2681', $expanded->get2('article-number'));
+    }
+
+    public function testEJTOldCommentedVolumeBecomesIssue(): void {
+        // Comment-guarded volume still matches after stripping (comment text itself is sanitized on move)
+        $text = '{{Cite journal|journal=European Journal of Taxonomy|volume=467<!-- -->|doi=10.5852/ejt.2018.467}}';
+        $expanded = $this->make_citation($text);
+        $expanded->tidy_parameter('volume');
+        $this->assertNull($expanded->get2('volume'));
+        $this->assertStringStartsWith('467', (string) $expanded->get2('issue'));
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
