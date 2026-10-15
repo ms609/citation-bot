@@ -282,20 +282,6 @@ function check_citation(Template $template): array {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
 
-    // R21: chapter parameters are ignored in templates without chapters.
-    // {{citation}} counts when it uses |work= or any of its aliases.
-    $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
-    if (!$chapter_ignored && $name === 'citation') {
-        $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
-    }
-    if ($chapter_ignored) {
-        foreach (CHAPTER_PARAMS as $param) {
-            if ($template->has($param)) {
-                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
-            }
-        }
-    }
-
     // R10: identifier templates require their identifier.
     if ($name === 'cite arxiv' && !$template->has('arxiv') && !$template->has('eprint')) {
         $violations[] = 'arxiv-required: CS1 "|arxiv= required"';
@@ -416,6 +402,20 @@ function check_citation(Template $template): array {
     foreach (ARCHIVE_URL_PARAMS as $archive_param) {
         if ($template->has($archive_param) && !archive_url_valid($template->get($archive_param))) {
             $violations[] = 'archive-url-malformed: CS1 "|archive-url= is malformed"';
+        }
+    }
+
+    // R21: chapter parameters are ignored in templates without chapters.
+    // {{citation}} counts when it uses |work= or any of its aliases.
+    $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
+    if (!$chapter_ignored && $name === 'citation') {
+        $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
+    }
+    if ($chapter_ignored) {
+        foreach (CHAPTER_PARAMS as $param) {
+            if ($template->has($param)) {
+                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
+            }
         }
     }
 
