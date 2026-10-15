@@ -122,4 +122,41 @@ final class MiscToolsCoveragePatch11Test extends testBaseClass {
         $this->assertSame($doi, $template->last_searched_doi);
     }
 
+    public function testVolumeTbaDoesNotBlockNewVolume(): void {
+        $template = $this->make_citation('{{cite journal | title=Test | journal=Test J | volume=TBA | doi=10.1234/test }}');
+        // Should allow adding volume when existing is placeholder, like 'in press'
+        $this->assertTrue($template->add_if_new('volume', '54'));
+    }
+
+    public function testIssueTbaDoesNotBlockNewIssue(): void {
+        $template = $this->make_citation('{{cite journal | title=Test | journal=Test J | issue=TBA | doi=10.1234/test }}');
+        $this->assertTrue($template->add_if_new('issue', '3'));
+    }
+
+    public function testTbaVolumeAndIssueDoNotBlockExpansionAfterCleanup(): void {
+        $doi = '10.1234/patch-tba-offline';
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '|title=Research|volume=TBA|issue=TBA}}');
+        $verified = new ReflectionProperty(Template::class, 'doi_valid');
+        $verified->setValue($template, true);
+        $template->last_searched_doi = $doi;
+        handleConferencePretendingToBeAJournal($template, $template->parsed_text());
+        // Phase 1 conservative: with no replacement metadata, TBA is restored,
+        // but must not block future expansion via add gates.
+        $this->assertSame($doi, $template->get('doi'));
+        $this->assertTrue($template->add_if_new('volume', '54'));
+        $this->assertTrue($template->add_if_new('issue', '3'));
+    }
+
+    public function testIncomingPlaceholderValuesAreRejected(): void {
+        $template = $this->make_citation('{{cite journal | title=Test | journal=Test J | doi=10.1234/test }}');
+        $this->assertFalse($template->add_if_new('volume', 'TBA'));
+        $this->assertFalse($template->add_if_new('issue', 'tbd'));
+        $this->assertFalse($template->add_if_new('pages', 'TBA'));
+    }
+
+    public function testPagesTbaDoesNotBlockNewPages(): void {
+        $template = $this->make_citation('{{cite journal | title=Test | journal=Test J | pages=TBA | doi=10.1234/test }}');
+        $this->assertTrue($template->add_if_new('pages', '54-68'));
+    }
+
 }

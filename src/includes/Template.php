@@ -764,7 +764,10 @@ final class Template
         // And now everything else
         if (
             $this->blank(['pages', 'page', 'at', 'article-number']) ||
-            preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
+            preg_match('~no.+no|n/a|in press|none~i', $this->get('pages') . $this->get('page') . $this->get('at')) ||
+            is_placeholder_bib_locator($this->get('pages')) ||
+            is_placeholder_bib_locator($this->get('page')) ||
+            is_placeholder_bib_locator($this->get('at')) ||
             (
                 preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') &&
                 (
@@ -1898,7 +1901,10 @@ final class Template
                 return false;
 
             case 'volume':
-                if ($this->blank($param_name) || str_i_same('in press', $this->get($param_name))) {
+                if (is_placeholder_bib_locator($value)) {
+                    return false;
+                }
+                if ($this->blank($param_name) || str_i_same('in press', $this->get($param_name)) || is_placeholder_bib_locator($this->get($param_name))) {
                     if ($value === '0') {
                         return false;
                     }
@@ -1970,6 +1976,9 @@ final class Template
 
             case 'issue':
             case 'number':
+                if (is_placeholder_bib_locator($value)) {
+                    return false;
+                }
                 if ($value === '0') {
                     return false;
                 }
@@ -1997,7 +2006,7 @@ final class Template
                 if (in_array($temp_string, HAS_NO_ISSUE, true)) {
                     return $this->add_if_new('volume', $value);
                 }
-                if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name))) {
+                if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name)) || is_placeholder_bib_locator($this->get($param_name))) {
                     if ($value === '1') {
                         // dubious
                         if (bad_10_1093_doi($this->get('doi'))) {
@@ -2026,6 +2035,9 @@ final class Template
             case "page":
             case "pages":
                 if (in_array($value, BAD_NEW_PAGES, true)) {
+                    return false;
+                }
+                if (is_placeholder_bib_locator($value)) {
                     return false;
                 }
                 if ($this->has('at') || $this->has('article-number')) {
@@ -2086,6 +2098,7 @@ final class Template
                 if (
                     $this->blank(PAGE_ALIASES) || // no page yet set
                     $all_page_values === "" ||
+                    is_placeholder_bib_locator($all_page_values) ||
                     (
                         str_i_same($all_page_values, 'no') ||
                         str_i_same($all_page_values, 'none')

@@ -545,12 +545,12 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_title = '';
         }
 
-        if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
+        if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming' || is_placeholder_bib_locator($the_pages)) {
             $template->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
             $the_pages = '';
             $bad_data = true;
         }
-        if ($the_page === '_' || $the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
+        if ($the_page === '_' || $the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming' || is_placeholder_bib_locator($the_page)) {
             $template->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
             $the_page = '';
             $bad_data = true;
@@ -567,7 +567,8 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_volume === 'In press' ||
             $the_volume === 'ahead-of-print' ||
             $the_volume === 'Forthcoming' ||
-            $the_volume === 'forthcoming'
+            $the_volume === 'forthcoming' ||
+            is_placeholder_bib_locator($the_volume)
         ) {
             $template->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
             $the_volume = '';
@@ -586,7 +587,8 @@ function handleConferencePretendingToBeAJournal(Template $template, string $rawt
             $the_issue === 'In press' ||
             $the_issue === 'ahead-of-print' ||
             $the_issue === 'Forthcoming' ||
-            $the_issue === 'forthcoming'
+            $the_issue === 'forthcoming' ||
+            is_placeholder_bib_locator($the_issue)
         ) {
             $template->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
             $the_issue = '';
