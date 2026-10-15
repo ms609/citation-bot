@@ -277,7 +277,7 @@ The project uses extensive automated testing:
 - **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
 - **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error, or if a known-gap case unexpectedly resolves (XPASS)
 
-The CS1 harness is the conformance regression gate (Phase 0 of the audit plan): it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message or an explicitly-tracked maintenance category (e.g. `CS1 maint: periodical has ISBN`, which emits no error message). Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
+The CS1 harness is the conformance regression gate: it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message or an explicitly-tracked maintenance category (e.g. `CS1 maint: periodical has ISBN`, which emits no error message). Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
 **Local PHPUnit note:** `phpunit.xml.dist` requests coverage. Install PCOV or Xdebug before running focused PHPUnit tests directly, for example: `php -d memory_limit=2G vendor/bin/phpunit <path>`.
 
@@ -611,7 +611,7 @@ The project prioritizes readability and maintainability over compactness. With 1
 
 ### Why Maintenance Mode?
 
-The bot has reached a stable, feature-complete state. It reliably processes Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.  Also, the main coders have busy lives.
+The bot has reached a stable, feature-complete state. It reliably processes Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.
 
 ---
 
