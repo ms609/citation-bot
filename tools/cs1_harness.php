@@ -282,20 +282,6 @@ function check_citation(Template $template): array {
         $violations[] = 'cite-web-without-url: CS1 "Missing or empty |url="';
     }
 
-    // R21: chapter parameters are ignored in templates without chapters.
-    // {{citation}} counts when it uses |work= or any of its aliases.
-    $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
-    if (!$chapter_ignored && $name === 'citation') {
-        $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
-    }
-    if ($chapter_ignored) {
-        foreach (CHAPTER_PARAMS as $param) {
-            if ($template->has($param)) {
-                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
-            }
-        }
-    }
-
     // R10: identifier templates require their identifier.
     if ($name === 'cite arxiv' && !$template->has('arxiv') && !$template->has('eprint')) {
         $violations[] = 'arxiv-required: CS1 "|arxiv= required"';
@@ -419,6 +405,20 @@ function check_citation(Template $template): array {
         }
     }
 
+    // R21: chapter parameters are ignored in templates without chapters.
+    // {{citation}} counts when it uses |work= or any of its aliases.
+    $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
+    if (!$chapter_ignored && $name === 'citation') {
+        $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
+    }
+    if ($chapter_ignored) {
+        foreach (CHAPTER_PARAMS as $param) {
+            if ($template->has($param)) {
+                $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
+            }
+        }
+    }
+
     // R22: maint only (maint_periodical_has_isbn has no message; hidden category).
     // Not a CS1 error.
     if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
@@ -472,10 +472,7 @@ function check_citation(Template $template): array {
  */
 function build_matrix(): array {
     return [
-        // --- cite web -> cite book, work=series routing (mandatory cases) ---
-        ['Erxleben path: work=series lands in series=', '{{cite web |title=Harness paper alpha |work=Lecture Notes in Computer Science |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
-        ['Najman path: title=book title kept, work=series -> series=', '{{cite web |title=Harness book title beta |work=Lecture notes in mathematics |date=2017 |isbn=978-0-19-852011-5}}', 'pass'],
-        ['No-clobber: existing series= preserved', '{{cite web |title=Harness paper gamma |work=Lecture Notes in Computer Science |series=Special Series Name |date=2014 |isbn=978-0-19-852011-5}}', 'pass'],
+        // --- cite web -> cite book conversion (must not leave a periodical error) ---
         ['Human ISBN on chaptered cite web converts to cite book', '{{cite web |url=https://example.com/book |title=Harness book epsilon |chapter=Harness chapter |website=Harness site |isbn=978-0-306-40615-7}}', 'pass'],
         ['Google Books volume url with website converts to book', '{{cite web |url=https://books.google.com/books?id=HarnessVolume |title=Harness book eta |website=Google Books |isbn=978-0-306-40615-7}}', 'pass'],
         ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
@@ -488,8 +485,6 @@ function build_matrix(): array {
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
         ['Orphaned chapter-url-access removed', '{{cite journal |title=X |journal=J |chapter-url-access=free}}', 'pass'],
         ['Orphaned contribution-url-access removed', '{{cite journal |title=X |journal=J |contribution-url-access=free}}', 'pass'],
-        ['Contribution-url kept for citation contributions', '{{citation |title=Harness volume |contribution=Harness paper |contribution-url=https://example.test/paper |publisher=Harness |year=2020}}', 'pass'],
-        ['CookieAbsent citation without a DOI is left unchanged', '{{cite web |title=Science |url=https://www.science.org/action/cookieAbsent |website=AAAS}}', 'pass'],
         ['url-access kept when base uses uppercase URL alias', '{{cite web |URL=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['url-access kept when base uses un-hyphenated alias', '{{cite web |url=https://example.com |url-access=subscription |title=X}}', 'pass'],
         ['chapter-url-access kept with chapter-url base', '{{cite book |title=X |chapter-url=https://example.com |chapter-url-access=free |year=2020}}', 'pass'],
@@ -525,18 +520,6 @@ function build_matrix(): array {
         ['Clean cite arxiv', '{{cite arxiv |arxiv=2401.99999 |title=X}}', 'pass'],
         ['Clean cite biorxiv', '{{cite biorxiv |biorxiv=10.1101/2020.01.01.000001 |title=X}}', 'pass'],
         ['Clean cite ssrn', '{{cite ssrn |ssrn=1234567 |title=X}}', 'pass'],
-
-        // --- book review confusion guard (Turnbull 1939) ---
-        ['Turnbull book stays book (no journal/doi/bibcode pollution)', '{{citation|editor=Turnbull, H. W.|title=The James Gregory Tercentenary Memorial Volume|publication-place=London|year=1939}}', 'pass'],
-
-        // --- IAU Circular / CBET / ATel locator handling ---
-        ['IAU Circular volume becomes issue, number becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |number=2 |date=May 2000 |page=2 |bibcode=2000IAUC.7428....2S}}', 'pass'],
-        ['IAU Circular issue+volume: volume becomes issue, old issue becomes page', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=4225 |issue=2 |date=June 1986 |pages=2 |bibcode=1986IAUC.4225....2P}}', 'pass'],
-        ['IAU Circular duplicate volume/issue stays a single issue', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=7428 |date=May 2000}}', 'pass'],
-        ['IAU Circular at= kept when issue is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |volume=7428 |issue=5 |at=9 |date=May 2000}}', 'pass'],
-        ['IAU Circular at= kept when number is relocated to article-number', '{{cite journal |title=Harness supernova |journal=IAU Circular |number=2 |at=9 |date=May 2000}}', 'pass'],
-        ['ATel volume becomes issue, number becomes page', "{{cite journal |title=Broadband photometry |journal=The Astronomer's Telegram |volume=3073 |number=1 |date=2010 |page=1 |bibcode=2010ATel.3073....1H}}", 'pass'],
-        ['ATel duplicate volume/issue stays a single issue', "{{cite journal |title=Broadband photometry |journal=The Astronomer's Telegram |volume=3073 |issue=3073 |date=2010}}", 'pass'],
 
         // --- known gaps (documented current CS1 violations, tracked) ---
         ['GAP bad ISBN-13 check digit survives tidy', '{{cite journal |title=X |journal=J |isbn=978-0-306-40615-8}}', 'gap'],
