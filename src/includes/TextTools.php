@@ -1027,6 +1027,14 @@ function str_i_same(string $str1, string $str2): bool {
     return strcmp(mb_strtoupper($str1), mb_strtoupper($str2)) === 0;
 }
 
+function is_placeholder_bib_locator(string $value): bool {
+    $trimmed = mb_trim(mb_strtolower($value));
+    if ($trimmed === '') {
+        return false;
+    }
+    return in_array($trimmed, IN_PRESS_ALIASES, true);
+}
+
 function doi_encode (string $doi): string {
     /**
      * @psalm-taint-escape html

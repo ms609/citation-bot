@@ -248,4 +248,14 @@ final class TextToolsCoverageTest extends testBaseClass {
         $this->assertSame(tidy_date('1800-02-03'), $template->get2('date'));
     }
 
+    public function testIsPlaceholderBibLocatorRecognizesTbaVariants(): void {
+        $this->assertTrue(is_placeholder_bib_locator('TBA'));
+        $this->assertTrue(is_placeholder_bib_locator('tba'));
+        $this->assertTrue(is_placeholder_bib_locator(' TBD '));
+        $this->assertTrue(is_placeholder_bib_locator('in press'));
+        $this->assertFalse(is_placeholder_bib_locator('54'));
+        $this->assertFalse(is_placeholder_bib_locator(''));
+        $this->assertFalse(is_placeholder_bib_locator('TBA special issue'));
+    }
+
 }
