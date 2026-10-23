@@ -603,7 +603,7 @@ When helping with this project:
 10. **No stubs:** Do not implement placeholders or simple implementations.  We want full implementations
 11. **Code reuse:** Never assume something is not implemented - search the code base first
 12. **Code consistency:**  Before changing behavior, identify the existing pattern elsewhere in the repository and follow it. Do not modernize existing code unless requested.  Avoid unnecessary refactoring.
-
+13. Do not touch vendor/, hash-pinned lockfiles (use the tools/update_\*_lock.sh scripts), attic/, and progpilot\*.json.
 ## Project Philosophy
 
 ### Why PHP?
