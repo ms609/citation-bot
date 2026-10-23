@@ -5,7 +5,7 @@ This file provides context for AI assistants working on the Citation Bot project
 ## Quick Start for AI Assistants
 
 - Language: PHP 8.4+
-- Main logic: Template.php
+- Main logic: Template.php (very large file)
 - Test command: composer run test
 - CS1 regression gate (run before and after citation-logic changes): `php tools/cs1_harness.php` and `php tools/cs1_harness.php --slow`
 - CLI smoke-test (requires credentials, use --savetofiles to avoid writing to Wikipedia): php src/process_page.php "Page" --savetofiles
@@ -74,10 +74,10 @@ Add Missing Metadata → Clean Formatting → Post to Wikipedia
 
 ```php
 if ($doi = $template->get('doi')) {
-  $crossRef = query_crossref($doi);
-  if ($crossRef) {
-    $template->add_if_new('title', $crossRef->title);
-  }
+    $crossRef = query_crossref($doi);
+    if ($crossRef) {
+        $template->add_if_new('title', $crossRef->title);
+    }
 }
 ```
 
@@ -428,6 +428,11 @@ The gadget MUST:
 ├── progpilot.yml               # Security analysis config
 ├── env.php.example             # Configuration template
 └── ...other config files
+
+src/includes/api/APIResponseGuard.php
+tools/cleanup-citoid-pending.php
+tools/verify-citoid-shared-flock.php
+docs/citoid-*.md,
 ```
 
 ## Debugging Tips
@@ -612,8 +617,3 @@ The project prioritizes readability and maintainability over compactness. With 1
 ### Why Maintenance Mode?
 
 The bot has reached a stable, feature-complete state. It reliably processes Wikipedia pages daily. New features are welcome but the focus is on stability and bug fixes.
-
----
-
-**Last updated:** October 2026
-**Maintained by:** Citation Bot community
