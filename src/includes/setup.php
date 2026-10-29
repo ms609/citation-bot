@@ -7,24 +7,6 @@
 
 declare(strict_types=1);
 
-// Only run on PHP releases at or above the security floor for each
-// supported minor series. New minor series require explicit review.
-if (!(
-    (PHP_VERSION_ID >= 80427 && PHP_VERSION_ID < 80500) ||
-    (PHP_VERSION_ID >= 80512 && PHP_VERSION_ID < 80600)
-)) {
-    $message = 'Citation Bot requires PHP 8.4.27+ or PHP 8.5.12+ (within those release series); running ' . PHP_VERSION . ".\n";
-    if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, $message);
-    } else {
-        http_response_code(503);
-        header('Content-Type: text/plain; charset=utf-8');
-        header('Cache-Control: no-store');
-        echo $message;
-    }
-    exit(1);
-}
-
 error_reporting(E_ALL);
 
 date_default_timezone_set('UTC');
