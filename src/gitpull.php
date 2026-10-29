@@ -31,6 +31,9 @@ const GITPULL_CSRF_TTL = 600;
  * impractical without introducing an attacker-triggerable account lockout.
  */
 function gitpull_valid_deploy_token(string $token): bool {
+    if ($token === '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef') {
+        return false; /* The example token */
+    }
     return preg_match('~\A[a-f0-9]{64}\z~D', $token) === 1;
 }
 
