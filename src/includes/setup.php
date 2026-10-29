@@ -16,6 +16,11 @@ if (!mb_internal_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are ver
     exit(0);
 }
 
+// With register_argc_argv enabled, a web SAPI populates these
+if (PHP_SAPI !== 'cli') {
+    unset($GLOBALS['argv'], $GLOBALS['argc'], $_SERVER['argv'], $_SERVER['argc']);
+}
+
 /*
  * gitpull.php holds an exclusive advisory lock while the working tree is being
  * replaced. Probe it with a non-blocking shared lock instead of treating the
