@@ -792,7 +792,7 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arXiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
     }
 
-    public function testLatexMathInTitle(): void { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.   See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
+    public function testLatexMathInTitle(): void { // This contains Math stuff that should be z~10.  The arXiv form with single-dollar LaTeX is now converted to <math>; the CrossRef forms below are only verified not to get worse.   See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
         $text = "{{Cite arxiv|eprint=1801.03103}}";
         $expanded = $this->process_citation($text);
         $title = $expanded->get2('title');
@@ -800,7 +800,7 @@ final class TemplatePart3Test extends testBaseClass {
             $this->markTestSkipped('arXiv API did not respond (rate limit or outage)');
         }
         // For some reason we sometimes get the first one - probably just ARXIV
-        $title1 = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
+        $title1 = 'A Candidate <math>z\sim10</math> Galaxy Strongly Lensed into a Spatially Resolved Arc';
         $title2 = "RELICS: A Candidate ''z'' ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
         $title3 = "RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
         if (in_array($title, [$title1, $title2, $title3], true)) {

@@ -27,6 +27,19 @@ function wikify_external_text(string $title): string {
                 return "<math>" . $matches[1] . "</math>";
             },
             $title);
+    // Single-dollar LaTeX such as $z\sim10$ gets the same <math> treatment as $$...$$ so that the
+    // output does not depend on which upstream source supplied the title.  To avoid mistaking
+    // ordinary text such as "costs $5 and $10" for math, the span must start and end with a
+    // non-space character, must not be an escaped dollar sign, and must contain at least one
+    // unambiguous LaTeX command (a backslash followed by letters).
+    $title = safe_preg_replace_callback('~(?<![\\\\$])\$(?![\$\s])([^\$<>]*)(?<=\S)\$(?!\$)~u',
+            static function (array $matches): string {
+                if (preg_match('~\\\\[a-zA-Z]+~', $matches[1]) !== 1) {
+                    return $matches[0];
+                }
+                return "<math>" . $matches[1] . "</math>";
+            },
+            $title);
     if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
         $num_matches = count($matches[0]);
         for ($i = 0; $i < $num_matches; $i++) {
