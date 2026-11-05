@@ -92,7 +92,6 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 $template->forget($url_type);
             } elseif (doi_works($template->get('doi')) &&
                         !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
-                        $url_type !== '' &&
                         (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_type)) !== $template->get($url_type)) &&
                         $template->has_good_free_copy() &&
                         (mb_stripos($template->get($url_type), 'pdf') === false)) {
