@@ -516,6 +516,42 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame($expected, wikify_external_text($text_mml));
     }
 
+    public function testSingleDollarLatexInTitle(): void {
+        // arXiv supplies LaTeX in single dollar signs; this must come out the same as $$...$$ and MathML do
+        $text = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
+        $expected = 'A Candidate <math>z\sim10</math> Galaxy Strongly Lensed into a Spatially Resolved Arc';
+        $this->assertSame($expected, wikify_external_text($text));
+    }
+
+    public function testSingleDollarLatexMatchesDoubleDollar(): void {
+        $single = wikify_external_text('A Candidate $z\sim10$ Galaxy');
+        $double = wikify_external_text('A Candidate $$z\sim10$$ Galaxy');
+        $this->assertSame($double, $single);
+    }
+
+    public function testSingleDollarLatexMultipleSpans(): void {
+        $text = 'Decay of $\alpha$ particles and $\beta$ particles';
+        $expected = 'Decay of <math>\alpha</math> particles and <math>\beta</math> particles';
+        $this->assertSame($expected, wikify_external_text($text));
+    }
+
+    public function testSingleDollarWithoutLatexCommandIsNotMath(): void {
+        // Prices and similar text have no LaTeX command, so they must be left alone
+        $result = wikify_external_text('A guide that costs $5 and then $10 more');
+        $this->assertStringNotContainsString('<math>', $result);
+        $this->assertStringContainsString('$5 and then $10', $result);
+    }
+
+    public function testSingleDollarNeedsNonSpaceEdges(): void {
+        $result = wikify_external_text('Costs $ 5 \times 2 $ in total');
+        $this->assertStringNotContainsString('<math>', $result);
+    }
+
+    public function testEscapedDollarIsNotMath(): void {
+        $result = wikify_external_text('Paying \$5 for \alpha$ today');
+        $this->assertStringNotContainsString('<math>', $result);
+    }
+
     public function testMathTagSpacesAddedWhenMissing(): void {
         // Regression test: CrossRef sometimes omits the spaces between math markup and surrounding
         // text, e.g. "Using<math>...</math>Decays" instead of "Using <math>...</math> Decays".
