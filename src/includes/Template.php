@@ -2551,6 +2551,11 @@ final class Template
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn === $possible_isbn13) {
+                            if (preg_match('~^[0-9A-Za-z]{10}$~', $possible_isbn) !== 1) {
+                                // tidy_parameter() would remove it again
+                                report_inaction("Not adding malformed ASIN: " . echoable($value));
+                                return false;
+                            }
                             return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
                         } elseif (!$this->can_add_isbn_identifier()) {
                             report_inaction("Not adding ASIN that cannot become an ISBN: " . echoable($value));
@@ -2560,6 +2565,11 @@ final class Template
                         }
                     } else {
                         // NOT ISBN
+                        if (preg_match('~^[0-9A-Za-z]{10}$~', sanitize_string($value)) !== 1) {
+                            // tidy_parameter() would remove it again
+                            report_inaction("Not adding malformed ASIN: " . echoable($value));
+                            return false;
+                        }
                         return $this->add($param_name, sanitize_string($value));
                     }
                 }
@@ -5236,18 +5246,26 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    if ($this->has('isbn')) {
-                        return;
+                    $asin_value = $this->get_without_comments_and_placeholders($param);
+                    if (preg_match('~^[0-9A-Za-z]{10}$~', $asin_value) === 1 && $asin_value !== mb_strtoupper($asin_value)) {
+                        $asin_value = mb_strtoupper($asin_value); // ASINs are upper case
+                        $this->set($param, $asin_value);
                     }
                     $value = $this->get($param);
-                    if (preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
+                    if (!$this->has('isbn') && preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn !== $possible_isbn13) {
                             // It is an ISBN
                             $this->rename('asin', 'isbn', $this->isbn10ToIsbn13($possible_isbn, false));
+                            return;
                         }
+                    }
+                    if ($asin_value !== '' && preg_match('~^[0-9A-Z]{10}$~', $asin_value) !== 1 && preg_match('~^[\d\s-]{9,}[\dXx]$~', $asin_value) !== 1) {
+                        // CS1 wants exactly ten upper-case letters or digits; anything else is a mistake, but keep hyphenated ISBNs for a human
+                        report_forget("Removing malformed ASIN: " . echoable($asin_value));
+                        $this->forget($param);
                     }
                     return;
 

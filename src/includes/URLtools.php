@@ -1871,7 +1871,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
             }
             return false;
 
-        } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
+        } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d{9}[\dX])(?!\w)~i", $url, $match)) {
 
             $was_cite_web = $template->wikiname() === 'cite web';
             if ($was_cite_web) {

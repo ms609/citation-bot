@@ -478,7 +478,7 @@ function build_matrix(): array {
         ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
         // Input ISBNs are left in place; the bot only declines to create them.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
-        ['GAP numeric asin in input survives tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'gap'],
+        ['Malformed numeric asin in input is removed by tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'pass'],
         ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
