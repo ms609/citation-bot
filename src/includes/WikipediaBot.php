@@ -380,29 +380,23 @@ final class WikipediaBot {
         }
 
         $list = [];
+        // Exclude project, system and maintenance namespaces by ID. Other content
+        // namespaces (such as Draft and wiki-specific namespaces) remain eligible.
         foreach ($response->query->categorymembers as $page) {
-            if (!is_object($page) || !isset($page->title) || !is_string($page->title)) {
+            if (
+                !is_object($page) ||
+                !isset($page->title, $page->ns) ||
+                !is_string($page->title) ||
+                $page->title === '' ||
+                !is_int($page->ns) ||
+                $page->ns < 0 ||
+                $page->ns % 2 !== 0 || // Talk namespaces
+                in_array($page->ns, [4, 8, 10, 12, 14, 100, 108, 446, 710, 828, 2300, 2302, 2600], true) ||
+                mb_stripos($page->title, '/doc') !== false
+            ) {
                 continue;
             }
-            $title = $page->title;
-            if (mb_stripos($title, 'talk:') === false &&
-                mb_stripos($title, 'Special:') === false &&
-                mb_stripos($title, '/doc') === false &&
-                mb_stripos($title, 'Template:') === false &&
-                mb_stripos($title, 'Mediawiki:') === false &&
-                mb_stripos($title, 'help:') === false &&
-                mb_stripos($title, 'Gadget:') === false &&
-                mb_stripos($title, 'Portal:') === false &&
-                mb_stripos($title, 'timedtext:') === false &&
-                mb_stripos($title, 'module:') === false &&
-                mb_stripos($title, 'category:') === false &&
-                mb_stripos($title, 'Wikipedia:') === false &&
-                mb_stripos($title, 'Gadget definition:') === false &&
-                mb_stripos($title, 'Topic:') === false &&
-                mb_stripos($title, 'Education Program:') === false &&
-                mb_stripos($title, 'Book:') === false) {
-                $list[] = $title;
-            }
+            $list[] = $page->title;
         }
         return $list;
     }
