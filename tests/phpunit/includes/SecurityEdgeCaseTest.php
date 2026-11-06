@@ -538,6 +538,8 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             'flock($git_pull_lock_handle, LOCK_SH | LOCK_NB)',
             $setup
         );
+        $this->assertStringNotContainsString('flock($git_pull_lock_handle, LOCK_UN)', $setup);
+        $this->assertStringContainsString("\$GLOBALS['citation_bot_deployment_read_lock'] = \$git_pull_lock_handle;", $setup);
         $this->assertStringNotContainsString('sleep(5);', $setup);
         $this->assertStringContainsString('http_response_code(503);', $setup);
         $this->assertStringContainsString("header('Retry-After: 5')", $setup);

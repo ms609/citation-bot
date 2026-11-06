@@ -28,7 +28,8 @@ if (PHP_SAPI !== 'cli') {
  * a killed deploy process cannot leave the site disabled by a stale sentinel.
  *
  * This check is deliberately self-contained and before mutable application
- * includes, so requests arriving during a deployment do not load a mixed tree.
+ * includes. Keep the shared handle alive for the request, including any
+ * lazy loads, so deployment cannot replace its files midway.
  */
 $git_pull_lock = dirname(__DIR__) . '/git_pull.lock';
 $git_pull_in_progress = true;
@@ -58,10 +59,12 @@ if (!is_link($git_pull_lock) && !is_dir($git_pull_lock)) {
             @chmod($git_pull_lock, 0600);
             if (@flock($git_pull_lock_handle, LOCK_SH | LOCK_NB)) {
                 $git_pull_in_progress = false;
-                @flock($git_pull_lock_handle, LOCK_UN);
+                $GLOBALS['citation_bot_deployment_read_lock'] = $git_pull_lock_handle;
             }
         }
-        @fclose($git_pull_lock_handle);
+        if ($git_pull_in_progress) {
+            @fclose($git_pull_lock_handle);
+        }
     }
 }
 
