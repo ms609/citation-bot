@@ -6540,6 +6540,16 @@ final class Template
                         $this->set('via', 'ResearchGate');
                     }
                     return;
+                case 'article':
+                    if (
+                        $this->wikiname() === 'cite journal' &&
+                        $this->blank('article-number') &&
+                        preg_match('~^[a-z]{0,4}\d{1,12}$~iD', $this->get('article'))
+                    ) {
+                        $this->rename('article', 'article-number');
+                    }
+                    return;
+
                 case 'volume':
                     if ($this->blank($param)) {
                         return;
