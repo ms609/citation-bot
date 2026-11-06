@@ -1622,7 +1622,12 @@ final class Zotero {
             $template->add_if_new('isbn', $result->ISBN);
         }
         if ($access_date && isset($result->date)) {
-            $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
+            $tidied_result_date = tidy_date((string) $result->date); // One time got an integer
+            if (preg_match('~^\d{4}$~', $tidied_result_date) === 1) {
+                $new_date = strtotime('1 January ' . $tidied_result_date); // strtotime('2015') is a time of day: 8:15pm today
+            } else {
+                $new_date = strtotime($tidied_result_date);
+            }
             if ($new_date) { // can compare
                 if ($new_date > $access_date) {
                     report_info("URL appears to have changed since access-date " . echoable($url));
