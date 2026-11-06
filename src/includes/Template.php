@@ -1881,7 +1881,10 @@ final class Template
                                return false;
                         }
                     }
-                    if ($this->has('article') && ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) {
+                    if (
+                        in_array($this->wikiname(), ['cite encyclopedia', 'cite dictionary', 'cite encyclopaedia'], true) &&
+                        ($this->has('article') || (!$this->blank(CHAPTER_ALIASES_AND_SCRIPT) && !$this->blank(WORK_ALIASES)))
+                    ) {
                         return false;
                     } // Probably the same thing
                     if (!$this->blank('book-title')) {
@@ -2551,6 +2554,11 @@ final class Template
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn === $possible_isbn13) {
+                            if (preg_match('~^[0-9A-Za-z]{10}$~', $possible_isbn) !== 1) {
+                                // tidy_parameter() would remove it again
+                                report_inaction("Not adding malformed ASIN: " . echoable($value));
+                                return false;
+                            }
                             return $this->add('asin', $possible_isbn); // Something went wrong, add as ASIN
                         } elseif (!$this->can_add_isbn_identifier()) {
                             report_inaction("Not adding ASIN that cannot become an ISBN: " . echoable($value));
@@ -2560,6 +2568,11 @@ final class Template
                         }
                     } else {
                         // NOT ISBN
+                        if (preg_match('~^[0-9A-Za-z]{10}$~', sanitize_string($value)) !== 1) {
+                            // tidy_parameter() would remove it again
+                            report_inaction("Not adding malformed ASIN: " . echoable($value));
+                            return false;
+                        }
                         return $this->add($param_name, sanitize_string($value));
                     }
                 }
@@ -5147,7 +5160,62 @@ final class Template
                             }
                         }
                     }
+                    $handle = safe_preg_replace('~[\s.,]+$~u', '', $handle); // Trailing punctuation is never part of a handle (CS1 flags it)
                     $this->set('hdl', $handle);
+                    return;
+
+                case 'oclc':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^oclc\s*[:#]?\s*(\S+)$~i', $value, $matches) === 1 && oclc_valid($matches[1])) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1) {
+                        report_forget("Removing malformed OCLC identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
+                    return;
+
+                case 's2cid':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^(?:s2cid|corpusid)\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1) {
+                        report_forget("Removing malformed S2CID identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
+                    return;
+
+                case 'ssrn':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^ssrn\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1 && $this->wikiname() !== 'cite ssrn') {
+                        report_forget("Removing malformed SSRN identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
                     return;
 
                 case 'doi-broken':
@@ -5264,18 +5332,26 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    if ($this->has('isbn')) {
-                        return;
+                    $asin_value = $this->get_without_comments_and_placeholders($param);
+                    if (preg_match('~^[0-9A-Za-z]{10}$~', $asin_value) === 1 && $asin_value !== mb_strtoupper($asin_value)) {
+                        $asin_value = mb_strtoupper($asin_value); // ASINs are upper case
+                        $this->set($param, $asin_value);
                     }
                     $value = $this->get($param);
-                    if (preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
+                    if (!$this->has('isbn') && preg_match("~^\d~", $value) && mb_substr($value, 0, 2) !== '63') {
                         // 630 and 631 ones are not ISBNs, so block all of 63*
                         $possible_isbn = sanitize_string($value);
                         $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, true);
                         if ($possible_isbn !== $possible_isbn13) {
                             // It is an ISBN
                             $this->rename('asin', 'isbn', $this->isbn10ToIsbn13($possible_isbn, false));
+                            return;
                         }
+                    }
+                    if ($asin_value !== '' && preg_match('~^[0-9A-Z]{10}$~', $asin_value) !== 1 && preg_match('~^[\d\s-]{9,}[\dXx]$~', $asin_value) !== 1) {
+                        // CS1 wants exactly ten upper-case letters or digits; anything else is a mistake, but keep hyphenated ISBNs for a human
+                        report_forget("Removing malformed ASIN: " . echoable($asin_value));
+                        $this->forget($param);
                     }
                     return;
 
@@ -6568,6 +6644,16 @@ final class Template
                         $this->set('via', 'ResearchGate');
                     }
                     return;
+                case 'article':
+                    if (
+                        $this->wikiname() === 'cite journal' &&
+                        $this->blank('article-number') &&
+                        preg_match('~^[a-z]{0,4}\d{1,12}$~iD', $this->get('article'))
+                    ) {
+                        $this->rename('article', 'article-number');
+                    }
+                    return;
+
                 case 'volume':
                     if ($this->blank($param)) {
                         return;

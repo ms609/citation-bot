@@ -477,7 +477,7 @@ function build_matrix(): array {
         ['ScienceDirect book url with website converts to book', '{{cite web |url=https://www.sciencedirect.com/book/9780123456789 |title=Harness book theta |website=ScienceDirect |isbn=978-0-306-40615-7}}', 'pass'],
         // Input ISBNs are left in place; the bot only declines to create them.
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
-        ['GAP numeric asin in input survives tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'gap'],
+        ['Malformed numeric asin in input is removed by tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'pass'],
         ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
 
         // Reproduce the conversion in Special:Diff/1378823420 without external metadata.
@@ -546,10 +546,10 @@ function build_matrix(): array {
         ['Malformed arxiv/eprint in input removed in tidy', '{{cite journal |title=X |journal=J |eprint=XYZ}}', 'pass'],
         ['Malformed bibcode in input removed in tidy', '{{cite journal |title=X |journal=J |bibcode=Z}}', 'pass'],
         ['Trailing-dot doi repaired in tidy', '{{cite journal |title=X |journal=J |doi=10.1103/abc.}}', 'pass'],
-        ['GAP malformed ssrn in input survives tidy', '{{cite journal |title=X |journal=J |ssrn=abc}}', 'gap'],
-        ['GAP malformed s2cid in input survives tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'gap'],
-        ['GAP malformed hdl in input survives tidy', '{{cite journal |title=X |journal=J |hdl=10.1000/abcdef.}}', 'gap'],
-        ['GAP malformed oclc in input survives tidy', '{{cite journal |title=X |journal=J |oclc=abc}}', 'gap'],
+        ['Malformed ssrn in input removed in tidy', '{{cite journal |title=X |journal=J |ssrn=abc}}', 'pass'],
+        ['Malformed s2cid in input removed in tidy', '{{cite journal |title=X |journal=J |s2cid=abc}}', 'pass'],
+        ['Trailing-dot hdl repaired in tidy', '{{cite journal |title=X |journal=J |hdl=10.1000/abcdef.}}', 'pass'],
+        ['Malformed oclc in input removed in tidy', '{{cite journal |title=X |journal=J |oclc=abc}}', 'pass'],
         ['GAP bare-digit ol in input survives tidy', '{{cite journal |title=X |journal=J |ol=1234}}', 'gap'],
         ['GAP short lccn in input survives tidy', '{{cite journal |title=X |journal=J |lccn=1234}}', 'gap'],
         ['GAP out-of-range doi registrant in input survives tidy', '{{cite journal |title=X |journal=J |doi=10.123/abc}}', 'gap'],

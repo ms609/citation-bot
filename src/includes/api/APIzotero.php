@@ -1622,7 +1622,12 @@ final class Zotero {
             $template->add_if_new('isbn', $result->ISBN);
         }
         if ($access_date && isset($result->date)) {
-            $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
+            $tidied_result_date = tidy_date((string) $result->date); // One time got an integer
+            if (preg_match('~^\d{4}$~', $tidied_result_date) === 1) {
+                $new_date = strtotime('1 January ' . $tidied_result_date); // strtotime('2015') is a time of day: 8:15pm today
+            } else {
+                $new_date = strtotime($tidied_result_date);
+            }
             if ($new_date) { // can compare
                 if ($new_date > $access_date) {
                     report_info("URL appears to have changed since access-date " . echoable($url));
@@ -1808,6 +1813,18 @@ final class Zotero {
         if (!$template->blank(['interviewer-last', 'interviewer-first', 'interviewer-surname', 'interviewer-given', 'interviewer'])) {
             unset($result->author);
             unset($result->creators);
+        }
+        // CalMatters supplies this collective byline as two parts of a person's name.
+        $creator_host = parse_url($url, PHP_URL_HOST);
+        if (is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
+            $result->author = array_values(array_filter(
+                $result->author ?? [],
+                static fn (array $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name[0] ?? '') . ' ' . mb_trim($name[1] ?? '')))
+            ));
+            $result->creators = array_values(array_filter(
+                $result->creators ?? [],
+                static fn (object $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name->firstName ?? '') . ' ' . mb_trim($name->lastName ?? '')))
+            ));
         }
         // Filter out bad author name components and remove entirely empty author entries
         $i = 0;

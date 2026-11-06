@@ -75,6 +75,73 @@ function category_confirmation_fields(string $category, array $query): array {
     return $fields;
 }
 
+const OAUTH_FORM_ACTIONS = [
+    'process_page.php' => ['page', 'Process page'],
+    'category.php' => ['cat', 'Process category'],
+    'linked_pages.php' => ['linkpage', 'Process linked pages'],
+];
+
+/**
+ * @param array<array-key, mixed> &$session
+ * @param string $action
+ * @param array<string, string> $fields
+ */
+function save_oauth_form(array &$session, string $action, array $fields): string {
+    $nonce = bin2hex(random_bytes(16));
+    $session['citation_bot_oauth_form'] = [
+        'nonce' => $nonce,
+        'expires' => time() + 900,
+        'action' => $action,
+        'fields' => $fields,
+    ];
+    return public_url_path('/resume.php') . '?request=' . $nonce;
+}
+
+/**
+ * @param array<array-key, mixed> &$session
+ * @return array{nonce: string, expires: int, action: string, fields: array<string, string>}|null
+ */
+function take_oauth_form(array &$session, string $nonce): ?array {
+    /** @var array{nonce: string, expires: int, action: string, fields: array<string, string>}|null $pending */
+    $pending = $session['citation_bot_oauth_form'] ?? null;
+    if ($pending === null || !hash_equals($pending['nonce'], $nonce)) {
+        return null;
+    }
+    if ($pending['expires'] < time()) {
+        unset($session['citation_bot_oauth_form']);
+        return null;
+    }
+    if (!isset($session['access_key'], $session['access_secret'])) {
+        return null;
+    }
+    unset($session['citation_bot_oauth_form']);
+    return $pending;
+}
+
+/**
+ * @param string $action
+ * @param string $target
+ * @param array<array-key, mixed> $post
+ * @return array{action: string, fields: array<string, string>}|null
+ */
+function oauth_form_request(string $action, string $target, array $post): ?array {
+    // Bound persisted input and allowlist fields. Never carry the old CSRF token or API keys.
+    if (!isset(OAUTH_FORM_ACTIONS[$action]) || mb_strlen($target, '8bit') > 12800) {
+        return null;
+    }
+    [$field] = OAUTH_FORM_ACTIONS[$action];
+    $fields = [$field => $target];
+    foreach (['edit', 'wiki_base', 'pcre', 'extended_limit', 'ignore_block'] as $option) {
+        if (isset($post[$option]) && is_string($post[$option]) && mb_strlen($post[$option], '8bit') <= 255) {
+            $fields[$option] = $post[$option];
+        }
+    }
+    if (isset($post['slow'])) {
+        $fields['slow'] = '1';
+    }
+    return ['action' => $action, 'fields' => $fields];
+}
+
 /**
  * @param string $action
  * @param array<string, string> $fields
@@ -102,6 +169,7 @@ function post_confirmation_form(string $action, array $fields, string $csrf_toke
     $display_fields = [
         'page' => 'Page',
         'cat' => 'Category',
+        'linkpage' => 'Linked from',
         'wiki_base' => 'Wiki',
         'slow' => 'Thorough mode',
         'pcre' => 'PCRE option',

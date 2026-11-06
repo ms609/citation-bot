@@ -2071,7 +2071,7 @@ final class TemplatePart3Test extends testBaseClass {
         $text = "{{#invoke:Cite|web|S2CID=X}}";
         $expanded = $this->process_citation($text);
         $this->assertFalse($expanded->add_if_new('s2cid', 'Z')); // Do something random
-        $this->assertSame("{{#invoke:Cite|web|s2cid=X}}", $expanded->parsed_text());
+        $this->assertSame("{{#invoke:Cite|web}}", $expanded->parsed_text());
     }
 
     public function testInvoke2(): void {

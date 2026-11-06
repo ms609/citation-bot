@@ -86,6 +86,7 @@ class Page {
     private int $lastrevid = 0;
     private bool $page_error = false;
     private bool $cs2_mode = false;
+    private const int CS2_INFERENCE_MINIMUM = 5; // Citation templates, all CS2, needed to infer cs2 mode without {{cs1 config}}
     private static bool $told_fast = false;
     protected static string $last_title = '';
 
@@ -1123,6 +1124,55 @@ class Page {
         $this->cs2_mode = false;
         $pattern = '/{{\s*?cs1\s*?config[^}]*?mode\s*?=\s*?(cs2)\b[^}]*?}}/im';
         if (preg_match($pattern, $this->text, $matches)) {
+            $this->cs2_mode = true;
+            return;
+        }
+        // Without explicit configuration, follow the page: when it already has several citation templates and
+        // every one of them is Citation Style 2, a new reference should not be the one that introduces CS1.
+        $cs2_count = 0;
+        $text_length = mb_strlen($this->text, '8bit'); // Bytes, since the offsets from preg_match_all are bytes
+        if (preg_match_all('~\{\{\s*([^|{}]+?)\s*\|~u', $this->text, $starts, PREG_OFFSET_CAPTURE) === false) {
+            return; // @codeCoverageIgnore
+        }
+        foreach ($starts[0] as $key => $start) {
+            $name = mb_strtolower(mb_trim((string) safe_preg_replace('~[\s_]+~u', ' ', $starts[1][$key][0])));
+            $is_cs2_name = ($name === 'citation');
+            $is_cs1_name = !$is_cs2_name &&
+                $name !== 'cite needed' && $name !== 'cite check' &&
+                (mb_strpos($name, 'cite ') === 0 || in_array($name, TEMPLATES_WE_PROCESS, true) || in_array($name, TEMPLATES_WE_SLIGHTLY_PROCESS, true) || in_array($name, TEMPLATES_WE_BARELY_PROCESS, true));
+            if (!$is_cs2_name && !$is_cs1_name) {
+                continue;
+            }
+            // Find the end of this template, allowing for templates inside it
+            $begin = (int) $start[1];
+            $depth = 0;
+            $end = $text_length;
+            for ($position = $begin; $position < $text_length - 1; $position++) {
+                $pair = mb_substr($this->text, $position, 2, '8bit');
+                if ($pair === '{{') {
+                    $depth++;
+                    $position++;
+                } elseif ($pair === '}}') {
+                    $depth--;
+                    $position++;
+                    if ($depth === 0) {
+                        $end = $position + 1;
+                        break;
+                    }
+                }
+            }
+            $body = mb_substr($this->text, $begin, $end - $begin, '8bit');
+            $mode = '';
+            if (preg_match('~\|\s*mode\s*=\s*(cs[12])\b~i', $body, $mode_match) === 1) {
+                $mode = mb_strtolower($mode_match[1]);
+            }
+            if ($mode === 'cs2' || ($is_cs2_name && $mode !== 'cs1')) {
+                $cs2_count++;
+            } else {
+                return; // A single CS1 citation means the page is not uniformly CS2
+            }
+        }
+        if ($cs2_count >= self::CS2_INFERENCE_MINIMUM) {
             $this->cs2_mode = true;
         }
     }

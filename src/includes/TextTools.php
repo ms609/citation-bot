@@ -555,8 +555,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Implicit acronyms
     $new_case = ' ' . $new_case . ' ';
-    $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui",
+    $new_case = safe_preg_replace_callback("~[^\w&](?!str\.)[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", // "str." is the abbreviation in "s. str."
             static function (array $matches): string {  // Three or more consonants.  NOT Y
+                if (preg_match('~\p{Ll}\p{Lu}~u', $matches[0]) === 1) {
+                    return $matches[0]; // Mixed case such as rbcL, ndhF or trnL is deliberate (gene names), not an acronym
+                }
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
@@ -579,7 +582,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if ($caps_after_punctuation || (mb_substr_count($in, '.') / mb_strlen($in)) > .07) {
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
-        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
+        // The abbreviations "s. str." and "s. l." (sensu stricto, sensu lato) and "str." (street) do not end a sentence
+        $new_case = safe_preg_replace_callback("~(?<![\s(\[]s)(?<![\s(\[.]str)(?<![\s(\[]s\. l)(?<![\s(\[]s\.l)[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
@@ -921,11 +925,17 @@ function tidy_date_inside(string $string): string {
     }
     if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
         if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+            if (!checkdate(intval($matches[1]), intval($matches[2]), intval($matches[3]))) {
+                return $matches[3]; // Not a real day, such as 4/31/2001. Do not know. just give year
+            }
             if (mb_strlen($matches[1]) === 1) {
                 $matches[1] = '0' . $matches[1];
             }
             return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
         } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+            if (!checkdate(intval($matches[2]), intval($matches[1]), intval($matches[3]))) {
+                return $matches[3]; // Not a real day, such as 31/2/1913. Do not know. just give year
+            }
             if (mb_strlen($matches[2]) === 1) {
                 $matches[2] = '0' . $matches[2];
             }
@@ -957,6 +967,20 @@ function tidy_date_inside(string $string): string {
     }
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
+    }
+    $parsed_date = date_parse($string);
+    if (is_int($parsed_date['year']) && in_array('The parsed date was invalid', $parsed_date['warnings'], true)) {
+        // strtotime() would quietly roll 31 June over into July, or 30 February into March
+        if ($parsed_date['year'] < 100 || $parsed_date['year'] > (int) date("Y") + 10) {
+            return ''; // We got an invalid year
+        }
+        if ($parsed_date['day'] === 0 && is_int($parsed_date['month']) && $parsed_date['month'] >= 1 && $parsed_date['month'] <= 12) {
+            $month_start = mktime(0, 0, 0, $parsed_date['month'], 1, $parsed_date['year']);
+            if ($month_start !== false) {
+                return date('F Y', $month_start); // 2001-05-00 is the usual way to say day unknown
+            }
+        }
+        return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
     $time = strtotime($string);
     if ($time) {

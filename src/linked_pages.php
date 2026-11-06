@@ -29,7 +29,7 @@ if (!isset($_POST['csrf_token']) || !request_has_valid_post_csrf($_SERVER, $_POS
     exit(0);
 }
 
-$api = new WikipediaBot();
+$api = new WikipediaBot(oauth_form_request('linked_pages.php', $page_name, $_POST));
 check_blocked();
 
 $page_name = str_replace(' ', '_', mb_trim($page_name));

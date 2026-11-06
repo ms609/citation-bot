@@ -46,6 +46,40 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('This is robert WWW', title_capitalization('This is robert www', true));
     }
 
+    public function testCapitalizationKeepsMixedCaseGeneNames(): void {
+        // rbcL, ndhF and trnK are gene names: deliberate mixed case must not be read as an acronym
+        $this->assertSame('The rbcL gene and the matK gene', title_capitalization('The rbcL gene and the matK gene', true));
+        $this->assertSame('Chloroplast rbcL, ndhF and trnK sequences', title_capitalization('Chloroplast rbcL, ndhF and trnK sequences', true));
+        $this->assertSame('Phylogeny from the trnL-trnF region', title_capitalization('Phylogeny from the trnL-trnF region', true));
+    }
+
+    public function testCapitalizationStillUppercasesPlainConsonantAcronyms(): void {
+        // The mixed-case exemption must not stop real acronyms from being fixed
+        $this->assertSame('A study of HPLC and NMR in plants', title_capitalization('A study of hplc and nmr in plants', true));
+        $this->assertSame('HPLC Analysis of Plants', title_capitalization('HPLC ANALYSIS OF PLANTS', true));
+    }
+
+    public function testCapitalizationKeepsSensuStrictoAbbreviation(): void {
+        // "s. str." is an abbreviation, neither an acronym nor the end of a sentence
+        $this->assertSame(
+            'Phylogenetic Placement and Circumscription of Tribes Inuleae s. str. and Plucheeae (Asteraceae): Evidence from Sequences of Chloroplast Gene ndhF',
+            title_capitalization('Phylogenetic Placement and Circumscription of Tribes Inuleae s. str. and Plucheeae (Asteraceae): Evidence from Sequences of Chloroplast Gene ndhF', true)
+        );
+        $this->assertSame('Phylogeny of the Inuleae s. str. in Europe', title_capitalization('Phylogeny of the Inuleae s. str. in Europe', true));
+        $this->assertSame('Revision of the genus Foo s. l. and s. str.', title_capitalization('Revision of the genus Foo s. l. and s. str.', true));
+        $this->assertSame('Revision of the genus Foo s.l. and s.str. in Europe', title_capitalization('Revision of the genus Foo s.l. and s.str. in Europe', true));
+    }
+
+    public function testCapitalizationKeepsStrAbbreviation(): void {
+        $this->assertSame('Bakery str. and bridges', title_capitalization('Bakery str. and bridges', true));
+    }
+
+    public function testCapitalizationStillCapitalizesAfterOrdinaryPeriods(): void {
+        // The abbreviation exemptions must not turn off capitalization after a normal sentence end
+        $this->assertSame('Lecture notes. A first course', title_capitalization('Lecture notes. a first course', true));
+        $this->assertSame("John's. A note", title_capitalization("John's. a note", true));
+    }
+
     public function testCapitalization5(): void {
         $this->assertSame('This is robert http://', title_capitalization('This is robert http://', true));
         $this->assertSame('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', title_capitalization('HTTPS://EXAMPLE.COM/CASESENSITIVEPATH', true));

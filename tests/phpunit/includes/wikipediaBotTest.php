@@ -346,17 +346,21 @@ final class wikipediaBotTest extends testBaseClass {
         $response = (object) [
             'query' => (object) [
                 'categorymembers' => [
-                    (object) ['title' => 'Article One'],
+                    (object) ['ns' => 0, 'title' => 'Small Talk: A History'],
                     (object) ['title' => ['unexpected']],
                     'not-an-object',
-                    (object) ['title' => 'Talk:Excluded'],
-                    (object) ['title' => 'Article Two'],
+                    (object) ['ns' => 1, 'title' => 'Обсуждение:Пример'],
+                    (object) ['ns' => 10, 'title' => 'Шаблон:Пример'],
+                    (object) ['ns' => 2, 'title' => 'User:Example/doc'],
+                    (object) ['title' => 'Unknown namespace'],
+                    (object) ['ns' => 118, 'title' => 'Draft:Article Two'],
+                    (object) ['ns' => 126, 'title' => 'MOS:Example'],
                 ],
             ],
         ];
 
         $this->assertSame(
-            ['Article One', 'Article Two'],
+            ['Small Talk: A History', 'Draft:Article Two', 'MOS:Example'],
             WikipediaBot::category_member_titles_from_response($response)
         );
         $this->assertNull(WikipediaBot::category_member_titles_from_response((object) ['query' => []]));
