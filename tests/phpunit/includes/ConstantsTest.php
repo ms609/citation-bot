@@ -662,9 +662,9 @@ final class ConstantsTest extends testBaseClass {
             $status = $this->is_redirect_with_retry($tem); // Expect "1" or "-1"
             if ($status === 0) {
                 usleep(250000); /* one quarter of a second */
-                $page->get_text_from($tem);
-                $text = $page->parsed_text();
-                if (mb_stripos($text, 'safesubst:') === false) {
+                if (!$page->get_text_from($tem)) {
+                    $skip_on_too_many_failures();
+                } elseif (mb_stripos($page->parsed_text(), 'safesubst:') === false) {
                     $errors = $errors . '   Is real:' . $convert[0];
                 }
             } elseif ($status === -2) {
