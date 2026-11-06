@@ -21,17 +21,16 @@ final class ChangeNameToCiteBookTest extends testBaseClass {
         $template->change_name_to('cite book');
         $this->assertSame('Paper Title', $template->get2('title'));
         $this->assertNull($template->get2('chapter'));
+        $this->assertSame('Lecture Notes in Computer Science', $template->get('series'));
+        $this->assertNull($template->get2('journal'));
     }
 
     public function testExistingChapterBlocksJournalRemap(): void {
-        // Remapping would have to overwrite the chapter, so leave everything for a human
+        // Keep the original type when converting would strand the journal or overwrite the chapter.
         $text = '{{cite journal|title=T|journal=J|chapter=C}}';
         $template = $this->make_citation($text);
         $template->change_name_to('cite book');
-        $this->assertSame('cite book', $template->wikiname());
-        $this->assertSame('T', $template->get2('title'));
-        $this->assertSame('C', $template->get2('chapter'));
-        $this->assertSame('J', $template->get2('journal'));
+        $this->assertSame($text, $template->parsed_text());
     }
 
     public function testJournalSameAsTitleIsDropped(): void {
