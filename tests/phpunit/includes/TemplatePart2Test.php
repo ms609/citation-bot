@@ -1371,10 +1371,22 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testZooKeys2(): void {
-        sleep(2);
-        $text = '{{Cite journal|journal=[[Zookeys]]}}';
-        $expanded = $this->process_citation($text);
-        $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $expanded->parsed_text());
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'is_redirect', static function (string $title): int {
+            return match ($title) {
+                'Zookeys' => 1,
+                'ZooKeys' => 0,
+                default => -2,
+            };
+        }, true);
+        try {
+            $text = '{{Cite journal|journal=[[Zookeys]]}}';
+            $template = $this->process_citation($text);
+            $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $template->parsed_text());
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'is_redirect');
+        }
     }
 
     public function testRedirectFixing(): void {
