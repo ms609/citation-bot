@@ -392,6 +392,7 @@ The gadget MUST:
 │       │   ├── APIjstor.php     # JSTOR metadata
 │       │   ├── APIpii.php       # PII to DOI conversion
 │       │   ├── APIPubMed.php    # PubMed/PMC metadata
+│       │   ├── APIResponseGuard.php # Defensive decoding of external API responses
 │       │   ├── APIS2.php        # Semantic Scholar metadata
 │       │   ├── APIsici.php      # SICI parsing
 │       │   ├── APIunpaywall.php # Unpaywall open-access lookup
@@ -416,6 +417,11 @@ The gadget MUST:
 ├── .github/codespell-requirements.txt   # Hash-pinned codespell closure for the Codespell workflow
 ├── tools/update_cffconvert_lock.sh      # Regenerates the hash-pinned cffconvert closure
 ├── tools/update_codespell_lock.sh       # Regenerates the hash-pinned codespell closure
+├── tools/cs1_harness.php                # CS1 conformance regression gate
+├── tools/reset_big_run_state.php        # Operator recovery for shared big-run admission state
+├── tools/cleanup-citoid-pending.php     # Offline cleanup of stale Citoid pending writes
+├── tools/verify-citoid-shared-flock.php # Offline cross-host flock smoke check for the Citoid mutex
+├── docs/citoid-*.md                     # Citoid rate-limit locking and distributed deployment validation
 ├── vendor/                     # Composer dependencies
 ├── composer.json               # Dependency configuration
 ├── docker-compose.yml          # Docker setup
@@ -428,11 +434,6 @@ The gadget MUST:
 ├── progpilot.yml               # Security analysis config
 ├── env.php.example             # Configuration template
 └── ...other config files
-
-src/includes/api/APIResponseGuard.php
-tools/cleanup-citoid-pending.php
-tools/verify-citoid-shared-flock.php
-docs/citoid-*.md,
 ```
 
 ## Debugging Tips
