@@ -1811,14 +1811,14 @@ final class Zotero {
         }
         // CalMatters supplies this collective byline as two parts of a person's name.
         $creator_host = parse_url($url, PHP_URL_HOST);
-        if (is_string($creator_host) && in_array(strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
+        if (is_string($creator_host) && in_array(mb_strtolower($creator_host), ['calmatters.org', 'www.calmatters.org'], true)) {
             $result->author = array_values(array_filter(
                 $result->author ?? [],
-                static fn (array $name): bool => !str_i_same('Guest Commentary', trim(trim($name[0] ?? '') . ' ' . trim($name[1] ?? '')))
+                static fn (array $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name[0] ?? '') . ' ' . mb_trim($name[1] ?? '')))
             ));
             $result->creators = array_values(array_filter(
                 $result->creators ?? [],
-                static fn (object $name): bool => !str_i_same('Guest Commentary', trim(trim($name->firstName ?? '') . ' ' . trim($name->lastName ?? '')))
+                static fn (object $name): bool => !str_i_same('Guest Commentary', mb_trim(mb_trim($name->firstName ?? '') . ' ' . mb_trim($name->lastName ?? '')))
             ));
         }
         // Filter out bad author name components and remove entirely empty author entries
