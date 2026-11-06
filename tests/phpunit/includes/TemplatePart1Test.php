@@ -608,8 +608,8 @@ JSON;
     public function testAddASIN2(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('asin', '630000000')); // 63.... code
-        $this->assertSame('630000000', $expanded->get2('asin'));
+        $this->assertTrue($expanded->add_if_new('asin', '6300000000')); // 63.... code
+        $this->assertSame('6300000000', $expanded->get2('asin'));
     }
 
     public function testAddASIN3(): void {
@@ -630,8 +630,8 @@ JSON;
     public function testAddASIN5(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('asin', 'ABC'));
-        $this->assertSame('ABC', $expanded->get2('asin'));
+        $this->assertTrue($expanded->add_if_new('asin', 'B0002TV0K8'));
+        $this->assertSame('B0002TV0K8', $expanded->get2('asin'));
         $this->assertNull($expanded->get2('isbn'));
     }
 
@@ -646,8 +646,8 @@ JSON;
     public function testAddASIN7(): void {
         $text = "{{Cite book}}";
         $expanded = $this->make_citation($text);
-        $this->assertTrue($expanded->add_if_new('asin', '12345'));
-        $this->assertSame('12345', $expanded->get2('asin'));
+        $this->assertFalse($expanded->add_if_new('asin', '12345')); // Not an ISBN, and not ten characters
+        $this->assertNull($expanded->get2('asin'));
         $this->assertNull($expanded->get2('isbn'));
     }
 

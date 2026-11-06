@@ -248,7 +248,8 @@ final class ConstantsTest extends testBaseClass {
             if (mb_stripos($value, '_bot')) {
                 $value = 'title'; // basically skip it
             }
-            $text = '{{citation | ' . $value . ' = Z123Z }}';
+            $fixture_value = str_i_same($value, 'asin') ? 'B012345678' : 'Z123Z';
+            $text = '{{citation | ' . $value . ' = ' . $fixture_value . ' }}';
             $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
             $text = str_replace(
                 ['authors1', 'editors1', 'publication-date', 'publicationdate', 'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ', '| pp = Z123Z ', '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '], // Put spaces on end to not change chapter-url-access and such
