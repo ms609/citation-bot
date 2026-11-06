@@ -971,7 +971,10 @@ function tidy_date_inside(string $string): string {
             return ''; // We got an invalid year
         }
         if ($parsed_date['day'] === 0 && is_int($parsed_date['month']) && $parsed_date['month'] >= 1 && $parsed_date['month'] <= 12) {
-            return date('F Y', mktime(0, 0, 0, $parsed_date['month'], 1, $parsed_date['year'])); // 2001-05-00 is the usual way to say day unknown
+            $month_start = mktime(0, 0, 0, $parsed_date['month'], 1, $parsed_date['year']);
+            if ($month_start !== false) {
+                return date('F Y', $month_start); // 2001-05-00 is the usual way to say day unknown
+            }
         }
         return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
