@@ -1130,7 +1130,7 @@ class Page {
         // Without explicit configuration, follow the page: when it already has several citation templates and
         // every one of them is Citation Style 2, a new reference should not be the one that introduces CS1.
         $cs2_count = 0;
-        $text_length = strlen($this->text); // Bytes, since the offsets from preg_match_all are bytes
+        $text_length = mb_strlen($this->text, '8bit'); // Bytes, since the offsets from preg_match_all are bytes
         if (preg_match_all('~\{\{\s*([^|{}]+?)\s*\|~u', $this->text, $starts, PREG_OFFSET_CAPTURE) === false) {
             return; // @codeCoverageIgnore
         }
@@ -1148,7 +1148,7 @@ class Page {
             $depth = 0;
             $end = $text_length;
             for ($position = $begin; $position < $text_length - 1; $position++) {
-                $pair = substr($this->text, $position, 2);
+                $pair = mb_substr($this->text, $position, 2, '8bit');
                 if ($pair === '{{') {
                     $depth++;
                     $position++;
@@ -1161,7 +1161,7 @@ class Page {
                     }
                 }
             }
-            $body = substr($this->text, $begin, $end - $begin);
+            $body = mb_substr($this->text, $begin, $end - $begin, '8bit');
             $mode = '';
             if (preg_match('~\|\s*mode\s*=\s*(cs[12])\b~i', $body, $mode_match) === 1) {
                 $mode = mb_strtolower($mode_match[1]);
