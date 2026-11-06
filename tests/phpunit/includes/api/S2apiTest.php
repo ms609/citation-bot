@@ -157,14 +157,13 @@ final class S2apiTest extends testBaseClass {
         $this->assertNull($template->get2('url'));
     }
 
-    public function testSemanticscholar4(): void { // s2cid does not match and ALL CAPS
-        $this->sleep_S2();
+    public function testSemanticscholar4(): void { // Malformed upper-case S2CID is removed in prepare
         $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704|S2CID=XXXXXX}}';
-        $template = $this->process_citation($text);
+        $template = $this->prepare_citation($text);
         $this->assertNull($template->get2('doi'));
         $this->assertSame('cite web', $template->wikiname());
         $this->assertNull($template->get2('s2cid-access'));
-        $this->assertSame('XXXXXX', $template->get2('s2cid'));
+        $this->assertNull($template->get2('s2cid'));
         $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
     }
 
