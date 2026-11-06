@@ -4095,6 +4095,25 @@ final class Template
         if ($new_name === $this->wikiname()) {
             return;
         }
+        // Decide how to preserve a journal container before changing the template type.
+        $book_journal_target = null;
+        if ($new_name === 'cite book' && !$this->blank('journal')) {
+            if (str_equivalent($this->get('journal'), $this->get('title'))) {
+                $book_journal_target = '';
+            } elseif ($this->is_book_series_for_journal('journal')) {
+                if (str_equivalent($this->get('journal'), $this->get('series'))) {
+                    $book_journal_target = '';
+                } elseif ($this->blank('series')) {
+                    $book_journal_target = 'series';
+                } else {
+                    return;
+                }
+            } elseif (!$this->blank('title') && $this->blank([...CHAPTER_ALIASES_AND_SCRIPT, 'work', 'book-title'])) {
+                $book_journal_target = 'title';
+            } else {
+                return;
+            }
+        }
         // website= identifies the delivery site in cite web.  cite book has no
         // website= parameter, so preserve it as via=.  If a different via=
         // already exists, declining the conversion is safer than losing either.
@@ -4233,6 +4252,15 @@ final class Template
                     $this->rename( 'title', 'chapter' );
                     $this->add('title', $tmp);
                 }
+            }
+
+            if ($book_journal_target === '') {
+                $this->forget('journal');
+            } elseif ($book_journal_target === 'series') {
+                $this->rename('journal', 'series');
+            } elseif ($book_journal_target === 'title') {
+                $this->rename('title', 'chapter');
+                $this->rename('journal', 'title');
             }
 
             // Remove blank unsupported parameters when converting to cite book

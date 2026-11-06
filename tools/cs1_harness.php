@@ -15,9 +15,8 @@ declare(strict_types=1);
  *   php tools/cs1_harness.php --slow     # slow mode
  *   php tools/cs1_harness.php --list     # print the matrix without running
  *
- * The harness needs no credentials: the matrix uses fabricated identifiers
- * and titles that external APIs cannot match, so the pass/fail result is
- * reproducible run-to-run when the upstream APIs respond normally.
+ * The harness needs no credentials. Full expansion cases use fabricated
+ * identifiers, and reported conversion cases run directly without enrichment.
  * Exit code is 1 if any "must-pass" case violates the CS1 rules, or if a
  * known-gap case unexpectedly resolves (an XPASS that must be converted).
  */
@@ -468,7 +467,7 @@ function check_citation(Template $template): array {
  * expectation 'gap'  means the current code is known to leave a CS1 error in
  *                    the output; reported (and tracked) but does not fail the run.
  *
- * @return array<int, array{0: string, 1: string, 2: string}>
+ * @return array<int, array{0: string, 1: string, 2: string, 3?: string}>
  */
 function build_matrix(): array {
     return [
@@ -480,6 +479,12 @@ function build_matrix(): array {
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
         ['Malformed numeric asin in input is removed by tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'pass'],
         ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
+
+        // Reproduce the conversion in Special:Diff/1378823420 without external metadata.
+        ['IEEE structure in complexity proceedings', "{{Cite journal |date=1989 |title=Proceedings. Structure in Complexity Theory Fourth Annual Conference (Cat. No.89CH2745-8) |url=https://doi.org/10.1109/sct.1989.41807 |journal=[1989] Proceedings. Structure in Complexity Theory Fourth Annual Conference |publisher=IEEE |pages=0_1 |doi=10.1109/sct.1989.41807}}", 'pass', 'cite book'],
+        ['ACM parameterized learning paper', "{{Cite journal |last=Downey |first=Rodney G. |last2=Evans |first2=Patricia A. |last3=Fellows |first3=Michael R. |date=1993 |title=Parameterized learning complexity |url=https://doi.org/10.1145/168304.168311 |journal=Proceedings of the sixth annual conference on Computational learning theory  - COLT '93 |location=New York, New York, USA |publisher=ACM Press |pages=51–57 |doi=10.1145/168304.168311}}", 'pass', 'cite book'],
+        ['IEEE counting problems paper', "{{Cite journal |last=Flum |first=J. |last2=Grohe |first2=M. |title=The parameterized complexity of counting problems |url=https://doi.org/10.1109/sfcs.2002.1181978 |journal=The 43rd Annual IEEE Symposium on Foundations of Computer Science, 2002. Proceedings. |publisher=IEEE Comput. Soc |pages=538–547 |doi=10.1109/sfcs.2002.1181978}}", 'pass', 'cite book'],
+        ['IEEE isomorphism paper', "{{Cite journal |last=Yijia Chen |last2=Grohe |first2=M. |title=An Isomorphism between Subexponential and Parameterized Complexity Theory |url=https://doi.org/10.1109/ccc.2006.8 |journal=21st Annual IEEE Conference on Computational Complexity (CCC'06) |publisher=IEEE |pages=314–330 |doi=10.1109/ccc.2006.8}}", 'pass', 'cite book'],
 
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
@@ -560,10 +565,18 @@ function build_matrix(): array {
 // ---------------------------------------------------------------------------
 
 /** @return array{0: bool, 1: array<int, string>} */
-function run_case(string $wikitext): array {
+function run_case(string $wikitext, ?string $convert_to): array {
     try {
         ob_start();
-        $templates = expand_citation($wikitext);
+        if ($convert_to === null) {
+            $templates = expand_citation($wikitext);
+        } else {
+            reset_bot_state();
+            $template = new Template();
+            $template->parse_text($wikitext);
+            $template->change_name_to($convert_to);
+            $templates = [$template];
+        }
         ob_end_clean();
     } catch (Throwable $e) {
         while (ob_get_level() > 0) {
@@ -574,6 +587,9 @@ function run_case(string $wikitext): array {
     }
     $violations = [];
     foreach ($templates as $template) {
+        if ($convert_to !== null && $template->wikiname() !== $convert_to) {
+            $violations[] = "Expected conversion to " . $convert_to;
+        }
         $violations = array_merge($violations, check_citation($template));
     }
     return [count($templates) > 0, array_values(array_unique($violations))];
@@ -601,8 +617,9 @@ $resolved = 0;
 $failed = 0;
 $failures = [];
 
-foreach ($matrix as [$name, $wikitext, $expectation]) {
-    [$produced_output, $violations] = run_case($wikitext);
+foreach ($matrix as $case) {
+    [$name, $wikitext, $expectation] = $case;
+    [$produced_output, $violations] = run_case($wikitext, $case[3] ?? null);
     if (!$produced_output) {
         $failed++;
         $failures[] = [$name, $violations];
