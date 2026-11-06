@@ -1881,7 +1881,10 @@ final class Template
                                return false;
                         }
                     }
-                    if ($this->has('article') && ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) {
+                    if (
+                        in_array($this->wikiname(), ['cite encyclopedia', 'cite dictionary', 'cite encyclopaedia'], true) &&
+                        ($this->has('article') || (!$this->blank(CHAPTER_ALIASES_AND_SCRIPT) && !$this->blank(WORK_ALIASES)))
+                    ) {
                         return false;
                     } // Probably the same thing
                     if (!$this->blank('book-title')) {
