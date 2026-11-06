@@ -5119,7 +5119,62 @@ final class Template
                             }
                         }
                     }
+                    $handle = safe_preg_replace('~[\s.,]+$~u', '', $handle); // Trailing punctuation is never part of a handle (CS1 flags it)
                     $this->set('hdl', $handle);
+                    return;
+
+                case 'oclc':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^oclc\s*[:#]?\s*(\S+)$~i', $value, $matches) === 1 && oclc_valid($matches[1])) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1) {
+                        report_forget("Removing malformed OCLC identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
+                    return;
+
+                case 's2cid':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^(?:s2cid|corpusid)\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1) {
+                        report_forget("Removing malformed S2CID identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
+                    return;
+
+                case 'ssrn':
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $value = $this->get_without_comments_and_placeholders($param);
+                    if ($value === '') {
+                        return; // Preserve comment/placeholder-only values that intentionally block additions
+                    }
+                    if (preg_match('~^ssrn\s*[:#]?\s*(\d+)$~i', $value, $matches) === 1) {
+                        $this->set($param, $matches[1]); // Label typed in front of the number
+                        return;
+                    }
+                    if (preg_match('~\d~', $value) !== 1 && $this->wikiname() !== 'cite ssrn') {
+                        report_forget("Removing malformed SSRN identifier: " . echoable($value));
+                        $this->forget($param);
+                    }
                     return;
 
                 case 'doi-broken':
