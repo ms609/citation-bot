@@ -100,7 +100,7 @@ if (!isset($argv[1]) && !request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION
     exit(0);
 }
 
-$api = new WikipediaBot();
+$api = new WikipediaBot(oauth_form_request('process_page.php', $pages, $_POST));
 
 check_blocked();
 

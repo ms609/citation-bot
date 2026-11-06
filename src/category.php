@@ -91,7 +91,7 @@ if (!request_has_valid_post_csrf($_SERVER, $_POST, $_SESSION)) {
 if (($_POST['extended_limit'] ?? '') === '1' && in_array($category, GET_IS_OKAY, true)) {
     define('MAX_PAGES_OVERRIDE', 1000000); // Match the historical whitelisted-link limit
 }
-$api = new WikipediaBot();
+$api = new WikipediaBot(oauth_form_request('category.php', $category, $_POST));
 check_blocked();
 
 $dev_user_run = false;

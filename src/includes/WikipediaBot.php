@@ -12,6 +12,7 @@ use MediaWiki\OAuthClient\Token;
 require_once __DIR__ . '/user_messages.php';  // @codeCoverageIgnore
 require_once __DIR__ . '/constants.php';      // @codeCoverageIgnore
 require_once __DIR__ . '/PublicConfig.php';   // @codeCoverageIgnore
+require_once __DIR__ . '/request_security.php'; // @codeCoverageIgnore
 
 final class WikipediaBot {
     private Consumer $bot_consumer;
@@ -44,7 +45,8 @@ final class WikipediaBot {
         unset($referer);
     }
 
-    public function __construct() {
+    /** @param array{action: string, fields: array<string, string>}|null $pending_form */
+    public function __construct(?array $pending_form = null) {
         // setup.php must already be run at this point
 
         $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
@@ -63,7 +65,7 @@ final class WikipediaBot {
         } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
             $this->the_user = '';
         } else {
-            $this->authenticate_user();
+            $this->authenticate_user($pending_form);
             // @codeCoverageIgnoreEnd
         }
         self::$last_WikipediaBot = $this;
@@ -1137,8 +1139,9 @@ final class WikipediaBot {
 
     /**
      * @codeCoverageIgnore
+     * @param array{action: string, fields: array<string, string>}|null $pending_form
      */
-    private function authenticate_user(): void {
+    private function authenticate_user(?array $pending_form): void {
         $session_name = session_name();
         $session_id = session_id();
         if ($session_name !== false && $session_id !== false) {
@@ -1198,10 +1201,13 @@ final class WikipediaBot {
             unset($_SESSION['access_key'], $_SESSION['access_secret']);
             $return = $_SERVER['REQUEST_URI'];
             unset($_SERVER['REQUEST_URI']);
-            session_write_close();
-            if (mb_substr($return, 0, 1) !== '/' || mb_substr($return, 0, 2) === '//' || preg_match('~\s+~', $return)) { // Security paranoia
+            if (!is_string($return) || !is_valid_local_return_path($return)) {
                 report_error('Invalid URL passes to internal API');
             }
+            if ($pending_form !== null) {
+                $return = save_oauth_form($_SESSION, $pending_form['action'], $pending_form['fields']);
+            }
+            session_write_close();
 
             /** @psalm-taint-escape header */
             $authentication_url = oauth_authentication_url($return);

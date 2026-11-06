@@ -16,7 +16,7 @@ require_once __DIR__ . '/includes/PublicConfig.php';
 
 /** The two ways we leave this script */
 function death_time(string $err): never {
-    unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['csrf_token']);
+    unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['csrf_token'], $_SESSION['citation_bot_oauth_form']);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title>Authentication System Failure</title></head><body><main>', $err, '</main></body></html>';
     exit(0);
 }
