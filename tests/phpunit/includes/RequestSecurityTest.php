@@ -140,7 +140,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
 
         $csrf_check = mb_strpos($source, 'request_has_valid_post_csrf(');
         $forbidden_response = mb_strpos($source, 'http_response_code(403);');
-        $authentication = mb_strpos($source, '$api = new WikipediaBot();');
+        $authentication = mb_strpos($source, '$api = new WikipediaBot(');
         $this->assertIsInt($csrf_check);
         $this->assertIsInt($forbidden_response);
         $this->assertIsInt($authentication);
@@ -227,4 +227,32 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
         $this->assertTrue(request_has_valid_post_csrf(['REQUEST_METHOD' => 'POST'], $post, $session));
     }
+    public function testOAuthFormResumeRequiresAuthorizedSessionAndConsumesMatchingRequest(): void {
+        $request = oauth_form_request('linked_pages.php', 'User:Example', [
+            'wiki_base' => 'ru',
+            'slow' => 'on',
+            'edit' => 'webform',
+            'csrf_token' => 'old',
+            'PHP_ADSABSAPIKEY' => 'private',
+        ]);
+        $this->assertNotNull($request);
+        $session = [];
+        $return = save_oauth_form($session, $request['action'], $request['fields']);
+        $nonce = substr($return, -32);
+        $this->assertNull(take_oauth_form($session, $nonce));
+        $session['access_key'] = 'key';
+        $session['access_secret'] = 'secret';
+        $this->assertNull(take_oauth_form($session, str_repeat('x', 32)));
+        $resumed = take_oauth_form($session, $nonce);
+        $this->assertNotNull($resumed);
+        $this->assertSame('linked_pages.php', $resumed['action']);
+        $this->assertSame([
+            'linkpage' => 'User:Example',
+            'edit' => 'webform',
+            'wiki_base' => 'ru',
+            'slow' => '1',
+        ], $resumed['fields']);
+        $this->assertNull(take_oauth_form($session, $nonce));
+    }
+
 }
