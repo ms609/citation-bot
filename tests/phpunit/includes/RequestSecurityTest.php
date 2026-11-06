@@ -227,6 +227,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $this->assertSame(['csrf_token' => 'known-token'] + $fields, $post);
         $this->assertTrue(request_has_valid_post_csrf(['REQUEST_METHOD' => 'POST'], $post, $session));
     }
+
     public function testOAuthFormResumeRequiresAuthorizedSessionAndConsumesMatchingRequest(): void {
         $request = oauth_form_request('linked_pages.php', 'User:Example', [
             'wiki_base' => 'ru',
@@ -238,7 +239,7 @@ final class RequestSecurityTest extends PHPUnit\Framework\TestCase {
         $this->assertNotNull($request);
         $session = [];
         $return = save_oauth_form($session, $request['action'], $request['fields']);
-        $nonce = substr($return, -32);
+        $nonce = mb_substr($return, -32, null, '8bit');
         $this->assertNull(take_oauth_form($session, $nonce));
         $session['access_key'] = 'key';
         $session['access_secret'] = 'secret';

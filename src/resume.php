@@ -6,6 +6,7 @@ require_once __DIR__ . '/includes/setup.php';
 require_once __DIR__ . '/includes/request_security.php';
 
 session_start(public_session_start_options());
+$_SESSION ??= [];
 $nonce = $_GET['request'] ?? null;
 $pending = ($_SERVER['REQUEST_METHOD'] ?? '') === 'GET' && is_string($nonce)
     ? take_oauth_form($_SESSION, $nonce)

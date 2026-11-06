@@ -82,7 +82,8 @@ const OAUTH_FORM_ACTIONS = [
 ];
 
 /**
- * @param array<array-key, mixed> $session
+ * @param array<array-key, mixed> &$session
+ * @param string $action
  * @param array<string, string> $fields
  */
 function save_oauth_form(array &$session, string $action, array $fields): string {
@@ -97,7 +98,7 @@ function save_oauth_form(array &$session, string $action, array $fields): string
 }
 
 /**
- * @param array<array-key, mixed> $session
+ * @param array<array-key, mixed> &$session
  * @return array{nonce: string, expires: int, action: string, fields: array<string, string>}|null
  */
 function take_oauth_form(array &$session, string $nonce): ?array {
@@ -118,18 +119,20 @@ function take_oauth_form(array &$session, string $nonce): ?array {
 }
 
 /**
+ * @param string $action
+ * @param string $target
  * @param array<array-key, mixed> $post
  * @return array{action: string, fields: array<string, string>}|null
  */
 function oauth_form_request(string $action, string $target, array $post): ?array {
     // Bound persisted input and allowlist fields. Never carry the old CSRF token or API keys.
-    if (!isset(OAUTH_FORM_ACTIONS[$action]) || strlen($target) > 12800) {
+    if (!isset(OAUTH_FORM_ACTIONS[$action]) || mb_strlen($target, '8bit') > 12800) {
         return null;
     }
     [$field] = OAUTH_FORM_ACTIONS[$action];
     $fields = [$field => $target];
     foreach (['edit', 'wiki_base', 'pcre', 'extended_limit', 'ignore_block'] as $option) {
-        if (isset($post[$option]) && is_string($post[$option]) && strlen($post[$option]) <= 255) {
+        if (isset($post[$option]) && is_string($post[$option]) && mb_strlen($post[$option], '8bit') <= 255) {
             $fields[$option] = $post[$option];
         }
     }
