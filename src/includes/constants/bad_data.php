@@ -13570,6 +13570,7 @@ const ZOTERO_BAD_TITLES = [
     'bad gateway',
     'being redirected',
     'bluehost.com',
+    'million publication pages organized by topic on ResearchGate',
     'Bookmarkable URL intermediate page',
     'Browse publications',
     'Captcha',
