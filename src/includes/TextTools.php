@@ -555,8 +555,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     // Implicit acronyms
     $new_case = ' ' . $new_case . ' ';
-    $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui",
+    $new_case = safe_preg_replace_callback("~[^\w&](?!str\.)[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", // "str." is the abbreviation in "s. str."
             static function (array $matches): string {  // Three or more consonants.  NOT Y
+                if (preg_match('~\p{Ll}\p{Lu}~u', $matches[0]) === 1) {
+                    return $matches[0]; // Mixed case such as rbcL, ndhF or trnL is deliberate (gene names), not an acronym
+                }
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
@@ -579,7 +582,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     if ($caps_after_punctuation || (mb_substr_count($in, '.') / mb_strlen($in)) > .07) {
         // When there are lots of periods, then they probably mark abbreviations, not sentence ends
         // We should therefore capitalize after each punctuation character.
-        $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
+        // The abbreviations "s. str." and "s. l." (sensu stricto, sensu lato) and "str." (street) do not end a sentence
+        $new_case = safe_preg_replace_callback("~(?<![\s(\[]s)(?<![\s(\[.]str)(?<![\s(\[]s\. l)(?<![\s(\[]s\.l)[?.:!/]\s+[a-z]~u", // Capitalize after punctuation
             static function (array $matches): string {
                 return mb_strtoupper($matches[0]);
             },
