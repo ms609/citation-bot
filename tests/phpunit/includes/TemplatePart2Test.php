@@ -1371,6 +1371,7 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testZooKeys2(): void {
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'is_redirect', static function (string $title): int {
             return match ($title) {
                 'Zookeys' => 1,
@@ -1383,6 +1384,7 @@ final class TemplatePart2Test extends testBaseClass {
             $template = $this->process_citation($text);
             $this->assertSame('{{Cite journal|journal=[[ZooKeys]]}}', $template->parsed_text());
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'is_redirect');
         }
     }
