@@ -943,7 +943,23 @@ function clean_existing_urls(Template $template, string $param): void {
     if ($template->blank($param)) {
         return;
     }
+    $url_before_cleaning = $template->get($param);
     clean_existing_urls_INSIDE($template, $param);
+    $cleaned_url = $template->get($param);
+    if ($cleaned_url === $url_before_cleaning || $cleaned_url === '') {
+        return;
+    }
+    // Decoding %7C, %7B and %7D would put characters in the URL that end the parameter or the template
+    $safe_url = str_replace('|', '%7C', $cleaned_url);
+    if (mb_strpos($url_before_cleaning, '{') === false) {
+        $safe_url = str_replace('{', '%7B', $safe_url);
+    }
+    if (mb_strpos($url_before_cleaning, '}') === false) {
+        $safe_url = str_replace('}', '%7D', $safe_url);
+    }
+    if ($safe_url !== $cleaned_url) {
+        $template->set($param, $safe_url);
+    }
 }
 
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
