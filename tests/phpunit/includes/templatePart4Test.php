@@ -252,8 +252,9 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $text = "{{cite journal|series=Methods of Molecular Biology|journal=biomaas}}";
         $template = $this->make_citation($text);
         $template->tidy_parameter('series');
-        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('cite journal', $template->wikiname());
         $this->assertSame('biomaas', $template->get2('journal'));
+        $this->assertSame('Methods of Molecular Biology', $template->get2('series'));
     }
 
     public function testTidy31(): void {
