@@ -921,11 +921,17 @@ function tidy_date_inside(string $string): string {
     }
     if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
         if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
+            if (!checkdate(intval($matches[1]), intval($matches[2]), intval($matches[3]))) {
+                return $matches[3]; // Not a real day, such as 4/31/2001. Do not know. just give year
+            }
             if (mb_strlen($matches[1]) === 1) {
                 $matches[1] = '0' . $matches[1];
             }
             return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
         } elseif (intval($matches[2]) < 13 && intval($matches[1]) > 12) {
+            if (!checkdate(intval($matches[2]), intval($matches[1]), intval($matches[3]))) {
+                return $matches[3]; // Not a real day, such as 31/2/1913. Do not know. just give year
+            }
             if (mb_strlen($matches[2]) === 1) {
                 $matches[2] = '0' . $matches[2];
             }
@@ -957,6 +963,17 @@ function tidy_date_inside(string $string): string {
     }
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
+    }
+    $parsed_date = date_parse($string);
+    if (is_int($parsed_date['year']) && in_array('The parsed date was invalid', $parsed_date['warnings'], true)) {
+        // strtotime() would quietly roll 31 June over into July, or 30 February into March
+        if ($parsed_date['year'] < 100 || $parsed_date['year'] > (int) date("Y") + 10) {
+            return ''; // We got an invalid year
+        }
+        if ($parsed_date['day'] === 0 && is_int($parsed_date['month']) && $parsed_date['month'] >= 1 && $parsed_date['month'] <= 12) {
+            return date('F Y', mktime(0, 0, 0, $parsed_date['month'], 1, $parsed_date['year'])); // 2001-05-00 is the usual way to say day unknown
+        }
+        return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
     $time = strtotime($string);
     if ($time) {
