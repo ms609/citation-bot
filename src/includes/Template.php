@@ -4222,6 +4222,22 @@ final class Template
                 }
             }
 
+            // A journal= that survives conversion to cite book is the container of the cited item,
+            // for example conference proceedings that were first formatted as cite journal.  cite book
+            // has no journal=, so leaving it behind causes a CS1 error and strands the paper title in
+            // the book title field.  Move the container to title= and the cited item's title to
+            // chapter=.  Do nothing when that could overwrite existing data (a chapter is already
+            // present) or when the journal is really a book series, which the journal handling
+            // routes into series= itself.
+            if (!$this->blank('journal') && !$this->blank('title')) {
+                if (str_equivalent($this->get('journal'), $this->get('title'))) {
+                    $this->forget('journal');
+                } elseif (!$this->is_book_series('journal') && $this->blank(CHAPTER_ALIASES_AND_SCRIPT)) {
+                    $this->rename('title', 'chapter');
+                    $this->rename('journal', 'title');
+                }
+            }
+
             // Remove blank unsupported parameters when converting to cite book
             foreach (CITE_BOOK_UNSUPPORTED_PARAMS as $unsupported) {
                 if ($this->blank($unsupported)) {
