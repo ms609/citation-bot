@@ -654,6 +654,9 @@ final class ConstantsTest extends testBaseClass {
             if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
                 continue;
             }
+            if (mb_strtolower(mb_substr($convert[0], 0, 1)) . mb_substr($convert[0], 1) === mb_strtolower(mb_substr($convert[1], 0, 1)) . mb_substr($convert[1], 1)) {
+                continue; // Differ only in the case of the first letter, which MediaWiki ignores: the same page, so there is no redirect to check
+            }
             /* We get int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
             /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
             $tem = 'Template:' . $convert[0];
@@ -662,10 +665,11 @@ final class ConstantsTest extends testBaseClass {
             $status = $this->is_redirect_with_retry($tem); // Expect "1" or "-1"
             if ($status === 0) {
                 usleep(250000); /* one quarter of a second */
-                $page->get_text_from($tem);
-                $text = $page->parsed_text();
-                if (mb_stripos($text, 'safesubst:') === false) {
-                    $errors = $errors . '   Is real:' . $convert[0];
+                if ($page->get_text_from($tem)) { // False for a protected template or a failed read, and then parsed_text() would be left over from an earlier template
+                    $text = $page->parsed_text();
+                    if (mb_stripos($text, 'safesubst:') === false) {
+                        $errors = $errors . '   Is real:' . $convert[0];
+                    }
                 }
             } elseif ($status === -2) {
                 $skip_on_too_many_failures();
