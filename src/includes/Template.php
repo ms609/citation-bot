@@ -4569,8 +4569,8 @@ final class Template
                         }
                         return;
                     }
-                    // Convert authorX to lastX, if firstX is set
-                    if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+                    // Convert authorX to lastX, if firstX is set.  The suffix may be empty: author= with first= becomes last= with first=
+                    if ($this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
                         $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
                         $pmatch[1] = 'last';
                         // Comment out since "never used"  $param = 'last' . $pmatch[2];
@@ -6847,7 +6847,9 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                    if (!preg_match('~^p\d+\s*:\s*\d~ui', $value)) { // P10:1–P10:42 is an article locator, not a "p" page prefix
+                        $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                    }
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
                         $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD

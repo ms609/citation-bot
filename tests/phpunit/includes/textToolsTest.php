@@ -74,6 +74,27 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('Bakery str. and bridges', title_capitalization('Bakery str. and bridges', true));
     }
 
+    public function testTitleHasMathMarkupFindsLiveTags(): void {
+        $this->assertTrue(title_has_math_markup('The length of an <math>s</math>-increasing sequence of <math>r</math>-tuples'));
+        $this->assertTrue(title_has_math_markup('Two quick proofs of <MATH display="inline">\sum k^3</MATH>'));
+    }
+
+    public function testTitleHasMathMarkupFindsPageProcessingPlaceholder(): void {
+        // Page processing swaps <math> for a placeholder before any template sees the title
+        $placeholder = sprintf(Mathematics::PLACEHOLDER_TEXT, '0');
+        $this->assertTrue(title_has_math_markup('The length of an ' . $placeholder . '-increasing sequence of ' . sprintf(Mathematics::PLACEHOLDER_TEXT, '1') . '-tuples'));
+        $this->assertTrue(title_has_math_markup(mb_strtolower($placeholder))); // Placeholders can get their case changed
+    }
+
+    public function testTitleHasMathMarkupIgnoresOtherTitles(): void {
+        $this->assertFalse(title_has_math_markup(''));
+        $this->assertFalse(title_has_math_markup('The length of an s-increasing sequence of r-tuples'));
+        $this->assertFalse(title_has_math_markup("The length of an ''s'' -increasing sequence of ''r'' -tuples")); // Italic form from CrossRef is not math markup
+        $this->assertFalse(title_has_math_markup('Water is H<sub>2</sub>O and <sup>13</sup>C is a carbon isotope'));
+        $this->assertFalse(title_has_math_markup('A title with ' . sprintf(Chemistry::PLACEHOLDER_TEXT, '0') . ' in it'));
+        $this->assertFalse(title_has_math_markup('Mathematics and mathematical methods')); // Word "math" without a tag
+    }
+
     public function testCapitalizationStillCapitalizesAfterOrdinaryPeriods(): void {
         // The abbreviation exemptions must not turn off capitalization after a normal sentence end
         $this->assertSame('Lecture notes. A first course', title_capitalization('Lecture notes. a first course', true));
@@ -770,6 +791,25 @@ final class textToolsTest extends testBaseClass {
 
     public function testCapitalizationASEG(): void {
         $this->assertSame('ASEG Extended Abstracts', title_capitalization(title_case('ASEG Extended Abstracts'), true));
+    }
+
+    public function testCapitalizationDeLaPlataCity(): void {
+        // The city of La Plata keeps its capital L: it is part of the name
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('Universidad Nacional de La Plata', true));
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('UNIVERSIDAD NACIONAL DE LA PLATA', true));
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('Universidad Nacional De La Plata', true));
+        $this->assertSame('Observatorio Astronómico de La Plata', title_capitalization('Observatorio Astronómico de La Plata', true));
+        $this->assertSame('Anales del Museo de La Plata, Argentina', title_capitalization('Anales del Museo de La Plata, Argentina', true));
+    }
+
+    public function testCapitalizationDeLaPlataRiver(): void {
+        // The river Río de la Plata has a lower-case "la"
+        $this->assertSame('Río de la Plata', title_capitalization('Río de la Plata', true));
+        $this->assertSame('Río de la Plata', title_capitalization('RÍO DE LA PLATA', true));
+        $this->assertSame('Río de la Plata', title_capitalization('Río De La Plata', true));
+        $this->assertSame('Rio de la Plata', title_capitalization('Rio de la Plata', true));
+        $this->assertSame('Estuario del Río de la Plata', title_capitalization('ESTUARIO DEL RÍO DE LA PLATA', true));
+        $this->assertSame('Río de la Plata, Argentina', title_capitalization('Río de la Plata, Argentina', true));
     }
 
     public function testRestorItalicsRegex1(): void {

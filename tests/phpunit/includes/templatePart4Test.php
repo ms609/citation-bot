@@ -2164,6 +2164,62 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('doi-access'));
     }
 
+    public function testDoiConditionalAfterDate_AnnualReviewsOnThreshold_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-010123-000001|date=2023-01-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsBeforeThreshold_NotFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-122822-000001|date=2022-12-31}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsLaterYear_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-060525-000001|date=2025-06-05}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsYearOnlyFlipYear_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-010123-000001|year=2023}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsYearOnlyBeforeFlip_NotFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-010122-000001|year=2022}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsOldStyleDoi_NotFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev.fl.23.010191.001111|date=1991}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsNoDate_NotFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-010123-000001}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalAfterDate_AnnualReviewsExistingAccessPreserved(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-example-010124-000001|date=2024-01-01|doi-access=limited}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('limited', $template->get2('doi-access'));
+    }
+
     public function testDoiConditionalAfterDate_ChasNoDate_NotFree(): void {
         $text = '{{cite journal|doi=10.1021/acs.chas.6c00007}}';
         $template = $this->make_citation($text);

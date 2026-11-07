@@ -1072,6 +1072,17 @@ function is_placeholder_bib_locator(string $value): bool {
     return in_array($trimmed, IN_PRESS_ALIASES, true);
 }
 
+/**
+ * True when a title contains <math> markup, either live or as the placeholder that stands in for
+ * it while a page is being processed (see Mathematics::PLACEHOLDER_TEXT).  Online metadata cannot be
+ * trusted to reproduce math correctly (e.g. CrossRef gives the italic ''s'' form), so a title like
+ * this must not be replaced by a fetched title.
+ */
+function title_has_math_markup(string $title): bool {
+    return mb_stripos($title, '<math') !== false
+        || mb_stripos($title, 'CITATION_BOT_PLACEHOLDER_MATHEMATICS') !== false;
+}
+
 function doi_encode (string $doi): string {
     /**
      * @psalm-taint-escape html
