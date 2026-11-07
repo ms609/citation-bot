@@ -4032,6 +4032,20 @@ final class Template
         return false;
     }
 
+    private function has_distinct_book_chapter_url(): bool {
+        if ($this->wikiname() !== 'cite book') {
+            return false;
+        }
+        $book_url = $this->get_without_comments_and_placeholders('url');
+        foreach (['chapter-url', 'chapterurl'] as $param) {
+            $chapter_url = $this->get_without_comments_and_placeholders($param);
+            if ($chapter_url !== $book_url && url_valid($chapter_url)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Best template for a url-less cite web given URL-independent evidence.
      * Returns '' when no evidence supports re-typing (caller falls back to
@@ -4718,9 +4732,13 @@ final class Template
                         if (str_equivalent($this->get($param), $this->get('work'))) {
                             $this->forget('work');
                         }
-                        if (str_equivalent($this->get('chapter'), $this->get('title')) && !$this->has('trans-chapter')) {
+                        if (
+                            str_equivalent($this->get('chapter'), $this->get('title')) &&
+                            !$this->has('trans-chapter') &&
+                            !$this->has_distinct_book_chapter_url()
+                        ) {
                             $this->forget('chapter');
-                            return; // Nonsense to have both.
+                            return;
                         }
                         if ($this->get('chapter') === 'Cultural Advice' && mb_strpos($this->get('url') . $this->get('chapter-url'), 'anu.edu.au') !== false) {
                             $this->forget('chapter');
@@ -7167,8 +7185,12 @@ final class Template
             if ($this->initial_name !== $this->name) {
                 $this->tidy();
             }
-            // Sometimes title and chapter come from different databases
-            if ($this->has('chapter') && $this->get('chapter') === $this->get('title')) {
+            // A chapter and its containing book can legitimately share a title.
+            if (
+                $this->has('chapter') &&
+                $this->get('chapter') === $this->get('title') &&
+                !$this->has_distinct_book_chapter_url()
+            ) {
                 // Leave only one
                 if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
                     $this->forget('title');
