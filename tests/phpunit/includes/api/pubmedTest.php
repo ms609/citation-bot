@@ -6,12 +6,47 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class pubmedTest extends testBaseClass {
-    public function testPmidExpansion(): void {
-        $this->sleep_pubmed();
-        $text = "{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}";
-        $expanded = $this->prepare_citation($text);
-        $this->assertSame('cite journal', $expanded->wikiname());
+    #[DataProvider('pmidExpansionResponses')]
+    public function testPmidExpansion(?string $response, string $expected_template, ?string $expected_journal): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Entrez responses');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('get_entrez_xml', $response === null ? null : new SimpleXMLElement($response));
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('get_doi_from_crossref', null);
+        try {
+            $expanded = $this->prepare_citation('{{Cite web | http://www.ncbi.nlm.nih.gov/pubmed/1941451?dopt=AbstractPlus}}');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('get_doi_from_crossref');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('get_entrez_xml');
+        }
+
         $this->assertSame('1941451', $expanded->get2('pmid'));
+        $this->assertSame($expected_template, $expanded->wikiname());
+        $this->assertSame($expected_journal, $expanded->get2('journal'));
+        if ($expected_journal === null) {
+            $this->assertNotNull($expanded->get2('url'));
+        }
+    }
+
+    /** @return array<string, array{?string, string, ?string}> */
+    public static function pmidExpansionResponses(): array {
+        $response = <<<'XML'
+<eSummaryResult>
+  <DocSum>
+    <Id>1941451</Id>
+    <Item Name="Title">Example Article</Item>
+    <Item Name="FullJournalName">Example Journal</Item>
+  </DocSum>
+</eSummaryResult>
+XML;
+        return [
+            'identifier only' => [null, 'cite web', null],
+            'journal metadata returned' => [$response, 'cite journal', 'Example Journal'],
+        ];
     }
 
     public function testGetPMIDwitNoDOIorJournal(): void {  // Also has evil colon in the name.   Use wikilinks for code coverage reason
