@@ -18,6 +18,17 @@ function expand_arxiv_templates (array &$templates): void {    // Pointer to sav
         if ($eprint === '') {
             continue;
         }
+        // An arXiv link can supplement a citation to an already selected publication.
+        // Do not use it to replace a conference paper or a chapter in named proceedings.
+        if (
+            $this_template->wikiname() === 'cite conference' ||
+            !$this_template->blank_other_than_comments('conference') ||
+            (in_array($this_template->wikiname(), ['citation', 'cite book'], true) &&
+                !$this_template->blank_other_than_comments(CHAPTER_ALIASES_AND_SCRIPT) &&
+                !$this_template->blank_other_than_comments(['title', 'book-title']))
+        ) {
+            continue;
+        }
         if (!arxiv_id_valid($eprint)) {
             report_inaction("Not querying malformed arXiv identifier: " . echoable($eprint));
             continue;
