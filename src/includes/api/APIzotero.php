@@ -1773,7 +1773,16 @@ final class Zotero {
                 if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
                     (mb_stripos((string) $result->publicationTitle, ' edition') === false)) { // Do not add if "journal" includes "edition"
                     if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
-                        if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
+                        if (
+                            $require_title_match && ($result->itemType ?? '') === 'journalArticle' &&
+                            $template->wikiname() === 'cite web' && self::jstor_stable_id($url) !== null &&
+                            ($template->blank('website') || str_equivalent($template->get('website'), $result->publicationTitle))
+                        ) {
+                            // A validated JSTOR article supplies the venue independently of its archive URL.
+                            if ($template->add_if_new('journal', $result->publicationTitle)) {
+                                $template->change_name_to('cite journal');
+                            }
+                        } elseif (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url || $template->wikiname() === 'cite journal') {
                             if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $url) === $url && str_ireplace(JOURNAL_ARCHIVES_SITES, '', $url) === $url) {
                                 if ($url !== '' && $url !== 'X' && str_ireplace(['digitalcommons', 'repository', 'scholarship', 'digitalcollection', 'dialnet.', 'handle.net', '.library.', 'dx.doi.org'], '', $url) === $url && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) { // '' and 'X" are only in test suite
                                     bot_debug_log('Possible journal URL: ' . $url);

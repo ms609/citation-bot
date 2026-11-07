@@ -392,9 +392,29 @@ JSON;
     public function testJstorExpansion1(): void {
         $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
         $prepared = $this->prepare_citation($text);
-        $this->assertSame('cite journal', $prepared->wikiname());
+        $this->assertSame('cite web', $prepared->wikiname());
         $this->assertSame('1701972', $prepared->get2('jstor'));
-        $this->assertNotNull($prepared->get2('website'));
+        $this->assertSame('i found this online', $prepared->get2('website'));
+        $this->assertNotNull($prepared->get2('url'));
+
+        $response = '[{"itemType":"journalArticle","title":"Example Article","publicationTitle":"Example Journal"}]';
+        Zotero::process_zotero_response($response, $prepared, 'https://www.jstor.org/stable/1701972', 0, true, true, true);
+        $this->assertSame('cite web', $prepared->wikiname());
+        $this->assertSame('i found this online', $prepared->get2('website'));
+    }
+
+    public function testJstorWebCitationUsesVerifiedJournalMetadata(): void {
+        $url = 'https://www.jstor.org/stable/1701972';
+        $template = $this->prepare_citation('{{cite web|url=' . $url . '|title=Example Article|website=Example Journal}}');
+        $this->assertSame('cite web', $template->wikiname());
+
+        $response = '[{"itemType":"journalArticle","title":"Example Article","publicationTitle":"Example Journal"}]';
+        Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
+
+        $this->assertSame('cite journal', $template->wikiname());
+        $this->assertSame('Example Journal', $template->get2('journal'));
+        $this->assertNull($template->get2('website'));
+        $this->assertSame('1701972', $template->get2('jstor'));
     }
 
     public function testJstorExpansion2(): void {
