@@ -641,6 +641,16 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // but not in "U S A"
     $new_case = mb_trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
+    // Cyrillic "и" (and) and "у" (at) are small words, like the solitary 'a'.  They are left alone as the first or last word,
+    // and the other single letters (в, с, к, о, а) are not touched because they double as labels, as in "Гепатит В".
+    $new_case = safe_preg_replace_callback(
+        "~(?<=\p{Cyrillic}\s)[ИУ](?=\s\p{Cyrillic})~u",
+        static function (array $matches): string {
+            return mb_strtolower($matches[0]);
+        },
+        $new_case
+    );
+
     // This should be capitalized
     $new_case = str_replace(['(new Series)', '(new series)'], ['(New Series)', '(New Series)'], $new_case);
 

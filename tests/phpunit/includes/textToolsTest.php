@@ -26,6 +26,33 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', true));
     }
 
+    public function testCapitalizationCyrillicAnd(): void {
+        $this->assertSame('Война и Мир', title_capitalization('ВОЙНА И МИР', true));
+        $this->assertSame('Журнал Физической Химии и Техники', title_capitalization('ЖУРНАЛ ФИЗИЧЕСКОЙ ХИМИИ И ТЕХНИКИ', true));
+    }
+
+    public function testCapitalizationCyrillicAt(): void {
+        $this->assertSame('Город у Моря', title_capitalization('ГОРОД У МОРЯ', true));
+    }
+
+    public function testCapitalizationCyrillicSmallWordsFirstAndLast(): void {
+        // The first word and the last character keep their capital letter
+        $this->assertSame('Человек и Закон У', title_capitalization('ЧЕЛОВЕК И ЗАКОН У', true));
+        $this->assertSame('Человек И', title_capitalization('ЧЕЛОВЕК И', true));
+        $this->assertSame('И Закон Человек', title_capitalization('И ЗАКОН ЧЕЛОВЕК', true));
+    }
+
+    public function testCapitalizationCyrillicLabelLettersKept(): void {
+        // Single letters other than и and у are often labels (Hepatitis B, vitamin C) and stay capitalized
+        $this->assertSame('Гепатит В и С', title_capitalization('ГЕПАТИТ В И С', true));
+        $this->assertSame('Витамин С и Е В Пище', title_capitalization('ВИТАМИН С И Е В ПИЩЕ', true));
+    }
+
+    public function testCapitalizationCyrillicMixedCaseUntouched(): void {
+        $this->assertSame('Город у моря', title_capitalization('Город у моря', true));
+        $this->assertSame('Журнал физической химии и техники', title_capitalization('Журнал физической химии и техники', true));
+    }
+
     public function testCapitalization2a(): void {
         $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', true));
     }
