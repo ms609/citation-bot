@@ -1552,6 +1552,30 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertNull($template->get2('publisher'));
     }
 
+    public function testTidyPublisherMatchesJournalWithAndOrAmpersand(): void {
+        foreach ([
+            ['Archives of Pathology & Laboratory Medicine', 'Archives of Pathology and Laboratory Medicine'],
+            ['Archives of Pathology and Laboratory Medicine', 'Archives of Pathology &amp; Laboratory Medicine'],
+        ] as [$journal, $publisher]) {
+            $text = '{{cite journal|title=Pathologic Quiz Case|doi=10.5858/2004-128-1453-pqcaan' .
+                '|journal=' . $journal . '|publisher=' . $publisher . '}}';
+            $template = $this->make_citation($text);
+            $template->tidy_parameter('publisher');
+
+            $this->assertSame($journal, $template->get('journal'));
+            $this->assertNull($template->get2('publisher'));
+        }
+    }
+
+    public function testTidyPublisherKeepsADifferentOrganization(): void {
+        $text = '{{cite journal|title=Pathologic Quiz Case|doi=10.5858/2004-128-1453-pqcaan' .
+            '|journal=Archives of Pathology & Laboratory Medicine|publisher=College of American Pathologists}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('publisher');
+
+        $this->assertSame('College of American Pathologists', $template->get('publisher'));
+    }
+
     public function testTidyPublisherGoogleSupport(): void {
         $text = "{{cite web|publisher=google hive mind|url=support.google.com}}";
         $template = $this->make_citation($text);
