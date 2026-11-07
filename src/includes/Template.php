@@ -5751,6 +5751,18 @@ final class Template
                     return;
 
                 case 'publisher':
+                    $journal = $this->get('journal');
+                    $ampersands = [' & ', ' &amp; '];
+                    if (
+                        $journal !== '' &&
+                        str_i_same(
+                            str_ireplace($ampersands, ' and ', $journal),
+                            str_ireplace($ampersands, ' and ', $this->get($param))
+                        )
+                    ) {
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
                         $this->forget($param); // Not good to encourage adding this
                         return;
