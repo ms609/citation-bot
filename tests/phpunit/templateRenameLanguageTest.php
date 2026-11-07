@@ -51,7 +51,7 @@ final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
     public function test_english_name_stays_english_on_sr_wiki(): void {
         self::boot_sr_wiki();
         $template = new Template();
-        $template->parse_text('{{Cite web|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|website=www.tandfonline.com|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
+        $template->parse_text('{{Cite web|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|journal=Asian Affairs|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
         $template->change_name_to('cite journal');
         $this->assertStringStartsWith('{{Cite journal|', $template->parsed_text());
         $this->assertStringContainsString('doi=10.1080/03068374.2019.1636515', $template->parsed_text());
@@ -62,7 +62,7 @@ final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
     public function test_vietnamese_name_maps_within_vietnamese_on_vi_wiki(): void {
         self::boot_vi_wiki();
         $template = new Template();
-        $template->parse_text('{{Chú thích web|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|website=www.tandfonline.com|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
+        $template->parse_text('{{Chú thích web|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|journal=Asian Affairs|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
         $template->change_name_to('cite journal');
         $this->assertStringStartsWith('{{Chú thích tập san học thuật|', $template->parsed_text());
         $this->assertStringContainsString('doi=10.1080/03068374.2019.1636515', $template->parsed_text());
@@ -73,7 +73,7 @@ final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
     public function test_macedonian_name_maps_within_macedonian_on_mk_wiki(): void {
         self::boot_mk_wiki();
         $template = new Template();
-        $template->parse_text('{{наведена мрежна страница|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|website=www.tandfonline.com|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
+        $template->parse_text('{{наведена мрежна страница|url=https://www.tandfonline.com/action/cookieAbsent|title=Patriotic Chinese Triads and Secret Societies|last=Martin|first=Purbrick|journal=Asian Affairs|doi=10.1080/03068374.2019.1636515|url-status=live|access-date=2026-09-30}}');
         $template->change_name_to('cite journal');
         $this->assertStringStartsWith('{{наведено списание|', $template->parsed_text());
         $this->assertStringContainsString('doi=10.1080/03068374.2019.1636515', $template->parsed_text());

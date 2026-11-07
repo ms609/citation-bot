@@ -4110,6 +4110,13 @@ final class Template
         if ($new_name === $this->wikiname()) {
             return;
         }
+        if (
+            $new_name === 'cite journal' && $this->wikiname() === 'cite web' &&
+            !$this->blank_other_than_comments(['url', 'archive-url', 'archiveurl']) &&
+            !$this->web_has_journal_container()
+        ) {
+            return;
+        }
         if ($new_name === 'cite journal' && mb_stripos($this->get('doi'), '10.1287/orms.') !== false) {
             // ORMS Today is an INFORMS magazine, not a journal.  Whatever the template calls its container
             // (website=, the article title, nothing), turning it into cite journal strands the citation
@@ -4291,6 +4298,48 @@ final class Template
                 }
             }
         }
+    }
+
+    /** A web citation needs an identifiable periodical before it can become a journal citation. */
+    private function web_has_journal_container(): bool {
+        if (!$this->blank_other_than_comments([
+            'website', 'newspaper', 'magazine', 'encyclopedia', 'encyclopaedia',
+            'script-website', 'script-newspaper', 'script-magazine',
+            ...CHAPTER_ALIASES_AND_SCRIPT, 'script-contribution', 'script-article', 'script-entry', 'script-section',
+        ])) {
+            return false;
+        }
+
+        $has_container = false;
+        $has_script_container = false;
+        foreach (['journal', 'periodical', 'work', 'script-journal', 'script-periodical', 'script-work'] as $parameter) {
+            $container = $this->get_without_comments_and_placeholders($parameter);
+            if ($container === '') {
+                continue;
+            }
+            $name = mb_strtolower(str_remove_irrelevant_bits($container));
+            if (
+                str_equivalent($container, $this->get('title')) ||
+                str_equivalent($container, $this->get('series')) ||
+                string_is_book_series($container) ||
+                in_array($name, ['undefined', 'semantic scholar', ...BAD_WORK_NAMES, ...ARE_MAGAZINES, ...ARE_NEWSPAPERS, ...ARE_WORKS], true) ||
+                preg_match('~^(?:https?://|www\.)|^(?:[a-z0-9-]+\.)+(?:com|org|net|gov|edu)$~i', $container)
+            ) {
+                return false;
+            }
+            if (str_starts_with($parameter, 'script-')) {
+                if ($has_script_container) {
+                    return false;
+                }
+                $has_script_container = true;
+            } else {
+                if ($has_container) {
+                    return false;
+                }
+                $has_container = true;
+            }
+        }
+        return $has_container || $has_script_container;
     }
 
     /**
