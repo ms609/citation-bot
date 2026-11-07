@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class UrlToolsTest extends testBaseClass {
 
@@ -69,23 +70,25 @@ final class UrlToolsTest extends testBaseClass {
     }
 
     public function testAmazonExpansion1(): void {
+        // A web citation of an Amazon listing cites the listing, so it is neither made into cite book nor stripped of its URL
         $text = '{{Cite web | url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
-        $this->assertSame('cite book', $expanded->wikiname());
-        $this->assertSame('0226845494', $expanded->get2('isbn'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertSame('', $expanded->get2('isbn'));
         $this->assertNull($expanded->get2('asin'));
-        $this->assertNull($expanded->get2('publisher'));
-        $this->assertNull($expanded->get2('url'));
+        $this->assertSame('amazon', $expanded->get2('publisher'));
+        $this->assertSame('http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494', $expanded->get2('url'));
+        $this->assertSame('2012-04-20', $expanded->get2('accessdate'));
     }
 
     public function testAmazonExpansion2(): void {
         $text = '{{Cite web | chapter-url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
-        $this->assertSame('cite book', $expanded->wikiname());
-        $this->assertSame('0226845494', $expanded->get2('isbn'));
+        $this->assertSame('cite web', $expanded->wikiname());
+        $this->assertSame('', $expanded->get2('isbn'));
         $this->assertNull($expanded->get2('asin'));
-        $this->assertNull($expanded->get2('publisher'));
-        $this->assertNull($expanded->get2('chapter-url'));
+        $this->assertSame('amazon', $expanded->get2('publisher'));
+        $this->assertSame('http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494', $expanded->get2('url'));
     }
 
     public function testAmazonExpansion3(): void {
@@ -97,12 +100,12 @@ final class UrlToolsTest extends testBaseClass {
     public function testAmazonExpansion4(): void {
         $text = '{{Cite web | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}';
         $expanded = $this->prepare_citation($text);
-        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('cite web', $expanded->wikiname());
         $this->assertSame('', $expanded->get2('isbn'));
         $this->assertNull($expanded->get2('asin'));
-        $this->assertNull($expanded->get2('publisher'));
-        $this->assertNull($expanded->get2('chapter-url'));
-        $this->assertSame('{{ASIN|0226845494|country=eu}}', $expanded->get2('id'));
+        $this->assertNull($expanded->get2('id'));
+        $this->assertSame('amazon', $expanded->get2('publisher'));
+        $this->assertSame('http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494', $expanded->get2('url'));
     }
 
     public function testAmazonExpansion5(): void {
@@ -111,6 +114,35 @@ final class UrlToolsTest extends testBaseClass {
         $this->assertNull($expanded->get2('asin'));
         $this->assertNull($expanded->get2('chapter-url'));
         $this->assertSame('exists', $expanded->get2('isbn'));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function amazonCiteWebLeftAloneProvider(): array {
+        // Citations from User talk:Citation bot that the bot used to turn into a bare cite book
+        return [
+            // Special:Diff/1263465110: the Amazon page is the source of the release date
+            'Christmas: A Biography' => ['{{Cite web |title=Christmas: A Biography |url=https://www.amazon.com/Christmas-Biography-Judith-Flanders/dp/1509833609 |archive-url=http://web.archive.org/web/20221223000623/https://www.amazon.com/Christmas-Biography-Judith-Flanders/dp/1509833609/ |archive-date=2022-12-23 |access-date=2024-12-14 |website=Amazon}}'],
+            // Special:Diff/1265696226
+            'Louis Riel' => ['{{Cite web |title=Louis Riel and the Creation of Modern Canada: Mythic Discourse and the Postcolonial State (Religions of the Americas Series) |url=https://www.amazon.com/Louis-Riel-Creation-Modern-Canada/dp/0826344151 |access-date=2024-12-26 |website=Amazon}}'],
+            // Shatnerverse, diff 1254239468: a Library Journal review quoted on the Amazon page
+            'Library Journal review' => ['{{cite web |title=Star Trek: Avenger |url=https://www.amazon.com/Star-Trek-Avenger-William-Shatner/dp/0671551329 |website=[[Amazon (company)|Amazon]] ([[Library Journal]]) |access-date=29 October 2024 |archive-url=https://web.archive.org/web/20160111063050/https://www.amazon.com/Star-Trek-Avenger-William-Shatner/dp/0671551329 |archive-date=January 11, 2016 |date=1997 |url-status=live}}'],
+            'amazon.de' => ['{{Cite web |title=Ein Buch |url=https://www.amazon.de/Ein-Buch/dp/3446424040 |access-date=2024-12-14 |website=Amazon}}'],
+        ];
+    }
+
+    #[DataProvider('amazonCiteWebLeftAloneProvider')]
+    public function testAmazonCiteWebIsLeftAlone(string $text): void {
+        $expanded = $this->prepare_citation($text);
+        $this->assertSame($text, $expanded->parsed_text());
+    }
+
+    public function testAmazonCiteBookStillGetsIsbnAndLosesRedundantUrl(): void {
+        // The URL is only dropped when the template is already a book citation
+        $text = '{{Cite book |title=Some book |url=https://www.amazon.com/Some-Book/dp/0226845494 |access-date=2024-12-14}}';
+        $expanded = $this->prepare_citation($text);
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertSame('0226845494', $expanded->get2('isbn'));
+        $this->assertNull($expanded->get2('url'));
     }
 
     public function testSimpleIEEE(): void {
