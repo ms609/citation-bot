@@ -472,11 +472,16 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     $try_to_add_it('isbn', doi_json_get($json, ['isbn-type', 0, 'value']));
     if (isset($json['author']) && is_array($json['author'])) {
         $i = 0;
+        // Authors are added before the journal, so compare against the record's own container title
+        $container_title = doi_json_get($json, ['container-title']);
+        if (is_array($container_title)) {
+            $container_title = doi_json_get($container_title, [0]);
+        }
+        $container_title = doi_json_scalar($container_title) ?? '';
         foreach ($json['author'] as $auth) {
             if (!is_array($auth)) {
                 continue;
             }
-            $i += 1;
             $given = doi_json_scalar($auth['given'] ?? null) ?? '';
             $family = doi_json_scalar($auth['family'] ?? null) ?? '';
             $literal = doi_json_scalar($auth['literal'] ?? null) ?? '';
@@ -484,6 +489,12 @@ function process_doi_json(Template $template, string $doi, array $json): void {
             if (in_array($full_name, BAD_AUTHORS, true)) {
                 break;
             }
+            if ($container_title !== '' && $full_name !== '' && str_equivalent($full_name, $container_title)) {
+                // Some journals credit themselves as author of editorials; the journal is already in |journal=
+                report_inaction("Not adding journal name as author: " . echoable($full_name));
+                continue; // $i is not advanced, so any later authors stay numbered consecutively
+            }
+            $i += 1;
             if ($family === '' && $given !== '') {
                 $try_to_add_it('author' . (string) $i, $given);
             } else {
