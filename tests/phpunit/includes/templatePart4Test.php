@@ -2353,6 +2353,21 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         return $template;
     }
 
+    public function testAnnualReviewCellBiologySkipsOnlyImportedIssueOne(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1146/annurev-cellbio-012624-031419|volume=40}}');
+        $this->assertFalse($template->add_if_new('issue', '1', 'crossref'));
+        $this->assertFalse($template->add_if_new('number', '1', 'crossref'));
+        $this->assertNull($template->get2('issue'));
+        $this->assertNull($template->get2('number'));
+        $this->assertTrue($template->add_if_new('issue', '2', 'crossref'));
+        $this->assertSame('2', $template->get2('issue'));
+        $this->assertSame('40', $template->get2('volume'));
+
+        $template = $this->make_citation('{{cite journal|journal=Example Quarterly|volume=40}}');
+        $this->assertTrue($template->add_if_new('issue', '1', 'entrez'));
+        $this->assertSame('1', $template->get2('issue'));
+    }
+
     public function testAnnualReviewBogusIssueVolumePresent(): void {
         $t = $this->tidy_issue('{{Cite journal|volume=62|issue=Volume 62, 2024|journal=Annual Review of Astronomy and Astrophysics}}');
         $this->assertNull($t->get2('issue'));

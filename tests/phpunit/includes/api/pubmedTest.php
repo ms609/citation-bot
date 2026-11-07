@@ -49,6 +49,52 @@ XML;
         ];
     }
 
+    #[DataProvider('cellBiologyIssueCitations')]
+    public function testEntrezDoesNotAddAnnualReviewDefaultIssue(string $fields, ?string $expected_issue): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Entrez responses');
+        }
+        // Entrez returns Issue before FullJournalName for PMID 39356808.
+        $response = <<<'XML'
+<eSummaryResult>
+  <DocSum>
+    <Id>39356808</Id>
+    <Item Name="Title">Lipid Droplets Big and Small: Basic Mechanisms That Make Them All</Item>
+    <Item Name="Volume">40</Item>
+    <Item Name="Issue">1</Item>
+    <Item Name="Pages">143-168</Item>
+    <Item Name="FullJournalName">Annual review of cell and developmental biology</Item>
+  </DocSum>
+</eSummaryResult>
+XML;
+        $template = $this->make_citation('{{cite journal|pmid=39356808' . $fields . '}}');
+        $templates = [$template];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('get_entrez_xml', new SimpleXMLElement($response));
+        try {
+            query_pmid_api(['39356808'], $templates);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('get_entrez_xml');
+        }
+
+        $this->assertSame($expected_issue, $template->get2('issue'));
+        $this->assertSame('40', $template->get2('volume'));
+        $this->assertSame('143–168', $template->get2('pages'));
+    }
+
+    /** @return array<string, array{string, ?string}> */
+    public static function cellBiologyIssueCitations(): array {
+        return [
+            'reported citation with blank issue' => [
+                '|journal=Annual Review of Cell and Developmental Biology|doi=10.1146/annurev-cellbio-012624-031419|issue=',
+                '',
+            ],
+            'PMID-only citation' => ['', null],
+            'editor-supplied issue' => ['|issue=1', '1'],
+        ];
+    }
+
     public function testGetPMIDwitNoDOIorJournal(): void {  // Also has evil colon in the name.   Use wikilinks for code coverage reason
         $this->sleep_pubmed();
         sleep(9);
