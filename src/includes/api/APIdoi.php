@@ -113,6 +113,16 @@ function expand_by_doi(Template $template, bool $force = false): void {
             }
 
             $crossRefNewAPI = query_crossref_newapi($doi);
+            $crossref_type = $crossRefNewAPI->type ?? '';
+            $journal_title = (string) $crossRef->journal_title;
+            if (
+                ($crossref_type === 'journal-article' || ($crossref_type === '' && $journal_title !== '')) &&
+                conference_citation_conflicts_with_journal($template, $journal_title)
+            ) {
+                $template->conflicting_journal_doi = $doi;
+                report_warning("Journal DOI does not match the cited proceedings: " . doi_link($doi));
+                return;
+            }
             if (isCrossRefReviewConfusion($template, $crossRefNewAPI)) {
                 report_info("Book review confusion rejected for doi:" . doi_link($doi) . " — not adding journal metadata to book citation");
                 return;
@@ -204,7 +214,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 }
             }
             $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
-            $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
+            $template->add_if_new('journal', $journal_title); // add_if_new will format the title
             $crossref_volume = (string) $crossRef->volume;
             $crossref_volume_number = parse_decimal_integer_prefix($crossref_volume);
             if ($crossref_volume_number !== null && $crossref_volume_number > 0) {
@@ -394,6 +404,21 @@ function doi_json_scalar(mixed $value): ?string {
  * @param array<mixed> $json
  */
 function process_doi_json(Template $template, string $doi, array $json): void {
+    $type = doi_json_scalar($json['type'] ?? null) ?? '';
+    $container_title = $json['container-title'] ?? null;
+    if (is_array($container_title)) {
+        $container_title = $container_title[0] ?? null;
+    }
+    $container_title = doi_json_scalar($container_title) ?? '';
+    if (
+        in_array($type, ['article-journal', 'journal-article'], true) &&
+        conference_citation_conflicts_with_journal($template, $container_title)
+    ) {
+        $template->conflicting_journal_doi = $doi;
+        report_warning("Journal DOI does not match the cited proceedings: " . doi_link($doi));
+        return;
+    }
+
     /** @param mixed $data */
     $try_to_add_it = static function (string $name, $data) use($template): void {
         if ($template->has($name)) {
@@ -473,11 +498,6 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     if (isset($json['author']) && is_array($json['author'])) {
         $i = 0;
         // Authors are added before the journal, so compare against the record's own container title
-        $container_title = doi_json_get($json, ['container-title']);
-        if (is_array($container_title)) {
-            $container_title = doi_json_get($container_title, [0]);
-        }
-        $container_title = doi_json_scalar($container_title) ?? '';
         foreach ($json['author'] as $auth) {
             if (!is_array($auth)) {
                 continue;
@@ -532,7 +552,6 @@ function process_doi_json(Template $template, string $doi, array $json): void {
         unset($json['container-title']);   // @codeCoverageIgnore
     }
 
-    $type = doi_json_scalar($json['type'] ?? null) ?? '';
     if ($type === 'article-journal' ||
             $type === 'journal-article' ||
             $type === 'article' ||
@@ -650,6 +669,24 @@ function parse_crossref_newapi_response(string $response): ?object {
         }
     }
     return $message;
+}
+
+/** A paper title may match across versions even when the publication venues differ. */
+function conference_citation_conflicts_with_journal(Template $template, string $journal): bool {
+    $event = $template->get_without_comments_and_placeholders('conference');
+    $proceedings = $template->get_without_comments_and_placeholders('book-title');
+    if ($event === '' && $template->wikiname() !== 'cite conference') {
+        if ($template->blank_other_than_comments(CHAPTER_ALIASES_AND_SCRIPT)) {
+            return false;
+        }
+        if ($proceedings === '') {
+            $proceedings = $template->get_without_comments_and_placeholders('title');
+        }
+        if (!preg_match('~\b(?:proceedings|proc\.?)\s+.*\b(?:conference|symposium|workshop|meeting|congress|colloquium)\b~isu', $proceedings)) {
+            return false;
+        }
+    }
+    return $journal === '' || (!str_equivalent($proceedings, $journal) && !str_equivalent($event, $journal));
 }
 
 function isCrossRefReviewConfusion(Template $template, object $msg): bool {

@@ -267,7 +267,7 @@ function get_open_access_url(Template $template): void {
         return;
     }
     $doi = $template->get_without_comments_and_placeholders('doi');
-    if (!$doi) {
+    if (!$doi || $template->conflicting_journal_doi === $doi) {
         return;
     }
     if (mb_strpos($doi, '10.1093/') === 0) {
