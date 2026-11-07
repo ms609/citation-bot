@@ -486,6 +486,9 @@ function build_matrix(): array {
         ['IEEE counting problems paper', "{{Cite journal |last=Flum |first=J. |last2=Grohe |first2=M. |title=The parameterized complexity of counting problems |url=https://doi.org/10.1109/sfcs.2002.1181978 |journal=The 43rd Annual IEEE Symposium on Foundations of Computer Science, 2002. Proceedings. |publisher=IEEE Comput. Soc |pages=538–547 |doi=10.1109/sfcs.2002.1181978}}", 'pass', 'cite book'],
         ['IEEE isomorphism paper', "{{Cite journal |last=Yijia Chen |last2=Grohe |first2=M. |title=An Isomorphism between Subexponential and Parameterized Complexity Theory |url=https://doi.org/10.1109/ccc.2006.8 |journal=21st Annual IEEE Conference on Computational Complexity (CCC'06) |publisher=IEEE |pages=314–330 |doi=10.1109/ccc.2006.8}}", 'pass', 'cite book'],
 
+        // --- book series recognized from their full name ---
+        ['Neurosciences book citation drops duplicate journal', '{{cite book |title=Harness book iota |journal=Curr Top Behav Neurosci |series=Current Topics in Behavioral Neurosciences |isbn=978-0-306-40615-7}}', 'pass'],
+
         // --- orphaned *-access removal (merged Tier 1 fix) ---
         ['Orphaned url-access removed', '{{cite journal |title=X |journal=J |url-access=subscription}}', 'pass'],
         ['Orphaned chapter-url-access removed', '{{cite journal |title=X |journal=J |chapter-url-access=free}}', 'pass'],

@@ -13315,6 +13315,7 @@ const JOURNAL_IS_BOOK_SERIES = [
     'studies in bilingualism',
     'the cambridge history of latin america',
     'current topics in behavioral neuroscience',
+    'current topics in behavioral neurosciences',
     'curr top behav neurosci',
 ];
 
