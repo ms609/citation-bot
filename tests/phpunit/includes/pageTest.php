@@ -329,40 +329,63 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('.'));
     }
 
-    public function testBotExpandWrite(): void { // Warning: this test will start to fail every time, if this file get corrupted https://en.wikipedia.org/w/index.php?title=User:Blocked_Testing_Account/writetest&oldid=1372041963
+    public function testBotExpandWrite(): void { // The shared page is only ever written with the expanded citation, so a failed or overlapping run cannot leave it broken. Good revision: https://en.wikipedia.org/w/index.php?title=User:Blocked_Testing_Account/writetest&oldid=1372041963
         $this->requires_secrets(function (): void {
             $api = new WikipediaBot();
-            $page = new TestPage();
             $writeTestPage = 'User:Blocked Testing Account/writetest';
-            $page->get_text_from($writeTestPage);
-            sleep(1);
-            $origText = $page->parsed_text();
-            $this->assertTrue(mb_strpos($origText, 'Nature') > 5);
             $trialCitation = '{{Cite journal | doi = 10.1038/nature09068 | pmid=<!-- --> | url=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |bibcode=<!-- --> |hdl=<!-- --> |s2cid=<!-- --> }}';
-            $page->overwrite_text($trialCitation);
-            $page_result = $page->write($api, "Testing bot write function | #UCB_Testing");
+
+            // Expand in memory first and check the result before the shared page is touched.
+            // A lookup failure now fails the test without leaving the unexpanded citation on the wiki.
+            $expansion = $this->process_page($trialCitation);
+            $this->assertTrue(mb_strpos($expansion->edit_summary(), 'journal, ') > 3);
+            $expanded_text = $expansion->parsed_text();
+            $this->assertTrue(mb_strpos($expanded_text, 'Nature') > 5);
+
+            // Several CI runs (or a developer's local run) can use this page at the same time.
+            // Each run writes the same expanded citation plus a comment that is unique to the run, so
+            // the page never holds anything but a good citation and every run makes a real edit.
+            $run_id = getenv('GITHUB_RUN_ID');
+            $run_token = '';
+            if (is_string($run_id) && $run_id !== '') {
+                $run_token = $run_id . '-';
+            }
+            $run_token .= bin2hex(random_bytes(4));
+            $marker = '<!-- UCB write test ' . $run_token . ' -->';
+            $without_marker = static fn (string $text): string => safe_preg_replace('~<!-- UCB write test [A-Za-z0-9-]+ -->$~u', '', $text);
+
+            $page = new TestPage();
+            $page_result = false;
+            $text_before_write = '';
+            $max_attempts = 4;
+            for ($attempt = 1; $attempt <= $max_attempts; $attempt++) {
+                // Read immediately before writing, so that the revision id and read time are current
+                $this->assertTrue($page->get_text_from($writeTestPage));
+                $text_before_write = $page->parsed_text();
+                $page->overwrite_text($expanded_text . $marker);
+                $page_result = $page->write($api, "Testing bot write function (run " . $run_token . ") | #UCB_Testing");
+                if (!$page_result || !$api->last_write_was_skipped()) {
+                    break;
+                }
+                // Someone else edited the page after we read it, so write_page() skipped our edit. Read again and retry
+                sleep(random_int(2, 8));
+            }
+            $this->assertFalse($api->last_write_was_skipped(), 'Write was skipped because of edit conflicts ' . $max_attempts . ' times in a row');
             sleep(6);
+
             // Double check we can read it back
-            $page->get_text_from($writeTestPage);
-            sleep(1);
+            $this->assertTrue($page->get_text_from($writeTestPage));
+            $read_back = $without_marker($page->parsed_text());
             if (!$page_result && (bool) getenv('CI')) {
                 // Not all "CI" which includes any phpunit, but only GitHub Actions or TRAVIS or other fully automatic CI
                 // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
-                $this->assertSame($origText, $page->parsed_text());
+                $this->assertSame($without_marker($text_before_write), $read_back);
             } else {
-                $this->assertSame($trialCitation, $page->parsed_text());
+                // Another run may have written after us. It wrote the same citation, with a different marker.
+                // MediaWiki stores text as NFC, so compare in that form.
+                $this->assertSame(normalize_unicode_nfc($expanded_text), normalize_unicode_nfc($read_back));
             }
             $this->assertTrue((bool) getenv('CI') || $page_result); // If we have tokens and are not in CI, then should have worked
-            $page->overwrite_text($trialCitation);
-            $page->expand_text();
-            $this->assertTrue(mb_strpos($page->edit_summary(), 'journal, ') > 3);
-            if ($page_result) {
-                $this->assertTrue($page->write($api, "| #UCB_Testing"));
-            } else {
-                $this->assertFalse($page->write($api, "| #UCB_Testing"));
-            }
-            sleep(6);
-            $page->get_text_from($writeTestPage);
             $this->assertTrue(mb_strpos($page->parsed_text(), 'Nature') > 5);
         });
     }
