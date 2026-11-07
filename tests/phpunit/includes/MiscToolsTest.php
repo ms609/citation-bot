@@ -57,20 +57,23 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter5(): void {
-        $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/232}}';
+    public function testConvertToCiteBookKeepsArchivePageUrl(): void {
+        $url = 'https://archive.org/details/examplebook/page/232';
+        $text = '{{Cite web|title=X|chapter=Y|url=' . $url . '}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
-        $this->assertNotNull($expanded->get2('chapter-url'));
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertNull($expanded->get2('chapter-url'));
         $this->assertNull($expanded->get2('chapterurl'));
-        $this->assertNull($expanded->get2('url'));
+        $this->assertSame($url, $expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter6(): void {
-        $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/chapter/}}';
+    public function testConvertToCiteBookMovesArchiveChapterUrl(): void {
+        $url = 'https://archive.org/details/examplebook/chapter/4';
+        $text = '{{Cite web|title=X|chapter=Y|url=' . $url . '}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
-        $this->assertNotNull($expanded->get2('chapter-url'));
+        $this->assertSame($url, $expanded->get2('chapter-url'));
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNull($expanded->get2('url'));
     }
