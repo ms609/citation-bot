@@ -105,7 +105,8 @@ final class TidyMalformedAsinTest extends testBaseClass {
     }
 
     public function testAmazonUrlWithTenDigitIdStillBecomesIsbn(): void {
-        $template = $this->prepare_citation('{{cite web|url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494|accessdate=2012-04-20}}');
+        // In a book citation, not in cite web: the URL of a web citation is the source, see UrlToolsTest
+        $template = $this->prepare_citation('{{cite book|url=http://www.amazon.com/On-Origin-Phyla-James-Valentine/dp/0226845494|accessdate=2012-04-20}}');
         $this->assertSame('0226845494', $template->get2('isbn'));
         $this->assertNull($template->get2('asin'));
         $this->assertNull($template->get2('url'));
