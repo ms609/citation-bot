@@ -1780,6 +1780,34 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertSame('Same Title', $template->get2('chapter')); // chapter must not be removed when trans-chapter exists
     }
 
+    public function testSameBookAndChapterTitleKeepsTheChapterLink(): void {
+        $url = 'https://elgaronline.com/view/edcoll/9781788970730/9781788970730.00008.xml';
+        foreach (['chapter-url', 'chapterurl'] as $param) {
+            $text = '{{cite book|last=Towse|first=Ruth|chapter=Teaching Cultural Economics' .
+                '|title=Teaching Cultural Economics|' . $param . '=' . $url . '}}';
+            $template = $this->make_citation($text);
+            $template->tidy();
+            $template->final_tidy();
+
+            $this->assertSame('Teaching Cultural Economics', $template->get('title'));
+            $this->assertSame('Teaching Cultural Economics', $template->get('chapter'));
+            $this->assertSame($url, $template->get($param));
+            $this->assertNull($template->get2('url'));
+        }
+    }
+
+    public function testSameBookAndChapterTitleWithoutASeparateChapterLinkStillCollapses(): void {
+        $url = 'https://example.com/book';
+        $text = '{{cite book|title=Example Book|chapter=Example Book|url=' . $url . '|chapter-url=' . $url . '}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $template->final_tidy();
+
+        $this->assertSame('Example Book', $template->get('title'));
+        $this->assertNull($template->get2('chapter'));
+        $this->assertSame($url, $template->get('url'));
+    }
+
     public function testACMConfWithDash(): void {
         $text = '{{cite journal |title=Proceedings of the 1964 19th ACM national conference on - }}';
         $template = $this->process_citation($text);
