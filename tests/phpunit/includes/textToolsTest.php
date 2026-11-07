@@ -772,6 +772,25 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('ASEG Extended Abstracts', title_capitalization(title_case('ASEG Extended Abstracts'), true));
     }
 
+    public function testCapitalizationDeLaPlataCity(): void {
+        // The city of La Plata keeps its capital L: it is part of the name
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('Universidad Nacional de La Plata', true));
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('UNIVERSIDAD NACIONAL DE LA PLATA', true));
+        $this->assertSame('Universidad Nacional de La Plata', title_capitalization('Universidad Nacional De La Plata', true));
+        $this->assertSame('Observatorio Astronómico de La Plata', title_capitalization('Observatorio Astronómico de La Plata', true));
+        $this->assertSame('Anales del Museo de La Plata, Argentina', title_capitalization('Anales del Museo de La Plata, Argentina', true));
+    }
+
+    public function testCapitalizationDeLaPlataRiver(): void {
+        // The river Río de la Plata has a lower-case "la"
+        $this->assertSame('Río de la Plata', title_capitalization('Río de la Plata', true));
+        $this->assertSame('Río de la Plata', title_capitalization('RÍO DE LA PLATA', true));
+        $this->assertSame('Río de la Plata', title_capitalization('Río De La Plata', true));
+        $this->assertSame('Rio de la Plata', title_capitalization('Rio de la Plata', true));
+        $this->assertSame('Estuario del Río de la Plata', title_capitalization('ESTUARIO DEL RÍO DE LA PLATA', true));
+        $this->assertSame('Río de la Plata, Argentina', title_capitalization('Río de la Plata, Argentina', true));
+    }
+
     public function testRestorItalicsRegex1(): void {
         $text = "{{cite journal|doi=10.7717/peerj.7240 }}";
         $template = $this->process_citation($text);
