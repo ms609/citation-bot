@@ -1553,6 +1553,38 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($template->get2('pages'));
     }
 
+    public function testTidyPageKeepsPaperLocatorInPage(): void {
+        // Journals like Combinatorial Theory and Algorithms number pages P10:1–P10:42; the P is part of the locator
+        $template = $this->make_citation('{{cite journal| page=P10:1–P10:42}}');
+        $template->tidy_parameter('page');
+        $this->assertSame('P10:1–P10:42', $template->get2('page'));
+    }
+
+    public function testTidyPageKeepsPaperLocatorInPages(): void {
+        $template = $this->make_citation('{{cite journal| pages=P10:1–P10:22}}');
+        $template->tidy_parameter('pages');
+        $this->assertSame('P10:1–P10:22', $template->get2('pages'));
+    }
+
+    public function testTidyPageKeepsLowerCasePaperLocator(): void {
+        $template = $this->make_citation('{{cite journal| pages=p3:1–p3:12}}');
+        $template->tidy_parameter('pages');
+        $this->assertSame('p3:1–p3:12', $template->get2('pages'));
+    }
+
+    public function testTidyPageKeepsOtherLetterLocator(): void {
+        $template = $this->make_citation('{{cite journal| pages=A3:1–A3:46}}');
+        $template->tidy_parameter('pages');
+        $this->assertSame('A3:1–A3:46', $template->get2('pages'));
+    }
+
+    public function testTidyPageStillStripsPPrefixFromPlainPage(): void {
+        // Unchanged behavior: a p directly before an ordinary page number is a prefix
+        $template = $this->make_citation('{{cite journal| page=p12}}');
+        $template->tidy_parameter('page');
+        $this->assertSame('12', $template->get2('page'));
+    }
+
     public function testTidyGoofyFirsts1(): void {
         $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
         $template = $this->process_citation($text_in);

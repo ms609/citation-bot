@@ -6847,7 +6847,9 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                    if (!preg_match('~^p\d+\s*:\s*\d~ui', $value)) { // P10:1–P10:42 is an article locator, not a "p" page prefix
+                        $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                    }
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
                         $this->set($param, 'n.p.'); // clean up after REMOVE_PERIOD
