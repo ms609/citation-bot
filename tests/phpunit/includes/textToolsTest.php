@@ -74,6 +74,27 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('Bakery str. and bridges', title_capitalization('Bakery str. and bridges', true));
     }
 
+    public function testTitleHasMathMarkupFindsLiveTags(): void {
+        $this->assertTrue(title_has_math_markup('The length of an <math>s</math>-increasing sequence of <math>r</math>-tuples'));
+        $this->assertTrue(title_has_math_markup('Two quick proofs of <MATH display="inline">\sum k^3</MATH>'));
+    }
+
+    public function testTitleHasMathMarkupFindsPageProcessingPlaceholder(): void {
+        // Page processing swaps <math> for a placeholder before any template sees the title
+        $placeholder = sprintf(Mathematics::PLACEHOLDER_TEXT, '0');
+        $this->assertTrue(title_has_math_markup('The length of an ' . $placeholder . '-increasing sequence of ' . sprintf(Mathematics::PLACEHOLDER_TEXT, '1') . '-tuples'));
+        $this->assertTrue(title_has_math_markup(mb_strtolower($placeholder))); // Placeholders can get their case changed
+    }
+
+    public function testTitleHasMathMarkupIgnoresOtherTitles(): void {
+        $this->assertFalse(title_has_math_markup(''));
+        $this->assertFalse(title_has_math_markup('The length of an s-increasing sequence of r-tuples'));
+        $this->assertFalse(title_has_math_markup("The length of an ''s'' -increasing sequence of ''r'' -tuples")); // Italic form from CrossRef is not math markup
+        $this->assertFalse(title_has_math_markup('Water is H<sub>2</sub>O and <sup>13</sup>C is a carbon isotope'));
+        $this->assertFalse(title_has_math_markup('A title with ' . sprintf(Chemistry::PLACEHOLDER_TEXT, '0') . ' in it'));
+        $this->assertFalse(title_has_math_markup('Mathematics and mathematical methods')); // Word "math" without a tag
+    }
+
     public function testCapitalizationStillCapitalizesAfterOrdinaryPeriods(): void {
         // The abbreviation exemptions must not turn off capitalization after a normal sentence end
         $this->assertSame('Lecture notes. A first course', title_capitalization('Lecture notes. a first course', true));
