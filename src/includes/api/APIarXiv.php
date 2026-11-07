@@ -143,8 +143,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         if ($this_template->add_if_new("doi", (string) @$entry->arxivdoi, 'arxiv')) {
             if (
                 $this_template->blank(['journal', 'volume', 'issue']) &&
-                $this_template->has('title') &&
-                !title_has_math_markup($this_template->get('title')) // Fetched titles garble math, so keep the existing one
+                $this_template->has('title')
             ) {
                 // Move outdated/bad arXiv title out of the way
                 $the_arxiv_title = $this_template->get('title');
@@ -157,7 +156,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
                 // Keep manually marked-up math even when the DOI supplies a title.
                 if (
                     $this_template->blank('title') ||
-                    preg_match('~<math\b|CITATION_BOT_PLACEHOLDER_MATHEMATICS ~i', $the_arxiv_title) === 1
+                    title_has_math_markup($the_arxiv_title)
                 ) {
                     $this_template->set('title', $the_arxiv_title);
                     if ($the_arxiv_contribution !== '') {
