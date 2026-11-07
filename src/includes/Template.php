@@ -1666,7 +1666,7 @@ final class Template
                         $this->forget('number');
                     } // No issues, just volumes
                     $value = wikify_external_text(title_case($value));
-                    if ($this->has('series') && str_equivalent($this->get('series'), $value)) {
+                    if ($this->has('seriess') && str_equivalent($this->get('series'), $value)) {
                         return false;
                     }
                     if ($this->has('work')) {
