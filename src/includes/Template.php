@@ -24,6 +24,11 @@ final class Template
     public const string PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
     public const array REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su']; // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
     public const bool TREAT_IDENTICAL_SEPARATELY = false; // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
+    private const array BOOK_PERIODICAL_FIELDS_WITHOUT_MAPPING = [
+        'magazine', 'newspaper',
+        'script-journal', 'script-magazine', 'script-newspaper', 'script-periodical', 'script-website', 'script-work',
+        'trans-journal', 'trans-magazine', 'trans-newspaper', 'trans-periodical', 'trans-website', 'trans-work',
+    ];
     /** @var array<Template> */
     public static array $all_templates = []; // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
     public static DateStyle $date_style = DateStyle::DATES_WHATEVER;
@@ -1666,7 +1671,7 @@ final class Template
                         $this->forget('number');
                     } // No issues, just volumes
                     $value = wikify_external_text(title_case($value));
-                    if ($this->has('seriess') && str_equivalent($this->get('series'), $value)) {
+                    if ($this->has('series') && (str_equivalent($this->get('series'), $value) || $this->memoirs_series_matches($value))) {
                         return false;
                     }
                     if ($this->has('work')) {
@@ -4123,13 +4128,27 @@ final class Template
             // without a journal=, so keep the template type it has.
             return;
         }
+        $book_container_param = 'journal';
+        if ($new_name === 'cite book' && !$this->blank_other_than_comments('periodical')) {
+            if (!$this->blank('journal') || !$this->is_book_series('periodical')) {
+                return;
+            }
+            $book_container_param = 'periodical';
+        }
+        if ($new_name === 'cite book' && (
+            !$this->blank_other_than_comments(self::BOOK_PERIODICAL_FIELDS_WITHOUT_MAPPING) ||
+            (!$this->blank_other_than_comments('work') && $this->blank_other_than_comments('title'))
+        )) {
+            // These periodical fields have no safe mapping in the book conversion below.
+            return;
+        }
         // Decide how to preserve a journal container before changing the template type.
         $book_journal_target = null;
-        if ($new_name === 'cite book' && !$this->blank('journal')) {
-            if (str_equivalent($this->get('journal'), $this->get('title'))) {
+        if ($new_name === 'cite book' && !$this->blank($book_container_param)) {
+            if (str_equivalent($this->get($book_container_param), $this->get('title')) || $this->is_redundant_proceedings_name($book_container_param)) {
                 $book_journal_target = '';
-            } elseif ($this->is_book_series_for_journal('journal')) {
-                if (str_equivalent($this->get('journal'), $this->get('series'))) {
+            } elseif ($this->is_book_series_for_journal($book_container_param)) {
+                if (str_equivalent($this->get($book_container_param), $this->get('series'))) {
                     $book_journal_target = '';
                 } elseif ($this->blank('series')) {
                     $book_journal_target = 'series';
@@ -4283,12 +4302,12 @@ final class Template
             }
 
             if ($book_journal_target === '') {
-                $this->forget('journal');
+                $this->forget($book_container_param);
             } elseif ($book_journal_target === 'series') {
-                $this->rename('journal', 'series');
+                $this->rename($book_container_param, 'series');
             } elseif ($book_journal_target === 'title') {
                 $this->rename('title', 'chapter');
-                $this->rename('journal', 'title');
+                $this->rename($book_container_param, 'title');
             }
 
             // Remove blank unsupported parameters when converting to cite book
@@ -4391,6 +4410,21 @@ final class Template
 
     public function should_be_processed(): bool {
         return in_array($this->wikiname(), TEMPLATES_WE_PROCESS, true);
+    }
+
+    /** Compare two titles for a whole proceedings volume, ignoring cataloguing details. */
+    private function is_redundant_proceedings_name(string $parameter): bool {
+        $title = $this->get('title');
+        $container = $this->get($parameter);
+        if (!isbn_valid($this->get('isbn')) || !$this->blank(CHAPTER_ALIASES_AND_SCRIPT) ||
+            mb_stripos($title, 'proceedings') === false || mb_stripos($container, 'proceedings') === false) {
+            return false;
+        }
+        $cataloguing_details = '~^\[\d{4}\]\s*|\s*\(cat\.\s*no\.[^()]+\)$~i';
+        return str_equivalent(
+            safe_preg_replace($cataloguing_details, '', $title),
+            safe_preg_replace($cataloguing_details, '', $container)
+        );
     }
 
     public function tidy_parameter(string $param): void {
@@ -5434,6 +5468,10 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
+                    if ($this->memoirs_series_matches($this->get($param))) {
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
                         $this->forget($param);
                         return;
@@ -5452,6 +5490,30 @@ final class Template
                         $this->forget('work');
                     }
 
+                    if (
+                        $param === 'journal' && $this->wikiname() === 'cite book' &&
+                        $this->blank([...self::BOOK_PERIODICAL_FIELDS_WITHOUT_MAPPING, 'periodical', 'website', 'work'])
+                    ) {
+                        if ($this->is_redundant_proceedings_name($param)) {
+                            $this->forget($param);
+                            return;
+                        }
+                        // Repair proceedings citations left with journal= by earlier conversions.
+                        if (
+                            !$this->blank_other_than_comments('title') &&
+                            isbn_valid($this->get('isbn')) &&
+                            conference_doi(mb_strtolower($this->get('doi'))) &&
+                            preg_match('~\b(?:proceedings|conference|symposium|workshop)\b~i', $this->get($param)) === 1 &&
+                            $this->blank([
+                                ...CHAPTER_ALIASES_AND_SCRIPT, 'chapter-url', 'chapterurl', 'book-title',
+                                'script-title', 'trans-title', 'title-link', 'titlelink',
+                            ])
+                        ) {
+                            $this->rename('title', 'chapter');
+                            $this->rename('journal', 'title');
+                            return;
+                        }
+                    }
                     $periodical = mb_trim($this->get($param));
                     if (mb_stripos($periodical, 'arxiv') !== false) {
                         return;
@@ -5635,6 +5697,9 @@ final class Template
                     }
                     if ($this->is_book_series_for_journal($param)) {
                         $this->change_name_to('cite book');
+                        if (!in_array($this->wikiname(), ['cite book', 'citation'], true)) {
+                            return;
+                        }
                         if ($this->blank('series')) {
                             $this->rename($param, 'series');
                         } elseif ($this->is_book_series('series') || str_equivalent($this->get($param), $this->get('series'))) {
@@ -6345,6 +6410,9 @@ final class Template
                     }
                     if ($this->is_book_series('series')) {
                         $this->change_name_to('cite book');
+                        if (!in_array($this->wikiname(), ['cite book', 'citation'], true)) {
+                            return;
+                        }
                         if ($this->has('journal')) {
                             if ($this->is_book_series('journal') || str_equivalent($this->get('series'), $this->get('journal'))) {
                                 $this->forget('journal');
@@ -7258,6 +7326,10 @@ final class Template
                 } elseif (($this->wikiname() === 'cite journal' || $this->wikiname() === 'citation') && !$this->has('trans-chapter')) {
                     $this->forget('chapter');
                 }
+            }
+            // An editor's Memoirs series can coexist with journal-style metadata from a DOI.
+            if ($this->memoirs_series_matches($this->get('journal'))) {
+                $this->forget('journal');
             }
             // Sometimes series and journal come from different databases
             if ($this->has('series') && $this->has('journal') && str_equivalent($this->get('series'), $this->get('journal'))) {
@@ -8954,6 +9026,17 @@ final class Template
                 }
             }
         }
+    }
+
+    /** Memoirs can be cited as a journal or as a monograph in a series. */
+    private function memoirs_series_matches(string $periodical): bool {
+        if ($periodical === '' || !in_array($this->wikiname(), ['citation', 'cite book'], true)) {
+            return false;
+        }
+        $names = ['memoirs of the american mathematical society', 'memoirs of the ams', 'mem amer math soc'];
+        $series = $this->get_without_comments_and_placeholders('series');
+        return in_array(mb_strtolower(str_remove_irrelevant_bits($series)), $names, true) &&
+            in_array(mb_strtolower(str_remove_irrelevant_bits($periodical)), $names, true);
     }
 
     public function is_book_series(string $param): bool {
