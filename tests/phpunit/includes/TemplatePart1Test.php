@@ -1202,6 +1202,30 @@ JSON;
         $this->assertSame('{{citation|orig-date=2000|date=1999}}', $prepared->parsed_text());
     }
 
+    public function testOrigYearNotPromotedWhenPublicationDatePresent(): void {
+        // Promoting orig-year to year would replace the date that is actually shown and can create ISBN/date errors
+        $template = $this->make_citation('{{cite book |title=Paracelsus |orig-year=1894 |publication-date=1976}}');
+        $template->tidy_parameter('orig-year');
+        $this->assertNull($template->get2('year'));
+        $this->assertSame('1894', $template->get2('orig-year'));
+        $this->assertSame('1976', $template->get2('publication-date'));
+    }
+
+    public function testOrigYearNotPromotedWhenYearPresent(): void {
+        $template = $this->make_citation('{{cite book |title=Paracelsus |orig-year=1894 |year=1976}}');
+        $template->tidy_parameter('orig-year');
+        $this->assertSame('1976', $template->get2('year'));
+        $this->assertSame('1894', $template->get2('orig-year'));
+    }
+
+    public function testOrigYearStillPromotedWhenNoOtherDate(): void {
+        // Unchanged behavior: orig-year does not display without a date, so a plain year is promoted
+        $template = $this->make_citation('{{cite book |title=Paracelsus |orig-year=1894}}');
+        $template->tidy_parameter('orig-year');
+        $this->assertSame('1894', $template->get2('year'));
+        $this->assertNull($template->get2('orig-year'));
+    }
+
     public function testDropDuplicates1(): void {
         $text = '{{citation|work=Work|journal=|magazine=|website=}}';
         $prepared = $this->prepare_citation($text);

@@ -5656,7 +5656,7 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    if ($this->blank(['year', 'date'])) {
+                    if ($this->blank(TIME_ALIASES)) { // year, date and publication-date: a publication-date is already the date shown
                         // Will not show unless one of these is set, so convert
                         if (preg_match('~^\d\d\d\d$~', $this->get($param))) {
                             // Only if a year, might contain text like "originally was...."
