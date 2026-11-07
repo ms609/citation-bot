@@ -306,16 +306,9 @@ function should_url2chapter(Template $template, bool $force): bool {
         return false;
     }
     if (mb_stripos($url, 'archive.org')) {
-        if (mb_strpos($url, 'chapter')) {
-            return true;
-        }
-        if (mb_strpos($url, 'page')) {
-            if (preg_match('~page/?[01]?$~i', $url)) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+        // A BookReader page link still points into the whole scanned book.
+        // Only an explicit chapter path identifies a chapter-specific resource.
+        return preg_match('~^https?://(?:www\.)?archive\.org/details/[^/?#]+/chapter/[^/?#]+(?:[/?#]|$)~i', $url) === 1;
     }
     if (mb_stripos($url, 'wp-content')) {
         // Private websites are hard to judge
