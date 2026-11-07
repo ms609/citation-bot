@@ -18,9 +18,11 @@ if ($endpoint === 'health') {
     return;
 }
 
+/** @psalm-suppress UnusedFunctionCall */
 uopz_set_return('curl_exec', static function (): never {
     throw new LogicException('External HTTP is disabled in endpoint fixtures');
 }, true);
+/** @psalm-suppress UnusedFunctionCall */
 uopz_set_return('proc_open', static function (): never {
     throw new LogicException('Child processes are disabled in endpoint fixtures');
 }, true);
@@ -52,6 +54,7 @@ switch ($endpoint) {
 
     case 'authenticate.php':
         require $root . '/vendor/autoload.php';
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Client::class, 'complete', static function (Token $request, string $verifier): Token {
             if ($request->key !== 'request-key' || $verifier !== 'accepted') {
                 return new Token('', '');
@@ -65,13 +68,16 @@ switch ($endpoint) {
     case 'category.php':
     case 'linked_pages.php':
         require $source . '/includes/setup.php';
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Client::class, 'identify', static function (): never {
             throw new RuntimeException('Fixture rejected stale credentials');
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'is_valid_user', static function (string $username): bool {
             file_put_contents(request_rate_limit_base_directory() . '/user-check', $username . "\n", FILE_APPEND);
             return true;
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'linked_pages_batch', static function (string $title, ?array $continuation): ?array {
             if ($continuation === null) {
                 return ['links' => [['ns' => 0, 'title' => 'Example']], 'continue' => ['continue' => 'next'], 'scanned' => 1];
@@ -92,6 +98,7 @@ switch ($endpoint) {
     case 'gadgetapi.php':
     case 'generate_template.php':
         require $source . '/includes/setup.php';
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'expand_text', static function (): never {
             throw new LogicException('Rejected request reached citation expansion');
         }, true);

@@ -13,7 +13,9 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
         }
 
         $reads = 0;
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'read_details', $details);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'get_a_page', static function () use (&$reads, $wikitext): string {
             ++$reads;
             return $wikitext;
@@ -22,7 +24,9 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
             $this->assertFalse((new Page())->get_text_from('Example'));
             $this->assertSame($expected_reads, $reads);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'get_a_page');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'read_details');
         }
     }
@@ -67,7 +71,9 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
 
         $preflight = $token === null ? null : self::editPreflight($token);
         $actions = [];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('report_minor_error', null);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'fetch', static function (array $request) use (&$actions, $preflight): ?object {
             $actions[] = $request['action'];
             return $preflight;
@@ -78,7 +84,9 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
             $this->assertSame($conflict, $bot->last_write_was_skipped());
             $this->assertSame($expected_actions, $actions);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'fetch');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('report_minor_error');
         }
     }
@@ -117,6 +125,7 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
 
         $preflight = self::editPreflight('fixture');
         $requests = [];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'fetch', static function (array $request) use (&$requests, $preflight, $result): ?object {
             $requests[] = $request;
             return $request['action'] === 'query' ? $preflight : $result;
@@ -148,6 +157,7 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
                 ],
             ], $requests);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'fetch');
         }
     }
@@ -174,10 +184,12 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
         $recorded_requests = new ArrayObject();
         $reads = [];
         $title = 'User:Citation bot/statistics';
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'read_details', static function (string $page) use (&$reads): object {
             $reads[] = $page;
             return (object) ['curtimestamp' => '2026-10-25T12:01:00Z'];
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'fetch', static function (array $request) use ($recorded_requests, $preflight, $accepted): object {
             $recorded_requests->append($request);
             if ($request['action'] === 'query') {
@@ -204,7 +216,9 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
             }
             $this->assertSame($edit, $requests[1]);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'fetch');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'read_details');
         }
     }

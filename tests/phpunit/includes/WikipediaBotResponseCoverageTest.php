@@ -46,6 +46,7 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
             'access_key' => 'fixture-key',
             'access_secret' => 'fixture-secret',
         ];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'is_valid_user', static fn (string $user): bool => $user === 'Fixture user', true);
         try {
             $bot = new WikipediaBot();
@@ -57,6 +58,7 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
             } else {
                 $_SESSION = $original_session;
             }
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'is_valid_user');
         }
     }
@@ -474,10 +476,12 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
             '{"query":{"usercontribs":[{"comment":"second"}]},"continue":{"uccontinue":"last"}}',
             '{"query":{"usercontribs":"malformed"}}',
         ];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api_authenticated', static function (array $request) use (&$authenticated): string {
             $authenticated[] = $request;
             return '';
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api', static function (array $request) use ($recorded_anonymous, &$responses): string {
             $recorded_anonymous->append($request);
             return array_shift($responses) ?? '';
@@ -499,7 +503,9 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
                 return $request;
             }, $anonymous), $authenticated);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'query_api');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'query_api_authenticated');
         }
     }

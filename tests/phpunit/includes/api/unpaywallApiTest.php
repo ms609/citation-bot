@@ -46,13 +46,17 @@ final class unpaywallApiTest extends testBaseClass {
         }
         $input = '{{cite journal|doi=10.1000/coverage-fixture}}';
         $template = $this->make_citation($input);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('curl_getinfo', $http_status);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('bot_curl_exec', $json);
         try {
             $this->assertSame($expected, get_unpaywall_url($template, '10.1000/coverage-fixture'));
             $this->assertSame($input, $template->parsed_text());
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('bot_curl_exec');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('curl_getinfo');
         }
     }

@@ -26,6 +26,7 @@ final class WikipediaBotRetryTest extends testBaseClass {
         $attempt_count = count($responses);
         $calls = new ArrayObject();
         $delays = new ArrayObject();
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('bot_curl_exec_withFalse', static function () use (&$responses, $calls): string|bool {
             $calls->append(true);
             $response = array_shift($responses);
@@ -37,6 +38,7 @@ final class WikipediaBotRetryTest extends testBaseClass {
             }
             return $response;
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('sleep', static function (int $seconds) use ($delays): int {
             $delays->append($seconds);
             return 0;
@@ -54,7 +56,9 @@ final class WikipediaBotRetryTest extends testBaseClass {
             $this->assertCount($attempt_count, $calls);
             $this->assertSame($expected_delays, $delays->getArrayCopy());
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('sleep');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('bot_curl_exec_withFalse');
         }
     }
@@ -96,8 +100,11 @@ final class WikipediaBotRetryTest extends testBaseClass {
             }
             return '{"query":{"usercontribs":[{"comment":"edit"}]},"continue":{"uccontinue":"repeat"}}';
         };
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api_authenticated', $contribution, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api', $contribution, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('usleep', null);
         try {
             $edits = WikipediaBot::fetch_user_contribs('Fixture bot');
@@ -105,8 +112,11 @@ final class WikipediaBotRetryTest extends testBaseClass {
             $this->assertCount(20, $requests);
             $this->assertSame(array_fill(0, 19, 'repeat'), array_column($requests->getArrayCopy(), 'uccontinue'));
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('usleep');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'query_api');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'query_api_authenticated');
         }
     }

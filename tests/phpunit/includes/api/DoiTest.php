@@ -9,15 +9,19 @@ final class DoiTest extends testBaseClass {
             $this->markTestSkipped('uopz is required to stub Crossref');
         }
         $attempts = 0;
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('bot_curl_exec', static function () use (&$attempts): string {
             return ++$attempts === 1 ? '' : '<broken';
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('sleep', 0);
         try {
             $this->assertNull(query_crossref('10.1000/coverage-fixture'));
             $this->assertSame(2, $attempts);
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('sleep');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('bot_curl_exec');
         }
     }

@@ -229,9 +229,13 @@ final class gadgetapiTest extends testBaseClass {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub citation expansion');
         }
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('request_rate_limit_consume_layered', null);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'expand_text', true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'parsed_text', $expanded);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'edit_summary', 'Use this bot');
         try {
             $response = $this->runGadgetEndpoint(
@@ -241,9 +245,13 @@ final class gadgetapiTest extends testBaseClass {
             $this->assertSame($expected_status, $response['status']);
             $this->assertSame($expected_body, json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR));
         } finally {
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'edit_summary');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'parsed_text');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('request_rate_limit_consume_layered');
         }
     }

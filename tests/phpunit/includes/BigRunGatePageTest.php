@@ -215,10 +215,13 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
 
         $reads = [];
         $warnings = [];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_redefine('MAX_PAGES', 1);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('report_warning', static function (string $message) use (&$warnings): void {
             $warnings[] = $message;
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'get_text_from', static function (string $title) use (&$reads): bool {
             $reads[] = $title;
             return false;
@@ -228,7 +231,9 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             edit_a_list_of_pages($titles, new WikipediaBot(), '', 'category', $entry_id);
         } finally {
             ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'get_text_from');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('report_warning');
         }
 

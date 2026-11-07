@@ -11,6 +11,7 @@ final class WebToolsTest extends testBaseClass {
 
         $title = '';
         $written = [];
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'get_text_from', static function (string $page) use (&$title): bool {
             $title = $page;
             if ($page === 'Read failure') {
@@ -18,16 +19,20 @@ final class WebToolsTest extends testBaseClass {
             }
             return true;
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'expand_text', static function () use (&$title): bool {
             return $title !== 'No changes';
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(Page::class, 'write', static function () use (&$title, &$written): bool {
             $written[] = $title;
             return $title !== 'Rejected write';
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'last_write_was_skipped', static function () use (&$title): bool {
             return $title === 'Edit conflict';
         }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'get_last_revision', '123');
         try {
             ob_start();
@@ -39,10 +44,15 @@ final class WebToolsTest extends testBaseClass {
             $body = (string) ob_get_contents();
         } finally {
             ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'get_last_revision');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'last_write_was_skipped');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'write');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(Page::class, 'get_text_from');
         }
         $this->assertSame(

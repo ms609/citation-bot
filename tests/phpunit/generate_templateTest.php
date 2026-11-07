@@ -19,7 +19,9 @@ final class generate_templateTest extends testBaseClass {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub citation metadata');
         }
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('request_rate_limit_consume_layered', null);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('jstor_expand_via_zotero', static function (Template $template, string $jstor): void {
             if ($jstor === '373737') {
                 $template->add_if_new('title', 'Fixture article');
@@ -33,7 +35,9 @@ final class generate_templateTest extends testBaseClass {
             $body = (string) ob_get_contents();
         } finally {
             ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('jstor_expand_via_zotero');
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('request_rate_limit_consume_layered');
         }
         $this->assertStringContainsString('{{cite journal', $body);
@@ -50,6 +54,7 @@ final class generate_templateTest extends testBaseClass {
         }
         parse_str($query, $_GET);
         $response_ended = new RuntimeException('Template generator exited');
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('exit', static function () use ($response_ended): never {
             throw $response_ended;
         }, true);
@@ -64,6 +69,7 @@ final class generate_templateTest extends testBaseClass {
             $body = (string) ob_get_contents();
         } finally {
             ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('exit');
         }
         $this->assertSame(400, http_response_code());
