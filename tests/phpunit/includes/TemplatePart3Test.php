@@ -1339,6 +1339,48 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertNull($template->get2('last1'));
     }
 
+    public function testAuthorToLastUnnumbered(): void {
+        $text = '{{Cite journal|author=Last|first=First}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('Last', $template->get2('last'));
+        $this->assertSame('First', $template->get2('first'));
+        $this->assertNull($template->get2('author'));
+    }
+
+    public function testAuthorToLastUnnumberedCiteBook(): void {
+        $text = '{{Cite book|author=Last|first=First|title=A Book}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('Last', $template->get2('last'));
+        $this->assertSame('First', $template->get2('first'));
+        $this->assertNull($template->get2('author'));
+    }
+
+    public function testAuthorToLastUnnumberedWithSecondAuthor(): void {
+        $text = '{{Cite journal|author=Last|first=First|author2=Other|first2=Second}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('Last', $template->get2('last1'));
+        $this->assertSame('First', $template->get2('first1'));
+        $this->assertSame('Other', $template->get2('last2'));
+        $this->assertSame('Second', $template->get2('first2'));
+        $this->assertNull($template->get2('author'));
+        $this->assertNull($template->get2('author2'));
+    }
+
+    public function testAuthorToLastUnnumberedNeedsFirst(): void {
+        $text = '{{Cite journal|author=Last, First}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('Last, First', $template->get2('author'));
+        $this->assertNull($template->get2('last'));
+    }
+
+    public function testAuthorToLastUnnumberedIgnoresNumberedFirst(): void {
+        $text = '{{Cite journal|author=Last|first2=First}}';
+        $template = $this->prepare_citation($text);
+        $this->assertSame('Last', $template->get2('author'));
+        $this->assertSame('First', $template->get2('first2'));
+        $this->assertNull($template->get2('last'));
+    }
+
     public function testAddArchiveDate(): void {
         $text = '{{Cite web|archive-url=https://web.archive.org/web/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
         $template = $this->prepare_citation($text);

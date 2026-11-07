@@ -4569,8 +4569,8 @@ final class Template
                         }
                         return;
                     }
-                    // Convert authorX to lastX, if firstX is set
-                    if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+                    // Convert authorX to lastX, if firstX is set.  The suffix may be empty: author= with first= becomes last= with first=
+                    if ($this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
                         $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
                         $pmatch[1] = 'last';
                         // Comment out since "never used"  $param = 'last' . $pmatch[2];
