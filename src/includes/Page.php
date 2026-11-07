@@ -107,7 +107,6 @@ class Page {
         $parsed_details = page_details_from_api_response($details);
 
         if ($parsed_details === null) {
-            // @codeCoverageIgnoreStart
             $message = "Error: Could not fetch page.";
             if (
                 isset($details->error) &&
@@ -119,7 +118,6 @@ class Page {
             }
             report_warning(echoable($message));
             return false;
-            // @codeCoverageIgnoreEnd
         }
         [$my_details, $read_at] = $parsed_details;
         $this->read_at = $read_at;
@@ -139,8 +137,8 @@ class Page {
         }
 
         if (!isset($details->title)) {
-            report_warning("Could not even get the page title.");   // @codeCoverageIgnore
-            return false;                                           // @codeCoverageIgnore
+            report_warning("Could not even get the page title.");
+            return false;
         }
 
         if (!empty($details->protection)) {
@@ -168,8 +166,8 @@ class Page {
         $this->text = WikipediaBot::get_a_page($title);
 
         if ($this->text === '') {
-            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
-            return false;                                                                                                                                    // @codeCoverageIgnore
+            report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty ');
+            return false;
         }
         $this->start_text = $this->text;
         $this->set_date_pattern();
@@ -177,14 +175,14 @@ class Page {
         $this->set_page_display_authors();
 
         if (preg_match('~\#redirect *\[\[~i', $this->text)) {
-            report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
+            report_warning("Page is a redirect.");
             if (mb_strlen($this->text) > 2000) {
                 $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
                 if (mb_strlen($test_text) > 1500) {
                      bot_debug_log($this->title . " is probably not a redirect");
                 }
             }
-            return false; // @codeCoverageIgnoreEnd
+            return false;
         }
         return true;
     }

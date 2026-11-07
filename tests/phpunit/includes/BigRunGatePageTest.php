@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
@@ -191,6 +192,59 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_redefine('HTML_OUTPUT', false);
         }
+    }
+
+    /**
+     * @param list<string> $titles
+     * @param string $expected_warning
+     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[DataProvider('rejectedBatches')]
+    public function testRejectedBatchReleasesProbeBeforePageReads(array $titles, string $expected_warning): void {
+        $this->requireUopz();
+
+        [$acquired, , $entry_id] = big_run_try_acquire_probe();
+        if (!$acquired || $entry_id === null) {
+            $this->fail('Expected to acquire a probe lease');
+        }
+        $state_path = big_run_state_path($this->base_directory);
+        [, , $entries_before, $valid_before] = big_run_read_state_file($state_path, microtime(true));
+        $this->assertTrue($valid_before);
+        $this->assertArrayHasKey($entry_id, $entries_before);
+
+        $reads = [];
+        $warnings = [];
+        uopz_redefine('MAX_PAGES', 1);
+        uopz_set_return('report_warning', static function (string $message) use (&$warnings): void {
+            $warnings[] = $message;
+        }, true);
+        uopz_set_return(Page::class, 'get_text_from', static function (string $title) use (&$reads): bool {
+            $reads[] = $title;
+            return false;
+        }, true);
+        try {
+            ob_start();
+            edit_a_list_of_pages($titles, new WikipediaBot(), '', 'category', $entry_id);
+        } finally {
+            ob_end_clean();
+            uopz_unset_return(Page::class, 'get_text_from');
+            uopz_unset_return('report_warning');
+        }
+
+        $this->assertSame([], $reads);
+        $this->assertContains($expected_warning, $warnings);
+        [, , $entries_after, $valid_after] = big_run_read_state_file($state_path, microtime(true));
+        $this->assertTrue($valid_after);
+        $this->assertSame([], $entries_after);
+    }
+
+    /** @return array<string, array{list<string>, string}> */
+    public static function rejectedBatches(): array {
+        return [
+            'no usable titles' => [['', '   '], 'No links to expand found'],
+            'above the page limit' => [['First page', 'Second page'], 'Number of links is huge. Cancelling run. Maximum size is 1'],
+        ];
     }
 
     public function testBulkEntryPointsAcquireProbeBeforeFirstRemoteDiscoveryCall(): void {

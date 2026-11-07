@@ -6645,12 +6645,13 @@ final class Template
                     }
                     return;
                 case 'article':
-                    if (
-                        $this->wikiname() === 'cite journal' &&
-                        $this->blank('article-number') &&
-                        preg_match('~^[a-z]{0,4}\d{1,12}$~iD', $this->get('article'))
-                    ) {
-                        $this->rename('article', 'article-number');
+                    $article = $this->get('article');
+                    if ($this->wikiname() === 'cite journal' && preg_match('~^[a-z]{0,4}\d{1,12}$~iD', $article)) {
+                        if ($this->blank('article-number')) {
+                            $this->rename('article', 'article-number');
+                        } elseif ($article === $this->get('article-number')) {
+                            $this->forget('article');
+                        }
                     }
                     return;
 

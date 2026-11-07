@@ -1638,8 +1638,8 @@ final class Zotero {
         if (str_i_same(mb_substr((string) @$result->publicationTitle, 0, 4), 'http') ||
                 str_i_same(mb_substr((string) @$result->bookTitle, 0, 4), 'http') ||
                 str_i_same(mb_substr((string) @$result->title, 0, 4), 'http')) {
-            report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . echoable($url)); // @codeCoverageIgnore
-            return;                                   // @codeCoverageIgnore
+            report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . echoable($url));
+            return;
         }
 
         if (isset($result->bookTitle)) {

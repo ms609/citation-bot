@@ -5,6 +5,7 @@ declare(strict_types=1);
  * Tests for gadgetapi.php
  */
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
@@ -33,6 +34,7 @@ final class gadgetapiTest extends testBaseClass {
             $_SERVER['HTTP_ORIGIN'] = $origin;
         }
 
+        http_response_code(200);
         $original_buffer_level = ob_get_level();
 
         /*
@@ -207,6 +209,62 @@ final class gadgetapiTest extends testBaseClass {
 
         $this->assertSame('normal text', $text);
         $this->assertSame(1000, mb_strlen($summary));
+    }
+
+    /**
+     * @param string $expanded
+     * @param string $incoming_summary
+     * @param int $expected_status
+     * @param array<string, string> $expected_body
+     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[DataProvider('gadgetExpansionResults')]
+    public function testGadgetEndpointReturnsExpectedExpansionResponse(
+        string $expanded,
+        string $incoming_summary,
+        int $expected_status,
+        array $expected_body
+    ): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub citation expansion');
+        }
+        uopz_set_return('request_rate_limit_consume_layered', null);
+        uopz_set_return(Page::class, 'expand_text', true);
+        uopz_set_return(Page::class, 'parsed_text', $expanded);
+        uopz_set_return(Page::class, 'edit_summary', 'Use this bot');
+        try {
+            $response = $this->runGadgetEndpoint(
+                ['text' => 'Original citation', 'summary' => $incoming_summary],
+                'https://en.wikipedia.org'
+            );
+            $this->assertSame($expected_status, $response['status']);
+            $this->assertSame($expected_body, json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR));
+        } finally {
+            uopz_unset_return(Page::class, 'edit_summary');
+            uopz_unset_return(Page::class, 'parsed_text');
+            uopz_unset_return(Page::class, 'expand_text');
+            uopz_unset_return('request_rate_limit_consume_layered');
+        }
+    }
+
+    /** @return array<string, array{string, string, int, array<string, string>}> */
+    public static function gadgetExpansionResults(): array {
+        return [
+            'unchanged citation' => [
+                'Original citation', 'Existing summary', 200,
+                ['expandedtext' => 'Original citation', 'editsummary' => 'Existing summary'],
+            ],
+            'expanded citation with summary' => [
+                'Expanded citation', 'Existing summary', 200,
+                ['expandedtext' => 'Expanded citation', 'editsummary' => 'Existing summary | Use this tool| #UCB_Gadget '],
+            ],
+            'expanded citation without summary' => [
+                'Expanded citation', '', 200,
+                ['expandedtext' => 'Expanded citation', 'editsummary' => 'Use this tool| #UCB_Gadget '],
+            ],
+            'empty expansion' => ['', 'Existing summary', 500, ['error' => 'internal_error']],
+        ];
     }
 
     #[RunInSeparateProcess]

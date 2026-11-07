@@ -14,6 +14,15 @@ final class JournalArticleNumberAliasTest extends testBaseClass {
         $this->assertSame($text, $citation->parsed_text());
     }
 
+    public function testIdenticalLocatorsCollapseToOneParameter(): void {
+        $citation = $this->make_citation('{{cite journal|title=Example|article=e153|article-number=e153}}');
+        $citation->tidy();
+        $expected = '{{cite journal|title=Example|article-number=e153}}';
+        $this->assertSame($expected, $citation->parsed_text());
+        $citation->tidy();
+        $this->assertSame($expected, $citation->parsed_text());
+    }
+
     public function testConflictingOrNonLocatorValuesArePreserved(): void {
         foreach ([
             '{{cite journal|title=Example|article=e153|article-number=e154}}',

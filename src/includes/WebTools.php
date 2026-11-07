@@ -504,7 +504,6 @@ function gate_big_run(
 }
 
 /**
- * @codeCoverageIgnore
  * @param array<string> $pages_in_category
  */
 function edit_a_list_of_pages(

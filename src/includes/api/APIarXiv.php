@@ -150,7 +150,11 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
                 }
                 $this_template->set('title', '');
                 expand_by_doi($this_template);
-                if ($this_template->blank('title')) {
+                // Keep manually marked-up math even when the DOI supplies a title.
+                if (
+                    $this_template->blank('title') ||
+                    preg_match('~<math\b|CITATION_BOT_PLACEHOLDER_MATHEMATICS ~i', $the_arxiv_title) === 1
+                ) {
                     $this_template->set('title', $the_arxiv_title);
                     if ($the_arxiv_contribution !== '') {
                         $this_template->set('contribution', $the_arxiv_contribution);

@@ -61,12 +61,10 @@ final class WikipediaBot {
 
         if (CI) {
             $this->the_user = 'Citation_bot';
-            // @codeCoverageIgnoreStart
         } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
             $this->the_user = '';
         } else {
             $this->authenticate_user($pending_form);
-            // @codeCoverageIgnoreEnd
         }
         self::$last_WikipediaBot = $this;
     }
@@ -110,16 +108,16 @@ final class WikipediaBot {
             } elseif (mb_strpos($response_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
             } elseif (mb_strpos($response_info, 'Edit conflict') !== false) {
-                report_warning('Edit Conflict while saving changes');  // @codeCoverageIgnore
-                return true;  // @codeCoverageIgnore
+                report_warning('Edit Conflict while saving changes');
+                return true;
             } elseif (mb_strpos($response_info, 'Invalid CSRF token') !== false) {
-                report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');  // @codeCoverageIgnore
+                report_warning('Invalid CSRF token - probably bot edit conflict with itself.  Will sleep and move on');
             } elseif (mb_strpos($response_info, 'Bad title') !== false) {
-                report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');  // @codeCoverageIgnore
+                report_warning('Bad title error - You probably did a category as a page or pasted invisible characters or some other typo.  Will sleep and move on');
             } elseif (mb_strpos($response_info, "The page you specified does not exist") !== false) {
-                report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
+                report_warning('Bad title error - This page does not exist.  Will sleep and move on');
             } elseif (mb_strpos($response_info, "The page you specified doesn") !== false) {
-                report_warning('Bad title error - This page does not exist.  Will sleep and move on');  // @codeCoverageIgnore
+                report_warning('Bad title error - This page does not exist.  Will sleep and move on');
             } else {
                 $err_string = 'API call failed for unexpected reason.  Will sleep and move on: ' . echoable($response_info);
                 bot_debug_log($err_string); // Good to know about about these things
@@ -190,8 +188,8 @@ final class WikipediaBot {
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
         $this->last_write_skipped = false;
         if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
-            report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
-            return false;                                                                             // @codeCoverageIgnore
+            report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));
+            return false;
         }
 
         $response = $this->fetch([
@@ -204,21 +202,21 @@ final class WikipediaBot {
 
         $myPage = self::response2page($response);
         if ($myPage === null) {
-            return false;  // @codeCoverageIgnore
+            return false;
         }
 
         $baseTimeStamp = (string) $myPage->revisions[0]->timestamp;
 
         if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
          || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-            report_warning("Possible edit conflict detected. Aborting.");     // @codeCoverageIgnore
-            $this->last_write_skipped = true;                                 // @codeCoverageIgnore
-            return true;                                                      // @codeCoverageIgnore
+            report_warning("Possible edit conflict detected. Aborting.");
+            $this->last_write_skipped = true;
+            return true;
         }  // This returns true so that we do not try again
 
         if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
-            report_warning('unable to get bot tokens');     // @codeCoverageIgnore
-            return false;                                   // @codeCoverageIgnore
+            report_warning('unable to get bot tokens');
+            return false;
         }
         // No obvious errors; looks like we're good to go ahead and edit
         $auth_token = $response->query->tokens->csrftoken;
@@ -247,7 +245,7 @@ final class WikipediaBot {
         $result = $this->fetch($submit_vars);
 
         if (!self::resultsGood($result)) {
-            return false;  // @codeCoverageIgnore
+            return false;
         }
 
         if (HTML_OUTPUT) {
@@ -847,18 +845,16 @@ final class WikipediaBot {
 
                 $data = bot_curl_exec_withFalse(self::$ch_logout);
                 if ($data === false) {
-                    // @codeCoverageIgnoreStart
                     $errnoInt = curl_errno(self::$ch_logout);
                     $errorStr = curl_error(self::$ch_logout);
                     report_warning('Curl error #' . $errnoInt . ' on a Wikipedia API query: ' . $errorStr);
-                    // @codeCoverageIgnoreEnd
                     $data = '';
                 }
                 $data = (string) $data;
                 if ($data === '') {
                     if ($attempt < 3) {
-                        sleep(4);                                   // @codeCoverageIgnore
-                        continue;                                   // @codeCoverageIgnore
+                        sleep(4);
+                        continue;
                     }
                     return '';
                 }
@@ -874,14 +870,12 @@ final class WikipediaBot {
                 return '';
             }
             return '';
-            // @codeCoverageIgnoreStart
         } catch (Throwable $E) {
             bot_debug_log('Wikipedia read API failure: ' . $E::class . ': ' . $E->getMessage());
             report_warning("Wikipedia read API request failed; continuing.\n");
             report_info("Response: " . echoable($E->getMessage()));
         }
         return '';
-        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -1131,10 +1125,7 @@ final class WikipediaBot {
         return $request_uri !== null && mb_strpos($request_uri, 'automated_tools') !== false;
     }
 
-    /**
-     * @codeCoverageIgnore
-     * @param array{action: string, fields: array<string, string>}|null $pending_form
-     */
+    /** @param array{action: string, fields: array<string, string>}|null $pending_form */
     private function authenticate_user(?array $pending_form): void {
         $session_name = session_name();
         $session_id = session_id();

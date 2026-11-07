@@ -346,7 +346,7 @@ function enforce_public_request_configuration(?string $request_host): void {
     if (public_request_configuration_is_valid($request_host)) {
         return;
     }
-    http_response_code(400); // @codeCoverageIgnore
-    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"><title>Invalid request</title></head><body><main>Invalid request host or public URL configuration.</main></body></html>'; // @codeCoverageIgnore
-    exit(0); // @codeCoverageIgnore
+    http_response_code(400);
+    echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta charset="utf-8"><title>Invalid request</title></head><body><main>Invalid request host or public URL configuration.</main></body></html>';
+    exit(0);
 }

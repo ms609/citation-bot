@@ -77,6 +77,47 @@ final class arxivTest extends testBaseClass {
         $this->assertSame('12345678', $template->get2('pmid'));
     }
 
+    public function testArxivPublicationMetadataPreservesExistingMathTitle(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub arXiv and DOI metadata');
+        }
+
+        $math_title = 'The structure of isoperimetric bubbles on <math>\mathbb{R}^n</math> and <math>\mathbb{S}^n</math>';
+        $citation = '{{citation|title=' . $math_title . '|arxiv=2205.09102}}';
+        $atom = '<feed xmlns:arxiv="http://arxiv.org/schemas/atom"><entry>' .
+            '<id>https://arxiv.org/abs/2205.09102</id><title>Isoperimetric bubbles</title>' .
+            '<arxiv:doi>10.4310/ACTA.2025.v234.n1.a2</arxiv:doi></entry></feed>';
+
+        uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use ($atom): string {
+            $url = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return is_string($url) && str_starts_with($url, 'https://export.arxiv.org/') ? $atom : '';
+        }, true);
+        uopz_set_return('curl_exec', false);
+        uopz_set_return('sleep', 0);
+        uopz_set_return('doi_works', true);
+        uopz_set_return('doi_active', true);
+        $published_title = 'The structure of isoperimetric bubbles on R^n and S^n';
+        uopz_set_return('query_crossref', new SimpleXMLElement(
+            '<query><article_title>' . $published_title . '</article_title>' .
+            '<journal_title>Acta Mathematica</journal_title><year>2025</year><volume>234</volume></query>'
+        ));
+        uopz_set_return('query_crossref_newapi', (object) ['title' => [$published_title], 'type' => 'journal-article']);
+        try {
+            $expanded = $this->process_page($citation)->parsed_text();
+            $this->assertStringContainsString('title=' . $math_title, $expanded);
+            $this->assertMatchesRegularExpression('~journal\s*=\s*Acta Mathematica~', $expanded);
+            $this->assertSame($expanded, $this->process_page($expanded)->parsed_text());
+        } finally {
+            uopz_unset_return('query_crossref_newapi');
+            uopz_unset_return('query_crossref');
+            uopz_unset_return('doi_active');
+            uopz_unset_return('doi_works');
+            uopz_unset_return('sleep');
+            uopz_unset_return('curl_exec');
+            uopz_unset_return('bot_curl_exec');
+        }
+    }
+
     public function testArxivEntriesAreMatchedByIdentifierNotResponseOrder(): void {
         $xml = simplexml_load_string(
             '<feed>' .

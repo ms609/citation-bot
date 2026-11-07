@@ -20,11 +20,8 @@
       <file>./src/includes/constants.php</file>
       <file>./src/authenticate.php</file>
       <file>./src/category.php</file>
-      <file>./src/gadgetapi.php</file>
-      <file>./src/generate_template.php</file>
       <file>./src/gitpull.php</file>
       <file>./src/reset_big_run_state.php</file>
-      <file>./src/kill_big_job.php</file>
       <file>./src/linked_pages.php</file>
       <file>./src/process_page.php</file>
       <file>./src/index.php</file>

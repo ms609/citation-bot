@@ -15,35 +15,35 @@ function die_in_template(string $err, int $http_status): never {
     http_response_code($http_status);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><a href="#main-content" class="skip-link">Skip to main content</a><header><h1>Citation Bot – Generate Template</h1></header><main id="main-content"><h2>Generated citation template</h2><pre>',
         $err,
-        '</pre></main><footer><a href="./" title="Use Citation Bot">Back to Citation Bot</a></footer></body></html>'; // @codeCoverageIgnore
-    exit(0); // @codeCoverageIgnore
+        '</pre></main><footer><a href="./" title="Use Citation Bot">Back to Citation Bot</a></footer></body></html>';
+    exit(0);
 }
 
 if (count($_GET) !== 1) {
-    die_in_template('Exactly one parameters must be passed', 400); // @codeCoverageIgnore
+    die_in_template('Exactly one parameters must be passed', 400);
 }
 $param = array_keys($_GET)[0];
 $value = $_GET[$param];
 unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
 if (!is_string($param) || !is_string($value)) {
-    die_in_template('Invalid parameter type error for passed parameter', 400); // @codeCoverageIgnore
+    die_in_template('Invalid parameter type error for passed parameter', 400);
 }
 if (!mb_check_encoding($param, 'UTF-8') || !mb_check_encoding($value, 'UTF-8')) {
-    die_in_template('Invalid UTF-8 parameter data', 400); // @codeCoverageIgnore
+    die_in_template('Invalid UTF-8 parameter data', 400);
 }
 if (mb_strlen($value) < 3) {
-    die_in_template('Unset parameter error', 400); // @codeCoverageIgnore
+    die_in_template('Unset parameter error', 400);
 }
 if (mb_strlen($value) > 100) {
-    die_in_template('Excessive parameter error', 400); // @codeCoverageIgnore
+    die_in_template('Excessive parameter error', 400);
 }
 if ((mb_strpos($value, "'") !== false) || (mb_strpos($value, '"') !== false) || (mb_strpos($value, "|") !== false) || (mb_strpos($value, " ") !== false)) {
-    die_in_template('Invalid parameter value error', 400); // @codeCoverageIgnore
+    die_in_template('Invalid parameter value error', 400);
 }
 $param = mb_strtolower($param);
 if (!in_array($param, VALID_PARAMS, true)) {
-    die_in_template('Unexpected parameter passed', 400); // @codeCoverageIgnore
+    die_in_template('Unexpected parameter passed', 400);
 }
 
 $retry_after = request_rate_limit_consume_layered(
