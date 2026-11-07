@@ -132,6 +132,63 @@ final class arxivTest extends testBaseClass {
         }
     }
 
+    public function testArxivDoesNotReplaceCitedConferenceVersion(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub arXiv and DOI metadata');
+        }
+
+        $paper = 'Orthogonal dissection into few rectangles';
+        $proceedings = 'Proceedings of the 34th Canadian Conference on Computational Geometry';
+        $doi = '10.1007/s00454-023-00614-w';
+        $atom = '<feed xmlns:arxiv="http://arxiv.org/schemas/atom"><entry>' .
+            '<id>https://arxiv.org/abs/2206.10675</id><title>' . $paper . '</title>' .
+            '<arxiv:doi>' . $doi . '</arxiv:doi></entry></feed>';
+        $published = new SimpleXMLElement(
+            '<query><article_title>Orthogonal Dissection into Few Rectangles</article_title>' .
+            '<journal_title>Discrete &amp; Computational Geometry</journal_title>' .
+            '<year>2025</year><volume>73</volume></query>'
+        );
+        $stubs = [
+            'bot_curl_exec' => static function (CurlHandle $handle) use ($atom): string {
+                $url = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+                return is_string($url) && str_starts_with($url, 'https://export.arxiv.org/') ? $atom : '';
+            },
+            'curl_exec' => false,
+            'sleep' => 0,
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $published,
+            'query_crossref_newapi' => (object) ['type' => 'journal-article'],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value, $value instanceof Closure);
+        }
+        try {
+            foreach (['citation' => 'contribution', 'cite book' => 'chapter'] as $name => $parameter) {
+                $conference = $this->process_citation(
+                    '{{' . $name . '|last=Eppstein|first=David|arxiv=2206.10675|' .
+                    $parameter . '=' . $paper . '|title=' . $proceedings . '|year=2022}}'
+                );
+                $this->assertSame($paper, $conference->get($parameter));
+                $this->assertSame($proceedings, $conference->get('title'));
+                $this->assertSame('2022', $conference->get('year'));
+                $this->assertSame('2206.10675', $conference->get('arxiv'));
+                $this->assertNull($conference->get2('doi'));
+                $this->assertNull($conference->get2('journal'));
+            }
+
+            $preprint = $this->process_citation('{{cite arXiv|eprint=2206.10675}}');
+            $this->assertSame($doi, $preprint->get('doi'));
+            $this->assertSame('Discrete & Computational Geometry', $preprint->get('journal'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
     public function testArxivEntriesAreMatchedByIdentifierNotResponseOrder(): void {
         $xml = simplexml_load_string(
             '<feed>' .
