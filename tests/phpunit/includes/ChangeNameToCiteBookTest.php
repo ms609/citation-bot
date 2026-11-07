@@ -25,6 +25,20 @@ final class ChangeNameToCiteBookTest extends testBaseClass {
         $this->assertNull($template->get2('journal'));
     }
 
+    public function testNeurosciencesBookSeriesKeepsOnlyTheFullSeriesName(): void {
+        $text = '{{cite book|title=Chemistry and Structure-Activity Relationships of Psychedelics' .
+            '|journal=Curr. Top. Behav. Neurosci.|series=Current Topics in Behavioral Neurosciences' .
+            '|volume=36|pages=1–43|isbn=978-3-662-55878-2}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $template->final_tidy();
+
+        $this->assertSame('cite book', $template->wikiname());
+        $this->assertSame('Chemistry and Structure-Activity Relationships of Psychedelics', $template->get('title'));
+        $this->assertSame('Current Topics in Behavioral Neurosciences', $template->get('series'));
+        $this->assertNull($template->get2('journal'));
+    }
+
     public function testExistingChapterBlocksJournalRemap(): void {
         // Keep the original type when converting would strand the journal or overwrite the chapter.
         $text = '{{cite journal|title=T|journal=J|chapter=C}}';
