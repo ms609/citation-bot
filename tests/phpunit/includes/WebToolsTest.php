@@ -4,6 +4,66 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class WebToolsTest extends testBaseClass {
+    public function testBatchCountsNoChangeFailedWritesAndEditConflicts(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki');
+        }
+
+        $title = '';
+        $written = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'get_text_from', static function (string $page) use (&$title): bool {
+            $title = $page;
+            if ($page === 'Read failure') {
+                throw new RuntimeException('fixture read failure');
+            }
+            return true;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'expand_text', static function () use (&$title): bool {
+            return $title !== 'No changes';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'write', static function () use (&$title, &$written): bool {
+            $written[] = $title;
+            return $title !== 'Rejected write';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'last_write_was_skipped', static function () use (&$title): bool {
+            return $title === 'Edit conflict';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'get_last_revision', '123');
+        try {
+            ob_start();
+            edit_a_list_of_pages(
+                ['Read failure', 'Rejected write', 'No changes', 'Edit conflict', 'Edited page'],
+                new WikipediaBot(),
+                'Fixture'
+            );
+            $body = (string) ob_get_contents();
+        } finally {
+            ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'get_last_revision');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'last_write_was_skipped');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'write');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'get_text_from');
+        }
+        $this->assertSame(
+            [...array_fill(0, MAX_TRIES + 1, 'Rejected write'), 'Edit conflict', 'Edited page'],
+            $written
+        );
+        $this->assertStringContainsString('1 changed, 2 unchanged, 2 failed', $body);
+        $this->assertStringContainsString('Pages skipped due to edit conflict', $body);
+        $this->assertStringContainsString('* Edit conflict', $body);
+    }
+
     public function testPageExceptionBoundaryReturnsOperationResult(): void {
         $this->assertTrue(
             run_page_with_exception_boundary('test page', static fn (): bool => true)

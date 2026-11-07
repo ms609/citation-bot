@@ -716,6 +716,22 @@ final class zoteroTest extends testBaseClass {
         $this->assertSame($text, $template->parsed_text());
     }
 
+    public function testZoteroResponseRejectsUrlsInTitleFields(): void {
+        $input = '{{cite web|title=Existing title}}';
+        foreach (['title', 'publicationTitle', 'bookTitle'] as $field) {
+            $template = $this->make_citation($input);
+            $item = ['title' => 'Fixture title', 'itemType' => 'journalArticle', 'volume' => '10'];
+            $item[$field] = 'https://example.test/wrong-title';
+            Zotero::process_zotero_response(
+                json_encode([$item], JSON_THROW_ON_ERROR),
+                $template,
+                'https://example.test/article',
+                0,
+            );
+            $this->assertSame($input, $template->parsed_text(), $field);
+        }
+    }
+
     public function testZoteroResponseRejectsMalformedScalarField(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);

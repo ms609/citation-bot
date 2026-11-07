@@ -273,8 +273,8 @@ function query_crossref(string $doi): ?SimpleXMLElement {
     for ($i = 0; $i < 2; $i++) {
         $raw_xml = bot_curl_exec($ch);
         if (!$raw_xml) {
-            sleep(1);                // @codeCoverageIgnore
-            continue;                // @codeCoverageIgnore
+            sleep(1);
+            continue;
             // Keep trying...
         }
         $raw_xml = safe_preg_replace(
@@ -308,12 +308,12 @@ function query_crossref(string $doi): ?SimpleXMLElement {
                 return null;
             }
         } else {
-            sleep(1);                // @codeCoverageIgnore
+            sleep(1);
             // Keep trying...
         }
     }
-    report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");      // @codeCoverageIgnore
-    return null;                                                                        // @codeCoverageIgnore
+    report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");
+    return null;
 }
 
 function expand_doi_with_dx(Template $template, string $doi): void {

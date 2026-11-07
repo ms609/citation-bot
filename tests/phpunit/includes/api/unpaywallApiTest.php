@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 final class unpaywallApiTest extends testBaseClass {
@@ -35,6 +37,42 @@ final class unpaywallApiTest extends testBaseClass {
         $result = parse_unpaywall_response('{"doi":"10.1000/test","best_oa_location":null}');
         $this->assertNotNull($result);
         $this->assertFalse(isset($result->best_oa_location));
+    }
+
+    #[DataProvider('unusableLocations')]
+    public function testUnusableUnpaywallLocationLeavesCitationUntouched(int $http_status, string $json, string $expected): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Unpaywall');
+        }
+        $input = '{{cite journal|doi=10.1000/coverage-fixture}}';
+        $template = $this->make_citation($input);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('curl_getinfo', $http_status);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', $json);
+        try {
+            $this->assertSame($expected, get_unpaywall_url($template, '10.1000/coverage-fixture'));
+            $this->assertSame($input, $template->parsed_text());
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('curl_getinfo');
+        }
+    }
+
+    /** @return array<string, array{int, string, string}> */
+    public static function unusableLocations(): array {
+        return [
+            'rate limited' => [429, '', 'rate_limited'],
+            'missing evidence' => [200, '{"best_oa_location":{"url":"https://example.test"}}', 'nothing'],
+            'missing URL' => [200, '{"best_oa_location":{"evidence":"fixture"}}', 'nothing'],
+            'empty URL fallback' => [200, '{"best_oa_location":{"evidence":"fixture","url":""}}', 'nothing'],
+            'Cochrane' => [
+                200, '{"journal_name":"Cochrane Database of Systematic Reviews","best_oa_location":{"evidence":"fixture"}}',
+                'unreliable',
+            ],
+        ];
     }
 
     public function testKnownBadOpenAccessDoiIsRejectedWithoutARequest(): void {

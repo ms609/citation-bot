@@ -4,6 +4,28 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 final class DoiTest extends testBaseClass {
+    public function testCrossrefStopsAfterTwoUnusableResponses(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $attempts = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function () use (&$attempts): string {
+            return ++$attempts === 1 ? '' : '<broken';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('sleep', 0);
+        try {
+            $this->assertNull(query_crossref('10.1000/coverage-fixture'));
+            $this->assertSame(2, $attempts);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('sleep');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+    }
+
     public function testCrossRefNewApiParserAcceptsObjectMessage(): void {
         $result = parse_crossref_newapi_response(
             '{"status":"ok","message":{"title":["Expected title"]}}'

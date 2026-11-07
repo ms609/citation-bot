@@ -35,6 +35,34 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         ];
     }
 
+    public function testWebAuthenticationAcceptsValidatedCachedIdentity(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub user validation');
+        }
+
+        $original_session = $_SESSION ?? null;
+        $_SESSION = [
+            'citation_bot_user_id' => 'Fixture user',
+            'access_key' => 'fixture-key',
+            'access_secret' => 'fixture-secret',
+        ];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'is_valid_user', static fn (string $user): bool => $user === 'Fixture user', true);
+        try {
+            $bot = new WikipediaBot();
+            (new ReflectionMethod(WikipediaBot::class, 'authenticate_user'))->invoke($bot, null);
+            $this->assertSame('Fixture user', $bot->get_the_user());
+        } finally {
+            if ($original_session === null) {
+                unset($_SESSION);
+            } else {
+                $_SESSION = $original_session;
+            }
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'is_valid_user');
+        }
+    }
+
     public function testDecodeObjectResponseAcceptsJsonObject(): void {
         $decoded = WikipediaBot::decode_object_response(
             '{"query":{"pages":{}}}'
@@ -435,6 +463,51 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
                 "The page you specified doesn't exist",
             ],
         ];
+    }
+
+    public function testContributionPaginationFallsBackAndKeepsValidBatches(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki');
+        }
+        $authenticated = [];
+        $recorded_anonymous = new ArrayObject();
+        $responses = [
+            '{"query":{"usercontribs":[{"comment":"first"},null]},"continue":{"uccontinue":"next"}}',
+            '{"query":{"usercontribs":[{"comment":"second"}]},"continue":{"uccontinue":"last"}}',
+            '{"query":{"usercontribs":"malformed"}}',
+        ];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'query_api_authenticated', static function (array $request) use (&$authenticated): string {
+            $authenticated[] = $request;
+            return '';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'query_api', static function (array $request) use ($recorded_anonymous, &$responses): string {
+            $recorded_anonymous->append($request);
+            return array_shift($responses) ?? '';
+        }, true);
+        try {
+            $edits = WikipediaBot::fetch_user_contribs('Fixture bot', 48);
+            $anonymous = $recorded_anonymous->getArrayCopy();
+            $this->assertSame(['first', 'second'], array_column($edits, 'comment'));
+            $this->assertCount(3, $anonymous);
+            $this->assertSame(['500', '500', '500'], array_column($anonymous, 'uclimit'));
+            $this->assertArrayNotHasKey('uccontinue', $anonymous[0]);
+            $this->assertSame('next', $anonymous[1]['uccontinue']);
+            $this->assertSame('last', $anonymous[2]['uccontinue']);
+            $this->assertSame('Fixture bot', $anonymous[0]['ucuser']);
+            $this->assertSame('older', $anonymous[0]['ucdir']);
+            $this->assertSame(48 * 3600, strtotime($anonymous[0]['ucstart']) - strtotime($anonymous[0]['ucend']));
+            $this->assertSame(array_map(static function (array $request): array {
+                $request['uclimit'] = 'max';
+                return $request;
+            }, $anonymous), $authenticated);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'query_api');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'query_api_authenticated');
+        }
     }
 
     public function testCategoryMembersBoundedStopsAtLimitAndSignalsThresholds(): void {

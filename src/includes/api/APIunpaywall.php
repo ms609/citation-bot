@@ -67,7 +67,7 @@ function get_unpaywall_url(Template $template, string $doi): string {
     curl_setopt($ch_oa, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch_oa);
     if (curl_getinfo($ch_oa, CURLINFO_RESPONSE_CODE) === 429) {
-        return 'rate_limited'; // @codeCoverageIgnore
+        return 'rate_limited';
     }
     if ($json) {
         $oa = parse_unpaywall_response($json);
@@ -83,22 +83,21 @@ function get_unpaywall_url(Template $template, string $doi): string {
                 return 'publisher';
             }
             if (!isset($best_location->evidence)) {
-                return 'nothing'; // @codeCoverageIgnore
+                return 'nothing';
             }
             if (isset($oa->journal_name) && $oa->journal_name === "Cochrane Database of Systematic Reviews") {
-                report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
-                return 'unreliable'; // @codeCoverageIgnore
+                report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi));
+                return 'unreliable';
             }
             if (isset($best_location->url_for_landing_page)) {
                 $oa_url = (string) $best_location->url_for_landing_page; // Prefer to PDF
             } elseif (isset($best_location->url)) {
-                // @codeCoverageIgnoreStart
                 $oa_url = (string) $best_location->url;
             } else {
-                return 'nothing'; // @codeCoverageIgnoreEnd
+                return 'nothing';
             }
             if (!$oa_url) {
-                return 'nothing'; // @codeCoverageIgnore
+                return 'nothing';
             }
 
             if (mb_stripos($oa_url, 'semanticscholar.org') !== false) {
