@@ -481,6 +481,36 @@ final class TemplatePart3Test extends testBaseClass {
         $this->assertStringStartsWith('467', (string) $expanded->get2('issue'));
     }
 
+    public function testExistingTitleItalicTagsAreConverted(): void {
+        foreach ([
+            '<i>Geinitzia</i>',
+            '<em>Geinitzia</em>',
+            '<italic>Geinitzia</italic>',
+            '<italics>Geinitzia</italics>',
+            '<I>Geinitzia</I>',
+            '&lt;italic&gt;Geinitzia&lt;/italic&gt;',
+        ] as $italic_name) {
+            $citation = $this->make_citation('{{cite journal|title=A review of ' . $italic_name . '.}}');
+            $citation->tidy_parameter('title');
+            $this->assertSame("A review of ''Geinitzia''.", $citation->get('title'));
+            $text = $citation->parsed_text();
+            $citation->tidy_parameter('title');
+            $this->assertSame($text, $citation->parsed_text());
+        }
+    }
+
+    public function testTitleItalicCleanupPreservesOtherMarkup(): void {
+        $text = '<ref>{{cite journal|title=A review of <i>Geinitzia</i> and <math>x^2</math>' .
+            ' <nowiki><i>literal</i></nowiki>}}</ref><!-- <i>comment</i> -->';
+        $expected = str_replace('<i>Geinitzia</i>', "''Geinitzia''", $text);
+        $this->assertSame($expected, $this->process_page($text)->parsed_text());
+    }
+
+    public function testCommentStillBlocksTitleItalicCleanup(): void {
+        $text = '{{cite journal|title=A review of <i>Geinitzia</i><!-- keep formatting -->}}';
+        $this->assertSame($text, $this->process_page($text)->parsed_text());
+    }
+
     public function testTitleItalics(): void {
         $text = '{{cite journal|doi=10.1111/pala.12168|pmid=<!-- -->|pmc=<!-- -->}}';
         $expanded = $this->process_citation($text);
