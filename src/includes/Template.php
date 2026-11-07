@@ -1671,7 +1671,7 @@ final class Template
                         $this->forget('number');
                     } // No issues, just volumes
                     $value = wikify_external_text(title_case($value));
-                    if ($this->has('series') && str_equivalent($this->get('series'), $value)) {
+                    if ($this->has('series') && (str_equivalent($this->get('series'), $value) || $this->memoirs_series_matches($value))) {
                         return false;
                     }
                     if ($this->has('work')) {
@@ -5419,6 +5419,10 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
+                    if ($this->memoirs_series_matches($this->get($param))) {
+                        $this->forget($param);
+                        return;
+                    }
                     if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
                         $this->forget($param);
                         return;
@@ -7274,6 +7278,10 @@ final class Template
                     $this->forget('chapter');
                 }
             }
+            // An editor's Memoirs series can coexist with journal-style metadata from a DOI.
+            if ($this->memoirs_series_matches($this->get('journal'))) {
+                $this->forget('journal');
+            }
             // Sometimes series and journal come from different databases
             if ($this->has('series') && $this->has('journal') && str_equivalent($this->get('series'), $this->get('journal'))) {
                 // Leave only one
@@ -8969,6 +8977,17 @@ final class Template
                 }
             }
         }
+    }
+
+    /** Memoirs can be cited as a journal or as a monograph in a series. */
+    private function memoirs_series_matches(string $periodical): bool {
+        if ($periodical === '' || !in_array($this->wikiname(), ['citation', 'cite book'], true)) {
+            return false;
+        }
+        $names = ['memoirs of the american mathematical society', 'memoirs of the ams', 'mem amer math soc'];
+        $series = $this->get_without_comments_and_placeholders('series');
+        return in_array(mb_strtolower(str_remove_irrelevant_bits($series)), $names, true) &&
+            in_array(mb_strtolower(str_remove_irrelevant_bits($periodical)), $names, true);
     }
 
     public function is_book_series(string $param): bool {
