@@ -2214,13 +2214,13 @@ final class TemplatePart2Test extends testBaseClass {
         $this->AssertNull($expanded->get2('chapter-url'));
     }
 
-    public function testTidyArchiveCloseToStartb(): void {
+    public function testTidyArchiveLaterPageRemainsBookUrl(): void {
         $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/n111}}";
         $expanded = $this->make_citation($text);
         $expanded->tidy_parameter('url');
         $this->AssertSame('cite book', $expanded->wikiname());
-        $this->AssertSame('http://archive.org/details/stuff/page/n111', $expanded->get2('chapter-url'));
-        $this->AssertNull($expanded->get2('url'));
+        $this->assertSame('http://archive.org/details/stuff/page/n111', $expanded->get2('url'));
+        $this->assertNull($expanded->get2('chapter-url'));
     }
 
     public function testRemoveContentdirectionsDOIs(): void {

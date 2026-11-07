@@ -57,20 +57,23 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertNotNull($expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter5(): void {
-        $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/232}}';
+    public function testConvertToCiteBookKeepsArchivePageUrl(): void {
+        $url = 'https://archive.org/details/examplebook/page/232';
+        $text = '{{Cite web|title=X|chapter=Y|url=' . $url . '}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
-        $this->assertNotNull($expanded->get2('chapter-url'));
+        $this->assertSame('cite book', $expanded->wikiname());
+        $this->assertNull($expanded->get2('chapter-url'));
         $this->assertNull($expanded->get2('chapterurl'));
-        $this->assertNull($expanded->get2('url'));
+        $this->assertSame($url, $expanded->get2('url'));
     }
 
-    public function testCovertUrl2Chapter6(): void {
-        $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/chapter/}}';
+    public function testConvertToCiteBookMovesArchiveChapterUrl(): void {
+        $url = 'https://archive.org/details/examplebook/chapter/4';
+        $text = '{{Cite web|title=X|chapter=Y|url=' . $url . '}}';
         $expanded = $this->make_citation($text);
         $expanded->change_name_to('cite book');
-        $this->assertNotNull($expanded->get2('chapter-url'));
+        $this->assertSame($url, $expanded->get2('chapter-url'));
         $this->assertNull($expanded->get2('chapterurl'));
         $this->assertNull($expanded->get2('url'));
     }
@@ -546,12 +549,12 @@ final class MiscToolsTest extends testBaseClass {
             'archive page n16' => [
                 '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/page/n16}}',
                 false,
-                true,
+                false,
             ],
             'archive ordinary page' => [
                 '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/page/n200}}',
                 false,
-                true,
+                false,
             ],
             'archive chapter URL' => [
                 '{{Cite book|chapter=X|url=https://archive.org/details/examplebook/chapter/4}}',
@@ -798,12 +801,12 @@ final class MiscToolsTest extends testBaseClass {
         $this->assertFalse(should_url2chapter($template, true));
     }
 
-    public function testShouldUrl2ChapterAcceptsLaterArchivePage(): void {
+    public function testShouldUrl2ChapterRejectsLaterArchivePage(): void {
         $template = $this->make_citation(
             '{{cite book|chapter=Example|url=https://archive.org/details/examplebook/page/n16}}'
         );
 
-        $this->assertTrue(should_url2chapter($template, false));
+        $this->assertFalse(should_url2chapter($template, false));
     }
 
     public function testShouldUrl2ChapterAcceptsArchiveChapterPath(): void {
@@ -812,6 +815,33 @@ final class MiscToolsTest extends testBaseClass {
         );
 
         $this->assertTrue(should_url2chapter($template, false));
+    }
+
+    public function testArchiveBookReaderPagesStayBookUrls(): void {
+        foreach ([
+            'https://archive.org/details/unesco_general_history_africa_v/page/69/mode/2up?q=sakalava+maroserana&view=theater',
+            'https://archive.org/details/general-history-of-africa-vol-4/page/n291/mode/2up?view=theater',
+            'https://archive.org/details/examplebook/page/200?query=chapter',
+            'https://archive.org/details/examplebook-chapter-4/page/200',
+            'https://www.archive.org/details/examplebook/?query=chapter',
+        ] as $url) {
+            $text = '{{cite book|title=General History of Africa|chapter=Madagascar|url=' . $url . '}}';
+            $citation = $this->make_citation($text);
+            $this->assertFalse(should_url2chapter($citation, false), $url);
+            $this->assertFalse(should_url2chapter($citation, true), $url);
+            $citation->tidy();
+            $this->assertSame($url, $citation->get('url'));
+            $this->assertSame('', $citation->get('chapter-url'));
+        }
+    }
+
+    public function testArchiveBookUrlSurvivesPageProcessing(): void {
+        $url = 'https://archive.org/details/unesco_general_history_africa_v/page/69/mode/2up';
+        $text = '{{cite book|title=General History of Africa|chapter=Population movements|url=' . $url . '}}';
+        $citation = $this->process_citation($text);
+        $this->assertSame($url, $citation->get('url'));
+        $this->assertSame('', $citation->get('chapter-url'));
+        $this->assertSame('Population movements', $citation->get('chapter'));
     }
 
     public function testShouldUrl2ChapterRejectsArchivePageRootAndPageOne(): void {
