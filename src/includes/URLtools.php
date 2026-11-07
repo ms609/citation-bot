@@ -1889,17 +1889,16 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
 
         } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d{9}[\dX])(?!\w)~i", $url, $match)) {
 
-            $was_cite_web = $template->wikiname() === 'cite web';
-            if ($was_cite_web) {
-                $template->change_name_to('cite book');
+            if ($template->wikiname() === 'cite web') {
+                // A web citation of a retail listing cites that page (its release date, the
+                // reviews it quotes), not the book.  Turning it into cite book would drop
+                // the url, archive-url and access-date that show where the claim came from.
+                report_info("Leaving Amazon URL in cite web unchanged: the listing is the source, not the book.");
+                return false;
             }
             if ($match['domain'] === ".com") {
-                if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
-                    // Drop the URL when it is redundant (template was already a
-                    // book citation, or the conversion succeeded). If the
-                    // conversion was declined (see Template::change_name_to()),
-                    // the template must remain a valid cite web, which
-                    // requires a url=.
+                if (!$url_sent) {
+                    // The URL is redundant to the ASIN
                     $template->forget($url_type);
                     if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
@@ -1920,7 +1919,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                         return false;  // do not continue and delete it, because of TODO above
                     }
                 }
-                if (!$url_sent && (!$was_cite_web || $template->wikiname() === 'cite book')) {
+                if (!$url_sent) {
                     $template->forget($url_type); // will forget accessdate too
                     if (mb_stripos($template->get('publisher'), 'amazon') !== false) {
                         $template->forget('publisher');
