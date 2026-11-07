@@ -4095,6 +4095,12 @@ final class Template
         if ($new_name === $this->wikiname()) {
             return;
         }
+        if ($new_name === 'cite journal' && mb_stripos($this->get('doi'), '10.1287/orms.') !== false) {
+            // ORMS Today is an INFORMS magazine, not a journal.  Whatever the template calls its container
+            // (website=, the article title, nothing), turning it into cite journal strands the citation
+            // without a journal=, so keep the template type it has.
+            return;
+        }
         // Decide how to preserve a journal container before changing the template type.
         $book_journal_target = null;
         if ($new_name === 'cite book' && !$this->blank('journal')) {
