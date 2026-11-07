@@ -632,4 +632,59 @@ final class DoiTest extends testBaseClass {
         ]);
         $this->assertNull($template->get2('issue'));
     }
+
+    public function testDoiJsonDoesNotAddJournalNameAsAuthor(): void {
+        // Some journals credit themselves as the author of editorials
+        $template = $this->make_citation('{{cite journal|doi=10.1000/journal-as-author}}');
+        process_doi_json($template, '10.1000/journal-as-author', [
+            'type' => 'journal-article',
+            'title' => ['An editorial'],
+            'container-title' => ['The Lancet Child & Adolescent Health'],
+            'author' => [['literal' => 'The Lancet Child & Adolescent Health']],
+        ]);
+        $this->assertNull($template->get2('author1'));
+        $this->assertNull($template->get2('author'));
+        $this->assertNull($template->get2('last1'));
+        $this->assertNull($template->get2('first1'));
+        $this->assertNull($template->get2('vauthors'));
+    }
+
+    public function testDoiJsonDoesNotAddJournalNameAsAuthorStringContainerTitle(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1000/journal-as-author-string}}');
+        process_doi_json($template, '10.1000/journal-as-author-string', [
+            'type' => 'journal-article',
+            'title' => ['An editorial'],
+            'container-title' => 'Lancet Child and Adolescent Health', // string form; no "The"; "and" for "&"
+            'author' => [['literal' => 'The Lancet Child & Adolescent Health']],
+        ]);
+        $this->assertNull($template->get2('author1'));
+        $this->assertNull($template->get2('last1'));
+    }
+
+    public function testDoiJsonKeepsOtherAuthorsAndNumbersThemConsecutively(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1000/journal-and-person}}');
+        process_doi_json($template, '10.1000/journal-and-person', [
+            'type' => 'journal-article',
+            'title' => ['An editorial'],
+            'container-title' => ['The Lancet Child & Adolescent Health'],
+            'author' => [
+                ['literal' => 'The Lancet Child & Adolescent Health'],
+                ['given' => 'Jane', 'family' => 'Smith'],
+            ],
+        ]);
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('Jane', $template->get2('first1'));
+        $this->assertNull($template->get2('last2'));
+    }
+
+    public function testDoiJsonStillAddsAuthorsWhenNoContainerTitle(): void {
+        $template = $this->make_citation('{{cite journal|doi=10.1000/person-only}}');
+        process_doi_json($template, '10.1000/person-only', [
+            'type' => 'journal-article',
+            'title' => ['A paper'],
+            'author' => [['given' => 'Jane', 'family' => 'Smith']],
+        ]);
+        $this->assertSame('Smith', $template->get2('last1'));
+        $this->assertSame('Jane', $template->get2('first1'));
+    }
 }

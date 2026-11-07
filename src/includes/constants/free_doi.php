@@ -1022,4 +1022,12 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '12',
     ],
+    [   // Annual Reviews (Subscribe to Open): free from 2023 onward.  Open-ended on purpose; if the program
+        // lapses in a later year this needs an end date.  Several titles became free earlier (2020, 2021)
+        // but need per-journal prefixes, so only the common 2023 start is covered here.
+        // See User talk:Citation bot, "10.1146 is free from 2023+"
+        'prefix' => '10.1146/annurev',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2023-01-01',
+    ],
 ];
