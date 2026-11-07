@@ -26,6 +26,106 @@ final class DoiTest extends testBaseClass {
         }
     }
 
+    public function testJournalDoiDoesNotEnrichProceedingsCitation(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI metadata');
+        }
+
+        $doi = '10.7155/jgaa.00318';
+        $record = new SimpleXMLElement(
+            '<query><article_title>Superpatterns and Universal Point Sets</article_title>' .
+            '<journal_title>Journal of Graph Algorithms and Applications</journal_title>' .
+            '<year>2014</year><volume>18</volume><issue>2</issue>' .
+            '<first_page>177</first_page><last_page>209</last_page></query>'
+        );
+        $stubs = [
+            'bot_curl_exec' => '',
+            'curl_exec' => false,
+            'sleep' => 0,
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) ['type' => 'journal-article'],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $proceedings = '[[International Symposium on Graph Drawing|Proc. 21st International Symposium on Graph Drawing (GD 2013)]]';
+            $citation = $this->process_citation(
+                '{{citation|contribution=Superpatterns and universal point sets|title=' . $proceedings .
+                '|year=2013|doi=' . $doi . '|bibcode=2013arXiv1308.0403B|s2cid=6229641}}'
+            );
+            $this->assertSame('Superpatterns and universal point sets', $citation->get('contribution'));
+            $this->assertSame($proceedings, $citation->get('title'));
+            $this->assertSame('2013', $citation->get('year'));
+            $this->assertSame($doi, $citation->get('doi'));
+            foreach (['journal', 'volume', 'issue', 'pages'] as $parameter) {
+                $this->assertNull($citation->get2($parameter), $parameter);
+            }
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
+    public function testProceedingsCitationRejectsJournalDoiJson(): void {
+        $doi = '10.7155/jgaa.00318';
+        $citation = $this->make_citation(
+            '{{cite book|chapter=Superpatterns and universal point sets|' .
+            'title=Proceedings of the 21st International Symposium on Graph Drawing|year=2013|doi=' . $doi . '}}'
+        );
+        $original = $citation->parsed_text();
+        process_doi_json($citation, $doi, [
+            'type' => 'article-journal',
+            'title' => 'Superpatterns and Universal Point Sets',
+            'container-title' => 'Journal of Graph Algorithms and Applications',
+            'volume' => '18',
+            'issue' => '2',
+            'pages' => '177-209',
+        ]);
+        $this->assertSame($original, $citation->parsed_text());
+
+        if (function_exists('uopz_set_return')) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return('get_unpaywall_url', static function (): string {
+                throw new LogicException('A DOI for a different version must not supply an open access URL');
+            }, true);
+            try {
+                get_open_access_url($citation);
+            } finally {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return('get_unpaywall_url');
+            }
+        }
+
+        process_bibcode_data($citation, (object) [
+            'title' => ['Superpatterns and Universal Point Sets'],
+            'pub' => 'Journal of Graph Algorithms and Applications',
+            'volume' => '18',
+            'page' => ['177-209'],
+        ]);
+        $this->assertSame($original, $citation->parsed_text());
+    }
+
+    public function testProceedingsCitationCanUseProceedingsDoiJson(): void {
+        $doi = '10.1000/proceedings';
+        foreach (['proceedings-article', 'article-journal'] as $type) {
+            $citation = $this->make_citation(
+                '{{cite book|chapter=Example paper|title=Proceedings of the Example Symposium|doi=' . $doi . '}}'
+            );
+            process_doi_json($citation, $doi, [
+                'type' => $type,
+                'container-title' => 'Proceedings of the Example Symposium',
+                'pages' => '1-12',
+            ]);
+            $this->assertSame('1–12', $citation->get('pages'));
+        }
+    }
+
     public function testCrossRefNewApiParserAcceptsObjectMessage(): void {
         $result = parse_crossref_newapi_response(
             '{"status":"ok","message":{"title":["Expected title"]}}'

@@ -32,6 +32,7 @@ final class Template
     /** @psalm-suppress PropertyNotSetInConstructor */
     private string $rawtext; // Must start out as unset
     public string $last_searched_doi = '';
+    public ?string $conflicting_journal_doi = null;
     private string $example_param = '';
     private string $name = '';
     /** @var array<Parameter> */

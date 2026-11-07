@@ -101,6 +101,9 @@ function is_a_book_bibcode(string $id): bool {
  * @param null|callable(string): stdClass $lookup
  */
 function expand_by_adsabs(Template $template, ?callable $lookup = null): void {
+    if ($template->conflicting_journal_doi === $template->get_without_comments_and_placeholders('doi')) {
+        return;
+    }
     static $needs_told = true;
     // Offline tests inject a fixed ADS response; production uses the live service.
     $lookup ??= static fn (string $options): stdClass => query_adsabs($options);
@@ -776,6 +779,9 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
 }
 
 function process_bibcode_data(Template $this_template, object $record): void {
+    if ($this_template->conflicting_journal_doi === $this_template->get_without_comments_and_placeholders('doi')) {
+        return;
+    }
     if (!adsabs_record_is_safe($record)) {
         report_warning("Malformed AdsAbs record ignored.");
         return;
