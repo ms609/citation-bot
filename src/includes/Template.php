@@ -6284,7 +6284,7 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $title = $this->get($param);
+                    $title = wikify_italic_tags($this->get($param));
                     // Check for MathML
                     if (preg_match('~<(?:mml:)?m(?:sup|sub|subsup|frac|root|under|over|underover|row|i|n|o|text|multiscripts)[\s>]~', $title)) {
                         report_warning("Title contains MathML markup that should be converted to LaTeX: " . echoable(mb_substr($title, 0, 100)));

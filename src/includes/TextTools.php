@@ -121,21 +121,7 @@ function wikify_external_text(string $title): string {
                 return "'''" . $matches[1] . "'''";
             },
             $title);
-        $title = safe_preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-            static function (array $matches): string {
-                return "''" . $matches[1] . "''";
-            },
-            $title);
-        $title = safe_preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
-            static function (array $matches): string {
-                return "''" . $matches[1] . "''";
-            },
-            $title);
-        $title = safe_preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
-            static function (array $matches): string {
-                return "''" . $matches[1] . "''";
-            },
-            $title);
+        $title = wikify_italic_tags($title);
     }
 
     if (mb_substr($title, -1) === '.') {
@@ -167,6 +153,17 @@ function wikify_external_text(string $title): string {
         }
     }
     return $title;
+}
+
+/** Convert paired italic tags without otherwise normalizing an existing title. */
+function wikify_italic_tags(string $text): string {
+    return safe_preg_replace_callback(
+        '~(?:<|&lt;)(i|em|italics?)(?:>|&gt;)([^<]+?)(?:<|&lt;)/\1(?:>|&gt;)~iu',
+        static function (array $matches): string {
+            return "''" . $matches[2] . "''";
+        },
+        $text
+    );
 }
 
 function restore_italics (string $text): string {
