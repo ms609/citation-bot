@@ -58,7 +58,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     /** @return resource */
-    private function openLease(): mixed {
+    private function openLease() {
         $handle = fopen(big_jobs_name(), 'x+');
         $this->assertIsResource($handle);
         $this->open_handles[] = $handle;
@@ -91,6 +91,8 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
     /**
      * Run a callback while the named internal function returns a fixed value.
      *
+     * @param string $function
+     * @param mixed $value
      * @param callable(): void $callback
      */
     private function withStub(string $function, mixed $value, callable $callback): void {
@@ -517,7 +519,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
      *
      * @return resource
      */
-    private function enterLargeRunMode(bool $with_lease_global = true): mixed {
+    private function enterLargeRunMode(bool $with_lease_global = true) {
         /** @psalm-suppress UnusedFunctionCall */
         uopz_redefine('HTML_OUTPUT', true);
         define('BIG_JOB_MODE', 'YES');

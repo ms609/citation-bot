@@ -65,7 +65,10 @@ final class WikipediaBotResponseEdgeCaseTest extends PHPUnit\Framework\TestCase 
         ];
     }
 
-    /** @param array{string, string}|null $expected */
+    /**
+     * @param mixed $error
+     * @param array{string, string}|null $expected
+     */
     #[DataProvider('errorFieldProvider')]
     public function testErrorFieldExtraction(mixed $error, ?array $expected): void {
         $this->assertSame($expected, WikipediaBot::mediawiki_error_fields($error));

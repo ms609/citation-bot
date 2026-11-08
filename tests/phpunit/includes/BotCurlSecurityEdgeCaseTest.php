@@ -52,11 +52,20 @@ final class BotCurlSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->assertSame($expected, bot_curl_ip_is_public($address));
     }
 
+    private function unconfiguredHandle(): CurlHandle {
+        // phpcs:ignore Generic.PHP.ForbiddenFunctions.FoundWithAlternative -- These tests need a handle without bot defaults.
+        $handle = curl_init();
+        if ($handle === false) {
+            $this->fail('Could not initialize a cURL test handle');
+        }
+        return $handle;
+    }
+
     public function testFailureToApplySecurityOptionsIsFatal(): void {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
             $this->markTestSkipped('uopz is required to simulate a cURL option failure');
         }
-        $handle = curl_init();
+        $handle = $this->unconfiguredHandle();
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('curl_setopt_array', false);
         try {
@@ -70,13 +79,12 @@ final class BotCurlSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testNormalHandlesGetStrictTlsVerification(): void {
-        $handle = curl_init();
-        bot_curl_apply_security_options($handle);
+        $handle = bot_curl_init(1.0, [], BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
         $this->assertFalse(bot_curl_is_legacy_tls_probe($handle));
     }
 
     public function testTransferResultDefaultsToNotRun(): void {
-        $handle = curl_init();
+        $handle = bot_curl_init(1.0, [], BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES);
         $result = bot_curl_last_transfer($handle);
         $this->assertFalse($result['ok']);
         $this->assertSame(0, $result['errno']);
@@ -96,7 +104,7 @@ final class BotCurlSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testResponseLimitDefaultsWhenNoneWasSet(): void {
-        $handle = curl_init();
+        $handle = $this->unconfiguredHandle();
         $this->assertSame(BOT_CURL_DEFAULT_MAX_RESPONSE_BYTES, bot_curl_get_max_response_bytes($handle));
     }
 }

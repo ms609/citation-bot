@@ -102,7 +102,9 @@ final class RequestSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
     public function testOauthFormRequestBoundsTheTargetInBytes(): void {
         $limit = str_repeat('a', 12800);
         $request = oauth_form_request('process_page.php', $limit, []);
-        $this->assertIsArray($request);
+        if ($request === null) {
+            $this->fail('Expected a form request at the byte limit');
+        }
         $this->assertSame($limit, $request['fields']['page']);
 
         $this->assertNull(oauth_form_request('process_page.php', $limit . 'a', []));
@@ -129,12 +131,12 @@ final class RequestSecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $request = oauth_form_request('process_page.php', 'Target', [
             'edit' => 'yes',
             'wiki_base' => str_repeat('w', 255),
-            'pcre' => str_repeat('p', 256),          // too long: dropped
+            'pcre' => str_repeat('p', 256), // too long: dropped
             'extended_limit' => ['not', 'a', 'string'], // wrong type: dropped
             'ignore_block' => '1',
             'csrf_token' => 'must-never-be-carried',
             'api_key' => 'must-never-be-carried',
-            'slow' => '',                            // presence alone enables it
+            'slow' => '', // presence alone enables it
         ]);
         $this->assertIsArray($request);
         $this->assertSame(

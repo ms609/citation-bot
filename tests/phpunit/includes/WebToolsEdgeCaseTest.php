@@ -129,13 +129,20 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
     /**
      * Record shutdown registrations instead of deferring them to the end of the process.
      *
-     * @param list<array<int, mixed>> $registered
+     * @param list<array<int, mixed>> &$registered
      */
     private function captureShutdownFunctions(array &$registered): void {
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('register_shutdown_function', static function (mixed ...$arguments) use (&$registered): void {
             $registered[] = $arguments;
         }, true);
+    }
+
+    private function requireLeaseId(?string $entry_id): string {
+        if ($entry_id === null) {
+            $this->fail('Expected the gate to admit a lease');
+        }
+        return $entry_id;
     }
 
     /** Page fixtures: the title decides what happens to each page. */
@@ -465,8 +472,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->assertSame($probe, gate_big_run_probe_to_discovery($probe, $this->base_directory, self::NOW), 'Promotion is idempotent');
 
         // A second probe cannot become discovery while the only normal slot is taken.
-        $second = gate_big_run_probe('category', 'bob', $this->base_directory, self::NOW);
-        $this->assertIsString($second);
+        $second = $this->requireLeaseId(gate_big_run_probe('category', 'bob', $this->base_directory, self::NOW));
         ob_start();
         try {
             gate_big_run_probe_to_discovery($second, $this->base_directory, self::NOW);
@@ -528,13 +534,11 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $ended = new RuntimeException('exit');
         $this->stubExit($ended);
 
-        $first = gate_big_run_discovery('category', 'alice', $this->base_directory, self::NOW);
-        $this->assertIsString($first);
+        $first = $this->requireLeaseId(gate_big_run_discovery('category', 'alice', $this->base_directory, self::NOW));
         gate_big_run_discovery_large($first, $this->base_directory, self::NOW);
         $this->assertSame('ok', big_run_heartbeat_status($first, $this->base_directory, self::NOW));
 
-        $second = gate_big_run_discovery('category', 'bob', $this->base_directory, self::NOW);
-        $this->assertIsString($second);
+        $second = $this->requireLeaseId(gate_big_run_discovery('category', 'bob', $this->base_directory, self::NOW));
         $this->assertSame($second, $GLOBALS['citation_bot_big_run_current']['entry_id']);
         ob_start();
         try {
@@ -572,8 +576,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->assertCount(2, $registered, 'Promotion must not register a second release');
 
         // A discovery lease that turned out to be a small job is released immediately.
-        $small = gate_big_run_discovery('category', 'carol', $this->base_directory, self::NOW);
-        $this->assertIsString($small);
+        $small = $this->requireLeaseId(gate_big_run_discovery('category', 'carol', $this->base_directory, self::NOW));
         $this->assertNull(gate_big_run(BIG_RUN_PAGE_THRESHOLD, 'category', 'carol', $this->base_directory, self::NOW, $small));
         $this->assertSame('lost', big_run_heartbeat_status($small, $this->base_directory, self::NOW));
         $this->assertArrayNotHasKey('citation_bot_big_run_current', $GLOBALS);
@@ -594,8 +597,7 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->stubExit($ended);
 
         $this->assertIsString(gate_big_run(5, 'webform', 'alice', $this->base_directory, self::NOW), 'Spends the only token');
-        $discovery = gate_big_run_discovery('category', 'bob', $this->base_directory, self::NOW);
-        $this->assertIsString($discovery);
+        $discovery = $this->requireLeaseId(gate_big_run_discovery('category', 'bob', $this->base_directory, self::NOW));
 
         ob_start();
         try {
