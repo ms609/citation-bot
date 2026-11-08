@@ -203,15 +203,23 @@ function big_jobs_acquire_large_run(): void {
     $stop_message = null;
     try {
         clearstatcache(true, $fn);
-        $last_seen = @filemtime($fn);
-        if (is_int($last_seen) && $last_seen < (time() - BIG_JOBS_STALE_SECONDS)) {
-            @unlink($fn);
-            clearstatcache(true, $fn);
-        }
-        if (file_exists($fn)) {
+        // PHP can resolve a dangling symlink before opening with x+.
+        $lease_stat = @lstat($fn);
+        if (is_array($lease_stat) && ($lease_stat['mode'] & 0170000) !== 0100000) {
+            $stop_message = 'Unable to obtain large run lock.';
+        } elseif (
+            is_array($lease_stat) &&
+            ($lease_stat['mtime'] >= time() - BIG_JOBS_STALE_SECONDS || !@unlink($fn)) &&
+            file_exists($fn)
+        ) {
             $stop_message = 'Run blocked by your existing big run.';
         } else {
             $lock_file = @fopen($fn, 'x+');
+            clearstatcache(true, $fn);
+            if ($lock_file !== false && !big_jobs_owns_path($lock_file, $fn)) {
+                @fclose($lock_file);
+                $lock_file = false;
+            }
             if ($lock_file === false) {
                 $stop_message = 'Unable to obtain large run lock.';
             } else {

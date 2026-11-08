@@ -4,6 +4,50 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class WebToolsTest extends testBaseClass {
+    public function testPageContainingZeroIsReportedAsUnchanged(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki');
+        }
+
+        $details = (object) [
+            'query' => (object) [
+                'pages' => [(object) ['title' => 'Zero', 'touched' => '2020-01-01T00:00:00Z', 'lastrevid' => 123]],
+            ],
+        ];
+        $phases = [];
+        $warnings = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'read_details', $details);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'get_a_page', '0');
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('report_phase', static function (string $message) use (&$phases): void {
+            $phases[] = $message;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('report_warning', static function (string $message) use (&$warnings): void {
+            $warnings[] = $message;
+        }, true);
+        ob_start();
+        try {
+            edit_a_list_of_pages(['Zero'], new WikipediaBot(), 'Fixture');
+        } finally {
+            ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('report_warning');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('report_phase');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'get_a_page');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'read_details');
+        }
+
+        $this->assertStringContainsString('No changes required.', implode("\n", $phases));
+        $this->assertStringNotContainsString('Blank page.', implode("\n", $phases));
+        $this->assertStringNotContainsString('No text retrieved.', implode("\n", $warnings));
+    }
+
     public function testBatchCountsNoChangeFailedWritesAndEditConflicts(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub MediaWiki');

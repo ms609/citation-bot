@@ -271,6 +271,14 @@ final class gadgetapiTest extends testBaseClass {
                 'Expanded citation', '', 200,
                 ['expandedtext' => 'Expanded citation', 'editsummary' => 'Use this tool| #UCB_Gadget '],
             ],
+            'expanded citation with zero summary' => [
+                'Expanded citation', '0', 200,
+                ['expandedtext' => 'Expanded citation', 'editsummary' => '0 | Use this tool| #UCB_Gadget '],
+            ],
+            'zero expansion with summary' => [
+                '0', 'Existing summary', 200,
+                ['expandedtext' => '0', 'editsummary' => 'Existing summary | Use this tool| #UCB_Gadget '],
+            ],
             'empty expansion' => ['', 'Existing summary', 500, ['error' => 'internal_error']],
         ];
     }
