@@ -158,7 +158,7 @@ if (!is_string($request_edit) || $request_edit === '') {
 $edit_summary_end = category_edit_summary_end(
     $api->get_the_user(),
     $category,
-    defined('MAX_PAGES_OVERRIDE'),
+    defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit,
     $dev_user_run,
     $request_edit
 );
