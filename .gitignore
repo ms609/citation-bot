@@ -7,6 +7,7 @@
 /junit.xml
 /env.php
 /DebugLog.txt
+/git_pull.lock
 /tmp/*
 /vendor/*
 /node_modules/

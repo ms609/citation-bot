@@ -31,7 +31,7 @@ if (PHP_SAPI !== 'cli') {
  * includes. Keep the shared handle alive for the request, including any
  * lazy loads, so deployment cannot replace its files midway.
  */
-$git_pull_lock = dirname(__DIR__) . '/git_pull.lock';
+$git_pull_lock = dirname(__DIR__, 2) . '/git_pull.lock';
 $git_pull_in_progress = true;
 $git_pull_lock_handle = false;
 
