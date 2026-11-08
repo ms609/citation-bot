@@ -28,13 +28,13 @@ final class TaxonCitationConversionTest extends testBaseClass {
             'GBIF genus record without www' => ['https://gbif.org/species/2888942', 'cite gbif', '2888942', null],
             'GBIF uppercase host and trailing slash' => ['http://WWW.GBIF.ORG/species/12345/', 'cite gbif', '12345', null],
             'POWO record' => [
-                'https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:30003057-2', 'cite taxon', '30003057-2', 'powo',
+                'https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:30003057-2', 'cite taxon', '30003057-2', 'POWO',
             ],
             'POWO record with trailing slash' => [
-                'http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:77178919-1/', 'cite taxon', '77178919-1', 'powo',
+                'http://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:77178919-1/', 'cite taxon', '77178919-1', 'POWO',
             ],
-            'IPNI record' => ['https://www.ipni.org/n/30149252-2', 'cite taxon', '30149252-2', 'ipni'],
-            'IPNI record without www' => ['https://ipni.org/n/30003057-2/', 'cite taxon', '30003057-2', 'ipni'],
+            'IPNI record' => ['https://www.ipni.org/n/30149252-2', 'cite taxon', '30149252-2', 'IPNI'],
+            'IPNI record without www' => ['https://ipni.org/n/30003057-2/', 'cite taxon', '30003057-2', 'IPNI'],
         ];
     }
 
@@ -75,6 +75,48 @@ final class TaxonCitationConversionTest extends testBaseClass {
             'BioRef via POWO' => ['https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:30003057-2', 'cite taxon'],
             'BioRef via IPNI' => ['https://www.ipni.org/n/30149252-2', 'cite taxon'],
         ];
+    }
+
+    #[DataProvider('pageCitations')]
+    public function testKeepsOriginalTitleMarkup(string $url, string $wrapper): void {
+        $title = "''Rumex'' L.:";
+        $template = $this->make_citation('{{cite web|url=' . $url . '|title=' . $title . '}}');
+
+        $this->assertTrue($template->convert_taxon_url());
+        $this->assertSame($wrapper, $template->wikiname());
+        $this->assertSame($title, $template->get('title'));
+    }
+
+    #[DataProvider('pageCitations')]
+    public function testWikipediaRendersConvertedCitation(string $url, string $wrapper): void {
+        if (getenv('CITATION_BOT_TEST_WIKI_RENDER') !== '1') {
+            $this->markTestSkipped('Set CITATION_BOT_TEST_WIKI_RENDER=1 to run the live Wikipedia parser check');
+        }
+        $archive = 'https://web.archive.org/web/20210101000000/' . $url;
+        $input = '{{cite web|url=' . $url . '|title=Rumex specimen|ref=taxon-regression' .
+            '|archive-url=' . $archive . '|archive-date=1 January 2021|url-status=live|quote=Taxonomic note}}';
+        $output = $this->process_page($input)->parsed_text();
+        $this->assertSame($wrapper, $this->make_citation($output)->wikiname());
+
+        $query = http_build_query([
+            'action' => 'parse', 'format' => 'json', 'formatversion' => 2,
+            'title' => 'Template:Sandbox', 'contentmodel' => 'wikitext', 'prop' => 'text', 'text' => $output,
+        ], '', '&', PHP_QUERY_RFC3986);
+        $ch = bot_curl_init(0.75, [
+            CURLOPT_URL => 'https://en.wikipedia.org/w/api.php?' . $query,
+            CURLOPT_FAILONERROR => true,
+        ], 512 * 1024);
+        $body = bot_curl_exec($ch);
+        $this->assertNotSame('', $body, 'Wikipedia parser request failed: ' . curl_error($ch));
+        $response = json_decode($body, true, 32, JSON_THROW_ON_ERROR);
+        $html = $response['parse']['text'] ?? null;
+        $this->assertIsString($html);
+        $this->assertDoesNotMatchRegularExpression('~class="(?:[^"]* )?(?:error|cs1-visible-error)(?: [^"]*)?"~', $html);
+        $this->assertStringContainsString('id="taxon-regression"', $html);
+        $this->assertStringContainsString('href="' . $url . '"', $html);
+        $this->assertStringContainsString('href="' . $archive . '"', $html);
+        $this->assertStringContainsString('Rumex specimen', $html);
+        $this->assertStringContainsString('Taxonomic note', $html);
     }
 
     #[DataProvider('pageCitations')]
@@ -121,6 +163,10 @@ final class TaxonCitationConversionTest extends testBaseClass {
             'IPNI malformed identifier' => [$prefix . 'https://www.ipni.org/n/12345}}'],
             'missing title' => ['{{cite web|url=' . $gbif . '}}'],
             'comment-only title' => ['{{cite web|url=' . $gbif . '|title=<!-- pending -->}}'],
+            'known error title with an archive' => ['{{cite web|url=' . $gbif . '|title=Page not found' .
+                '|archive-url=https://web.archive.org/web/20210101000000/' . $gbif . '|archive-date=1 January 2021}}'],
+            'known interstitial title' => ['{{cite web|url=' . $gbif . '|title=Validate User}}'],
+            'known challenge title' => [$prefix . $gbif . '|title=Checking your browser}}'],
             'already has an identifier' => [$prefix . $gbif . '|id=unrelated}}'],
             'duplicate URL' => [$prefix . $gbif . '|url=https://example.com/another-record}}'],
             'duplicate website aliases' => [$prefix . $gbif . '|website=One|work=Two}}'],

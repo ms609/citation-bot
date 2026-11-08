@@ -510,9 +510,13 @@ final class Template
     public function convert_taxon_url(): bool {
         if (
             WIKI_BASE !== 'en' || $this->wikiname() !== 'cite web' ||
-            mb_stripos($this->name, '#invoke:') !== false ||
-            $this->get_without_comments_and_placeholders('title') === ''
+            mb_stripos($this->name, '#invoke:') !== false
         ) {
+            return false;
+        }
+        $title = mb_strtolower($this->get_without_comments_and_placeholders('title'));
+        if ($title === '' || in_array($title, ALWAYS_BAD_TITLES, true) ||
+            in_array($title, ['validate user', 'join ancestry', 'join ancestry.com', 'ancestry - sign up'], true)) {
             return false;
         }
         $url = $this->get('url');
@@ -521,10 +525,10 @@ final class Template
             $database = '';
         } elseif (preg_match('~\A(?i:https?://powo\.science\.kew\.org)/taxon/urn:lsid:ipni\.org:names:([1-9][0-9]*-[0-9]+)/?\z~', $url, $match) === 1) {
             $wrapper = 'Cite taxon';
-            $database = 'powo';
+            $database = 'POWO';
         } elseif (preg_match('~\A(?i:https?://(?:www\.)?ipni\.org)/n/([1-9][0-9]*-[0-9]+)/?\z~', $url, $match) === 1) {
             $wrapper = 'Cite taxon';
-            $database = 'ipni';
+            $database = 'IPNI';
         } else {
             return false;
         }
@@ -554,7 +558,6 @@ final class Template
         }
         // Both wrappers accept the original URL and title, including their formatting.
         $this->name = safe_preg_replace('~\S(?:.*\S)?~su', $wrapper, $this->name);
-        $this->tidy_parameter('title');
         return true;
     }
 
