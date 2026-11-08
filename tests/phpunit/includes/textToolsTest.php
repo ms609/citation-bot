@@ -290,6 +290,24 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('-0003-10-22'));
     }
 
+    public function testTidyDateRejectsSignedNegativeYears(): void {
+        $this->assertSame('', tidy_date_inside('-0044'));
+        $this->assertSame('', tidy_date('-1500'));
+        $this->assertSame('', tidy_date('-1500-10-22'));
+        $this->assertSame('', tidy_date('−1500-10-22'));
+        $this->assertSame('', tidy_date('Date published (-1500'));
+        $this->assertSame('1500', tidy_date('1500-10-22'));
+    }
+
+    public function testTidyDateComparesSlashComponentsNumerically(): void {
+        $this->assertSame('2005-05-05', tidy_date_inside('5/05/2005'));
+        $this->assertSame('2005-05-05', tidy_date_inside('05/5/2005'));
+        $this->assertSame('2005-05-05', tidy_date_inside('5/5/2005'));
+        $this->assertSame('2005', tidy_date_inside('5/06/2005'));
+        $this->assertSame('2005', tidy_date_inside('0/00/2005'));
+        $this->assertSame('2005', tidy_date_inside('0/0/2005'));
+    }
+
     public function testTidyDateFutureRejection1(): void {
         new TestPage(); // Fill page name with test name for debugging
         // Test date 4 days in the future (should be rejected)

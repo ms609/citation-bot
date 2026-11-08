@@ -34,6 +34,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml)
 
 ## GitHub repository details
 
@@ -294,6 +295,14 @@ The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning
 Runtime diagnostics are written to `DebugLog.txt` in the main Citation Bot
 repository directory, one level above the `src/` web tree. The file is forced
 to mode `0600` and is ignored by Git.
+
+The permanent deployment lock, `git_pull.lock`, also lives in the repository
+root and is ignored by Git. The account running PHP must be able to create it
+there. When upgrading from `src/git_pull.lock`, stop the web service, pause
+scheduled Citation Bot jobs, and wait for active requests, jobs, and
+deployments to exit. Apply the update from the shell, remove
+`src/git_pull.lock`, then restart the service and resume jobs. Old and new
+processes use different lock files during this transition.
 
 When upgrading from a build that locks `big-run.json` directly to the permanent `big-run.lock` backend, perform a **drained deployment**. Stop the web service and wait for all old php-cgi requests to exit, update the code while the service is stopped, remove the old `big-run.json` snapshot from the configured rate-limit state directory, then restart the web service. Do not use the live `gitpull.php` endpoint for this one-time lock-protocol transition: old and new requests otherwise coordinate on different lock objects. Once every worker is running the new protocol, normal deployments may resume.
 

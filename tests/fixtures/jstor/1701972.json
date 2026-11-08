@@ -1,0 +1,30 @@
+[
+  {
+    "itemType": "journalArticle",
+    "title": "Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec",
+    "publicationTitle": "Science",
+    "date": "1988",
+    "volume": "242",
+    "issue": "4880",
+    "pages": "913-916",
+    "url": "https://www.jstor.org/stable/1701972",
+    "DOI": "10.1126/science.242.4880.913",
+    "creators": [
+      {
+        "creatorType": "author",
+        "firstName": "Conrad C.",
+        "lastName": "Labandeira"
+      },
+      {
+        "creatorType": "author",
+        "firstName": "Bret S.",
+        "lastName": "Beall"
+      },
+      {
+        "creatorType": "author",
+        "firstName": "Francis M.",
+        "lastName": "Hueber"
+      }
+    ]
+  }
+]

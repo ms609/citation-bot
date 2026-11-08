@@ -864,17 +864,12 @@ function tidy_date(string $string): string {
     if (mb_strlen($new) === 4) {
         return mb_ltrim($new, "0"); // Also cleans up 0000
     }
-    if (mb_strlen($new) === 5 && mb_substr($new, 0, 1) === '-') {
-        $new = mb_ltrim($new, "-");
-        $new = mb_ltrim($new, "0");
-        $new = $new . ' BC';
-        return $new;
-    }
     return $string;
 }
 
 function tidy_date_inside(string $string): string {
     $string = mb_trim($string);
+    $string = safe_preg_replace('~^Date published \(\s*~', '', $string); // seen this
     if (mb_stripos($string, 'Invalid') !== false) {
         return '';
     }
@@ -888,6 +883,10 @@ function tidy_date_inside(string $string): string {
         return ''; // Not two numbers next to each other
     }
     if (preg_match('~^\d{2}\-\-$~', $string)) {
+        return '';
+    }
+    // CS1 date fields reject BCE dates. Check the sign before stripping dashes.
+    if (preg_match('~\A[-\x{2212}](?:\d+\z|\d{4,}-\d)~u', $string)) {
         return '';
     }
     // Google sends ranges
@@ -922,7 +921,6 @@ function tidy_date_inside(string $string): string {
     $string = mb_trim($string);
     // End of character clean-up
     $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
-    $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
     // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
     if (mb_strpos($string, '0001-11-30') !== false) {
         return '';
@@ -955,11 +953,13 @@ function tidy_date_inside(string $string): string {
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
             return '';
-        } elseif ($matches[1] === $matches[2]) {
-            if (mb_strlen($matches[2]) === 1) {
-                $matches[2] = '0' . $matches[2];
+        } elseif (intval($matches[1]) === intval($matches[2])) {
+            $month_day = intval($matches[1]);
+            if (!checkdate($month_day, $month_day, intval($matches[3]))) {
+                return $matches[3];
             }
-            return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
+            $padded = sprintf('%02d', $month_day);
+            return $matches[3] . '-' . $padded . '-' . $padded;
         } else {
             return $matches[3];// do not know. just give year
         }
@@ -968,15 +968,12 @@ function tidy_date_inside(string $string): string {
     if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) {
         return tidy_date_inside($matches[1]); // Remove time zone stuff from standard date format
     }
-    if (preg_match('~^\-?\d+$~', $string)) {
-        $string = intval($string);
-        if ($string < -2000 || $string > (int) date("Y") + 10) {
+    if (preg_match('~^\d+$~', $string)) {
+        $year = intval($string);
+        if ($year < 2 || $year > (int) date("Y") + 10) {
             return ''; // A number that is not a year; probably garbage
         }
-        if ($string > -2 && $string < 2) {
-            return ''; // reject -1,0,1
-        }
-        return (string) $string; // year
+        return (string) $year;
     }
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
@@ -999,11 +996,8 @@ function tidy_date_inside(string $string): string {
     if ($time) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
-        if ($year < -2000 || $year > (int) date("Y") + 10) {
+        if ($year < 100 || $year > (int) date("Y") + 10) {
             return ''; // We got an invalid year
-        }
-        if ($year < 100 && $year > -100) {
-            return '';
         }
         if ($day === '01') { // Probably just got month and year
             $string = date('F Y', $time);
