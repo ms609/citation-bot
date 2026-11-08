@@ -5,8 +5,6 @@ declare(strict_types=1);
 /**
  * The index contains byte offsets only. Read and verify each match against
  * the CSV from the same immutable snapshot.
- *
- * @phpstan-type Notice array{doi: string, pmid: string, id: string, type: string, date: string, noticeDoi: string, noticePmid: string, url: string}
  */
 final class RetractionWatch {
     public const string CSV = 'retraction_watch.csv';
@@ -104,7 +102,13 @@ final class RetractionWatch {
     private function offsets(string $key): array {
         $shard = self::shard($key);
         if (!isset($this->shards[$shard])) {
-            $json = @file_get_contents($this->snapshot . '/index-' . $shard . '.json', false, null, 0, 8 * 1024 * 1024);
+            $directory = realpath($this->snapshot);
+            $path = realpath($this->snapshot . '/index-' . $shard . '.json');
+            if ($directory === false || $path === false ||
+                $path !== $directory . '/index-' . $shard . '.json' || !is_file($path)) {
+                throw new RuntimeException('Unreadable Retraction Watch index');
+            }
+            $json = @file_get_contents($path, false, null, 0, 8 * 1024 * 1024);
             $data = $json === false ? null : json_decode($json, true);
             if (!is_array($data)) {
                 throw new RuntimeException('Unreadable Retraction Watch index');
@@ -138,7 +142,7 @@ final class RetractionWatch {
      * Follow an exact DOI/PMID pair once so a later event indexed under only
      * the other identifier still counts. Conflicting identities are unknown.
      *
-     * @return Notice|null
+     * @return array{doi: string, pmid: string, id: string, type: string, date: string, noticeDoi: string, noticePmid: string, url: string}|null
      */
     public function find(string $doi, string $pmid): ?array {
         $doi = self::doi($doi);
@@ -187,7 +191,7 @@ final class RetractionWatch {
 
     /**
      * @param array<int, array<string, string>> $rows
-     * @return Notice|null
+     * @return array{doi: string, pmid: string, id: string, type: string, date: string, noticeDoi: string, noticePmid: string, url: string}|null
      */
     private static function latestNotice(array $rows, string $doi, string $pmid): ?array {
         $status = [];
@@ -198,7 +202,9 @@ final class RetractionWatch {
                 continue;
             }
             $date = DateTimeImmutable::createFromFormat('!n/j/Y G:i', mb_trim($row['RetractionDate']), new DateTimeZone('UTC'));
-            if (!in_array($type, self::TYPES, true) || $date === false || DateTimeImmutable::getLastErrors() !== false) {
+            $date_errors = DateTimeImmutable::getLastErrors();
+            if (!in_array($type, self::TYPES, true) || $date === false ||
+                ($date_errors['warning_count'] ?? 0) !== 0 || ($date_errors['error_count'] ?? 0) !== 0) {
                 return null;
             }
             $day = $date->format('Y-m-d');

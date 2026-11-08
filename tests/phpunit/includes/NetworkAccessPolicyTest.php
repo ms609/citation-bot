@@ -17,6 +17,8 @@ final class NetworkAccessPolicyTest extends PHPUnit\Framework\TestCase {
      */
     private const ALLOWED_LOCAL_FILE_GET_CONTENTS = [
         'src/includes/RequestRateLimit.php' => ['$state_path' => 1],
+        // The shard is a regular file at its expected absolute path in the local snapshot.
+        'src/includes/RetractionWatch.php' => ['$path' => 1],
         // $pages is restricted immediately beforehand to page_list.txt/page_list2.txt.
         'src/process_page.php' => ['$pages' => 1],
     ];

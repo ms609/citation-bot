@@ -44,7 +44,9 @@ final class RetractionWatchTest extends testBaseClass {
             }
         }, 1));
         $snapshot = RetractionWatch::open($this->directory);
-        $this->assertNotNull($snapshot);
+        if ($snapshot === null) {
+            $this->fail('Could not open the published Retraction Watch snapshot');
+        }
         return $snapshot;
     }
 
@@ -139,6 +141,16 @@ final class RetractionWatchTest extends testBaseClass {
         unlink($this->directory . '/current/index-' . RetractionWatch::shard('doi:10.1234/original') . '.json');
         $snapshot = RetractionWatch::open($this->directory);
         $this->assertNotNull($snapshot);
+        $this->assertNull($snapshot->find('10.1234/original', ''));
+    }
+
+    public function testIndexCannotBeReadThroughASymlink(): void {
+        $snapshot = $this->publish([self::row('1')]);
+        $shard = $this->directory . '/current/index-' . RetractionWatch::shard('doi:10.1234/original') . '.json';
+        $moved = $this->directory . '/other-index.json';
+        $this->assertTrue(rename($shard, $moved));
+        $this->assertTrue(symlink($moved, $shard));
+
         $this->assertNull($snapshot->find('10.1234/original', ''));
     }
 
