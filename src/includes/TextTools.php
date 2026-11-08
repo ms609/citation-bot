@@ -1346,6 +1346,19 @@ function rxiv_id_valid(string $value): bool {
 }
 
 /**
+ * Turn the value of a biorxiv= or medrxiv= parameter into a full DOI.
+ * The parameter may hold a bare identifier (the 10.1101 prefix is assumed) or
+ * an already-complete DOI with either the 10.1101 or the newer 10.64898
+ * prefix, which must not be given a second prefix.
+ */
+function rxiv_doi_from_id(string $value): string {
+    if (mb_strpos($value, '10.1101/') === 0 || mb_strpos($value, '10.64898/') === 0) {
+        return $value;
+    }
+    return '10.1101/' . $value;
+}
+
+/**
  * Validate a bibcode: exactly 19 characters whose first four characters form
  * a year beginning with 1 or 2 (matching REGEXP_BIBCODE), with only letters,
  * digits, underscores, ampersands, and dots elsewhere.  CS1 additionally
@@ -1635,7 +1648,9 @@ function archive_url_has_timestamp(string $value): bool {
 
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
-    $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
+    // Written as escapes (U+2014 em dash, U+2015 horizontal bar, U+2013 en dash, U+2012 figure dash, U+2212 minus sign, U+2010 hyphen) so that an encoding round trip cannot corrupt them into '?'
+    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2212}", "\u{2010}"];
+    $test = str_replace([...$dash_variants, '-', ' '], '', $isbn10);
     if (mb_strlen($test) < 10 || mb_strlen($test) > 13) {
         return $isbn10;
     }
@@ -1644,7 +1659,7 @@ function changeisbn10Toisbn13(string $isbn10, int $year): string {
         // Uses spaces
         $isbn10 = str_replace(' ', '-', $isbn10);
     }
-    $isbn10 = str_replace(['—', '?', '–', '-', '?'], '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+    $isbn10 = str_replace($dash_variants, '-', $isbn10); // Standardize dashes: em dash, horizontal bar, en dash, figure dash, minus sign, and Unicode hyphen to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1) {
         return $isbn10;
     } // Contains invalid characters
