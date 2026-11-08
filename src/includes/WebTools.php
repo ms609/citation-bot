@@ -640,7 +640,7 @@ function edit_a_list_of_pages(
                     return true;
                 }
 
-                report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
+                report_phase($page->parsed_text() !== '' ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
                 $final_edit_overview .= "\n No changes needed. " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
                 return false;
             }

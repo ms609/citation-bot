@@ -255,7 +255,7 @@ class Page {
         $this->page_error = false;
         $this->set_cs2_mode();
         $this->announce_page();
-        if (!$this->text) {
+        if ($this->text === '') {
             report_warning("No text retrieved.\n");
             return false;
         }
