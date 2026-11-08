@@ -252,6 +252,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
             'doi_works' => true,
             'doi_active' => true,
             'query_crossref' => null,
+            'query_pubmed' => ['', 0, []],
             'bot_curl_exec_withFalse' => false,
         ];
         foreach ($network_stubs as $function => $value) {

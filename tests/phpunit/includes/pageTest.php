@@ -642,6 +642,49 @@ final class pageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
+    #[DataProvider('cs1OptOutProvider')]
+    public function testCs1OptOut(string $marker, string $reference, bool $opted_out): void {
+        $existing_citation = '{{cite journal|pages=44-55}}';
+        $this->with_jstor_citoid_fixture('962034', function () use ($marker, $reference, $existing_citation, $opted_out): TestPage {
+            $page = $this->process_page($marker . $reference . $existing_citation);
+            $this->assertStringContainsString('{{cite journal|pages=44–55}}', $page->parsed_text());
+            if ($opted_out) {
+                $this->assertStringContainsString($reference, $page->parsed_text());
+                $this->assertStringNotContainsString('Changed bare reference to CS1/2.', $page->edit_summary());
+                // Check that reusing the page object for a page without the opt-out still allows expansion.
+                $page->parse_text($reference);
+                $this->assertTrue($page->expand_text());
+            }
+            $this->assertStringContainsString('jstor=962034', $page->parsed_text());
+            return $page;
+        });
+    }
+
+    /** @return array<string, array{string, string, bool}> */
+    public static function cs1OptOutProvider(): array {
+        $bare_url = '<ref>https://doi.org/10.2307/962034</ref>';
+        return [
+            'bare URL' => ['{{bots|optout=CS1}}', $bare_url, true],
+            'DOI template' => ['{{bots|optout=CS1}}', '<ref>{{doi|10.2307/962034}}</ref>', true],
+            'plain DOI' => ['{{bots|optout=CS1}}', '<ref>10.2307/962034</ref>', true],
+            'DOI with reference text' => ['{{bots|optout=CS1}}', '<ref>Jarman, [https://doi.org/10.2307/962034 Violin Concerto], 1983.</ref>', true],
+            'CS2 mode' => ['{{cs1 config|mode=cs2}}{{bots|optout=CS1}}', $bare_url, true],
+            'list, spacing and case' => ['{{ Bots | optout = MassMessage, cS1 , afd }}', $bare_url, true],
+            'second parameter with a comment' => ['{{Template:Bots|deny=AnotherBot|optout=CS1<!-- keep simple references -->}}', $bare_url, true],
+            'protected regions' => ['<!-- {{bots|optout=CS1}} --><nowiki>{{bots|optout=CS1}}</nowiki>', $bare_url, false],
+            'unrelated opt-out' => ['{{bots|optout=CS12}}', $bare_url, false],
+        ];
+    }
+
+    public function testCs1OptOutDoesNotOverrideBotDenial(): void {
+        $text = '{{bots|optout=CS1}}{{bots|deny=Citation bot}}{{cite journal|pages=44-55}}';
+        $page = new TestPage();
+        $page->parse_text($text);
+
+        $this->assertFalse($page->expand_text());
+        $this->assertSame($text, $page->parsed_text());
+    }
+
     public function testODNB1(): void {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
         $page = $this->process_page($text);

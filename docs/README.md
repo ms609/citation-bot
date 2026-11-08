@@ -50,6 +50,8 @@ This is more properly a bot-gadget-tool combination. The parts are:
 - Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `src/gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 - `src/generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
+On English Wikipedia, use `{{bots|optout=CS1}}` to keep plain references in their current format while Citation Bot continues to maintain existing CS1 and CS2 citations. Use `{{bots|deny=Citation bot}}` to block Citation Bot edits to the page entirely.
+
 Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_talk:Citation_bot>.
 
 ## Web Interface vs. Gadget: Slow Mode Differences
