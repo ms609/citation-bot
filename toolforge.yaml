@@ -1,4 +1,4 @@
-# Toolforge Jobs v2 – daily statistics update (EN wiki) + session cleanup every 8h
+# Citation Bot scheduled Toolforge jobs
 # Load with:
 # toolforge jobs load toolforge.yaml
 # Kill all cron jobs:
@@ -17,3 +17,12 @@
   image: bookworm
   command: bash -c "find ~/sessions/ -type f -name 'sess_*' \( -size -109c -amin +60 -o -atime +7 \) -delete"
   schedule: "0 */8 * * *"
+
+- name: refresh-retraction-watch
+  image: php8.4
+  command: php /data/project/citations/git_repo/tools/update_retraction_watch.php
+  schedule: "17 6 * * *"
+  mount: all
+  timeout: 300
+  retry: 1
+  emails: onfailure
