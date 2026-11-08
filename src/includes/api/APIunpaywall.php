@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIfatcat.php';
+
 function parse_unpaywall_response(string $response): ?object {
     $oa = ExternalApiResponseGuard::decodeObject($response);
     if ($oa === null) {
@@ -289,6 +291,13 @@ function get_open_access_url(Template $template): void {
     $return = get_unpaywall_url($template, $doi);
     if (in_array($return, GOOD_FREE, true)) {
         return;
-    } // Do continue on
+    }
+    if (
+        SLOW_MODE &&
+        in_array($return, ['nothing', 'url_unreachable'], true) &&
+        add_fatcat_open_access_url($template, $doi)
+    ) {
+        return;
+    }
     get_semanticscholar_url($template, $doi);
 }
