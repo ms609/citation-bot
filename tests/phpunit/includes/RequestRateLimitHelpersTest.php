@@ -1383,7 +1383,7 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
             $this->assertNotFalse(file_put_contents($file, $script));
             $output = [];
             $exit_code = -1;
-            $command = escapeshellarg(PHP_BINARY) . ' -d display_errors=1 -d log_errors=0 ' .
+            $command = escapeshellarg(PHP_BINARY) . ' -d uopz.exit=1 -d display_errors=1 -d log_errors=0 ' .
                 escapeshellarg($file) . ' 2>&1';
             exec($command, $output, $exit_code); // phpcs:ignore
         } finally {
