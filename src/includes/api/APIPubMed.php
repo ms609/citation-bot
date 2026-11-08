@@ -104,6 +104,13 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                 $this_template->add_if_new('volume', (string) $item, 'entrez');
                                 break;
                             case "Issue":
+                                if ((string) $item === '1') {
+                                    // Entrez can supply the issue before the full journal name.
+                                    $journal_names = $document->xpath('Item[@Name="FullJournalName"]');
+                                    if (is_annual_review_cell_biology((string) ($journal_names[0] ?? ''))) {
+                                        break;
+                                    }
+                                }
                                 $this_template->add_if_new('issue', (string) $item, 'entrez');
                                 break;
                             case "Pages":

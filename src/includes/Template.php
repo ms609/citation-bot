@@ -2017,6 +2017,10 @@ final class Template
                 }
                 if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name)) || is_placeholder_bib_locator($this->get($param_name))) {
                     if ($value === '1') {
+                        if (is_annual_review_cell_biology($this->normalized_work_name(), $this->get_without_comments_and_placeholders('doi'))) {
+                            // Metadata providers can supply a default issue where the publisher cites only the volume.
+                            return false;
+                        }
                         // dubious
                         if (bad_10_1093_doi($this->get('doi'))) {
                                return false;

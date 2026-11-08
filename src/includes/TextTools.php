@@ -287,6 +287,12 @@ function str_equivalent(string $str1, string $str2): bool {
     return false;
 }
 
+/** Annual Review of Cell and Developmental Biology cites these articles by volume. */
+function is_annual_review_cell_biology(string $journal, string $doi = ''): bool {
+    return preg_match('~\A10\.1146/annurev[-.]cellbio[-.]~i', $doi) === 1 ||
+        str_equivalent($journal, 'Annual Review of Cell and Developmental Biology');
+}
+
 /** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
