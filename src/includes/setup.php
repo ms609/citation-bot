@@ -432,7 +432,7 @@ require_once __DIR__ . '/Page.php';
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);
 } else {
-    define("MAX_PAGES", 50);
+    define("MAX_PAGES", 200);
 }
 
 if (!CI) { // This is explicitly "tested" in test suite
