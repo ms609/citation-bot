@@ -1,0 +1,57 @@
+name: Validate deployment files and assets
+
+on:
+  pull_request:
+    paths:
+      - 'src/.user.ini'
+      - 'src/robots.txt'
+      - 'src/assets/**/*.png'
+      - 'src/assets/**/*.gif'
+      - 'toolforge.yaml'
+      - 'catalog-info.yaml'
+      - 'attic/ris/fixtures/**/*.ris'
+      - '.github/scripts/validate_misc_files.php'
+      - '.github/workflows/misc-file-validation.yml'
+  push:
+    branches: [ master ]
+    paths:
+      - 'src/.user.ini'
+      - 'src/robots.txt'
+      - 'src/assets/**/*.png'
+      - 'src/assets/**/*.gif'
+      - 'toolforge.yaml'
+      - 'catalog-info.yaml'
+      - 'attic/ris/fixtures/**/*.ris'
+      - '.github/scripts/validate_misc_files.php'
+      - '.github/workflows/misc-file-validation.yml'
+  schedule:
+    - cron: '35 19 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install PHP and image/YAML extensions
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.4'
+          coverage: none
+          extensions: gd, yaml
+
+      - name: Check validator syntax and negative tests
+        run: |
+          php -l .github/scripts/validate_misc_files.php
+          php .github/scripts/validate_misc_files.php --self-test
+
+      - name: Validate repository files
+        run: php .github/scripts/validate_misc_files.php

@@ -34,6 +34,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml)
 
 ## GitHub repository details
 
