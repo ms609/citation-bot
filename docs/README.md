@@ -59,6 +59,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
+- If Unpaywall finds no usable link, thorough mode can add a public Archive.org PDF found through Fatcat’s DOI lookup. It uses this fallback for article citations with a title and an available URL field.
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
 - **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, 1,000,000 for CLI); thorough mode can use the full budget
 
