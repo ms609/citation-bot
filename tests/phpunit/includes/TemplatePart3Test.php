@@ -1722,15 +1722,22 @@ final class TemplatePart3Test extends testBaseClass {
     }
 
     public function testGoogleBadAuthor(): void {
-        $text = "{{cite book|url=https://books.google.com/books?id=5wllAAAAcAAJ }}";
-        $template = $this->process_citation($text);
+        $response = <<<'XML'
+<entry xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title>Example Book</title>
+  <dc:creator>Example Author, 1800-1875</dc:creator>
+</entry>
+XML;
+        $template = $this->make_citation('{{cite book|url=https://books.google.com/books?id=5wllAAAAcAAJ}}');
+        apply_google_book_details($template, $response);
+
+        $this->assertSame('Example Book', $template->get2('title'));
         $this->assertNull($template->get2('last1'));
         $this->assertNull($template->get2('last'));
         $this->assertNull($template->get2('author1'));
         $this->assertNull($template->get2('author'));
         $this->assertNull($template->get2('first1'));
         $this->assertNull($template->get2('first'));
-        $this->assertNotNull($template->get2('title'));
     }
 
     public function testDoiHasNoLastFirstSplit(): void {
