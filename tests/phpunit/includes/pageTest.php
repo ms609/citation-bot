@@ -351,6 +351,18 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('.'));
     }
 
+    private function readSharedWriteTestPage(TestPage $page, string $title): void {
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            if ($page->get_text_from($title)) {
+                return;
+            }
+            if ($attempt < 3) {
+                sleep(2);
+            }
+        }
+        self::fail('Could not read the shared Wikipedia write-test page after three attempts: ' . $title);
+    }
+
     public function testBotExpandWrite(): void { // The shared page is only ever written with the expanded citation, so a failed or overlapping run cannot leave it broken. Good revision: https://en.wikipedia.org/w/index.php?title=User:Blocked_Testing_Account/writetest&oldid=1372041963
         $this->requires_secrets(function (): void {
             $api = new WikipediaBot();
@@ -382,7 +394,7 @@ final class pageTest extends testBaseClass {
             $max_attempts = 4;
             for ($attempt = 1; $attempt <= $max_attempts; $attempt++) {
                 // Read immediately before writing, so that the revision id and read time are current
-                $this->assertTrue($page->get_text_from($writeTestPage));
+                $this->readSharedWriteTestPage($page, $writeTestPage);
                 $text_before_write = $page->parsed_text();
                 $page->overwrite_text($expanded_text . $marker);
                 $page_result = $page->write($api, "Testing bot write function (run " . $run_token . ") | #UCB_Testing");
@@ -396,7 +408,7 @@ final class pageTest extends testBaseClass {
             sleep(6);
 
             // Double check we can read it back
-            $this->assertTrue($page->get_text_from($writeTestPage));
+            $this->readSharedWriteTestPage($page, $writeTestPage);
             $read_back = $without_marker($page->parsed_text());
             if (!$page_result && (bool) getenv('CI')) {
                 // Not all "CI" which includes any phpunit, but only GitHub Actions or TRAVIS or other fully automatic CI
