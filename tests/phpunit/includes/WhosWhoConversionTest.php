@@ -8,6 +8,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 final class WhosWhoConversionTest extends testBaseClass {
     private const string DOI = '10.1093/ww/9780199540884.013.U192476';
     private const string TITLE = 'Wyatt, Sir William Henry';
+    private const string CROSSREF_TITLE = 'Wyatt, Sir William Henry, (1823–6 Jan. 1898), JP, DL';
+    private const string PUBLISHER_URL = 'https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-192476';
 
     /** @param array<string, mixed> $overrides */
     private static function crossrefRecord(array $overrides = []): object {
@@ -76,8 +78,7 @@ final class WhosWhoConversionTest extends testBaseClass {
             uopz_unset_return('bot_curl_exec');
         }
 
-        $this->assertCount(1, $requests);
-        $this->assertStringStartsWith('https://api.crossref.org/v1/works/', $requests[0]);
+        $this->assertSame(['https://api.crossref.org/v1/works/' . doi_encode(self::DOI) . '?mailto=' . CROSSREFUSERNAME], $requests);
         $template = $this->make_citation($output);
         $this->assertSame("who's who", $template->wikiname());
         $this->assertSame('Wyatt, Sir William Henry & family', $template->get('title'));
@@ -138,6 +139,64 @@ final class WhosWhoConversionTest extends testBaseClass {
         $this->assertSame('cs1', $template->get('mode'));
         $this->assertSame('2021-04-21', $template->get('accessdate'));
         $this->assertNull($template->get2('url'));
+    }
+
+    public function testKeepsTheCurrentPublisherLinkAndShortTitle(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref metadata');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('query_crossref_newapi', self::crossrefRecord(['title' => [self::CROSSREF_TITLE]]));
+        $input = '{{citation|doi=' . self::DOI . '|title=' . self::TITLE . '|url=' . self::PUBLISHER_URL .
+            '|ref={{sfnref|Wyatt|2020}}|access-date=21 April 2021}}';
+        try {
+            $output = $this->process_page($input)->parsed_text();
+            $this->assertSame($output, $this->process_page($output)->parsed_text());
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('query_crossref_newapi');
+        }
+        $template = $this->make_citation($output);
+        $this->assertSame("who's who", $template->wikiname());
+        $this->assertSame(self::TITLE, $template->get('title'));
+        $this->assertSame(self::PUBLISHER_URL, $template->get('entry-url'));
+        $this->assertNull($template->get2('url'));
+        $this->assertSame('21 April 2021', $template->get('access-date'));
+        $this->assertSame('cs2', $template->get('mode'));
+        $this->assertStringContainsString('{{sfnref|Wyatt|2020}}', $output);
+    }
+
+    #[DataProvider('crossrefOutcomes')]
+    public function testSharesCrossrefResultWithinPage(bool $available): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref metadata');
+        }
+        $calls = 0;
+        $record = $available ? self::crossrefRecord() : new stdClass();
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('query_crossref_newapi', static function () use ($record, &$calls): object {
+            $calls++;
+            return $record;
+        }, true);
+        $first = $this->make_citation('{{cite web|doi=' . self::DOI . '}}');
+        $second = $this->make_citation('{{cite web|doi=' . mb_strtolower(self::DOI) . '}}');
+        $records = [];
+        try {
+            $first->convert_whos_who_doi($records);
+            $second->convert_whos_who_doi($records);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('query_crossref_newapi');
+        }
+        $this->assertSame(1, $calls);
+        $expected = $available ? "who's who" : 'cite web';
+        $this->assertSame($expected, $first->wikiname());
+        $this->assertSame($expected, $second->wikiname());
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function crossrefOutcomes(): array {
+        return ['verified record' => [true], 'empty failure response' => [false]];
     }
 
     public function testCrossrefFailureLeavesCitationIntact(): void {
@@ -230,6 +289,8 @@ final class WhosWhoConversionTest extends testBaseClass {
             'different resolver DOI' => [$citation . '|url=https://doi.org/10.1093/ww/9780199540884.013.U9}}'],
             'counterfeit resolver host' => ['{{cite web|url=https://doi.org.example.com/' . self::DOI . '}}'],
             'different profile ID' => [$citation . '|url=https://www.ukwhoswho.com/view/article/oupww/whoswho/U9}}'],
+            'different modern profile ID' => [$citation . '|url=' . str_replace('e-192476', 'e-9', self::PUBLISHER_URL) . '}}'],
+            'lookalike modern publisher host' => [$citation . '|url=' . str_replace('.com/', '.com.example.org/', self::PUBLISHER_URL) . '}}'],
             'archive metadata' => [$citation . '|archive-url=https://web.archive.org/example}}'],
             'unknown parameter' => [$citation . '|custom=value}}'],
             'duplicate DOI' => [$citation . '|doi=' . self::DOI . '}}'],

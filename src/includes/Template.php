@@ -308,8 +308,11 @@ final class Template
         }
     }
 
-    /** Convert an Oxford Who's Who entry while its original citation fields are intact. */
-    public function convert_whos_who_doi(): void {
+    /**
+     * Convert an Oxford Who's Who entry while its original citation fields are intact.
+     * @param array<string, object> &$crossref_records Shared by citations on the current page.
+     */
+    public function convert_whos_who_doi(array &$crossref_records = []): void {
         $source = $this->wikiname();
         if (
             WIKI_BASE !== 'en' ||
@@ -328,6 +331,8 @@ final class Template
             return;
         }
         $id = 'U' . $match[1];
+        $modern_url = preg_match('~\Ahttps://www\.ukwhoswho\.com/view/10\.1093/ww/[0-9]{13}\.001\.0001/' .
+            'ww-9780199540884-e-' . $match[1] . '\z~i', $url) === 1;
         $container_fields = ['encyclopedia', 'encyclopaedia', 'website', 'work'];
         $supported = [
             'doi', 'title', 'date', 'year', 'volume', 'edition', 'access-date', 'accessdate',
@@ -343,18 +348,24 @@ final class Template
             $seen[$name] = true;
         }
         if (
-            $url !== '' && !str_i_same($resolver_doi, $doi) &&
+            $url !== '' && !$modern_url && !str_i_same($resolver_doi, $doi) &&
             preg_match('~\Ahttps?://www\.ukwhoswho\.com/view/article/oupww/whoswho/' . $id . '\z~i', $url) !== 1
         ) {
             return;
         }
 
-        try {
-            $record = query_crossref_newapi($doi);
-        } catch (Throwable) {
-            report_warning("Could not verify Who's Who metadata from Crossref.");
-            return;
+        $cache_key = mb_strtolower($doi);
+        if (!isset($crossref_records[$cache_key])) {
+            try {
+                $crossref_records[$cache_key] = query_crossref_newapi($doi);
+            } catch (Throwable) {
+                $crossref_records[$cache_key] = new stdClass();
+            }
+            if (get_object_vars($crossref_records[$cache_key]) === []) {
+                report_warning("Could not verify Who's Who metadata from Crossref for DOI " . echoable($doi));
+            }
         }
+        $record = $crossref_records[$cache_key];
         if (
             !isset($record->DOI) || !is_string($record->DOI) || !str_i_same($record->DOI, $doi) ||
             ($record->type ?? '') !== 'reference-entry' ||
@@ -373,8 +384,13 @@ final class Template
             return;
         }
         $existing_title = $this->get_without_comments_and_placeholders('title');
-        if ($this->has('title') && ($existing_title === '' || !titles_are_similar($existing_title, $title))) {
-            return;
+        if ($this->has('title')) {
+            // Oxford can append lifespan dates and postnominals to the name in Crossref.
+            $name_only = safe_preg_replace('~,\s*\([0-9]{4}\b.*\z~u', '', $title);
+            if ($existing_title === '' ||
+                (!titles_are_similar($existing_title, $title) && !titles_are_similar($existing_title, $name_only))) {
+                return;
+            }
         }
         foreach ($container_fields as $name) {
             $value = $this->get($name);
@@ -395,6 +411,9 @@ final class Template
         }
         if ($source === 'citation' && !$this->has('mode')) {
             $this->set('mode', 'cs2');
+        }
+        if ($modern_url) {
+            $this->rename('url', 'entry-url');
         }
         foreach ($this->param as $key => $parameter) {
             if ($parameter->param === 'url' || in_array($parameter->param, $container_fields, true)) {
