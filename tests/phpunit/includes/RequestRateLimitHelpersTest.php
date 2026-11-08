@@ -70,7 +70,10 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
         putenv($name . '=' . $value);
     }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * @param string $base
+     * @param array<string, mixed> $data
+     */
     private function writeState(string $base, array $data): string {
         $this->assertNotNull(big_run_prepare_state_directory($base));
         $path = big_run_state_path($base);
@@ -644,8 +647,7 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
 
     public function testStateHandleCreatesPrivateFilesAndRefusesSubstitutes(): void {
         $base = $this->newBase();
-        $directory = big_run_prepare_state_directory($base);
-        $this->assertNotNull($directory);
+        $directory = big_run_prepare_state_directory($base) ?? self::fail('Could not prepare the state directory');
 
         $handle = request_rate_limit_open_state_handle($directory, 'bucket-a');
         $this->assertIsResource($handle);
@@ -929,7 +931,7 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
 
     public function testMarkingLargeRequiresAnExistingDiscoveryLease(): void {
         $base = $this->newBase();
-        $retry = static fn(int $count): array => [false, 2, null, 'retry_later', $count];
+        $retry = static fn (int $count): array => [false, 2, null, 'retry_later', $count];
         $this->assertSame($retry(0), big_run_try_mark_discovery_large('b0000000000000000', $base, self::NOW));
 
         $probe = big_run_try_acquire_probe($base, self::NOW);
@@ -1340,16 +1342,14 @@ final class RequestRateLimitHelpersTest extends PHPUnit\Framework\TestCase {
     public function testRecoveryBackupNamesAvoidExistingFiles(): void {
         $base = $this->newBase();
         $state_path = $base . DIRECTORY_SEPARATOR . BIG_RUN_STATE_FILE;
-        $first = big_run_recovery_backup_path($state_path);
-        $this->assertIsString($first);
+        $first = big_run_recovery_backup_path($state_path) ?? self::fail('Could not allocate a recovery backup path');
         $this->assertMatchesRegularExpression(
             '~' . preg_quote($state_path, '~') . '\.recovery-\d{8}T\d{6}Z-\d+(-\d+)?\z~D',
             $first
         );
 
         $this->assertNotFalse(file_put_contents($first, 'taken'));
-        $second = big_run_recovery_backup_path($state_path);
-        $this->assertIsString($second);
+        $second = big_run_recovery_backup_path($state_path) ?? self::fail('Could not allocate a recovery backup path');
         $this->assertNotSame($first, $second);
 
         // Even a dangling symlink occupies a name.

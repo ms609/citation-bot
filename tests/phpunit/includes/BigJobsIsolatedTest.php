@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-/*
+/**
  * Heartbeat edge cases for the per-user large-job lease in big_jobs.php.
  *
  * These need HTML_OUTPUT to be true and BIG_JOB_MODE to be defined, which cannot

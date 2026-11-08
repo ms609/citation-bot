@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
-/*
+/**
  * Edge-case tests for user_messages.php that depend on the output-mode
  * constants (CI, HTML_OUTPUT, BIG_JOB_MODE): big-job output compression, the
  * 900-character cutoff, HTML output mode, and report_inline().

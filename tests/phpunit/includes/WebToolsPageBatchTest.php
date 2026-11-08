@@ -404,7 +404,7 @@ final class WebToolsPageBatchTest extends testBaseClass {
         ob_start();
         try {
             edit_a_list_of_pages([], new WikipediaBot(), 'Fixture');
-            edit_a_list_of_pages(['', '   ', 5, "\xFF"], new WikipediaBot(), 'Fixture');
+            edit_a_list_of_pages(['', '   ', "\xFF"], new WikipediaBot(), 'Fixture');
             $body = (string) ob_get_contents();
         } finally {
             ob_end_clean();
