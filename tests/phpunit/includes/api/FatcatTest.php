@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
@@ -51,6 +53,38 @@ final class FatcatTest extends testBaseClass {
         $this->assertSame([[self::LOOKUP, false], [self::DOWNLOAD, true], [self::STORAGE, true]], $requests);
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testRateLimitSuppressesTheNextLookup(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Fatcat responses');
+        }
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec_withFalse', static function () use (&$calls): string {
+            $calls++;
+            return '';
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('curl_getinfo', static function (CurlHandle $handle, int $option): int|string {
+            return match ($option) {
+                CURLINFO_RESPONSE_CODE => 429,
+                CURLINFO_RETRY_AFTER => 15,
+                default => '',
+            };
+        }, true);
+        try {
+            $this->assertNull(fatcat_fulltext_url(self::DOI));
+            $this->assertNull(fatcat_fulltext_url('10.1080/14786449908621246'));
+            $this->assertSame(1, $calls);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('curl_getinfo');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec_withFalse');
+        }
+    }
+
     /** @param list<array{status: int, location: string, content_type: string}|null> $responses */
     #[DataProvider('unusableResponses')]
     public function testFatcatRejectsUnusableResponses(array $responses, int $request_count): void {
@@ -80,6 +114,10 @@ final class FatcatTest extends testBaseClass {
             'external host' => [[self::response(302, 'https://archive.org.example.test/download/a/b.pdf')], 1],
             'userinfo' => [[self::response(302, 'https://example.test@archive.org/download/a/b.pdf')], 1],
             'HTTP copy' => [[self::response(302, 'http://archive.org/download/a/b.pdf')], 1],
+            'unreviewed Archive.org item' => [[self::response(302, str_replace('crossref-pre-1909-scholarly-works', 'other-item', self::DOWNLOAD))], 1],
+            'case-sensitive Archive.org item' => [[self::response(302, str_replace('crossref-pre-1909-scholarly-works', 'CROSSREF-pre-1909-scholarly-works', self::DOWNLOAD))], 1],
+            'Wayback result without release verification' => [[self::response(302, 'https://web.archive.org/web/20200101000000/https://example.org/paper.pdf')], 1],
+            'PDF member for a different DOI' => [[self::response(302, str_replace('14786449908621245', '14786449908621246', self::DOWNLOAD))], 1],
             'incomplete item URL' => [[self::response(302, 'https://archive.org/download/a')], 1],
             'unsafe wiki markup' => [[self::response(302, 'https://archive.org/download/a/b|test.pdf')], 1],
             'restricted download' => [[$download, self::response(403)], 2],
@@ -87,6 +125,8 @@ final class FatcatTest extends testBaseClass {
             'HEAD transport failure' => [[$download, null], 2],
             'private redirect' => [[$download, self::response(302, 'https://127.0.0.1/private.pdf')], 2],
             'storage host lookalike' => [[$download, self::response(302, 'https://ia600805.us.archive.org.example.test/a.pdf')], 2],
+            'storage redirect changes PDF member' => [[$download, self::response(302, str_replace('14786449908621245', '14786449908621246', self::STORAGE))], 2],
+            'storage redirect changes collection' => [[$download, self::response(302, str_replace('crossref-pre-1909-scholarly-works', 'other-item', self::STORAGE))], 2],
             'redirect loop' => [[$download, $download, $download, $download], 4],
         ];
     }
@@ -145,6 +185,7 @@ final class FatcatTest extends testBaseClass {
             'existing title link' => ['nothing', '|title-link=Uranium radiation', 0, true],
             'chapter title' => ['nothing', '|chapter=Chapter title', 0, true],
             'URL format already specified' => ['nothing', '|format=HTML', 0, true],
+            'publication year outside the collection' => ['nothing', '|date=1 January 1910', 0, true],
             'free DOI' => ['nothing', '|doi-access=free', 0, false],
             'PMC full text' => ['nothing', '|pmc=123456', 0, false],
             'broken DOI' => ['nothing', '|doi-broken-date=2024-01-01', 0, false],
