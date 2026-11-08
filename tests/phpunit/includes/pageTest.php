@@ -210,9 +210,31 @@ final class pageTest extends testBaseClass {
     }
 
     public function testBotRead(): void {
-        $page = new TestPage();
-        $page->get_text_from('User:Citation_bot');
-        $this->assertTrue(mb_strlen($page->parsed_text()) > 200);
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki transport');
+        }
+
+        $wikitext = 'A page with a {{cite journal|title=Example}} citation.';
+        $details = '{"curtimestamp":"2026-10-25T12:00:00Z","query":{"pages":{"1":' .
+            '{"title":"Example","touched":"2026-10-25T11:00:00Z","lastrevid":2,"protection":[]}}}}';
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec_withFalse', static function () use (&$calls, $details, $wikitext): string {
+            return match (++$calls) {
+                1 => $details,
+                2 => $wikitext,
+                default => throw new LogicException('Unexpected MediaWiki request'),
+            };
+        }, true);
+        try {
+            $page = new TestPage();
+            $this->assertTrue($page->get_text_from('Example'));
+            $this->assertSame($wikitext, $page->parsed_text());
+            $this->assertSame(2, $calls);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec_withFalse');
+        }
     }
 
     public function testBotReadNonExistent(): void {
