@@ -2207,10 +2207,9 @@ final class TemplatePart3Test extends testBaseClass {
     }
 
     public function testInvoke2(): void {
-        $this->require_live_jstor_ris();
         $text = "{{#invoke:Cite|web| jstor=1701972 |s2cid= <!-- --> }}";
-        $expanded = $this->process_citation($text);
-        $this->assertSame('{{#invoke:Cite|journal| jstor=1701972 |s2cid= <!-- --> |title= Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec |last1= Labandeira |first1= Conrad C. |last2= Beall |first2= Bret S. |last3= Hueber |first3= Francis M. |journal= Science |date= 1988 |volume= 242 |issue= 4880 |pages= 913–916 |doi= 10.1126/science.242.4880.913 }}', $expanded->parsed_text());
+        $expanded = $this->with_jstor_citoid_fixture('1701972', fn (): Template => $this->process_citation($text));
+        $this->assertSame('{{#invoke:Cite|journal| jstor=1701972 |s2cid= <!-- --> |doi= 10.1126/science.242.4880.913 |last1= Labandeira |first1= Conrad C. |last2= Beall |first2= Bret S. |last3= Hueber |first3= Francis M. |title= Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec |journal= Science |date= 1988 |volume= 242 |issue= 4880 |pages= 913–916 }}', $expanded->parsed_text());
         $this->assertSame('cite journal', $expanded->wikiname());
     }
 

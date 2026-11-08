@@ -52,7 +52,7 @@ try {
 
     //Modify edit summary to identify bot-assisted edits
     if ($newText !== $originalText) {
-        if ($editSummarsy) {
+        if ($editSummary !== '') {
             $editSummary .= ' | '; // Add pipe if already something there.
         }
         $editSummary .= str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';

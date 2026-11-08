@@ -10,6 +10,45 @@ final class BigJobsCoverageTest extends PHPUnit\Framework\TestCase {
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
+    public function testLargeJobRefusesDanglingLeaseSymlink(): void {
+        if (DIRECTORY_SEPARATOR === '\\' || !function_exists('uopz_set_return')) {
+            $this->markTestSkipped('This test requires POSIX symlinks and uopz.');
+        }
+
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_redefine('HTML_OUTPUT', true);
+        $_SESSION = ['citation_bot_user_id' => 'dangling-lease-' . bin2hex(random_bytes(8))];
+        $lock_name = big_jobs_name();
+        $guard_name = big_jobs_guard_name();
+        $target = $lock_name . '-missing';
+        $this->assertTrue(symlink($target, $lock_name));
+
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('big_jobs_stop_page', static function (string $message): never {
+            throw new RuntimeException($message);
+        }, true);
+        try {
+            $stop_message = null;
+            try {
+                big_jobs_acquire_large_run();
+            } catch (RuntimeException $exception) {
+                $stop_message = $exception->getMessage();
+            }
+            $this->assertSame('Unable to obtain large run lock.', $stop_message);
+            $this->assertFileDoesNotExist($target);
+            $this->assertTrue(is_link($lock_name));
+            $this->assertFalse(defined('BIG_JOB_MODE'));
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('big_jobs_stop_page');
+            @unlink($lock_name);
+            @unlink($target);
+            @unlink($guard_name);
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testLargeJobCanBeAcquiredDuringDiscoveryAndReportedAtFinalCount(): void {
         try {
             /** @psalm-suppress UnusedFunctionCall */
