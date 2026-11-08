@@ -250,37 +250,7 @@ class Page {
         }
     }
 
-    public function expand_text(): bool {
-        set_time_limit(120);
-        $this->page_error = false;
-        $this->set_cs2_mode();
-        $this->announce_page();
-        if ($this->text === '') {
-            report_warning("No text retrieved.\n");
-            return false;
-        }
-
-        // COMMENTS AND NOWIKI ETC. //
-        /** @var array<Comment> $comments */
-        $comments = $this->extract_object('Comment');
-        /** @var array<Nowiki> $nowiki */
-        $nowiki = $this->extract_object('Nowiki');
-        /** @var array<Chemistry> $chemistry */
-        $chemistry = $this->extract_object('Chemistry');
-        /** @var array<Mathematics> $mathematics */
-        $mathematics = $this->extract_object('Mathematics');
-        /** @var array<Musicscores> $musicality */
-        $musicality = $this->extract_object('Musicscores');
-        /** @var array<Preformated> $preformated */
-        $preformated = $this->extract_object('Preformated');
-        /** @var array<SyntaxHighlight> $syntaxhighlights */
-        $syntaxhighlights = $this->extract_object('SyntaxHighlight');
-        set_time_limit(120);
-        if (!$this->allow_bots()) {
-            report_warning("Page marked with {{nobots}} template.    Skipping.");
-            $this->text = $this->start_text;
-            return false;
-        }
+    private function convert_bare_references(): void {
         $citation_count = mb_substr_count($this->text, '{{cite ') +
             mb_substr_count($this->text, '{{Cite ') +
             mb_substr_count($this->text, '{{citation') +
@@ -377,6 +347,42 @@ class Page {
                 },
                 $this->text
             );
+        }
+    }
+
+    public function expand_text(): bool {
+        set_time_limit(120);
+        $this->page_error = false;
+        $this->set_cs2_mode();
+        $this->announce_page();
+        if ($this->text === '') {
+            report_warning("No text retrieved.\n");
+            return false;
+        }
+
+        // COMMENTS AND NOWIKI ETC. //
+        /** @var array<Comment> $comments */
+        $comments = $this->extract_object('Comment');
+        /** @var array<Nowiki> $nowiki */
+        $nowiki = $this->extract_object('Nowiki');
+        /** @var array<Chemistry> $chemistry */
+        $chemistry = $this->extract_object('Chemistry');
+        /** @var array<Mathematics> $mathematics */
+        $mathematics = $this->extract_object('Mathematics');
+        /** @var array<Musicscores> $musicality */
+        $musicality = $this->extract_object('Musicscores');
+        /** @var array<Preformated> $preformated */
+        $preformated = $this->extract_object('Preformated');
+        /** @var array<SyntaxHighlight> $syntaxhighlights */
+        $syntaxhighlights = $this->extract_object('SyntaxHighlight');
+        set_time_limit(120);
+        if (!$this->allow_bots()) {
+            report_warning("Page marked with {{nobots}} template.    Skipping.");
+            $this->text = $this->start_text;
+            return false;
+        }
+        if (!$this->opts_out_of_cs1()) {
+            $this->convert_bare_references();
         }
         // TEMPLATES
         set_time_limit(120);
@@ -1085,6 +1091,24 @@ class Page {
             return false;
         }
         return true;
+    }
+
+    private function opts_out_of_cs1(): bool {
+        // Protected regions are already shielded. Comments inside a directive do not affect its value.
+        $text = safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', '', $this->text);
+        if (!preg_match_all('~(?<!\{)\{\{\s*(?:template\s*:\s*)?bots\s*\|[^{}]*\}\}~i', $text, $matches)) {
+            return false;
+        }
+        foreach ($matches[0] as $match) {
+            $directive = new Template();
+            $directive->parse_text($match);
+            foreach (explode(',', $directive->get3('optout')) as $option) {
+                if (mb_strtolower(mb_trim($option)) === 'cs1') {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private function set_name_list_style(): void {
