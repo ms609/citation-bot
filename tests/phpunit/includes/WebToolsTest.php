@@ -77,7 +77,13 @@ final class WebToolsTest extends testBaseClass {
             return $title === 'Edit conflict';
         }, true);
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return(WikipediaBot::class, 'get_last_revision', '123');
+        uopz_set_return(WikipediaBot::class, 'last_written_revision', 123);
+        $result_urls = new ArrayObject();
+        uopz_set_hook('html_echo', static function (string $html, string $plain = '') use ($result_urls): void {
+            if (str_contains($html, '>history</a>')) {
+                $result_urls->append(mb_trim($plain));
+            }
+        });
         try {
             ob_start();
             edit_a_list_of_pages(
@@ -89,7 +95,9 @@ final class WebToolsTest extends testBaseClass {
         } finally {
             ob_end_clean();
             /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return(WikipediaBot::class, 'get_last_revision');
+            uopz_unset_hook('html_echo');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'last_written_revision');
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'last_write_was_skipped');
             /** @psalm-suppress UnusedFunctionCall */
@@ -106,6 +114,7 @@ final class WebToolsTest extends testBaseClass {
         $this->assertStringContainsString('1 changed, 2 unchanged, 2 failed', $body);
         $this->assertStringContainsString('Pages skipped due to edit conflict', $body);
         $this->assertStringContainsString('* Edit conflict', $body);
+        $this->assertSame([WIKI_ROOT . '?title=Edited+page&diff=prev&oldid=123'], $result_urls->getArrayCopy());
     }
 
     public function testPageExceptionBoundaryReturnsOperationResult(): void {

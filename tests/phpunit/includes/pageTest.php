@@ -642,6 +642,33 @@ final class pageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
+    #[DataProvider('botDirectiveForms')]
+    public function testBotDirectiveForms(string $directive, bool $denied): void {
+        $text = $directive . '{{cite journal|pages=44-55}}';
+        $page = new TestPage();
+        $page->parse_text($text);
+        $this->assertSame(!$denied, $page->expand_text());
+        $this->assertSame($denied ? $text : $directive . '{{cite journal|pages=44–55}}', $page->parsed_text());
+        if ($denied) {
+            $this->assertFalse($page->write(new WikipediaBot()));
+        }
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function botDirectiveForms(): array {
+        return [
+            'whitespace and multiline' => ["{{ bots |\n deny = Citation bot }}", true],
+            'namespace and comma list' => ['{{Template:Bots|deny=Other,Citation_bot}}', true],
+            'comment in parameter' => ['{{bots|d<!-- comment -->eny=Citation bot}}', true],
+            'nested unrelated parameter' => ['{{bots|reason={{!}}|deny=Citation bot}}', true],
+            'legacy optout all' => ['{{ bots | optout=all }}', true],
+            'namespace on nobots' => ['{{Template:Nobots }}', true],
+            'exact denial name' => ['{{bots|deny=Not Citation bot}}', false],
+            'exact allow name' => ['{{bots|allow=Not Citation bot}}', true],
+            'protected denial' => ['<nowiki>{{bots|deny=Citation bot}}</nowiki>', false],
+        ];
+    }
+
     #[DataProvider('cs1OptOutProvider')]
     public function testCs1OptOut(string $marker, string $reference, bool $opted_out): void {
         $existing_citation = '{{cite journal|pages=44-55}}';
@@ -672,6 +699,7 @@ final class pageTest extends testBaseClass {
             'list, spacing and case' => ['{{ Bots | optout = MassMessage, cS1 , afd }}', $bare_url, true],
             'second parameter with a comment' => ['{{Template:Bots|deny=AnotherBot|optout=CS1<!-- keep simple references -->}}', $bare_url, true],
             'protected regions' => ['<!-- {{bots|optout=CS1}} --><nowiki>{{bots|optout=CS1}}</nowiki>', $bare_url, false],
+            'nested unrelated parameter' => ['{{bots|reason={{!}}|optout=CS1}}', $bare_url, true],
             'unrelated opt-out' => ['{{bots|optout=CS12}}', $bare_url, false],
         ];
     }
@@ -689,6 +717,17 @@ final class pageTest extends testBaseClass {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
+    }
+
+    public function testOdnbRemovalDoesNotCarryOverToTheNextPage(): void {
+        $page = new TestPage();
+        $page->parse_text('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} {{ODNBsub}}');
+        $this->assertTrue($page->expand_text());
+        $this->assertStringContainsString('ODNBsub', $page->edit_summary());
+
+        $page->parse_text('{{cite journal|pages=44-55}}');
+        $this->assertTrue($page->expand_text());
+        $this->assertStringNotContainsString('ODNBsub', $page->edit_summary());
     }
 
     public function testODNB2(): void {

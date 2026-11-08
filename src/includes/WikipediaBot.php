@@ -25,6 +25,7 @@ final class WikipediaBot {
     private string $the_user = '';
     private static ?self $last_WikipediaBot = null;
     private bool $last_write_skipped = false;
+    private ?int $last_written_revision = null;
 
     public static function make_ch(): void {
         static $init_done = false;
@@ -80,6 +81,10 @@ final class WikipediaBot {
         return $this->last_write_skipped;
     }
 
+    public function last_written_revision(): ?int {
+        return $this->last_written_revision;
+    }
+
     public static function ret_okay(?object $response): bool { // We send back true for thing that are page specific
         if (is_null($response)) {
             report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
@@ -107,7 +112,7 @@ final class WikipediaBot {
                 report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
             } elseif (mb_strpos($response_info, 'The authorization headers in your request are not valid') !== false) {
                 report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
-            } elseif (mb_strpos($response_info, 'Edit conflict') !== false) {
+            } elseif ($error_code === 'editconflict' || mb_strpos($response_info, 'Edit conflict') !== false) {
                 report_warning('Edit Conflict while saving changes');
                 return true;
             } elseif (mb_strpos($response_info, 'Invalid CSRF token') !== false) {
@@ -187,6 +192,7 @@ final class WikipediaBot {
     /** @phpstan-impure */
     public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing): bool {
         $this->last_write_skipped = false;
+        $this->last_written_revision = null;
         if (mb_stripos($text, "CITATION_BOT_PLACEHOLDER") !== false) {
             report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));
             return false;
@@ -206,8 +212,13 @@ final class WikipediaBot {
         }
 
         $baseTimeStamp = (string) $myPage->revisions[0]->timestamp;
+        $base_revision = $myPage->lastrevid;
+        if (!is_int($base_revision) || $base_revision < 1) {
+            report_warning('Unable to determine the base revision for the edit.');
+            return false;
+        }
 
-        if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
+        if (($lastRevId !== 0 && $base_revision !== $lastRevId)
          || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
             report_warning("Possible edit conflict detected. Aborting.");
             $this->last_write_skipped = true;
@@ -236,7 +247,7 @@ final class WikipediaBot {
             "summary" => $editSummary,
             "notminor" => "1",
             "bot" => "1",
-            "basetimestamp" => $baseTimeStamp,
+            "baserevid" => (string) $base_revision,
             "starttimestamp" => $startedEditing,
             "nocreate" => "1",
             "watchlist" => "nochange",
@@ -244,8 +255,16 @@ final class WikipediaBot {
         ];
         $result = $this->fetch($submit_vars);
 
+        if (($result->error->code ?? null) === 'editconflict') {
+            $this->last_write_skipped = true;
+            return true;
+        }
         if (!self::resultsGood($result)) {
             return false;
+        }
+        $new_revision = $result->edit->newrevid ?? null;
+        if (is_int($new_revision) && $new_revision > 0) {
+            $this->last_written_revision = $new_revision;
         }
 
         if (HTML_OUTPUT) {
@@ -708,16 +727,18 @@ final class WikipediaBot {
      * Uses list=usercontribs with ucdir=older and ucstart/ucend window.
      * Handles continuation via uccontinue.
      *
-     * @return array<object> edits with at least ->comment and ->timestamp
+     * @return array<object>|null Complete result, or null if the fetch failed.
      */
-    public static function fetch_user_contribs(string $user, int $hours = 24): array {
+    public static function fetch_user_contribs(string $user, int $hours = 24): ?array {
         if (mb_trim($user) === '' || $hours < 1) {
-            return [];
+            return null;
         }
         $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
         $start = $now->format('Y-m-d\TH:i:s\Z');
         $end = $now->sub(new DateInterval('PT' . (string) $hours . 'H'))->format('Y-m-d\TH:i:s\Z');
         $uccontinue = '';
+        $generic_continue = null;
+        $seen = [];
         $all = [];
         // EN wiki single statistics page: use apihighlimits (uclimit=max → 5000 for bot) via authenticated request
         $use_max = (defined('WIKI_BASE') && WIKI_BASE === 'en');
@@ -743,6 +764,9 @@ final class WikipediaBot {
             if ($uccontinue !== '') {
                 $vars['uccontinue'] = $uccontinue;
             }
+            if ($generic_continue !== null) {
+                $vars['continue'] = $generic_continue;
+            }
             if ($use_max) {
                 $res = $auth_instance->query_api_authenticated($vars);
                 // Fallback to anon 500 if authenticated max not granted (e.g. in CI without tokens)
@@ -754,32 +778,33 @@ final class WikipediaBot {
                 $res = self::query_api($vars);
             }
             if ($res === '') {
-                if ($batch === 0) {
-                    report_warning('Failed to fetch contribs for ' . echoable($user) . ' – API returned empty');
-                } else {
-                    bot_debug_log('fetch_user_contribs truncated after ' . (string) $batch . ' batches for ' . echoable($user));
-                }
-                break;
+                report_warning('Failed to fetch complete contribs for ' . echoable($user));
+                return null;
             }
-            $decoded = @json_decode($res);
-            if (!is_object($decoded)) {
-                report_warning('Failed to decode contribs response');
-                break;
-            }
+            $decoded = self::decode_object_response($res);
             $parsed = statistics_parse_contribs_response($decoded);
             if ($parsed === null) {
                 report_warning('Malformed contribs response');
-                break;
+                return null;
             }
             array_push($all, ...$parsed['edits']);
-            if ($parsed['continue'] === null) {
-                break;
+            $next = $parsed['continue'];
+            if ($next === null) {
+                return $all;
             }
-            $uccontinue = $parsed['continue'];
-            // Be nice to the API – small delay between batches
+            if (isset($seen[$next])) {
+                report_warning('Repeated contribs continuation token.');
+                return null;
+            }
+            $seen[$next] = true;
+            $uccontinue = $next;
+            $token = $decoded->continue->continue ?? null;
+            $generic_continue = is_string($token) ? $token : null;
+            // Be nice to the API – small delay between batches.
             usleep(200000);
         }
-        return $all;
+        report_warning('Contribs pagination reached its batch limit.');
+        return null;
     }
 
     /** @return int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
@@ -949,7 +974,7 @@ final class WikipediaBot {
      * Write the statistics page, allowing creation if it does not exist.
      * Unlike write_page(), this permits creation and is tolerant of missing pages.
      */
-    public function write_statistics_page(string $title, string $text, string $summary): bool {
+    public function write_statistics_page(string $title, string $text, string $summary, bool $create_only = false): bool {
         // Reuse the authenticated write path but without requiring lastrevid/start timestamp
         $response = $this->fetch([
             'action' => 'query',
@@ -959,7 +984,11 @@ final class WikipediaBot {
             'titles' => $title,
         ]);
         $myPage = self::response2page($response);
-        if ($myPage === null) { // Page may not exist - still try to get a token via separate query
+        if ($create_only && $myPage !== null) {
+            report_warning('Statistics page already exists.');
+            return false;
+        }
+        if ($myPage === null) {
             $missingPage = self::first_page_from_response($response);
             if ($missingPage === null || !isset($missingPage->missing)) {
                 report_warning('Unable to validate statistics page state.');
@@ -1010,7 +1039,9 @@ final class WikipediaBot {
             'watchlist' => 'nochange',
             'token' => $auth_token,
         ];
-        if ($baseTimeStamp !== '') {
+        if ($myPage === null) {
+            $vars['createonly'] = '1';
+        } elseif ($baseTimeStamp !== '') {
             $vars['basetimestamp'] = $baseTimeStamp;
         }
         if ($startTimestamp !== '') {
@@ -1038,11 +1069,15 @@ final class WikipediaBot {
         return self::query_api(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
     }
 
-    public static function get_a_page(string $title): string {
-        curl_setopt_array(self::$ch_logout,
-                                [CURLOPT_HTTPGET => true,
-                                    CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' => 'raw',]),
-                                ]);
+    public static function get_a_page(string $title, ?int $revision = null): string {
+        $params = ['title' => $title, 'action' => 'raw'];
+        if ($revision !== null) {
+            $params['oldid'] = (string) $revision;
+        }
+        curl_setopt_array(self::$ch_logout, [
+            CURLOPT_HTTPGET => true,
+            CURLOPT_URL => WIKI_ROOT . '?' . http_build_query($params),
+        ]);
         $text = bot_curl_exec_withFalse(self::$ch_logout);
         if ($text === false) {
             // @codeCoverageIgnoreStart

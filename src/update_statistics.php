@@ -56,6 +56,10 @@ if (!HTML_OUTPUT) {
 }
 
 $edits = WikipediaBot::fetch_user_contribs($stats_user, $window_hours);
+if ($edits === null) {
+    report_warning('Could not fetch a complete statistics window.');
+    exit(1);
+}
 $total = count($edits);
 $counts = statistics_aggregate($edits);
 $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
@@ -84,36 +88,29 @@ if (mb_trim($current) === mb_trim($wikitext)) {
     exit(0);
 }
 
-// Try to write via helper that allows creation by omitting MediaWiki's nocreate parameter.
 $summary = "Update statistics: {$total} edits in last 24 hours";
 if ($window_hours !== 24) {
     $summary = "Update statistics: {$total} edits in last {$window_hours} hours";
 }
 $summary .= " | #UCB_Statistics";
 
-// Attempt to get lastrevid and read timestamp for write_page semantics
-$details = WikipediaBot::read_details($stats_page);
-$parsed = page_details_from_api_response($details);
-$last_rev = 0;
-$read_at = '';
-if ($parsed !== null) {
-    [$my_details, $read_at] = $parsed;
-    if (isset($my_details->lastrevid) && is_int($my_details->lastrevid)) {
-        $last_rev = $my_details->lastrevid;
-    }
+$parsed = page_details_from_api_response(WikipediaBot::read_details($stats_page));
+if ($parsed === null) {
+    report_warning('Unable to read statistics page metadata.');
+    exit(1);
 }
-
-// If page exists and we have last_rev, use normal write_page (honors edit conflict checks)
- // For new/missing page, use direct statistics write that permits creation
-if ($last_rev !== 0 && $read_at !== '') {
-    $ok = $api->write_page($stats_page, $wikitext, $summary, $last_rev, $read_at);
-    if (!$ok) {
-        // Fallback to direct create-permissive write
-        report_warning("Normal write failed, trying create-permissive write");
-        $ok = $api->write_statistics_page($stats_page, $wikitext, $summary);
+[$details, $read_at] = $parsed;
+if (isset($details->missing)) {
+    $ok = $api->write_statistics_page($stats_page, $wikitext, $summary, true);
+} elseif (($details->lastrevid ?? 0) > 0 && $read_at !== '') {
+    $ok = $api->write_page($stats_page, $wikitext, $summary, $details->lastrevid, $read_at);
+    if ($ok && $api->last_write_was_skipped()) {
+        report_warning('Statistics page changed before it could be updated.');
+        exit(1);
     }
 } else {
-    $ok = $api->write_statistics_page($stats_page, $wikitext, $summary);
+    report_warning('Unable to determine the current statistics page revision.');
+    exit(1);
 }
 
 if ($ok) {
