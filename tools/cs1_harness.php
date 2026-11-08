@@ -109,6 +109,16 @@ const CHAPTER_IGNORING_TEMPLATES = [
 
 const CHAPTER_PARAMS = ['chapter', 'contribution', 'article', 'entry', 'section'];
 
+// Component forms of |chapter= and its aliases that Module:Citation/CS1 also
+// reports as "|chapter= ignored" (err_chapter_ignored checks Chapter,
+// TransChapter, ChapterURL, ScriptChapter, and ChapterFormat).
+const CHAPTER_COMPONENT_PARAMS = [
+    'chapter-url', 'contribution-url', 'article-url', 'entry-url', 'section-url',
+    'chapter-format', 'contribution-format', 'article-format', 'entry-format', 'section-format',
+    'trans-chapter', 'trans-contribution', 'trans-article', 'trans-entry', 'trans-section',
+    'script-chapter', 'script-contribution', 'script-article', 'script-entry', 'script-section',
+];
+
 // CS1 periodical templates that report "periodical has ISBN" for any ISBN.
 const PERIODICAL_TEMPLATES = ['cite web', 'cite journal', 'cite magazine', 'cite news'];
 
@@ -124,6 +134,15 @@ const ACCESS_PARAMS = [
     'transcript-url-access' => ['transcript-url', 'transcripturl'],
     'map-url-access' => ['map-url', 'mapurl'],
     'doi-access' => ['doi'],
+];
+
+// Supported |asin-tld= values, mirroring the domain list in Identifiers.asin
+// (Module:Citation/CS1 err_bad_asin_tld).  Any other value triggers
+// CS1 "Check |asin-tld= value".
+const VALID_ASIN_TLDS = [
+    'us', 'jp', 'uk', 'za', 'z.cn', 'au', 'be', 'br', 'mx', 'sg', 'tr',
+    'ae', 'ca', 'cn', 'de', 'eg', 'es', 'fr', 'ie', 'in', 'it', 'nl', 'pl',
+    'sa', 'se', 'co.jp', 'co.uk', 'com', 'com.au', 'com.br', 'com.mx', 'com.sg', 'com.tr',
 ];
 
 // Alias groups for the url/archive/access-date family. The bot normally
@@ -335,7 +354,7 @@ function check_citation(Template $template): array {
         $violations[] = 'pmc-malformed: CS1 "Check |pmc= value"';
     }
     if ($template->has('bibcode') && !bibcode_valid($template->get('bibcode'))) {
-        $violations[] = 'bibcode-malformed: CS1 "Check |bibcode= value"';
+        $violations[] = 'bibcode-malformed: CS1 "Check |bibcode= <message>"';
     }
     if ($template->has('doi') && !doi_valid($template->get('doi'))) {
         $violations[] = 'doi-malformed: CS1 "Check |doi= value"';
@@ -404,27 +423,51 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R21: chapter parameters are ignored in templates without chapters.
+    // R21: |archive-date= / |archive-url= timestamp mismatch
+    // (Module:Citation/CS1 err_archive_date_url_ts_mismatch).  Only archive.org
+    // snapshot URLs carry an extractable 14-digit timestamp; when |archive-date=
+    // is a YYYY-MM-DD date (the form the bot emits) and does not match it, CS1
+    // reports a mismatch.
+    foreach (ARCHIVE_URL_PARAMS as $archive_param) {
+        if (!$template->has($archive_param) || !has_any($template, ARCHIVE_DATE_PARAMS)) {
+            continue;
+        }
+        if (preg_match('~^https?://(?:www\.|web\.)?archive\.org/web/(\d{14})/~i', $template->get($archive_param), $matches) !== 1) {
+            continue;
+        }
+        $timestamp_ymd = mb_substr($matches[1], 0, 4) . '-' . mb_substr($matches[1], 4, 2) . '-' . mb_substr($matches[1], 6, 2);
+        foreach (ARCHIVE_DATE_PARAMS as $archive_date_param) {
+            if (!$template->has($archive_date_param)) {
+                continue;
+            }
+            $archive_date = $template->get($archive_date_param);
+            if (preg_match('~^\d{4}-\d{2}-\d{2}$~', $archive_date) === 1 && $archive_date !== $timestamp_ymd) {
+                $violations[] = 'archive-timestamp-mismatch: CS1 "|archive-date= / |archive-url= timestamp mismatch"';
+            }
+        }
+    }
+
+    // R22: chapter parameters are ignored in templates without chapters.
     // {{citation}} counts when it uses |work= or any of its aliases.
     $chapter_ignored = in_array($name, CHAPTER_IGNORING_TEMPLATES, true);
     if (!$chapter_ignored && $name === 'citation') {
         $chapter_ignored = has_any($template, ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']);
     }
     if ($chapter_ignored) {
-        foreach (CHAPTER_PARAMS as $param) {
+        foreach (array_merge(CHAPTER_PARAMS, CHAPTER_COMPONENT_PARAMS) as $param) {
             if ($template->has($param)) {
                 $violations[] = "$param-in-$name: CS1 \"|$param= ignored\"";
             }
         }
     }
 
-    // R22: maint only (maint_periodical_has_isbn has no message; hidden category).
+    // R23: maint only (maint_periodical_has_isbn has no message; hidden category).
     // Not a CS1 error.
     if (in_array($name, PERIODICAL_TEMPLATES, true) && $template->get_without_comments_and_placeholders('isbn') !== '') {
         $violations[] = 'isbn-in-periodical: CS1 maint "periodical has ISBN"';
     }
 
-    // R23: ASIN shape per Identifiers.asin: 10 uppercase alphanumerics;
+    // R24: ASIN shape per Identifiers.asin: 10 uppercase alphanumerics;
     // numeric-10 must checksum and start 630/631; mixed must start uppercase.
     $asin = $template->get_without_comments_and_placeholders('asin');
     if ($asin !== '') {
@@ -443,7 +486,19 @@ function check_citation(Template $template): array {
         }
     }
 
-    // R24: page-style locator parameters are mutually exclusive in CS1.
+    // R25: |asin-tld= requires |asin= (Module:Citation/CS1 err_asintld_missing_asin).
+    if ($template->has('asin-tld') && !$template->has('asin')) {
+        $violations[] = 'asin-tld-orphaned: CS1 "|asin-tld= requires |asin="';
+    }
+
+    // R26: |asin-tld= must be a supported Amazon country/TLD
+    // (Module:Citation/CS1 err_bad_asin_tld, emitted only when |asin= is present).
+    $asin_tld = $template->get_without_comments_and_placeholders('asin-tld');
+    if ($template->has('asin') && $asin_tld !== '' && !in_array(mb_strtolower($asin_tld), VALID_ASIN_TLDS, true)) {
+        $violations[] = 'asin-tld-malformed: CS1 "Check |asin-tld= value"';
+    }
+
+    // R27: page-style locator parameters are mutually exclusive in CS1.
     $locators = [];
     foreach (['page', 'p', 'pp', 'pages', 'at', 'sheet', 'sheets'] as $locator) {
         if ($template->has($locator)) {
@@ -479,6 +534,8 @@ function build_matrix(): array {
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
         ['Malformed numeric asin in input is removed by tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'pass'],
         ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
+        ['GAP orphaned asin-tld survives tidy', '{{cite web |url=https://example.com |title=Harness asin-tld alpha |asin-tld=us}}', 'gap'],
+        ['GAP invalid asin-tld survives tidy', '{{cite web |url=https://example.com |title=Harness asin-tld beta |asin=6301234561 |asin-tld=zz}}', 'gap'],
 
         // Reproduce the conversion in Special:Diff/1378823420 without external metadata.
         ['IEEE structure in complexity proceedings', "{{Cite journal |date=1989 |title=Proceedings. Structure in Complexity Theory Fourth Annual Conference (Cat. No.89CH2745-8) |url=https://doi.org/10.1109/sct.1989.41807 |journal=[1989] Proceedings. Structure in Complexity Theory Fourth Annual Conference |publisher=IEEE |pages=0_1 |doi=10.1109/sct.1989.41807}}", 'pass', 'cite book'],
@@ -505,6 +562,7 @@ function build_matrix(): array {
         ['archive-date kept with archive-url base', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-01-01}}', 'pass'],
         ['Save-command archive-url removed', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/save/https://example.com |archive-date=2020-01-01}}', 'pass'],
         ['Wildcard archive-url removed', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/*/https://example.com |archive-date=2020-01-01}}', 'pass'],
+        ['GAP archive timestamp mismatch survives tidy', '{{cite web |url=https://example.com |title=X |archive-url=https://web.archive.org/web/20200101000000/https://example.com |archive-date=2020-02-02}}', 'gap'],
 
         // --- ISBN validation (merged Tier 1 fix) ---
         ['Valid ISBN-10 kept', '{{cite book |title=X |isbn=0-306-40615-2}}', 'pass'],
@@ -540,6 +598,9 @@ function build_matrix(): array {
         ['GAP work= survives in cite book', '{{cite book |title=X |work=Some Series |publisher=P |year=2020}}', 'gap'],
         ['Work in cite ssrn is not a periodical error', '{{cite ssrn |ssrn=1234567 |title=X |work=Y}}', 'pass'],
         ['GAP news chapter left as-is', '{{cite news |newspaper=N |date=2020 |chapter=C}}', 'gap'],
+        ['GAP chapter-url in cite web survives tidy', '{{cite web |url=https://example.com |title=X |chapter-url=https://example.com/ch}}', 'gap'],
+        ['Orphaned chapter-format removed from cite web', '{{cite web |url=https://example.com |title=X |chapter-format=PDF}}', 'pass'],
+        ['GAP script-chapter in cite web survives tidy', '{{cite web |url=https://example.com |title=X |script-chapter=ja:章}}', 'gap'],
         ['GAP magazine chapter left as-is', '{{cite magazine |magazine=M |date=2020 |chapter=C}}', 'gap'],
         ['GAP news chapter left as-is with title', '{{cite news |title=T |date=2020 |url=https://example.com |chapter=C}}', 'gap'],
         ['GAP news chapter kept with newspaper', '{{cite news |title=T |newspaper=N |date=2020 |chapter=C}}', 'gap'],
