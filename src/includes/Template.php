@@ -8293,6 +8293,19 @@ final class Template
                         }
                     }
                 }
+            } elseif ($rule_type === 'YEAR_RANGE') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 1000) { // Sanity-check: must be a plausible year
+                    // Malformed or reversed ranges intentionally tag nothing; ConstantsTest enforces the structure.
+                    $range_bounds = explode('-', $rule_value, 2);
+                    if (count($range_bounds) === 2) {
+                        $start_year = (int) $range_bounds[0];
+                        $end_year   = (int) $range_bounds[1];
+                        if ($pub_year >= $start_year && $pub_year <= $end_year) {
+                            $this->add_if_new('doi-access', 'free');
+                        }
+                    }
+                }
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();
                 if ($pub_ts === null) {
