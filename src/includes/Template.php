@@ -1877,6 +1877,10 @@ final class Template
                     report_inaction("Not adding generic title: " . echoable($value));
                     return false;
                 }
+                if (has_unexpanded_cms_token($value)) {
+                    report_inaction("Not adding unexpanded CMS placeholder title: " . echoable($value));
+                    return false;
+                }
                 if (
                     $this->blank($param_name) ||
                     in_array($this->get($param_name), GOOFY_TITLES, true) ||

@@ -727,6 +727,9 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                                     $good_title = false;
                                 }
                             }
+                            if (has_unexpanded_cms_token($title)) {
+                                $good_title = false;
+                            }
                             if ($good_title) {
                                 $old = $template->get('title');
                                 $template->set('title', '');

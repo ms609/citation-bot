@@ -1608,6 +1608,20 @@ function is_generic_title(string $value): bool {
 }
 
 /**
+ * True when a value contains an unexpanded CMS placeholder token such as
+ * Drupal's [node:title] or [site:name].  These appear verbatim in <title>
+ * tags when the site's metatag configuration is broken, and Citoid/Zotero
+ * faithfully returns them as the page title.  They must never become
+ * |title=, so reject any bracketed token with a colon and no spaces
+ * (legitimate bracketed titles such as "[Review] Foo" have no colon).
+ * See https://en.mapofmemory.org/54-07 whose <title> is literally
+ * "[node:field_nane] | [site:name]".
+ */
+function has_unexpanded_cms_token(string $value): bool {
+    return preg_match('~\[[\w\-]+:[\w\-]+\]~u', $value) === 1;
+}
+
+/**
  * True when a value is a structurally valid URL for CS1 (error 40,
  * "Check |url= value"): no whitespace/control characters, a proper scheme
  * (RFC 3986 scheme syntax), and non-empty content after the scheme.

@@ -1353,6 +1353,10 @@ final class Zotero {
                 return;
             }
         }
+        if (has_unexpanded_cms_token($test_data)) {
+            report_info("Received unexpanded CMS placeholder title for URL " . echoable($url . ": " . $test_data));
+            return;
+        }
         if ($test_data === '404' || $test_data === '/404') {
             return;
         }
@@ -1384,6 +1388,10 @@ final class Zotero {
                     report_info("Received invalid publication title data for URL " . echoable($url . ": " . $result->publicationTitle));
                     return;
                 }
+            }
+            if (has_unexpanded_cms_token($result->publicationTitle)) {
+                report_info("Received unexpanded CMS placeholder publication title for URL " . echoable($url . ": " . $result->publicationTitle));
+                unset($result->publicationTitle);
             }
             // Specific bad data that is correctable
             $tester = mb_strtolower($result->publicationTitle);
