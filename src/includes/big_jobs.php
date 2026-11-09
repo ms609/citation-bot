@@ -150,9 +150,9 @@ function big_jobs_current_lock_file() {
 
 /** Render a terminal large-job message without leaving buffered output behind. */
 function big_jobs_stop_page(string $message): never {
-    echo '<div style="text-align:center"><h1>',
+    echo '</pre><div style="text-align:center"><h1>',
         htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'),
-        '</h1></div>';
+        '</h1></div><pre>';
     bot_html_footer();
     if (function_exists('bot_admission_buffer_flush')) {
         bot_admission_buffer_flush();

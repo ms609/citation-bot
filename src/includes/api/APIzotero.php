@@ -1999,7 +1999,6 @@ final class Zotero {
                 case 'forumPost':    // @codeCoverageIgnore
                 case 'tvBroadcast':    // @codeCoverageIgnore
                 case 'podcast':    // @codeCoverageIgnore
-                case 'manuscript':    // @codeCoverageIgnore
                 case 'artwork':    // @codeCoverageIgnore
                 case 'case':    // @codeCoverageIgnore
                 case 'statute':    // @codeCoverageIgnore

@@ -231,9 +231,7 @@ if (file_exists(dirname(__DIR__, 2) . '/env.php')) {
     ob_start();
     /** @psalm-suppress MissingFile */
     include_once dirname(__DIR__, 2) . '/env.php';
-    $env_output_contents = ob_get_contents();
-    $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
-    unset($env_output_contents);
+    $env_output = mb_trim((string) ob_get_contents());
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
     }
@@ -392,7 +390,7 @@ function check_blocked(): void {
         } elseif (defined('EDIT_AS_USER')) {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction - so BE CAREFUL.</h1></div><pre>';
         } else {
-            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
+            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div></main><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
             exit(0);
         }
         unset($requested_page, $the_page, $ignore_block_requested);

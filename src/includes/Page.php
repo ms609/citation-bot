@@ -865,8 +865,8 @@ class Page {
                 'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
                 'cit news', 'Cit news', 'cite url', 'Cite url', 'web cite', 'Web cite',
                 'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
-                'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
-                'cite new |', 'cite new |', 'cite |', 'Cite |',
+                'citepaper', 'Citepaper', 'cite new|', 'Cite new|', 'citation journal', 'Citation journal',
+                'cite new |', 'Cite new |', 'cite |', 'Cite |',
             ] as $try_me) {
                 if (mb_substr_count($this->text, $try_me) < mb_substr_count($this->start_text, $try_me)) {
                     $auto_summary .= 'Removed Template redirect. ';
