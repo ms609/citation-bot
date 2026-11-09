@@ -879,34 +879,18 @@ class Page {
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
-        switch (WIKI_BASE) {  // @codeCoverageIgnoreStart
-            case 'en':
-            case 'simple':
-            case 'mdwiki':
-                break; // English
-            case 'mk':
-                foreach (MK_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Macedonian
-            case 'ru':
-                foreach (RU_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Russian
-            case 'sr':
-                foreach (SR_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Serbian
-            case 'vi':
-                foreach (VI_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Vietnamese
-            default:
-                report_error('invalid wiki in edit summary');
-        }    // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreStart
+        /** @var array<string, array<string, string>> $translations_by_wiki */
+        $translations_by_wiki = EDIT_SUMMARY_TRANSLATIONS;
+        $translations = $translations_by_wiki[WIKI_BASE] ?? null;
+        if ($translations !== null) {
+            foreach ($translations as $english => $translated) {
+                $auto_summary = str_replace($english, $translated, $auto_summary);
+            }
+        } elseif (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
+            report_error('invalid wiki in edit summary');
+        }
+        // @codeCoverageIgnoreEnd
         return $auto_summary;
     }
 
