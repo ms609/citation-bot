@@ -880,8 +880,11 @@ class Page {
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
         // @codeCoverageIgnoreStart
-        if (isset(EDIT_SUMMARY_TRANSLATIONS[WIKI_BASE])) {
-            foreach (EDIT_SUMMARY_TRANSLATIONS[WIKI_BASE] as $english => $translated) {
+        /** @var array<string, array<string, string>> $translations_by_wiki */
+        $translations_by_wiki = EDIT_SUMMARY_TRANSLATIONS;
+        $translations = $translations_by_wiki[WIKI_BASE] ?? null;
+        if ($translations !== null) {
+            foreach ($translations as $english => $translated) {
                 $auto_summary = str_replace($english, $translated, $auto_summary);
             }
         } elseif (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
