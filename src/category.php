@@ -113,8 +113,9 @@ $bulk_discovery_signaled = false;
 // A normal finite run is bounded to one title past the accepted maximum, so
 // its large lease is acquired after that bound proves the category will not
 // be cancelled (below), rather than at the threshold on a doomed run.
+$extended_run = defined('MAX_PAGES_OVERRIDE');
 $large_callback = null;
-if (defined('MAX_PAGES_OVERRIDE')) {
+if ($extended_run) {
     $large_callback = static function () use (&$discovery_entry_id): void {
         big_jobs_acquire_large_run();
         // The bulk callback necessarily runs before the large callback.
@@ -156,7 +157,7 @@ if ($total > $category_limit) {
     bot_admission_buffer_flush();
     exit(0);
 }
-if ($large_callback === null && $total >= BIG_RUN_LARGE_THRESHOLD) {
+if (!$extended_run && $total >= BIG_RUN_LARGE_THRESHOLD) {
     big_jobs_acquire_large_run();
     if ($discovery_entry_id !== null) {
         gate_big_run_discovery_large($discovery_entry_id);
