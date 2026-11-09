@@ -1353,6 +1353,10 @@ final class Zotero {
                 return;
             }
         }
+        if (has_unexpanded_cms_token($test_data)) {
+            report_info("Received unexpanded CMS placeholder title for URL " . echoable($url . ": " . $test_data));
+            return;
+        }
         if ($test_data === '404' || $test_data === '/404') {
             return;
         }
@@ -1385,23 +1389,31 @@ final class Zotero {
                     return;
                 }
             }
-            // Specific bad data that is correctable
-            $tester = mb_strtolower($result->publicationTitle);
-            if ($tester === 'nationalpost') {
-                $result->publicationTitle = 'National Post';
-            } elseif ($tester === 'financialpost') {
-                $result->publicationTitle = 'Financial Post';
-            } elseif ($tester === 'bloomberg.com') {
-                $result->publicationTitle = 'Bloomberg';
-            } elseif ($tester === 'radiofreeeurope/radioliberty') {
-                $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
-            } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
-                $result->publicationTitle = 'The Yucatan Times';
-            } elseif ($tester === 'advanced books') {
-                unset($result->issue);
-                unset($result->volume);
-                unset($result->pages);
+            if (has_unexpanded_cms_token($result->publicationTitle)) {
+                report_info("Received unexpanded CMS placeholder publication title for URL " . echoable($url . ": " . $result->publicationTitle));
                 unset($result->publicationTitle);
+            }
+            // Specific bad data that is correctable
+            if (!isset($result->publicationTitle)) {
+                // Token was just removed above; nothing left to correct
+            } else {
+                $tester = mb_strtolower($result->publicationTitle);
+                if ($tester === 'nationalpost') {
+                    $result->publicationTitle = 'National Post';
+                } elseif ($tester === 'financialpost') {
+                    $result->publicationTitle = 'Financial Post';
+                } elseif ($tester === 'bloomberg.com') {
+                    $result->publicationTitle = 'Bloomberg';
+                } elseif ($tester === 'radiofreeeurope/radioliberty') {
+                    $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
+                } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
+                    $result->publicationTitle = 'The Yucatan Times';
+                } elseif ($tester === 'advanced books') {
+                    unset($result->issue);
+                    unset($result->volume);
+                    unset($result->pages);
+                    unset($result->publicationTitle);
+                }
             }
         }
 
