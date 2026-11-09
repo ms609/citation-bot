@@ -397,7 +397,7 @@ final class gadgetapiTest extends testBaseClass {
         uopz_set_return(Page::class, 'expand_text', static function (): never {
             echo 'partial output that must not leak';
             throw new RuntimeException('expansion failed');
-        });
+        }, true);
         try {
             $response = $this->runGadgetEndpoint(
                 [
