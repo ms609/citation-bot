@@ -1,0 +1,29 @@
+name: Check for patch artifacts
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Reject tracked patch artifacts
+        shell: bash
+        run: |
+          artifacts=$(git ls-files -- '*.patch' '*.orig' '*.rei' '*.rej')
+          if [[ -n "$artifacts" ]]; then
+            printf 'Remove these tracked patch artifacts:\n' >&2
+            printf '%s\n' "$artifacts" | sed 's/^/  - /' >&2
+            exit 1
+          fi

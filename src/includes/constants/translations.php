@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-// Also need added to: both Page.php case statements, setup.php list of valid wikis, and both places in index.php
+// When adding a wiki, also review the parse-error messages in Page.php and the UI in index.php.
+const SUPPORTED_WIKIS = ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'];
+const ENGLISH_WIKI = ['en', 'simple', 'mdwiki'];
 
 const MK_ERR1 = 'Следниот текст може да ви помогне да сфатите каде е грешката на страницата (Барајте само { и } знаци или незатворен коментар)';
 const MK_ERR2 = 'Ако тоа не е проблемот, тогаш стартувајте ја единствената страница со &prce=1 додадена на URL-то за да го промените моторот за парсирање';
@@ -212,4 +214,11 @@ const VI_TRANS = [
     'Whitelisted category ' => 'Danh mục được cho phép ',
     'Converted page numbers to article numbers. ' => 'Đã chuyển đổi số trang thành số bài viết. ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Tham số page không còn được dùng đã chuyển đổi thành article-number trong cite IUCN. ',
+];
+
+const EDIT_SUMMARY_TRANSLATIONS = [
+    'mk' => MK_TRANS,
+    'ru' => RU_TRANS,
+    'sr' => SR_TRANS,
+    'vi' => VI_TRANS,
 ];

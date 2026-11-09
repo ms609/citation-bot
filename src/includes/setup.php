@@ -245,15 +245,14 @@ require_once __DIR__ . '/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
-// Should add all these to index.php web interface
-// Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
+require_once __DIR__ . '/constants/translations.php';
 $requested_wiki_base = setup_request_value('wiki_base');
 if ($requested_wiki_base !== null) {
     if (!is_string($requested_wiki_base)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
     $wiki_base = mb_trim($requested_wiki_base);
-    if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
+    if (!in_array($wiki_base, SUPPORTED_WIKIS, true)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
 } else {
