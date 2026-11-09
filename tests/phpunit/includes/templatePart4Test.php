@@ -858,6 +858,12 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
     }
 
+    public function testIncompleteNgaGovernor(): void {
+        $text = "{{cite web|url=https://www.nga.org/governor/william-calhoun-mcdonald/|website=National Governors Association|title=William Calhoun McDonald}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->profoundly_incomplete('https://www.nga.org/governor/william-calhoun-mcdonald/'));
+    }
+
     public function testAddEditor_1(): void {
         $text = "{{cite journal}}";
         $template = $this->make_citation($text);

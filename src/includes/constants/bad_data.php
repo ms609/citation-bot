@@ -1197,6 +1197,7 @@ const NO_DATE_WEBSITES = [
     'metacritic.com',
     'music.apple.com',
     'nationalarchives.gov.uk',
+    'nga.org/governor/', // Citoid reads term-list <time itemprop="termStart"> microdata as the publication date
     'numismatics.org.uk',
     'officialcharts.com',
     'oireachtas.ie',
