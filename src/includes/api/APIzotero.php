@@ -1394,7 +1394,10 @@ final class Zotero {
                 unset($result->publicationTitle);
             }
             // Specific bad data that is correctable
-            $tester = mb_strtolower($result->publicationTitle);
+            if (!isset($result->publicationTitle)) {
+                // Token was just removed above; nothing left to correct
+            } else {
+                $tester = mb_strtolower($result->publicationTitle);
             if ($tester === 'nationalpost') {
                 $result->publicationTitle = 'National Post';
             } elseif ($tester === 'financialpost') {
@@ -1410,6 +1413,7 @@ final class Zotero {
                 unset($result->volume);
                 unset($result->pages);
                 unset($result->publicationTitle);
+            }
             }
         }
 

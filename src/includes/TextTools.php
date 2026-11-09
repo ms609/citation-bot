@@ -1618,7 +1618,7 @@ function is_generic_title(string $value): bool {
  * "[node:field_nane] | [site:name]".
  */
 function has_unexpanded_cms_token(string $value): bool {
-    return preg_match('~\[[\w\-]+:[\w\-]+\]~u', $value) === 1;
+    return preg_match('~\[[\w\-.]+(?::[\w\-.]+)+\]~u', $value) === 1;
 }
 
 /**
