@@ -884,9 +884,8 @@ class Page {
         $translations_by_wiki = EDIT_SUMMARY_TRANSLATIONS;
         $translations = $translations_by_wiki[WIKI_BASE] ?? null;
         if ($translations !== null) {
-            foreach ($translations as $english => $translated) {
-                $auto_summary = str_replace($english, $translated, $auto_summary);
-            }
+            // Apply longest matching keys first and do not translate replacement text again.
+            $auto_summary = strtr($auto_summary, $translations);
         } elseif (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
             report_error('invalid wiki in edit summary');
         }
