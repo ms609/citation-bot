@@ -186,6 +186,8 @@ final class FatcatTest extends testBaseClass {
             'chapter title' => ['nothing', '|chapter=Chapter title', 0, true],
             'URL format already specified' => ['nothing', '|format=HTML', 0, true],
             'publication year outside the collection' => ['nothing', '|date=1 January 1910', 0, true],
+            'suffixed publication year outside the collection' => ['nothing', '|year=2020a', 0, true],
+            'publication year range outside the collection' => ['nothing', '|year=2020–2025', 0, true],
             'free DOI' => ['nothing', '|doi-access=free', 0, false],
             'PMC full text' => ['nothing', '|pmc=123456', 0, false],
             'broken DOI' => ['nothing', '|doi-broken-date=2024-01-01', 0, false],
