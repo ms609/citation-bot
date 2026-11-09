@@ -85,6 +85,46 @@ final class unpaywallApiTest extends testBaseClass {
         $this->assertSame(BAD_OA_URL, array_map('mb_strtolower', BAD_OA_URL));
     }
 
+    #[DataProvider('unpaywallUrlProvider')]
+    public function testUnpaywallUrlEncodesReservedCharactersInDoi(string $doi, string $expected_url): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Unpaywall');
+        }
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $urls = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function ($handle) use (&$urls): string {
+            $urls[] = (string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return '';
+        }, true);
+        try {
+            get_unpaywall_url($template, $doi);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+
+        $this->assertSame([$expected_url], $urls);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function unpaywallUrlProvider(): array {
+        return [
+            'hash' => [
+                '10.1000/foo#bar',
+                'https://api.unpaywall.org/v2/10.1000/foo%23bar?email=' . CROSSREFUSERNAME,
+            ],
+            'already percent-encoded hash' => [
+                '10.1000/foo%23bar',
+                'https://api.unpaywall.org/v2/10.1000/foo%23bar?email=' . CROSSREFUSERNAME,
+            ],
+            'query and ampersand' => [
+                '10.1000/foo?bar&baz',
+                'https://api.unpaywall.org/v2/10.1000/foo%3Fbar%26baz?email=' . CROSSREFUSERNAME,
+            ],
+        ];
+    }
+
     public function testResnetDoiWithUnrelatedThesisIsRejectedWithoutARequest(): void {
         foreach (['10.1109/CVPR.2016.90', '10.1109/cvpr.2016.90'] as $doi) {
             $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');

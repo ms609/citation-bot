@@ -64,8 +64,9 @@ function get_unpaywall_url(Template $template, string $doi): string {
         return 'wrong';
     } // TODO - maybe all ISBN
     set_time_limit(120);
+    $encoded_doi = doi_encode(urldecode($doi));
     /** @psalm-taint-escape ssrf */
-    $url = "https://api.unpaywall.org/v2/{$doi}?email=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/{$encoded_doi}?email=" . CROSSREFUSERNAME;
     curl_setopt($ch_oa, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch_oa);
     if (curl_getinfo($ch_oa, CURLINFO_RESPONSE_CODE) === 429) {

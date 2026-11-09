@@ -85,7 +85,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                     $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
 
                     foreach ($document->Item as $item) {
-                        if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
+                        if (
+                            in_array(pubmed_item_name($item), ['DOI', 'doi', 'ELocationID', 'pii'], true) &&
+                            preg_match("~10\.\d{4,9}/[^\s\"']*~", (string) $item, $match)
+                        ) {
                             $this_template->add_if_new('doi', $match[0], 'entrez');
                         }
                         switch ($item["Name"]) {
@@ -186,7 +189,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                             break;
                                         case "doi":
                                         case "pii":
-                                            if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                                            if (preg_match("~10\.\d{4,9}/[^\s\"']*~", (string) $subItem, $match)) {
                                                 $this_template->add_if_new('doi', $match[0], 'entrez');
                                             }
                                     }
@@ -411,7 +414,8 @@ function do_pumbed_query(Template $template, array $terms): array {
             $key = 'AID';
             $val = $template->get_without_comments_and_placeholders($term);
             if ($val) {
-                  $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
+                $val = doi_encode(urldecode(str_replace('+', '%2B', $val)));
+                $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
             }
         } else {
             $key = $key_index[$term]; // Will crash if bad data is passed

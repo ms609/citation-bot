@@ -360,6 +360,88 @@ XML;
         $this->assertSame($text, $template->parsed_text());
     }
 
+    #[DataProvider('entrezDoiItemSources')]
+    public function testEntrezExtractsDoiOnlyFromIdentifierItems(string $items_xml, ?string $expected_doi): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Entrez responses');
+        }
+        $response = '<eSummaryResult><DocSum><Id>12345678</Id>' . $items_xml . '</DocSum></eSummaryResult>';
+        $template = $this->make_citation('{{cite journal}}');
+        $templates = [$template];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('get_entrez_xml', new SimpleXMLElement($response));
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('doi_works', true);
+        try {
+            query_pmid_api(['12345678'], $templates);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('doi_works');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('get_entrez_xml');
+        }
+
+        $this->assertSame($expected_doi, $template->get2('doi'));
+    }
+
+    /** @return array<string, array{string, ?string}> */
+    public static function entrezDoiItemSources(): array {
+        return [
+            'top-level DOI with five-digit registrant' => [
+                '<Item Name="Title">A study of 10.1234/not-affiliated</Item>' .
+                '<Item Name="DOI">10.12345/real-doi</Item>',
+                '10.12345/real-doi',
+            ],
+            'ArticleIds doi with five-digit registrant' => [
+                '<Item Name="ArticleIds" Type="List"><Item Name="doi">10.12345/from-articleids</Item></Item>',
+                '10.12345/from-articleids',
+            ],
+            'ELocationID doi' => [
+                '<Item Name="ELocationID" Type="String">doi: 10.12345/from-elocation</Item>',
+                '10.12345/from-elocation',
+            ],
+            'title-shaped doi is ignored' => [
+                '<Item Name="Title">A study of 10.1234/not-affiliated</Item>',
+                null,
+            ],
+        ];
+    }
+
+    #[DataProvider('doiFormBodyProvider')]
+    public function testDoPubMedQueryEncodesDoiForFormBody(string $doi, string $expected_query): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Entrez responses');
+        }
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $queries = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('get_entrez_xml', static function (string $type, string $query) use (&$queries): ?SimpleXMLElement {
+            $queries[] = [$type, $query];
+            return null;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('sleep', 0);
+        try {
+            do_pumbed_query($template, ['doi']);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('sleep');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('get_entrez_xml');
+        }
+
+        $this->assertSame([['esearch_pubmed', $expected_query]], $queries);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function doiFormBodyProvider(): array {
+        return [
+            'raw plus and ampersand' => ['10.1000/a&b+c', '("10.1000/a%26b%2Bc"[AID])'],
+            'already percent-encoded plus' => ['10.1000/a%2Bb', '("10.1000/a%2Bb"[AID])'],
+            'already percent-encoded hash' => ['10.1000/a%23b', '("10.1000/a%23b"[AID])'],
+        ];
+    }
+
     /**
      * @param Template $template
      * @param list<?string> $responses
