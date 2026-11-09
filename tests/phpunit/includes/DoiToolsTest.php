@@ -42,6 +42,20 @@ final class DoiToolsTest extends testBaseClass {
         $this->assertSame('10.1097/01.jac.0000264606.50123.6d', $the_return[1]);
     }
 
+    public function testExtractDoiSixDigitRegistrant(): void {
+        $doi = '10.123456/example';
+        HandleCache::$cache_good[$doi] = true;
+        try {
+            $this->assertSame($doi, extract_doi('https://example.org/' . $doi)[1]);
+        } finally {
+            unset(HandleCache::$cache_good[$doi]);
+        }
+    }
+
+    public function testGetPossibleDoisSevenDigitRegistrant(): void {
+        $this->assertContains('10.1234567/example', get_possible_dois('junk 10.1234567/example'));
+    }
+
     public function testSanitizeDoi1(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));

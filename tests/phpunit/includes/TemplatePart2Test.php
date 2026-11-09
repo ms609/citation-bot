@@ -1282,6 +1282,17 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
+    public function testDoiFromTextWithFiveDigitRegistrant(): void {
+        $doi = '10.11646/zootaxa.4963.1.1';
+        HandleCache::$cache_good[$doi] = true;
+        try {
+            $template = $this->prepare_citation('{{cite journal|publisher=See ' . $doi . ' for details}}');
+        } finally {
+            unset(HandleCache::$cache_good[$doi]);
+        }
+        $this->assertSame($doi, $template->get2('doi'));
+    }
+
     public function testJournalIsBookSeries(): void {
         $text = '{{cite journal|journal=advances in enzymology and related areas of molecular biology}}';
         $template = $this->process_citation($text);

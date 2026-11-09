@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 final class DoiTest extends testBaseClass {
     public function testCrossrefStopsAfterTwoUnusableResponses(): void {
         if (!function_exists('uopz_set_return')) {
@@ -797,6 +799,37 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Smith', $template->get2('last1'));
         $this->assertSame('Jane', $template->get2('first1'));
         $this->assertNull($template->get2('last2'));
+    }
+
+    #[DataProvider('doiDxUrlProvider')]
+    public function testExpandDoiWithDxEncodesReservedCharactersInUrl(string $doi, string $expected_url): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI content negotiation');
+        }
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $urls = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function ($handle) use (&$urls): string {
+            $urls[] = (string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return 'not json';
+        }, true);
+        try {
+            expand_doi_with_dx($template, $doi);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+
+        $this->assertSame([$expected_url], $urls);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function doiDxUrlProvider(): array {
+        return [
+            'hash' => ['10.1000/foo#bar', 'https://doi.org/10.1000/foo%23bar'],
+            'already percent-encoded hash' => ['10.1000/foo%23bar', 'https://doi.org/10.1000/foo%23bar'],
+            'query and ampersand' => ['10.1000/foo?bar&baz', 'https://doi.org/10.1000/foo%3Fbar%26baz'],
+        ];
     }
 
     public function testDoiJsonStillAddsAuthorsWhenNoContainerTitle(): void {

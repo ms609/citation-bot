@@ -352,7 +352,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     if (!$doi) {
         return;
     }
-    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
+    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . doi_encode(urldecode($doi)));
     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
     try {
         $data = bot_curl_exec($ch);
