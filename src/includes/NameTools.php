@@ -85,8 +85,16 @@ function clean_up_first_names(string $value): string {
     return $value;
 }
 
+/** Institutional author acronyms must not be formatted as personal surnames. */
+function is_institutional_author_acronym(string $name): bool {
+    return in_array($name, ['ESA', 'NASA'], true);
+}
+
 function format_surname(string $surname): string {
     $surname = mb_trim($surname);
+    if (is_institutional_author_acronym($surname)) {
+        return $surname;
+    }
     if ($surname === '-') {
         return '';
     }
@@ -221,7 +229,11 @@ function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
-    [$author, $junior] = junior_test(mb_trim($author));
+    $author = mb_trim($author);
+    if (is_institutional_author_acronym($author)) {
+        return $author;
+    }
+    [$author, $junior] = junior_test($author);
     // Google and Zotero sometimes have these (sir) and just sir
     $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", $author);
     $author = preg_replace("~^( ?sir )~", "", $author);
