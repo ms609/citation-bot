@@ -86,6 +86,22 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('HPLC Analysis of Plants', title_capitalization('HPLC ANALYSIS OF PLANTS', true));
     }
 
+    public function testIrCasePreservedInTitles(): void {
+        $this->assertSame('Infrared IR Imaging', title_case('infrared IR imaging'));
+        $this->assertSame('Science ir Society', title_case('science ir society'));
+        $this->assertSame('Ir A Word', title_case('ir a word'));
+        $this->assertSame('A Study of IR Sensors', title_capitalization(title_case('A study of IR sensors'), true));
+        $this->assertSame('Science ir Society', title_capitalization(title_case('science ir society'), true));
+    }
+
+    public function testIrTitleCaseDoesNotChangeOtherWordsOrUrls(): void {
+        $this->assertSame('Mirror First', title_case('mirror first'));
+        $this->assertSame('Ir2 Example', title_case('ir2 example'));
+        $this->assertSame('Iridium Is An Element', title_case('iridium is an element'));
+        $this->assertSame('Ir A Word', title_case('Ir a word'));
+        $this->assertSame('https://example.org/ir', title_case('https://example.org/ir'));
+    }
+
     public function testCapitalizationKeepsSensuStrictoAbbreviation(): void {
         // "s. str." is an abbreviation, neither an acronym nor the end of a sentence
         $this->assertSame(
