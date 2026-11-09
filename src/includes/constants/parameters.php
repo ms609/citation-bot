@@ -21,7 +21,7 @@ const TEMPLATES_WE_CHAPTER_URL = [
     'cite cambridge history of china', 'warfare, state and society in the byzantine world, 565–1204',
     'die provinzen des osmanischen reiches', 'runciman-a history of the crusades',
     'history of taron', 'the muslims of medieval italy', 'emperor michael palaeologus and the west',
-    'arts of armenia', 'a history of palestine, 634–1099',
+    'arts of armenia', 'a history of palestine, 634–1099', 'baghdad during the abbasid caliphate',
     'the cambridge history of china', 'cambridge history of iran',
     'essays on the latin orient', 'cambridge history of egypt',
 ];
