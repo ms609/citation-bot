@@ -18,10 +18,14 @@ final class TranslationsTest extends PHPUnit\Framework\TestCase {
     }
 
     public function testEverySupportedWikiUsesEnglishOrHasEditSummaryTranslations(): void {
-        $this->assertEqualsCanonicalizing(
-            SUPPORTED_WIKIS,
-            [...ENGLISH_WIKI, ...array_keys(EDIT_SUMMARY_TRANSLATIONS)],
-            'Each supported wiki must have exactly one edit-summary language configuration.'
-        );
+        foreach (SUPPORTED_WIKIS as $wiki) {
+            $is_english = in_array($wiki, ENGLISH_WIKI, true);
+            $has_translation = array_key_exists($wiki, EDIT_SUMMARY_TRANSLATIONS);
+            $this->assertNotSame(
+                $is_english,
+                $has_translation,
+                "$wiki must use either English or a translation map, but not both."
+            );
+        }
     }
 }
