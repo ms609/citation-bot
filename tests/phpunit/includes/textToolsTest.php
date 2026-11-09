@@ -238,7 +238,7 @@ final class textToolsTest extends testBaseClass {
     public function testTidyDate4(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
-        $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
+        $this->assertSame('22 September – 22 October 1999', tidy_date('1999-09-22 - 1999-10-22'));
     }
 
     public function testTidyDate5(): void {

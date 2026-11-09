@@ -94,15 +94,17 @@ function statistics_parse_contribs_response(mixed $response): ?array {
     /** @var array<object> $edits */
     $edits = [];
     foreach ($response->query->usercontribs as $edit) {
-        if (is_object($edit)) {
-            $edits[] = $edit;
+        if (!is_object($edit)) {
+            return null;
         }
+        $edits[] = $edit;
     }
     $continue = null;
-    if (isset($response->continue) && is_object($response->continue)
-        && isset($response->continue->uccontinue) && is_string($response->continue->uccontinue)
-        && $response->continue->uccontinue !== '') {
-        $continue = $response->continue->uccontinue;
+    if (property_exists($response, 'continue')) {
+        $continue = $response->continue->uccontinue ?? null;
+        if (!is_string($continue) || $continue === '') {
+            return null;
+        }
     }
     return ['edits' => $edits, 'continue' => $continue];
 }

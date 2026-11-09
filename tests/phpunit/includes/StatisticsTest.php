@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class StatisticsTest extends testBaseClass {
@@ -142,4 +144,93 @@ final class StatisticsTest extends testBaseClass {
         $this->assertContains('#UCB_Gadget', KNOWN_UCB_TYPES);
         $this->assertContains('#UCB_webform_linked', KNOWN_UCB_TYPES);
     }
+
+    #[DataProvider('statisticsJobOutcomes')]
+    public function testStatisticsJobWritesOnlyCompleteWindows(
+        string $scenario,
+        int $status,
+        ?string $edit_summary,
+    ): void {
+        if (!function_exists('uopz_set_return') || !function_exists('proc_open')) {
+            $this->markTestSkipped('The statistics CLI fixture requires uopz and proc_open');
+        }
+
+        $fixture = <<<'PHP'
+require $argv[1] . '/src/includes/setup.php';
+$scenario = $argv[2];
+$responses = match ($scenario) {
+    'partial' => ['{"query":{"usercontribs":[{"comment":"#UCB_Gadget"}]},"continue":{"uccontinue":"next"}}', ''],
+    'malformed' => ['{"query":{"usercontribs":[]},"continue":{"uccontinue":false}}'],
+    'empty' => ['{"query":{"usercontribs":[]}}'],
+    default => ['{"query":{"usercontribs":[{"comment":"#UCB_Gadget"}]}}'],
+};
+uopz_set_return(WikipediaBot::class, 'query_api_authenticated', static function () use (&$responses): string {
+    return array_shift($responses) ?? '';
+}, true);
+uopz_set_return(WikipediaBot::class, 'query_api', '');
+uopz_set_return(WikipediaBot::class, 'get_a_page', 'Existing statistics');
+$existing = (object) ['title' => 'User:Citation bot/statistics', 'lastrevid' => 5,
+    'revisions' => [(object) ['timestamp' => '2026-11-08T12:00:00Z']]];
+$missing = (object) ['title' => 'User:Citation bot/statistics', 'missing' => ''];
+$details = $scenario === 'created' || $scenario === 'already created' ? $missing : $existing;
+uopz_set_return(WikipediaBot::class, 'read_details', (object) [
+    'curtimestamp' => '2026-11-08T12:01:00Z',
+    'query' => (object) ['pages' => (object) ['1' => $details]],
+]);
+uopz_set_return(WikipediaBot::class, 'fetch', static function (array $request) use ($existing, $missing, $scenario): object {
+    if ($request['action'] === 'edit') {
+        echo 'EDIT: ', $request['summary'], PHP_EOL;
+        if ($scenario === 'conflict') {
+            return (object) ['error' => (object) ['code' => 'editconflict']];
+        }
+        if ($scenario === 'created' && ($request['createonly'] ?? '') !== '1') {
+            throw new LogicException('The missing-page write was not create-only');
+        }
+        return (object) ['edit' => (object) ['result' => 'Success', 'newrevid' => 6]];
+    }
+    return (object) ['batchcomplete' => true, 'query' => (object) [
+        'pages' => (object) ['1' => $scenario === 'created' ? $missing : $existing],
+        'tokens' => (object) ['csrftoken' => 'fixture'],
+    ]];
+}, true);
+uopz_set_return('bot_curl_exec_withFalse', static function (): never {
+    throw new LogicException('Unexpected network request');
+}, true);
+require $argv[1] . '/src/update_statistics.php';
+PHP;
+
+        $process = proc_open( // phpcs:ignore Generic.PHP.ForbiddenFunctions.Found
+            [PHP_BINARY, '-d', 'uopz.exit=1', '-r', $fixture, '--', dirname(__DIR__, 3), $scenario],
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['redirect', 1]],
+            $pipes
+        );
+        $this->assertIsResource($process);
+        fclose($pipes[0]);
+        $output = stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $exit_status = proc_close($process);
+
+        $this->assertIsString($output);
+        $this->assertSame($status, $exit_status, $output);
+        if ($edit_summary === null) {
+            $this->assertStringNotContainsString('EDIT: ', $output);
+        } else {
+            $this->assertSame(1, mb_substr_count($output, 'EDIT: '));
+            $this->assertStringContainsString('EDIT: Update statistics: ' . $edit_summary, $output);
+        }
+    }
+
+    /** @return array<string, array{string, int, string|null}> */
+    public static function statisticsJobOutcomes(): array {
+        return [
+            'complete' => ['complete', 0, '1 edits in last 24 hours'],
+            'empty is complete' => ['empty', 0, '0 edits in last 24 hours'],
+            'later batch failed' => ['partial', 1, null],
+            'malformed continuation' => ['malformed', 1, null],
+            'conflict is not retried' => ['conflict', 1, '1 edits in last 24 hours'],
+            'missing page is created atomically' => ['created', 0, '1 edits in last 24 hours'],
+            'another writer created the page first' => ['already created', 1, null],
+        ];
+    }
+
 }
