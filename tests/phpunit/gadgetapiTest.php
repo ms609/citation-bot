@@ -384,4 +384,38 @@ final class gadgetapiTest extends testBaseClass {
             json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
         );
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointDiscardsExpansionOutputOnFailure(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to force an expansion failure');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('request_rate_limit_consume_layered', null);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'expand_text', static function (): never {
+            echo 'partial output that must not leak';
+            throw new RuntimeException('expansion failed');
+        });
+        try {
+            $response = $this->runGadgetEndpoint(
+                [
+                    'text' => 'Original citation',
+                    'summary' => '',
+                ],
+                'https://en.wikipedia.org'
+            );
+            $this->assertSame(500, $response['status']);
+            $this->assertSame(
+                ['error' => 'internal_error'],
+                json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+            );
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('request_rate_limit_consume_layered');
+        }
+    }
 }
