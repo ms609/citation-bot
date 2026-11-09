@@ -393,6 +393,9 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
         } else {
             $referer_url = WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $last_title));
         }
+        if ($referer_url === '') {
+            $referer_url = 'https://en.wikipedia.org/';
+        }
         curl_setopt($ch, CURLOPT_REFERER, $referer_url);
     }
 
