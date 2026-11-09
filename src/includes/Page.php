@@ -1128,14 +1128,14 @@ class Page {
                         $name = mb_strtolower(mb_trim(safe_preg_replace('~[\s_]+~u', ' ', $name)));
                         $frame['name'] = mb_trim(safe_preg_replace('~^template\s*:\s*~', '', $name));
                     } elseif ($frame['name'] !== null && preg_match(
-                        '~\G\s*(allow|deny|optout|mode)\s*=~',
+                        '~\G\s*(allow|deny|optout|mode)\s*=~i',
                         $text,
                         $param,
                         0,
                         $frame['field']
                     ) === 1) {
                         $value_start = $frame['field'] + mb_strlen($param[0], '8bit');
-                        $frame['params'][$param[1]] = mb_strtolower(mb_trim(mb_substr($text, $value_start, $offset - $value_start, '8bit')));
+                        $frame['params'][mb_strtolower($param[1])] = mb_strtolower(mb_trim(mb_substr($text, $value_start, $offset - $value_start, '8bit')));
                     }
                 }
                 $frame['name'] ??= '';
