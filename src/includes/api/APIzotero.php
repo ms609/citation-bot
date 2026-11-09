@@ -1398,22 +1398,22 @@ final class Zotero {
                 // Token was just removed above; nothing left to correct
             } else {
                 $tester = mb_strtolower($result->publicationTitle);
-            if ($tester === 'nationalpost') {
-                $result->publicationTitle = 'National Post';
-            } elseif ($tester === 'financialpost') {
-                $result->publicationTitle = 'Financial Post';
-            } elseif ($tester === 'bloomberg.com') {
-                $result->publicationTitle = 'Bloomberg';
-            } elseif ($tester === 'radiofreeeurope/radioliberty') {
-                $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
-            } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
-                $result->publicationTitle = 'The Yucatan Times';
-            } elseif ($tester === 'advanced books') {
-                unset($result->issue);
-                unset($result->volume);
-                unset($result->pages);
-                unset($result->publicationTitle);
-            }
+                if ($tester === 'nationalpost') {
+                    $result->publicationTitle = 'National Post';
+                } elseif ($tester === 'financialpost') {
+                    $result->publicationTitle = 'Financial Post';
+                } elseif ($tester === 'bloomberg.com') {
+                    $result->publicationTitle = 'Bloomberg';
+                } elseif ($tester === 'radiofreeeurope/radioliberty') {
+                    $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
+                } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
+                    $result->publicationTitle = 'The Yucatan Times';
+                } elseif ($tester === 'advanced books') {
+                    unset($result->issue);
+                    unset($result->volume);
+                    unset($result->pages);
+                    unset($result->publicationTitle);
+                }
             }
         }
 
