@@ -124,6 +124,7 @@ config:
       - .markdownlint-cli2.yaml
       - .lycheeignore
       - .gitignore
+      - .gitattributes
       - .phan/config.php
       - catalog-info.yaml
       - env.php.example

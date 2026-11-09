@@ -92,7 +92,7 @@ function add_fatcat_open_access_url(Template $template, string $doi): bool {
     if (
         !in_array($template->wikiname(), ['cite journal', 'citation', 'cite web'], true) ||
         $title === '' || $title === 'none' || mb_strpos($title, '[') !== false ||
-        (preg_match('~\A[0-9]{4}\z~', $year) === 1 && (int) $year > 1909) ||
+        (preg_match('~\A[0-9]{4}~', $year) === 1 && (int) $year > 1909) ||
         !$template->blank([
             ...ALL_URL_TYPES, ...TITLE_LINK_ALIASES, ...CHAPTER_ALIASES_AND_SCRIPT,
             'script-entry', 'script-contribution', 'script-article', 'script-section',
