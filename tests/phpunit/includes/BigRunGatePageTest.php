@@ -279,6 +279,39 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
         $this->assertLessThan($linked_remote, $linked_probe);
     }
 
+    public function testCategoryDefersLargeLeaseUntilOversizedCategoryIsRuledOut(): void {
+        $category = file_get_contents(dirname(__DIR__, 3) . '/src/category.php');
+        $this->assertIsString($category);
+        if (!is_string($category)) {
+            throw new RuntimeException('Unable to read category.php.');
+        }
+
+        $this->assertStringContainsString('$large_callback = null;', $category);
+        $this->assertMatchesRegularExpression(
+            '~if \(defined\(\'MAX_PAGES_OVERRIDE\'\)\) \{\s*\$large_callback = static function~',
+            $category,
+            'Only extended runs may reserve the large lease during discovery.'
+        );
+        $this->assertMatchesRegularExpression(
+            '~\$pages_in_category = WikipediaBot::category_members_bounded\(.*?\$large_callback\s*\);~s',
+            $category,
+            'The bounded category scan must receive the conditional large callback.'
+        );
+
+        $cancellation = mb_strpos($category, 'if ($total > $category_limit) {');
+        $deferred = mb_strpos($category, 'if ($large_callback === null && $total >= BIG_RUN_LARGE_THRESHOLD) {');
+        $this->assertIsInt($cancellation);
+        $this->assertIsInt($deferred);
+        if (!is_int($cancellation) || !is_int($deferred)) {
+            throw new RuntimeException('Expected category cancellation and deferred acquisition markers.');
+        }
+        $this->assertLessThan(
+            $deferred,
+            $cancellation,
+            'Finite runs must cancel oversized categories before acquiring a large lease.'
+        );
+    }
+
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testProbePromotesToDiscoveryAndThenChargesAtFinalAdmission(): void {
