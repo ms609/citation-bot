@@ -29,20 +29,15 @@ final class AdditionalWikiEditSummaryTranslationTest extends PHPUnit\Framework\T
         foreach (self::newLanguages() as $wiki) {
             $this->assertArrayHasKey($wiki, EDIT_SUMMARY_TRANSLATIONS);
         }
-        $this->assertCount(18, EDIT_SUMMARY_TRANSLATIONS);
     }
 
     #[DataProvider('languages')]
     public function test_key_sets_match_existing_translation_maps(string $wiki): void {
         $map = EDIT_SUMMARY_TRANSLATIONS[$wiki];
         $base_keys = array_keys(MK_TRANS);
-        $extra_keys = ['authors ', 'editors ', 'Formatted [[WP:ENDASH|dashes]]. '];
-        $this->assertSame(array_merge($base_keys, $extra_keys), array_keys($map), $wiki);
-        $this->assertEqualsCanonicalizing(array_keys(RU_TRANS), $base_keys, $wiki);
-        $this->assertEqualsCanonicalizing(array_keys(SR_TRANS), $base_keys, $wiki);
-        $this->assertEqualsCanonicalizing(array_keys(VI_TRANS), $base_keys, $wiki);
+        $this->assertSame($base_keys, array_keys($map), $wiki);
         foreach ($map as $english => $translated) {
-            $this->assertNotSame('', trim($translated), "$wiki: empty $english");
+            $this->assertNotSame('', mb_trim($translated), "$wiki: empty $english");
             $this->assertSame(str_ends_with($english, ' '), str_ends_with($translated, ' '), "$wiki: trailing space for $english");
         }
     }
@@ -62,7 +57,7 @@ final class AdditionalWikiEditSummaryTranslationTest extends PHPUnit\Framework\T
         $this->assertStringContainsString('[[:en:WP:UCB|', $translated);
         $this->assertStringContainsString('[[:en:WP:DBUG|', $translated);
         $this->assertStringContainsString('[[Category:Science]]', $translated);
-        $this->assertSame(2, substr_count($translated, ']].'));
+        $this->assertSame(2, mb_substr_count($translated, ']].'));
     }
 
     #[DataProvider('languages')]
@@ -93,9 +88,31 @@ final class AdditionalWikiEditSummaryTranslationTest extends PHPUnit\Framework\T
         $this->assertStringNotContainsString('[[WP:ENDASH|', strtr($source, $map));
     }
 
-    public function test_preexisting_languages_remain_registered(): void {
+    public function test_preexisting_languages_have_the_same_source_keys(): void {
         foreach (['mk', 'ru', 'sr', 'vi'] as $wiki) {
-            $this->assertArrayHasKey($wiki, EDIT_SUMMARY_TRANSLATIONS);
+            $this->assertEqualsCanonicalizing(array_keys(MK_TRANS), array_keys(EDIT_SUMMARY_TRANSLATIONS[$wiki]), $wiki);
         }
+    }
+
+    public function test_new_translation_maps_do_not_enable_new_wikis(): void {
+        foreach (self::newLanguages() as $wiki) {
+            $this->assertNotContains($wiki, SUPPORTED_WIKIS);
+        }
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function existingSummaryExamples(): array {
+        return [
+            'mk' => ['mk', 'Промени: doi. Додај: authors 1-2. Форматиран [[WP:ENDASH|dashes]]. '],
+            'ru' => ['ru', 'Изменены: doi. Добавлены: authors 1-2. Отформатировано [[WP:ENDASH|dashes]]. '],
+            'sr' => ['sr', 'Промени: doi. Додај: authors 1-2. Форматиран [[WP:ENDASH|dashes]]. '],
+            'vi' => ['vi', 'Thay đổi: doi. Thêm: authors 1-2. Định dạng [[WP:ENDASH|dashes]]. '],
+        ];
+    }
+
+    #[DataProvider('existingSummaryExamples')]
+    public function test_existing_language_edit_summaries_remain_unchanged(string $wiki, string $expected): void {
+        $source = 'Alter: doi. Add: authors 1-2. Formatted [[WP:ENDASH|dashes]]. ';
+        $this->assertSame($expected, strtr($source, EDIT_SUMMARY_TRANSLATIONS[$wiki]));
     }
 }

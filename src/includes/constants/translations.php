@@ -118,6 +118,9 @@ const MK_TRANS = [
     'Whitelisted category ' => 'Категорија на белата листа ',
     'Converted page numbers to article numbers. ' => 'Конвертирани страници во броеви на статии. ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Конвертиран депрециран параметар за страници во article-number во cite IUCN. ',
+    'authors ' => 'authors ',
+    'editors ' => 'editors ',
+    'Formatted [[WP:ENDASH|dashes]]. ' => 'Форматиран [[WP:ENDASH|dashes]]. ',
 ];
 
 const RU_TRANS = [
@@ -150,6 +153,9 @@ const RU_TRANS = [
     'Whitelisted category ' => 'Категория из белого списка ',
     'Converted page numbers to article numbers. ' => 'Номера страниц преобразованы в номера статей. ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Устаревший параметр page преобразован в article-number в cite IUCN. ',
+    'authors ' => 'authors ',
+    'editors ' => 'editors ',
+    'Formatted [[WP:ENDASH|dashes]]. ' => 'Отформатировано [[WP:ENDASH|dashes]]. ',
 ];
 
 const SR_TRANS = [
@@ -182,6 +188,9 @@ const SR_TRANS = [
     'Whitelisted category ' => 'Категорија са беле листе ',
     'Converted page numbers to article numbers. ' => 'Конвертоване странице у бројеве чланака. ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Застарели параметар page конвертован у article-number у cite IUCN. ',
+    'authors ' => 'authors ',
+    'editors ' => 'editors ',
+    'Formatted [[WP:ENDASH|dashes]]. ' => 'Форматиран [[WP:ENDASH|dashes]]. ',
 ];
 
 const VI_TRANS = [
@@ -214,6 +223,9 @@ const VI_TRANS = [
     'Whitelisted category ' => 'Danh mục được cho phép ',
     'Converted page numbers to article numbers. ' => 'Đã chuyển đổi số trang thành số bài viết. ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => 'Tham số page không còn được dùng đã chuyển đổi thành article-number trong cite IUCN. ',
+    'authors ' => 'authors ',
+    'editors ' => 'editors ',
+    'Formatted [[WP:ENDASH|dashes]]. ' => 'Định dạng [[WP:ENDASH|dashes]]. ',
 ];
 
 // Edit-summary translations for the 14 wiki languages proposed in #6143.
@@ -252,7 +264,7 @@ const ZH_TRANS = [
     'Converted page numbers to article numbers. ' => '已将页码转换为文章编号。 ',
     'Converted deprecated page parameter to article-number in cite IUCN. ' => '已将 cite IUCN 中弃用的 page 参数转换为 article-number。 ',
     'authors ' => '作者 ',
-    'editors ' => '编辑 ',
+    'editors ' => '编者 ',
     'Formatted [[WP:ENDASH|dashes]]. ' => '已规范化[[:en:WP:ENDASH|短横线]]的格式。 ',
 ];
 
@@ -300,17 +312,17 @@ const MS_TRANS = [
     'Removed or converted URL. ' => 'URL dialih keluar atau ditukar. ',
     'Removed URL that duplicated identifier. ' => 'URL yang mengulang maklumat pengecam telah dialih keluar. ',
     'Rebuilt citation from DOI after removing cookieAbsent link. ' => 'Rujukan dibina semula berdasarkan DOI selepas pautan cookieAbsent dialih keluar. ',
-    'Removed access-date with no URL. ' => 'Parameter access-date tanpa URL dibuang. ',
+    'Removed access-date with no URL. ' => 'Parameter access-date tanpa URL dialih keluar. ',
     'Changed bare reference to CS1/2. ' => 'Rujukan yang hanya mengandungi URL ditukar kepada format CS1/2. ',
-    'Removed parameters. ' => 'Parameter dibuang. ',
+    'Removed parameters. ' => 'Parameter dialih keluar. ',
     'Some additions/deletions were parameter name changes. ' => 'Sesetengah penambahan atau pembuangan sebenarnya perubahan nama parameter. ',
     'Normalized parameter names. ' => 'Nama parameter diseragamkan. ',
-    'Removed redundant ref parameter. ' => 'Parameter ref yang berlebihan dibuang. ',
-    'Removed invalid "n/a" parameter values. ' => 'Nilai parameter "n/a" yang tidak sah dibuang. ',
-    'Removed unsupported issue parameter from cite book. ' => 'Parameter issue yang tidak disokong dibuang daripada cite book. ',
-    'Removed ODNBsub template. ' => 'Templat ODNBsub dibuang. ',
+    'Removed redundant ref parameter. ' => 'Parameter ref yang berlebihan dialih keluar. ',
+    'Removed invalid "n/a" parameter values. ' => 'Nilai parameter "n/a" yang tidak sah dialih keluar. ',
+    'Removed unsupported issue parameter from cite book. ' => 'Parameter issue yang tidak disokong dialih keluar daripada cite book. ',
+    'Removed ODNBsub template. ' => 'Templat ODNBsub dialih keluar. ',
     'Upgrade ISBN10 to 13. ' => 'ISBN10 dinaik taraf kepada ISBN13. ',
-    'Removed Template redirect. ' => 'Lencongan templat dibuang. ',
+    'Removed Template redirect. ' => 'Lencongan templat dialih keluar. ',
     'Misc citation tidying. ' => 'Pembaikan rujukan lain. ',
     'Use this bot]].' => 'Gunakan bot ini]].',
     '|Report bugs]]' => '|Laporkan pepijat]]',
@@ -366,7 +378,7 @@ const HE_TRANS = [
     'Alter:' => 'שינויים:',
     'URLs might have been anonymized. ' => 'ייתכן שכתובות URL עברו אנונימיזציה. ',
     'Added' => 'נוסף',
-    'Add:' => 'הוספה:',
+    'Add:' => 'תוספות:',
     'Removed or converted URL. ' => 'כתובת URL הוסרה או הומרה. ',
     'Removed URL that duplicated identifier. ' => 'הוסרה כתובת URL ששכפלה מזהה. ',
     'Rebuilt citation from DOI after removing cookieAbsent link. ' => 'הערת השוליים נבנתה מחדש על סמך DOI לאחר הסרת הקישור cookieAbsent. ',
@@ -421,7 +433,7 @@ const HI_TRANS = [
     '|Report bugs]]' => '|त्रुटियों की रिपोर्ट करें]]',
     'Formatted ' => 'प्रारूपित किया गया ',
     'Suggested by' => 'सुझावकर्ता',
-    'Linked from' => 'कड़ी का स्रोत:',
+    'Linked from' => 'कड़ी का स्रोत',
     '[[Category:' => '[[Category:',
     'Whitelisted category ' => 'अनुमत श्रेणी ',
     'Converted page numbers to article numbers. ' => 'पृष्ठ संख्याएँ लेख संख्याओं में बदली गईं। ',
@@ -700,8 +712,8 @@ const PA_TRANS = [
     'Use this bot]].' => 'ਇਹ ਬੋਟ ਵਰਤੋ]].',
     '|Report bugs]]' => '|ਗਲਤੀਆਂ ਦੀ ਰਿਪੋਰਟ ਕਰੋ]]',
     'Formatted ' => 'ਫਾਰਮੈਟ ਕੀਤਾ ਗਿਆ ',
-    'Suggested by' => 'ਸੁਝਾਅ:',
-    'Linked from' => 'ਕੜੀ ਦਾ ਸਰੋਤ:',
+    'Suggested by' => 'ਸੁਝਾਅ ਦੇਣ ਵਾਲਾ',
+    'Linked from' => 'ਕੜੀ ਦਾ ਸਰੋਤ',
     '[[Category:' => '[[Category:',
     'Whitelisted category ' => 'ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਸ਼੍ਰੇਣੀ ',
     'Converted page numbers to article numbers. ' => 'ਸਫ਼ਾ ਨੰਬਰ ਲੇਖ ਨੰਬਰਾਂ ਵਿੱਚ ਬਦਲੇ ਗਏ। ',
