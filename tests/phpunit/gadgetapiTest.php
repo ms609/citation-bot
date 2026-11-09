@@ -17,10 +17,6 @@ final class gadgetapiTest extends testBaseClass {
     /**
      * Execute the real gadgetapi.php endpoint and return its status and body.
      *
-     * gadgetapi.php deliberately clears several output buffers while handling
-     * errors, so create enough private buffers that its cleanup does not
-     * consume PHPUnit's own output buffering.
-     *
      * @param array<array-key, mixed> $post
      * @return array{status: int, body: string}
      */
@@ -37,16 +33,17 @@ final class gadgetapiTest extends testBaseClass {
         http_response_code(200);
         $original_buffer_level = ob_get_level();
 
-        /*
-         * The endpoint's exception handlers call ob_end_clean() three times.
-         * Four buffers leave one under our control for capturing the JSON.
-         */
         ob_start();
-        ob_start();
-        ob_start();
-        ob_start();
+        $capture_buffer_level = ob_get_level();
 
         require dirname(__DIR__, 2) . '/src/gadgetapi.php';
+
+        // The endpoint must only unwind the buffers it opened itself.
+        $this->assertSame(
+            $capture_buffer_level,
+            ob_get_level(),
+            'gadgetapi.php must leave the caller output buffer level unchanged'
+        );
 
         $body = ob_get_contents();
         $this->assertIsString($body);
