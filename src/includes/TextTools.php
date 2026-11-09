@@ -529,7 +529,18 @@ function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false || mb_stripos($text, 'https://') !== false) {
         return $text; // Who knows - duplicate code below
     }
-    return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
+    // "ir" may be a lowercase word, while "IR" is an abbreviation. Preserve
+    // their explicit case, rather than turning both into "Ir".
+    $parts = preg_split('~(?<![\p{L}\p{N}_])(ir|IR)(?![\p{L}\p{N}_])~u', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($parts === false) {
+        return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
+    }
+    foreach ($parts as $i => $part) {
+        if ($i % 2 === 0 || ($part === 'ir' && $i === 1 && mb_trim($parts[0]) === '')) {
+            $parts[$i] = mb_convert_case($part, MB_CASE_TITLE, "UTF-8");
+        }
+    }
+    return implode('', $parts);
 }
 
 /** Returns a properly capitalized title.
