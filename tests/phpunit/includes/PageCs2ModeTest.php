@@ -29,6 +29,7 @@ final class PageCs2ModeTest extends testBaseClass {
 
     public function testExplicitConfigurationStillWorks(): void {
         $this->assertTrue($this->cs2_mode_of('{{cs1 config|mode=cs2}}'));
+        $this->assertTrue($this->cs2_mode_of('{{cs1 config|Mode=cs2}}'));
         $this->assertFalse($this->cs2_mode_of('{{cs1 config|mode=cs1}}{{cite web|title=A}}'));
     }
 
