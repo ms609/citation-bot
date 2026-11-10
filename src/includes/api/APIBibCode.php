@@ -440,7 +440,10 @@ function adsabs_api(
 
     $matched_ids = [];
     foreach ($response->docs as $record) {
-        report_info("Found match for bibcode " . bibcode_link($record->bibcode));
+        if (!isset($record->bibcode)) {
+            continue; // Nothing below can use a record without a bibcode
+        }
+        report_info("Found match for bibcode " . bibcode_link((string) $record->bibcode));
         $matched_ids[] = $record->bibcode;
         foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
             if (isset($record->bibcode) && mb_strtolower($an_id) === mb_strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
