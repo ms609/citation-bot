@@ -1744,7 +1744,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     }
                     return true;
                 } elseif ($old_pmid === '') {
-                    $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
+                    $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
                     $template->add_if_new('pmid', $pos_pmid);
                     return true;
                 } else {
@@ -1765,7 +1765,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 ) {
                 if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
                     if (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
-                        $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+                        $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
                     }
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
@@ -1809,10 +1809,10 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 }
                 return false;
             } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
-                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+                $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
                 return false;
             } elseif (preg_match('~^(https://pubmed\.ncbi\.nlm\.nih\.gov/\d+)/#:~', $url, $matches)) {
-                $template->set($url_type, $matches[1]);
+                $update_url($url_type, $matches[1]);
                 return false;
             }
 
