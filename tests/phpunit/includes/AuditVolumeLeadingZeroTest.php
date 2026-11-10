@@ -21,9 +21,9 @@ final class AuditVolumeLeadingZeroTest extends testBaseClass {
         $this->assertSame('0', $template->get2('volume'));
     }
 
-    public function testZeroPointValueIsKept(): void {
-        $template = $this->make_citation('{{cite journal|volume=0.5}}');
+    public function testZeroFollowedByLetterIsKept(): void {
+        $template = $this->make_citation('{{cite journal|volume=0A}}');
         $template->tidy_parameter('volume');
-        $this->assertSame('0.5', $template->get2('volume'));
+        $this->assertSame('0A', $template->get2('volume'));
     }
 }
