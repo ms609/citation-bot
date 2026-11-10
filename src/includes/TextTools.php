@@ -1009,6 +1009,15 @@ function tidy_date_inside(string $string): string {
         // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
         $time = false;
     }
+    if ($time && is_int($parsed_date['year']) && $parsed_date['year'] >= 1000 && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
+        checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
+        // Keep the calendar date as written.  strtotime() converts to UTC, which moves an evening
+        // timestamp with a negative offset ("2020-03-15T23:30:00-05:00", "... EST") to the next day.
+        $written = gmmktime(12, 0, 0, $parsed_date['month'], $parsed_date['day'], $parsed_date['year']);
+        if ($written !== false) {
+            $time = $written;
+        }
+    }
     if ($time) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
