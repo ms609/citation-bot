@@ -88,7 +88,9 @@ session_write_close();
     <p>
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More&nbsp;details</a> |
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report&nbsp;bugs/suggestions</a> |
-      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source&nbsp;code</a>
+      <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source&nbsp;code</a> |
+      <a href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use" title="Wikimedia Cloud Services End User Terms of Use">Terms&nbsp;of&nbsp;Use</a> |
+      <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" title="Wikimedia Foundation Privacy Policy">Privacy&nbsp;Policy</a>
     </p>
     <p>
       Recent edits on:
@@ -104,7 +106,7 @@ session_write_close();
     Your Wikipedia username will be included in the edit, such as: "Suggested&nbsp;by&nbsp;YourUserID".
     </p>
     <p>
-    You will be asked to log in to your Wikipedia account if you have not already authorized this tool.
+    You will be asked to log in to your Wikipedia account if you have not already authorized this tool. A strictly necessary session cookie (<code>CiteBot</code>) is used for CSRF security and Wikipedia OAuth login.
     </p>
   </footer>
  </body>

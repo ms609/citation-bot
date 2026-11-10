@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class SessionSecurityTest extends testBaseClass {
@@ -34,5 +37,28 @@ final class SessionSecurityTest extends testBaseClass {
         } finally {
             $old === false ? putenv('PUBLIC_BASE_URL') : putenv('PUBLIC_BASE_URL=' . $old);
         }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testLandingPageFooterDisclosesTermsPrivacyAndSessionCookie(): void {
+        putenv('PUBLIC_BASE_URL=https://citations.toolforge.org');
+        putenv('ALLOWED_HOSTS=citations.toolforge.org');
+        putenv('ALLOWED_ORIGINS=https://citations.toolforge.org');
+        $_SERVER['HTTP_HOST'] = 'citations.toolforge.org';
+
+        ob_start();
+        require dirname(__DIR__, 3) . '/src/index.php';
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString(
+            'href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use"',
+            $html
+        );
+        $this->assertStringContainsString(
+            'href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy"',
+            $html
+        );
+        $this->assertStringContainsString('<code>CiteBot</code>', $html);
     }
 }
