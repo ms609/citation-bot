@@ -6582,6 +6582,10 @@ final class Template
 
                 case 'archive-url':
                 case 'archiveurl':
+                    // Repair a missing scheme first: the validity check below would otherwise delete the link
+                    if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && mb_stripos($this->get($param), 'citation') === false) {
+                        $this->set($param, 'http://' . $matches[0]);
+                    }
                     if ($this->has($param) && !archive_url_valid($this->get($param))) {
                         // CS1 "|archive-url= is malformed": save commands and
                         // wildcard searches are not snapshots.
@@ -6595,9 +6599,6 @@ final class Template
                         if (preg_match('~^https?://wayback\.archive\-it\.org/\d{4}/(\d{4})(\d{2})(\d{2})\d{6}~', $this->get($param), $matches)) {
                             $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
                         }
-                    }
-                    if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && mb_stripos($this->get($param), 'citation') === false) {
-                        $this->set($param, 'http://' . $matches[0]);
                     }
                     if (
                         preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param)) ||
