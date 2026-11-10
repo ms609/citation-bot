@@ -190,14 +190,22 @@ function convert_mathml_to_latex(string $mathml): string {
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
 
-    // Apply simple tag replacements from MML_TAGS constant
-    $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
+    // Replace MathML tags before stripping them, but defer entities until after stripping.
+    // This preserves the command boundary when an entity is followed by a new <mi> letter.
+    $tag_replacements = [];
+    $entity_replacements = [];
+    foreach (MML_TAGS as $symbol => $replacement) {
+        if ($symbol[0] === '<') {
+            $tag_replacements[$symbol] = $replacement;
+        } else {
+            $entity_replacements[$symbol] = $replacement;
+        }
+    }
+    $mathml = str_replace(array_keys($tag_replacements), array_values($tag_replacements), $mathml);
 
-    // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
+    // Clean up any remaining MathML tags (including <mrow>).
     $mathml = strip_tags($mathml);
-    $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
-
-    $mathml = mathml_replace_symbols($mml_entities, $mathml);
+    $mathml = mathml_replace_symbols($entity_replacements, $mathml);
     $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
     // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
@@ -218,7 +226,7 @@ function mathml_replace_symbols(array $map, string $text): string {
         return $text;
     }
     $keys = array_map('strval', array_keys($map));
-    usort($keys, static fn(string $a, string $b): int => strlen($b) <=> strlen($a)); // Longest first
+    usort($keys, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a)); // Longest first
     $alternatives = [];
     foreach ($keys as $key) {
         $alternatives[] = preg_quote($key, '~');
