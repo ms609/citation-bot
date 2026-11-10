@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/APIfatcat.php';
+
 function parse_unpaywall_response(string $response): ?object {
     $oa = ExternalApiResponseGuard::decodeObject($response);
     if ($oa === null) {
@@ -62,8 +64,9 @@ function get_unpaywall_url(Template $template, string $doi): string {
         return 'wrong';
     } // TODO - maybe all ISBN
     set_time_limit(120);
+    $encoded_doi = doi_encode(urldecode($doi));
     /** @psalm-taint-escape ssrf */
-    $url = "https://api.unpaywall.org/v2/{$doi}?email=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/{$encoded_doi}?email=" . CROSSREFUSERNAME;
     curl_setopt($ch_oa, CURLOPT_URL, $url);
     $json = bot_curl_exec($ch_oa);
     if (curl_getinfo($ch_oa, CURLINFO_RESPONSE_CODE) === 429) {
@@ -289,6 +292,13 @@ function get_open_access_url(Template $template): void {
     $return = get_unpaywall_url($template, $doi);
     if (in_array($return, GOOD_FREE, true)) {
         return;
-    } // Do continue on
+    }
+    if (
+        SLOW_MODE &&
+        in_array($return, ['nothing', 'url_unreachable'], true) &&
+        add_fatcat_open_access_url($template, $doi)
+    ) {
+        return;
+    }
     get_semanticscholar_url($template, $doi);
 }

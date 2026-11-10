@@ -1,16 +1,84 @@
-/.phplint.cache/*
-/.phpunit.cache/*
+# Citation Bot: local credentials and deployment configuration
+# Keep the public env.php.example and src/env.php.example tracked.
+/env.php
+/src/env.php
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+
+# Local secrets (do not ignore public fixtures or example configuration)
+/auth.json
+/credentials.json
+/service-account*.json
+/.netrc
+/.pypirc
+/id_dsa
+/id_ecdsa
+/id_ed25519
+/id_rsa
+*.p12
+*.pfx
+*.keystore
+
+# Composer and npm dependencies; keep lockfiles and manifests tracked
+/vendor/
+/node_modules/
+
+# Generated CI/test/lint/coverage output
+/.phplint.cache/
+/.phpunit.cache/
+/phpunit.local.xml
+/.coverage
+/.coverage.*
 /clover.xml
-/core
-/coverage
 /coverage.xml
 /junit.xml
-/env.php
-/DebugLog.txt
-/tmp/*
-/vendor/*
-/node_modules/
+/coverage/
 /playwright-report/
 /test-results/
-/phpunit.local.xml
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+/.phpstan/
+/.psalm/
+/.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+__pycache__/
+*.py[cod]
+
+# Bot runtime files, deployment locks and scratch space
+/DebugLog.txt
+/core
+/git_pull.lock
+/src/git_pull.lock
+/tmp/
+/logs/
+*.log
+*.swp
+*.swo
+*~
+
+# Local development tools and personal workspace state
+/.claude/settings.local.json
+/.claude/worktrees/
 /.worktrees/
+CLAUDE.local.md
+.aider.chat.history.md
+.aider.input.history
+.aider.llm.history
+.aider.tags.cache*/
+/.idea/workspace.xml
+/.venv/
+/venv/
+
+# Operating system metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini

@@ -54,14 +54,13 @@ entrypoints:
       - src/gitpull.php
       - src/kill_big_job.php
       - src/linked_pages.php
-      - src/preview_results.php
       - src/index.php
-      - src/preview.html
       - src/assets/*
       - src/robots.txt
       - src/.user.ini
-      - src/GadgetApi.php
       - src/update_statistics.php
+      - src/resume.php
+      - src/reset_big_run_state.php
 
 tests:
   - changed-files:
@@ -98,6 +97,11 @@ ci:
       - tools/update_cffconvert_lock.sh
       - tools/update_codespell_lock.sh
       - tools/cs1_harness.php
+      - tools/reset_big_run_state.php
+      - tools/cleanup-citoid-pending.php
+      - tools/verify-citoid-shared-flock.php
+      - .github/scripts/*
+      - .github/actions/*
 
 docker:
   - changed-files:
@@ -120,6 +124,7 @@ config:
       - .markdownlint-cli2.yaml
       - .lycheeignore
       - .gitignore
+      - .gitattributes
       - .phan/config.php
       - catalog-info.yaml
       - env.php.example

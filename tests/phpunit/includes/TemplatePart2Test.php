@@ -44,6 +44,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testTidyKeepsBookSeriesThatIsPartOfTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About Fatal Fury 3|series=All About|volume=10|page=253}}');
+        $template->final_tidy();
+        $this->assertSame('All About', $template->get2('series'));
+        $this->assertSame('10', $template->get2('volume'));
+    }
+
+    public function testTidyRemovesBookSeriesIdenticalToTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About|series=All about}}');
+        $template->final_tidy();
+        $this->assertNull($template->get2('series'));
+    }
+
     public function testTidyChapterNotJournal(): void {
         $text = "{{cite web|chapter=X|title=Y|url=Z}}";
         $template = $this->make_citation($text);
@@ -1282,6 +1295,17 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('publisher'));
     }
 
+    public function testDoiFromTextWithFiveDigitRegistrant(): void {
+        $doi = '10.11646/zootaxa.4963.1.1';
+        HandleCache::$cache_good[$doi] = true;
+        try {
+            $template = $this->prepare_citation('{{cite journal|publisher=See ' . $doi . ' for details}}');
+        } finally {
+            unset(HandleCache::$cache_good[$doi]);
+        }
+        $this->assertSame($doi, $template->get2('doi'));
+    }
+
     public function testJournalIsBookSeries(): void {
         $text = '{{cite journal|journal=advances in enzymology and related areas of molecular biology}}';
         $template = $this->process_citation($text);
@@ -1390,17 +1414,28 @@ final class TemplatePart2Test extends testBaseClass {
     }
 
     public function testRedirectFixing(): void {
-        sleep(2);
-        $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
-        $template = $this->prepare_citation($text);
-        $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $template->parsed_text());
-    }
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki redirect status');
+        }
 
-    public function testRedirectFixing2(): void {
-        sleep(2);
-        $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-        $template = $this->prepare_citation($text);
-        $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'is_redirect', static function (string $title): int {
+            return match ($title) {
+                'Journal Of Polymer Science' => 1,
+                'Journal of Polymer Science' => 0,
+                default => throw new LogicException('Unexpected redirect lookup: ' . $title),
+            };
+        }, true);
+        try {
+            $plain = $this->prepare_citation('{{cite journal|journal=[[Journal Of Polymer Science]]}}');
+            $this->assertSame('{{cite journal|journal=[[Journal of Polymer Science]]}}', $plain->parsed_text());
+
+            $piped = $this->prepare_citation('{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}');
+            $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $piped->get2('journal'));
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'is_redirect');
+        }
     }
 
     public function testFixURLinLocation1(): void {

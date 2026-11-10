@@ -210,9 +210,31 @@ final class pageTest extends testBaseClass {
     }
 
     public function testBotRead(): void {
-        $page = new TestPage();
-        $page->get_text_from('User:Citation_bot');
-        $this->assertTrue(mb_strlen($page->parsed_text()) > 200);
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki transport');
+        }
+
+        $wikitext = 'A page with a {{cite journal|title=Example}} citation.';
+        $details = '{"curtimestamp":"2026-10-25T12:00:00Z","query":{"pages":{"1":' .
+            '{"title":"Example","touched":"2026-10-25T11:00:00Z","lastrevid":2,"protection":[]}}}}';
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec_withFalse', static function () use (&$calls, $details, $wikitext): string {
+            return match (++$calls) {
+                1 => $details,
+                2 => $wikitext,
+                default => throw new LogicException('Unexpected MediaWiki request'),
+            };
+        }, true);
+        try {
+            $page = new TestPage();
+            $this->assertTrue($page->get_text_from('Example'));
+            $this->assertSame($wikitext, $page->parsed_text());
+            $this->assertSame(2, $calls);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec_withFalse');
+        }
     }
 
     public function testBotReadNonExistent(): void {
@@ -329,6 +351,18 @@ final class pageTest extends testBaseClass {
         $this->assertFalse($page->get_text_from('.'));
     }
 
+    private function readSharedWriteTestPage(TestPage $page, string $title): void {
+        for ($attempt = 1; $attempt <= 3; $attempt++) {
+            if ($page->get_text_from($title)) {
+                return;
+            }
+            if ($attempt < 3) {
+                sleep(2);
+            }
+        }
+        self::fail('Could not read the shared Wikipedia write-test page after three attempts: ' . $title);
+    }
+
     public function testBotExpandWrite(): void { // The shared page is only ever written with the expanded citation, so a failed or overlapping run cannot leave it broken. Good revision: https://en.wikipedia.org/w/index.php?title=User:Blocked_Testing_Account/writetest&oldid=1372041963
         $this->requires_secrets(function (): void {
             $api = new WikipediaBot();
@@ -360,7 +394,7 @@ final class pageTest extends testBaseClass {
             $max_attempts = 4;
             for ($attempt = 1; $attempt <= $max_attempts; $attempt++) {
                 // Read immediately before writing, so that the revision id and read time are current
-                $this->assertTrue($page->get_text_from($writeTestPage));
+                $this->readSharedWriteTestPage($page, $writeTestPage);
                 $text_before_write = $page->parsed_text();
                 $page->overwrite_text($expanded_text . $marker);
                 $page_result = $page->write($api, "Testing bot write function (run " . $run_token . ") | #UCB_Testing");
@@ -374,7 +408,7 @@ final class pageTest extends testBaseClass {
             sleep(6);
 
             // Double check we can read it back
-            $this->assertTrue($page->get_text_from($writeTestPage));
+            $this->readSharedWriteTestPage($page, $writeTestPage);
             $read_back = $without_marker($page->parsed_text());
             if (!$page_result && (bool) getenv('CI')) {
                 // Not all "CI" which includes any phpunit, but only GitHub Actions or TRAVIS or other fully automatic CI
@@ -442,16 +476,14 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText0(): void {
-        $this->require_live_jstor_ris();
         $text = "<ref>{{doi|10.2307/962034}}</ref>";
-        $page = $this->process_page($text);
+        $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 }}</ref>', $page->parsed_text());
     }
 
     public function testUrlReferencesWithText1(): void {
-        $this->require_live_jstor_ris();
         $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=|||||||||3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
-        $page = $this->process_page($text);
+        $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertSame('<ref>{{cite journal | last1=Jarman | first1=Douglas | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | journal=The Musical Times | date=1983 | volume=124 | issue=1682 | pages=218–223 | doi=10.2307/962034 | jstor=962034 | url=https://www.jstor.org/stable/962034 }}</ref>', $page->parsed_text());
     }
 
@@ -563,16 +595,14 @@ final class pageTest extends testBaseClass {
     }
 
     public function testUrlReferencesWithText18(): void {
-        $this->require_live_jstor_ris();
         $text = "<ref>https://doi.org/10.2307/962034{{full}}</ref>";
-        $page = $this->process_page($text);
+        $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
     public function testUrlReferencesWithText19(): void {
-        $this->require_live_jstor_ris();
         $text = "<ref>https://doi.org/10.2307/962034{{Bare URL inline}}</ref>";
-        $page = $this->process_page($text);
+        $page = $this->with_jstor_citoid_fixture('962034', fn (): TestPage => $this->process_page($text));
         $this->assertTrue((bool) mb_stripos($page->parsed_text(), 'jstor=962034'));
     }
 
@@ -612,10 +642,96 @@ final class pageTest extends testBaseClass {
         $this->assertSame($text, $page->parsed_text());
     }
 
+    #[DataProvider('botDirectiveForms')]
+    public function testBotDirectiveForms(string $directive, bool $denied): void {
+        $text = $directive . '{{cite journal|pages=44-55}}';
+        $page = new TestPage();
+        $page->parse_text($text);
+        $this->assertSame(!$denied, $page->expand_text());
+        $this->assertSame($denied ? $text : $directive . '{{cite journal|pages=44–55}}', $page->parsed_text());
+        if ($denied) {
+            $this->assertFalse($page->write(new WikipediaBot()));
+        }
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function botDirectiveForms(): array {
+        return [
+            'whitespace and multiline' => ["{{ bots |\n deny = Citation bot }}", true],
+            'namespace and comma list' => ['{{Template:Bots|deny=Other,Citation_bot}}', true],
+            'comment in parameter' => ['{{bots|d<!-- comment -->eny=Citation bot}}', true],
+            'nested unrelated parameter' => ['{{bots|reason={{!}}|deny=Citation bot}}', true],
+            'legacy optout all' => ['{{ bots | optout=all }}', true],
+            'mixed-case deny name' => ['{{bots|Deny=Citation bot}}', true],
+            'mixed-case allow none' => ['{{bots|Allow=none}}', true],
+            'mixed-case optout all' => ['{{bots|Optout=all}}', true],
+            'namespace on nobots' => ['{{Template:Nobots }}', true],
+            'exact denial name' => ['{{bots|deny=Not Citation bot}}', false],
+            'exact allow name' => ['{{bots|allow=Not Citation bot}}', true],
+            'protected denial' => ['<nowiki>{{bots|deny=Citation bot}}</nowiki>', false],
+        ];
+    }
+
+    #[DataProvider('cs1OptOutProvider')]
+    public function testCs1OptOut(string $marker, string $reference, bool $opted_out): void {
+        $existing_citation = '{{cite journal|pages=44-55}}';
+        $this->with_jstor_citoid_fixture('962034', function () use ($marker, $reference, $existing_citation, $opted_out): TestPage {
+            $page = $this->process_page($marker . $reference . $existing_citation);
+            $this->assertStringContainsString('{{cite journal|pages=44–55}}', $page->parsed_text());
+            if ($opted_out) {
+                $this->assertStringContainsString($reference, $page->parsed_text());
+                $this->assertStringNotContainsString('Changed bare reference to CS1/2.', $page->edit_summary());
+                // Check that reusing the page object for a page without the opt-out still allows expansion.
+                $page->parse_text($reference);
+                $this->assertTrue($page->expand_text());
+            }
+            $this->assertStringContainsString('jstor=962034', $page->parsed_text());
+            return $page;
+        });
+    }
+
+    /** @return array<string, array{string, string, bool}> */
+    public static function cs1OptOutProvider(): array {
+        $bare_url = '<ref>https://doi.org/10.2307/962034</ref>';
+        return [
+            'bare URL' => ['{{bots|optout=CS1}}', $bare_url, true],
+            'DOI template' => ['{{bots|optout=CS1}}', '<ref>{{doi|10.2307/962034}}</ref>', true],
+            'plain DOI' => ['{{bots|optout=CS1}}', '<ref>10.2307/962034</ref>', true],
+            'DOI with reference text' => ['{{bots|optout=CS1}}', '<ref>Jarman, [https://doi.org/10.2307/962034 Violin Concerto], 1983.</ref>', true],
+            'CS2 mode' => ['{{cs1 config|mode=cs2}}{{bots|optout=CS1}}', $bare_url, true],
+            'list, spacing and case' => ['{{ Bots | optout = MassMessage, cS1 , afd }}', $bare_url, true],
+            'mixed-case parameter name' => ['{{bots|Optout=CS1}}', $bare_url, true],
+            'second parameter with a comment' => ['{{Template:Bots|deny=AnotherBot|optout=CS1<!-- keep simple references -->}}', $bare_url, true],
+            'protected regions' => ['<!-- {{bots|optout=CS1}} --><nowiki>{{bots|optout=CS1}}</nowiki>', $bare_url, false],
+            'nested unrelated parameter' => ['{{bots|reason={{!}}|optout=CS1}}', $bare_url, true],
+            'unrelated opt-out' => ['{{bots|optout=CS12}}', $bare_url, false],
+        ];
+    }
+
+    public function testCs1OptOutDoesNotOverrideBotDenial(): void {
+        $text = '{{bots|optout=CS1}}{{bots|deny=Citation bot}}{{cite journal|pages=44-55}}';
+        $page = new TestPage();
+        $page->parse_text($text);
+
+        $this->assertFalse($page->expand_text());
+        $this->assertSame($text, $page->parsed_text());
+    }
+
     public function testODNB1(): void {
         $text = '{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
         $page = $this->process_page($text);
         $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
+    }
+
+    public function testOdnbRemovalDoesNotCarryOverToTheNextPage(): void {
+        $page = new TestPage();
+        $page->parse_text('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} {{ODNBsub}}');
+        $this->assertTrue($page->expand_text());
+        $this->assertStringContainsString('ODNBsub', $page->edit_summary());
+
+        $page->parse_text('{{cite journal|pages=44-55}}');
+        $this->assertTrue($page->expand_text());
+        $this->assertStringNotContainsString('ODNBsub', $page->edit_summary());
     }
 
     public function testODNB2(): void {

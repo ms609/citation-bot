@@ -487,9 +487,8 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     }
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
-    $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
+    $str = safe_preg_replace('~(?<!\')(?:&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;)(?!\')~u', "'", $str);
     if ((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&lsaquo;') !== false) ||
-            (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
             (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);  // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
@@ -529,7 +528,18 @@ function title_case(string $text): string {
     if (mb_stripos($text, 'www.') !== false || mb_stripos($text, 'www-') !== false || mb_stripos($text, 'http://') !== false || mb_stripos($text, 'https://') !== false) {
         return $text; // Who knows - duplicate code below
     }
-    return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
+    // "ir" may be a lowercase word, while "IR" is an abbreviation. Preserve
+    // their explicit case, rather than turning both into "Ir".
+    $parts = preg_split('~(?<![\p{L}\p{N}_])(ir|IR)(?![\p{L}\p{N}_])~u', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($parts === false) {
+        return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
+    }
+    foreach ($parts as $i => $part) {
+        if ($i % 2 === 0 || ($part === 'ir' && $i === 1 && mb_trim($parts[0]) === '')) {
+            $parts[$i] = mb_convert_case($part, MB_CASE_TITLE, "UTF-8");
+        }
+    }
+    return implode('', $parts);
 }
 
 /** Returns a properly capitalized title.
@@ -739,13 +749,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+        "~ (?:Ii|Iii|Iv|Vi|Vii|Viii|Ix)$~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
+        "~^(?:Ii|Iii|Iv|Vi|Vii|Viii|Ix):~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
@@ -864,17 +874,12 @@ function tidy_date(string $string): string {
     if (mb_strlen($new) === 4) {
         return mb_ltrim($new, "0"); // Also cleans up 0000
     }
-    if (mb_strlen($new) === 5 && mb_substr($new, 0, 1) === '-') {
-        $new = mb_ltrim($new, "-");
-        $new = mb_ltrim($new, "0");
-        $new = $new . ' BC';
-        return $new;
-    }
     return $string;
 }
 
 function tidy_date_inside(string $string): string {
     $string = mb_trim($string);
+    $string = safe_preg_replace('~^Date published \(\s*~', '', $string); // seen this
     if (mb_stripos($string, 'Invalid') !== false) {
         return '';
     }
@@ -890,17 +895,22 @@ function tidy_date_inside(string $string): string {
     if (preg_match('~^\d{2}\-\-$~', $string)) {
         return '';
     }
-    // Google sends ranges
-    if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
-        $start_ts = strtotime($matches[1] . $matches[2]);
-        $end_ts = strtotime($matches[3] . $matches[4]);
-        if ($start_ts !== false && $end_ts !== false) {
-            if ($matches[1] === $matches[3]) {
-                return date('j F', $start_ts) . ' – ' . date('j F Y', $end_ts);
-            } else {
-                return date('j F Y', $start_ts) . ' – ' . date('j F Y', $end_ts);
-            }
+    // CS1 date fields reject BCE dates. Check the sign before stripping dashes.
+    if (preg_match('~\A[-\x{2212}](?:\d+\z|\d{4,}-\d)~u', $string)) {
+        return '';
+    }
+    // Google sends ranges. Check each endpoint before PHP can roll it forward.
+    if (preg_match('~^(\d{4})-(\d{2})-(\d{2})\s+-\s+(\d{4})-(\d{2})-(\d{2})$~', $string, $matches)) {
+        $start = $matches[1] . '-' . $matches[2] . '-' . $matches[3];
+        $end = $matches[4] . '-' . $matches[5] . '-' . $matches[6];
+        if (!checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1]) ||
+            !checkdate((int) $matches[5], (int) $matches[6], (int) $matches[4]) ||
+            $start > $end) {
+            return '';
         }
+        $start_date = new DateTimeImmutable($start);
+        $end_date = new DateTimeImmutable($end);
+        return $start_date->format($matches[1] === $matches[4] ? 'j F' : 'j F Y') . ' – ' . $end_date->format('j F Y');
     }
     // Huge amount of character cleaning
     if (mb_strlen($string, '8bit') !== mb_strlen($string)) {    // Convert all multi-byte characters to dashes
@@ -922,7 +932,6 @@ function tidy_date_inside(string $string): string {
     $string = mb_trim($string);
     // End of character clean-up
     $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
-    $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
     // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
     if (mb_strpos($string, '0001-11-30') !== false) {
         return '';
@@ -955,11 +964,13 @@ function tidy_date_inside(string $string): string {
             return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
         } elseif (intval($matches[2]) > 12 && intval($matches[1]) > 12) {
             return '';
-        } elseif ($matches[1] === $matches[2]) {
-            if (mb_strlen($matches[2]) === 1) {
-                $matches[2] = '0' . $matches[2];
+        } elseif (intval($matches[1]) === intval($matches[2])) {
+            $month_day = intval($matches[1]);
+            if (!checkdate($month_day, $month_day, intval($matches[3]))) {
+                return $matches[3];
             }
-            return $matches[3] . '-' . $matches[2] . '-' . $matches[2];
+            $padded = sprintf('%02d', $month_day);
+            return $matches[3] . '-' . $padded . '-' . $padded;
         } else {
             return $matches[3];// do not know. just give year
         }
@@ -968,15 +979,12 @@ function tidy_date_inside(string $string): string {
     if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) {
         return tidy_date_inside($matches[1]); // Remove time zone stuff from standard date format
     }
-    if (preg_match('~^\-?\d+$~', $string)) {
-        $string = intval($string);
-        if ($string < -2000 || $string > (int) date("Y") + 10) {
+    if (preg_match('~^\d+$~', $string)) {
+        $year = intval($string);
+        if ($year < 2 || $year > (int) date("Y") + 10) {
             return ''; // A number that is not a year; probably garbage
         }
-        if ($string > -2 && $string < 2) {
-            return ''; // reject -1,0,1
-        }
-        return (string) $string; // year
+        return (string) $year;
     }
     if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.    The comma is evil and strtotime is stupid
         $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
@@ -999,11 +1007,8 @@ function tidy_date_inside(string $string): string {
     if ($time) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
-        if ($year < -2000 || $year > (int) date("Y") + 10) {
+        if ($year < 100 || $year > (int) date("Y") + 10) {
             return ''; // We got an invalid year
-        }
-        if ($year < 100 && $year > -100) {
-            return '';
         }
         if ($day === '01') { // Probably just got month and year
             $string = date('F Y', $time);
@@ -1174,13 +1179,13 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
         return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
     }
-    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-–]([A-Z][a-z]+ \d{4})$~u', $input, $matches)) { // Missing space around en dash for range of full dates
         return $matches[1] . ' – ' . $matches[2];
     }
     if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
         return $matches[1] . ' ' . $matches[2];
     }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-–](\d{4})$~u', $input, $matches)) { // Comma with month/season and years
         return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
     }
     if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
@@ -1349,6 +1354,19 @@ function rxiv_id_valid(string $value): bool {
         return $month >= 1 && $month <= 12 && $day >= 1 && $day <= 31;
     }
     return false;
+}
+
+/**
+ * Turn the value of a biorxiv= or medrxiv= parameter into a full DOI.
+ * The parameter may hold a bare identifier (the 10.1101 prefix is assumed) or
+ * an already-complete DOI with either the 10.1101 or the newer 10.64898
+ * prefix, which must not be given a second prefix.
+ */
+function rxiv_doi_from_id(string $value): string {
+    if (mb_strpos($value, '10.1101/') === 0 || mb_strpos($value, '10.64898/') === 0) {
+        return $value;
+    }
+    return '10.1101/' . $value;
 }
 
 /**
@@ -1589,6 +1607,20 @@ function is_generic_title(string $value): bool {
 }
 
 /**
+ * True when a value contains an unexpanded CMS placeholder token such as
+ * Drupal's [node:title] or [site:name].  These appear verbatim in <title>
+ * tags when the site's metatag configuration is broken, and Citoid/Zotero
+ * faithfully returns them as the page title.  They must never become
+ * |title=, so reject any bracketed token with a colon and no spaces
+ * (legitimate bracketed titles such as "[Review] Foo" have no colon).
+ * See https://en.mapofmemory.org/54-07 whose <title> is literally
+ * "[node:field_nane] | [site:name]".
+ */
+function has_unexpanded_cms_token(string $value): bool {
+    return preg_match('~\[[\w\-.]+(?::[\w\-.]+)+\]~u', $value) === 1;
+}
+
+/**
  * True when a value is a structurally valid URL for CS1 (error 40,
  * "Check |url= value"): no whitespace/control characters, a proper scheme
  * (RFC 3986 scheme syntax), and non-empty content after the scheme.
@@ -1641,7 +1673,9 @@ function archive_url_has_timestamp(string $value): bool {
 
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
-    $test = str_replace(['—', '?', '–', '-', '?', ' '], '', $isbn10);
+    // Written as escapes (U+2014 em dash, U+2015 horizontal bar, U+2013 en dash, U+2012 figure dash, U+2212 minus sign, U+2010 hyphen) so that an encoding round trip cannot corrupt them into '?'
+    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2212}", "\u{2010}"];
+    $test = str_replace([...$dash_variants, '-', ' '], '', $isbn10);
     if (mb_strlen($test) < 10 || mb_strlen($test) > 13) {
         return $isbn10;
     }
@@ -1650,7 +1684,7 @@ function changeisbn10Toisbn13(string $isbn10, int $year): string {
         // Uses spaces
         $isbn10 = str_replace(' ', '-', $isbn10);
     }
-    $isbn10 = str_replace(['—', '?', '–', '-', '?'], '-', $isbn10); // Standardize dahses : en dash, horizontal bar, em dash, minus sign, figure dash, to hyphen.
+    $isbn10 = str_replace($dash_variants, '-', $isbn10); // Standardize dashes: em dash, horizontal bar, en dash, figure dash, minus sign, and Unicode hyphen to hyphen.
     if (preg_match("~[^0-9Xx\-]~", $isbn10) === 1) {
         return $isbn10;
     } // Contains invalid characters
@@ -1686,7 +1720,8 @@ function clean_volume(string $volume): string {
     if (mb_strpos($volume, "(") !== false) {
         return '';
     }
-    if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+    // A single letter is a legitimate volume ("A", "B"), but strtotime() reads it as a military time zone
+    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*$~', $volume) !== 1 && (bool) strtotime($volume)) {
         return ''; // Do not add date
     }
     if (mb_stripos($volume, "november") !== false) {

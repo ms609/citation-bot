@@ -14,7 +14,7 @@ const TEMPLATES_WE_SLIGHTLY_PROCESS = ['cite news', 'cite newspaper', 'citenews'
 const TEMPLATES_WE_BARELY_PROCESS = ['cite thesis', 'cite press release', 'cite report', 'cite conference'];
 const TEMPLATES_WE_RENAME = ['cite arxiv', 'cite biorxiv', 'cite medrxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite paper', 'cite website', 'cite ssrn'];
 const TEMPLATES_WE_CHAPTER_URL = [
-    'new cambridge medieval history', 'setton-a history of the crusades', 'new cambridge medieval history',
+    'new cambridge medieval history', 'setton-a history of the crusades',
     'the cambridge history of iran', 'the buwayhid dynasty in iraq', 'the cambridge history of egypt',
     'the history of al-tabari', 'the prophet and the age of the caliphates', 'cambridge ancient history',
     'the last centuries of byzantium, 1261–1453', 'the byzantine revival, 780–842',
@@ -22,7 +22,7 @@ const TEMPLATES_WE_CHAPTER_URL = [
     'die provinzen des osmanischen reiches', 'runciman-a history of the crusades',
     'history of taron', 'the muslims of medieval italy', 'emperor michael palaeologus and the west',
     'arts of armenia', 'a history of palestine, 634–1099', 'baghdad during the abbasid caliphate',
-    'baghdad during the abbasid caliphate', 'the cambridge history of china', 'cambridge history of iran',
+    'the cambridge history of china', 'cambridge history of iran',
     'essays on the latin orient', 'cambridge history of egypt',
 ];
 const ISSN_TEMPLATES = [...TEMPLATES_WE_PROCESS, ...TEMPLATES_WE_SLIGHTLY_PROCESS, 'cite magazine'];
@@ -32,12 +32,12 @@ const TEMPLATES_WE_HARV = [
     'cite catholic encyclopedia', 'cathency', 'cite ce1913', 'cite danfs', 'new american cyclopedia', 'cite power broker',
     'cite central park history', 'schafer-more-classic', 'cite grove', 'eb1911', 'odnbweb', 'cite eb9', 'cite dcb',
     'encyclopaedia islamica', 'goldberg-amtrak', 'hilton-amtrak', 'solomon-sp-passenger', 'wayner - car names, numbers, consists',
-    'wayner - car names, numbers, consists', 'cite lotep', 'cite lives of the eminent philosophers',
+    'cite lotep', 'cite lives of the eminent philosophers',
     'cite av media notes', 'gilliland', 'cox-upper darby', 'oxford dictionary of late antiquity',
     'cite notitia parliamentaria', 'historyofparliament', 'lewis-shortline-1986',
-    'lewis-shortline-1991', 'cite podcast', 'oxford dictionary of late antiquity', 'duke-rdc',
+    'lewis-shortline-1991', 'cite podcast', 'duke-rdc',
     'lynch-new haven passenger', 'schwieterman-leaves-eastern', 'amtrak by the numbers', 'cite amcyc',
-    'historic environment scotland', 'cite lotep', 'zimmermann-burlington', 'shaughnessy-dh', 'reynolds-bo',
+    'historic environment scotland', 'zimmermann-burlington', 'shaughnessy-dh', 'reynolds-bo',
     'sanders-heartland', 'cite av media', 'murray-illinois central', 'schafer-streamliners',
     'cite letter', 'cite dgrg', 'cite interview', 'cite dnbsupp', '1922 locomotive cyclopedia',
     'foster-field guide', 'solomon-ge and emd', 'pinkepank diesel spotters guide 2',
@@ -45,10 +45,10 @@ const TEMPLATES_WE_HARV = [
     'solomon-american diesel', 'solomon-emd f-unit', 'solomon-emd locomotives',
     'solomon-vintage diesel', 'solomon-north american locomotives', 'cite sep',
     'wegman-illustrated', 'zimmermann-santa fe', 'glischinski-santa fe', 'disraeliref', 'cite map',
-    'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs', 'cite liner notes',
+    'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite liner notes',
     'setton-a history of the crusades', 'cite appletons\'', 'cite dnb12', 'cite newsletter',
     'the cambridge history of iran', 'drury historical guide 1985', 'cite dgrbm', 'cite nie',
-    'herr-ln', 'complete book of north american railroading', 'catholic', 'gilliland', 'cite eb1922',
+    'herr-ln', 'complete book of north american railroading', 'catholic', 'cite eb1922',
     'cite audb', 'cite serial', 'solomon-csx', 'skeptoid', 'colledge', 'cite nuttall',
     'citar tese', 'sbdel', 'australian dictionary of biography', 'cyclopaedia 1728',
     'dnb cite', 'rfk6.1 ', 'schafer-classic-railroads-1', 'springer', 'holland-classic',
@@ -57,17 +57,17 @@ const TEMPLATES_WE_HARV = [
     'mcdonnell-locomotives-2nd', 'cite gotham', '1911', 'scribbins-400-2008', 'catholic encyclopedia',
     'cite video', 'ivey-marquette', 'michigan railroad commission', 'cite hidden waters nyc',
     'williams-philadelphia', 'downey-chicago', 'hilton narrow gauge', 'kratville-ssl',
-    'cite dissertation', 'cite jewish encyclopedia', 'cudahy-hudson', 'williams-philadelphia',
-    'holton-reading-1', 'coates-reading', 'williams-philadelphia', 'cite afm', 'churella-prr-1',
-    'cudahy-hudson', 'cite bdcc', 'canadabio', 'gillham-waterloo-city', 'cite aia5', 'scribbins-hiawatha',
+    'cite dissertation', 'cite jewish encyclopedia', 'cudahy-hudson',
+    'holton-reading-1', 'coates-reading', 'cite afm', 'churella-prr-1',
+    'cite bdcc', 'canadabio', 'gillham-waterloo-city', 'cite aia5', 'scribbins-hiawatha',
     'solomon-masterpieces', 'cite episode', 'taber-dlw-20th-2', 'bbkl', 'burch electric traction',
     'cite ssrn', 'lsi', 'linguistic survey of india', 'yenne-chiefs', 'schafer-classic-railroads-3',
-    'cite morningside', 'cite newspaper the times', 'kratville-ssl', 'cite cem', 'mactutor biography',
+    'cite morningside', 'cite newspaper the times', 'cite cem', 'mactutor biography',
     'clementsmcmahon-gsr locomotives', 'vennac', 'lynch-penn central', 'meints-companies',
-    'meints-lines', 'scribbins-remembered', 'burch electric traction', 'staufer-pennsy power ii',
-    'volkmer-pennsy-electric', 'staufer-pennsy', 'cudahy-hudson', 'middleton-prr-under-wire',
-    'bezilla-prr-electric-traction', 'dunbar-railroads', 'meints-companies', 'oxford dictionary of byzantium',
-    'dlmf', 'mlcc', 'cite episode', 'dnb12', 'cite sbdel', 'nhle', 'london gazette', 'odb', 'maiken-night trains',
+    'meints-lines', 'scribbins-remembered', 'staufer-pennsy power ii',
+    'volkmer-pennsy-electric', 'staufer-pennsy', 'middleton-prr-under-wire',
+    'bezilla-prr-electric-traction', 'dunbar-railroads', 'oxford dictionary of byzantium',
+    'dlmf', 'mlcc', 'dnb12', 'cite sbdel', 'nhle', 'london gazette', 'odb', 'maiken-night trains',
     'solomon-up', 'welsh-pullman', 'welsh-up', 'eminent scotsmen', 'cite dab', 'cite act', 'cite je1906',
     'lewis-shortline-1996', 'cite speech', 'holt-northwest', 'grant-railco', 'johnston-streamliner',
     'schafer-classic', 'welsh-broadway', 'feis', 'schafer-american passenger train', 'msw3 hystricognathi',
@@ -91,7 +91,7 @@ const ALL_URL_TYPES = [
 /** Do not clean orig-date */
 const DATES_TO_CLEAN = [
     'air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
-    'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'doi-broken-date',
+    'lay-date', 'accessdate', 'access-date', 'doi-broken-date',
 ];
 
 const THINGS_THAT_ARE_TITLES = ['chapter', 'title', 'series', 'trans-title', 'book-title', 'contribution'];

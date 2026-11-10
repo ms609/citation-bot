@@ -1877,6 +1877,10 @@ final class Template
                     report_inaction("Not adding generic title: " . echoable($value));
                     return false;
                 }
+                if (has_unexpanded_cms_token($value)) {
+                    report_inaction("Not adding unexpanded CMS placeholder title: " . echoable($value));
+                    return false;
+                }
                 if (
                     $this->blank($param_name) ||
                     in_array($this->get($param_name), GOOFY_TITLES, true) ||
@@ -2152,11 +2156,9 @@ final class Template
                         $old_page = (int) $oldpagenos[1];
                         if ($last_page < $first_page) {
                             // 2342-5 instead of 2342-2345
-                            if ($last_page < 10) {
-                                $last_page = $last_page + 10 * (int) ($first_page / 10);
-                            } else {
-                                $last_page = $last_page + 100 * (int) ($first_page / 100);
-                            }
+                            // Replace only as many trailing digits as the abbreviated end page has: 1298-305 is 1298-1305
+                            $page_modulus = 10 ** min(mb_strlen($newpagenos[2]), 9);
+                            $last_page = $last_page + $page_modulus * intdiv($first_page, $page_modulus);
                         }
                         if ($old_page > $first_page && $old_page <= $last_page) {
                             foreach (['pages', 'page', 'pp', 'p', 'article-number'] as $forget_blank) {
@@ -2187,11 +2189,9 @@ final class Template
                         $last_page = (int) $newpagenos[2];
                         if ($last_page < $first_page) {
                             // 2342-5 instead of 2342-2345
-                            if ($last_page < 10) {
-                                $last_page = $last_page + 10 * (int) ($first_page / 10);
-                            } else {
-                                $last_page = $last_page + 100 * (int) ($first_page / 100);
-                            }
+                            // Replace only as many trailing digits as the abbreviated end page has: 1298-305 is 1298-1305
+                            $page_modulus = 10 ** min(mb_strlen($newpagenos[2]), 9);
+                            $last_page = $last_page + $page_modulus * intdiv($first_page, $page_modulus);
                             if ($last_page > $first_page) {
                                 // Paranoid
                                 $value = (string) $first_page . "–" . (string) $last_page;
@@ -2951,7 +2951,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doi') && preg_match('~10\.\d{4,9}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
@@ -3804,8 +3804,8 @@ final class Template
                 $vanc_f = $vanc_fa[$vanc_idx];
                 $vanc_l = $vanc_la[$vanc_idx];
                 $v = '';
-                /** @phpstan-ignore isset.offset */
-                if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib])) {
+                // $this->param is a list, so look the parameter up by name rather than by array key
+                if ($this->get2($vanc_attrib) === null) {
                     $arr = [];
                     foreach ($this->param as $k => $p) {
                         if (str_starts_with($p->param, $vanc_f) || str_starts_with($p->param, $vanc_l)) {
@@ -3821,6 +3821,14 @@ final class Template
                         $lv = '';
                         $fk = $vanc_f . strval($i);
                         $lk = $vanc_l . strval($i);
+                        if ($i === 1) { // The first name may be unnumbered: first/last rather than first1/last1
+                            if (!array_key_exists($fk, $arr) && array_key_exists($vanc_f, $arr)) {
+                                $fk = $vanc_f;
+                            }
+                            if (!array_key_exists($lk, $arr) && array_key_exists($vanc_l, $arr)) {
+                                $lk = $vanc_l;
+                            }
+                        }
                         if (array_key_exists($fk, $arr)) {
                                $tfk = $arr[$fk];
                                unset($arr[$fk]);
@@ -4530,7 +4538,7 @@ final class Template
             }
         }
         if (in_array(mb_strtolower($param), ['series', 'journal', 'newspaper'], true) && $this->has($param)) {
-            $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
+            $this->set($param, safe_preg_replace('~[™®]$~u', '', $this->get($param))); // remove trailing TM/(R)
         }
         if (
             in_array(
@@ -5073,7 +5081,7 @@ final class Template
                     if (mb_substr($doi, 0, 8) === '10.5555/') {
                         // Test DOI prefix. NEVER will work
                         $this->forget('doi');
-                        if ($this->blank('url') && mb_substr($doi, 0, 15) === '10.5555/al.ap.') {
+                        if ($this->blank('url') && mb_substr($doi, 0, 14) === '10.5555/al.ap.') {
                             /** @psalm-taint-escape ssrf */
                             $test_url = 'https://plants.jstor.org/stable/' . $doi;
                             $this->add_if_new('url', $test_url);
@@ -5228,7 +5236,7 @@ final class Template
                     // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
                     $this->doi_free_check_conditional($doi);
                     /** } */
-                    if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
+                    if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{4,5})$~i', $doi, $matches)) { // 2007-2014 identifiers have four digits after the dot
                         if ($this->blank(ARXIV_ALIASES)) {
                             $this->rename('doi', 'eprint', $matches[1]);
                         } elseif ($this->has('eprint')) {
@@ -5366,7 +5374,7 @@ final class Template
                     return;
 
                 case 'encyclopedia':
-                case 'encyclopeadia':
+                case 'encyclopaedia':
                     if ($this->blank($param)) {
                         return;
                     }
@@ -5429,8 +5437,8 @@ final class Template
                         return;
                     }
                     $orig = $this->get($param);
-                    $new = str_replace(["\u{2011}", "\u{2013}", "\u{2014}"], '-', $orig); // normalize various hyphens
-                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $new); // existing dash normalization
+                    $new = str_replace(["\u{2010}", "\u{2011}", "\u{2012}", "\u{2013}", "\u{2014}", "\u{2212}"], '-', $orig); // normalize various hyphens
+                    $new = safe_preg_replace('~\s?-+\s?~u', '-', $new); // dash normalization; must be /u so multi-byte characters are never split
                     $new = str_replace('x', 'X', $new);
                     if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
                         $new = $matches[1] . '-' . mb_strtoupper($matches[2]); // Add dash
@@ -6817,7 +6825,8 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $this->set($param, preg_replace('~^(?i)(?:Vol(?:ume)?|no)\.?\s*~u', '', $this->get($param)));
+                    // Only strip a real prefix ("Vol. 3", "Volume 3", "No 5", "vol3"), not the start of a word such as "Volumes" or "Notes"
+                    $this->set($param, (string) preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
@@ -7708,8 +7717,16 @@ final class Template
             if (mb_stripos($this->get('journal'), 'SIGGRAPH') !== false && $this->blank('title')) {
                 $this->rename('journal', 'title');
             }
-            if ($this->has('series') && mb_stripos($this->get('title'), $this->get('series')) !== false && $this->get('series') !== 'Surtees Society' && !preg_match('~^\d+$~', $this->get('series'))) {
-                $this->forget('series');
+            $series = $this->get('series');
+            if ($series !== '' && $series !== 'Surtees Society' && !preg_match('~^\d+$~', $series)) {
+                $title = $this->get('title');
+                // A book title may include its series name without duplicating it.
+                $duplicates_title = $this->wikiname() === 'cite book'
+                    ? mb_strtolower($title) === mb_strtolower($series)
+                    : mb_stripos($title, $series) !== false;
+                if ($duplicates_title) {
+                    $this->forget('series');
+                }
             }
 
             $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
@@ -8061,7 +8078,7 @@ final class Template
         $trial = get_possible_dois($doi);
         foreach ($trial as $try) {
             // Check that it begins with 10.
-            if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
+            if (preg_match("~[^/]*?(\d{4,9}/.+)$~", $try, $match)) { // Registrants are four to nine digits
                 $try = "10." . $match[1];
             }
             if (doi_works($try)) {
@@ -8293,6 +8310,19 @@ final class Template
                         }
                     }
                 }
+            } elseif ($rule_type === 'YEAR_RANGE') {
+                $pub_year = $this->pub_year_extended();
+                if ($pub_year > 1000) { // Sanity-check: must be a plausible year
+                    // Malformed or reversed ranges intentionally tag nothing; ConstantsTest enforces the structure.
+                    $range_bounds = explode('-', $rule_value, 2);
+                    if (count($range_bounds) === 2) {
+                        $start_year = (int) $range_bounds[0];
+                        $end_year   = (int) $range_bounds[1];
+                        if ($pub_year >= $start_year && $pub_year <= $end_year) {
+                            $this->add_if_new('doi-access', 'free');
+                        }
+                    }
+                }
             } elseif ($rule_type === 'EMBARGO_MONTHS') {
                 $pub_ts = $this->pub_exact_ts();
                 if ($pub_ts === null) {
@@ -8345,6 +8375,15 @@ final class Template
             if ($new_value !== null) {
                 $this->add_if_new($new_param, $new_value);
                 return;
+            }
+            return;
+        }
+        if ($new_value === null && $this->blank($old_param) && !$this->blank($new_param)) {
+            // Renaming an empty parameter must not destroy a populated destination: just drop the empty one
+            $pos = $this->get_param_key($old_param);
+            while ($pos !== null) {
+                unset($this->param[$pos]);
+                $pos = $this->get_param_key($old_param);
             }
             return;
         }

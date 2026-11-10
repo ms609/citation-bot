@@ -218,6 +218,61 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::unblock_zotero();
     }
 
+    /**
+     * Run citation expansion against one known Citoid response.
+     *
+     * @template T
+     * @param string $id
+     * @param callable(): T $expand
+     * @return T
+     */
+    protected function with_jstor_citoid_fixture(string $id, callable $expand): mixed {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Citoid');
+        }
+
+        $url = 'https://www.jstor.org/stable/' . $id;
+        $path = __DIR__ . '/fixtures/jstor/' . $id . '.json';
+        $response = file_get_contents($path);
+        if ($response === false) {
+            self::fail('Could not read the Citoid fixture for ' . $url);
+        }
+
+        $requested_fixture = false;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Zotero::class, 'zotero_request', static function (string $requested) use ($url, $response, &$requested_fixture): string {
+            if ($requested !== $url) {
+                return '';
+            }
+            $requested_fixture = true;
+            return $response;
+        }, true);
+        // Simulate a valid DOI and disable competing network metadata lookups.
+        $network_stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => null,
+            'query_pubmed' => ['', 0, []],
+            'bot_curl_exec_withFalse' => false,
+        ];
+        foreach ($network_stubs as $function => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($function, $value);
+        }
+        try {
+            $result = $expand();
+            $this->assertTrue($requested_fixture, 'Expected a Citoid request for ' . $url);
+            return $result;
+        } finally {
+            foreach (array_keys($network_stubs) as $function) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($function);
+            }
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Zotero::class, 'zotero_request');
+        }
+    }
+
     protected function expand_via_zotero(string $text): Template {
         $expanded = $this->make_citation($text);
         Zotero::expand_by_zotero($expanded);

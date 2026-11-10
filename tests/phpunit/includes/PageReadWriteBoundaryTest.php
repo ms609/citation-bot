@@ -48,6 +48,41 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
         ];
     }
 
+    public function testPageReadsTheRevisionReturnedByItsMetadataQuery(): void {
+        if (!function_exists('uopz_set_hook') || !function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki');
+        }
+
+        $details = (object) ['query' => (object) ['pages' => [
+            (object) ['title' => 'Example', 'touched' => '2026-10-25T12:00:00Z', 'lastrevid' => 456],
+        ]]];
+        $urls = new ArrayObject();
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'read_details', $details);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec_withFalse', 'Text from the expected revision');
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_hook('curl_setopt_array', static function (CurlHandle $handle, array $options) use ($urls): void {
+            if (isset($options[CURLOPT_URL])) {
+                $urls->append($options[CURLOPT_URL]);
+            }
+        });
+
+        try {
+            $page = new Page();
+            $this->assertTrue($page->get_text_from('Example'));
+            $this->assertSame('Text from the expected revision', $page->parsed_text());
+            $this->assertSame([WIKI_ROOT . '?title=Example&action=raw&oldid=456'], $urls->getArrayCopy());
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_hook('curl_setopt_array');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec_withFalse');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'read_details');
+        }
+    }
+
     /**
      * @param string $text
      * @param int $last_revision
@@ -118,7 +153,7 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
     }
 
     #[DataProvider('editResults')]
-    public function testWriteSubmitsGuardedEditAndReportsItsResult(?object $result, bool $expected): void {
+    public function testWriteSubmitsGuardedEditAndReportsItsResult(?object $result, bool $expected, bool $skipped, ?int $revision): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub MediaWiki');
         }
@@ -133,7 +168,8 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
         try {
             $bot = new WikipediaBot();
             $this->assertSame($expected, $bot->write_page('Example', 'Updated citation', 'Fix citation', 2, '2026-10-25T12:01:00Z'));
-            $this->assertFalse($bot->last_write_was_skipped());
+            $this->assertSame($skipped, $bot->last_write_was_skipped());
+            $this->assertSame($revision, $bot->last_written_revision());
             $this->assertSame([
                 [
                     'action' => 'query',
@@ -149,25 +185,34 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
                     'summary' => 'Fix citation',
                     'notminor' => '1',
                     'bot' => '1',
-                    'basetimestamp' => '2026-10-25T12:00:00Z',
+                    'baserevid' => '2',
                     'starttimestamp' => '2026-10-25T12:01:00Z',
                     'nocreate' => '1',
                     'watchlist' => 'nochange',
                     'token' => 'fixture',
                 ],
             ], $requests);
+            if ($revision !== null) {
+                // A preflight conflict in a later batch item must clear the old diff ID.
+                $this->assertTrue($bot->write_page('Example', 'Outdated citation', 'Fix citation', 1, '2026-10-25T12:01:00Z'));
+                $this->assertTrue($bot->last_write_was_skipped());
+                $this->assertNull($bot->last_written_revision());
+                $this->assertCount(3, $requests);
+            }
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'fetch');
         }
     }
 
-    /** @return array<string, array{object|null, bool}> */
+    /** @return array<string, array{object|null, bool, bool, int|null}> */
     public static function editResults(): array {
         return [
-            'accepted' => [(object) ['edit' => (object) ['result' => 'Success']], true],
-            'rejected' => [(object) ['error' => (object) ['code' => 'protectedpage', 'info' => 'Protected']], false],
-            'no response' => [null, false],
+            'accepted' => [(object) ['edit' => (object) ['result' => 'Success', 'newrevid' => 123]], true, false, 123],
+            'no change' => [(object) ['edit' => (object) ['result' => 'Success', 'nochange' => true]], true, false, null],
+            'rejected' => [(object) ['error' => (object) ['code' => 'protectedpage', 'info' => 'Protected']], false, false, null],
+            'edit conflict after preflight' => [(object) ['error' => (object) ['code' => 'editconflict']], true, true, null],
+            'no response' => [null, false, false, null],
         ];
     }
 
@@ -213,6 +258,8 @@ final class PageReadWriteBoundaryTest extends testBaseClass {
             if ($existing) {
                 $edit['basetimestamp'] = '2026-10-25T12:00:00Z';
                 $edit['starttimestamp'] = '2026-10-25T12:01:00Z';
+            } else {
+                $edit['createonly'] = '1';
             }
             $this->assertSame($edit, $requests[1]);
         } finally {

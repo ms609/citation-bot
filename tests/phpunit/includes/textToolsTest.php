@@ -86,6 +86,22 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('HPLC Analysis of Plants', title_capitalization('HPLC ANALYSIS OF PLANTS', true));
     }
 
+    public function testIrCasePreservedInTitles(): void {
+        $this->assertSame('Infrared IR Imaging', title_case('infrared IR imaging'));
+        $this->assertSame('Science ir Society', title_case('science ir society'));
+        $this->assertSame('Ir A Word', title_case('ir a word'));
+        $this->assertSame('A Study of IR Sensors', title_capitalization(title_case('A study of IR sensors'), true));
+        $this->assertSame('Science ir Society', title_capitalization(title_case('science ir society'), true));
+    }
+
+    public function testIrTitleCaseDoesNotChangeOtherWordsOrUrls(): void {
+        $this->assertSame('Mirror First', title_case('mirror first'));
+        $this->assertSame('Ir2 Example', title_case('ir2 example'));
+        $this->assertSame('Iridium Is An Element', title_case('iridium is an element'));
+        $this->assertSame('Ir A Word', title_case('Ir a word'));
+        $this->assertSame('https://example.org/ir', title_case('https://example.org/ir'));
+    }
+
     public function testCapitalizationKeepsSensuStrictoAbbreviation(): void {
         // "s. str." is an abbreviation, neither an acronym nor the end of a sentence
         $this->assertSame(
@@ -238,7 +254,7 @@ final class textToolsTest extends testBaseClass {
     public function testTidyDate4(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
-        $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
+        $this->assertSame('22 September – 22 October 1999', tidy_date('1999-09-22 - 1999-10-22'));
     }
 
     public function testTidyDate5(): void {
@@ -288,6 +304,24 @@ final class textToolsTest extends testBaseClass {
 
     public function testTidyDate57(): void {
         $this->assertSame('', tidy_date('-0003-10-22'));
+    }
+
+    public function testTidyDateRejectsSignedNegativeYears(): void {
+        $this->assertSame('', tidy_date_inside('-0044'));
+        $this->assertSame('', tidy_date('-1500'));
+        $this->assertSame('', tidy_date('-1500-10-22'));
+        $this->assertSame('', tidy_date('−1500-10-22'));
+        $this->assertSame('', tidy_date('Date published (-1500'));
+        $this->assertSame('1500', tidy_date('1500-10-22'));
+    }
+
+    public function testTidyDateComparesSlashComponentsNumerically(): void {
+        $this->assertSame('2005-05-05', tidy_date_inside('5/05/2005'));
+        $this->assertSame('2005-05-05', tidy_date_inside('05/5/2005'));
+        $this->assertSame('2005-05-05', tidy_date_inside('5/5/2005'));
+        $this->assertSame('2005', tidy_date_inside('5/06/2005'));
+        $this->assertSame('2005', tidy_date_inside('0/00/2005'));
+        $this->assertSame('2005', tidy_date_inside('0/0/2005'));
     }
 
     public function testTidyDateFutureRejection1(): void {

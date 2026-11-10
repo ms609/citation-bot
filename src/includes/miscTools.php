@@ -943,7 +943,7 @@ function clean_cite_odnb(Template $template): void {
     if ($template->has('doi')) {
         $doi = $template->get('doi');
         if (doi_works($doi) === false) {
-            if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
+            if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb/|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
                 $try1 = '10.1093/ref:odnb/' . $matches[1];
                 $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
                 if (doi_works($try1)) {

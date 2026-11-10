@@ -61,6 +61,14 @@ final class TidyImpossibleDateTest extends testBaseClass {
         $this->assertSame('2001', tidy_date('2001-00-10'));
     }
 
+    public function testGoogleDateRangesValidateBothEndpointsAndOrder(): void {
+        $this->assertSame('', tidy_date('2011-06-31 - 2011-07-04'));
+        $this->assertSame('', tidy_date('2012-02-28 - 2012-02-30'));
+        $this->assertSame('', tidy_date('2012-03-10 - 2012-02-29'));
+        $this->assertSame('29 February – 10 March 2012', tidy_date('2012-02-29 - 2012-03-10'));
+        $this->assertSame('31 December 2011 – 1 January 2012', tidy_date('2011-12-31 - 2012-01-01'));
+    }
+
     public function testTidyingTwiceGivesTheSameAnswer(): void {
         foreach (['31/2/1913', '2011-06-31', 'February 31, 1913', '2001-05-00', '31.02.2001'] as $input) {
             $once = tidy_date($input);

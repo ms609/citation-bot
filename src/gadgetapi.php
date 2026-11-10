@@ -8,6 +8,7 @@ set_time_limit(120);
 require_once __DIR__ . '/includes/GadgetApi.php';
 require_once __DIR__ . '/includes/RequestRateLimit.php';
 
+$gadget_initial_ob_level = ob_get_level();
 try {
     //Set up tool requirements
     require_once __DIR__ . '/includes/setup.php';
@@ -41,7 +42,7 @@ try {
 
     //Expand text from postvars
     $page = new Page();
-    ob_start(); // For some reason this is needed sometimes
+    ob_start(); // Capture stray output from parsing/expansion so it cannot corrupt the JSON response
     $page->parse_text($originalText);
     $page->expand_text();
     ob_end_clean();
@@ -52,7 +53,7 @@ try {
 
     //Modify edit summary to identify bot-assisted edits
     if ($newText !== $originalText) {
-        if ($editSummxary) {
+        if ($editSummary !== '') {
             $editSummary .= ' | '; // Add pipe if already something there.
         }
         $editSummary .= str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
@@ -66,21 +67,24 @@ try {
     $result = ['expandedtext' => $newText, 'editsummary' => $editSummary];
 
     unset($newText, $editSummary);
-    ob_end_clean();
 
     echo json_encode($result, JSON_THROW_ON_ERROR);
 } catch (GadgetApiRequestException $exception) {
-    @ob_end_clean();
-    @ob_end_clean();
-    @ob_end_clean();
-    // Above is paranoid panic code. So paranoid that we even empty buffers two extra times.
+    // Discard every buffer opened by this request; leave caller/server buffers intact.
+    while (ob_get_level() > $gadget_initial_ob_level) {
+        if (!@ob_end_clean()) {
+            break;
+        }
+    }
 
     gadget_api_error($exception->error_name, $exception->http_status);
 } catch (Throwable $exception) {
-    @ob_end_clean();
-    @ob_end_clean();
-    @ob_end_clean();
-    // Above is paranoid panic code.    So paranoid that we even empty buffers two extra times
+    // Discard every buffer opened by this request; leave caller/server buffers intact.
+    while (ob_get_level() > $gadget_initial_ob_level) {
+        if (!@ob_end_clean()) {
+            break;
+        }
+    }
     if (function_exists('bot_debug_log')) {
         bot_debug_log('gadgetapi failure: ' . $exception::class . ': ' . $exception->getMessage());
     } else {
