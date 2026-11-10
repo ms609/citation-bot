@@ -1563,7 +1563,7 @@ function doi_registrant_code_valid(string $registrant): bool {
     if ($main === '5555' || $main[0] === '0') {
         return false;
     }
-    switch (strlen($main)) {
+    switch (mb_strlen($main, '8bit')) {
         case 3:
             return $has_subcode;
         case 4:
