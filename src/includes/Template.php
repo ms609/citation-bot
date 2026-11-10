@@ -8373,6 +8373,15 @@ final class Template
             }
             return;
         }
+        if ($new_value === null && $this->blank($old_param) && !$this->blank($new_param)) {
+            // Renaming an empty parameter must not destroy a populated destination: just drop the empty one
+            $pos = $this->get_param_key($old_param);
+            while ($pos !== null) {
+                unset($this->param[$pos]);
+                $pos = $this->get_param_key($old_param);
+            }
+            return;
+        }
         // Forget old copies
         $pos = $this->get_param_key($new_param);
         while ($pos !== null) {
