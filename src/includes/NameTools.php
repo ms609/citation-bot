@@ -389,7 +389,7 @@ function format_multiple_authors(string $authors): string {
         }
     }
     if ($savedChunk && isset($bits[0])) {
-        $return[0] = $bits[0];
+        $return[] = $bits[0]; // A trailing single-word name is one more author; it must not replace the first one
     }
     $return = implode("; ", $return);
     $frags = explode(" ", $return);
