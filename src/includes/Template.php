@@ -5077,7 +5077,7 @@ final class Template
                     if (mb_substr($doi, 0, 8) === '10.5555/') {
                         // Test DOI prefix. NEVER will work
                         $this->forget('doi');
-                        if ($this->blank('url') && mb_substr($doi, 0, 15) === '10.5555/al.ap.') {
+                        if ($this->blank('url') && mb_substr($doi, 0, 14) === '10.5555/al.ap.') {
                             /** @psalm-taint-escape ssrf */
                             $test_url = 'https://plants.jstor.org/stable/' . $doi;
                             $this->add_if_new('url', $test_url);
