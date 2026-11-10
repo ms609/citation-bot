@@ -11,6 +11,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
+[![Scheduled citation fuzz tests](https://github.com/ms609/citation-bot/actions/workflows/fuzz-citations.yml/badge.svg?branch=master&event=schedule)](https://github.com/ms609/citation-bot/actions/workflows/fuzz-citations.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/labeler.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/labeler.yml)

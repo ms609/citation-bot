@@ -1,0 +1,59 @@
+name: Citation fuzz tests
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/fuzz-citations.yml'
+      - 'tools/fuzz_citations.php'
+      - 'src/includes/Parameter.php'
+      - 'src/includes/Template.php'
+  workflow_dispatch:
+    inputs:
+      seed:
+        description: 'Random seed (leave blank to generate one)'
+        type: string
+        required: false
+      iterations:
+        description: 'Cases per target (1–100000)'
+        type: string
+        default: '10000'
+        required: false
+  schedule:
+    - cron: '45 19 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    if: github.event_name != 'schedule' || github.ref == 'refs/heads/master'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+      with:
+        php-version: '8.4'
+        extensions: mbstring
+        coverage: none
+
+    - name: Fuzz citation parsing offline
+      env:
+        FUZZ_SEED: ${{ github.event_name == 'pull_request' && '42' || inputs.seed }}
+        FUZZ_ITERATIONS: ${{ github.event_name == 'pull_request' && '1000' || inputs.iterations }}
+      run: |
+        args=("$FUZZ_SEED" "$FUZZ_ITERATIONS")
+        seconds=120
+        if [[ "$GITHUB_EVENT_NAME" == 'schedule' ]]; then
+          args=('' 400000 --random)
+          seconds=240
+        fi
+        sudo -n unshare --net --setgid "$(id -g)" --setuid "$(id -u)" -- \
+          timeout --kill-after=5s "$seconds" "$(command -v php)" -d memory_limit=128M -d uopz.exit=1 \
+          tools/fuzz_citations.php "${args[@]}"

@@ -103,10 +103,10 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
                     $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
                     if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
-                        break; // @codeCoverageIgnore
+                        continue; // @codeCoverageIgnore
                     }
                     if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
-                        break; // @codeCoverageIgnore
+                        continue; // @codeCoverageIgnore
                     }
                     $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
                     $url_short = url_simplify($url);
@@ -339,7 +339,6 @@ function simplify_google_search(string $url): string {
             case "stick":
             case "as_eq":
             case "kgmid":
-            case "as_drrb":
             case "gbv":
             case "as_scoring":
             case "gl":
@@ -1744,7 +1743,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     }
                     return true;
                 } elseif ($old_pmid === '') {
-                    $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
+                    $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid . '/');
                     $template->add_if_new('pmid', $pos_pmid);
                     return true;
                 } else {
@@ -1765,7 +1764,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 ) {
                 if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
                     if (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
-                        $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+                        $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
                     }
                     return false; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
                 }
@@ -1809,10 +1808,10 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 }
                 return false;
             } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
-                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+                $update_url($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
                 return false;
             } elseif (preg_match('~^(https://pubmed\.ncbi\.nlm\.nih\.gov/\d+)/#:~', $url, $matches)) {
-                $template->set($url_type, $matches[1]);
+                $update_url($url_type, $matches[1]);
                 return false;
             }
 
@@ -1869,7 +1868,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 /* ARXIV
                 * See https://arxiv.org/help/arxiv_identifier for identifier formats
                 */
-                if (preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
+                if (preg_match("~[A-Za-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
                         || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
                         ) {
                     report_modification("Converting URL to arXiv parameter");
@@ -1881,9 +1880,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     }
                     return $ret;
                 }
-                if ($template->wikiname() === 'cite web') {
-                    $template->change_name_to('cite arxiv');
-                }
+                // No usable identifier: leave the template type alone, cite arxiv needs one
             }
             return false;
 
