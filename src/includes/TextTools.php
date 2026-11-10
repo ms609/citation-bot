@@ -1009,7 +1009,7 @@ function tidy_date_inside(string $string): string {
         // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
         $time = false;
     }
-    if ($time && is_int($parsed_date['year']) && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
+    if ($time && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
         $parsed_date['year'] >= 1000 && checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
         // strtotime() interprets timezone-bearing timestamps as instants: formatting that
         // timestamp in the runner's timezone may change the written calendar day.
