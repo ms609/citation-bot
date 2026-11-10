@@ -44,6 +44,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testTidyKeepsBookSeriesThatIsPartOfTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About Fatal Fury 3|series=All About|volume=10|page=253}}');
+        $template->final_tidy();
+        $this->assertSame('All About', $template->get2('series'));
+        $this->assertSame('10', $template->get2('volume'));
+    }
+
+    public function testTidyRemovesBookSeriesIdenticalToTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About|series=All about}}');
+        $template->final_tidy();
+        $this->assertNull($template->get2('series'));
+    }
+
     public function testTidyChapterNotJournal(): void {
         $text = "{{cite web|chapter=X|title=Y|url=Z}}";
         $template = $this->make_citation($text);
