@@ -440,7 +440,10 @@ function adsabs_api(
 
     $matched_ids = [];
     foreach ($response->docs as $record) {
-        report_info("Found match for bibcode " . bibcode_link($record->bibcode));
+        if (!isset($record->bibcode)) {
+            continue; // Nothing below can use a record without a bibcode
+        }
+        report_info("Found match for bibcode " . bibcode_link((string) $record->bibcode));
         $matched_ids[] = $record->bibcode;
         foreach ($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
             if (isset($record->bibcode) && mb_strtolower($an_id) === mb_strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
@@ -655,7 +658,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                     $limit_action = mb_strtolower(PHP_ADSABSAPILIMITACTION);
                 }
                 if ($limit_action === 'sleep') {
-                    $time_to_sleep = $rai + 1;
+                    $time_to_sleep = min(60, $rai + 1);
                 } elseif ($limit_action === 'exit') {
                     $time_to_sleep = -1;
                 } elseif ($limit_action === 'ignore' || $limit_action === '' || $limit_action === null) {
@@ -761,15 +764,15 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
         } elseif (mb_strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== false) {
             report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-        } elseif (mb_strpos($e->getMessage(), 'HTTP') === 0) {
-            report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-        } elseif (mb_strpos($e->getMessage(), 'Too many requests') !== false) {
+        } elseif ($e->getCode() === 429 || mb_strpos($e->getMessage(), 'Too many requests') !== false) {
             report_warning('Giving up on AdsAbs for a while.  Too many requests.');
             if (mb_strpos($adsabs_url, 'bigquery') !== false) {
                 AdsAbsControl::big_give_up();
             } else {
                 AdsAbsControl::small_give_up();
             }
+        } elseif (mb_strpos($e->getMessage(), 'HTTP') === 0) {
+            report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
         } else {
             report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
         }

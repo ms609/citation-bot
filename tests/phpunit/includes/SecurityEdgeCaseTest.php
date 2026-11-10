@@ -526,6 +526,8 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
             throw new RuntimeException('Unable to read deployment sources.');
         }
 
+        $this->assertStringContainsString("const LOCK_FILE = __DIR__ . '/../git_pull.lock';", $gitpull);
+        $this->assertStringContainsString("\$git_pull_lock = dirname(__DIR__, 2) . '/git_pull.lock';", $setup);
         $this->assertStringContainsString('flock($lockHandle, LOCK_EX | LOCK_NB)', $gitpull);
         $this->assertStringNotContainsString('@mkdir(LOCK_DIR', $gitpull);
         $this->assertStringContainsString('$git_status = 500;', $gitpull);

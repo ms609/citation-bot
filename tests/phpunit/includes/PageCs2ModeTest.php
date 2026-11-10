@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 /**
@@ -27,6 +29,7 @@ final class PageCs2ModeTest extends testBaseClass {
 
     public function testExplicitConfigurationStillWorks(): void {
         $this->assertTrue($this->cs2_mode_of('{{cs1 config|mode=cs2}}'));
+        $this->assertTrue($this->cs2_mode_of('{{cs1 config|Mode=cs2}}'));
         $this->assertFalse($this->cs2_mode_of('{{cs1 config|mode=cs1}}{{cite web|title=A}}'));
     }
 
@@ -68,4 +71,43 @@ final class PageCs2ModeTest extends testBaseClass {
                 '{{citation|title=C|year=2002}}{{citation|title=D|year=2003|quote={{tq|x}}}}{{citation|title=E|year=2004}}';
         $this->assertTrue($this->cs2_mode_of($text));
     }
+
+    #[DataProvider('pageStyleCases')]
+    public function testBareReferencesUseTheActivePageStyle(string $prefix, string $reference, bool $cs2): void {
+        $this->with_jstor_citoid_fixture('962034', function () use ($prefix, $reference, $cs2): void {
+            $page = $this->process_page($prefix . $reference);
+            $output = $page->parsed_text();
+            $this->assertStringContainsString($prefix, $output);
+            $this->assertMatchesRegularExpression('~<ref>(\{\{[^{}]+\}\})</ref>$~', $output);
+            $new_reference = mb_substr($output, mb_strlen($prefix));
+            $this->assertStringContainsString('jstor=962034', $new_reference);
+            $this->assertSame($cs2, preg_match('~<ref>\{\{citation\s*\||\|\s*mode\s*=\s*cs2\b~', $new_reference) === 1);
+        });
+    }
+
+    /** @return array<string, array{string, string, bool}> */
+    public static function pageStyleCases(): array {
+        $url = '<ref>https://doi.org/10.2307/962034</ref>';
+        $citations = '{{citation|title=A}}{{citation|title=B}}{{citation|title=C}}{{citation|title=D}}{{citation|title=E}}';
+        return [
+            'active CS2' => ['{{cs1 config|mode=cs2}}', $url, true],
+            'commented config' => ['<!-- {{cs1 config|mode=cs2}} -->', $url, false],
+            'nowiki config' => ['<nowiki>{{cs1 config|mode=cs2}}</nowiki>', $url, false],
+            'nowiki citation does not change inference' => [$citations . '<nowiki>{{cite web|title=F}}</nowiki>', $url, true],
+            'active CS1 overrides inference' => ['{{cs1 config|mode=cs1}}' . $citations, $url, false],
+            'plain DOI' => [$citations, '<ref>10.2307/962034</ref>', true],
+            'identifier template' => [$citations, '<ref>{{doi|10.2307/962034}}</ref>', true],
+            'DOI with surrounding text' => [$citations, '<ref>Jarman, [https://doi.org/10.2307/962034 Violin Concerto], 1983.</ref>', true],
+        ];
+    }
+
+    public function testNestedParametersDoNotSetTheOuterCitationMode(): void {
+        $text = $this->five_citations() . '{{cite web|title={{example|mode=cs2}}}}';
+        $this->assertFalse($this->cs2_mode_of($text));
+    }
+
+    public function testUnclosedTemplatesDoNotCountTowardCs2Inference(): void {
+        $this->assertFalse($this->cs2_mode_of(str_repeat('{{citation|title=Unclosed ', 4096)));
+    }
+
 }

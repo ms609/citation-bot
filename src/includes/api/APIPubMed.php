@@ -22,6 +22,20 @@ function pubmed_item_name(SimpleXMLElement $item): string {
     return (string) $item['Name'];
 }
 
+/**
+ * Split an ESummary author such as "Hammer Ø" or "Smith JA" into surname and dotted initials.
+ * Unicode-aware, so initials outside ASCII are kept instead of dropping the author.
+ *
+ * @return array{0: string, 1: string, 2: string}|null  [whole match, surname, initials]
+ */
+function pubmed_split_author_name(string $name): ?array {
+    if (preg_match("~(.*) (\w+)$~u", $name, $names) !== 1) {
+        return null;
+    }
+    $first = mb_trim((string) preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
+    return [$names[0], $names[1], $first];
+}
+
 function pubmed_document_has_items(SimpleXMLElement $document): bool {
     return isset($document->Item) && count($document->Item) > 0;
 }
@@ -85,7 +99,10 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                     $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
 
                     foreach ($document->Item as $item) {
-                        if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
+                        if (
+                            in_array(pubmed_item_name($item), ['DOI', 'doi', 'ELocationID', 'pii'], true) &&
+                            preg_match("~10\.\d{4,9}/[^\s\"']*~", (string) $item, $match)
+                        ) {
                             $this_template->add_if_new('doi', $match[0], 'entrez');
                         }
                         switch ($item["Name"]) {
@@ -134,8 +151,9 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         $suffix_test = junior_test($subItem);
                                         $subItem = $suffix_test[0];
                                         $junior = $suffix_test[1];
-                                        if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-                                            $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
+                                        $names = pubmed_split_author_name($subItem);
+                                        if ($names !== null) {
+                                            $first = $names[2];
                                             if ($first !== '' && mb_substr($first, -1) !== '.' && (mb_strpos($first, '.') !== false || $junior !== '')) {
                                                 $first .= '.';
                                             }
@@ -186,7 +204,7 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                             break;
                                         case "doi":
                                         case "pii":
-                                            if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                                            if (preg_match("~10\.\d{4,9}/[^\s\"']*~", (string) $subItem, $match)) {
                                                 $this_template->add_if_new('doi', $match[0], 'entrez');
                                             }
                                     }
@@ -411,7 +429,8 @@ function do_pumbed_query(Template $template, array $terms): array {
             $key = 'AID';
             $val = $template->get_without_comments_and_placeholders($term);
             if ($val) {
-                  $query .= " AND (" . "\"" . str_replace(["%E2%80%93", ';'], ["-", '%3B'], $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
+                $val = doi_encode(urldecode(str_replace('+', '%2B', $val)));
+                $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", $val) . "\"" . "[{$key}])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
             }
         } else {
             $key = $key_index[$term]; // Will crash if bad data is passed

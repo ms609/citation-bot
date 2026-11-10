@@ -17,10 +17,6 @@ final class gadgetapiTest extends testBaseClass {
     /**
      * Execute the real gadgetapi.php endpoint and return its status and body.
      *
-     * gadgetapi.php deliberately clears several output buffers while handling
-     * errors, so create enough private buffers that its cleanup does not
-     * consume PHPUnit's own output buffering.
-     *
      * @param array<array-key, mixed> $post
      * @return array{status: int, body: string}
      */
@@ -37,16 +33,17 @@ final class gadgetapiTest extends testBaseClass {
         http_response_code(200);
         $original_buffer_level = ob_get_level();
 
-        /*
-         * The endpoint's exception handlers call ob_end_clean() three times.
-         * Four buffers leave one under our control for capturing the JSON.
-         */
         ob_start();
-        ob_start();
-        ob_start();
-        ob_start();
+        $capture_buffer_level = ob_get_level();
 
         require dirname(__DIR__, 2) . '/src/gadgetapi.php';
+
+        // The endpoint must only unwind the buffers it opened itself.
+        $this->assertSame(
+            $capture_buffer_level,
+            ob_get_level(),
+            'gadgetapi.php must leave the caller output buffer level unchanged'
+        );
 
         $body = ob_get_contents();
         $this->assertIsString($body);
@@ -271,6 +268,14 @@ final class gadgetapiTest extends testBaseClass {
                 'Expanded citation', '', 200,
                 ['expandedtext' => 'Expanded citation', 'editsummary' => 'Use this tool| #UCB_Gadget '],
             ],
+            'expanded citation with zero summary' => [
+                'Expanded citation', '0', 200,
+                ['expandedtext' => 'Expanded citation', 'editsummary' => '0 | Use this tool| #UCB_Gadget '],
+            ],
+            'zero expansion with summary' => [
+                '0', 'Existing summary', 200,
+                ['expandedtext' => '0', 'editsummary' => 'Existing summary | Use this tool| #UCB_Gadget '],
+            ],
             'empty expansion' => ['', 'Existing summary', 500, ['error' => 'internal_error']],
         ];
     }
@@ -378,5 +383,39 @@ final class gadgetapiTest extends testBaseClass {
             ['error' => 'invalid_origin'],
             json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
         );
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointDiscardsExpansionOutputOnFailure(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to force an expansion failure');
+        }
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('request_rate_limit_consume_layered', null);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'expand_text', static function (): never {
+            echo 'partial output that must not leak';
+            throw new RuntimeException('expansion failed');
+        }, true);
+        try {
+            $response = $this->runGadgetEndpoint(
+                [
+                    'text' => 'Original citation',
+                    'summary' => '',
+                ],
+                'https://en.wikipedia.org'
+            );
+            $this->assertSame(500, $response['status']);
+            $this->assertSame(
+                ['error' => 'internal_error'],
+                json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+            );
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('request_rate_limit_consume_layered');
+        }
     }
 }

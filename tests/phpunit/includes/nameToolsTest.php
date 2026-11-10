@@ -507,6 +507,21 @@ final class nameToolsTest extends testBaseClass {
         $this->assertSame('Van Der Waals, Johannes', $result);
     }
 
+    public function testInstitutionalAuthorAcronymsKeepTheirSourceCase(): void {
+        foreach (['ESA', 'NASA'] as $agency) {
+            $this->assertSame($agency, format_surname($agency)); // CrossRef last-name path
+            $this->assertSame($agency, format_author($agency)); // Full-name metadata path
+            $this->assertSame($agency, format_author(' ' . $agency . ' '));
+        }
+    }
+
+    public function testUppercasePersonalSurnamesAreStillFormatted(): void {
+        $this->assertSame('Smith', format_surname('SMITH'));
+        $this->assertSame('Smith', format_author('SMITH'));
+        $this->assertSame('Smith, Jane', format_author('SMITH, Jane'));
+        $this->assertSame('Esaias', format_surname('ESAIAS'));
+    }
+
     /** Mirrors Module:Citation/CS1 is_suffix() */
     public function testVancSuffixValid(): void {
         $this->assertTrue(vanc_suffix_valid('Jr'));

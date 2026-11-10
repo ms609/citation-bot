@@ -87,18 +87,20 @@ final class WikipediaBotRetryTest extends testBaseClass {
         }
     }
 
-    public function testRepeatedContributionContinuationStopsAtBatchLimit(): void {
+    #[DataProvider('unfinishedContributionWindows')]
+    public function testIncompleteContributionWindowsAreRejected(bool $repeat_token, int $expected_requests): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub MediaWiki transport and sleep');
         }
         $requests = new ArrayObject();
-        $contribution = static function (array $request) use ($requests): string {
+        $contribution = static function (array $request) use ($requests, $repeat_token): string {
             $requests->append($request);
             // A 21st request ends the fixture and lets the call-count assertion detect a missing cap.
             if ($requests->count() > 20) {
                 return '{"query":{"usercontribs":[]}}';
             }
-            return '{"query":{"usercontribs":[{"comment":"edit"}]},"continue":{"uccontinue":"repeat"}}';
+            $token = $repeat_token ? 'repeat' : (string) $requests->count();
+            return '{"query":{"usercontribs":[{"comment":"edit"}]},"continue":{"uccontinue":"' . $token . '"}}';
         };
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api_authenticated', $contribution, true);
@@ -107,10 +109,8 @@ final class WikipediaBotRetryTest extends testBaseClass {
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('usleep', null);
         try {
-            $edits = WikipediaBot::fetch_user_contribs('Fixture bot');
-            $this->assertSame(array_fill(0, 20, 'edit'), array_column($edits, 'comment'));
-            $this->assertCount(20, $requests);
-            $this->assertSame(array_fill(0, 19, 'repeat'), array_column($requests->getArrayCopy(), 'uccontinue'));
+            $this->assertNull(WikipediaBot::fetch_user_contribs('Fixture bot'));
+            $this->assertCount($expected_requests, $requests);
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('usleep');
@@ -120,4 +120,13 @@ final class WikipediaBotRetryTest extends testBaseClass {
             uopz_unset_return(WikipediaBot::class, 'query_api_authenticated');
         }
     }
+
+    /** @return array<string, array{bool, int}> */
+    public static function unfinishedContributionWindows(): array {
+        return [
+            'repeated continuation' => [true, 2],
+            'batch limit with more data' => [false, 20],
+        ];
+    }
+
 }

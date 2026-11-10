@@ -1,6 +1,6 @@
 import { test, expect } from './coverage-fixture.js';
 import AxeBuilder from '@axe-core/playwright';
-import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import {
   captureSubmission,
   fulfillSubmission,
@@ -445,10 +445,10 @@ test.describe('Citation Bot web interface', () => {
     const publicWikis = await page.locator('#wiki_base option').evaluateAll((options) => options.map((option) => option.value));
     expect(publicWikis).toEqual(['en', 'simple', 'mk', 'ru', 'sr']);
 
-    const setup = readFileSync('src/includes/setup.php', 'utf8');
-    const match = setup.match(/in_array\(\$wiki_base,\s*\[([^\]]+)\],\s*true\)/s);
-    expect(match, 'setup.php supported-wiki allow-list should remain discoverable by the UI contract test').not.toBeNull();
-    const backendWikis = [...match[1].matchAll(/'([^']+)'/g)].map((entry) => entry[1]);
+    const backendWikis = JSON.parse(execFileSync('php', [
+      '-r',
+      "require 'src/includes/constants/translations.php'; echo json_encode(SUPPORTED_WIKIS, JSON_THROW_ON_ERROR);",
+    ], { encoding: 'utf8' }));
     for (const wiki of publicWikis) expect(backendWikis).toContain(wiki);
     expect(backendWikis).toEqual(expect.arrayContaining(['mdwiki', 'vi']));
   });

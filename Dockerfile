@@ -1,7 +1,7 @@
 # If you make any changes to this file, don't forget to rebuild the Docker image using the --build flag:
 # docker-compose up --build -d
 
-FROM php:8.5-apache@sha256:ae83253bb4d8b8b9715e0846ac915dae15d19818947f0a27cbcf88f4711a76fa
+FROM php:8.5-apache@sha256:08af36df144462d84c7f16190557eec06cb9f656882685610b712a15eec54d46
 
 # Install PHP XDebug, for step debugging and for PHPUnit code coverage report.
 # You can leave port 9007 for all your Docker containers. It doesn't conflict across containers like the localhost port does.
@@ -52,7 +52,7 @@ RUN apt-get update && apt-get upgrade -y \
 
 # Allow directory listings. Not a security issue since this is a test environment.
 RUN a2enmod autoindex \
-    && echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n    <FilesMatch \"^(env\\.php|DebugLog\\.txt|cookie\\.txt)$\">\n        Require all denied\n    </FilesMatch>\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
+    && echo "<Directory /var/www/html>\n    Options +Indexes\n    AllowOverride All\n    <FilesMatch \"^(env\\.php|DebugLog\\.txt|cookie\\.txt|git_pull\\.lock)$\">\n        Require all denied\n    </FilesMatch>\n</Directory>" > /etc/apache2/conf-available/directory-listing.conf \
     && a2enconf directory-listing
 
 # If ever deployed into production instead of just for testing, then two things need done:

@@ -616,16 +616,18 @@ function edit_a_list_of_pages(
                         );
                         $write_result = page_result_from_write($write_succeeded, $api->last_write_was_skipped());
                         if ($write_result === true) {
-                            $last_rev = WikipediaBot::get_last_revision($page_title);
-                            html_echo(
-                            "\n  <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
-                            . $last_rev . "\">diff</a>" .
-                            " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a>",
-                            "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=" . $last_rev . "\n");
-                            $final_edit_overview .=
-                                "\n [ <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;diff=prev&amp;oldid="
-                            . $last_rev . "\">diff</a>" .
-                            " | <a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&amp;action=history\">history</a> ] " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
+                            $last_rev = $api->last_written_revision();
+                            $page_url = WIKI_ROOT . '?title=' . urlencode($page_title);
+                            $history_url = $page_url . '&action=history';
+                            $history = '<a href="' . echoable($history_url) . '">history</a>';
+                            $links = $history;
+                            $output_url = $history_url;
+                            if ($last_rev !== null) {
+                                $output_url = $page_url . '&diff=prev&oldid=' . (string) $last_rev;
+                                $links = '<a href="' . echoable($output_url) . '">diff</a> | ' . $history;
+                            }
+                            html_echo("\n  " . $links, "\n" . $output_url . "\n");
+                            $final_edit_overview .= "\n [ " . $links . ' ] <a href="' . echoable($page_url) . '">' . echoable($page_title) . '</a>';
                         } elseif ($write_result === false) {
                             report_warning("Write skipped because the page changed while Citation Bot was working.");
                             $final_edit_overview .= "\n Write skipped.           " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
@@ -640,7 +642,7 @@ function edit_a_list_of_pages(
                     return true;
                 }
 
-                report_phase($page->parsed_text() ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
+                report_phase($page->parsed_text() !== '' ? "No changes required. \n\n      # # # " : "Blank page. \n\n      # # # ");
                 $final_edit_overview .= "\n No changes needed. " . "<a href=\"" . WIKI_ROOT . "?title=" . urlencode($page_title) . "\">" . echoable($page_title) . "</a>";
                 return false;
             }

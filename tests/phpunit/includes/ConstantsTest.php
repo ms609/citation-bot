@@ -619,77 +619,104 @@ final class ConstantsTest extends testBaseClass {
         }
     }
 
-    /**
-     * Retry is_redirect up to two extra times with short back-off on transient failure (-2).
-     *
-     * Returns -2 only when all attempts fail.
-     */
-    private function is_redirect_with_retry(string $tem): int {
-        $backoff_delays = [2, 5]; // seconds to wait before each successive retry
-        $status = WikipediaBot::is_redirect($tem);
-        foreach ($backoff_delays as $delay) {
-            if ($status !== -2) {
-                return $status;
+    public function testConversionsGood(): void {
+        $deadline = hrtime(true) + 480_000_000_000;
+        $errors = [];
+        $unavailable = 0;
+        foreach (array_chunk(TEMPLATE_CONVERSIONS, 20) as $batch) {
+            if (hrtime(true) >= $deadline || $unavailable >= 3) {
+                break;
             }
-            sleep($delay);
-            $status = WikipediaBot::is_redirect($tem);
+            $batch_errors = $this->checkConversionBatch($batch, $deadline);
+            if ($batch_errors === null) {
+                ++$unavailable;
+            } else {
+                array_push($errors, ...$batch_errors);
+            }
         }
-        return $status;
+
+        $this->assertSame([], $errors);
+        if ($unavailable > 0 || hrtime(true) >= $deadline) {
+            $this->markTestSkipped('Wikipedia API did not return all template information within the retry budget');
+        }
     }
 
-    public function testConversionsGood(): void {
-        WikipediaBot::make_ch();
-        $page = new TestPage();
-        $errors = "";
-        $upstream_failures = 0;
-        $skip_on_too_many_failures = function () use (&$upstream_failures): void {
-            $upstream_failures++;
-            if ($upstream_failures >= 3) {
-                $this->markTestSkipped('Wikipedia API unavailable after retries (rate limit or outage)');
+    /**
+     * @param list<array{string, string}> $conversions
+     * @param float|int $deadline
+     * @return list<string>|null
+     */
+    private function checkConversionBatch(array $conversions, float|int $deadline): ?array {
+        $sources = [];
+        $targets = [];
+        foreach ($conversions as [$source, $target]) {
+            if (in_array($source, ['cite standard', 'Cite standard'], true)) {
+                continue; // A wrapper now, but not usable yet.
             }
-        };
-        $conversions = TEMPLATE_CONVERSIONS;
-        shuffle($conversions);
-        foreach ($conversions as $convert) {
-            set_time_limit(120);
-            if ($convert[0] === 'cite standard' || $convert[0] === 'Cite standard') { // A wrapper now, but not usable yet
-                continue;
+            if (mb_strtolower(mb_substr($source, 0, 1)) . mb_substr($source, 1) ===
+                mb_strtolower(mb_substr($target, 0, 1)) . mb_substr($target, 1)) {
+                continue; // MediaWiki ignores the case of the first letter.
             }
-            if (mb_strtolower(mb_substr($convert[0], 0, 1)) . mb_substr($convert[0], 1) === mb_strtolower(mb_substr($convert[1], 0, 1)) . mb_substr($convert[1], 1)) {
-                continue; // Differ only in the case of the first letter, which MediaWiki ignores: the same page, so there is no redirect to check
-            }
-            /* We get int -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect */
-            /* Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis */
-            $tem = 'Template:' . $convert[0];
-            $tem = str_replace(' ', '_', $tem);
-            usleep(50000); /* tiny bit of time */
-            $status = $this->is_redirect_with_retry($tem); // Expect "1" or "-1"
-            if ($status === 0) {
-                usleep(250000); /* one quarter of a second */
-                if ($page->get_text_from($tem)) { // False for a protected template or a failed read, and then parsed_text() would be left over from an earlier template
-                    $text = $page->parsed_text();
-                    if (mb_stripos($text, 'safesubst:') === false) {
-                        $errors = $errors . '   Is real:' . $convert[0];
-                    }
-                }
-            } elseif ($status === -2) {
-                $skip_on_too_many_failures();
-            }
-            $tem = 'Template:' . $convert[1];
-            $tem = str_replace(' ', '_', $tem);
-            if ($tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper' && // We use code to clean up cite paper
-                $tem !== 'Template:LCCN' && $tem !== 'Template:PMC' && $tem !== 'Template:URN') { // We remove one layer of re-direct, but not both
-                $status = $this->is_redirect_with_retry($tem); // Expect "0"
-                if ($status === 1) {
-                    $errors = $errors . '   Is now a redirect:' . $convert[1];
-                } elseif ($status === -1) {
-                    $errors = $errors . '   Does not exist anymore:' . $convert[1];
-                } elseif ($status === -2) {
-                    $skip_on_too_many_failures();
-                }
+            $sources[] = 'Template:' . $source;
+            if (!in_array($target, ['Cite paper', 'cite paper', 'LCCN', 'PMC', 'URN'], true)) {
+                $targets[] = 'Template:' . $target;
             }
         }
-        $this->assertSame("", $errors); // We want a list of all of them
+        $titles = array_unique([...$sources, ...$targets]);
+        if ($titles === []) {
+            return [];
+        }
+
+        // Request up to 40 titles at once through the same read path as is_redirect().
+        $query = new ReflectionMethod(WikipediaBot::class, 'query_api');
+        $body = $query->invoke(null, [
+            'action' => 'query',
+            'prop' => 'info',
+            'titles' => implode('|', $titles),
+            'formatversion' => '2',
+        ]);
+        $response = is_string($body) ? json_decode($body) : null;
+        if (!is_object($response) || !isset($response->query->pages) || !is_array($response->query->pages)) {
+            return null;
+        }
+
+        $pages = [];
+        foreach ($response->query->pages as $details) {
+            if (is_object($details) && isset($details->title) && is_string($details->title)) {
+                $pages[$details->title] = $details;
+            }
+        }
+        foreach ($response->query->normalized ?? [] as $normalization) {
+            if (is_object($normalization) && isset($normalization->from, $normalization->to) &&
+                is_string($normalization->from) && is_string($normalization->to) &&
+                isset($pages[$normalization->to])) {
+                $pages[$normalization->from] = $pages[$normalization->to];
+            }
+        }
+
+        $page = new TestPage();
+        $errors = [];
+        foreach (array_unique($sources) as $source) {
+            $details = $pages[$source] ?? self::fail('Wikipedia response omitted ' . $source);
+            if (isset($details->missing) || isset($details->redirect)) {
+                continue;
+            }
+            if (hrtime(true) >= $deadline) {
+                break;
+            }
+            if ($page->get_text_from($source) && mb_stripos($page->parsed_text(), 'safesubst:') === false) {
+                $errors[] = 'Is real: ' . $source;
+            }
+        }
+        foreach (array_unique($targets) as $target) {
+            $details = $pages[$target] ?? self::fail('Wikipedia response omitted ' . $target);
+            if (isset($details->redirect)) {
+                $errors[] = 'Is now a redirect: ' . $target;
+            } elseif (isset($details->missing)) {
+                $errors[] = 'Does not exist anymore: ' . $target;
+            }
+        }
+        return $errors;
     }
 
     public function testFreeDOI(): void {
@@ -784,7 +811,7 @@ final class ConstantsTest extends testBaseClass {
 
     public function testDoiConditionalStructure(): void {
         new TestPage();
-        $valid_types = ['AFTER_YEAR', 'AFTER_DATE', 'EMBARGO_MONTHS'];
+        $valid_types = ['AFTER_YEAR', 'AFTER_DATE', 'EMBARGO_MONTHS', 'YEAR_RANGE'];
         foreach (DOI_FREE_CONDITIONAL as $idx => $rule) {
             $label = 'DOI_FREE_CONDITIONAL[' . $idx . ']';
             $this->assertIsArray($rule, $label);
@@ -800,6 +827,10 @@ final class ConstantsTest extends testBaseClass {
                 $this->assertMatchesRegularExpression('~^\d{4}$~', $rule['value'], $label . ' value');
             } elseif ($rule['type'] === 'AFTER_DATE') {
                 $this->assertMatchesRegularExpression('~^\d{4}-\d{2}-\d{2}$~', $rule['value'], $label . ' value');
+            } elseif ($rule['type'] === 'YEAR_RANGE') {
+                $this->assertMatchesRegularExpression('~^\d{4}-\d{4}$~', $rule['value'], $label . ' value');
+                [$start_year, $end_year] = explode('-', $rule['value'], 2);
+                $this->assertLessThanOrEqual((int) $end_year, (int) $start_year, $label . ' value order');
             } else {
                 $this->assertGreaterThan(0, (int) $rule['value'], $label . ' value');
             }

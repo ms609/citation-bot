@@ -11,6 +11,7 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/PHPCodeSniffer.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/python-lint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/test-suite.yml)
+[![Scheduled citation fuzz tests](https://github.com/ms609/citation-bot/actions/workflows/fuzz-citations.yml/badge.svg?branch=master&event=schedule)](https://github.com/ms609/citation-bot/actions/workflows/fuzz-citations.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/trivy-analysis.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/docker-build.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/labeler.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/labeler.yml)
@@ -34,6 +35,8 @@
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/browser-ui.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/eslint.yml)
 [![Build Status](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/secret-scan.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/misc-file-validation.yml)
+[![Build Status](https://github.com/ms609/citation-bot/actions/workflows/patch-artifacts.yml/badge.svg)](https://github.com/ms609/citation-bot/actions/workflows/patch-artifacts.yml)
 
 ## GitHub repository details
 
@@ -49,7 +52,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
 - Citation expander (<https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js>) + `src/gadgetapi.php`. This comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
 - `src/generate_template.php` creates the wiki reference given an identifier (for example: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
-On English Wikipedia, supported Oxford biographical DOIs can produce `{{Who's Who}}` citations. Citation Bot checks the Crossref title and publication before converting and uses `type=was` for entries from *Who Was Who*.
+On English Wikipedia, use `{{bots|optout=CS1}}` to keep plain references in their current format while Citation Bot continues to maintain existing CS1 and CS2 citations. Use `{{bots|deny=Citation bot}}` to block Citation Bot edits to the page entirely.
 
 Bugs and requested changes are listed here: <https://en.wikipedia.org/wiki/User_talk:Citation_bot>.
 
@@ -61,6 +64,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 
 - **Default mode**: Thorough mode (slow mode enabled via checkbox, checked by default)
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
+- If Unpaywall finds no usable link, thorough mode can add an Archive.org PDF from the [public-domain pre-1909 collection](https://archive.org/details/crossref-pre-1909-scholarly-works). The PDF filename must match the citation DOI. The fallback runs for titled journal, general, and web citations with empty URL and archive fields. It skips known publication years after 1909 and shares a four-second limit across the lookup and PDF checks.
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
 - **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, 1,000,000 for CLI); thorough mode can use the full budget
 
@@ -224,6 +228,7 @@ Entry points (under `src/`):
 Operational/support endpoints:
 
 - `src/authenticate.php`: OAuth authorization flow for web users
+- `src/resume.php`: resumes saved OAuth-gated request after login
 - `src/gitpull.php`: password-protected deployment/update endpoint
 - `src/kill_big_job.php`: lets users kill their own long-running batch jobs
 - `src/reset_big_run_state.php`: authenticated manual recovery for shared big-run admission state
@@ -249,7 +254,7 @@ Includes (under `src/includes/`):
 - `src/includes/user_messages.php`: functions for reporting bot activity to users
 - `src/includes/doiTools.php`: DOI-specific validation and normalization functions
 - `src/includes/big_jobs.php`: handling for large batch jobs
-- `src/includes/api/API*.php`: sets up needed functions for expanding PMID/DOI/URL/etc. Note: `APIissn.php` and `APIsici.php` are loaded directly by `Page.php` and `Template.php` rather than through `setup.php`.
+- `src/includes/api/API*.php`: sets up needed functions for expanding PMID/DOI/URL/etc. Note: `APIissn.php` and `APIsici.php` are loaded directly by `Page.php` and `Template.php`, and `APIfatcat.php` via `APIunpaywall.php`, rather than through `setup.php`.
 - `src/includes/Page.php`: Represents an individual page to expand citations on. Key methods are `Page::get_text_from()`, `Page::expand_text()`, and `Page::write()`.
 - `src/includes/Template.php`: most of the actual expansion happens here. `Template::add_if_new()` is generally (but not always) used to add parameters to the updated template; `Template::tidy()` cleans up the template, but may add parameters as well and have side effects.
 - `src/includes/WikiThings.php`: Handles comments, nowiki, etc. tags
@@ -295,6 +300,14 @@ The big-run admission gate also accepts optional `CITATION_BOT_BIG_RUN_*` tuning
 Runtime diagnostics are written to `DebugLog.txt` in the main Citation Bot
 repository directory, one level above the `src/` web tree. The file is forced
 to mode `0600` and is ignored by Git.
+
+The permanent deployment lock, `git_pull.lock`, also lives in the repository
+root and is ignored by Git. The account running PHP must be able to create it
+there. When upgrading from `src/git_pull.lock`, stop the web service, pause
+scheduled Citation Bot jobs, and wait for active requests, jobs, and
+deployments to exit. Apply the update from the shell, remove
+`src/git_pull.lock`, then restart the service and resume jobs. Old and new
+processes use different lock files during this transition.
 
 When upgrading from a build that locks `big-run.json` directly to the permanent `big-run.lock` backend, perform a **drained deployment**. Stop the web service and wait for all old php-cgi requests to exit, update the code while the service is stopped, remove the old `big-run.json` snapshot from the configured rate-limit state directory, then restart the web service. Do not use the live `gitpull.php` endpoint for this one-time lock-protocol transition: old and new requests otherwise coordinate on different lock objects. Once every worker is running the new protocol, normal deployments may resume.
 

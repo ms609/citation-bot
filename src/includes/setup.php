@@ -31,7 +31,7 @@ if (PHP_SAPI !== 'cli') {
  * includes. Keep the shared handle alive for the request, including any
  * lazy loads, so deployment cannot replace its files midway.
  */
-$git_pull_lock = dirname(__DIR__) . '/git_pull.lock';
+$git_pull_lock = dirname(__DIR__, 2) . '/git_pull.lock';
 $git_pull_in_progress = true;
 $git_pull_lock_handle = false;
 
@@ -231,9 +231,7 @@ if (file_exists(dirname(__DIR__, 2) . '/env.php')) {
     ob_start();
     /** @psalm-suppress MissingFile */
     include_once dirname(__DIR__, 2) . '/env.php';
-    $env_output_contents = ob_get_contents();
-    $env_output = ($env_output_contents === false) ? '' : mb_trim($env_output_contents);
-    unset($env_output_contents);
+    $env_output = mb_trim((string) ob_get_contents());
     if ($env_output) {
         bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
     }
@@ -245,15 +243,14 @@ require_once __DIR__ . '/PublicConfig.php';
 enforce_public_request_configuration(is_string($_SERVER['HTTP_HOST'] ?? null) ? $_SERVER['HTTP_HOST'] : null);
 
 // Bot account has flags set to avoid captchas.  Having an account is not enough. https://en.wikipedia.org/wiki/Special:CentralAuth/Citation_bot
-// Should add all these to index.php web interface
-// Might need to translate the messages in constants/translations.php and must add to Page->edit_summary() list
+require_once __DIR__ . '/constants/translations.php';
 $requested_wiki_base = setup_request_value('wiki_base');
 if ($requested_wiki_base !== null) {
     if (!is_string($requested_wiki_base)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
     $wiki_base = mb_trim($requested_wiki_base);
-    if (!in_array($wiki_base, ['en', 'simple', 'mk', 'ru', 'mdwiki', 'sr', 'vi'], true)) {
+    if (!in_array($wiki_base, SUPPORTED_WIKIS, true)) {
         reject_setup_request('Unsupported wiki requested - aborting');
     }
 } else {
@@ -284,7 +281,7 @@ define('TRUST_DOI_GOOD', true); // TODO: this is a bit too trusting
 
 $setup_request_page = setup_request_value('page');
 $setup_request_page = is_string($setup_request_page) ? $setup_request_page : '';
-if ($setup_request_page . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
+if ($setup_request_page . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3" && !defined('EDIT_AS_USER')) { // Specific page to make sure this code path keeps working; mdwiki has already defined it
     define('EDIT_AS_USER', true);
 }
 unset($setup_request_page);
@@ -384,7 +381,9 @@ function check_blocked(): void {
         if (mb_strpos($the_page, '|') === false) {
             $the_user = WikipediaBot::get_last_user();
             if ($the_user !== '' && mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
-                define('EDIT_AS_USER', true);
+                if (!defined('EDIT_AS_USER')) {
+                    define('EDIT_AS_USER', true);
+                }
                 $ignore_block_requested = false;
             }
         }
@@ -393,7 +392,7 @@ function check_blocked(): void {
         } elseif (defined('EDIT_AS_USER')) {
             echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction - so BE CAREFUL.</h1></div><pre>';
         } else {
-            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
+            echo '</pre><div style="text-align:center"><h1>Citation Bot is currently blocked because of a malfunction.</h1><br/><h1>Alternatively, the bot has not been fully enabled on the selected wiki yet.</h1><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank" rel="noopener noreferrer" aria-label="Join the discussion (opens a new window)">Follow the discussion</a></h2></div></main><footer><a href="./" title="Use Citation Bot again"> Edit another page</a>?</footer></body></html>';
             exit(0);
         }
         unset($requested_page, $the_page, $ignore_block_requested);
@@ -432,7 +431,7 @@ require_once __DIR__ . '/Page.php';
 if (isset($argv)) {
     define("MAX_PAGES", 1000000);
 } else {
-    define("MAX_PAGES", 50);
+    define("MAX_PAGES", 200);
 }
 
 if (!CI) { // This is explicitly "tested" in test suite

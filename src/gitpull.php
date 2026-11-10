@@ -21,7 +21,7 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 @header('X-Content-Type-Options: nosniff');
 @header("Content-Security-Policy: default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'");
 
-const LOCK_FILE = __DIR__ . '/git_pull.lock';
+const LOCK_FILE = __DIR__ . '/../git_pull.lock';
 const GITPULL_CSRF_COOKIE = 'citation_bot_gitpull_csrf';
 const GITPULL_CSRF_TTL = 600;
 

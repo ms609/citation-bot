@@ -518,7 +518,7 @@ function sanitize_doi(string $doi): string {
  */
 function extract_doi(string $text): array {
     if (preg_match(
-                "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
+                "~(10\.\d{4,9}(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
                 $text, $match)) {
         $doi = $match[1];
         if (preg_match(
@@ -691,7 +691,7 @@ function get_possible_dois(string $doi): array {
             $trial[] = "10." . $doi;
         }
     }
-    if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", mb_trim($doi), $match)) {
+    if (preg_match("~^(.+)(10\.\d{4,9}/.+)~", mb_trim($doi), $match)) {
         $trial[] = $match[1];
         $trial[] = $match[2];
     }

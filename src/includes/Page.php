@@ -130,7 +130,8 @@ class Page {
         if (
             !isset($details->touched) ||
             !isset($details->lastrevid) ||
-            !is_int($details->lastrevid)
+            !is_int($details->lastrevid) ||
+            $details->lastrevid < 1
         ) {
             report_warning("Could not even get the page.     Perhaps non-existent?");
             return false;
@@ -163,7 +164,7 @@ class Page {
         self::$last_title = $this->title;
         $this->lastrevid = $details->lastrevid;
 
-        $this->text = WikipediaBot::get_a_page($title);
+        $this->text = WikipediaBot::get_a_page($title, $this->lastrevid);
 
         if ($this->text === '') {
             report_warning('Page ' . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['', ''], WIKI_ROOT) . ' appears to be empty ');
@@ -250,37 +251,7 @@ class Page {
         }
     }
 
-    public function expand_text(): bool {
-        set_time_limit(120);
-        $this->page_error = false;
-        $this->set_cs2_mode();
-        $this->announce_page();
-        if (!$this->text) {
-            report_warning("No text retrieved.\n");
-            return false;
-        }
-
-        // COMMENTS AND NOWIKI ETC. //
-        /** @var array<Comment> $comments */
-        $comments = $this->extract_object('Comment');
-        /** @var array<Nowiki> $nowiki */
-        $nowiki = $this->extract_object('Nowiki');
-        /** @var array<Chemistry> $chemistry */
-        $chemistry = $this->extract_object('Chemistry');
-        /** @var array<Mathematics> $mathematics */
-        $mathematics = $this->extract_object('Mathematics');
-        /** @var array<Musicscores> $musicality */
-        $musicality = $this->extract_object('Musicscores');
-        /** @var array<Preformated> $preformated */
-        $preformated = $this->extract_object('Preformated');
-        /** @var array<SyntaxHighlight> $syntaxhighlights */
-        $syntaxhighlights = $this->extract_object('SyntaxHighlight');
-        set_time_limit(120);
-        if (!$this->allow_bots()) {
-            report_warning("Page marked with {{nobots}} template.    Skipping.");
-            $this->text = $this->start_text;
-            return false;
-        }
+    private function convert_bare_references(): void {
         $citation_count = mb_substr_count($this->text, '{{cite ') +
             mb_substr_count($this->text, '{{Cite ') +
             mb_substr_count($this->text, '{{citation') +
@@ -327,15 +298,12 @@ class Page {
         $this->text = safe_preg_replace_callback(
             // like <ref>{{doi|10.1244/abc}}</ref>
             "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-            static function (array $matches): string  {
-                if (mb_stripos($matches[2], 'arxiv')) {
-                    $type = 'arxiv';
-                } elseif (mb_stripos($matches[2], 'isbn') || mb_stripos($matches[2], 'oclc')) {
-                    $type = 'book';
-                } else {
-                    $type = 'journal';
+            static function (array $matches): string {
+                $type = 'cite journal';
+                if (preg_match('~^\s*\{\{(arxiv|isbn|oclc)\|~i', $matches[2], $identifier)) {
+                    $type = mb_strtolower($identifier[1]) === 'arxiv' ? 'cite arxiv' : 'cite book';
                 }
-                return $matches[1] . '{{cite ' . $type . ' | id=' . $matches[2] . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
+                return $matches[1] . '{{' . $type . ' | id=' . $matches[2] . ' | ' . mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') . '=' . base64_encode($matches[2]) . ' }}' . $matches[3];
             },
             $this->text
         );
@@ -356,7 +324,7 @@ class Page {
                 // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                 // also without titles on the urls
                 "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                static function (array $matches): string  {
+                static function (array $matches): string {
                     $UPPER = mb_strtoupper($matches[0]);
                     if (mb_substr_count($UPPER, 'HTTP') !== 1 || // more than one url
                             mb_substr_count($UPPER, '10.') > 3 || // More than one doi probably
@@ -377,6 +345,44 @@ class Page {
                 },
                 $this->text
             );
+        }
+    }
+
+    public function expand_text(): bool {
+        set_time_limit(120);
+        $this->page_error = false;
+        $this->cs2_mode = false;
+        $this->announce_page();
+        if ($this->text === '') {
+            report_warning("No text retrieved.\n");
+            return false;
+        }
+
+        // COMMENTS AND NOWIKI ETC. //
+        /** @var array<Comment> $comments */
+        $comments = $this->extract_object('Comment');
+        /** @var array<Nowiki> $nowiki */
+        $nowiki = $this->extract_object('Nowiki');
+        /** @var array<Chemistry> $chemistry */
+        $chemistry = $this->extract_object('Chemistry');
+        /** @var array<Mathematics> $mathematics */
+        $mathematics = $this->extract_object('Mathematics');
+        /** @var array<Musicscores> $musicality */
+        $musicality = $this->extract_object('Musicscores');
+        /** @var array<Preformated> $preformated */
+        $preformated = $this->extract_object('Preformated');
+        /** @var array<SyntaxHighlight> $syntaxhighlights */
+        $syntaxhighlights = $this->extract_object('SyntaxHighlight');
+        set_time_limit(120);
+        [$allow_bots, $cs1_optout] = $this->bot_directives();
+        if (!$allow_bots) {
+            report_warning("Page marked with {{nobots}} template.    Skipping.");
+            $this->text = $this->start_text;
+            return false;
+        }
+        if (!$cs1_optout) {
+            $this->set_cs2_mode();
+            $this->convert_bare_references();
         }
         // TEMPLATES
         set_time_limit(120);
@@ -562,7 +568,15 @@ class Page {
             if (!$this_template->initial_author_params()) {
                 $this_template->handle_et_al();
             }
+            $new_cs2_citation = $this->cs2_mode &&
+                $this_template->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
             $this_template->final_tidy();
+
+            // Metadata can select a specialized citation template. Preserve the
+            // page style on new citations even when their template changes.
+            if ($new_cs2_citation && $this_template->wikiname() !== 'citation' && $this_template->blank('mode')) {
+                $this_template->add('mode', 'cs2');
+            }
 
             // Record any modifications that have been made:
             $template_mods = $this_template->modifications();
@@ -592,6 +606,8 @@ class Page {
         foreach ($our_templates_slight as $this_template) {
             // Settle any pending rebuild before recording changes
             $this_template->finalize_cookie_absent_citation();
+            // Tidy first, as for $our_templates above, so that what the final pass changes is recorded too
+            $this_template->final_tidy();
             // Record any modifications that have been made:
             $template_mods = $this_template->modifications();
             foreach (array_keys($template_mods) as $key) {
@@ -604,7 +620,6 @@ class Page {
                     $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
                 }
             }
-            $this_template->final_tidy();
         }
         set_time_limit(120);
 
@@ -854,8 +869,8 @@ class Page {
                 'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
                 'cit news', 'Cit news', 'cite url', 'Cite url', 'web cite', 'Web cite',
                 'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
-                'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
-                'cite new |', 'cite new |', 'cite |', 'Cite |',
+                'citepaper', 'Citepaper', 'cite new|', 'Cite new|', 'citation journal', 'Citation journal',
+                'cite new |', 'Cite new |', 'cite |', 'Cite |',
             ] as $try_me) {
                 if (mb_substr_count($this->text, $try_me) < mb_substr_count($this->start_text, $try_me)) {
                     $auto_summary .= 'Removed Template redirect. ';
@@ -868,41 +883,25 @@ class Page {
         }
         $auto_summary .= "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. " . $edit_summary_end;
 
-        switch (WIKI_BASE) {  // @codeCoverageIgnoreStart
-            case 'en':
-            case 'simple':
-            case 'mdwiki':
-                break; // English
-            case 'mk':
-                foreach (MK_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Macedonian
-            case 'ru':
-                foreach (RU_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Russian
-            case 'sr':
-                foreach (SR_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Serbian
-            case 'vi':
-                foreach (VI_TRANS as $eng => $not_eng) {
-                    $auto_summary = str_replace($eng, $not_eng, $auto_summary);
-                }
-                break; // Vietnamese
-            default:
-                report_error('invalid wiki in edit summary');
-        }    // @codeCoverageIgnoreEnd
+        // @codeCoverageIgnoreStart
+        /** @var array<string, array<string, string>> $translations_by_wiki */
+        $translations_by_wiki = EDIT_SUMMARY_TRANSLATIONS;
+        $translations = $translations_by_wiki[WIKI_BASE] ?? null;
+        if ($translations !== null) {
+            // Apply longest matching keys first and do not translate replacement text again.
+            $auto_summary = strtr($auto_summary, $translations);
+        } elseif (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
+            report_error('invalid wiki in edit summary');
+        }
+        // @codeCoverageIgnoreEnd
         return $auto_summary;
     }
 
     public function write(WikipediaBot $api, string $edit_summary_end = ''): bool {
         /** @var array<bool> $failures */
         static $failures = [false, false, false, false, false];
-        if (!$this->allow_bots()) {
+        [$allow_bots] = $this->bot_directives(true);
+        if (!$allow_bots) {
             report_warning("Can't write to " . echoable($this->title) . " - prohibited by {{bots}} template.");
             return false;
         }
@@ -1075,19 +1074,117 @@ class Page {
                 "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
     }
 
-    private function allow_bots(): bool {
-        // see {{bots}} and {{nobots}}
-        $bot_username = 'Citation[ _]bot';
-        if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?' . $bot_username . '.*?)\}\}~iS', $this->text)) {
-            return false;
+    /**
+     * Read literal parameters from balanced templates in a single pass. Pipes
+     * inside nested templates, arguments and wikilinks belong to those frames.
+     *
+     * @return Generator<int, array{string, array<string, string>, int}>
+     */
+    private static function page_template_settings(string $text): Generator {
+        $text = remove_comments($text);
+        $frames = [];
+        $position = 0;
+        while (preg_match('~\{\{\{?|\[\[|\}\}\}?|\]\]|\|~', $text, $match, PREG_OFFSET_CAPTURE, $position) === 1) {
+            [$token, $offset] = $match[0];
+            $position = $offset + mb_strlen($token, '8bit');
+            $current = array_key_last($frames);
+            if ($token[0] === '{' || $token[0] === '[') {
+                if ($current !== null) {
+                    $frames[$current]['nested'] = true;
+                }
+                $frames[] = [
+                    'closing' => strtr($token, '{[', '}]'),
+                    'offset' => $offset,
+                    'field' => $position,
+                    'nested' => false,
+                    'name' => null,
+                    'params' => [],
+                ];
+                continue;
+            }
+            if ($current === null) {
+                continue;
+            }
+            $frame = $frames[$current];
+            $closing = str_starts_with($token, $frame['closing']);
+            if ($frame['closing'] === '}}' && ($closing || $token === '|')) {
+                if (!$frame['nested']) {
+                    $field_length = $offset - $frame['field'];
+                    if ($frame['name'] === null && $field_length <= 255) {
+                        $name = mb_substr($text, $frame['field'], $field_length, '8bit');
+                        $name = mb_strtolower(mb_trim(safe_preg_replace('~[\s_]+~u', ' ', $name)));
+                        $frame['name'] = mb_trim(safe_preg_replace('~^template\s*:\s*~', '', $name));
+                    } elseif ($frame['name'] !== null && preg_match(
+                        '~\G\s*(allow|deny|optout|mode)\s*=~i',
+                        $text,
+                        $param,
+                        0,
+                        $frame['field']
+                    ) === 1) {
+                        $value_start = $frame['field'] + mb_strlen($param[0], '8bit');
+                        $frame['params'][mb_strtolower($param[1])] = mb_strtolower(mb_trim(mb_substr($text, $value_start, $offset - $value_start, '8bit')));
+                    }
+                }
+                $frame['name'] ??= '';
+                $frame['field'] = $position;
+                $frame['nested'] = false;
+            }
+            if ($closing) {
+                $position = $offset + mb_strlen($frame['closing'], '8bit');
+                if ($frame['name'] !== null && $frame['name'] !== '') {
+                    yield [$frame['name'], $frame['params'], $frame['offset']];
+                }
+                array_pop($frames);
+            } else {
+                $frames[$current] = $frame;
+            }
         }
-        if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?' . $bot_username . '.*?)\}\}~iS', $this->text)) {
-            return true;
+    }
+
+    /** @return array{bool, bool} Whether to allow editing and skip bare-reference conversion. */
+    private function bot_directives(bool $shield_protected = false): array {
+        $text = $this->text;
+        if ($shield_protected) {
+            $text = remove_comments($text);
+            foreach ([...Nowiki::REGEXP, ...Chemistry::REGEXP, ...Mathematics::REGEXP,
+                ...Musicscores::REGEXP, ...Preformated::REGEXP, ...SyntaxHighlight::REGEXP] as $pattern) {
+                $text = safe_preg_replace($pattern, ' ', $text);
+            }
         }
-        if (preg_match('~\{\{(bots\|allow=.*?)\}\}~iS', $this->text)) {
-            return false;
+        $has_allow_list = false;
+        $allowed_by_list = false;
+        $cs1_optout = false;
+        foreach (self::page_template_settings($text) as [$name, $params]) {
+            if ($name === 'nobots') {
+                return [false, false];
+            }
+            if ($name !== 'bots') {
+                continue;
+            }
+            $deny = self::bot_list($params['deny'] ?? '');
+            $optout = self::bot_list($params['optout'] ?? '');
+            if (array_intersect($deny, ['all', 'citation bot']) || in_array('all', $optout, true)) {
+                return [false, false];
+            }
+            $cs1_optout = $cs1_optout || in_array('cs1', $optout, true);
+            if (isset($params['allow'])) {
+                $has_allow_list = true;
+                $allow = self::bot_list($params['allow']);
+                if (in_array('none', $allow, true)) {
+                    return [false, false];
+                }
+                $allowed_by_list = $allowed_by_list || (bool) array_intersect($allow, ['all', 'citation bot']);
+            }
         }
-        return true;
+        return [!$has_allow_list || $allowed_by_list, $cs1_optout];
+    }
+
+    /** @return list<string> */
+    private static function bot_list(string $value): array {
+        return array_map(
+            static fn (string $item): string => mb_trim(safe_preg_replace('~[\s_]+~u', ' ', $item)),
+            explode(',', $value)
+        );
     }
 
     private function set_name_list_style(): void {
@@ -1121,61 +1218,29 @@ class Page {
     }
 
     private function set_cs2_mode(): void {
-        // get value of mode parameter in "cs1 config" templates such as {{cs1 config |mode=cs2 }}
-        $this->cs2_mode = false;
-        $pattern = '/{{\s*?cs1\s*?config[^}]*?mode\s*?=\s*?(cs2)\b[^}]*?}}/im';
-        if (preg_match($pattern, $this->text, $matches)) {
-            $this->cs2_mode = true;
-            return;
-        }
-        // Without explicit configuration, follow the page: when it already has several citation templates and
-        // every one of them is Citation Style 2, a new reference should not be the one that introduces CS1.
+        $explicit_mode = '';
+        $first_config = PHP_INT_MAX;
         $cs2_count = 0;
-        $text_length = mb_strlen($this->text, '8bit'); // Bytes, since the offsets from preg_match_all are bytes
-        if (preg_match_all('~\{\{\s*([^|{}]+?)\s*\|~u', $this->text, $starts, PREG_OFFSET_CAPTURE) === false) {
-            return; // @codeCoverageIgnore
-        }
-        foreach ($starts[0] as $key => $start) {
-            $name = mb_strtolower(mb_trim((string) safe_preg_replace('~[\s_]+~u', ' ', $starts[1][$key][0])));
-            $is_cs2_name = ($name === 'citation');
-            $is_cs1_name = !$is_cs2_name &&
+        $has_cs1 = false;
+        foreach (self::page_template_settings($this->text) as [$name, $params, $offset]) {
+            $mode = $params['mode'] ?? '';
+            if ($name === 'cs1 config' && ($mode === 'cs1' || $mode === 'cs2') && $offset < $first_config) {
+                $first_config = $offset;
+                $explicit_mode = $mode;
+            } elseif ($name === 'citation' || (
                 $name !== 'cite needed' && $name !== 'cite check' &&
-                (mb_strpos($name, 'cite ') === 0 || in_array($name, TEMPLATES_WE_PROCESS, true) || in_array($name, TEMPLATES_WE_SLIGHTLY_PROCESS, true) || in_array($name, TEMPLATES_WE_BARELY_PROCESS, true));
-            if (!$is_cs2_name && !$is_cs1_name) {
-                continue;
-            }
-            // Find the end of this template, allowing for templates inside it
-            $begin = (int) $start[1];
-            $depth = 0;
-            $end = $text_length;
-            for ($position = $begin; $position < $text_length - 1; $position++) {
-                $pair = mb_substr($this->text, $position, 2, '8bit');
-                if ($pair === '{{') {
-                    $depth++;
-                    $position++;
-                } elseif ($pair === '}}') {
-                    $depth--;
-                    $position++;
-                    if ($depth === 0) {
-                        $end = $position + 1;
-                        break;
-                    }
+                (str_starts_with($name, 'cite ') || in_array($name, TEMPLATES_WE_PROCESS, true) ||
+                    in_array($name, TEMPLATES_WE_SLIGHTLY_PROCESS, true) || in_array($name, TEMPLATES_WE_BARELY_PROCESS, true))
+            )) {
+                if ($mode === 'cs2' || ($name === 'citation' && $mode !== 'cs1')) {
+                    ++$cs2_count;
+                } else {
+                    $has_cs1 = true;
                 }
             }
-            $body = mb_substr($this->text, $begin, $end - $begin, '8bit');
-            $mode = '';
-            if (preg_match('~\|\s*mode\s*=\s*(cs[12])\b~i', $body, $mode_match) === 1) {
-                $mode = mb_strtolower($mode_match[1]);
-            }
-            if ($mode === 'cs2' || ($is_cs2_name && $mode !== 'cs1')) {
-                $cs2_count++;
-            } else {
-                return; // A single CS1 citation means the page is not uniformly CS2
-            }
         }
-        if ($cs2_count >= self::CS2_INFERENCE_MINIMUM) {
-            $this->cs2_mode = true;
-        }
+        $this->cs2_mode = $explicit_mode === 'cs2' ||
+            ($explicit_mode === '' && !$has_cs1 && $cs2_count >= self::CS2_INFERENCE_MINIMUM);
     }
 
     private function set_date_pattern(): void {
@@ -1206,6 +1271,7 @@ class Page {
     }
 
     private function construct_modifications_array(): void {
+        $this->odnb_sub_removed = false;
         $this->modifications['changeonly'] = [];
         $this->modifications['additions'] = [];
         $this->modifications['deletions'] = [];
