@@ -511,6 +511,8 @@ function check_citation(Template $template): array {
 /**
  * Each case is [name, wikitext, expectation].
  * expectation 'pass' means the expanded output must satisfy every CS1 rule.
+ * expectation 'isbn-invalid' requires exactly one CS1 invalid-ISBN error; leaving
+ *                            a bad input ISBN unchanged is intentional.
  * expectation 'gap'  means the current code is known to leave a CS1 error in
  *                    the output; reported (and tracked) but does not fail the run.
  *
@@ -561,7 +563,7 @@ function build_matrix(): array {
         // --- ISBN validation (merged Tier 1 fix) ---
         ['Valid ISBN-10 kept', '{{cite book |title=X |isbn=0-306-40615-2}}', 'pass'],
         ['Valid ISBN-13 kept', '{{cite book |title=X |isbn=978-0-306-40615-7}}', 'pass'],
-        ['Bad ISBN-10 auto-repaired for post-2007 book', '{{cite book |title=X |date=2019 |isbn=0-306-40615-1}}', 'pass'],
+        ['Bad ISBN-10 preserved for human correction', '{{cite book |title=X |date=2019 |isbn=0-306-40615-1}}', 'isbn-invalid'],
 
         // --- coupled-parameter consistency (bot prevents these) ---
         ['doi-broken-date removed without doi', '{{cite journal |title=X |journal=J |doi-broken-date=2020-01-01}}', 'pass'],
@@ -684,8 +686,11 @@ foreach ($matrix as $case) {
         echo "FAIL  $name (no citation output produced)\n";
         continue;
     }
-    if ($expectation === 'pass') {
-        if ($violations === []) {
+    if ($expectation === 'pass' || $expectation === 'isbn-invalid') {
+        $matches_expectation = $expectation === 'pass'
+            ? $violations === []
+            : count($violations) === 1 && str_starts_with($violations[0], 'isbn-invalid:');
+        if ($matches_expectation) {
             $passed++;
             echo "PASS  $name\n";
         } else {
