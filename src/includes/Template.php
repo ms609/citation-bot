@@ -7712,8 +7712,16 @@ final class Template
             if (mb_stripos($this->get('journal'), 'SIGGRAPH') !== false && $this->blank('title')) {
                 $this->rename('journal', 'title');
             }
-            if ($this->has('series') && mb_stripos($this->get('title'), $this->get('series')) !== false && $this->get('series') !== 'Surtees Society' && !preg_match('~^\d+$~', $this->get('series'))) {
-                $this->forget('series');
+            $series = $this->get('series');
+            if ($series !== '' && $series !== 'Surtees Society' && !preg_match('~^\d+$~', $series)) {
+                $title = $this->get('title');
+                // A book title may include its series name without duplicating it.
+                $duplicates_title = $this->wikiname() === 'cite book'
+                    ? mb_strtolower($title) === mb_strtolower($series)
+                    : mb_stripos($title, $series) !== false;
+                if ($duplicates_title) {
+                    $this->forget('series');
+                }
             }
 
             $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
