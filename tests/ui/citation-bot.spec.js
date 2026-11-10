@@ -95,6 +95,9 @@ test.describe('Citation Bot web interface', () => {
     expect(await page.locator('#PageSpinner').evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(page.locator('#PageSpinner')).toHaveAttribute('alt', '');
     await expect(page.locator('#botForm #botStatus')).toHaveCount(0);
+    await expect(page.locator('footer a[href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use"]')).toBeVisible();
+    await expect(page.locator('footer a[href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy"]')).toBeVisible();
+    await expect(page.locator('footer code')).toHaveText('CiteBot');
   });
 
   const validationCases = [

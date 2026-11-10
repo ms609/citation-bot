@@ -376,4 +376,25 @@ final class UserMessagesIsolatedModesTest extends PHPUnit\Framework\TestCase {
         $this->assertStringNotContainsString('[LOG:', $output);
         $this->assertStringContainsString('|CONTINUED', $output);
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testBotHtmlFooterIncludesTermsAndPrivacyLinks(): void {
+        $this->useMode(false, true);
+        require_once dirname(__DIR__, 3) . '/src/includes/WebTools.php';
+
+        $output = $this->capture(static function (): void {
+            bot_html_footer();
+        });
+
+        $this->assertStringContainsString('Edit another page', $output);
+        $this->assertStringContainsString(
+            'href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use"',
+            $output
+        );
+        $this->assertStringContainsString(
+            'href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy"',
+            $output
+        );
+    }
 }
