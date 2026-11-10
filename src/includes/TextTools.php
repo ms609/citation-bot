@@ -1671,6 +1671,15 @@ function archive_url_has_timestamp(string $value): bool {
         || preg_match('~^https?://(?:www\.|)webcitation\.org/[0-9a-zA-Z]{9}~', $value) === 1;
 }
 
+/**
+ * True when a value is a supported |asin-tld= Amazon country/TLD code per
+ * Module:Citation/CS1/Identifiers asin() (err_bad_asin_tld,
+ * "Check |asin-tld= value").
+ */
+function asin_tld_valid(string $value): bool {
+    return $value !== '' && in_array(mb_strtolower(mb_trim($value)), VALID_ASIN_TLDS, true);
+}
+
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     // Written as escapes (U+2014 em dash, U+2015 horizontal bar, U+2013 en dash, U+2012 figure dash, U+2212 minus sign, U+2010 hyphen) so that an encoding round trip cannot corrupt them into '?'
