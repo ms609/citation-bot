@@ -1004,6 +1004,11 @@ function tidy_date_inside(string $string): string {
         return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
     $time = strtotime($string);
+    if ($time && !is_int($parsed_date['year'])) {
+        // No year was written ("12 hours ago", "May 15", "10:30", "March, 2020"), so strtotime()
+        // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
+        $time = false;
+    }
     if ($time) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
