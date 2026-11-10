@@ -1505,7 +1505,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 return $template->add_if_new('jstor', $matches[1]);
             }
         }
-        if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
+        if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . preg_quote($template->get('jstor'), '~') . '(?:|\.pdf)$~i', $url)) {
             if (!$url_sent) {
                 if ($template->has_good_free_copy()) {
                     $template->forget($url_type);

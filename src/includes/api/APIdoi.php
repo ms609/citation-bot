@@ -45,7 +45,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                 if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
                     $new = $matches[1];
                     $new_roman = $matches[2];
-                } elseif (preg_match('~^([IVX]+)\.[\s\-\—]*(.................+)$~i', $new, $matches)) {
+                } elseif (preg_match('~^([IVX]+)\.[\s\-—]*(.................+)$~iu', $new, $matches)) {
                     $new = $matches[2];
                     $new_roman = $matches[1];
                 } else {
@@ -57,7 +57,7 @@ function expand_by_doi(Template $template, bool $force = false): void {
                         if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                             $old = $matches[1];
                             $old_roman = $matches[2];
-                        } elseif (preg_match('~^([IVX]+)\.[\s\-\—]*(.................+)$~i', $old, $matches)) {
+                        } elseif (preg_match('~^([IVX]+)\.[\s\-—]*(.................+)$~iu', $old, $matches)) {
                             $old = $matches[2];
                             $old_roman = $matches[1];
                         } else {

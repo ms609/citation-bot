@@ -292,7 +292,7 @@ const ARE_WORKS = [
 /** LOWER CASE!  WWW not there too! */
 const PUBLISHERS_ARE_WORKS = [
     'hitfix',
-    'forbes (Russia)',
+    'forbes (russia)',
     'anchorage daily news',
     'arizona daily star',
     'belmontstakes.com',
@@ -13505,7 +13505,7 @@ const BAD_TITLES = [
     'sciencedirect',
     'secure request and redirect',
     'shibboleth authentication request',
-    'sign up ',
+    'sign up',
     'something went wrong',
     'ssrn electronic journal',
     'ssrn temporarily unavailable',
