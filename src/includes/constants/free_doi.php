@@ -935,7 +935,11 @@ const DOI_FREE_PREFIX = [
 
 /**
  * Conditional free DOI rules: DOIs that are free only under certain publication-date conditions.
- * Rule types: AFTER_YEAR (year > value), AFTER_DATE (publication date >= value; year-only dates tag only when the whole publication year is post-flip), EMBARGO_MONTHS (pub date + value months <= now; falls back to end of year when only year is known).
+ * Rule types:
+ * - AFTER_YEAR: year > value
+ * - AFTER_DATE: publication date >= value; year-only dates tag only when the whole publication year is post-flip
+ * - EMBARGO_MONTHS: pub date + value months <= now; falls back to end of year when only year is known
+ * - YEAR_RANGE: publication year within the inclusive YYYY-YYYY value
  * If no parseable date is present, no free tag is added.
  * Note: these rules apply only through the `doi` tidy path (`doi_free_check_conditional`).
  * Standalone {{doi}}/{{doi-inline}} templates carry no date, so `set_free_doi_access()` ignores them.
@@ -1022,10 +1026,57 @@ const DOI_FREE_CONDITIONAL = [
         'type'   => 'EMBARGO_MONTHS',
         'value'  => '12',
     ],
-    [   // Annual Reviews (Subscribe to Open): free from 2023 onward.  Open-ended on purpose; if the program
-        // lapses in a later year this needs an end date.  Several titles became free earlier (2020, 2021)
-        // but need per-journal prefixes, so only the common 2023 start is covered here.
-        // See User talk:Citation bot, "10.1146 is free from 2023+"
+    [   // Annual Review of Public Health: the 2017 and 2018 volumes are CC-licensed (2017 CC BY-SA,
+        // 2018 CC BY) under a Robert Wood Johnson Foundation grant.  The 2019 volume is bronze
+        // (free-to-read, no CC license), so the contiguous 2020+ rule below cannot cover it.
+        // https://annualreviewsnews.org/2017/04/06/public-health-oa/
+        'prefix' => '10.1146/annurev-publhealth',
+        'type'   => 'YEAR_RANGE',
+        'value'  => '2017-2018',
+    ],
+    [   // Annual Review of Public Health: Subscribe to Open from 2020 onward (CC BY, permanent)
+        'prefix' => '10.1146/annurev-publhealth',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Annual Reviews Subscribe to Open 2020 pilot titles (CC BY, permanent)
+        'prefix' => '10.1146/annurev-cancerbio',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Annual Review of Environment and Resources (S2O 2020 pilot)
+        'prefix' => '10.1146/annurev-environ',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Annual Review of Nuclear and Particle Science (S2O 2020 pilot)
+        'prefix' => '10.1146/annurev-nucl',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Annual Review of Political Science (S2O 2020 pilot)
+        'prefix' => '10.1146/annurev-polisci',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2020-01-01',
+    ],
+    [   // Annual Reviews Subscribe to Open 2021 titles (CC BY, permanent)
+        'prefix' => '10.1146/annurev-virology',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2021-01-01',
+    ],
+    [   // Annual Review of Genomics and Human Genetics (S2O 2021)
+        'prefix' => '10.1146/annurev-genom',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2021-01-01',
+    ],
+    [   // Annual Review of Biomedical Engineering (S2O 2021)
+        'prefix' => '10.1146/annurev-bioeng',
+        'type'   => 'AFTER_DATE',
+        'value'  => '2021-01-01',
+    ],
+    [   // Annual Reviews (Subscribe to Open): all remaining titles free from 2023 onward.  Open-ended
+        // on purpose; volumes already published open access stay permanently CC-licensed.
+        // Original patch: User_talk:Citation_bot/Archive_46
         'prefix' => '10.1146/annurev',
         'type'   => 'AFTER_DATE',
         'value'  => '2023-01-01',

@@ -70,6 +70,29 @@ final class TextToolsCoverageTest extends testBaseClass {
         $this->assertSame('12345X7890', changeisbn10Toisbn13('12345X7890', 2007));
     }
 
+    public function testChangeIsbnConvertsUnicodeDashVariants(): void {
+        // 0-306-40615-2 is the ISBN-10 form of 978-0-306-40615-7
+        $this->assertSame('978-0-306-40615-7', changeisbn10Toisbn13('0-306-40615-2', 2010));
+        // em dash, horizontal bar, en dash, figure dash, minus sign, Unicode hyphen
+        foreach (["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2212}", "\u{2010}"] as $dash) {
+            $this->assertSame(
+                '978-0-306-40615-7',
+                changeisbn10Toisbn13('0' . $dash . '306' . $dash . '40615' . $dash . '2', 2010)
+            );
+        }
+    }
+
+    public function testChangeIsbnDoesNotTreatQuestionMarkAsDash(): void {
+        $this->assertSame('0?306?40615?2', changeisbn10Toisbn13('0?306?40615?2', 2010));
+    }
+
+    public function testRxivDoiFromIdPrefixesOnlyBareIdentifiers(): void {
+        $this->assertSame('10.1101/123456', rxiv_doi_from_id('123456'));
+        $this->assertSame('10.1101/2020.01.01.123456', rxiv_doi_from_id('2020.01.01.123456'));
+        $this->assertSame('10.1101/2020.01.01.123456', rxiv_doi_from_id('10.1101/2020.01.01.123456'));
+        $this->assertSame('10.64898/2025.01.01.123456', rxiv_doi_from_id('10.64898/2025.01.01.123456'));
+    }
+
     public function testCleanVolumeRejectsMonthNames(): void {
         $this->assertSame('', clean_volume('November bananas'));
     }

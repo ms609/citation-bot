@@ -34,6 +34,8 @@ on:
       - '.github/workflows/browser-ui.yml'
       - '.github/workflows/python-lint.yml'
       - '.github/workflows/secret-scan.yml'
+      - '.github/workflows/patch-artifacts.yml'
+      - '.github/workflows/fuzz-citations.yml'
       - '.gitignore'
       - '.phan'
       - '.phan/config.php'

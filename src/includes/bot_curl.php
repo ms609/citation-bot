@@ -387,7 +387,16 @@ function bot_curl_exec_withFalse(CurlHandle $ch): string|bool {
          * upstream services use request metadata when classifying automated
          * traffic, and this variation helps reduce false-positive blocking.
          */
-        curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::get_last_title());
+        $last_title = Page::get_last_title();
+        if ($last_title === '') {
+            $referer_url = WIKI_ROOT;
+        } else {
+            $referer_url = WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $last_title));
+        }
+        if ($referer_url === '') {
+            $referer_url = 'https://en.wikipedia.org/';
+        }
+        curl_setopt($ch, CURLOPT_REFERER, $referer_url);
     }
 
     // Re-assert either the strict or explicitly marked legacy policy.

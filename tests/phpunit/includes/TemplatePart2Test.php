@@ -44,6 +44,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('chapter'));
     }
 
+    public function testTidyKeepsBookSeriesThatIsPartOfTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About Fatal Fury 3|series=All About|volume=10|page=253}}');
+        $template->final_tidy();
+        $this->assertSame('All About', $template->get2('series'));
+        $this->assertSame('10', $template->get2('volume'));
+    }
+
+    public function testTidyRemovesBookSeriesIdenticalToTitle(): void {
+        $template = $this->make_citation('{{cite book|title=All About|series=All about}}');
+        $template->final_tidy();
+        $this->assertNull($template->get2('series'));
+    }
+
     public function testTidyChapterNotJournal(): void {
         $text = "{{cite web|chapter=X|title=Y|url=Z}}";
         $template = $this->make_citation($text);
@@ -1280,6 +1293,17 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNotNull($template->get2('url'));
         $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
         $this->assertNull($template->get2('publisher'));
+    }
+
+    public function testDoiFromTextWithFiveDigitRegistrant(): void {
+        $doi = '10.11646/zootaxa.4963.1.1';
+        HandleCache::$cache_good[$doi] = true;
+        try {
+            $template = $this->prepare_citation('{{cite journal|publisher=See ' . $doi . ' for details}}');
+        } finally {
+            unset(HandleCache::$cache_good[$doi]);
+        }
+        $this->assertSame($doi, $template->get2('doi'));
     }
 
     public function testJournalIsBookSeries(): void {

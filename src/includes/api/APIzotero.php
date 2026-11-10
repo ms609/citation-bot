@@ -227,12 +227,14 @@ final class Zotero {
                 self::expand_by_zotero($template);
             }
             if ($template->has('biorxiv')) {
+                // biorxiv= may already hold a full DOI (10.1101 or 10.64898 prefix), so do not blindly prepend a prefix
+                $biorxiv_doi = rxiv_doi_from_id($template->get('biorxiv'));
                 if ($template->blank('doi')) {
-                    $template->add_if_new('doi', '10.1101/' . $template->get('biorxiv'));
+                    $template->add_if_new('doi', $biorxiv_doi);
                     expand_by_doi($template, true); // this data is better than zotero
-                } elseif (mb_strstr($template->get('doi'), '10.1101') === false) {
-                    expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
-                    self::expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv')); // Rare case there is a different DOI
+                } elseif (mb_strstr($template->get('doi'), '10.1101') === false && mb_strstr($template->get('doi'), '10.64898') === false) {
+                    expand_doi_with_dx($template, $biorxiv_doi);  // dx data is better than zotero
+                    self::expand_by_zotero($template, 'https://dx.doi.org/' . $biorxiv_doi); // Rare case there is a different DOI
                 }
             }
             if ($template->has('medrxiv')) {
@@ -257,9 +259,9 @@ final class Zotero {
             }
             $doi = $template->get('doi'); // might have changed
             if (!doi_active($doi)) {
-                if ($template->has('citeseerx')) {
-                    self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
-                }
+                // CiteSeerX is deliberately not expanded: expand_by_zotero() skips CiteSeerX URLs and
+                // add_if_new() no longer adds citeseerx.  A branch for it used to live here, but its URL had
+                // a leading space, so it failed the URL check and never did anything.
                 //  Has a CAPTCHA -- if ($template->has('jfm'))
                 //  Has a CAPTCHA -- if ($template->has('zbl'))
                 //  Do NOT do MR -- it is a review not the article itself. Note that html does have doi, but do not use it.
@@ -1284,8 +1286,14 @@ final class Zotero {
         }
 
         if (mb_stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
-            unset($result->creators['1']);
-            unset($result->author['1']);
+            // Keep only the first entry.  Removing index 1 alone left later entries in place, and they
+            // came back whenever the list was re-indexed further down.
+            if (isset($result->creators) && is_array($result->creators)) {
+                $result->creators = array_slice($result->creators, 0, 1);
+            }
+            if (isset($result->author) && is_array($result->author)) {
+                $result->author = array_slice($result->author, 0, 1);
+            }
         }
 
         if (mb_stripos($url, 'flickr.') !== false) {
@@ -1351,6 +1359,10 @@ final class Zotero {
                 return;
             }
         }
+        if (has_unexpanded_cms_token($test_data)) {
+            report_info("Received unexpanded CMS placeholder title for URL " . echoable($url . ": " . $test_data));
+            return;
+        }
         if ($test_data === '404' || $test_data === '/404') {
             return;
         }
@@ -1383,23 +1395,31 @@ final class Zotero {
                     return;
                 }
             }
-            // Specific bad data that is correctable
-            $tester = mb_strtolower($result->publicationTitle);
-            if ($tester === 'nationalpost') {
-                $result->publicationTitle = 'National Post';
-            } elseif ($tester === 'financialpost') {
-                $result->publicationTitle = 'Financial Post';
-            } elseif ($tester === 'bloomberg.com') {
-                $result->publicationTitle = 'Bloomberg';
-            } elseif ($tester === 'radiofreeeurope/radioliberty') {
-                $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
-            } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
-                $result->publicationTitle = 'The Yucatan Times';
-            } elseif ($tester === 'advanced books') {
-                unset($result->issue);
-                unset($result->volume);
-                unset($result->pages);
+            if (has_unexpanded_cms_token($result->publicationTitle)) {
+                report_info("Received unexpanded CMS placeholder publication title for URL " . echoable($url . ": " . $result->publicationTitle));
                 unset($result->publicationTitle);
+            }
+            // Specific bad data that is correctable
+            if (!isset($result->publicationTitle)) {
+                // Token was just removed above; nothing left to correct
+            } else {
+                $tester = mb_strtolower($result->publicationTitle);
+                if ($tester === 'nationalpost') {
+                    $result->publicationTitle = 'National Post';
+                } elseif ($tester === 'financialpost') {
+                    $result->publicationTitle = 'Financial Post';
+                } elseif ($tester === 'bloomberg.com') {
+                    $result->publicationTitle = 'Bloomberg';
+                } elseif ($tester === 'radiofreeeurope/radioliberty') {
+                    $result->publicationTitle = 'Radio Free Europe/Radio Liberty';
+                } elseif (mb_strpos($tester, 'the yucatan times') === 0) {
+                    $result->publicationTitle = 'The Yucatan Times';
+                } elseif ($tester === 'advanced books') {
+                    unset($result->issue);
+                    unset($result->volume);
+                    unset($result->pages);
+                    unset($result->publicationTitle);
+                }
             }
         }
 
@@ -1985,7 +2005,6 @@ final class Zotero {
                 case 'forumPost':    // @codeCoverageIgnore
                 case 'tvBroadcast':    // @codeCoverageIgnore
                 case 'podcast':    // @codeCoverageIgnore
-                case 'manuscript':    // @codeCoverageIgnore
                 case 'artwork':    // @codeCoverageIgnore
                 case 'case':    // @codeCoverageIgnore
                 case 'statute':    // @codeCoverageIgnore

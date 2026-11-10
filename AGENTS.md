@@ -105,6 +105,7 @@ The bot integrates with multiple external services.  Sometimes these APIs will f
 | Semantic Scholar | S2 ID / DOI | Identifier mapping and open-access status lookup |
 | Google Books | ISBN / Google ID | Book metadata |
 | Unpaywall | DOI | Open-access location finder |
+| Fatcat (via Unpaywall) | DOI | Pre-1909 Archive.org PDF lookup via scholar.archive.org |
 | ISSN (local) | ISSN | Hardcoded ISSN-to-newspaper mapping (no live API) |
 | Internet Archive | URL | Archive-hosted page title retrieval (Wayback Machine, Ghostarchive) |
 | PII | PII | Publisher Item Identifier to DOI conversion |
@@ -152,12 +153,15 @@ and does not reorder already-arrived FastCGI requests.
   discovery is paginated. Fifth-runnable/raw-candidate/five-batch bounds remain
   defense in depth after the initial probe semaphore.
 - **Large-user lease:** acquire the per-user >=50-page lease as soon as discovery
-  reaches 50 runnable pages. The persistent `_guard` serializes takeover and
-  inode ownership is authoritative. Ownership loss is terminal. A private
-  process-owned `citation-bot-big-jobs` directory under `/dev/shm` is preferred
-  when available; otherwise the same private directory is created under `sys_get_temp_dir()`.
-  The first deployment that moves existing leases into this private subdirectory
-  must be drained so old direct-`/dev/shm` leases cannot overlap new leases.
+  reaches 50 runnable pages, except for finitely bounded category discovery:
+  that defers acquisition until the oversized-category bound is ruled out, so a
+  category about to be cancelled never takes the lease. The persistent `_guard`
+  serializes takeover and inode ownership is authoritative. Ownership loss is
+  terminal. A private process-owned `citation-bot-big-jobs` directory under
+  `/dev/shm` is preferred when available; otherwise the same private directory
+  is created under `sys_get_temp_dir()`. The first deployment that moves
+  existing leases into this private subdirectory must be drained so old
+  direct-`/dev/shm` leases cannot overlap new leases.
 - **Shared state machine:** `probe -> discovery -> running`. Final promotion
   charges tokens exactly once. Probe-to-discovery promotion checks the normal
   total atomically. Wrong/missing phases fail closed.
@@ -241,7 +245,7 @@ Must include:
 - Public URL and web-request configuration: `PUBLIC_BASE_URL`, `ALLOWED_HOSTS`, `ALLOWED_ORIGINS`
 - OAuth tokens: `PHP_OAUTH_CONSUMER_TOKEN`, `PHP_OAUTH_CONSUMER_SECRET`, `PHP_OAUTH_ACCESS_TOKEN`, `PHP_OAUTH_ACCESS_SECRET` (required for CLI)
 - Web user OAuth: `PHP_WP_OAUTH_CONSUMER`, `PHP_WP_OAUTH_SECRET` (required for web interface)
-- Optional: `PHP_ADSABSAPIKEY` (ADS), `PHP_S2APIKEY` (Semantic Scholar), `NLM_APIKEY`/`NLM_EMAIL` (NCBI), `DEPLOY_TOKEN` (deployment endpoint)
+- Optional: `PHP_ADSABSAPIKEY` (ADS), `PHP_ADSABSAPILIMITACTION` (sleep|exit|ignore), `PHP_S2APIKEY` (Semantic Scholar), `NLM_APIKEY`/`NLM_EMAIL` (NCBI), `DEPLOY_TOKEN` (deployment endpoint), `CITOID_RATE_LIMIT_DIR`/`CITOID_RATE_LIMIT_NAMESPACE_ID`/`CITOID_ALLOW_LOCAL_FALLBACK` (fail-closed Citoid, see docs/citoid-rate-limit-locking.md), `CITATION_BOT_BIG_RUN_*` tuning (see env.php.example:68-79, normally leave unset)
 
 **Security:**
 
@@ -264,7 +268,9 @@ The project uses extensive automated testing:
 - **CodeQL** - Security vulnerability scanning
 - **Trivy** - Container security scanning
 - **HTML5 and CSS Validator** - Validates HTML/CSS files
-- **Validate JSON, YAML, and MD** - Validates JSON, YAML, and Markdown files
+- **Config lint / misc-file validation** - Validates JSON, YAML, Markdown and misc repo files (`config-lint.yml`, `misc-file-validation.yml`)
+- **Browser UI / Docker build** - Validates web UI and container build (`browser-ui.yml`, `docker-build.yml`)
+- **ESLint / Python lint / Secret scan / Codespell** - Lints JS/Python, scans secrets, checks spelling (`eslint.yml`, `python-lint.yml`, `secret-scan.yml`, `codespell.yml`)
 - **Action Lint** - Validates GitHub Actions
 - **Shellcheck** - Lints shell scripts (e.g. `tools/update_cffconvert_lock.sh`)
 - **Link Checker** - Validates URLs in documentation and HTML - runs weekly
@@ -353,6 +359,7 @@ The gadget MUST:
 │   ├── gadgetapi.php           # Gadget endpoint
 │   ├── generate_template.php   # Single citation generator
 │   ├── authenticate.php        # OAuth authentication
+│   ├── resume.php              # Resume saved OAuth-gated request
 │   ├── category.php            # Category processing
 │   ├── linked_pages.php        # Processes pages linking to a given page
 │   ├── kill_big_job.php        # Kill large batch jobs
@@ -387,6 +394,7 @@ The gadget MUST:
 │       │   ├── APIarXiv.php     # arXiv metadata
 │       │   ├── APIBibCode.php   # Bibcode metadata via NASA ADS
 │       │   ├── APIdoi.php       # DOI/CrossRef metadata
+│       │   ├── APIfatcat.php    # Fatcat pre-1909 free PDF lookup
 │       │   ├── APIgoogle.php    # Google Books metadata
 │       │   ├── APIissn.php      # ISSN metadata
 │       │   ├── APIjstor.php     # JSTOR metadata
@@ -411,7 +419,9 @@ The gadget MUST:
 │           ├── regular_expressions.php  # Regular expression constants
 │           └── translations.php         # Translations
 ├── tests/                      # PHPUnit tests
-├── .github/workflows/          # CI/CD workflows
+├── .github/workflows/          # CI/CD workflows (incl. browser-ui, docker-build, eslint, python-lint, secret-scan, etc.)
+├── .github/labeler.yml         # PR auto-labeling (update on new/renamed files)
+├── .github/actions/, .github/scripts/  # Composite actions + CI helpers
 ├── .github/dependabot.yml      # Automated dependency update configuration
 ├── .github/cffconvert-requirements.txt  # Hash-pinned cffconvert closure for CITATION.cff validation
 ├── .github/codespell-requirements.txt   # Hash-pinned codespell closure for the Codespell workflow

@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 final class templatePart4Test extends testBaseClass { // Lower case "t" to run later in test suite
 
     public function testTidy1(): void {
@@ -854,6 +856,12 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $this->assertTrue($template->profoundly_incomplete());
         $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
+    }
+
+    public function testIncompleteNgaGovernor(): void {
+        $text = "{{cite web|url=https://www.nga.org/governor/william-calhoun-mcdonald/|website=National Governors Association|title=William Calhoun McDonald}}";
+        $template = $this->make_citation($text);
+        $this->assertFalse($template->profoundly_incomplete('https://www.nga.org/governor/william-calhoun-mcdonald/'));
     }
 
     public function testAddEditor_1(): void {
@@ -2242,6 +2250,60 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $template = $this->make_citation($text);
         $template->tidy_parameter('doi');
         $this->assertSame('limited', $template->get2('doi-access'));
+    }
+
+    /** @return array<string, array{string, string, ?string}> */
+    public static function annualReviewsS2OAccessProvider(): array {
+        return [
+            'Public Health 2016 not free'          => ['10.1146/annurev-publhealth-010117-000001', '2016-12-31', null],
+            'Public Health 2017 free'              => ['10.1146/annurev-publhealth-010117-000001', '2017-01-01', 'free'],
+            'Public Health 2018 free'              => ['10.1146/annurev-publhealth-010117-000001', '2018-12-31', 'free'],
+            'Public Health 2019 not free'          => ['10.1146/annurev-publhealth-010117-000001', '2019-01-01', null],
+            'Public Health 2020 free'              => ['10.1146/annurev-publhealth-010117-000001', '2020-01-01', 'free'],
+            'Cancer Biology 2019 not free'         => ['10.1146/annurev-cancerbio-010120-000001', '2019-12-31', null],
+            'Cancer Biology 2020 free'             => ['10.1146/annurev-cancerbio-010120-000001', '2020-01-01', 'free'],
+            'Environment 2019 not free'            => ['10.1146/annurev-environ-010120-000001', '2019-12-31', null],
+            'Environment 2020 free'                => ['10.1146/annurev-environ-010120-000001', '2020-01-01', 'free'],
+            'Nuclear 2019 not free'                => ['10.1146/annurev-nucl-010120-000001', '2019-12-31', null],
+            'Nuclear 2020 free'                    => ['10.1146/annurev-nucl-010120-000001', '2020-01-01', 'free'],
+            'Political Science 2019 not free'      => ['10.1146/annurev-polisci-010120-000001', '2019-12-31', null],
+            'Political Science 2020 free'          => ['10.1146/annurev-polisci-010120-000001', '2020-01-01', 'free'],
+            'Political Science 2022 free open-ended' => ['10.1146/annurev-polisci-010120-000001', '2022-12-31', 'free'],
+            'Virology 2020 not free'               => ['10.1146/annurev-virology-010121-000001', '2020-12-31', null],
+            'Virology 2021 free'                   => ['10.1146/annurev-virology-010121-000001', '2021-01-01', 'free'],
+            'Genomics 2020 not free'               => ['10.1146/annurev-genom-010121-000001', '2020-12-31', null],
+            'Genomics 2021 free'                   => ['10.1146/annurev-genom-010121-000001', '2021-01-01', 'free'],
+            'Biomedical Engineering 2020 not free' => ['10.1146/annurev-bioeng-010121-000001', '2020-12-31', null],
+            'Biomedical Engineering 2021 free'     => ['10.1146/annurev-bioeng-010121-000001', '2021-01-01', 'free'],
+        ];
+    }
+
+    #[DataProvider('annualReviewsS2OAccessProvider')]
+    public function testAnnualReviewsS2OAccess(string $doi, string $date, ?string $expected): void {
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '|date=' . $date . '}}');
+        $template->tidy_parameter('doi');
+        $this->assertSame($expected, $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalYearRange_PublicHealthYearOnly_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-publhealth-010117-000001|year=2017}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalYearRange_PublicHealthYearOnly2019_NotFree(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-publhealth-010117-000001|year=2019}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertNull($template->get2('doi-access'));
+    }
+
+    public function testDoiConditionalYearRange_PublicHealthPublicationDate_Free(): void {
+        $text = '{{cite journal|doi=10.1146/annurev-publhealth-010117-000001|publication-date=2017-06-01}}';
+        $template = $this->make_citation($text);
+        $template->tidy_parameter('doi');
+        $this->assertSame('free', $template->get2('doi-access'));
     }
 
     public function testDoiConditionalAfterDate_ChasNoDate_NotFree(): void {

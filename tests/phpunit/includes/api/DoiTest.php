@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
+use PHPUnit\Framework\Attributes\DataProvider;
+
 final class DoiTest extends testBaseClass {
     public function testCrossrefStopsAfterTwoUnusableResponses(): void {
         if (!function_exists('uopz_set_return')) {
@@ -328,7 +330,7 @@ final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossrefBookChapter(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-        $this->assertSame('{{Cite book| title=Internetworking LANs and WANs | chapter=Network Concepts | date=2001 | publisher=Wiley | isbn=978-0-471-97514-4 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite book| title=Internetworking LANs and WANs | chapter=Network Concepts | date=2001 | pages=1–30 | publisher=Wiley | isbn=978-0-471-97514-4 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossrefDataCiteSubsets(): void {
@@ -358,7 +360,7 @@ final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossref_fISTIC_Journal(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-        $this->assertSame('{{Cite journal| last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | last1=Yu | first1=ZHANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica | date=2012 | volume=28 | issue=3 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal| last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | last1=Yu | first1=ZHANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica | date=2012 | volume=28 | issue=3 | pages=499–503 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_fISTIC_Data(): void {
@@ -376,7 +378,7 @@ final class DoiTest extends testBaseClass {
     public function testExpansion_doi_not_from_crossref_JaLC_Journal(): void {
         $expanded = $this->make_citation('{{Cite journal}}');
         expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-        $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 }}', $expanded->parsed_text());
+        $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 | pages=11–20 }}', $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_JaLC_Journal2(): void {
@@ -391,7 +393,7 @@ final class DoiTest extends testBaseClass {
         if ($expanded->get2('title') === null) {
             $this->markTestSkipped('doi.org API did not respond (rate limit or outage)');
         }
-        $this->assertSame("{{Cite journal| author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria | date=2002 | issue=4 }}", $expanded->parsed_text());
+        $this->assertSame("{{Cite journal| author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria | date=2002 | issue=4 | pages=559–566 }}", $expanded->parsed_text());
     }
 
     public function testExpansion_doi_not_from_crossref_mEDRA_Monograph(): void {
@@ -431,7 +433,7 @@ final class DoiTest extends testBaseClass {
         if ($expanded->parsed_text() === '{{Cite journal}}') {
             $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
         } else {
-            $this->assertSame('{{Cite journal| last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management | date=2011 | volume=28 | issue=2 }}', $expanded->parsed_text());
+            $this->assertSame('{{Cite journal| last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management | date=2011 | volume=28 | issue=2 | pages=117–133 }}', $expanded->parsed_text());
         }
     }
 
@@ -797,6 +799,37 @@ final class DoiTest extends testBaseClass {
         $this->assertSame('Smith', $template->get2('last1'));
         $this->assertSame('Jane', $template->get2('first1'));
         $this->assertNull($template->get2('last2'));
+    }
+
+    #[DataProvider('doiDxUrlProvider')]
+    public function testExpandDoiWithDxEncodesReservedCharactersInUrl(string $doi, string $expected_url): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI content negotiation');
+        }
+        $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+        $urls = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', static function ($handle) use (&$urls): string {
+            $urls[] = (string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return 'not json';
+        }, true);
+        try {
+            expand_doi_with_dx($template, $doi);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
+
+        $this->assertSame([$expected_url], $urls);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function doiDxUrlProvider(): array {
+        return [
+            'hash' => ['10.1000/foo#bar', 'https://doi.org/10.1000/foo%23bar'],
+            'already percent-encoded hash' => ['10.1000/foo%23bar', 'https://doi.org/10.1000/foo%23bar'],
+            'query and ampersand' => ['10.1000/foo?bar&baz', 'https://doi.org/10.1000/foo%3Fbar%26baz'],
+        ];
     }
 
     public function testDoiJsonStillAddsAuthorsWhenNoContainerTitle(): void {

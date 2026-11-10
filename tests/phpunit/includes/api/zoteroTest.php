@@ -1039,6 +1039,31 @@ final class zoteroTest extends testBaseClass {
         $this->assertNull($template->get2('year'));
     }
 
+    public function testZoteroResponseNgaGovernorDateBlocked(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://www.nga.org/governor/william-calhoun-mcdonald/';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'William Calhoun McDonald', 'itemType' => 'blogPost', 'date' => '2011-01-01'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNull($template->get2('date'));
+        $this->assertNull($template->get2('year'));
+    }
+
+    public function testZoteroResponseNgaPressReleaseDateKept(): void {
+        $text = '{{cite web|id=}}';
+        $template = $this->make_citation($text);
+        $access_date = 0;
+        $url = 'https://www.nga.org/news/press-releases/state-local-governments-to-the-president-congress-re-open-the-federal-government-now/';
+        $zotero_data = [];
+        $zotero_data[0] = (object) ['title' => 'STATE & LOCAL GOVERNMENTS TO THE PRESIDENT & CONGRESS', 'itemType' => 'blogPost', 'date' => '2019-01-24'];
+        $zotero_response = json_encode($zotero_data);
+        Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+        $this->assertNotNull($template->get2('date'));
+    }
+
     public function testZoteroResponse22(): void {
         $text = '{{cite web|id=}}';
         $template = $this->make_citation($text);

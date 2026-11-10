@@ -465,16 +465,16 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         ];
     }
 
-    public function testContributionPaginationFallsBackAndKeepsValidBatches(): void {
+    public function testContributionPaginationFallsBackAndReturnsCompleteBatches(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub MediaWiki');
         }
         $authenticated = [];
         $recorded_anonymous = new ArrayObject();
         $responses = [
-            '{"query":{"usercontribs":[{"comment":"first"},null]},"continue":{"uccontinue":"next"}}',
-            '{"query":{"usercontribs":[{"comment":"second"}]},"continue":{"uccontinue":"last"}}',
-            '{"query":{"usercontribs":"malformed"}}',
+            '{"query":{"usercontribs":[{"comment":"first"}]},"continue":{"uccontinue":"next","continue":"-||"}}',
+            '{"query":{"usercontribs":[{"comment":"second"}]},"continue":{"uccontinue":"last","continue":"-||"}}',
+            '{"query":{"usercontribs":[]}}',
         ];
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'query_api_authenticated', static function (array $request) use (&$authenticated): string {
@@ -489,12 +489,16 @@ final class WikipediaBotResponseCoverageTest extends testBaseClass {
         try {
             $edits = WikipediaBot::fetch_user_contribs('Fixture bot', 48);
             $anonymous = $recorded_anonymous->getArrayCopy();
+            if ($edits === null) {
+                $this->fail('Expected a complete window after falling back to anonymous requests');
+            }
             $this->assertSame(['first', 'second'], array_column($edits, 'comment'));
             $this->assertCount(3, $anonymous);
             $this->assertSame(['500', '500', '500'], array_column($anonymous, 'uclimit'));
             $this->assertArrayNotHasKey('uccontinue', $anonymous[0]);
             $this->assertSame('next', $anonymous[1]['uccontinue']);
             $this->assertSame('last', $anonymous[2]['uccontinue']);
+            $this->assertSame('-||', $anonymous[1]['continue']);
             $this->assertSame('Fixture bot', $anonymous[0]['ucuser']);
             $this->assertSame('older', $anonymous[0]['ucdir']);
             $this->assertSame(48 * 3600, strtotime($anonymous[0]['ucstart']) - strtotime($anonymous[0]['ucend']));

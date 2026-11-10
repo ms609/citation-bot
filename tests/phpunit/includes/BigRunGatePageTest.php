@@ -279,6 +279,58 @@ final class BigRunGatePageTest extends PHPUnit\Framework\TestCase {
         $this->assertLessThan($linked_remote, $linked_probe);
     }
 
+    public function testCategoryDefersLargeLeaseUntilOversizedCategoryIsRuledOut(): void {
+        $category = file_get_contents(dirname(__DIR__, 3) . '/src/category.php');
+        $this->assertIsString($category);
+        if (!is_string($category)) {
+            throw new RuntimeException('Unable to read category.php.');
+        }
+
+        $this->assertStringContainsString('$extended_run = defined(\'MAX_PAGES_OVERRIDE\');', $category);
+        $this->assertStringContainsString('$large_callback = null;', $category);
+        $this->assertMatchesRegularExpression(
+            '~if \(\$extended_run\) \{\s*\$large_callback = static function~',
+            $category,
+            'Only extended runs may reserve the large lease during discovery.'
+        );
+        $this->assertMatchesRegularExpression(
+            '~\$pages_in_category = WikipediaBot::category_members_bounded\(.*?\$large_callback\s*\);~s',
+            $category,
+            'The bounded category scan must receive the conditional large callback.'
+        );
+
+        $cancellation = mb_strpos($category, 'if ($total > $category_limit) {');
+        $deferred = mb_strpos($category, 'if (!$extended_run && $total >= BIG_RUN_LARGE_THRESHOLD) {');
+        $deferred_end = mb_strpos(
+            $category,
+            'if (defined(\'MAX_PAGES_OVERRIDE\') && $total > $default_web_limit) {',
+            is_int($deferred) ? $deferred : 0
+        );
+        $this->assertIsInt($cancellation);
+        $this->assertIsInt($deferred);
+        $this->assertIsInt($deferred_end);
+        if (!is_int($cancellation) || !is_int($deferred) || !is_int($deferred_end)) {
+            throw new RuntimeException('Expected category cancellation and deferred acquisition markers.');
+        }
+        $this->assertLessThan(
+            $deferred,
+            $cancellation,
+            'Finite runs must cancel oversized categories before acquiring a large lease.'
+        );
+
+        $deferred_body = mb_substr($category, $deferred, $deferred_end - $deferred);
+        $this->assertStringContainsString(
+            'big_jobs_acquire_large_run();',
+            $deferred_body,
+            'The deferred block must acquire the per-user large lease.'
+        );
+        $this->assertStringContainsString(
+            'gate_big_run_discovery_large($discovery_entry_id);',
+            $deferred_body,
+            'The deferred block must mark the discovery lease large.'
+        );
+    }
+
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     public function testProbePromotesToDiscoveryAndThenChargesAtFinalAdmission(): void {

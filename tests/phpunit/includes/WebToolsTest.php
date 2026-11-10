@@ -4,6 +4,50 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class WebToolsTest extends testBaseClass {
+    public function testPageContainingZeroIsReportedAsUnchanged(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub MediaWiki');
+        }
+
+        $details = (object) [
+            'query' => (object) [
+                'pages' => [(object) ['title' => 'Zero', 'touched' => '2020-01-01T00:00:00Z', 'lastrevid' => 123]],
+            ],
+        ];
+        $phases = [];
+        $warnings = [];
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'read_details', $details);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'get_a_page', '0');
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('report_phase', static function (string $message) use (&$phases): void {
+            $phases[] = $message;
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('report_warning', static function (string $message) use (&$warnings): void {
+            $warnings[] = $message;
+        }, true);
+        ob_start();
+        try {
+            edit_a_list_of_pages(['Zero'], new WikipediaBot(), 'Fixture');
+        } finally {
+            ob_end_clean();
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('report_warning');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('report_phase');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'get_a_page');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'read_details');
+        }
+
+        $this->assertStringContainsString('No changes required.', implode("\n", $phases));
+        $this->assertStringNotContainsString('Blank page.', implode("\n", $phases));
+        $this->assertStringNotContainsString('No text retrieved.', implode("\n", $warnings));
+    }
+
     public function testBatchCountsNoChangeFailedWritesAndEditConflicts(): void {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required to stub MediaWiki');
@@ -33,7 +77,13 @@ final class WebToolsTest extends testBaseClass {
             return $title === 'Edit conflict';
         }, true);
         /** @psalm-suppress UnusedFunctionCall */
-        uopz_set_return(WikipediaBot::class, 'get_last_revision', '123');
+        uopz_set_return(WikipediaBot::class, 'last_written_revision', 123);
+        $result_urls = new ArrayObject();
+        uopz_set_hook('html_echo', static function (string $html, string $plain = '') use ($result_urls): void {
+            if (str_contains($html, '>history</a>')) {
+                $result_urls->append(mb_trim($plain));
+            }
+        });
         try {
             ob_start();
             edit_a_list_of_pages(
@@ -45,7 +95,9 @@ final class WebToolsTest extends testBaseClass {
         } finally {
             ob_end_clean();
             /** @psalm-suppress UnusedFunctionCall */
-            uopz_unset_return(WikipediaBot::class, 'get_last_revision');
+            uopz_unset_hook('html_echo');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(WikipediaBot::class, 'last_written_revision');
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return(WikipediaBot::class, 'last_write_was_skipped');
             /** @psalm-suppress UnusedFunctionCall */
@@ -62,6 +114,7 @@ final class WebToolsTest extends testBaseClass {
         $this->assertStringContainsString('1 changed, 2 unchanged, 2 failed', $body);
         $this->assertStringContainsString('Pages skipped due to edit conflict', $body);
         $this->assertStringContainsString('* Edit conflict', $body);
+        $this->assertSame([WIKI_ROOT . '?title=Edited+page&diff=prev&oldid=123'], $result_urls->getArrayCopy());
     }
 
     public function testPageExceptionBoundaryReturnsOperationResult(): void {

@@ -108,6 +108,22 @@ $category_limit = intval($effective_max / 4);
 $default_web_limit = intval(MAX_PAGES / 4);
 $discovery_entry_id = gate_big_run_probe('category', $api->get_the_user());
 $bulk_discovery_signaled = false;
+// Only extended runs, whose discovery can range far past the large-run
+// threshold, reserve the large lease while discovery is still in progress.
+// A normal finite run is bounded to one title past the accepted maximum, so
+// its large lease is acquired after that bound proves the category will not
+// be cancelled (below), rather than at the threshold on a doomed run.
+$extended_run = defined('MAX_PAGES_OVERRIDE');
+$large_callback = null;
+if ($extended_run) {
+    $large_callback = static function () use (&$discovery_entry_id): void {
+        big_jobs_acquire_large_run();
+        // The bulk callback necessarily runs before the large callback.
+        if ($discovery_entry_id !== null) {
+            gate_big_run_discovery_large($discovery_entry_id);
+        }
+    };
+}
 $pages_in_category = WikipediaBot::category_members_bounded(
     $category,
     $category_limit + 1,
@@ -118,13 +134,7 @@ $pages_in_category = WikipediaBot::category_members_bounded(
         $bulk_discovery_signaled = true;
         gate_big_run_probe_to_discovery($discovery_entry_id);
     },
-    static function () use (&$discovery_entry_id): void {
-        big_jobs_acquire_large_run();
-        // The bulk callback necessarily runs before the large callback.
-        if ($discovery_entry_id !== null) {
-            gate_big_run_discovery_large($discovery_entry_id);
-        }
-    }
+    $large_callback
 );
 shuffle($pages_in_category);
 $total = count($pages_in_category);
@@ -147,6 +157,12 @@ if ($total > $category_limit) {
     bot_admission_buffer_flush();
     exit(0);
 }
+if (!$extended_run && $total >= BIG_RUN_LARGE_THRESHOLD) {
+    big_jobs_acquire_large_run();
+    if ($discovery_entry_id !== null) {
+        gate_big_run_discovery_large($discovery_entry_id);
+    }
+}
 if (defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit) {
     report_info('Whitelisted category has ' . (string) $total . ' pages; proceeding with extended limit.');
 }
@@ -158,7 +174,7 @@ if (!is_string($request_edit) || $request_edit === '') {
 $edit_summary_end = category_edit_summary_end(
     $api->get_the_user(),
     $category,
-    defined('MAX_PAGES_OVERRIDE'),
+    defined('MAX_PAGES_OVERRIDE') && $total > $default_web_limit,
     $dev_user_run,
     $request_edit
 );

@@ -352,7 +352,7 @@ function expand_doi_with_dx(Template $template, string $doi): void {
     if (!$doi) {
         return;
     }
-    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
+    curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . doi_encode(urldecode($doi)));
     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
     try {
         $data = bot_curl_exec($ch);
@@ -489,8 +489,9 @@ function process_doi_json(Template $template, string $doi, array $json): void {
     } else {
         $try_to_add_it('issue', @$json['issue']);
     }
-    $try_to_add_it('pages', @$json['pages']);
-    $try_to_add_it('page', @$json['pages']);
+    $dx_pages = $json['page'] ?? ($json['pages'] ?? null); // CSL-JSON names the field "page"
+    $try_to_add_it('pages', $dx_pages);
+    $try_to_add_it('page', $dx_pages);
     $try_to_add_it('volume', @$json['volume']);
     $try_to_add_it('isbn', doi_json_get($json, ['ISBN', 0]));
     $try_to_add_it('isbn', doi_json_get($json, ['isbn-type', 'value']));

@@ -442,13 +442,9 @@ JSON;
     }
 
     public function testJstorTemplateExpansionViaCitoid(): void {
-        $this->require_live_jstor_ris();
         $text = "<ref name='jstor'>{{jstor|3073767}}</ref>"; // Check Page expansion too
-        $page = $this->process_page($text);
+        $page = $this->with_jstor_citoid_fixture('3073767', fn (): TestPage => $this->process_page($text));
         $expanded = $this->reference_to_template($page->parsed_text());
-        if ($expanded->get2('title') === null) {
-            $this->markTestSkipped('Live Citoid returned no JSTOR article title; offline title and journal mapping remain tested');
-        }
         $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
         $this->assertSame('99', $expanded->get2('volume'));
         $this->assertSame('24', $expanded->get2('issue'));

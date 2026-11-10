@@ -205,7 +205,7 @@ function arxiv_api(array $ids, array &$templates): void {  // Pointer to save me
         while (preg_match('~\$_(\d+)\$~', $the_title, $match)) {
             $the_title = str_replace($match[0], '<sub>' . $match[1] . '</sub>', $the_title); // @codeCoverageIgnore
         }
-        while (preg_match('~\\ce{([^}{^ ]+)}~', $the_title, $match)) {    // arXiv fixes these when it sees them
+        while (preg_match('~\\\\ce{([^}{^ ]+)}~', $the_title, $match)) {    // arXiv fixes these when it sees them
             $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);    // @codeCoverageIgnore
             $the_title = str_replace('  ', ' ', $the_title);                          // @codeCoverageIgnore
         }
