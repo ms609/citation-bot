@@ -136,15 +136,6 @@ const ACCESS_PARAMS = [
     'doi-access' => ['doi'],
 ];
 
-// Supported |asin-tld= values, mirroring the domain list in Identifiers.asin
-// (Module:Citation/CS1 err_bad_asin_tld).  Any other value triggers
-// CS1 "Check |asin-tld= value".
-const VALID_ASIN_TLDS = [
-    'us', 'jp', 'uk', 'za', 'z.cn', 'au', 'be', 'br', 'mx', 'sg', 'tr',
-    'ae', 'ca', 'cn', 'de', 'eg', 'es', 'fr', 'ie', 'in', 'it', 'nl', 'pl',
-    'sa', 'se', 'co.jp', 'co.uk', 'com', 'com.au', 'com.br', 'com.mx', 'com.sg', 'com.tr',
-];
-
 // Alias groups for the url/archive/access-date family. The bot normally
 // canonicalizes these aliases before output (so the checker usually sees the
 // canonical names); the groups are defense-in-depth so the rules also hold if
@@ -493,8 +484,9 @@ function check_citation(Template $template): array {
 
     // R26: |asin-tld= must be a supported Amazon country/TLD
     // (Module:Citation/CS1 err_bad_asin_tld, emitted only when |asin= is present).
+    // Delegates to the bot's shared validator; testAsinTldValid pins the list.
     $asin_tld = $template->get_without_comments_and_placeholders('asin-tld');
-    if ($template->has('asin') && $asin_tld !== '' && !in_array(mb_strtolower($asin_tld), VALID_ASIN_TLDS, true)) {
+    if ($template->has('asin') && $asin_tld !== '' && !asin_tld_valid($asin_tld)) {
         $violations[] = 'asin-tld-malformed: CS1 "Check |asin-tld= value"';
     }
 
@@ -534,8 +526,10 @@ function build_matrix(): array {
         ['GAP input ISBN on periodical cite web is left in place', '{{cite web |url=https://example.com/article |title=Harness article delta |journal=Harness Journal |isbn=978-0-306-40615-7}}', 'gap'],
         ['Malformed numeric asin in input is removed by tidy', '{{cite web |url=https://example.com |title=Harness book kappa |website=Example |asin=12345}}', 'pass'],
         ['630-prefixed ISBN-10 asin is valid', '{{cite web |url=https://example.com |title=X |asin=6301234561}}', 'pass'],
-        ['GAP orphaned asin-tld survives tidy', '{{cite web |url=https://example.com |title=Harness asin-tld alpha |asin-tld=us}}', 'gap'],
-        ['GAP invalid asin-tld survives tidy', '{{cite web |url=https://example.com |title=Harness asin-tld beta |asin=6301234561 |asin-tld=zz}}', 'gap'],
+        ['Orphaned asin-tld removed by tidy', '{{cite web |url=https://example.com |title=Harness asin-tld alpha |asin-tld=us}}', 'pass'],
+        ['Invalid asin-tld removed by tidy', '{{cite web |url=https://example.com |title=Harness asin-tld beta |asin=6301234561 |asin-tld=zz}}', 'pass'],
+        ['Valid asin-tld kept with asin', '{{cite web |url=https://example.com |title=Harness asin-tld gamma |asin=6301234561 |asin-tld=co.uk}}', 'pass'],
+        ['asin-tld removed when numeric asin converts to isbn', '{{cite book |title=Harness asin-tld delta |asin=0306406152 |asin-tld=us}}', 'pass'],
 
         // Reproduce the conversion in Special:Diff/1378823420 without external metadata.
         ['IEEE structure in complexity proceedings', "{{Cite journal |date=1989 |title=Proceedings. Structure in Complexity Theory Fourth Annual Conference (Cat. No.89CH2745-8) |url=https://doi.org/10.1109/sct.1989.41807 |journal=[1989] Proceedings. Structure in Complexity Theory Fourth Annual Conference |publisher=IEEE |pages=0_1 |doi=10.1109/sct.1989.41807}}", 'pass', 'cite book'],

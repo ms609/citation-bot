@@ -642,3 +642,11 @@ const DEAD_PARAMETERS = ['PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
     'organization', 'an', 'chapter-doi', 'extra',
 
 ];
+
+// Supported |asin-tld= values, mirroring the domain list in
+// Module:Citation/CS1/Identifiers asin() (err_bad_asin_tld).
+const VALID_ASIN_TLDS = [
+    'us', 'jp', 'uk', 'za', 'z.cn', 'au', 'be', 'br', 'mx', 'sg', 'tr',
+    'ae', 'ca', 'cn', 'de', 'eg', 'es', 'fr', 'ie', 'in', 'it', 'nl', 'pl',
+    'sa', 'se', 'co.jp', 'co.uk', 'com', 'com.au', 'com.br', 'com.mx', 'com.sg', 'com.tr',
+];

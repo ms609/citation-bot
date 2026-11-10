@@ -248,7 +248,13 @@ final class ConstantsTest extends testBaseClass {
             if (mb_stripos($value, '_bot')) {
                 $value = 'title'; // basically skip it
             }
-            $fixture_value = str_i_same($value, 'asin') ? 'B012345678' : 'Z123Z';
+            if (str_i_same($value, 'asin')) {
+                $fixture_value = 'B012345678';
+            } elseif (str_i_same($value, 'asin-tld')) {
+                $fixture_value = 'us'; // A valid TLD, so removal proves the orphan coupling
+            } else {
+                $fixture_value = 'Z123Z';
+            }
             $text = '{{citation | ' . $value . ' = ' . $fixture_value . ' }}';
             $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
             $text = str_replace(
@@ -262,7 +268,8 @@ final class ConstantsTest extends testBaseClass {
                 '| trans-title = Z123Z ', '| trans-chapter = Z123Z ', '| trans-article = Z123Z ', '| trans-contribution = Z123Z ', '| trans-entry = Z123Z ', '| trans-map = Z123Z ', '| trans-quote = Z123Z ', '| trans-journal = Z123Z ',
                 '| trans-work = Z123Z ', '| trans-magazine = Z123Z ', '| trans-newspaper = Z123Z ', '| trans-website = Z123Z ', '| trans-encyclopaedia = Z123Z ', '| trans-encyclopedia = Z123Z ', '| trans-periodical = Z123Z ', '| trans-section = Z123Z ',
                 '| archive-date = Z123Z ', '| archivedate = Z123Z ',
-                '| archive-url = Z123Z ', '| archiveurl = Z123Z '],
+                '| archive-url = Z123Z ', '| archiveurl = Z123Z ',
+                '| asin-tld = us '],
                 '',
                 $text
             ); // Stuff that gets dropped when orphaned (no base parameter present)
