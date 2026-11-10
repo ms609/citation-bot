@@ -2156,11 +2156,9 @@ final class Template
                         $old_page = (int) $oldpagenos[1];
                         if ($last_page < $first_page) {
                             // 2342-5 instead of 2342-2345
-                            if ($last_page < 10) {
-                                $last_page = $last_page + 10 * (int) ($first_page / 10);
-                            } else {
-                                $last_page = $last_page + 100 * (int) ($first_page / 100);
-                            }
+                            // Replace only as many trailing digits as the abbreviated end page has: 1298-305 is 1298-1305
+                            $page_modulus = 10 ** min(mb_strlen($newpagenos[2]), 9);
+                            $last_page = $last_page + $page_modulus * intdiv($first_page, $page_modulus);
                         }
                         if ($old_page > $first_page && $old_page <= $last_page) {
                             foreach (['pages', 'page', 'pp', 'p', 'article-number'] as $forget_blank) {
@@ -2191,11 +2189,9 @@ final class Template
                         $last_page = (int) $newpagenos[2];
                         if ($last_page < $first_page) {
                             // 2342-5 instead of 2342-2345
-                            if ($last_page < 10) {
-                                $last_page = $last_page + 10 * (int) ($first_page / 10);
-                            } else {
-                                $last_page = $last_page + 100 * (int) ($first_page / 100);
-                            }
+                            // Replace only as many trailing digits as the abbreviated end page has: 1298-305 is 1298-1305
+                            $page_modulus = 10 ** min(mb_strlen($newpagenos[2]), 9);
+                            $last_page = $last_page + $page_modulus * intdiv($first_page, $page_modulus);
                             if ($last_page > $first_page) {
                                 // Paranoid
                                 $value = (string) $first_page . "–" . (string) $last_page;
