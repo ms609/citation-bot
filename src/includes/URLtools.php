@@ -1881,9 +1881,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                     }
                     return $ret;
                 }
-                if ($template->wikiname() === 'cite web') {
-                    $template->change_name_to('cite arxiv');
-                }
+                // No usable identifier: leave the template type alone, cite arxiv needs one
             }
             return false;
 
