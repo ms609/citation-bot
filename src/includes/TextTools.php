@@ -1734,6 +1734,11 @@ function changeisbn10Toisbn13(string $isbn10, int $year): string {
     if (mb_strlen($isbn13) !== 10) {
         return $isbn10;
     } // Might be an ISBN 13 already, or rubbish
+    if (!isbn_valid($isbn13)) {
+        // A wrong check digit means a typo somewhere.  Converting would give it a correct ISBN-13
+        // check digit and hide the error that CS1 reports, so leave it for a human.
+        return $isbn10;
+    }
     $isbn13 = '978' . mb_substr($isbn13, 0, -1); // Convert without check digit - do not need and might be X
     if (preg_match("~[^0123456789]~", $isbn13) === 1) {
         return $isbn10;
