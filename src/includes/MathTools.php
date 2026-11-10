@@ -190,14 +190,12 @@ function convert_mathml_to_latex(string $mathml): string {
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
 
-    // Apply simple tag replacements from MML_TAGS constant.  Tags first, so that the entity
-    // replacements below can see which character really follows each symbol.
-    $mml_tags = array_filter(MML_TAGS, static fn(string $key): bool => str_starts_with($key, '<'), ARRAY_FILTER_USE_KEY);
-    $mml_entities = array_filter(MML_TAGS, static fn(string $key): bool => !str_starts_with($key, '<'), ARRAY_FILTER_USE_KEY);
-    $mathml = str_replace(array_keys($mml_tags), array_values($mml_tags), $mathml);
+    // Apply simple tag replacements from MML_TAGS constant
+    $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
 
     // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
     $mathml = strip_tags($mathml);
+    $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
     $mathml = mathml_replace_symbols($mml_entities, $mathml);
     $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);

@@ -487,9 +487,8 @@ function straighten_quotes(string $str, bool $do_more): string { // (?<!\') and 
     }
     $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
     $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
-    $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
+    $str = safe_preg_replace('~(?<!\')(?:&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;)(?!\')~u', "'", $str);
     if ((mb_strpos($str, '&rsaquo;') !== false && mb_strpos($str, '&lsaquo;') !== false) ||
-            (mb_strpos($str, '\x{2039}') !== false && mb_strpos($str, '\x{203A}') !== false) ||
             (mb_strpos($str, '‹') !== false && mb_strpos($str, '›') !== false)) { // Only replace single angle quotes if some of both
             $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);  // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
     }
@@ -750,13 +749,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+        "~ (?:Ii|Iii|Iv|Vi|Vii|Viii|Ix)$~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
+        "~^(?:Ii|Iii|Iv|Vi|Vii|Viii|Ix):~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
@@ -1180,13 +1179,13 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
         return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
     }
-    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-–]([A-Z][a-z]+ \d{4})$~u', $input, $matches)) { // Missing space around en dash for range of full dates
         return $matches[1] . ' – ' . $matches[2];
     }
     if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
         return $matches[1] . ' ' . $matches[2];
     }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-–](\d{4})$~u', $input, $matches)) { // Comma with month/season and years
         return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
     }
     if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
@@ -1721,7 +1720,8 @@ function clean_volume(string $volume): string {
     if (mb_strpos($volume, "(") !== false) {
         return '';
     }
-    if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+    // A single letter is a legitimate volume ("A", "B"), but strtotime() reads it as a military time zone
+    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*$~', $volume) !== 1 && (bool) strtotime($volume)) {
         return ''; // Do not add date
     }
     if (mb_stripos($volume, "november") !== false) {
