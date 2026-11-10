@@ -292,7 +292,7 @@ const ARE_WORKS = [
 /** LOWER CASE!  WWW not there too! */
 const PUBLISHERS_ARE_WORKS = [
     'hitfix',
-    'forbes (Russia)',
+    'forbes (russia)',
     'anchorage daily news',
     'arizona daily star',
     'belmontstakes.com',
