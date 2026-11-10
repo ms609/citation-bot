@@ -286,19 +286,10 @@ function is_doi_works(string $doi): ?bool {
     }
 
     $registrant = $matches[1];
-    // TODO this will need updated over time.    See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
-    // 17 August 2024 version is last check
+    // The registrant rules live in doi_registrant_code_valid() so that this pre-flight check and
+    // doi_registrant_valid() can never disagree.  Update them there when CS1 changes its ranges.
     if (mb_strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-        $registrant = mb_substr($registrant, 3);
-        if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant) || // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-                preg_match('~^[^1-7]\d\d\d\d$~', $registrant) || // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–69999
-                preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant) || // 4 digits with subcode (0xxx); accepts: 1000–9999
-                preg_match('~^[^1-9]\d\d\d$~', $registrant) || // 4 digits without subcode (0xxx); accepts: 1000–9999
-                preg_match('~^\d\d\d\d\d\d+~', $registrant) || // 6 or more digits
-                preg_match('~^\d\d?\d?$~', $registrant) || // less than 4 digits without subcode (3 digits with subcode is legitimate)
-                preg_match('~^\d\d?\.[\d\.]+~', $registrant) || // 1 or 2 digits with subcode
-                $registrant === '5555' || // test registrant will never resolve
-                preg_match('~[^\d\.]~', $registrant)) {                // any character that isn't a digit or a dot
+        if (!doi_registrant_code_valid(mb_substr($registrant, 3))) {
             return false;
         }
     }

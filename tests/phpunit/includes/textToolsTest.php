@@ -1784,6 +1784,22 @@ final class textToolsTest extends testBaseClass {
         $this->assertFalse(archive_url_valid(''));
     }
 
+    public function testAsinTldValid(): void {
+        $this->assertTrue(asin_tld_valid('us'));
+        $this->assertTrue(asin_tld_valid('co.uk'));
+        $this->assertTrue(asin_tld_valid('com.au'));
+        $this->assertTrue(asin_tld_valid('z.cn'));
+        $this->assertTrue(asin_tld_valid('za')); // easily pruned entries
+        $this->assertTrue(asin_tld_valid('be'));
+        $this->assertTrue(asin_tld_valid('eg'));
+        $this->assertTrue(asin_tld_valid('ie'));
+        $this->assertTrue(asin_tld_valid('UK')); // case-insensitive check
+        $this->assertTrue(asin_tld_valid(' US ')); // surrounding whitespace ignored
+        $this->assertFalse(asin_tld_valid('zz'));
+        $this->assertFalse(asin_tld_valid('.co.uk'));
+        $this->assertFalse(asin_tld_valid(''));
+    }
+
     public function testUnicodeLevenshteinNormalizesCombiningMarkOrder(): void {
         $left = "a\u{0301}\u{0323}";
         $right = "a\u{0323}\u{0301}";
