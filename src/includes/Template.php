@@ -7080,7 +7080,7 @@ final class Template
                         $value = $matches[1];
                         $this->set($param, $value);
                     }
-                    if (preg_match('~^pp?\. ([0-9\-\–\s\,]+)$~', $value, $matches)) {
+                    if (preg_match('~^pp?\. ([0-9\-–\s\,]+)$~u', $value, $matches)) {
                         $value = $matches[1];
                         $this->set($param, $value);
                     }
