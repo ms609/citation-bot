@@ -1869,7 +1869,7 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
                 /* ARXIV
                 * See https://arxiv.org/help/arxiv_identifier for identifier formats
                 */
-                if (preg_match("~[A-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
+                if (preg_match("~[A-Za-z\-\.]+/\d{7}~", $match[1], $arxiv_id) // pre-2007
                         || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
                         ) {
                     report_modification("Converting URL to arXiv parameter");
