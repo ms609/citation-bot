@@ -208,7 +208,7 @@ function sanitize_string(string $str): string {
     }
     $replacement = [];
     $placeholder = [];
-    $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+    $math_templates_present = preg_match_all("~<\s*math\s*>.*?<\s*/\s*math\s*>~", $str, $math_hits); // Lazy: protect each formula, not everything between the first and the last
     if ($math_templates_present) {
         $num_maths = count($math_hits[0]);
         for ($i = 0; $i < $num_maths; $i++) {
