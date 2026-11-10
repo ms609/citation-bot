@@ -2054,6 +2054,15 @@ final class Template
                 if (in_array($value, BAD_NEW_PAGES, true)) {
                     return false;
                 }
+                // Some DOI providers use CSL-JSON "page" for the journal issue label,
+                // e.g. "No 1 (April 2026)". Never treat it as an article locator:
+                // it can otherwise overwrite a valid range such as pages=1–13.
+                if (
+                    preg_match('~^(?:no\.?|issue|number)\s*[#:]?\s*\d+\b~iu', $value) ||
+                    preg_match('~^vol(?:ume)?\.?\s*\d+\s*[,;]?\s*(?:no\.?|issue)\s*\d+\b~iu', $value)
+                ) {
+                    return false;
+                }
                 if (is_placeholder_bib_locator($value)) {
                     return false;
                 }
