@@ -6821,7 +6821,8 @@ final class Template
                     if ($this->blank($param)) {
                         return;
                     }
-                    $this->set($param, preg_replace('~^(?i)(?:Vol(?:ume)?|no)\.?\s*~u', '', $this->get($param)));
+                    // Only strip a real prefix ("Vol. 3", "Volume 3", "No 5", "vol3"), not the start of a word such as "Volumes" or "Notes"
+                    $this->set($param, (string) preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
