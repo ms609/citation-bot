@@ -6873,9 +6873,11 @@ final class Template
                     // Remove leading zeroes
                     $value = $this->get($param);
                     if ($value !== '' && $value !== '0') { // Single zero is valid for some CS journals
-                        $value = safe_preg_replace('~^0+~', '', $value);
-                        if ($value === '') {
+                        $stripped = safe_preg_replace('~^0+~', '', $value);
+                        if ($stripped === '') {
                             $this->forget($param); // Was all zeros
+                        } elseif ($stripped !== $value && preg_match('~^[1-9]~', $stripped) === 1) {
+                            $this->set($param, $stripped); // 007 is 7; leave things like 0.5 and 0A alone
                         }
                     }
                     $this->volume_issue_demix($this->get($param), $param);
