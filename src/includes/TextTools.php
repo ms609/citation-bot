@@ -1180,13 +1180,13 @@ function clean_dates(string $input): string { // See https://en.wikipedia.org/wi
     if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
         return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
     }
-    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-–]([A-Z][a-z]+ \d{4})$~u', $input, $matches)) { // Missing space around en dash for range of full dates
         return $matches[1] . ' – ' . $matches[2];
     }
     if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
         return $matches[1] . ' ' . $matches[2];
     }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-–](\d{4})$~u', $input, $matches)) { // Comma with month/season and years
         return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
     }
     if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
