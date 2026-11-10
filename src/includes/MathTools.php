@@ -190,17 +190,68 @@ function convert_mathml_to_latex(string $mathml): string {
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
 
-    // Apply simple tag replacements from MML_TAGS constant
-    $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
+    // Replace MathML tags before stripping them. Process entities and Unicode symbols
+    // together afterward so that converted or removed symbols cannot hide a command boundary.
+    $tag_replacements = [];
+    $entity_replacements = [];
+    foreach (MML_TAGS as $symbol => $replacement) {
+        if ($symbol[0] === '<') {
+            $tag_replacements[$symbol] = $replacement;
+        } else {
+            $entity_replacements[$symbol] = $replacement;
+        }
+    }
+    $mathml = str_replace(array_keys($tag_replacements), array_values($tag_replacements), $mathml);
 
-    // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
+    // Clean up any remaining MathML tags (including <mrow>).
     $mathml = strip_tags($mathml);
-    $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
-    // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
-    // IMPORTANT: This step is ONLY intended for math expressions after MathML processing.
-    // Do not use globally, only for math-related conversions.
-    $mathml = str_replace(array_keys(UNICODE_MATH_MAP), array_values(UNICODE_MATH_MAP), $mathml);
+    // A single expansion pass is essential: e.g. &mu;&omicron; must be \mu{}o,
+    // and &mu;&InvisibleTimes;m must be \mu{}m, not \muo or \mum.
+    // Only convert symbols inside MathML (never globally in citation text).
+    $mathml = mathml_replace_symbols($entity_replacements + UNICODE_MATH_MAP, $mathml);
+    return str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
+}
 
-    return $mathml;
+/**
+ * Expand entity/Unicode symbols in a single pass while protecting generated TeX control words.
+ * A generated command ending in ASCII letters needs {} before the next emitted ASCII letter.
+ * Track the emitted pieces, not the input lookahead: the next symbol might become ASCII or
+ * disappear altogether (e.g. \mu + Greek omicron, or \mu + &InvisibleTimes; + m).
+ *
+ * @param array<string, string> $map
+ */
+function mathml_replace_symbols(array $map, string $text): string {
+    if ($map === [] || $text === '') {
+        return $text;
+    }
+    $keys = array_map('strval', array_keys($map));
+    usort($keys, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a)); // Longest first
+    $alternatives = [];
+    foreach ($keys as $key) {
+        $alternatives[] = preg_quote($key, '~');
+    }
+    // Captured delimiters alternate with untouched input fragments. This lets us decide
+    // boundaries from the FINAL emitted fragments rather than from the original characters.
+    $regex = '~(' . implode('|', $alternatives) . ')~u';
+    $parts = @preg_split($regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($parts === false) {
+        return $text; // Preserve input on invalid UTF-8 or a PCRE failure.
+    }
+
+    $output = '';
+    $pending_command = false;
+    foreach ($parts as $index => $part) {
+        $is_symbol = ($index % 2) === 1;
+        $fragment = $is_symbol ? $map[$part] : $part;
+        if ($fragment === '') {
+            continue; // Do not lose a pending command across empty replacements.
+        }
+        if ($pending_command && preg_match('~^[A-Za-z]~', $fragment) === 1) {
+            $output .= '{}';
+        }
+        $output .= $fragment;
+        $pending_command = $is_symbol && preg_match('~\\\\[A-Za-z]+$~', $fragment) === 1;
+    }
+    return $output;
 }
