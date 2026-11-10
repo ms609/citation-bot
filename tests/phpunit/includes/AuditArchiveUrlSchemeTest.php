@@ -12,10 +12,10 @@ final class AuditArchiveUrlSchemeTest extends testBaseClass {
     public function testSchemelessWaybackUrlIsRepaired(): void {
         $template = $this->make_citation('{{cite web|url=http://example.com/page|title=A title|archive-url=web.archive.org/web/20200102030405/http://example.com/page|archive-date=2020-01-02}}');
         $template->tidy_parameter('archive-url');
-        $archive = $template->get2('archive-url');
-        $this->assertNotNull($archive);
-        $this->assertStringStartsWith('http', $archive);
-        $this->assertStringContainsString('web.archive.org/web/20200102030405/http://example.com/page', $archive);
+        $this->assertSame(
+            'http://web.archive.org/web/20200102030405/http://example.com/page',
+            $template->get2('archive-url')
+        );
         $this->assertSame('2020-01-02', $template->get2('archive-date'));
     }
 
