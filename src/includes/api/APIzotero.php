@@ -1286,8 +1286,14 @@ final class Zotero {
         }
 
         if (mb_stripos($url, 'newrepublic.com') !== false) { // Bad data for all but first one
-            unset($result->creators['1']);
-            unset($result->author['1']);
+            // Keep only the first entry.  Removing index 1 alone left later entries in place, and they
+            // came back whenever the list was re-indexed further down.
+            if (isset($result->creators) && is_array($result->creators)) {
+                $result->creators = array_slice($result->creators, 0, 1);
+            }
+            if (isset($result->author) && is_array($result->author)) {
+                $result->author = array_slice($result->author, 0, 1);
+            }
         }
 
         if (mb_stripos($url, 'flickr.') !== false) {
