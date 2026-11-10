@@ -750,13 +750,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+        "~ (?:Ii|Iii|Iv|Vi|Vii|Viii|Ix)$~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
+        "~^(?:Ii|Iii|Iv|Vi|Vii|Viii|Ix):~u",
         static function (array $matches): string {
             return mb_strtoupper($matches[0]);
         },
