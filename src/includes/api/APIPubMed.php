@@ -22,6 +22,20 @@ function pubmed_item_name(SimpleXMLElement $item): string {
     return (string) $item['Name'];
 }
 
+/**
+ * Split an ESummary author such as "Hammer Ø" or "Smith JA" into surname and dotted initials.
+ * Unicode-aware, so initials outside ASCII are kept instead of dropping the author.
+ *
+ * @return array{0: string, 1: string, 2: string}|null  [whole match, surname, initials]
+ */
+function pubmed_split_author_name(string $name): ?array {
+    if (preg_match("~(.*) (\w+)$~u", $name, $names) !== 1) {
+        return null;
+    }
+    $first = mb_trim((string) preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
+    return [$names[0], $names[1], $first];
+}
+
 function pubmed_document_has_items(SimpleXMLElement $document): bool {
     return isset($document->Item) && count($document->Item) > 0;
 }
@@ -137,8 +151,9 @@ function entrez_api(array $ids, array &$templates, string $db): void {    // Poi
                                         $suffix_test = junior_test($subItem);
                                         $subItem = $suffix_test[0];
                                         $junior = $suffix_test[1];
-                                        if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
-                                            $first = mb_trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
+                                        $names = pubmed_split_author_name($subItem);
+                                        if ($names !== null) {
+                                            $first = $names[2];
                                             if ($first !== '' && mb_substr($first, -1) !== '.' && (mb_strpos($first, '.') !== false || $junior !== '')) {
                                                 $first .= '.';
                                             }

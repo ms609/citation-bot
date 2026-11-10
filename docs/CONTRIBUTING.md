@@ -6,6 +6,30 @@ Thanks for contributing to the maintenance of Citation Bot.
 
 We use PHPUnit to test code; please write test case examples for new code you create. It is helpful if each test case example describes the specific function that it is trying to test.
 
+### Citation fuzz tests
+
+**Citation fuzz tests** runs 1,000 cases per target with a fixed seed on pull requests that touch the citation parsers, harness or workflow. Run it manually in GitHub Actions for a larger run. Supply a seed to repeat a run or leave it blank to generate a new one. The parser runs with networking disabled and uses no API credentials.
+
+Every Monday the workflow runs 800,000 generated cases on `master`, 400,000 for each parser target. Each iteration draws a fresh 256-bit seed from the operating system. The README badge tracks this scheduled run.
+
+The harness checks that parsing and serializing preserves citation values across parameter orders, multiline spacing and piped links. It tests empty, omitted and zero-valued fields, as well as arbitrary parameter bytes. Failures include the input as base64 and a `--case` command that replays the individual case. For a seeded run, you can omit `--case` to rerun all cases through the failure and investigate state left by earlier cases.
+
+Run locally with PHP 8.4 or 8.5 and mbstring.
+
+```bash
+php tools/fuzz_citations.php             # Random seed, 10,000 cases per target
+php tools/fuzz_citations.php 42 1000     # Repeat 1,000 cases per target with seed 42
+php tools/fuzz_citations.php 42 850 --case  # Replay only case 850 with seed 42
+php tools/fuzz_citations.php '' 400000 --random  # Run the scheduled workload locally
+```
+
+To run offline in the development image, build it with `docker build -t citation-bot .`, then run the same harness with the checkout mounted.
+
+```bash
+docker run --rm --network none -v "$PWD:/work:ro" -w /work citation-bot \
+    php tools/fuzz_citations.php 42 1000
+```
+
 ## Quality verification
 
 All code is run through several tests.  The primary test is a suite of example pages and citation templates. There are a variety of static code analysis tests that look for common errors. The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting. There are even tests for the validity of HTML, CSS, JSON, Markdown, YAML, XML, cff, etc.
