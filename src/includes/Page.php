@@ -603,6 +603,8 @@ class Page {
         foreach ($our_templates_slight as $this_template) {
             // Settle any pending rebuild before recording changes
             $this_template->finalize_cookie_absent_citation();
+            // Tidy first, as for $our_templates above, so that what the final pass changes is recorded too
+            $this_template->final_tidy();
             // Record any modifications that have been made:
             $template_mods = $this_template->modifications();
             foreach (array_keys($template_mods) as $key) {
@@ -615,7 +617,6 @@ class Page {
                     $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
                 }
             }
-            $this_template->final_tidy();
         }
         set_time_limit(120);
 
