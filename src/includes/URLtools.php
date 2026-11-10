@@ -103,10 +103,10 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
                     $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
                     if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
-                        break; // @codeCoverageIgnore
+                        continue; // @codeCoverageIgnore
                     }
                     if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
-                        break; // @codeCoverageIgnore
+                        continue; // @codeCoverageIgnore
                     }
                     $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
                     $url_short = url_simplify($url);
