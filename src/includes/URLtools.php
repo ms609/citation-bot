@@ -1334,7 +1334,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         // Comment out because "never used" $param = 'chapter-url';
         return;
     }
-    $the_new_url = $template->get('url');
+    $the_new_url = $template->get($param); // Compare the same parameter that $the_original_url was read from
     if ($the_original_url !== $the_new_url) {
         $template->get_identifiers_from_url();
     }
