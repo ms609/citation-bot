@@ -85,6 +85,15 @@ function clean_up_first_names(string $value): string {
     return $value;
 }
 
+/**
+ * Surnames that start with "Mac" but are not Gaelic patronymics, so the letter after "Mac" stays lower case.
+ * Lower case, as compared inside format_surname().  Extend as further names are reported.
+ */
+const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
+    'macaluso', 'macario', 'macaulay', 'macchi', 'macedo', 'macek', 'macias', 'macías', 'maciel',
+    'mackey', 'mackie', 'macklin', 'macomber', 'macready', 'macron', 'macura',
+];
+
 /** Institutional author acronyms must not be formatted as personal surnames. */
 function is_institutional_author_acronym(string $name): bool {
     return in_array($name, ['ESA', 'NASA'], true);
@@ -115,7 +124,7 @@ function format_surname(string $surname): string {
     if (mb_substr($surname, 0, 2) === "mc") {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h") {
+    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h" && !in_array($surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
     }
     if (mb_substr($surname, 0, 1) === "&") {
@@ -389,7 +398,7 @@ function format_multiple_authors(string $authors): string {
         }
     }
     if ($savedChunk && isset($bits[0])) {
-        $return[0] = $bits[0];
+        $return[] = $bits[0]; // A trailing single-word name is one more author; it must not replace the first one
     }
     $return = implode("; ", $return);
     $frags = explode(" ", $return);

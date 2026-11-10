@@ -281,7 +281,7 @@ define('TRUST_DOI_GOOD', true); // TODO: this is a bit too trusting
 
 $setup_request_page = setup_request_value('page');
 $setup_request_page = is_string($setup_request_page) ? $setup_request_page : '';
-if ($setup_request_page . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
+if ($setup_request_page . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3" && !defined('EDIT_AS_USER')) { // Specific page to make sure this code path keeps working; mdwiki has already defined it
     define('EDIT_AS_USER', true);
 }
 unset($setup_request_page);
@@ -381,7 +381,9 @@ function check_blocked(): void {
         if (mb_strpos($the_page, '|') === false) {
             $the_user = WikipediaBot::get_last_user();
             if ($the_user !== '' && mb_strpos($the_page, 'User:' . $the_user . '/') === 0) {
-                define('EDIT_AS_USER', true);
+                if (!defined('EDIT_AS_USER')) {
+                    define('EDIT_AS_USER', true);
+                }
                 $ignore_block_requested = false;
             }
         }
