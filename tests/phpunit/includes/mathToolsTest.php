@@ -313,7 +313,7 @@ final class mathToolsTest extends testBaseClass {
     public function testUnicodeMinusAndMultiplicationAreConverted(): void {
         $mathml = '<mrow><mn>5</mn><mo>−</mo><mn>2</mn><mo>×</mo><mi>x</mi></mrow>';
 
-        $this->assertSame('5-2\\timesx', convert_mathml_to_latex($mathml));
+        $this->assertSame('5-2\\times{}x', convert_mathml_to_latex($mathml));
     }
 
     public function testUnicodeSetSymbolsAreConverted(): void {
