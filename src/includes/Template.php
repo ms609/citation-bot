@@ -5232,7 +5232,7 @@ final class Template
                     // Time-dependent access rules (see DOI_FREE_CONDITIONAL in free_doi.php)
                     $this->doi_free_check_conditional($doi);
                     /** } */
-                    if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
+                    if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{4,5})$~i', $doi, $matches)) { // 2007-2014 identifiers have four digits after the dot
                         if ($this->blank(ARXIV_ALIASES)) {
                             $this->rename('doi', 'eprint', $matches[1]);
                         } elseif ($this->has('eprint')) {
