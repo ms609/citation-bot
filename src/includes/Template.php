@@ -2588,6 +2588,16 @@ final class Template
                 }
                 return false;
 
+            case 'asin-tld':
+                if ($this->blank('asin') || $this->has($param_name)) {
+                    return false;
+                }
+                if (!asin_tld_valid($value)) {
+                    report_inaction("Not adding invalid asin-tld: " . echoable($value));
+                    return false;
+                }
+                return $this->add($param_name, mb_strtolower(mb_trim($value)));
+
             case 'publisher':
                 if ($this->had_initial_publisher) {
                     return false;
@@ -5472,6 +5482,25 @@ final class Template
                         // CS1 wants exactly ten upper-case letters or digits; anything else is a mistake, but keep hyphenated ISBNs for a human
                         report_forget("Removing malformed ASIN: " . echoable($asin_value));
                         $this->forget($param);
+                    }
+                    return;
+
+                case 'asin-tld':
+                    if ($this->blank('asin') && $this->has($param)) {
+                        $this->forget($param);
+                        return;
+                    }
+                    if ($this->blank($param)) {
+                        return;
+                    }
+                    $asin_tld_value = $this->get_without_comments_and_placeholders($param);
+                    if ($asin_tld_value !== '' && !asin_tld_valid($asin_tld_value)) {
+                        report_forget("Removing invalid asin-tld: " . echoable($asin_tld_value));
+                        $this->forget($param);
+                        return;
+                    }
+                    if ($asin_tld_value !== '' && $asin_tld_value !== mb_strtolower($asin_tld_value)) {
+                        $this->set($param, mb_strtolower($asin_tld_value)); // ASIN TLDs are lower case
                     }
                     return;
 
@@ -8717,6 +8746,9 @@ final class Template
                 }
             }
         } // even if blank try to remove
+        if ($par === 'asin') {
+            $this->forgetter('asin-tld', false);
+        }
         if ($par === 'doi') {
             foreach (DOI_BROKEN_ALIASES as $broke) {
                 $this->forgetter($broke, false);
