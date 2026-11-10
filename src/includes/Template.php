@@ -5370,7 +5370,7 @@ final class Template
                     return;
 
                 case 'encyclopedia':
-                case 'encyclopeadia':
+                case 'encyclopaedia':
                     if ($this->blank($param)) {
                         return;
                     }
