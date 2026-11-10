@@ -5433,8 +5433,8 @@ final class Template
                         return;
                     }
                     $orig = $this->get($param);
-                    $new = str_replace(["\u{2011}", "\u{2013}", "\u{2014}"], '-', $orig); // normalize various hyphens
-                    $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $new); // existing dash normalization
+                    $new = str_replace(["\u{2010}", "\u{2011}", "\u{2012}", "\u{2013}", "\u{2014}", "\u{2212}"], '-', $orig); // normalize various hyphens
+                    $new = safe_preg_replace('~\s?-+\s?~u', '-', $new); // dash normalization; must be /u so multi-byte characters are never split
                     $new = str_replace('x', 'X', $new);
                     if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
                         $new = $matches[1] . '-' . mb_strtoupper($matches[2]); // Add dash
