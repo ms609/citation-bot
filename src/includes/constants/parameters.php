@@ -51,7 +51,7 @@ const TEMPLATES_WE_HARV = [
     'herr-ln', 'complete book of north american railroading', 'catholic', 'cite eb1922',
     'cite audb', 'cite serial', 'solomon-csx', 'skeptoid', 'colledge', 'cite nuttall',
     'citar tese', 'sbdel', 'australian dictionary of biography', 'cyclopaedia 1728',
-    'dnb cite', 'rfk6.1 ', 'schafer-classic-railroads-1', 'springer', 'holland-classic',
+    'dnb cite', 'rfk6.1', 'schafer-classic-railroads-1', 'springer', 'holland-classic',
     'sanders-indiana', 'cite biblica', 'white - american railroad freight car',
     'hilton-interurban', 'middleton-interurban', 'butt-stations', 'solomon-modern diesel',
     'mcdonnell-locomotives-2nd', 'cite gotham', '1911', 'scribbins-400-2008', 'catholic encyclopedia',
