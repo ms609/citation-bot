@@ -8065,7 +8065,7 @@ final class Template
         $trial = get_possible_dois($doi);
         foreach ($trial as $try) {
             // Check that it begins with 10.
-            if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) {
+            if (preg_match("~[^/]*?(\d{4,9}/.+)$~", $try, $match)) { // Registrants are four to nine digits
                 $try = "10." . $match[1];
             }
             if (doi_works($try)) {
