@@ -974,6 +974,31 @@ function url_cleanup_needs_identifier_scan(string $param, string $before, string
     return $param !== 'url' && $before !== $primary_url;
 }
 
+/**
+ * Avoid rediscovering identifiers from the same unchanged citation.
+ * The first scan still runs for a secondary URL even if normalization did not
+ * change it (important for MathSciNet MR extraction). An edit to any citation
+ * parameter invalidates the snapshot. Weak keys avoid retaining templates.
+ *
+ * No-argument discovery can examine several URL parameters; a cache keyed
+ * only by the current URL would therefore be incorrect.
+ */
+function url_cleanup_scan_identifiers_once(Template $template): void {
+    /** @var ?WeakMap<Template, string> $last_scanned */
+    static $last_scanned = null;
+    $last_scanned ??= new WeakMap();
+
+    $before = $template->parsed_text();
+    if (($last_scanned[$template] ?? null) === $before) {
+        return;
+    }
+
+    $template->get_identifiers_from_url();
+    // Store the state *after* extraction: a discovered DOI, MR, etc. should
+    // not immediately force a duplicate lookup on the next tidy pass.
+    $last_scanned[$template] = $template->parsed_text();
+}
+
 function clean_existing_urls_INSIDE(Template $template, string $param): void {
     if (preg_match('~^(?:web\.|www\.).+$~', $template->get($param), $matches) && mb_stripos($template->get($param), 'citation') === false) {
         $template->set($param, 'http://' . $matches[0]);
@@ -1347,7 +1372,7 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         return;
     }
     if (url_cleanup_needs_identifier_scan($param, $the_original_url, $template->get($param), $template->get('url'))) {
-        $template->get_identifiers_from_url();
+        url_cleanup_scan_identifiers_once($template);
     }
     if (mb_stripos($template->get('url'), 'cinemaexpress.com') !== false) {
         foreach (WORK_ALIASES as $worky) {
