@@ -3809,7 +3809,7 @@ final class Template
                 $vanc_l = $vanc_la[$vanc_idx];
                 $v = '';
                 /** @phpstan-ignore isset.offset */
-                if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib])) {
+                if (!array_key_exists($vanc_asttrib, $this->param) || !isset($this->param[$vanc_attrib])) {
                     $arr = [];
                     foreach ($this->param as $k => $p) {
                         if (str_starts_with($p->param, $vanc_f) || str_starts_with($p->param, $vanc_l)) {
