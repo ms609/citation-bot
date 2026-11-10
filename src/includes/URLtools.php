@@ -339,7 +339,6 @@ function simplify_google_search(string $url): string {
             case "stick":
             case "as_eq":
             case "kgmid":
-            case "as_drrb":
             case "gbv":
             case "as_scoring":
             case "gl":
