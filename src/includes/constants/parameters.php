@@ -73,7 +73,7 @@ const TEMPLATES_WE_HARV = [
     'schafer-classic', 'welsh-broadway', 'feis', 'schafer-american passenger train', 'msw3 hystricognathi',
     'encyclopedia of north american railroads', 'dunn-comeng-5', 'cudahy-subways', 'cite dnbie',
     'bonnett practical rail engineering', 'solomon-amtrak', 'cox-dixie', 'holton-reading-2', 'cite irishbio',
-    'cite film', 'sowl', 'cite IETF', 'cite manhmaps', 'ndb', 'cite adb', 'cite ogn', 'dgrbm', 'greenlaw-via rail',
+    'cite film', 'sowl', 'cite ietf', 'cite manhmaps', 'ndb', 'cite adb', 'cite ogn', 'dgrbm', 'greenlaw-via rail',
     'cite newsgroup', 'the history of al-tabari', 'cite newgenbio', 'white-passenger-1985',
     'saunders-merging lines', 'dorin-north western', 'cambridge history of iran', 'quick-stations', 'irs-el',
     'cite bede he', 'cite court', 'google books', 'date', 'cite arnold hague convoy database',
