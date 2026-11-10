@@ -4534,7 +4534,7 @@ final class Template
             }
         }
         if (in_array(mb_strtolower($param), ['series', 'journal', 'newspaper'], true) && $this->has($param)) {
-            $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
+            $this->set($param, safe_preg_replace('~[™®]$~u', '', $this->get($param))); // remove trailing TM/(R)
         }
         if (
             in_array(
