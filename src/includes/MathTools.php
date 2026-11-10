@@ -190,8 +190,8 @@ function convert_mathml_to_latex(string $mathml): string {
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
 
-    // Replace MathML tags before stripping them, but defer entities until after stripping.
-    // This preserves the command boundary when an entity is followed by a new <mi> letter.
+    // Replace MathML tags before stripping them. Process entities and Unicode symbols
+    // together afterward so that converted or removed symbols cannot hide a command boundary.
     $tag_replacements = [];
     $entity_replacements = [];
     foreach (MML_TAGS as $symbol => $replacement) {
@@ -205,19 +205,19 @@ function convert_mathml_to_latex(string $mathml): string {
 
     // Clean up any remaining MathML tags (including <mrow>).
     $mathml = strip_tags($mathml);
-    $mathml = mathml_replace_symbols($entity_replacements, $mathml);
-    $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
-    // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
-    // IMPORTANT: This step is ONLY intended for math expressions after MathML processing.
-    // Do not use globally, only for math-related conversions.
-    return mathml_replace_symbols(UNICODE_MATH_MAP, $mathml);
+    // A single expansion pass is essential: e.g. &mu;&omicron; must be \mu{}o,
+    // and &mu;&InvisibleTimes;m must be \mu{}m, not \muo or \mum.
+    // Only convert symbols inside MathML (never globally in citation text).
+    $mathml = mathml_replace_symbols($entity_replacements + UNICODE_MATH_MAP, $mathml);
+    return str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 }
 
 /**
- * Replace every key of $map in a single pass.  When a replacement ends in a LaTeX command name
- * and the next character is a letter, "{}" is appended so that the two cannot merge into an
- * unknown command: "\mu" followed by "m" must become "\mu{}m", never "\mum".
+ * Expand entity/Unicode symbols in a single pass while protecting generated TeX control words.
+ * A generated command ending in ASCII letters needs {} before the next emitted ASCII letter.
+ * Track the emitted pieces, not the input lookahead: the next symbol might become ASCII or
+ * disappear altogether (e.g. \mu + Greek omicron, or \mu + &InvisibleTimes; + m).
  *
  * @param array<string, string> $map
  */
@@ -231,16 +231,27 @@ function mathml_replace_symbols(array $map, string $text): string {
     foreach ($keys as $key) {
         $alternatives[] = preg_quote($key, '~');
     }
-    $regex = '~(' . implode('|', $alternatives) . ')(?=([A-Za-z])?)~u';
-    return mathml_safe_preg_replace_callback(
-        $regex,
-        static function (array $matches) use ($map): string {
-            $replacement = $map[$matches[1]];
-            if (($matches[2] ?? '') !== '' && preg_match('~\\\\[A-Za-z]+$~', $replacement) === 1) {
-                $replacement .= '{}';
-            }
-            return $replacement;
-        },
-        $text
-    );
+    // Captured delimiters alternate with untouched input fragments. This lets us decide
+    // boundaries from the FINAL emitted fragments rather than from the original characters.
+    $regex = '~(' . implode('|', $alternatives) . ')~u';
+    $parts = @preg_split($regex, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    if ($parts === false) {
+        return $text; // Preserve input on invalid UTF-8 or a PCRE failure.
+    }
+
+    $output = '';
+    $pending_command = false;
+    foreach ($parts as $index => $part) {
+        $is_symbol = ($index % 2) === 1;
+        $fragment = $is_symbol ? $map[$part] : $part;
+        if ($fragment === '') {
+            continue; // Do not lose a pending command across empty replacements.
+        }
+        if ($pending_command && preg_match('~^[A-Za-z]~', $fragment) === 1) {
+            $output .= '{}';
+        }
+        $output .= $fragment;
+        $pending_command = $is_symbol && preg_match('~\\\\[A-Za-z]+$~', $fragment) === 1;
+    }
+    return $output;
 }
