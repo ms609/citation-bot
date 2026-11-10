@@ -190,17 +190,51 @@ function convert_mathml_to_latex(string $mathml): string {
     // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
     $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
 
-    // Apply simple tag replacements from MML_TAGS constant
-    $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
+    // Apply simple tag replacements from MML_TAGS constant.  Tags first, so that the entity
+    // replacements below can see which character really follows each symbol.
+    $mml_tags = array_filter(MML_TAGS, static fn(string $key): bool => str_starts_with($key, '<'), ARRAY_FILTER_USE_KEY);
+    $mml_entities = array_filter(MML_TAGS, static fn(string $key): bool => !str_starts_with($key, '<'), ARRAY_FILTER_USE_KEY);
+    $mathml = str_replace(array_keys($mml_tags), array_values($mml_tags), $mathml);
 
     // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
     $mathml = strip_tags($mathml);
+
+    $mathml = mathml_replace_symbols($mml_entities, $mathml);
     $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
     // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
     // IMPORTANT: This step is ONLY intended for math expressions after MathML processing.
     // Do not use globally, only for math-related conversions.
-    $mathml = str_replace(array_keys(UNICODE_MATH_MAP), array_values(UNICODE_MATH_MAP), $mathml);
+    return mathml_replace_symbols(UNICODE_MATH_MAP, $mathml);
+}
 
-    return $mathml;
+/**
+ * Replace every key of $map in a single pass.  When a replacement ends in a LaTeX command name
+ * and the next character is a letter, "{}" is appended so that the two cannot merge into an
+ * unknown command: "\mu" followed by "m" must become "\mu{}m", never "\mum".
+ *
+ * @param array<string, string> $map
+ */
+function mathml_replace_symbols(array $map, string $text): string {
+    if ($map === [] || $text === '') {
+        return $text;
+    }
+    $keys = array_map('strval', array_keys($map));
+    usort($keys, static fn(string $a, string $b): int => strlen($b) <=> strlen($a)); // Longest first
+    $alternatives = [];
+    foreach ($keys as $key) {
+        $alternatives[] = preg_quote($key, '~');
+    }
+    $regex = '~(' . implode('|', $alternatives) . ')(?=([A-Za-z])?)~u';
+    return mathml_safe_preg_replace_callback(
+        $regex,
+        static function (array $matches) use ($map): string {
+            $replacement = $map[$matches[1]];
+            if (($matches[2] ?? '') !== '' && preg_match('~\\\\[A-Za-z]+$~', $replacement) === 1) {
+                $replacement .= '{}';
+            }
+            return $replacement;
+        },
+        $text
+    );
 }
