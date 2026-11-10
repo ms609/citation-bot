@@ -3804,8 +3804,8 @@ final class Template
                 $vanc_f = $vanc_fa[$vanc_idx];
                 $vanc_l = $vanc_la[$vanc_idx];
                 $v = '';
-                /** @phpstan-ignore isset.offset */
-                if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib])) {
+                // $this->param is a list, so look the parameter up by name rather than by array key
+                if ($this->get2($vanc_attrib) === null) {
                     $arr = [];
                     foreach ($this->param as $k => $p) {
                         if (str_starts_with($p->param, $vanc_f) || str_starts_with($p->param, $vanc_l)) {
@@ -3821,6 +3821,14 @@ final class Template
                         $lv = '';
                         $fk = $vanc_f . strval($i);
                         $lk = $vanc_l . strval($i);
+                        if ($i === 1) { // The first name may be unnumbered: first/last rather than first1/last1
+                            if (!array_key_exists($fk, $arr) && array_key_exists($vanc_f, $arr)) {
+                                $fk = $vanc_f;
+                            }
+                            if (!array_key_exists($lk, $arr) && array_key_exists($vanc_l, $arr)) {
+                                $lk = $vanc_l;
+                            }
+                        }
                         if (array_key_exists($fk, $arr)) {
                                $tfk = $arr[$fk];
                                unset($arr[$fk]);
