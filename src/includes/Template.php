@@ -2054,6 +2054,15 @@ final class Template
                 if (in_array($value, BAD_NEW_PAGES, true)) {
                     return false;
                 }
+                // Some DOI providers use CSL-JSON "page" for the journal issue label,
+                // e.g. "No 1 (April 2026)". Never treat it as an article locator:
+                // it can otherwise overwrite a valid range such as pages=1–13.
+                if (
+                    preg_match('~^(?:no\.?|issue|number)\s*[#:]?\s*\d+\b~iu', $value) ||
+                    preg_match('~^vol(?:ume)?\.?\s*\d+\s*[,;]?\s*(?:no\.?|issue)\s*\d+\b~iu', $value)
+                ) {
+                    return false;
+                }
                 if (is_placeholder_bib_locator($value)) {
                     return false;
                 }
@@ -7080,7 +7089,7 @@ final class Template
                         $value = $matches[1];
                         $this->set($param, $value);
                     }
-                    if (preg_match('~^pp?\. ([0-9\-\–\s\,]+)$~', $value, $matches)) {
+                    if (preg_match('~^pp?\. ([0-9\-–\s\,]+)$~u', $value, $matches)) {
                         $value = $matches[1];
                         $this->set($param, $value);
                     }
@@ -7124,7 +7133,11 @@ final class Template
                     } else {
                         $this->set($param, safe_preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
                     }
-                    $value = preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
+                    if (preg_match('~^(.*\S)\s*,?\s*(?i)vol(?:ume)?\.?\s*(\d+)\s*$~u', $this->get($param), $trailing_volume) === 1 && $this->blank('volume')) {
+                        // The volume is about to be stripped from the page range: keep it rather than lose it
+                        $this->set('volume', $trailing_volume[2]);
+                    }
+                    $value = (string) preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
                     $this->set($param, $value);
                     if (mb_substr($this->get($param), -4) === ' etc') {
                         $this->set($param, $this->get($param) . '.');

@@ -208,7 +208,7 @@ function sanitize_string(string $str): string {
     }
     $replacement = [];
     $placeholder = [];
-    $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
+    $math_templates_present = preg_match_all("~<\s*math\s*>.*?<\s*/\s*math\s*>~", $str, $math_hits); // Lazy: protect each formula, not everything between the first and the last
     if ($math_templates_present) {
         $num_maths = count($math_hits[0]);
         for ($i = 0; $i < $num_maths; $i++) {
@@ -267,7 +267,7 @@ function str_remove_irrelevant_bits(string $str): string {
     $str = safe_preg_replace('~\d+ Volume Set$~i', '', $str);    // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
     $str = safe_preg_replace('~^Retracted~i', '', $str);
     $str = safe_preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
-    $str = safe_preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
+    $str = safe_preg_replace('~[:.,]? ?(?:an|the) official publication of the.+$~i', '', $str);
     $str = mb_trim($str);
     return strip_diacritics($str);
 }
@@ -1008,15 +1008,6 @@ function tidy_date_inside(string $string): string {
         // No year was written ("12 hours ago", "May 15", "10:30", "March, 2020"), so strtotime()
         // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
         $time = false;
-    }
-    if ($time && is_int($parsed_date['year']) && $parsed_date['year'] >= 1000 && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
-        checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
-        // Keep the calendar date as written.  strtotime() converts to UTC, which moves an evening
-        // timestamp with a negative offset ("2020-03-15T23:30:00-05:00", "... EST") to the next day.
-        $written = gmmktime(12, 0, 0, $parsed_date['month'], $parsed_date['day'], $parsed_date['year']);
-        if ($written !== false) {
-            $time = $written;
-        }
     }
     if ($time) {
         $day = date('d', $time);
@@ -1766,7 +1757,8 @@ function clean_volume(string $volume): string {
         return '';
     }
     // A single letter is a legitimate volume ("A", "B"), but strtotime() reads it as a military time zone
-    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*$~', $volume) !== 1 && (bool) strtotime($volume)) {
+    // The same goes for a letter followed by a number ("T5", "A-1"): a time-zone letter with an offset
+    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*(?:-?\s*\d+\s*)?$~', $volume) !== 1 && (bool) strtotime($volume)) {
         return ''; // Do not add date
     }
     if (mb_stripos($volume, "november") !== false) {
