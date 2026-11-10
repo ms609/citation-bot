@@ -186,11 +186,16 @@ function convert_mathml_to_latex(string $mathml): string {
         $mathml
     );
 
+    // Keep comparison operators away from strip_tags(): once decoded, "p<0.05" looks like the
+    // start of a tag and everything after it would be removed.  Private-use placeholders are restored below.
+    $mathml = str_replace(['&lt;', '&gt;'], ["\u{E000}", "\u{E001}"], $mathml);
+
     // Apply simple tag replacements from MML_TAGS constant
     $mathml = str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), $mathml);
 
     // Clean up any remaining MathML tags (including <mrow> which is just a grouping element)
     $mathml = strip_tags($mathml);
+    $mathml = str_replace(["\u{E000}", "\u{E001}"], ['<', '>'], $mathml);
 
     // Apply Unicode-to-LaTeX replacements for raw Unicode math symbols
     // IMPORTANT: This step is ONLY intended for math expressions after MathML processing.
