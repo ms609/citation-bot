@@ -3559,4 +3559,57 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Amazon', $expanded->get2('website'));
         $this->assertSame('Goodreads', $expanded->get2('via'));
     }
+
+    public function testTidyRemovesOrphanedAsinTld(): void {
+        $text = '{{cite web |url=https://example.com |title=T |asin-tld=us}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertNull($template->get2('asin-tld'));
+    }
+
+    public function testTidyRemovesInvalidAsinTld(): void {
+        $text = '{{cite web |url=https://example.com |title=T |asin=6301234561 |asin-tld=zz}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('6301234561', $template->get2('asin'));
+        $this->assertNull($template->get2('asin-tld'));
+    }
+
+    public function testTidyKeepsAndLowercasesValidAsinTld(): void {
+        $text = '{{cite web |url=https://example.com |title=T |asin=6301234561 |asin-tld=CO.UK}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('6301234561', $template->get2('asin'));
+        $this->assertSame('co.uk', $template->get2('asin-tld'));
+    }
+
+    public function testForgetAsinAlsoRemovesAsinTld(): void {
+        // When a numeric asin converts to isbn (or asin is dropped as malformed),
+        // asin-tld must also be removed regardless of parameter order.
+        $text = '{{cite book |title=T |asin=0306406152 |asin-tld=us}}';
+        $template = $this->make_citation($text);
+        $template->tidy();
+        $this->assertSame('0306406152', $template->get2('isbn'));
+        $this->assertNull($template->get2('asin'));
+        $this->assertNull($template->get2('asin-tld'));
+
+        $reversed = $this->make_citation('{{cite web |url=https://example.com |title=T |asin-tld=us |asin=12345}}');
+        $reversed->tidy();
+        $this->assertNull($reversed->get2('asin'));
+        $this->assertNull($reversed->get2('asin-tld'));
+    }
+
+    public function testAddIfNewAsinTldGatedOnAsinAndValidity(): void {
+        $no_asin = $this->make_citation('{{cite web |url=https://example.com |title=T}}');
+        $this->assertFalse($no_asin->add_if_new('asin-tld', 'us'));
+        $this->assertNull($no_asin->get2('asin-tld'));
+
+        $with_asin = $this->make_citation('{{cite web |url=https://example.com |title=T |asin=6301234561}}');
+        $this->assertFalse($with_asin->add_if_new('asin-tld', 'zz'));
+        $this->assertNull($with_asin->get2('asin-tld'));
+        $this->assertTrue($with_asin->add_if_new('asin-tld', 'DE'));
+        $this->assertSame('de', $with_asin->get2('asin-tld'));
+        $this->assertFalse($with_asin->add_if_new('asin-tld', 'fr'));
+        $this->assertSame('de', $with_asin->get2('asin-tld'));
+    }
 }
