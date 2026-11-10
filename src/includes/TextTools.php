@@ -1752,7 +1752,8 @@ function clean_volume(string $volume): string {
         return '';
     }
     // A single letter is a legitimate volume ("A", "B"), but strtotime() reads it as a military time zone
-    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*$~', $volume) !== 1 && (bool) strtotime($volume)) {
+    // The same goes for a letter followed by a number ("T5", "A-1"): a time-zone letter with an offset
+    if (preg_match('~[a-zA-Z]~', $volume) && preg_match('~^\s*[a-zA-Z]\s*(?:-?\s*\d+\s*)?$~', $volume) !== 1 && (bool) strtotime($volume)) {
         return ''; // Do not add date
     }
     if (mb_stripos($volume, "november") !== false) {
