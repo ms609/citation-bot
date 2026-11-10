@@ -1542,27 +1542,49 @@ function lccn_valid(string $value): bool {
 }
 
 /**
- * Validate a DOI registrant code against CS1's ranges (1000-9999 or
- * 10000-89999, never 5555).  Checker-only: do NOT gate add_if_new with this,
+ * The single definition of which DOI registrant codes can exist.  $registrant is the part
+ * between "10." and the first slash, for example "1234", "12345" or "1234.56".
+ *
+ * Mirrors registrant_err_patterns in https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
+ * and will need updating when that list changes:
+ *   - fewer than three digits: never valid; exactly three digits: only with a subcode
+ *   - four digits: 1000-9999 (5555 is the test registrant and never resolves)
+ *   - five digits: 10000-89999 without a subcode, 10000-39999 with one
+ *   - six or more digits, a leading zero, or anything but digits and dots: never valid
+ *
+ * Both is_doi_works() and doi_registrant_valid() call this; do not copy the rules elsewhere.
+ */
+function doi_registrant_code_valid(string $registrant): bool {
+    if (preg_match('~^(\d+)((?:\.\d+)*)$~', $registrant, $match) !== 1) {
+        return false;
+    }
+    $main = $match[1];
+    $has_subcode = $match[2] !== '';
+    if ($main === '5555' || $main[0] === '0') {
+        return false;
+    }
+    switch (mb_strlen($main, '8bit')) {
+        case 3:
+            return $has_subcode;
+        case 4:
+            return true;
+        case 5:
+            return intval($main) <= ($has_subcode ? 39999 : 89999);
+        default:
+            return false; // one, two, or six and more digits
+    }
+}
+
+/**
+ * Validate the registrant code of a whole DOI.  Checker-only: do NOT gate add_if_new with this,
  * since reserved/test registrants such as 10.0001 must stay processable.
+ * The ranges themselves are defined once, in doi_registrant_code_valid().
  */
 function doi_registrant_valid(string $value): bool {
     if (preg_match('~^10\.(\d+(?:\.\d+)*)/\S+$~', $value, $match) !== 1) {
         return false;
     }
-    $parts = explode('.', $match[1]);
-    $main = intval($parts[0]);
-    if ($main === 5555) {
-        return false;
-    }
-    $has_subcode = count($parts) > 1;
-    if ($main >= 1000 && $main <= 9999) {
-        return true;
-    }
-    if ($main >= 10000 && $main <= 89999) {
-        return !$has_subcode || $main <= 39999;
-    }
-    return $has_subcode && $main >= 100;
+    return doi_registrant_code_valid($match[1]);
 }
 
 /**
