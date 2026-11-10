@@ -29,6 +29,9 @@ final class AuditDateTimezoneShiftTest extends testBaseClass {
             'positive offset with seconds' => ['2020-03-15T04:30:00+05:30', '2020-03-15'],
             'utc' => ['2020-03-15T23:30:00Z', '2020-03-15'],
             'plain date' => ['2020-03-15', '2020-03-15'],
+            'negative offset crosses year' => ['2020-12-31T23:30:00-05:00', '2020-12-31'],
+            'positive offset crosses year' => ['2021-01-02T00:30:00+14:00', '2021-01-02'],
+            'invalid day does not roll forward' => ['2020-02-31T23:30:00-05:00', '2020'],
         ];
     }
 }
