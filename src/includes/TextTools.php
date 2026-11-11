@@ -419,7 +419,8 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
             $skeleton[] = '#';
             $numbers[] = intval($part);
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
-                (!$require_roman_label || in_array($parts[$index - 1] ?? '', ['act', 'book', 'chapter', 'episode', 'issue', 'lecture', 'part', 'section', 'series', 'vol', 'volume', 'war'], true))) {
+                (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
+                    ['act', 'book', 'chapter', 'episode', 'grade', 'issue', 'lecture', 'part', 'phase', 'section', 'series', 'stage', 'vol', 'volume', 'war'], true)))) {
             $skeleton[] = '#';
             $numbers[] = roman_numeral_value($part);
         } else {
@@ -443,19 +444,32 @@ function roman_numeral_value(string $roman): int {
 }
 
 /**
- * Compare numbers in otherwise identical titles. Return null when edit distance should decide.
+ * Compare numbers in titles with the same words or a minor spelling difference.
+ * Return null when edit distance should decide.
  */
 function compare_title_numbering(string $title1, string $title2): ?bool {
     [$skeleton1, $numbers1] = title_numbering($title1);
     [$skeleton2, $numbers2] = title_numbering($title2);
-    if ($numbers1 === [] || $numbers2 === [] || $skeleton1 !== $skeleton2) {
+    if ($numbers1 === [] || $numbers2 === []) {
         return null;
     }
-    if ($numbers1 !== $numbers2) {
+    if ($skeleton1 === $skeleton2 && $numbers1 !== $numbers2) {
         return false;
     }
-    // Require a numbering label for an affirmative Roman match. "Mix" may be a word.
-    return title_numbering($title1, true) === title_numbering($title2, true) ? true : null;
+    // Only count Roman numerals with labels when comparing different words or
+    // accepting equivalent numbers. An unlabelled "mix" may be an ordinary word.
+    [$labelled_skeleton1, $labelled_numbers1] = title_numbering($title1, true);
+    [$labelled_skeleton2, $labelled_numbers2] = title_numbering($title2, true);
+    if ($labelled_numbers1 === [] || count($labelled_numbers1) !== count($labelled_numbers2)) {
+        return null;
+    }
+    if ($labelled_skeleton1 === $labelled_skeleton2) {
+        return $labelled_numbers1 === $labelled_numbers2;
+    }
+    if ($labelled_numbers1 !== $labelled_numbers2 && unicode_levenshtein($labelled_skeleton1, $labelled_skeleton2) === 1) {
+        return false; // A one-character spelling difference does not erase a different part number.
+    }
+    return null;
 }
 
 function titles_simple(string $inTitle): string {
