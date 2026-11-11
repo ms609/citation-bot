@@ -503,6 +503,23 @@ function sanitize_doi(string $doi): string {
 }
 
 /**
+ * Cut a DOI found in running text or a URL at the first thing that cannot be part of it: a
+ * publisher page suffix such as /full, /abstract or /pdf, markup, white space, a quote or a query.
+ *
+ * A page suffix only counts when it is a whole path segment that follows some of the DOI's own
+ * suffix.  Otherwise DOIs such as 10.4000/abstractairanica.4242 or 10.1234/fullerene.2020.1
+ * would be cut down to the bare registrant.
+ */
+function trim_doi_url_suffix(string $doi): string {
+    if (preg_match(
+                "~^(10\.\d{4,9}(?:/|%2[fF]).+?)((?:/abstracts?|/e?pdf(?:plus|direct)?|/full(?:-?text)?|/figures?|/default)(?=$|[/?#.\s])|</span>|[\s\|\"\?]|</).*+$~",
+                $doi, $new_match)) {
+        return $new_match[1];
+    }
+    return $doi;
+}
+
+/**
  * @return array<string> Returns an array containing:
  * 0 => text containing a DOI, possibly encoded, possibly with additional text.
  * 1 => the decoded DOI
@@ -511,12 +528,7 @@ function extract_doi(string $text): array {
     if (preg_match(
                 "~(10\.\d{4,9}(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
                 $text, $match)) {
-        $doi = $match[1];
-        if (preg_match(
-                    "~^(.*?)(/abstract|/e?pdf|/full|/figure|/default|</span>|[\s\|\"\?]|</).*+$~",
-                    $doi, $new_match)) {
-            $doi = $new_match[1];
-        }
+        $doi = trim_doi_url_suffix($match[1]);
         $doi_candidate = sanitize_doi($doi);
         while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
             $last_delimiter = 0;
