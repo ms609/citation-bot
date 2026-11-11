@@ -2060,8 +2060,8 @@ final class Zotero {
                             $i++;
                             continue;
                         }
-                        $creator_first = mb_strtolower(mb_trim((string) $result->creators[$i]->firstName));
-                        $creator_last = mb_strtolower(mb_trim((string) $result->creators[$i]->lastName));
+                        $creator_first = mb_strtolower(normalize_unicode_nfc(mb_trim((string) $result->creators[$i]->firstName)));
+                        $creator_last = mb_strtolower(normalize_unicode_nfc(mb_trim((string) $result->creators[$i]->lastName)));
                         $creator_role = mb_strtolower(mb_trim((string) $creatorType));
                         $creator_key = $creator_first . '|' . $creator_last . '|' . $creator_role;
                         if (isset($seen_creators[$creator_key])) {

@@ -100,7 +100,7 @@ function is_institutional_author_acronym(string $name): bool {
 }
 
 function format_surname(string $surname): string {
-    $surname = mb_trim($surname);
+    $surname = mb_trim(normalize_unicode_nfc($surname));
     if (is_institutional_author_acronym($surname)) {
         return $surname;
     }
@@ -152,7 +152,7 @@ function format_surname_2(string $surname): string {
 }
 
 function format_forename(string $forename): string {
-    $forename = mb_trim($forename);
+    $forename = mb_trim(normalize_unicode_nfc($forename));
     if ($forename === '-' || $forename === '') {
         return '';
     }
@@ -173,7 +173,7 @@ function format_forename(string $forename): string {
  * @param string $str A series of initials, in any format.  NOTE! Do not pass a forename here!
  */
 function format_initials(string $str): string {
-    $str = mb_trim($str);
+    $str = mb_trim(normalize_unicode_nfc($str));
     if ($str === "") {
         return "";
     }
@@ -183,8 +183,11 @@ function format_initials(string $str): string {
 }
 
 function is_initials(string $str): bool {
-    $str = mb_trim($str);
+    $str = mb_trim(normalize_unicode_nfc($str));
     if (!$str) {
+        return false;
+    }
+    if (preg_match('~[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]~u', $str) === 1) {
         return false;
     }
     if (mb_strlen(str_replace(["-", ".", ";"], "", $str)) > 3) {
@@ -238,7 +241,7 @@ function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
-    $author = mb_trim($author);
+    $author = mb_trim(normalize_unicode_nfc($author));
     if (is_institutional_author_acronym($author)) {
         return $author;
     }

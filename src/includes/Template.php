@@ -3882,7 +3882,7 @@ final class Template
                             $v .= ', ';
                         }
                         $suffix_test = junior_test($fv);
-                        $fv_base = mb_trim($suffix_test[0]);
+                        $fv_base = normalize_unicode_nfc(mb_trim($suffix_test[0]));
                         $fv_suffix = $suffix_test[1];
                         $v .= mb_trim($lv . ' ' . mb_substr($fv_base, 0, 1));
                         $lve = explode(' ', $fv_base);
