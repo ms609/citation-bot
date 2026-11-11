@@ -23,6 +23,8 @@ final class AuditSectionLetterATest extends testBaseClass {
         return [
             'section' => ['Acta Crystallographica Section A Foundations of Crystallography'],
             'part' => ['Journal of Polymer Science Part A Polymer Chemistry'],
+            'part label after take' => ['Take Part A Before Part B'],
+            'part label before hyphenated topic' => ['Take Part A Few-Body Interactions'],
             'series' => ['Proceedings of the Royal Society Series A Mathematical Sciences'],
             'physica' => ['Physica A Statistical Mechanics'],
             'class, as before' => ['Journal of Class A Amplifiers'],
@@ -31,6 +33,8 @@ final class AuditSectionLetterATest extends testBaseClass {
 
     public function testArticleIsStillLowerCased(): void {
         $this->assertSame('Tale of a City', title_capitalization('Tale of A City', true));
+        $this->assertSame('We Took Part a Few Times', title_capitalization('We Took Part A Few Times', true));
+        $this->assertSame('Take Part a Little', title_capitalization(mb_ucwords('Take part a little'), true));
     }
 
     public function testLowerCaseInputIsNotPromoted(): void {

@@ -645,6 +645,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     $new_case = mb_ucfirst(mb_trim($new_case));
 
+    // In "took part a few times", "take part a little", etc., A is an article.
+    $new_case = safe_preg_replace(
+        '~(\b(?i:(?:take|takes|taking|taken|took)\s+part)\s+)A(?=\s+(?i:bit|couple|few|little|lot|while)\b(?!\p{Pd}))~u',
+        '$1a',
+        $new_case
+    );
+
     // Lowercase each solitary A unless the preceding word makes it a label.
     $new_case = safe_preg_replace_callback('~(\w+)(\s+)A(?=\s+\w)~u',
         static function (array $matches): string {
