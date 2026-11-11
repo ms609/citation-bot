@@ -600,6 +600,12 @@ function big_run_refill_tokens(float $tokens, float $updated, float $now): array
  */
 function big_run_log(string $event, array $fields = []): void {
     // No debug log for normal admission events.
+    // $payload = ['event' => $event] + $fields;
+    // $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES);
+    // Seems to be working now
+    // request_rate_limit_debug_log(
+    //    'Citation Bot big-run gate: ' . (is_string($encoded) ? $encoded : $event)
+    //);
 }
 
 /**
