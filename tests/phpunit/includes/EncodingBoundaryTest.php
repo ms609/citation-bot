@@ -83,6 +83,31 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
     }
 
+    public function testDifferentInternationalTitleLabelsBlockEnrichment(): void {
+        foreach ([
+            ['Annual report ٢٠٢٤', 'Annual report ٢٠٢٥'],
+            ['東京研究報告２０２４年', '東京研究報告２０２５年'],
+            ['दृष्टि अंक १', 'दृष्टि अंक २'],
+            ['Hepatitis Α study', 'Hepatitis Β study'],
+            ['Гепатит А у детей', 'Гепатит В у детей'],
+            ['Part Ⅲ Methods', 'Part Ⅳ Methods'],
+        ] as [$original, $candidate]) {
+            $this->assertFalse(titles_are_similar($original, $candidate), $original);
+        }
+        $this->assertTrue(titles_are_similar('Part Ⅲ Methods', 'Part III Methods'));
+        $this->assertFalse(titles_are_similar('Annual report ٢٠٢٤', 'Annual report 2024'));
+
+        $url = 'https://www.jstor.org/stable/1234567';
+        $template = $this->make_citation('{{cite journal|title=Annual report ٢٠٢٤|url=' . $url . '}}');
+        Zotero::process_zotero_response(json_encode([[
+            'itemType' => 'journalArticle',
+            'title' => 'Annual report ٢٠٢٥',
+            'publicationTitle' => 'Unrelated journal',
+            'volume' => '42',
+        ]], JSON_THROW_ON_ERROR), $template, $url, 0, true, true, true);
+        $this->assertSame('', $template->get('volume'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));

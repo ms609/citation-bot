@@ -457,7 +457,7 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
 
 /** @return array{0: string, 1: array<string>} */
 function title_lettered_labels(string $title): array {
-    $title = mb_strtolower(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $title = mb_strtolower(normalize_title_numeral_letters(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))));
     $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
@@ -469,17 +469,17 @@ function title_lettered_labels(string $title): array {
     $labels = [];
     $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
         'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
-        'table', 'type', 'variant', 'vitamin'];
+        'table', 'type', 'variant', 'vitamin', 'гепатит'];
     foreach ($parts as $index => $part) {
         if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
-                (preg_match('~^[a-z]$~', $part) === 1 || preg_match('~^\d{1,9}$~', $part) === 1 ||
+                (preg_match('~^\p{L}$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
                  // Multi-character Roman numerals may also be section labels.
                  // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
                  (mb_strlen($part) > 1 &&
                   preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                   roman_numeral_value($part) <= 50))) {
             $skeleton[] = '#letter';
-            $labels[] = preg_match('~^\d~', $part) === 1 ? '#' . $part : $part;
+            $labels[] = preg_match('~^\p{Nd}~u', $part) === 1 ? '#' . $part : $part;
         } else {
             $skeleton[] = $part;
         }
@@ -492,10 +492,10 @@ function title_lettered_labels(string $title): array {
  * those numbers.  Arabic and Roman numerals are both numbers, and are returned as integers so
  * that "Part 1" and "Part I" carry the same number.
  *
- * @return array{0: string, 1: array<int>}
+ * @return array{0: string, 1: array<int|string>}
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
-    $title = mb_strtolower(strip_tags($title));
+    $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
     $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
@@ -506,9 +506,14 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
     $skeleton = [];
     $numbers = [];
     foreach ($parts as $index => $part) {
-        if (preg_match('~^\d{1,9}$~', $part) === 1) {
+        if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
+        } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
+            // Keep the original digits as an identity token. Casting non-ASCII
+            // numerals with intval() would collapse different years to zero.
+            $skeleton[] = '#';
+            $numbers[] = $part;
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                 // Single C/L/D/M tokens are more likely letter labels than 100/50/500/1000.
                 (mb_strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
@@ -524,6 +529,19 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         }
     }
     return [implode(' ', $skeleton), $numbers];
+}
+
+/** Expand numeral letters such as Ⅲ to III without changing the rest of a title. */
+function normalize_title_numeral_letters(string $title): string {
+    $normalized = preg_replace_callback(
+        '~\p{Nl}~u',
+        static function (array $match): string {
+            $value = Normalizer::normalize($match[0], Normalizer::FORM_KC);
+            return is_string($value) ? $value : $match[0];
+        },
+        $title
+    );
+    return $normalized ?? $title;
 }
 
 /** Value of a valid lower-case Roman numeral. */
