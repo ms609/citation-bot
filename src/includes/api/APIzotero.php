@@ -2090,6 +2090,12 @@ final class Zotero {
                                 case 'performer': // http://catalog.nypl.org/search/o77059475
                                     $authorParam = '';
                                     break;
+                                case 'presenter': // https://zenodo.org/records/4249971
+                                    $authorParam = '';
+                                    break;
+                                case 'seriesEditor': // https://www.jstor.org/stable/10.3138/9781442689039
+                                    $authorParam = '';
+                                    break;
                                 default:                                // @codeCoverageIgnore
                                     report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));   // @codeCoverageIgnore
                                     $authorParam = '';                          // @codeCoverageIgnore
