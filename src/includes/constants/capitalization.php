@@ -877,6 +877,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' mLife ',
     ' Molecular and Cellular Biology ',
     ' Montana The Magazine of Western History ',
+    ' Mschr ',
+    ' Mschr. ',
     ' mSphere ',
     ' mSphere ',
     ' mSystems ',
@@ -1065,6 +1067,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' We Proceeded On ',
     ' WikiJournal ',
     ' WRIR ',
+    ' Wschr ',
+    ' Wschr. ',
     ' z/Journal ',
     ' z/Journal ',
     ' za g. ',
@@ -1080,6 +1084,8 @@ const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alp
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
     ' Zprávy o zasedání Král. čes. společnosti nauk v Praze ',
+    ' Ztschr ',
+    ' Ztschr. ',
     ' Ргасе filologiczne ',
     /* The above will be automatically updated to alphabetical order */
 ];
@@ -1432,6 +1438,8 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Mlife ',
     ' Molecular and cellular Biology ',
     ' Montana the Magazine of Western History ',
+    ' MSCHR ',
+    ' MSCHR. ',
     ' MSphere ',
     ' Msphere ',
     ' MSystems ',
@@ -1620,6 +1628,8 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' We Proceeded on ',
     ' Wikijournal ',
     ' Wrir ',
+    ' WSCHR ',
+    ' WSCHR. ',
     ' Z/Journal ',
     ' Z/journal ',
     ' Za G. ',
@@ -1635,6 +1645,8 @@ const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically update
     ' Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ',
     ' Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ',
     ' Zprávy o zasedání Král. čes. Společnosti nauk v Praze ',
+    ' ZTSCHR ',
+    ' ZTSCHR. ',
     ' Ргасе Filologiczne ',
     /* The above will be automatically updated to alphabetical order */
 ];

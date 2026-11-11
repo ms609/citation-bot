@@ -576,7 +576,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-    $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui",
+    $new_case = safe_preg_replace_callback("~[^\w&](?!eau\W)[aeiou]{3,}(?=\W)~ui", // "eau" is the French word (l'eau), not an acronym; an existing "EAU" is left as it is
             static function (array $matches): string {  // Three or more vowels.  NOT Y
                 return mb_strtoupper($matches[0]);
             },
