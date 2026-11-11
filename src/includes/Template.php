@@ -80,9 +80,6 @@ final class Template
     // A successful no-argument URL lookup, scoped to this citation.
     private ?string $successful_identifier_scan_state = null;
     private bool $identifier_scan_active = false;
-    private bool $identifier_scan_pending_url_change = false;
-    /** @var ?array<string, string> */
-    private ?array $identifier_scan_active_urls = null;
 
     public function __construct() {
         // Done in parse_text() and in variable initialization
@@ -2984,12 +2981,9 @@ final class Template
      */
     public function scan_identifiers_from_url_if_needed(): void {
         if ($this->identifier_scan_active) {
-            // Reentrant calls can be triggered by add_if_new()/tidy_parameter().
-            // Defer until the outer scan finishes, but only rescan automatically
-            // when a URL source has changed (not just a title or DOI).
-            if ($this->identifier_scan_active_urls !== $this->identifier_scan_sources()) {
-                $this->identifier_scan_pending_url_change = true;
-            }
+            // A nested cleanup must not recursively rescan. Check for changed
+            // URL sources after the active lookup returns, regardless of how
+            // the URL was modified (nested cleanup is not required).
             return;
         }
 
@@ -2997,37 +2991,32 @@ final class Template
         if ($urls === []) {
             return; // No URL or website: extraction has nothing to inspect.
         }
-        if (count($urls) <= 1 && $this->successful_identifier_scan_state === $this->identifier_scan_state()) {
+        if (count($urls) === 1 && $this->successful_identifier_scan_state === $this->identifier_scan_state()) {
             return;
         }
 
         $this->identifier_scan_active = true;
         try {
-            // At most one deferred follow-up, to prevent recursion or an
-            // unbounded loop when enrichment continually rewrites a URL.
-            for ($pass = 0; $pass < 2; ++$pass) {
-                $before_urls = $this->identifier_scan_sources();
-                $this->identifier_scan_active_urls = $before_urls;
-                $this->identifier_scan_pending_url_change = false;
+            $found = $this->get_identifiers_from_url();
+            $after_urls = $this->identifier_scan_sources();
 
+            // The first scan can rewrite a URL directly, without calling this
+            // wrapper recursively. Inspect the new URL once, but do not keep
+            // chasing sources if enrichment keeps changing them.
+            if ($urls !== $after_urls && $after_urls !== []) {
+                $urls = $after_urls;
                 $found = $this->get_identifiers_from_url();
                 $after_urls = $this->identifier_scan_sources();
-                $urls_stable = $before_urls === $after_urls;
-                $cacheable = count($before_urls) <= 1 && count($after_urls) <= 1;
-
-                // Never cache false (including failures). If a scan changed
-                // URL sources, do not mark the new URL as already examined.
-                $this->successful_identifier_scan_state = ($found && $cacheable && $urls_stable)
-                    ? $this->identifier_scan_state() : null;
-
-                if (!$this->identifier_scan_pending_url_change || $urls_stable) {
-                    break;
-                }
             }
+
+            // A positive result is reusable only for one unchanged source;
+            // false may mean a transient failure, and multi-URL success may be
+            // partial. The next call may retry either case.
+            $this->successful_identifier_scan_state = (
+                $found && $urls === $after_urls && count($urls) === 1
+            ) ? $this->identifier_scan_state() : null;
         } finally {
             $this->identifier_scan_active = false;
-            $this->identifier_scan_pending_url_change = false;
-            $this->identifier_scan_active_urls = null;
         }
     }
 
