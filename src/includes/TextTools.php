@@ -704,9 +704,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = mb_trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
     // Single letter at end should be capitalized (e.g. J Chem Phys E),
-    // except for a label-word followed by an originally lowercase article a.
+    // except for a non-Series label word followed by an originally lowercase article a.
+    // Series has historically promoted series letters, even when lowercase in the input.
     if (mb_substr($new_case, -2, 1) === ' ' &&
-            preg_match('~\b(?i:class|section|part|series|physica)\s+a$~u', mb_trim($in)) !== 1) {
+            preg_match('~\b(?i:class|section|part|physica)\s+a$~u', mb_trim($in)) !== 1) {
         $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
     }
 
@@ -743,8 +744,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         }
     }
 
-    // Keep explicit Series A / B labels, but never promote lowercase "Series a".
-    if (preg_match('~Series ([b-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
+    // Preserve the existing convention: Series a and b -> Series A and B.
+    // Unlike Class/Part/Section, Series letters were promoted before this PR.
+    if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
         $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
         $replace = 'Series ' . mb_strtoupper($matches[1]) . $matches[2] . mb_strtoupper($matches[3]);
         $new_case = mb_trim(str_replace($replace_me, $replace, $new_case . ' '));
@@ -801,7 +803,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         },
         $new_case);
     $new_case = safe_preg_replace_callback(
-        "~(Series )([b-z])( )~u",
+        "~(Series )([a-z])( )~u",
         static function (array $matches): string {
             return $matches[1] . mb_strtoupper($matches[2]) . $matches[3];
         },

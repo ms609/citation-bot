@@ -42,9 +42,6 @@ final class AuditSectionLetterATest extends testBaseClass {
         $this->assertSame('Class a Methods', title_capitalization('Class a Methods', true));
         $this->assertSame('Section a Methods', title_capitalization('Section a Methods', true));
         $this->assertSame('Part a Methods', title_capitalization('Part a Methods', true));
-        $this->assertSame('Series a Methods', title_capitalization('Series a Methods', true));
-        $this->assertSame('Series a and b Methods', title_capitalization('Series a and b Methods', true));
-        $this->assertSame('Series a', title_capitalization('Series a', true));
         $this->assertSame('Section a', title_capitalization('Section a', true));
         $this->assertSame('Part a', title_capitalization('Part a', true));
         $this->assertSame('Class a', title_capitalization('Class a', true));
@@ -57,6 +54,14 @@ final class AuditSectionLetterATest extends testBaseClass {
         $this->assertSame('We Took Part a Brief While', title_capitalization('WE TOOK PART A BRIEF WHILE', true));
         $this->assertSame('In Part a Result of Choice', title_capitalization('IN PART A RESULT OF CHOICE', true));
         $this->assertSame('Take Part A Long-Term Study', title_capitalization('Take Part A Long-Term Study', true));
+    }
+
+    public function testExistingSeriesCapitalizationIsPreserved(): void {
+        $this->assertSame('Journal Series A Notes', title_capitalization('Journal Series a Notes', true));
+        $this->assertSame('The Series A and B qu', title_capitalization('The Series a and b qu', true));
+        $this->assertSame('Series A Methods', title_capitalization('Series a Methods', true));
+        $this->assertSame('Series A and B Methods', title_capitalization('Series a and b Methods', true));
+        $this->assertSame('Series A', title_capitalization('Series a', true));
     }
 
     public function testOnlyOriginallyUppercaseLabelsArePreserved(): void {
