@@ -42,48 +42,261 @@ final class AuditUrlCleanupIdentifierScanTest extends testBaseClass {
         $this->assertMatchesRegularExpression('~\|\s*mr\s*=\s*1234(?:\s|\||\})~', $page->parsed_text());
     }
 
-    public function testRepeatedSecondaryUrlCleanupAvoidsRedundantIdentifierLookups(): void {
+    public function testSuccessfulLookupIsReusedAcrossCleanupAndPagePhases(): void {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
-            $this->markTestSkipped('Counting URL lookups requires uopz');
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
         }
 
         $calls = 0;
-        // Stub only identifier discovery, so the real cleanup, decision and
-        // per-template cache still run without external API dependencies.
         /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return('find_identifiers_in_urls', static function (Template $_template, ?string $_url = null) use (&$calls): bool {
             $calls++;
-            return false;
+            return true;
         }, true);
         try {
             $template = $this->make_citation(
-                '{{cite journal|title=Original|contribution-url=https://example.org/article|article-url=https://example.org/related}}'
+                '{{cite journal|title=Original|contribution-url=https://example.org/article}}'
             );
-
             clean_existing_urls($template, 'contribution-url');
-            $this->assertSame(1, $calls, 'The first unchanged secondary URL must be scanned');
-
+            $template->scan_identifiers_from_url_if_needed(); // Same entry point as Page.php
             clean_existing_urls($template, 'contribution-url');
-            $this->assertSame(1, $calls, 'Repeating identical cleanup must not scan again');
-
-            // No-argument discovery selects from the whole citation, so a
-            // different secondary parameter must not repeat the same scan.
-            clean_existing_urls($template, 'article-url');
-            $this->assertSame(1, $calls, 'Other secondary URL cleanup should reuse the unchanged state');
+            $this->assertSame(1, $calls, 'One successful scan must suffice across call sites');
 
             $template->set('title', 'Changed');
             clean_existing_urls($template, 'contribution-url');
-            $this->assertSame(2, $calls, 'Changing citation metadata must allow a new lookup');
-
-            $template->set('contribution-url', 'https://example.org/other');
+            $this->assertSame(2, $calls, 'Citation metadata changes invalidate the cache');
+            $template->set('contribution-url', 'https://example.org/different');
             clean_existing_urls($template, 'contribution-url');
-            $this->assertSame(3, $calls, 'Changing the URL must allow a new lookup');
+            $this->assertSame(3, $calls, 'Changing the URL invalidates the cache');
 
             $other = $this->make_citation(
                 '{{cite journal|title=Original|contribution-url=https://example.org/article}}'
             );
             clean_existing_urls($other, 'contribution-url');
-            $this->assertSame(4, $calls, 'Another citation must have an independent cache');
+            $this->assertSame(4, $calls, 'Different citations never share state');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testFailedIdentifierLookupIsRetryable(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $_template, ?string $_url = null) use (&$calls): bool {
+            $calls++;
+            return $calls >= 2;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|contribution-url=https://example.org/article}}');
+            clean_existing_urls($template, 'contribution-url');
+            clean_existing_urls($template, 'contribution-url');
+            $this->assertSame(2, $calls, 'A failed or negative lookup must not be permanently cached');
+            clean_existing_urls($template, 'contribution-url');
+            $this->assertSame(2, $calls, 'The later successful result may be cached');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testMultipleUrlsAreNotCachedOnPartialSuccess(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $_template, ?string $_url = null) use (&$calls): bool {
+            $calls++;
+            return true; // Even a true response might hide a second failed URL.
+        }, true);
+        try {
+            $template = $this->make_citation(
+                '{{cite book|url=https://example.org/book|chapter-url=https://example.org/chapter}}'
+            );
+            $template->scan_identifiers_from_url_if_needed();
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(2, $calls, 'Do not cache successes across different URL sources');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testNestedSameStateLookupDoesNotReenter(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $template, ?string $_url = null) use (&$calls): bool {
+            $calls++;
+            if ($calls === 1) {
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|contribution-url=https://example.org/article}}');
+            $template->scan_identifiers_from_url_if_needed();
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(1, $calls);
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testNestedLookupAfterMetadataChangeIsDeferred(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $template, ?string $_url = null) use (&$calls): bool {
+            $calls++;
+            if ($calls === 1) {
+                $template->set('title', 'Discovered title');
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|title=Original|contribution-url=https://example.org/paper}}');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(1, $calls, 'Do not recursively scan after metadata changes mid-lookup');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(1, $calls, 'The completed lookup should cache its final state');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testChangedUrlDuringNestedLookupIsProcessedOnceAfterOuterScan(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $template, ?string $_url = null) use (&$calls): bool {
+            ++$calls;
+            if ($calls === 1) {
+                $template->set('contribution-url', 'https://example.org/new');
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|contribution-url=https://example.org/old}}');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(2, $calls, 'A newly introduced URL needs one deferred scan');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(2, $calls, 'The stable result is reused after the deferred scan');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testRepeatedNestedUrlChangesHaveBoundedScans(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $template, ?string $_url = null) use (&$calls): bool {
+            ++$calls;
+            $template->set('contribution-url', 'https://example.org/version-' . $calls);
+            $template->scan_identifiers_from_url_if_needed();
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|contribution-url=https://example.org/start}}');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(2, $calls, 'Only one extra pass is permitted for URL churn');
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(4, $calls, 'Unsettled URLs remain retryable on a later call');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testMissingUrlsDoNotTriggerIdentifierLookups(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $_template, ?string $_url = null) use (&$calls): bool {
+            ++$calls;
+            return false;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|title=No link}}');
+            for ($i = 0; $i < 10; ++$i) {
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            $this->assertSame(0, $calls, 'No URL or website means there is nothing to extract');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+
+    public function testManyRepeatedSuccessfulScansCallDiscoveryOnlyOnce(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $_template, ?string $_url = null) use (&$calls): bool {
+            ++$calls;
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation('{{cite journal|contribution-url=https://example.org/once}}');
+            for ($i = 0; $i < 50; ++$i) {
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            $this->assertSame(1, $calls, 'Fifty identical requests must require only one successful lookup');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('find_identifiers_in_urls');
+        }
+    }
+    public function testMultipleUrlReentrantLookupIsAlsoGuarded(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
+        }
+
+        $calls = 0;
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('find_identifiers_in_urls', static function (Template $template, ?string $_url = null) use (&$calls): bool {
+            $calls++;
+            if ($calls === 1) {
+                $template->scan_identifiers_from_url_if_needed();
+            }
+            return true;
+        }, true);
+        try {
+            $template = $this->make_citation(
+                '{{cite journal|url=https://example.org/main|chapter-url=https://example.org/chapter}}'
+            );
+            $template->scan_identifiers_from_url_if_needed();
+            $this->assertSame(1, $calls, 'Reentrancy protection applies even when caching is disabled');
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('find_identifiers_in_urls');
@@ -92,7 +305,7 @@ final class AuditUrlCleanupIdentifierScanTest extends testBaseClass {
 
     public function testIdentifierLookupCacheRecordsPostExtractionState(): void {
         if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
-            $this->markTestSkipped('Counting URL lookups requires uopz');
+            $this->markTestSkipped('Counting identifier lookups requires uopz');
         }
 
         $calls = 0;
@@ -111,7 +324,7 @@ final class AuditUrlCleanupIdentifierScanTest extends testBaseClass {
             clean_existing_urls($template, 'contribution-url');
             $this->assertSame('Discovered title', $template->get('title'));
             clean_existing_urls($template, 'contribution-url');
-            $this->assertSame(1, $calls, 'Metadata added by the lookup must not cause an immediate duplicate');
+            $this->assertSame(1, $calls, 'Metadata added by discovery must not cause an immediate repeat');
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
             uopz_unset_return('find_identifiers_in_urls');

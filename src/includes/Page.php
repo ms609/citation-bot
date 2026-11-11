@@ -433,7 +433,7 @@ class Page {
                 $our_templates_slight[] = $this_template;
                 $this_template->correct_param_mistakes();
                 $this_template->prepare(); // does very little
-                $this_template->get_identifiers_from_url();
+                $this_template->scan_identifiers_from_url_if_needed();
                 expand_by_google_books($this_template);
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
@@ -442,7 +442,7 @@ class Page {
                 $our_templates_slight[] = $this_template;
                 clean_google_books($this_template);
                 $this_template->correct_param_mistakes();
-                $this_template->get_identifiers_from_url();
+                $this_template->scan_identifiers_from_url_if_needed();
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');
                 $this_template->tidy_parameter('deadurl');
@@ -462,7 +462,7 @@ class Page {
                 }
                 $this_template->correct_param_mistakes();
                 $this_template->prepare(); // does very little
-                $this_template->get_identifiers_from_url();
+                $this_template->scan_identifiers_from_url_if_needed();
                 expand_by_google_books($this_template);
                 $this_template->tidy();
                 $this_template->tidy_parameter('dead-url');

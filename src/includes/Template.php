@@ -77,6 +77,12 @@ final class Template
     private ?string $cookie_absent_original_name = null;
     /** @var array<string>|null */
     private ?array $cookie_absent_initial_author_params = null;
+    // A successful no-argument URL lookup, scoped to this citation.
+    private ?string $successful_identifier_scan_state = null;
+    private bool $identifier_scan_active = false;
+    private bool $identifier_scan_pending_url_change = false;
+    /** @var ?array<string, string> */
+    private ?array $identifier_scan_active_urls = null;
 
     public function __construct() {
         // Done in parse_text() and in variable initialization
@@ -2966,6 +2972,91 @@ final class Template
     /** This is also called when adding a URL with add_if_new, in which case it looks for a parameter before adding the url. */
     public function get_identifiers_from_url(?string $url_sent = null): bool {
         return find_identifiers_in_urls($this, $url_sent);
+    }
+
+    /**
+     * Deduplicate successful no-argument URL scans across cleanup and page
+     * processing. False results are retryable: they may be transient failures.
+     * Explicit URL extraction always uses get_identifiers_from_url() directly.
+     *
+     * Multiple URLs are never cached because a true result for one URL does
+     * not prove that extraction from the other URL succeeded.
+     */
+    public function scan_identifiers_from_url_if_needed(): void {
+        if ($this->identifier_scan_active) {
+            // Reentrant calls can be triggered by add_if_new()/tidy_parameter().
+            // Defer until the outer scan finishes, but only rescan automatically
+            // when a URL source has changed (not just a title or DOI).
+            if ($this->identifier_scan_active_urls !== $this->identifier_scan_sources()) {
+                $this->identifier_scan_pending_url_change = true;
+            }
+            return;
+        }
+
+        $urls = $this->identifier_scan_sources();
+        if ($urls === []) {
+            return; // No URL or website: extraction has nothing to inspect.
+        }
+        if (count($urls) <= 1 && $this->successful_identifier_scan_state === $this->identifier_scan_state()) {
+            return;
+        }
+
+        $this->identifier_scan_active = true;
+        try {
+            // At most one deferred follow-up, to prevent recursion or an
+            // unbounded loop when enrichment continually rewrites a URL.
+            for ($pass = 0; $pass < 2; ++$pass) {
+                $before_urls = $this->identifier_scan_sources();
+                $this->identifier_scan_active_urls = $before_urls;
+                $this->identifier_scan_pending_url_change = false;
+
+                $found = $this->get_identifiers_from_url();
+                $after_urls = $this->identifier_scan_sources();
+                $urls_stable = $before_urls === $after_urls;
+                $cacheable = count($before_urls) <= 1 && count($after_urls) <= 1;
+
+                // Never cache false (including failures). If a scan changed
+                // URL sources, do not mark the new URL as already examined.
+                $this->successful_identifier_scan_state = ($found && $cacheable && $urls_stable)
+                    ? $this->identifier_scan_state() : null;
+
+                if (!$this->identifier_scan_pending_url_change || $urls_stable) {
+                    break;
+                }
+            }
+        } finally {
+            $this->identifier_scan_active = false;
+            $this->identifier_scan_pending_url_change = false;
+            $this->identifier_scan_active_urls = null;
+        }
+    }
+
+    /**
+     * Snapshot only the URL values the no-argument scanner might select.
+     * The parameter names distinguish e.g. chapter-url from url.
+     * @return array<string, string>
+     */
+    private function identifier_scan_sources(): array {
+        $sources = [];
+        foreach (ALL_URL_TYPES as $param) {
+            $value = $this->get($param);
+            if ($value !== '') {
+                $sources[$param] = $value;
+            }
+        }
+        $website = $this->get('website');
+        if ($website !== '') {
+            $sources['website'] = $website;
+        }
+        return $sources;
+    }
+
+    /**
+     * parsed_text()/join_params() can mutate the Template, so fingerprint the
+     * underlying parameter objects instead of rendering them.
+     */
+    private function identifier_scan_state(): string {
+        return hash('sha256', serialize([$this->name, $this->param]));
     }
 
     private function get_doi_from_text(): void {
