@@ -272,6 +272,25 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('ビタミン A の研究', $template->get('title'));
     }
 
+    public function testCitoidPreservesUnicodePageDigitsAndGreekLabelCasing(): void {
+        $url = 'https://example.org/article';
+        foreach ([
+            '١٢–١٦' => '١٢–١٦',
+            '１２–１６' => '１２–１６',
+            'ΣΕΛ. 12–16' => '12–16',
+            'σελ. 12–16' => '12–16',
+        ] as $pages => $expected) {
+            $template = $this->make_citation('{{cite journal|title=Example article|url=' . $url . '}}');
+            Zotero::process_zotero_response(json_encode([[
+                'itemType' => 'journalArticle',
+                'title' => 'Example article',
+                'publicationTitle' => 'Example Journal',
+                'pages' => $pages,
+            ]], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
+            $this->assertSame($expected, $template->get('pages'), $pages);
+        }
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));

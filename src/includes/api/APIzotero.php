@@ -1772,8 +1772,8 @@ final class Zotero {
         }
         if (isset($result->pages)) {
             $pos_pages = (string) $result->pages;
-            if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
-                $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
+            if (preg_match('~\p{Nd}~u', $pos_pages) && !preg_match('~\p{Nd}+\.\p{Nd}+.\p{Nd}+~u', $pos_pages)) { // At least one number but not a dotted number from medRxiv
+                $pos_pages = safe_preg_replace('~σελ\.?\s*|pages?\s*:?\s*~iu', ' ', $pos_pages);
                 $pos_pages = mb_trim($pos_pages);
                 $pos_pages = str_ireplace(['  ', '  ', '  '], [' ', ' ', ' '], $pos_pages);
                 $template->add_if_new('pages', $pos_pages);
