@@ -362,6 +362,29 @@ final class SecurityEdgeCaseTest extends PHPUnit\Framework\TestCase {
         );
     }
 
+    public function testDebugLogOmitsAuthenticatedUsername(): void {
+        $source = file_get_contents(dirname(__DIR__, 3) . '/src/includes/setup.php');
+        $this->assertIsString($source);
+        if (!is_string($source)) {
+            throw new RuntimeException('Unable to read setup.php.');
+        }
+
+        $start = mb_strpos($source, 'function bot_debug_log(string $log_this): void');
+        $this->assertIsInt($start);
+        if (!is_int($start)) {
+            throw new RuntimeException('Unable to locate bot_debug_log.');
+        }
+        $body = mb_substr($source, $start, 2000);
+
+        $this->assertStringNotContainsString(
+            'get_last_user',
+            $body,
+            'DebugLog must not persist the authenticated Wikipedia username.'
+        );
+        $this->assertStringContainsString('get_last_title', $body);
+        $this->assertStringContainsString('WIKI_BASE', $body);
+    }
+
     public function testExecutionControlsDoNotReadFromMergedRequestSuperglobal(): void {
         $source_root = dirname(__DIR__, 3) . '/src';
         foreach ([
