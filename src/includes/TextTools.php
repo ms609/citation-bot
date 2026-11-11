@@ -376,12 +376,17 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
  */
 function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
     $distance = unicode_levenshtein($inTitle, $dbTitle);
-    if ($distance === 0) {
-        return false;
+    // Check original, spaced titles first. Normalization can erase chapter numbers,
+    // so an edit distance of zero does not always mean the same work.
+    if (compare_title_lettered_labels($inSpaced, $dbSpaced) === false) {
+        return true;
     }
     $numbering_matches = compare_title_numbering($inSpaced, $dbSpaced);
-    if ($numbering_matches !== null) {
-        return !$numbering_matches;
+    if ($numbering_matches === false) {
+        return true;
+    }
+    if ($distance === 0 || $numbering_matches === true) {
+        return false;
     }
     $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
     if ($shorter <= 4) {
@@ -394,6 +399,47 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
         $allowed = 3;
     }
     return $distance > $allowed;
+}
+
+/**
+ * Compare a *single-letter* title label (e.g. Hepatitis A/B or Section A/B).
+ * Do not treat ordinary one-letter articles as labels: only recognize a single
+ * alphabetic token following an established label word.
+ * Return null when the label positions are not comparable.
+ */
+function compare_title_lettered_labels(string $title1, string $title2): ?bool {
+    [$skeleton1, $labels1] = title_lettered_labels($title1);
+    [$skeleton2, $labels2] = title_lettered_labels($title2);
+    if ($labels1 === [] || $labels2 === [] || $skeleton1 !== $skeleton2) {
+        return null;
+    }
+    return $labels1 === $labels2;
+}
+
+/** @return array{0: string, 1: array<string>} */
+function title_lettered_labels(string $title): array {
+    $title = mb_strtolower(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false) {
+        return ['', []];
+    }
+    if (($parts[0] ?? '') === 'the') {
+        array_shift($parts);
+    }
+    $skeleton = [];
+    $labels = [];
+    $label_words = ['class', 'group', 'hepatitis', 'part', 'phase', 'section',
+        'series', 'stage', 'type', 'variant', 'vitamin', 'physica'];
+    foreach ($parts as $index => $part) {
+        if (preg_match('~^[a-z]$~', $part) === 1 && $index > 0 &&
+                in_array($parts[$index - 1], $label_words, true)) {
+            $skeleton[] = '#letter';
+            $labels[] = $part;
+        } else {
+            $skeleton[] = $part;
+        }
+    }
+    return [implode(' ', $skeleton), $labels];
 }
 
 /**
@@ -420,7 +466,7 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
             $numbers[] = intval($part);
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                 (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
-                    ['act', 'book', 'chapter', 'episode', 'grade', 'issue', 'lecture', 'part', 'phase', 'section', 'series', 'stage', 'vol', 'volume', 'war'], true)))) {
+                    ['act', 'book', 'chapter', 'episode', 'grade', 'group', 'hepatitis', 'issue', 'lecture', 'part', 'phase', 'section', 'series', 'stage', 'type', 'vitamin', 'vol', 'volume', 'war', 'year'], true)))) {
             $skeleton[] = '#';
             $numbers[] = roman_numeral_value($part);
         } else {
@@ -448,26 +494,19 @@ function roman_numeral_value(string $roman): int {
  * Return null when edit distance should decide.
  */
 function compare_title_numbering(string $title1, string $title2): ?bool {
-    [$skeleton1, $numbers1] = title_numbering($title1);
-    [$skeleton2, $numbers2] = title_numbering($title2);
-    if ($numbers1 === [] || $numbers2 === []) {
+    // Words such as "mix", "li", and "xi" are valid Roman-numeral strings, but
+    // should not be interpreted as numbers without a preceding label (Part, War,
+    // Volume, etc.). Use the label-restricted parser for *all* comparisons.
+    [$skeleton1, $numbers1] = title_numbering($title1, true);
+    [$skeleton2, $numbers2] = title_numbering($title2, true);
+    if ($numbers1 === [] || $numbers2 === [] || count($numbers1) !== count($numbers2)) {
         return null;
     }
-    if ($skeleton1 === $skeleton2 && $numbers1 !== $numbers2) {
-        return false;
+    if ($skeleton1 === $skeleton2) {
+        return $numbers1 === $numbers2;
     }
-    // Only count Roman numerals with labels when comparing different words or
-    // accepting equivalent numbers. An unlabelled "mix" may be an ordinary word.
-    [$labelled_skeleton1, $labelled_numbers1] = title_numbering($title1, true);
-    [$labelled_skeleton2, $labelled_numbers2] = title_numbering($title2, true);
-    if ($labelled_numbers1 === [] || count($labelled_numbers1) !== count($labelled_numbers2)) {
-        return null;
-    }
-    if ($labelled_skeleton1 === $labelled_skeleton2) {
-        return $labelled_numbers1 === $labelled_numbers2;
-    }
-    if ($labelled_numbers1 !== $labelled_numbers2 && unicode_levenshtein($labelled_skeleton1, $labelled_skeleton2) === 1) {
-        return false; // A one-character spelling difference does not erase a different part number.
+    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) === 1) {
+        return false; // A spelling variant does not erase a different part number.
     }
     return null;
 }

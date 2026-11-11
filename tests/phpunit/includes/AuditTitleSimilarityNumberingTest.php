@@ -36,6 +36,11 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'four letter titles' => ['Cats', 'Dogs'],
             'one letter apart, four letters' => ['Mars', 'Maps'],
             'a word that looks like a Roman numeral' => ['Mix', '1009'],
+            'hepatitis alphabetic labels' => ['Hepatitis A virus', 'Hepatitis B virus'],
+            'roman and non-roman hepatitis labels' => ['Hepatitis B virus', 'Hepatitis C virus'],
+            'section alphabetic labels' => ['Section A Methods', 'Section B Methods'],
+            'vitamin alphabetic labels' => ['Vitamin A Deficiency', 'Vitamin B Deficiency'],
+            'chapter number lost during normalization' => ['Chapter 1 - Introduction to Chemistry', 'Chapter 2 - Introduction to Chemistry'],
         ];
     }
 
@@ -59,6 +64,9 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'equivalent stages' => ['Stage III', 'Stage 3'],
             'same part with a spelling variant' => ['Color Vision Part 1', 'Colour Vision Part 1'],
             'spelling variant' => ['Colour perception in birds', 'Color perception in birds'],
+            'short spelling variant' => ['Color Vision', 'Colour Vision'],
+            'short plural' => ['Analysis', 'Analyses'],
+            'ordinary mix is not a numeral' => ['Mix and Match', 'Mix and Matches'],
             'plural' => ['Editorial comment', 'Editorial comments'],
             'ampersand' => ['Tom & Jerry', 'Tom and Jerry'],
             'leading article' => ['The Lancet', 'Lancet'],
@@ -75,6 +83,10 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
         $this->assertTrue(compare_title_numbering('part 1', 'part i'));
         $this->assertNull(compare_title_numbering('windows 10 guide', 'windows guide'));
         $this->assertNull(compare_title_numbering('cats', 'dogs'));
+        $this->assertNull(compare_title_numbering('mix of colours', 'xi of colours'));
+        $this->assertFalse(compare_title_lettered_labels('Hepatitis A virus', 'Hepatitis B virus'));
+        $this->assertFalse(compare_title_lettered_labels('Section A Methods', 'Section B Methods'));
+        $this->assertNull(compare_title_lettered_labels('a picture of blue', 'a picture of green'));
         $this->assertSame(1990, roman_numeral_value('mcmxc'));
         $this->assertSame(14, roman_numeral_value('xiv'));
     }
