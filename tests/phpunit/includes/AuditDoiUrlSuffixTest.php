@@ -17,19 +17,21 @@ final class AuditDoiUrlSuffixTest extends testBaseClass {
         $this->assertSame($expected, trim_doi_url_suffix($input));
     }
 
-    public function testExtractDoiWithClosingMarkupWithoutResolver(): void {
-        if (!function_exists('uopz_set_return')) {
+    public function testExtractDoiWithClosingDelimitersWithoutResolver(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_unset_return')) {
             $this->markTestSkipped('uopz is required to stub DOI resolution.');
         }
 
-        uopz_set_return('doi_works', null);
+        $this->assertTrue(uopz_set_return('doi_works', null));
         try {
             $doi = '10.1038/nature11111';
             $this->assertSame($doi, extract_doi($doi . '/figures</span>')[1]);
             $this->assertSame($doi, extract_doi($doi . '/epdfplus</i>')[1]);
+            $this->assertSame($doi, extract_doi('(https://example.org/doi/' . $doi . '/figures).')[1]);
+            $this->assertSame($doi, extract_doi($doi . '/figures)]</span>')[1]);
             $this->assertSame('10.4000/abstractairanica.4242', extract_doi('10.4000/abstractairanica.4242')[1]);
         } finally {
-            uopz_unset_return('doi_works');
+            $this->assertTrue(uopz_unset_return('doi_works'));
         }
     }
 
@@ -43,6 +45,7 @@ final class AuditDoiUrlSuffixTest extends testBaseClass {
             'suffix starts with pdf' => ['10.5555/pdfa-guide.7', '10.5555/pdfa-guide.7'],
             'suffix starts with figure' => ['10.1016/figures.2019.03.001', '10.1016/figures.2019.03.001'],
             'later segment starts with full' => ['10.1234/abc/fullerene', '10.1234/abc/fullerene'],
+            'closing parenthesis within the DOI' => ['10.1234/abc/figures)part', '10.1234/abc/figures)part'],
             'trailing full' => ['10.3389/fpsyg.2015.00001/full', '10.3389/fpsyg.2015.00001'],
             'trailing abstract' => ['10.1002/anie.201900001/abstract', '10.1002/anie.201900001'],
             'trailing pdf' => ['10.1111/j.1365-2958.2010.07165.x/pdf', '10.1111/j.1365-2958.2010.07165.x'],
