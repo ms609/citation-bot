@@ -45,6 +45,15 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'long label mismatch' => [str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Section A', str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Section B'],
             'long number mismatch' => [str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Part 1', str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Part 2'],
             'vitamin alphabetic labels' => ['Vitamin A Deficiency', 'Vitamin B Deficiency'],
+            'lettered versus numbered section' => ['Section A Methods', 'Section 1 Methods'],
+            'lettered versus roman section' => ['Section A Methods', 'Section II Methods'],
+            'vitamin C versus roman II' => ['Vitamin C Deficiency', 'Vitamin II Deficiency'],
+            'lettered versus numbered part' => ['Part A Methods', 'Part 1 Methods'],
+            'vitamin C is a letter, not 100' => ['Vitamin C Deficiency', 'Vitamin 100 Deficiency'],
+            'hepatitis C is a letter, not 100' => ['Hepatitis C virus', 'Hepatitis 100 virus'],
+            'section C is a letter, not 100' => ['Section C Methods', 'Section 100 Methods'],
+            'part L is a letter, not 50' => ['Part L Methods', 'Part 50 Methods'],
+            'number mismatch with two spelling typos' => ['Color Vison Part 1 Measurements', 'Colour Vision Part 2 Measurements'],
             'chapter number lost during normalization' => ['Chapter 1 - Introduction to Chemistry', 'Chapter 2 - Introduction to Chemistry'],
         ];
     }
@@ -62,6 +71,9 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
         return [
             'arabic and roman for the same number' => ['Henry the Fourth, Part 1', 'Henry the Fourth, Part I'],
             'equivalent short part numbers' => ['Part IV', 'Part 4'],
+            'equivalent single-character roman' => ['Part I Methods', 'Part 1 Methods'],
+            'equivalent multi-character roman' => ['Section II Methods', 'Section 2 Methods'],
+            'equivalent roman ten part' => ['Part X Methods', 'Part 10 Methods'],
             'equivalent numbers beyond the edit limit' => ['Volume VIII', 'Volume 8'],
             'equivalent formatted part numbers' => ['Part&nbsp;<i>IV</i>', 'Part 4'],
             'equivalent phases' => ['Phase II', 'Phase 2'],
@@ -93,6 +105,14 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
         $this->assertNull(compare_title_numbering('mix of colours', 'xi of colours'));
         $this->assertFalse(compare_title_lettered_labels('Hepatitis A virus', 'Hepatitis B virus'));
         $this->assertFalse(compare_title_lettered_labels('Section A Methods', 'Section B Methods'));
+        $this->assertFalse(compare_title_lettered_labels('Section A Methods', 'Section 1 Methods'));
+        $this->assertFalse(compare_title_lettered_labels('Section A Methods', 'Section II Methods'));
+        $this->assertTrue(compare_title_lettered_labels('Section II Methods', 'Section 2 Methods'));
+        $this->assertFalse(compare_title_lettered_labels('Vitamin C Deficiency', 'Vitamin 100 Deficiency'));
+        $this->assertTrue(compare_title_lettered_labels('Part I Methods', 'Part 1 Methods'));
+        $this->assertFalse(compare_title_numbering('Color Vison Part 1 Measurements', 'Colour Vision Part 2 Measurements'));
+        $this->assertNull(compare_title_numbering('Vitamin C', 'Vitamin 100'));
+        $this->assertNull(compare_title_numbering('Section C', 'Section 100'));
         $this->assertFalse(compare_title_lettered_labels('Colour Vision Part A Measurements', 'Color Vison Part B Measurements'));
         $this->assertTrue(compare_title_lettered_labels('Appendix A Methods', 'Appendix A Methods'));
         $this->assertNull(compare_title_lettered_labels('a picture of blue', 'a picture of green'));

@@ -421,13 +421,16 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
     if ($labels1 === [] || $labels2 === []) {
         return null;
     }
-    if ($skeleton1 === $skeleton2) {
-        return $labels1 === $labels2;
+    // A digit and a letter after the same label word are usually different
+    // works (Section A vs Section 1). Do not reject equivalent Roman/Arabic
+    // numbering, e.g. Part I vs Part 1 or Section IV vs Section 4.
+    if ($labels1 === $labels2 && $skeleton1 === $skeleton2) {
+        return true;
     }
-    // Allow the same three-edit typo tolerance as title matching. A minor
-    // spelling difference must not hide a different alphabetic section label.
-    if ($labels1 !== $labels2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
-        return false;
+    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+        if ($labels1 !== $labels2) {
+            return compare_title_numbering($title1, $title2) === true;
+        }
     }
     return null;
 }
@@ -448,10 +451,15 @@ function title_lettered_labels(string $title): array {
         'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
         'table', 'type', 'variant', 'vitamin'];
     foreach ($parts as $index => $part) {
-        if (preg_match('~^[a-z]$~', $part) === 1 && $index > 0 &&
-                in_array($parts[$index - 1], $label_words, true)) {
+        if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
+                (preg_match('~^[a-z]$~', $part) === 1 || preg_match('~^\d{1,9}$~', $part) === 1 ||
+                 // Multi-character Roman numerals may also be section labels.
+                 // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
+                 (strlen($part) > 1 &&
+                  preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
+                  roman_numeral_value($part) <= 50))) {
             $skeleton[] = '#letter';
-            $labels[] = $part;
+            $labels[] = preg_match('~^\d~', $part) === 1 ? '#' . $part : $part;
         } else {
             $skeleton[] = $part;
         }
@@ -482,11 +490,13 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
             $skeleton[] = '#';
             $numbers[] = intval($part);
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
+                // Single C/L/D/M tokens are more likely letter labels than 100/50/500/1000.
+                (strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
                 (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
                     ['act', 'appendix', 'book', 'chapter', 'episode', 'figure', 'grade',
-                    'group', 'hepatitis', 'issue', 'lecture', 'panel', 'part', 'phase',
-                    'region', 'section', 'series', 'stage', 'table', 'type', 'vitamin',
-                    'vol', 'volume', 'war', 'year'], true)))) {
+                    'group', 'issue', 'lecture', 'panel', 'part', 'phase',
+                    'region', 'section', 'series', 'stage', 'table', 'type',
+                    'vol', 'volume', 'war'], true)))) {
             $skeleton[] = '#';
             $numbers[] = roman_numeral_value($part);
         } else {
@@ -525,8 +535,8 @@ function compare_title_numbering(string $title1, string $title2): ?bool {
     if ($skeleton1 === $skeleton2) {
         return $numbers1 === $numbers2;
     }
-    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) === 1) {
-        return false; // A spelling variant does not erase a different part number.
+    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+        return false; // Several typos do not erase a different part number.
     }
     return null;
 }
