@@ -32,7 +32,7 @@ function setFieldError(input, errorId, message) {
     // input and its button. The message is a block element, so inserting it
     // right after the input pushed the button onto a new line.
     // insertBefore(span, null) appends, so fields without help text still work.
-    var help = input.parentNode.querySelector(".field-help");dfa
+    var help = input.parentNode.querySelector(".field-help");
     input.parentNode.insertBefore(span, help);
   }
 }
