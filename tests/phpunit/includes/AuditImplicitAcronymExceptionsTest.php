@@ -24,8 +24,11 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
         return [
             'Wochenschrift abbreviation' => ['Klin. Wschr.'],
             'Wochenschrift abbreviation without dot' => ['Klin Wschr'],
+            'Wochenschrift abbreviation before a comma' => ['Wschr., Neue Folge'],
             'Monatsschrift abbreviation' => ['Mschr. Kinderheilk.'],
+            'Monatsschrift abbreviation in parentheses' => ['Kinderheilkunde (Mschr.)'],
             'Zeitschrift abbreviation' => ['Ztschr. Physik'],
+            'Zeitschrift abbreviation before a semicolon' => ['Ztschr; Physik'],
             'French eau after an apostrophe' => ["Revue des Sciences de l'eau"],
             'French eau as a word' => ['Eau et Industrie'],
             'a real vowel acronym stays upper case' => ['EAU Guidelines'],
@@ -36,12 +39,13 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
         $this->assertSame('Journal of the IEEE', title_capitalization('Journal of the Ieee', true));
     }
 
-    public function testListsStayPaired(): void {
-        $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
-        foreach ([' WSCHR ' => ' Wschr ', ' WSCHR. ' => ' Wschr. ', ' MSCHR. ' => ' Mschr. ', ' ZTSCHR. ' => ' Ztschr. '] as $from => $to) {
-            $index = array_search($from, UCFIRST_JOURNAL_ACRONYMS, true);
-            $this->assertNotFalse($index);
-            $this->assertSame($to, JOURNAL_ACRONYMS[$index]);
-        }
+    public function testAcronymSurvivesTitleCaseConversion(): void {
+        $this->assertSame('EAU Guidelines', title_capitalization('EAU GUIDELINES', true));
+        $this->assertSame("'EAU Guidelines'", title_capitalization("'EAU GUIDELINES'", true));
+        $this->assertSame("L'Eau et la Vie", title_capitalization("L'EAU ET LA VIE", true));
+    }
+
+    public function testAbbreviationsSurviveTitleCaseConversion(): void {
+        $this->assertSame('Klin. Wschr., Neue Folge', title_capitalization('KLIN. WSCHR., NEUE FOLGE', true));
     }
 }

@@ -564,14 +564,20 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
             ) {
         // ALL CAPS to Title Case
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
+        // Restore standalone EAU while allowing the French elision l'eau to take title case.
+        $new_case = safe_preg_replace("~(?<!\b[dl]['´])\beau\b~ui", 'EAU', $new_case);
     }
 
     // Implicit acronyms
     $new_case = ' ' . $new_case . ' ';
-    $new_case = safe_preg_replace_callback("~[^\w&](?!str\.)[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", // "str." is the abbreviation in "s. str."
+    $new_case = safe_preg_replace_callback("~([^\w&])(?!str\.)([b-df-hj-np-tv-xz]{3,})(?=\W)~ui", // "str." is the abbreviation in "s. str."
             static function (array $matches): string {  // Three or more consonants.  NOT Y
                 if (preg_match('~\p{Ll}\p{Lu}~u', $matches[0]) === 1) {
                     return $matches[0]; // Mixed case such as rbcL, ndhF or trnL is deliberate (gene names), not an acronym
+                }
+                $word = mb_strtolower($matches[2]);
+                if (in_array($word, ['mschr', 'wschr', 'ztschr'], true)) {
+                    return $matches[1] . mb_ucfirst($word); // German journal abbreviations
                 }
                 return mb_strtoupper($matches[0]);
             },
