@@ -36,4 +36,9 @@ final class AuditSectionLetterATest extends testBaseClass {
     public function testLowerCaseInputIsNotPromoted(): void {
         $this->assertSame('Take Part a Little', title_capitalization('Take Part a Little', true));
     }
+
+    public function testOnlyOriginallyUppercaseLabelsArePreserved(): void {
+        $this->assertSame('Part A Methods: Take Part a Little', title_capitalization('Part A Methods: Take Part a Little', true));
+        $this->assertSame('Class A and Section a Methods', title_capitalization('Class A and Section a Methods', true));
+    }
 }
