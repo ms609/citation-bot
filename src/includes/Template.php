@@ -906,7 +906,8 @@ final class Template
      */
     public function add_if_new(string $param_name, string $value, string $api = ''): bool {
         // Clean up weird stuff from CrossRef etc.
-        $value = safe_preg_replace('~[\x{2000}-\x{200B}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
+        // U+200B can mark a word boundary in Thai and must remain invisible.
+        $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
         $value = safe_preg_replace("~^\xE2\x80\x8B~", " ", $value); // Zero-width at start
         $value = safe_preg_replace("~\xE2\x80\x8B$~", " ", $value); // Zero-width at end
         $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
@@ -4556,7 +4557,6 @@ final class Template
                 $this->set($param, mb_trim($this->get($param), " \t\n\r\0\x0B"));
                 $this->set($param, safe_preg_replace("~^\xE2\x80\x8B~", " ", $this->get($param))); // Zero-width at start
                 $this->set($param, safe_preg_replace("~\xE2\x80\x8B$~", " ", $this->get($param))); // Zero-width at end
-                $this->set($param, safe_preg_replace("~\x{200B}~u", " ", $this->get($param))); //Zero-width anywhere
                 while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
                     $this->set($param, mb_trim($matches[1], " \t\n\r\0\x0B"));
                 }

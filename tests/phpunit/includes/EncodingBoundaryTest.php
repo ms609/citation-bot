@@ -316,6 +316,17 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertNotSame($filename, page_output_filename(str_repeat('究', 85)));
     }
 
+    public function testThaiZeroWidthWordBoundaryIsNotMadeVisible(): void {
+        $title = "ภาษาไทย\u{200B}ทดสอบ";
+        $this->assertSame($title, wikify_external_text($title));
+        $template = $this->make_citation('{{cite book|title=' . $title . '|author=王小明|date=2024}}');
+        $template->tidy_parameter('title');
+        $this->assertSame($title, $template->get('title'));
+        $new_template = $this->make_citation('{{cite book|date=2024}}');
+        $this->assertTrue($new_template->add_if_new('title', $title));
+        $this->assertSame($title, $new_template->get('title'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
