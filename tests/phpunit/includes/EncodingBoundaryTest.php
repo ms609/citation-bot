@@ -5,7 +5,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
     public function testDoiStopsAtUnicodeWhitespaceAndKeepsFollowingText(): void {
-        uopz_set_return('doi_works', static fn (string $doi): bool => $doi === '10.1038/nature12373', true);
+        $this->assertTrue(uopz_set_return('doi_works', static fn (string $doi): bool => $doi === '10.1038/nature12373', true));
         try {
             foreach (["\u{00A0}", "\u{202F}", ' '] as $space) {
                 $text = '10.1038/nature12373' . $space . '(2013)';
@@ -16,7 +16,7 @@ final class EncodingBoundaryTest extends testBaseClass {
                 $this->assertStringContainsString('(2013)', $template->parsed_text());
             }
         } finally {
-            uopz_unset_return('doi_works');
+            $this->assertTrue(uopz_unset_return('doi_works'));
         }
     }
 
