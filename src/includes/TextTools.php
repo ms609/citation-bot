@@ -327,6 +327,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     // Strip diacritics before decode
     $inTitle = strip_diacritics($inTitle);
     $dbTitle = strip_diacritics($dbTitle);
+    // titles_simple() removes the spaces, so keep the words for the numbering check in short_titles_are_dissimilar()
+    $inSpaced = mb_strtolower($inTitle);
+    $dbSpaced = mb_strtolower($dbTitle);
     // always decode new data
     $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
@@ -349,12 +352,103 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
             || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
-                : (unicode_levenshtein($inTitle, $dbTitle) > 3))
+                : short_titles_are_dissimilar($inTitle, $dbTitle, $inSpaced, $dbSpaced))
     &&
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
             || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2, '8bit') < 0.98)
-                : (unicode_levenshtein($inTitle2, $dbTitle) > 3));
+                : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/**
+ * The comparison behind titles_are_dissimilar() for titles of ordinary length.
+ *
+ * Two titles are the same work when they are at most three single-character edits apart, which
+ * absorbs typos, plurals, spelling variants and punctuation.  Two refinements stop that tolerance
+ * from matching different works:
+ *   - titles that are identical apart from their numbering ("Part I"/"Part II", "Volume 1"/"Volume 2",
+ *     "Annual Report 2019"/"Annual Report 2020", "Hepatitis C"/"Hepatitis D") are different works;
+ *   - a short title gets a smaller allowance, because three edits is most of a four-letter title.
+ *
+ * $inTitle and $dbTitle are the fully normalised strings; the "spaced" versions are the same titles,
+ * lower-cased but with their words still separate.
+ */
+function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
+    $distance = unicode_levenshtein($inTitle, $dbTitle);
+    if ($distance > 3) {
+        return true;
+    }
+    if ($distance === 0) {
+        return false;
+    }
+    if (titles_differ_only_in_numbering($inSpaced, $dbSpaced)) {
+        return true;
+    }
+    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
+    if ($shorter <= 4) {
+        $allowed = 0;
+    } elseif ($shorter <= 9) {
+        $allowed = 1;
+    } elseif ($shorter <= 19) {
+        $allowed = 2;
+    } else {
+        $allowed = 3;
+    }
+    return $distance > $allowed;
+}
+
+/**
+ * Split a lower-cased title into its words with every number replaced by "#", plus the list of
+ * those numbers.  Arabic and Roman numerals are both numbers, and are returned as integers so
+ * that "Part 1" and "Part I" carry the same number.
+ *
+ * @return array{0: string, 1: array<int>}
+ */
+function title_numbering(string $title): array {
+    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false) {
+        return ['', []];
+    }
+    if (($parts[0] ?? '') === 'the') {
+        array_shift($parts); // "The Hobbit, Part 1" and "Hobbit, Part 2" have the same words
+    }
+    $skeleton = [];
+    $numbers = [];
+    foreach ($parts as $part) {
+        if (preg_match('~^\d{1,9}$~', $part) === 1) {
+            $skeleton[] = '#';
+            $numbers[] = intval($part);
+        } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1) {
+            $skeleton[] = '#';
+            $numbers[] = roman_numeral_value($part);
+        } else {
+            $skeleton[] = $part;
+        }
+    }
+    return [implode(' ', $skeleton), $numbers];
+}
+
+/** Value of a valid lower-case Roman numeral. */
+function roman_numeral_value(string $roman): int {
+    $values = ['i' => 1, 'v' => 5, 'x' => 10, 'l' => 50, 'c' => 100, 'd' => 500, 'm' => 1000];
+    $total = 0;
+    $previous = 0;
+    for ($i = strlen($roman) - 1; $i >= 0; $i--) {
+        $value = $values[$roman[$i]] ?? 0;
+        $total += $value < $previous ? -$value : $value;
+        $previous = max($previous, $value);
+    }
+    return $total;
+}
+
+/**
+ * True when both titles carry numbers, their words are otherwise identical, and the numbers differ.
+ * A title with a number against one without is left to the edit-distance test.
+ */
+function titles_differ_only_in_numbering(string $title1, string $title2): bool {
+    [$skeleton1, $numbers1] = title_numbering($title1);
+    [$skeleton2, $numbers2] = title_numbering($title2);
+    return $numbers1 !== [] && $numbers2 !== [] && $skeleton1 === $skeleton2 && $numbers1 !== $numbers2;
 }
 
 function titles_simple(string $inTitle): string {
