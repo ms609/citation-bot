@@ -133,6 +133,31 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertFalse(citation_urls_equivalent('https://example.org/Part1', 'https://example.org/part1'));
     }
 
+    public function testCrossrefOpenUrlReceivesDecodedInternationalEntities(): void {
+        $queries = [];
+        uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use (&$queries): string {
+            parse_str((string) parse_url((string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL), PHP_URL_QUERY), $query);
+            if (isset($query['atitle'])) {
+                $queries[] = [$query['atitle'], $query['title'] ?? ''];
+            }
+            return '';
+        }, true);
+        try {
+            foreach (['Caf&eacute; culture', 'Caf&#233; culture'] as $title) {
+                $template = $this->make_citation('{{cite journal|last=Smith|title=' . $title .
+                    '|journal=Revue de g&eacute;ographie|year=2020|pages=12–15}}');
+                $template->prepare();
+                get_doi_from_crossref($template);
+            }
+        } finally {
+            uopz_unset_return('bot_curl_exec');
+        }
+        $this->assertSame([
+            ['Café culture', 'Revue de géographie'],
+            ['Café culture', 'Revue de géographie'],
+        ], $queries);
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
