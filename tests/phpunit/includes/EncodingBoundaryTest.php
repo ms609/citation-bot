@@ -263,6 +263,15 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame($expected, wikify_external_text('Measurements of <math><mi>&#x3b1;</mi><mo>&#x2264;</mo><mi>&#946;</mi></math>'));
     }
 
+    public function testMultilingualTitleCasingKeepsLetterLabelsAndTurkishDots(): void {
+        $this->assertSame('ビタミン A の研究', title_capitalization('ビタミン A の研究', true));
+        $this->assertSame('Les vitamines A et D', title_capitalization('Les vitamines A et D', true));
+        $this->assertSame('İstanbul Üniversitesi', title_capitalization('İSTANBUL ÜNİVERSİTESİ', true));
+        $template = $this->make_citation('{{cite book|publisher=Example Publisher}}');
+        $template->add_if_new('title', 'ビタミン A の研究', 'crossref');
+        $this->assertSame('ビタミン A の研究', $template->get('title'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
