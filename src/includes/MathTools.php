@@ -55,6 +55,15 @@ function mathml_safe_preg_replace_callback(string $regex, callable $replace, str
  * Existing citations with MathML will retain their current values during tidying operations.
  */
 function convert_mathml_to_latex(string $mathml): string {
+    $mathml = mathml_safe_preg_replace_callback(
+        '~&#(?:x[0-9a-f]+|[0-9]+);~i',
+        static function (array $match): string {
+            $decoded = html_entity_decode($match[0], ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+            // Decode mathematical symbols, while preserving escaped markup.
+            return in_array($decoded, ['<', '>', '&', '"', "'"], true) ? $match[0] : $decoded;
+        },
+        $mathml
+    );
     // Remove mml: namespace prefix if present
     $mathml = str_replace(['<mml:', '</mml:'], ['<', '</'], $mathml);
 
