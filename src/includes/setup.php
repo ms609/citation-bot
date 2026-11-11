@@ -165,10 +165,11 @@ function bot_debug_log(string $log_this): void {
         @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
         // Keep each event on exactly one physical line so untrusted titles or
         // upstream error text cannot forge additional log entries.
-        $user = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(WikipediaBot::get_last_user()));
+        // The authenticated username is deliberately omitted: it is personal
+        // data and is not needed to diagnose upstream or parsing failures.
         $page = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable(Page::get_last_title()));
         $message = str_replace(["\r", "\n"], ['\\r', '\\n'], echoable($log_this));
-        $line = $base . ' :: ' . $user . " :: " . $page . " :: " . $message . "\n";
+        $line = $base . ' :: ' . $page . " :: " . $message . "\n";
 
         $handle = bot_debug_log_open_handle();
         if ($handle === false) {
