@@ -31,6 +31,10 @@ footer {
   box-shadow: 0 50vh 0 50vh #eed;
   margin-top: 3em;
   min-height: 155px;
+  /* Keep text clear of the logo column (2px offset + 144px logo + gap).
+     Padding both sides equally keeps the text centred on the page. */
+  padding-left: 156px;
+  padding-right: 156px;
 }
 
 /* Narrow viewports: text wraps to multiple lines and collides with the
@@ -39,6 +43,8 @@ footer {
   footer {
     background-position: center 8px;
     padding-top: 160px; /* logo height (144px) + a little breathing room */
+    padding-left: 1em;
+    padding-right: 1em;
   }
 }
 
