@@ -955,6 +955,8 @@ final class Template
         // Block URLs from being added to non-URL parameters
         if ($this->is_url_in_non_url_parameter($param_name, $value)) {
             report_warning("Rejecting URL in non-URL parameter |" . echoable($param_name) . "=");
+            $param_name = mb_substr($param_name, 0, 100);
+            $value = mb_substr($value, 0, 100);
             bot_debug_log("URL rejected for parameter: " . $param_name . " = " . $value);
             return false;
         }
