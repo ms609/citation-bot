@@ -564,19 +564,32 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
             ) {
         // ALL CAPS to Title Case
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
+        // ALL CAPS loses the distinction between French "eau" and the acronym "EAU".
+        // Recover EAU only in well-known European Association of Urology contexts.
+        // The acronym is also used with a year and/or hyphen in journal titles.
+        // Do not promote French "eau", including the elisions l'eau and d'eau.
+        $new_case = safe_preg_replace(
+            "~(?<!\b[dl]['´])\beau(?=[\s\-‐‑–—]+(?:20\d{2}[\s\-‐‑–—]+)?(?:guidelines?|congress(?:es)?|recommendations?|annual[\s\-‐‑–—]+(?:congress|meeting)|association)\b)~ui",
+            'EAU',
+            $new_case
+        );
     }
 
     // Implicit acronyms
     $new_case = ' ' . $new_case . ' ';
-    $new_case = safe_preg_replace_callback("~[^\w&](?!str\.)[b-df-hj-np-tv-xz]{3,}(?=\W)~ui", // "str." is the abbreviation in "s. str."
+    $new_case = safe_preg_replace_callback("~([^\w&])(?!str\.)([b-df-hj-np-tv-xz]{3,})(?=\W)~ui", // "str." is the abbreviation in "s. str."
             static function (array $matches): string {  // Three or more consonants.  NOT Y
                 if (preg_match('~\p{Ll}\p{Lu}~u', $matches[0]) === 1) {
                     return $matches[0]; // Mixed case such as rbcL, ndhF or trnL is deliberate (gene names), not an acronym
                 }
+                $word = mb_strtolower($matches[2]);
+                if (in_array($word, ['mschr', 'wschr', 'ztschr'], true)) {
+                    return $matches[1] . mb_ucfirst($word); // German journal abbreviations
+                }
                 return mb_strtoupper($matches[0]);
             },
             $new_case);
-    $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui",
+    $new_case = safe_preg_replace_callback("~[^\w&](?!eau\W)[aeiou]{3,}(?=\W)~ui", // "eau" is the French word (l'eau), not an acronym; an existing "EAU" is left as it is
             static function (array $matches): string {  // Three or more vowels.  NOT Y
                 return mb_strtoupper($matches[0]);
             },
