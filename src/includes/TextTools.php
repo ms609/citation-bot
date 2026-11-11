@@ -349,6 +349,14 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
     // This will convert &delta into delta
+    // Long titles use a 98% similarity threshold rather than edit distance. It
+    // must not override a different section label or number: a 300-character
+    // title with Part A and Part B can be more than 98% identical.
+    if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
+            (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
+             compare_title_numbering($inSpaced, $dbSpaced) === false)) {
+        return true;
+    }
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
             || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
@@ -410,10 +418,18 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
 function compare_title_lettered_labels(string $title1, string $title2): ?bool {
     [$skeleton1, $labels1] = title_lettered_labels($title1);
     [$skeleton2, $labels2] = title_lettered_labels($title2);
-    if ($labels1 === [] || $labels2 === [] || $skeleton1 !== $skeleton2) {
+    if ($labels1 === [] || $labels2 === []) {
         return null;
     }
-    return $labels1 === $labels2;
+    if ($skeleton1 === $skeleton2) {
+        return $labels1 === $labels2;
+    }
+    // Allow the same three-edit typo tolerance as title matching. A minor
+    // spelling difference must not hide a different alphabetic section label.
+    if ($labels1 !== $labels2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+        return false;
+    }
+    return null;
 }
 
 /** @return array{0: string, 1: array<string>} */
@@ -428,8 +444,9 @@ function title_lettered_labels(string $title): array {
     }
     $skeleton = [];
     $labels = [];
-    $label_words = ['class', 'group', 'hepatitis', 'part', 'phase', 'section',
-        'series', 'stage', 'type', 'variant', 'vitamin', 'physica'];
+    $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
+        'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
+        'table', 'type', 'variant', 'vitamin'];
     foreach ($parts as $index => $part) {
         if (preg_match('~^[a-z]$~', $part) === 1 && $index > 0 &&
                 in_array($parts[$index - 1], $label_words, true)) {
@@ -466,7 +483,10 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
             $numbers[] = intval($part);
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                 (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
-                    ['act', 'book', 'chapter', 'episode', 'grade', 'group', 'hepatitis', 'issue', 'lecture', 'part', 'phase', 'section', 'series', 'stage', 'type', 'vitamin', 'vol', 'volume', 'war', 'year'], true)))) {
+                    ['act', 'appendix', 'book', 'chapter', 'episode', 'figure', 'grade',
+                    'group', 'hepatitis', 'issue', 'lecture', 'panel', 'part', 'phase',
+                    'region', 'section', 'series', 'stage', 'table', 'type', 'vitamin',
+                    'vol', 'volume', 'war', 'year'], true)))) {
             $skeleton[] = '#';
             $numbers[] = roman_numeral_value($part);
         } else {

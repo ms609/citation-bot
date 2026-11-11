@@ -39,6 +39,11 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'hepatitis alphabetic labels' => ['Hepatitis A virus', 'Hepatitis B virus'],
             'roman and non-roman hepatitis labels' => ['Hepatitis B virus', 'Hepatitis C virus'],
             'section alphabetic labels' => ['Section A Methods', 'Section B Methods'],
+            'lettered part with spelling differences' => ['Colour Vision Part A Measurements', 'Color Vison Part B Measurements'],
+            'appendix labels' => ['Appendix A Methods', 'Appendix B Methods'],
+            'figure labels' => ['Figure A Methods', 'Figure B Methods'],
+            'long label mismatch' => [str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Section A', str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Section B'],
+            'long number mismatch' => [str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Part 1', str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Part 2'],
             'vitamin alphabetic labels' => ['Vitamin A Deficiency', 'Vitamin B Deficiency'],
             'chapter number lost during normalization' => ['Chapter 1 - Introduction to Chemistry', 'Chapter 2 - Introduction to Chemistry'],
         ];
@@ -63,6 +68,8 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'equivalent grades' => ['Grade IV', 'Grade 4'],
             'equivalent stages' => ['Stage III', 'Stage 3'],
             'same part with a spelling variant' => ['Color Vision Part 1', 'Colour Vision Part 1'],
+            'same lettered label with typos' => ['Colour Vision Part A Measurements', 'Color Vison Part A Measurements'],
+            'long title same label and typo' => [str_repeat('Molecular pathways and mechanisms in biology ', 8) . 'Section A', str_repeat('Molecular pathways and mechanisms in biology ', 7) . 'Moleculer pathways and mechanisms in biology Section A'],
             'spelling variant' => ['Colour perception in birds', 'Color perception in birds'],
             'short spelling variant' => ['Color Vision', 'Colour Vision'],
             'short plural' => ['Analysis', 'Analyses'],
@@ -86,6 +93,8 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
         $this->assertNull(compare_title_numbering('mix of colours', 'xi of colours'));
         $this->assertFalse(compare_title_lettered_labels('Hepatitis A virus', 'Hepatitis B virus'));
         $this->assertFalse(compare_title_lettered_labels('Section A Methods', 'Section B Methods'));
+        $this->assertFalse(compare_title_lettered_labels('Colour Vision Part A Measurements', 'Color Vison Part B Measurements'));
+        $this->assertTrue(compare_title_lettered_labels('Appendix A Methods', 'Appendix A Methods'));
         $this->assertNull(compare_title_lettered_labels('a picture of blue', 'a picture of green'));
         $this->assertSame(1990, roman_numeral_value('mcmxc'));
         $this->assertSame(14, roman_numeral_value('xiv'));
