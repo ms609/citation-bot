@@ -31,9 +31,12 @@ final class AuditSectionLetterAAdditionalTest extends testBaseClass {
         return [
             'article after ordinary word' => ['A Tale of A City', 'A Tale of a City'],
             'part article in a phrase' => ['We Took Part A Few Times', 'We Took Part a Few Times'],
-            'article after colon' => ['Methods: A New Approach', 'Methods: a New Approach'],
             'lowercase section label remains lowercase' => ['Section a Methods', 'Section a Methods'],
             'lowercase part label at end' => ['Part a', 'Part a'],
         ];
+    }
+
+    public function testArticleStartingSubtitleKeepsCapitalA(): void {
+        $this->assertSame('Methods: A New Approach', title_capitalization('Methods: A New Approach', true));
     }
 }
