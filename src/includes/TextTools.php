@@ -658,12 +658,31 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     $new_case = mb_ucfirst(mb_trim($new_case));
 
-    // Solitary 'a' should be lowercase
-    $preserve_class_a = preg_match('~\b(?i:class) A\b~u', $in) === 1;
-    $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
-    if ($preserve_class_a) {
-        $new_case = safe_preg_replace('~\b([Cc]lass) a\b~u', '$1 A', $new_case);
-    }
+    // "take/took part a little/long time" uses the indefinite article, not a label.
+    // These are deliberately limited grammatical exceptions; an ambiguous Part A
+    // is otherwise preserved when the input explicitly supplies an uppercase A.
+    $new_case = safe_preg_replace(
+        '~(\b(?i:(?:take|takes|taking|taken|took)\s+part)\s+)A(?=\s+(?i:bit|couple|few|little|lot|while|long|short|great|brief)\b(?!\p{Pd}))~u',
+        '$1a',
+        $new_case
+    );
+    // "in part a result" is likewise an article, not "Part A".
+    $new_case = safe_preg_replace(
+        '~(\b(?i:in\s+part)\s+)A(?=\s+(?i:result|consequence)\b(?!\p{Pd}))~u',
+        '$1a',
+        $new_case
+    );
+
+    // Lowercase each solitary A unless the preceding word makes it a label.
+    $new_case = safe_preg_replace_callback('~(\w+)(\s+)A(?=\s+\w)~u',
+        static function (array $matches): string {
+            if (in_array(mb_strtolower($matches[1]), ['class', 'section', 'part', 'series', 'physica'], true)) {
+                return $matches[0];
+            }
+            return $matches[1] . $matches[2] . 'a';
+        },
+        $new_case
+    );
     // but not in "U S A"
     $new_case = mb_trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
@@ -697,8 +716,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " . $new_case . " ");
     $new_case = mb_trim($new_case); // remove spaces, needed for matching in LC_SMALL_WORDS
 
-    // Single letter at end should be capitalized    J Chem Phys E for example.  Obviously not the spanish word "e".
-    if (mb_substr($new_case, -2, 1) === ' ') {
+    // Single letter at end should be capitalized (e.g. J Chem Phys E),
+    // except for a non-Series label word followed by an originally lowercase article a.
+    // Series has historically promoted series letters, even when lowercase in the input.
+    if (mb_substr($new_case, -2, 1) === ' ' &&
+            preg_match('~\b(?i:class|section|part|physica)\s+a$~u', mb_trim($in)) !== 1) {
         $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
     }
 
@@ -735,6 +757,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         }
     }
 
+    // Preserve the existing convention: Series a and b -> Series A and B.
+    // Unlike Class/Part/Section, Series letters were promoted before this PR.
     if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
         $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
         $replace = 'Series ' . mb_strtoupper($matches[1]) . $matches[2] . mb_strtoupper($matches[3]);
