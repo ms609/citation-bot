@@ -299,6 +299,8 @@ final class OfflineEndpointTest extends TestCase {
             $this->assertSame('1', $html['headers']['retry-after']);
             $this->assertSame('no-store', $html['headers']['cache-control']);
             $this->assertStringContainsString('Too many requests', $html['body']);
+            $this->assertStringContainsString('Terms&nbsp;of&nbsp;Use</a>', $html['body']);
+            $this->assertStringContainsString('Privacy&nbsp;Policy</a></footer></body></html>', $html['body']);
         } finally {
             fclose($generator);
             fclose($gadget);

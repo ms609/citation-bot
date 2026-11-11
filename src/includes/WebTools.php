@@ -743,9 +743,15 @@ function bot_html_header(): void {
 /**
  * @codeCoverageIgnore
  */
-function bot_html_footer(): void {
-    if (HTML_OUTPUT) {
-        echo '</pre></main><footer><a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>? | <a href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use" title="Wikimedia Cloud Services End User Terms of Use">Terms&nbsp;of&nbsp;Use</a> | <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" title="Wikimedia Foundation Privacy Policy">Privacy&nbsp;Policy</a></footer></body></html>'; // @codeCoverageIgnore
+function bot_html_footer(bool $template_generator = false): void {
+    // The template generator always emits an HTML document.
+    if (HTML_OUTPUT || $template_generator) {
+        $return_link = $template_generator
+            ? '<a href="./" title="Use Citation Bot">Back to Citation Bot</a>'
+            : '<a href="./" title="Use Citation Bot again" aria-label="Use Citation Bot again (return to main page)">Edit another page</a>?';
+        echo '</pre></main><footer>', $return_link,
+            ' | <a href="https://wikitech.wikimedia.org/wiki/Wikitech:Cloud_Services_End_User_Terms_of_use" title="Wikimedia Cloud Services End User Terms of Use">Terms&nbsp;of&nbsp;Use</a>',
+            ' | <a href="https://foundation.wikimedia.org/wiki/Policy:Privacy_policy" title="Wikimedia Foundation Privacy Policy">Privacy&nbsp;Policy</a></footer></body></html>';
     }
     echo "\n";
 }
