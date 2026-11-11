@@ -3614,6 +3614,10 @@ final class Template
                     case "lccn8": // Assume not normal template for a reason
                     case "google books": // Usually done for fancy formatting and because already has title-link/url
                     case "url": // Untrustable: used by bozos
+                    case "doi-inline": 
+                    case "lang": 
+                    case "muse": 
+                    case "newsbank text": 
                         break;
                     default:
                         report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
