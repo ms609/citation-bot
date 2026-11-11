@@ -28,7 +28,12 @@ function setFieldError(input, errorId, message) {
     span.setAttribute("role", "alert");
     span.className = "field-error";
     span.textContent = message;
-    input.parentNode.insertBefore(span, input.nextSibling);
+    // Place the message after the field's button and spinner, not between the
+    // input and its button. The message is a block element, so inserting it
+    // right after the input pushed the button onto a new line.
+    // insertBefore(span, null) appends, so fields without help text still work.
+    var help = input.parentNode.querySelector(".field-help");
+    input.parentNode.insertBefore(span, help);
   }
 }
 
