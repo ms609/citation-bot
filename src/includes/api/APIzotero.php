@@ -1833,7 +1833,16 @@ final class Zotero {
             $template->add_if_new('volume', clean_volume((string) $result->volume));
         }
         if (isset($result->date) && mb_strlen((string) $result->date) > 3) {
-            $new_date = tidy_date((string) $result->date);
+            $source_date = (string) $result->date;
+            $new_date = tidy_date($source_date);
+            if (preg_match('~^[0-9]{4}$~D', $new_date) === 1 &&
+                mb_trim($source_date) !== $new_date &&
+                (preg_match('~\p{L}~u', $source_date) === 1 ||
+                 preg_match_all('~(?<![0-9])[0-9]{4}(?![0-9])~', $source_date) > 1)) {
+                // A localized month or a date range must not be silently
+                // replaced with a year that means something different.
+                $new_date = '';
+            }
             if (mb_stripos($url, 'indiatimes') !== false) { // "re-posted" website all at once
                 $maybe_date = (int) strtotime($new_date);
                 $end_date1 = strtotime('10 January 2017');
