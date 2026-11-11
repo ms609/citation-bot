@@ -720,6 +720,7 @@ function bot_html_header(): void {
     '  <title>Citation Bot: running</title>', "\n",
     '  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />', "\n",
     '  <link rel="stylesheet" type="text/css" href="assets/results.css" />', "\n",
+    '  <script src="assets/results.js" defer></script>', "\n",
     ' </head>', "\n",
     ' <body>', "\n",
     '  <a href="#main-content" class="skip-link">Skip to main content</a>', "\n",
