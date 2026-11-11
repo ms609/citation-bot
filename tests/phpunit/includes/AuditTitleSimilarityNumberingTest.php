@@ -24,6 +24,8 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
     public static function differentWorksProvider(): array {
         return [
             'roman part numbers' => ['Henry the Fourth, Part I', 'Henry the Fourth, Part II'],
+            'roman numbers with an HTML space' => ['Part I', 'Part&nbsp;II'],
+            'different years with an HTML space' => ['Annual Report 2019', 'Annual&nbsp;Report 2020'],
             'arabic part numbers' => ['Henry the Fourth, Part 1', 'Henry the Fourth, Part 2'],
             'years' => ['Annual Report 2019', 'Annual Report 2020'],
             'chapter numbers' => ['Lecture 3', 'Lecture 12'],
@@ -31,6 +33,7 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
             'world wars' => ['Britain in World War I', 'Britain in World War II'],
             'four letter titles' => ['Cats', 'Dogs'],
             'one letter apart, four letters' => ['Mars', 'Maps'],
+            'a word that looks like a Roman numeral' => ['Mix', '1009'],
         ];
     }
 
@@ -46,6 +49,9 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
     public static function sameWorkProvider(): array {
         return [
             'arabic and roman for the same number' => ['Henry the Fourth, Part 1', 'Henry the Fourth, Part I'],
+            'equivalent short part numbers' => ['Part IV', 'Part 4'],
+            'equivalent numbers beyond the edit limit' => ['Volume VIII', 'Volume 8'],
+            'equivalent formatted part numbers' => ['Part&nbsp;<i>IV</i>', 'Part 4'],
             'spelling variant' => ['Colour perception in birds', 'Color perception in birds'],
             'plural' => ['Editorial comment', 'Editorial comments'],
             'ampersand' => ['Tom & Jerry', 'Tom and Jerry'],
@@ -58,11 +64,11 @@ final class AuditTitleSimilarityNumberingTest extends testBaseClass {
     }
 
     public function testNumberingHelper(): void {
-        $this->assertTrue(titles_differ_only_in_numbering('part i', 'part ii'));
-        $this->assertTrue(titles_differ_only_in_numbering('the hobbit, part 1', 'hobbit, part 2'));
-        $this->assertFalse(titles_differ_only_in_numbering('part 1', 'part i'));
-        $this->assertFalse(titles_differ_only_in_numbering('windows 10 guide', 'windows guide'));
-        $this->assertFalse(titles_differ_only_in_numbering('cats', 'dogs'));
+        $this->assertFalse(compare_title_numbering('part i', 'part ii'));
+        $this->assertFalse(compare_title_numbering('the hobbit, part 1', 'hobbit, part 2'));
+        $this->assertTrue(compare_title_numbering('part 1', 'part i'));
+        $this->assertNull(compare_title_numbering('windows 10 guide', 'windows guide'));
+        $this->assertNull(compare_title_numbering('cats', 'dogs'));
         $this->assertSame(1990, roman_numeral_value('mcmxc'));
         $this->assertSame(14, roman_numeral_value('xiv'));
     }

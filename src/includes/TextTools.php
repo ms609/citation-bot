@@ -327,14 +327,14 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     // Strip diacritics before decode
     $inTitle = strip_diacritics($inTitle);
     $dbTitle = strip_diacritics($dbTitle);
-    // titles_simple() removes the spaces, so keep the words for the numbering check in short_titles_are_dissimilar()
-    $inSpaced = mb_strtolower($inTitle);
-    $dbSpaced = mb_strtolower($dbTitle);
+    // Decode entities before tokenizing numbers, including spaces such as &nbsp;.
+    $inSpaced = html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $dbSpaced = html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     // always decode new data
-    $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
+    $dbTitle = titles_simple(htmlspecialchars($dbSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
     $inTitle2 = titles_simple($inTitle);
-    $inTitle = titles_simple(htmlspecialchars(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
+    $inTitle = titles_simple(htmlspecialchars($inSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
     $inTitle2 = strip_diacritics($inTitle2);
@@ -367,22 +367,21 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
  * absorbs typos, plurals, spelling variants and punctuation.  Two refinements stop that tolerance
  * from matching different works:
  *   - titles that are identical apart from their numbering ("Part I"/"Part II", "Volume 1"/"Volume 2",
- *     "Annual Report 2019"/"Annual Report 2020", "Hepatitis C"/"Hepatitis D") are different works;
+ *     "Annual Report 2019"/"Annual Report 2020", "Hepatitis C"/"Hepatitis D") are different works,
+ *     while "Part IV" and "Part 4" carry the same number;
  *   - a short title gets a smaller allowance, because three edits is most of a four-letter title.
  *
  * $inTitle and $dbTitle are the fully normalised strings; the "spaced" versions are the same titles,
- * lower-cased but with their words still separate.
+ * decoded but with their words still separate.
  */
 function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
     $distance = unicode_levenshtein($inTitle, $dbTitle);
-    if ($distance > 3) {
-        return true;
-    }
     if ($distance === 0) {
         return false;
     }
-    if (titles_differ_only_in_numbering($inSpaced, $dbSpaced)) {
-        return true;
+    $numbering_matches = compare_title_numbering($inSpaced, $dbSpaced);
+    if ($numbering_matches !== null) {
+        return !$numbering_matches;
     }
     $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
     if ($shorter <= 4) {
@@ -398,13 +397,14 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
 }
 
 /**
- * Split a lower-cased title into its words with every number replaced by "#", plus the list of
+ * Split a decoded title into its words with every number replaced by "#", plus the list of
  * those numbers.  Arabic and Roman numerals are both numbers, and are returned as integers so
  * that "Part 1" and "Part I" carry the same number.
  *
  * @return array{0: string, 1: array<int>}
  */
-function title_numbering(string $title): array {
+function title_numbering(string $title, bool $require_roman_label = false): array {
+    $title = mb_strtolower(strip_tags($title));
     $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
@@ -414,11 +414,12 @@ function title_numbering(string $title): array {
     }
     $skeleton = [];
     $numbers = [];
-    foreach ($parts as $part) {
+    foreach ($parts as $index => $part) {
         if (preg_match('~^\d{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
-        } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1) {
+        } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
+                (!$require_roman_label || in_array($parts[$index - 1] ?? '', ['act', 'book', 'chapter', 'episode', 'issue', 'lecture', 'part', 'section', 'series', 'vol', 'volume', 'war'], true))) {
             $skeleton[] = '#';
             $numbers[] = roman_numeral_value($part);
         } else {
@@ -433,7 +434,7 @@ function roman_numeral_value(string $roman): int {
     $values = ['i' => 1, 'v' => 5, 'x' => 10, 'l' => 50, 'c' => 100, 'd' => 500, 'm' => 1000];
     $total = 0;
     $previous = 0;
-    for ($i = strlen($roman) - 1; $i >= 0; $i--) {
+    for ($i = mb_strlen($roman, '8bit') - 1; $i >= 0; $i--) {
         $value = $values[$roman[$i]] ?? 0;
         $total += $value < $previous ? -$value : $value;
         $previous = max($previous, $value);
@@ -442,13 +443,19 @@ function roman_numeral_value(string $roman): int {
 }
 
 /**
- * True when both titles carry numbers, their words are otherwise identical, and the numbers differ.
- * A title with a number against one without is left to the edit-distance test.
+ * Compare numbers in otherwise identical titles. Return null when edit distance should decide.
  */
-function titles_differ_only_in_numbering(string $title1, string $title2): bool {
+function compare_title_numbering(string $title1, string $title2): ?bool {
     [$skeleton1, $numbers1] = title_numbering($title1);
     [$skeleton2, $numbers2] = title_numbering($title2);
-    return $numbers1 !== [] && $numbers2 !== [] && $skeleton1 === $skeleton2 && $numbers1 !== $numbers2;
+    if ($numbers1 === [] || $numbers2 === [] || $skeleton1 !== $skeleton2) {
+        return null;
+    }
+    if ($numbers1 !== $numbers2) {
+        return false;
+    }
+    // Require a numbering label for an affirmative Roman match. "Mix" may be a word.
+    return title_numbering($title1, true) === title_numbering($title2, true) ? true : null;
 }
 
 function titles_simple(string $inTitle): string {
