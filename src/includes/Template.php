@@ -2255,7 +2255,7 @@ final class Template
                 } // TITLE_LINK_ALIASES within the title
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
-                    if (str_i_same($value, $this->get($existing))) {
+                    if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }
                 }
@@ -2268,7 +2268,7 @@ final class Template
                 }
                 $value = sanitize_string($value);
                 foreach (ALL_URL_TYPES as $existing) {
-                    if (str_i_same($value, $this->get($existing))) {
+                    if (citation_urls_equivalent($value, $this->get($existing))) {
                         return false;
                     }
                 }
@@ -4307,7 +4307,7 @@ final class Template
             // so we use chapter-url so that the template is well rendered afterwards
             if (should_url2chapter($this, true)) {
                 $this->rename('url', 'chapter-url');
-            } elseif (!$this->blank(['chapter-url', 'chapterurl']) && str_i_same($this->get('chapter-url'), $this->get('url'))) {
+            } elseif (!$this->blank(['chapter-url', 'chapterurl']) && citation_urls_equivalent($this->get('chapter-url'), $this->get('url'))) {
                 $this->forget('url');
             } // otherwise they are different urls
 

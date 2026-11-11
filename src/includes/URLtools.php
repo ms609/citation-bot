@@ -920,6 +920,27 @@ function url_simplify(string $url): string {
     return str_ireplace('https', 'http', $url);
 }
 
+/** URL scheme and host are case-insensitive; path, query and fragment are not. */
+function citation_urls_equivalent(string $left, string $right): bool {
+    if ($left === $right) {
+        return true;
+    }
+    $left_parts = parse_url($left);
+    $right_parts = parse_url($right);
+    if (!is_array($left_parts) || !is_array($right_parts)) {
+        return false;
+    }
+    foreach (['scheme', 'host'] as $component) {
+        if (isset($left_parts[$component])) {
+            $left_parts[$component] = mb_strtolower($left_parts[$component]);
+        }
+        if (isset($right_parts[$component])) {
+            $right_parts[$component] = mb_strtolower($right_parts[$component]);
+        }
+    }
+    return $left_parts === $right_parts;
+}
+
 function not_an_archive_url_clean(Template $template, string $param): void {
     if (
         preg_match("~^https?://watermark\.silverchair\.com/~", $template->get($param)) ||
