@@ -1370,8 +1370,14 @@ function doi_encode (string $doi): string {
     return str_replace('%2F', '/', $doi);
 }
 
+/** Decode percent escapes only when the resulting value remains valid UTF-8. */
+function urldecode_valid_utf8(string $value): string {
+    $decoded = urldecode($value);
+    return mb_check_encoding($decoded, 'UTF-8') ? $decoded : $value;
+}
+
 function hdl_decode(string $hdl): string {
-    $hdl = urldecode($hdl);
+    $hdl = urldecode_valid_utf8($hdl);
     $hdl = str_replace(';', '%3B', $hdl);
     $hdl = str_replace('#', '%23', $hdl);
     return str_replace(' ', '%20', $hdl);
