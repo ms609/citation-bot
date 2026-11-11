@@ -591,15 +591,21 @@ function big_run_refill_tokens(float $tokens, float $updated, float $now): array
 }
 
 /**
+ * Routine big-run events are intentionally silent. Keep this entry point for
+ * admission callers while leaving explicit invalid-state operator warnings on.
+ *
+ * @psalm-suppress UnusedParam
  * @param string $event
  * @param array<string, scalar|null> $fields
  */
 function big_run_log(string $event, array $fields = []): void {
-    $payload = ['event' => $event] + $fields;
-    $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES);
-    request_rate_limit_debug_log(
-        'Citation Bot big-run gate: ' . (is_string($encoded) ? $encoded : $event)
-    );
+    // No debug log for normal admission events.
+    // $payload = ['event' => $event] + $fields;
+    // $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES);
+    // Seems to be working now
+    // request_rate_limit_debug_log(
+    //    'Citation Bot big-run gate: ' . (is_string($encoded) ? $encoded : $event)
+    //);
 }
 
 /**
