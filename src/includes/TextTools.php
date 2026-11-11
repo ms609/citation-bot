@@ -564,8 +564,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
             ) {
         // ALL CAPS to Title Case
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
-        // Restore standalone EAU while allowing the French elision l'eau to take title case.
-        $new_case = safe_preg_replace("~(?<!\b[dl]['´])\beau\b~ui", 'EAU', $new_case);
+        // ALL CAPS loses the distinction between French "eau" and the acronym "EAU".
+        // Restore the acronym only in the specific "EAU Guidelines" context; keep
+        // standalone French "Eau" and elisions such as "l'Eau" in title case.
+        $new_case = safe_preg_replace("~(?<!\b[dl]['´])\beau(?=\s+guidelines?\b)~ui", 'EAU', $new_case);
     }
 
     // Implicit acronyms

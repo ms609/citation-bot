@@ -48,4 +48,42 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
     public function testAbbreviationsSurviveTitleCaseConversion(): void {
         $this->assertSame('Klin. Wschr., Neue Folge', title_capitalization('KLIN. WSCHR., NEUE FOLGE', true));
     }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function frenchEauProvider(): array {
+        return [
+            'all-caps French eau at start' => ['EAU ET INDUSTRIE', 'Eau et Industrie'],
+            'all-caps French eau before adjective' => ['EAU POTABLE', 'Eau Potable'],
+            'all-caps French elision' => ["L'EAU ET LA VIE", "L'Eau et la Vie"],
+            'mixed-case French eau' => ['Eau et Industrie', 'Eau et Industrie'],
+            'mixed-case French elision' => ["Revue des Sciences de l'eau", "Revue des Sciences de l'eau"],
+        ];
+    }
+
+    #[DataProvider('frenchEauProvider')]
+    public function testFrenchEauIsNotAnAcronym(string $input, string $expected): void {
+        $this->assertSame($expected, title_capitalization($input, true));
+        $this->assertSame($expected, title_capitalization($input, false));
+    }
+
+    /**
+     * @return array<string, array{string, string}>
+     */
+    public static function acronymEauProvider(): array {
+        return [
+            'all-caps acronym in Guidelines' => ['EAU GUIDELINES', 'EAU Guidelines'],
+            'all-caps acronym in singular Guideline' => ['EAU GUIDELINE UPDATE', 'EAU Guideline Update'],
+            'all-caps acronym not at start' => ['NEW EAU GUIDELINES', 'New EAU Guidelines'],
+            'quoted acronym' => ["'EAU GUIDELINES'", "'EAU Guidelines'"],
+            'already-capitalized acronym' => ['EAU Guidelines', 'EAU Guidelines'],
+        ];
+    }
+
+    #[DataProvider('acronymEauProvider')]
+    public function testEauAcronymIsPreserved(string $input, string $expected): void {
+        $this->assertSame($expected, title_capitalization($input, true));
+        $this->assertSame($expected, title_capitalization($input, false));
+    }
 }
