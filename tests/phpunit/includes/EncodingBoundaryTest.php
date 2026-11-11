@@ -243,6 +243,20 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('', $template->get('last3'));
     }
 
+    public function testCitoidAcceptsValidIsbnWithInternationalDashSeparators(): void {
+        $url = 'https://example.org/book';
+        foreach (['978-0-306-40615-7', '978‑0‑306‑40615‑7', '978‒0‒306‒40615‒7'] as $isbn) {
+            $template = $this->make_citation('{{cite book|title=Example book|url=' . $url . '}}');
+            Zotero::process_zotero_response(json_encode([[
+                'itemType' => 'book',
+                'title' => 'Example book',
+                'publisher' => 'Example Publisher',
+                'ISBN' => $isbn,
+            ]], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
+            $this->assertSame('978-0-306-40615-7', $template->get('isbn'), $isbn);
+        }
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));

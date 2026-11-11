@@ -1553,7 +1553,7 @@ function addISBNdashes(string $isbn): string {
 
 function isbn_valid(string $isbn): bool {
     $digits = str_replace('x', 'X', $isbn);
-    $digits = str_replace(['–', '—', '−', '‐'], '-', $digits);
+    $digits = str_replace(['–', '—', '−', '‐', '‑', '‒', '―'], '-', $digits);
     $digits = str_replace(['-', ' '], '', $digits);
     if (preg_match('~^[0-9]{9}[0-9X]$~', $digits) === 1) {
         // ISBN-10: each digit weighted by 10..1 (X = 10); valid if the sum is a multiple of 11
@@ -1989,7 +1989,7 @@ function asin_tld_valid(string $value): bool {
 function changeisbn10Toisbn13(string $isbn10, int $year): string {
     $isbn10 = mb_trim($isbn10); // Remove leading and trailing spaces
     // Written as escapes (U+2014 em dash, U+2015 horizontal bar, U+2013 en dash, U+2012 figure dash, U+2212 minus sign, U+2010 hyphen) so that an encoding round trip cannot corrupt them into '?'
-    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2212}", "\u{2010}"];
+    $dash_variants = ["\u{2014}", "\u{2015}", "\u{2013}", "\u{2012}", "\u{2011}", "\u{2212}", "\u{2010}"];
     $test = str_replace([...$dash_variants, '-', ' '], '', $isbn10);
     if (mb_strlen($test) < 10 || mb_strlen($test) > 13) {
         return $isbn10;
