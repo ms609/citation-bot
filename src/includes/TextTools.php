@@ -393,7 +393,8 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
     if ($numbering_matches === false) {
         return true;
     }
-    if ($distance === 0 || $numbering_matches === true) {
+    if ($distance === 0 || $numbering_matches === true ||
+            titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
         return false;
     }
     $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
@@ -407,6 +408,24 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
         $allowed = 3;
     }
     return $distance > $allowed;
+}
+
+/**
+ * Recognize a terminal -ies/-y plural without relaxing the edit-distance
+ * allowance for other short titles. Both arguments have already had their
+ * punctuation and whitespace removed by titles_are_dissimilar().
+ *
+ * Numbering and lettered-label mismatches must be checked before this rule.
+ * The suffix is ASCII, so substr() deliberately removes three bytes; the
+ * untouched UTF-8 prefix is compared byte-for-byte.
+ */
+function titles_have_equivalent_final_y_plural(string $title1, string $title2): bool {
+    if (preg_match('~[a-z]{3,}ies\z~', $title1) === 1 &&
+            substr($title1, 0, -3) . 'y' === $title2) {
+        return true;
+    }
+    return preg_match('~[a-z]{3,}ies\z~', $title2) === 1 &&
+        substr($title2, 0, -3) . 'y' === $title1;
 }
 
 /**

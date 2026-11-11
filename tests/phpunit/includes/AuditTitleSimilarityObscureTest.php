@@ -37,6 +37,9 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
             'Roman section with typo' => ['Colour Vision Section IV', 'Color Vison Section V'],
             'different lettered labels with typo' => ['Colour Vision Section A', 'Color Vison Section B'],
             'different number with punctuation' => ['Part 1: Introduction', 'Part 2 — Introduction'],
+            'plural equivalence never overrides numbering' => ['Part 1 Studies', 'Part 2 Study'],
+            'plural equivalence never overrides section letter' => ['Section A Studies', 'Section B Study'],
+            'plural equivalence cannot ignore other word changes' => ['Civil Society Studies', 'Medical Society Study'],
         ];
     }
 
@@ -57,6 +60,9 @@ final class AuditTitleSimilarityObscureTest extends testBaseClass {
             'Unicode nonbreaking space and ASCII' => ["Part\u{00A0}IV Methods", 'Part 4 Methods'],
             'regular word mix is not Roman' => ['Mix and Match', 'Mix and Matches'],
             'ordinary word civil is not numeral' => ['Civil Society Studies', 'Civil Society Study'],
+            'case studies singular/plural' => ['Case Studies', 'Case Study'],
+            'policy singular/plural' => ['Urban Policies', 'Urban Policy'],
+            'unicode prefix before English plural' => ['Résumé Studies', 'Résumé Study'],
         ];
     }
 
