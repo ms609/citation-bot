@@ -455,7 +455,7 @@ function title_lettered_labels(string $title): array {
                 (preg_match('~^[a-z]$~', $part) === 1 || preg_match('~^\d{1,9}$~', $part) === 1 ||
                  // Multi-character Roman numerals may also be section labels.
                  // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
-                 (strlen($part) > 1 &&
+                 (mb_strlen($part) > 1 &&
                   preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                   roman_numeral_value($part) <= 50))) {
             $skeleton[] = '#letter';
@@ -491,7 +491,7 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
             $numbers[] = intval($part);
         } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
                 // Single C/L/D/M tokens are more likely letter labels than 100/50/500/1000.
-                (strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
+                (mb_strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
                 (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
                     ['act', 'appendix', 'book', 'chapter', 'episode', 'figure', 'grade',
                     'group', 'issue', 'lecture', 'panel', 'part', 'phase',
