@@ -327,11 +327,14 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     // Strip diacritics before decode
     $inTitle = strip_diacritics($inTitle);
     $dbTitle = strip_diacritics($dbTitle);
+    // Decode entities before tokenizing numbers, including spaces such as &nbsp;.
+    $inSpaced = html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    $dbSpaced = html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     // always decode new data
-    $dbTitle = titles_simple(htmlspecialchars(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
+    $dbTitle = titles_simple(htmlspecialchars($dbSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
     $inTitle2 = titles_simple($inTitle);
-    $inTitle = titles_simple(htmlspecialchars(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
+    $inTitle = titles_simple(htmlspecialchars($inSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
     $inTitle2 = strip_diacritics($inTitle2);
@@ -346,15 +349,215 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
     // This will convert &delta into delta
+    // Long titles use a 98% similarity threshold rather than edit distance. It
+    // must not override a different section label or number: a 300-character
+    // title with Part A and Part B can be more than 98% identical.
+    if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
+            (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
+             compare_title_numbering($inSpaced, $dbSpaced) === false)) {
+        return true;
+    }
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
             || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
-                : (unicode_levenshtein($inTitle, $dbTitle) > 3))
+                : short_titles_are_dissimilar($inTitle, $dbTitle, $inSpaced, $dbSpaced))
     &&
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
                 ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
             || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2, '8bit') < 0.98)
-                : (unicode_levenshtein($inTitle2, $dbTitle) > 3));
+                : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/**
+ * The comparison behind titles_are_dissimilar() for titles of ordinary length.
+ *
+ * Two titles are the same work when they are at most three single-character edits apart, which
+ * absorbs typos, plurals, spelling variants and punctuation.  Two refinements stop that tolerance
+ * from matching different works:
+ *   - titles that are identical apart from their numbering ("Part I"/"Part II", "Volume 1"/"Volume 2",
+ *     "Annual Report 2019"/"Annual Report 2020", "Hepatitis C"/"Hepatitis D") are different works,
+ *     while "Part IV" and "Part 4" carry the same number;
+ *   - a short title gets a smaller allowance, because three edits is most of a four-letter title.
+ *
+ * $inTitle and $dbTitle are the fully normalised strings; the "spaced" versions are the same titles,
+ * decoded but with their words still separate.
+ */
+function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
+    $distance = unicode_levenshtein($inTitle, $dbTitle);
+    // Check original, spaced titles first. Normalization can erase chapter numbers,
+    // so an edit distance of zero does not always mean the same work.
+    if (compare_title_lettered_labels($inSpaced, $dbSpaced) === false) {
+        return true;
+    }
+    $numbering_matches = compare_title_numbering($inSpaced, $dbSpaced);
+    if ($numbering_matches === false) {
+        return true;
+    }
+    if ($distance === 0 || $numbering_matches === true ||
+            titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
+        return false;
+    }
+    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
+    if ($shorter <= 4) {
+        $allowed = 0;
+    } elseif ($shorter <= 9) {
+        $allowed = 1;
+    } elseif ($shorter <= 19) {
+        $allowed = 2;
+    } else {
+        $allowed = 3;
+    }
+    return $distance > $allowed;
+}
+
+/**
+ * Recognize a terminal -ies/-y plural without relaxing the edit-distance
+ * allowance for other short titles. Both arguments have already had their
+ * punctuation and whitespace removed by titles_are_dissimilar().
+ *
+ * Numbering and lettered-label mismatches must be checked before this rule.
+ * The suffix is ASCII, so mb_substr(..., '8bit') removes three bytes; the
+ * untouched UTF-8 prefix is compared byte-for-byte.
+ */
+function titles_have_equivalent_final_y_plural(string $title1, string $title2): bool {
+    if (preg_match('~[a-z]{3,}ies\z~', $title1) === 1 &&
+            mb_substr($title1, 0, -3, '8bit') . 'y' === $title2) {
+        return true;
+    }
+    return preg_match('~[a-z]{3,}ies\z~', $title2) === 1 &&
+        mb_substr($title2, 0, -3, '8bit') . 'y' === $title1;
+}
+
+/**
+ * Compare a *single-letter* title label (e.g. Hepatitis A/B or Section A/B).
+ * Do not treat ordinary one-letter articles as labels: only recognize a single
+ * alphabetic token following an established label word.
+ * Return null when the label positions are not comparable.
+ */
+function compare_title_lettered_labels(string $title1, string $title2): ?bool {
+    [$skeleton1, $labels1] = title_lettered_labels($title1);
+    [$skeleton2, $labels2] = title_lettered_labels($title2);
+    if ($labels1 === [] || $labels2 === []) {
+        return null;
+    }
+    // A digit and a letter after the same label word are usually different
+    // works (Section A vs Section 1). Do not reject equivalent Roman/Arabic
+    // numbering, e.g. Part I vs Part 1 or Section IV vs Section 4.
+    if ($labels1 === $labels2 && $skeleton1 === $skeleton2) {
+        return true;
+    }
+    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+        if ($labels1 !== $labels2) {
+            return compare_title_numbering($title1, $title2) === true;
+        }
+    }
+    return null;
+}
+
+/** @return array{0: string, 1: array<string>} */
+function title_lettered_labels(string $title): array {
+    $title = mb_strtolower(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false) {
+        return ['', []];
+    }
+    if (($parts[0] ?? '') === 'the') {
+        array_shift($parts);
+    }
+    $skeleton = [];
+    $labels = [];
+    $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
+        'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
+        'table', 'type', 'variant', 'vitamin'];
+    foreach ($parts as $index => $part) {
+        if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
+                (preg_match('~^[a-z]$~', $part) === 1 || preg_match('~^\d{1,9}$~', $part) === 1 ||
+                 // Multi-character Roman numerals may also be section labels.
+                 // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
+                 (mb_strlen($part) > 1 &&
+                  preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
+                  roman_numeral_value($part) <= 50))) {
+            $skeleton[] = '#letter';
+            $labels[] = preg_match('~^\d~', $part) === 1 ? '#' . $part : $part;
+        } else {
+            $skeleton[] = $part;
+        }
+    }
+    return [implode(' ', $skeleton), $labels];
+}
+
+/**
+ * Split a decoded title into its words with every number replaced by "#", plus the list of
+ * those numbers.  Arabic and Roman numerals are both numbers, and are returned as integers so
+ * that "Part 1" and "Part I" carry the same number.
+ *
+ * @return array{0: string, 1: array<int>}
+ */
+function title_numbering(string $title, bool $require_roman_label = false): array {
+    $title = mb_strtolower(strip_tags($title));
+    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    if ($parts === false) {
+        return ['', []];
+    }
+    if (($parts[0] ?? '') === 'the') {
+        array_shift($parts); // "The Hobbit, Part 1" and "Hobbit, Part 2" have the same words
+    }
+    $skeleton = [];
+    $numbers = [];
+    foreach ($parts as $index => $part) {
+        if (preg_match('~^\d{1,9}$~', $part) === 1) {
+            $skeleton[] = '#';
+            $numbers[] = intval($part);
+        } elseif (preg_match('~^(?=[ivxlcdm])m{0,3}(?:cm|cd|d?c{0,3})(?:xc|xl|l?x{0,3})(?:ix|iv|v?i{0,3})$~', $part) === 1 &&
+                // Single C/L/D/M tokens are more likely letter labels than 100/50/500/1000.
+                (mb_strlen($part) > 1 || in_array($part, ['i', 'v', 'x'], true)) &&
+                (!$require_roman_label || ($index > 0 && in_array($parts[$index - 1] ?? '',
+                    ['act', 'appendix', 'book', 'chapter', 'episode', 'figure', 'grade',
+                    'group', 'issue', 'lecture', 'panel', 'part', 'phase',
+                    'region', 'section', 'series', 'stage', 'table', 'type',
+                    'vol', 'volume', 'war'], true)))) {
+            $skeleton[] = '#';
+            $numbers[] = roman_numeral_value($part);
+        } else {
+            $skeleton[] = $part;
+        }
+    }
+    return [implode(' ', $skeleton), $numbers];
+}
+
+/** Value of a valid lower-case Roman numeral. */
+function roman_numeral_value(string $roman): int {
+    $values = ['i' => 1, 'v' => 5, 'x' => 10, 'l' => 50, 'c' => 100, 'd' => 500, 'm' => 1000];
+    $total = 0;
+    $previous = 0;
+    for ($i = mb_strlen($roman, '8bit') - 1; $i >= 0; $i--) {
+        $value = $values[$roman[$i]] ?? 0;
+        $total += $value < $previous ? -$value : $value;
+        $previous = max($previous, $value);
+    }
+    return $total;
+}
+
+/**
+ * Compare numbers in titles with the same words or a minor spelling difference.
+ * Return null when edit distance should decide.
+ */
+function compare_title_numbering(string $title1, string $title2): ?bool {
+    // Words such as "mix", "li", and "xi" are valid Roman-numeral strings, but
+    // should not be interpreted as numbers without a preceding label (Part, War,
+    // Volume, etc.). Use the label-restricted parser for *all* comparisons.
+    [$skeleton1, $numbers1] = title_numbering($title1, true);
+    [$skeleton2, $numbers2] = title_numbering($title2, true);
+    if ($numbers1 === [] || $numbers2 === [] || count($numbers1) !== count($numbers2)) {
+        return null;
+    }
+    if ($skeleton1 === $skeleton2) {
+        return $numbers1 === $numbers2;
+    }
+    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+        return false; // Several typos do not erase a different part number.
+    }
+    return null;
 }
 
 function titles_simple(string $inTitle): string {
