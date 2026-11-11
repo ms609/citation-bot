@@ -59,6 +59,8 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
             'all-caps French elision' => ["L'EAU ET LA VIE", "L'Eau et la Vie"],
             'mixed-case French eau' => ['Eau et Industrie', 'Eau et Industrie'],
             'mixed-case French elision' => ["Revue des Sciences de l'eau", "Revue des Sciences de l'eau"],
+            'French eau before adjective' => ['EAU NATURELLE', 'Eau Naturelle'],
+            'French eau with apostrophe' => ["D'EAU POTABLE", "D'Eau Potable"],
         ];
     }
 
@@ -78,6 +80,10 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
             'all-caps acronym not at start' => ['NEW EAU GUIDELINES', 'New EAU Guidelines'],
             'quoted acronym' => ["'EAU GUIDELINES'", "'EAU Guidelines'"],
             'already-capitalized acronym' => ['EAU Guidelines', 'EAU Guidelines'],
+            'annual congress' => ['EAU ANNUAL CONGRESS', 'EAU Annual Congress'],
+            'urology congress' => ['THE EAU CONGRESS', 'The EAU Congress'],
+            'recommendations' => ['EAU RECOMMENDATIONS', 'EAU Recommendations'],
+            'association' => ['EAU ASSOCIATION', 'EAU Association'],
         ];
     }
 

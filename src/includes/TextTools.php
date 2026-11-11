@@ -565,9 +565,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         // ALL CAPS to Title Case
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
         // ALL CAPS loses the distinction between French "eau" and the acronym "EAU".
-        // Restore the acronym only in the specific "EAU Guidelines" context; keep
-        // standalone French "Eau" and elisions such as "l'Eau" in title case.
-        $new_case = safe_preg_replace("~(?<!\b[dl]['´])\beau(?=\s+guidelines?\b)~ui", 'EAU', $new_case);
+        // Recover EAU only in well-known European Association of Urology contexts.
+        // Do not promote French "eau", including the elisions l'eau and d'eau.
+        $new_case = safe_preg_replace(
+            "~(?<!\b[dl]['´])\beau(?=\s+(?:guidelines?|congress(?:es)?|recommendations?|annual\s+(?:congress|meeting)|association)\b)~ui",
+            'EAU',
+            $new_case
+        );
     }
 
     // Implicit acronyms
