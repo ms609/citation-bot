@@ -566,9 +566,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
         // ALL CAPS loses the distinction between French "eau" and the acronym "EAU".
         // Recover EAU only in well-known European Association of Urology contexts.
+        // The acronym is also used with a year and/or hyphen in journal titles.
         // Do not promote French "eau", including the elisions l'eau and d'eau.
         $new_case = safe_preg_replace(
-            "~(?<!\b[dl]['´])\beau(?=\s+(?:guidelines?|congress(?:es)?|recommendations?|annual\s+(?:congress|meeting)|association)\b)~ui",
+            "~(?<!\b[dl]['´])\beau(?=[\s\-‐‑–—]+(?:20\d{2}[\s\-‐‑–—]+)?(?:guidelines?|congress(?:es)?|recommendations?|annual[\s\-‐‑–—]+(?:congress|meeting)|association)\b)~ui",
             'EAU',
             $new_case
         );

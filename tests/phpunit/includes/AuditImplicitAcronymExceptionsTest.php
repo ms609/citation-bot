@@ -61,6 +61,7 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
             'mixed-case French elision' => ["Revue des Sciences de l'eau", "Revue des Sciences de l'eau"],
             'French eau before adjective' => ['EAU NATURELLE', 'Eau Naturelle'],
             'French eau with apostrophe' => ["D'EAU POTABLE", "D'Eau Potable"],
+            'French hyphenated water' => ['EAU-POTABLE', 'Eau-Potable'],
         ];
     }
 
@@ -84,6 +85,11 @@ final class AuditImplicitAcronymExceptionsTest extends testBaseClass {
             'urology congress' => ['THE EAU CONGRESS', 'The EAU Congress'],
             'recommendations' => ['EAU RECOMMENDATIONS', 'EAU Recommendations'],
             'association' => ['EAU ASSOCIATION', 'EAU Association'],
+            'hyphenated guidelines' => ['EAU-GUIDELINES', 'EAU-Guidelines'],
+            'en-dash guidelines' => ['EAU–GUIDELINES', 'EAU–Guidelines'],
+            'dated guidelines' => ['EAU 2024 GUIDELINES', 'EAU 2024 Guidelines'],
+            'dated hyphenated guidelines' => ['EAU-2024-GUIDELINES', 'EAU-2024-Guidelines'],
+            'dated congress' => ['THE EAU 2025 CONGRESS', 'The EAU 2025 Congress'],
         ];
     }
 
