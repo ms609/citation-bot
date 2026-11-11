@@ -4,6 +4,27 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
+    public function testDoiStopsAtUnicodeWhitespaceAndKeepsFollowingText(): void {
+        uopz_set_return('doi_works', static fn (string $doi): bool => $doi === '10.1038/nature12373', true);
+        try {
+            foreach (["\u{00A0}", "\u{202F}", ' '] as $space) {
+                $text = '10.1038/nature12373' . $space . '(2013)';
+                $this->assertSame('10.1038/nature12373', extract_doi($text)[1]);
+                $template = $this->make_citation('{{cite web|title=Example paper|' . $text . '}}');
+                $template->prepare();
+                $this->assertSame('10.1038/nature12373', $template->get('doi'));
+                $this->assertStringContainsString('(2013)', $template->parsed_text());
+            }
+        } finally {
+            uopz_unset_return('doi_works');
+        }
+    }
+
+    public function testDoiPrefixRequiresAsciiDigitsEvenWithUnicodeMatching(): void {
+        $this->assertSame(1, preg_match(REGEXP_DOI, '10.1038/nature12373'));
+        $this->assertSame(0, preg_match(REGEXP_DOI, '10.١٠٣٨/nature12373'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
