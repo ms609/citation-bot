@@ -17,6 +17,22 @@ final class AuditDoiUrlSuffixTest extends testBaseClass {
         $this->assertSame($expected, trim_doi_url_suffix($input));
     }
 
+    public function testExtractDoiWithClosingMarkupWithoutResolver(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI resolution.');
+        }
+
+        uopz_set_return('doi_works', null);
+        try {
+            $doi = '10.1038/nature11111';
+            $this->assertSame($doi, extract_doi($doi . '/figures</span>')[1]);
+            $this->assertSame($doi, extract_doi($doi . '/epdfplus</i>')[1]);
+            $this->assertSame('10.4000/abstractairanica.4242', extract_doi('10.4000/abstractairanica.4242')[1]);
+        } finally {
+            uopz_unset_return('doi_works');
+        }
+    }
+
     /**
      * @return array<string, array{string, string}>
      */

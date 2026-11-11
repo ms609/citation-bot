@@ -512,7 +512,7 @@ function sanitize_doi(string $doi): string {
  */
 function trim_doi_url_suffix(string $doi): string {
     if (preg_match(
-                "~^(10\.\d{4,9}(?:/|%2[fF]).+?)((?:/abstracts?|/e?pdf(?:plus|direct)?|/full(?:-?text)?|/figures?|/default)(?=$|[/?#.\s])|</span>|[\s\|\"\?]|</).*+$~",
+                "~^(10\.\d{4,9}(?:/|%2[fF]).+?)((?:/abstracts?|/e?pdf(?:plus|direct)?|/full(?:-?text)?|/figures?|/default)(?=$|[/?#.\s|\"]|</)|</span>|[\s\|\"\?]|</).*+$~",
                 $doi, $new_match)) {
         return $new_match[1];
     }
