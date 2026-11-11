@@ -39,6 +39,18 @@ final class AuditSectionLetterATest extends testBaseClass {
 
     public function testLowerCaseInputIsNotPromoted(): void {
         $this->assertSame('Take Part a Little', title_capitalization('Take Part a Little', true));
+        $this->assertSame('Class a Methods', title_capitalization('Class a Methods', true));
+        $this->assertSame('Section a Methods', title_capitalization('Section a Methods', true));
+        $this->assertSame('Part a Methods', title_capitalization('Part a Methods', true));
+        $this->assertSame('Series a Methods', title_capitalization('Series a Methods', true));
+        $this->assertSame('Physica a Methods', title_capitalization('Physica a Methods', true));
+    }
+
+    public function testPartWithAnArticleIsNotASectionLabel(): void {
+        $this->assertSame('We Took Part a Long Time Ago', title_capitalization('WE TOOK PART A LONG TIME AGO', true));
+        $this->assertSame('We Took Part a Brief While', title_capitalization('WE TOOK PART A BRIEF WHILE', true));
+        $this->assertSame('In Part a Result of Choice', title_capitalization('IN PART A RESULT OF CHOICE', true));
+        $this->assertSame('Take Part A Long-Term Study', title_capitalization('Take Part A Long-Term Study', true));
     }
 
     public function testOnlyOriginallyUppercaseLabelsArePreserved(): void {

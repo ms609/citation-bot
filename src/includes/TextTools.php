@@ -645,9 +645,17 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
 
     $new_case = mb_ucfirst(mb_trim($new_case));
 
-    // In "took part a few times", "take part a little", etc., A is an article.
+    // "take/took part a little/long time" uses the indefinite article, not a label.
+    // These are deliberately limited grammatical exceptions; an ambiguous Part A
+    // is otherwise preserved when the input explicitly supplies an uppercase A.
     $new_case = safe_preg_replace(
-        '~(\b(?i:(?:take|takes|taking|taken|took)\s+part)\s+)A(?=\s+(?i:bit|couple|few|little|lot|while)\b(?!\p{Pd}))~u',
+        '~(\b(?i:(?:take|takes|taking|taken|took)\s+part)\s+)A(?=\s+(?i:bit|couple|few|little|lot|while|long|short|great|brief)\b(?!\p{Pd}))~u',
+        '$1a',
+        $new_case
+    );
+    // "in part a result" is likewise an article, not "Part A".
+    $new_case = safe_preg_replace(
+        '~(\b(?i:in\s+part)\s+)A(?=\s+(?i:result|consequence)\b(?!\p{Pd}))~u',
         '$1a',
         $new_case
     );
