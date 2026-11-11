@@ -1408,9 +1408,39 @@ PHP;
         [$exit_code, $output] = $this->runStandalone($setup, $body);
         $this->assertSame(0, $exit_code);
         $this->assertStringContainsString('BUSY[lease_lost|NULL|30]', $output);
-        $this->assertStringContainsString('"event":"lease_lost"', $output);
-        $this->assertStringContainsString('"entry_id":"b1"', $output);
+        $this->assertStringNotContainsString('LOG[', $output, 'routine big-run events are now silent');
         $this->assertStringNotContainsString('UNREACHABLE', $output);
+    }
+
+    public function testRoutineBigRunEventsAreSilentWithAndWithoutBotLogger(): void {
+        $body = <<<'PHP'
+big_run_log('promoted', ['tier' => 'large', 'pages' => 50]);
+echo 'DONE';
+PHP;
+        foreach ([
+            '',
+            'function bot_debug_log(string $text): void { echo "LOG[", $text, "]"; }',
+        ] as $setup) {
+            [$exit_code, $output] = $this->runStandalone($setup, $body);
+            $this->assertSame(0, $exit_code);
+            $this->assertSame('DONE', $output, 'no routine debug output on either logging path');
+        }
+    }
+
+    public function testInvalidBigRunStateStillEmitsOperatorWarning(): void {
+        $setup = 'function bot_debug_log(string $text): void { echo "LOG[", $text, "]"; }';
+        $body = <<<'PHP'
+big_run_log_state_invalid('test-corrupt-state');
+echo '|DONE';
+PHP;
+        [$exit_code, $output] = $this->runStandalone($setup, $body);
+        $this->assertSame(0, $exit_code);
+        $this->assertStringContainsString(
+            'LOG[Citation Bot big-run gate: INVALID SHARED STATE (test-corrupt-state)',
+            $output
+        );
+        $this->assertStringNotContainsString('"event":"state_invalid"', $output);
+        $this->assertStringEndsWith(']|DONE', $output);
     }
 
     public function testLeaseLossWithoutBufferingWarnsRendersFooterAndExits(): void {
