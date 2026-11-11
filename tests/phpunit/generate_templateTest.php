@@ -43,6 +43,7 @@ final class generate_templateTest extends testBaseClass {
         $this->assertStringContainsString('{{cite journal', $body);
         $this->assertMatchesRegularExpression('~jstor\s*=\s*373737~', $body);
         $this->assertMatchesRegularExpression('~title\s*=\s*Fixture article~', $body);
+        $this->assertTemplateFooter($body);
     }
 
     #[DataProvider('invalidIdentifiers')]
@@ -74,6 +75,14 @@ final class generate_templateTest extends testBaseClass {
         }
         $this->assertSame(400, http_response_code());
         $this->assertStringContainsString($message, $body);
+        $this->assertTemplateFooter($body);
+    }
+
+    private function assertTemplateFooter(string $body): void {
+        $this->assertMatchesRegularExpression('~</pre></main><footer>.*</footer></body></html>\s*\z~s', $body);
+        $this->assertStringContainsString('Back to Citation Bot</a>', $body);
+        $this->assertStringContainsString('Terms&nbsp;of&nbsp;Use</a>', $body);
+        $this->assertStringContainsString('Privacy&nbsp;Policy</a>', $body);
     }
 
     /** @return array<string, array{string, string}> */

@@ -418,4 +418,56 @@ final class gadgetapiTest extends testBaseClass {
             uopz_unset_return('request_rate_limit_consume_layered');
         }
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGadgetEndpointDiscardsConstructionOutputOnSuccess(): void {
+        if (!function_exists('uopz_set_return') || !function_exists('uopz_redefine')) {
+            $this->markTestSkipped('uopz is required to simulate production constructor output');
+        }
+        // Production web runs have SLOW_MODE false, so the Page constructor
+        // emits its fast-mode notice via report_info(). Under PHPUnit CI that
+        // output is suppressed, which hid the corrupted-JSON regression where
+        // the notice was echoed before output buffering started. Simulate the
+        // production notice and require the success body to stay pure JSON.
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_redefine('SLOW_MODE', false);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('request_rate_limit_consume_layered', null);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'expand_text', true);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'parsed_text', 'Original citation');
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(Page::class, 'edit_summary', 'Use this bot');
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('report_info', static function (): void {
+            echo 'constructor output that must not leak';
+        }, true);
+        try {
+            $response = $this->runGadgetEndpoint(
+                [
+                    'text' => 'Original citation',
+                    'summary' => 'Existing summary',
+                ],
+                'https://en.wikipedia.org'
+            );
+            $this->assertSame(200, $response['status']);
+            $this->assertSame(
+                ['expandedtext' => 'Original citation', 'editsummary' => 'Existing summary'],
+                json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR)
+            );
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('report_info');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'edit_summary');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'parsed_text');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return(Page::class, 'expand_text');
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('request_rate_limit_consume_layered');
+        }
+    }
 }

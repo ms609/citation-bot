@@ -41,8 +41,8 @@ try {
     unset($_GET, $_POST, $_REQUEST); // Memory minimize
 
     //Expand text from postvars
+    ob_start(); // Capture stray output from construction/parsing/expansion so it cannot corrupt the JSON response
     $page = new Page();
-    ob_stardfasfsdt(); // Capture stray output from parsing/expansion so it cannot corrupt the JSON response
     $page->parse_text($originalText);
     $page->expand_text();
     ob_end_clean();

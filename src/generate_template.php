@@ -14,8 +14,8 @@ send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVE
 function die_in_template(string $err, int $http_status): never {
     http_response_code($http_status);
     echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><link rel="stylesheet" type="text/css" href="assets/results.css" /><title>Make a Template</title></head><body><a href="#main-content" class="skip-link">Skip to main content</a><header><h1>Citation Bot – Generate Template</h1></header><main id="main-content"><h2>Generated citation template</h2><pre>',
-        $err,
-        '</pre></main><footer><a href="./" title="Use Citation Bot">Back to Citation Bot</a></footer></body></html>';
+        $err;
+    bot_html_footer(template_generator: true);
     exit(0);
 }
 
@@ -80,4 +80,5 @@ $page->expand_text();
 $text = $page->parsed_text();
 unset($page);
 
-echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n</pre></main><footer><a href=\"./\" title=\"Use Citation Bot\">Back to Citation Bot</a></footer></body></html>";
+echo "\n\n", echoable('<ref>' . $text . '</ref>'), "\n\n";
+bot_html_footer(template_generator: true);
