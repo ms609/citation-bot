@@ -91,6 +91,16 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('', $template->get('volume'));
     }
 
+    public function testInternationalPageRangeDoesNotDiscardSpecificPage(): void {
+        foreach (['١٠–٢٠', '１２–２０', '№9', 'Ⅻ'] as $candidate) {
+            $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');
+            $this->assertFalse($template->add_if_new('pages', $candidate, 'crossref'), $candidate);
+            $this->assertSame('12', $template->get('page'));
+        }
+        $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');
+        $this->assertFalse($template->add_if_new('pages', '10–20', 'crossref'));
+    }
+
     public function testCitoidChecksScriptTitleBeforeEnriching(): void {
         $url = 'https://www.jstor.org/stable/1234567';
         foreach (['Different article', '東京大学の研究'] as $result_title) {
