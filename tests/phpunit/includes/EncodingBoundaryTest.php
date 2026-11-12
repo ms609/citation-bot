@@ -25,6 +25,29 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame(0, preg_match(REGEXP_DOI, '10.١٠٣٨/nature12373'));
     }
 
+    public function testPercentDecodedTemplateValuesStayValidUtf8(): void {
+        $this->assertTrue(uopz_set_return('doi_works', false));
+        try {
+            $this->assertSame('caf%E9', urldecode_valid_utf8('caf%E9'));
+            $this->assertSame('café', urldecode_valid_utf8('caf%C3%A9'));
+            $this->assertSame('1234/caf%E9', hdl_decode('1234/caf%E9'));
+            $this->assertSame('10.1234/caf%E9', sanitize_doi('10.1234/caf%E9'));
+
+            foreach ([
+                'https://academic.oup.com/crawlprevention/governor?content=%2Fcaf%E9',
+                'https://www.ancestry.com/cs/offers/join?url=https://example.org/caf%E9',
+                'https://login.libproxy.example.org/login?url=https%3A%2F%2Fexample.org%2Fcaf%E9',
+            ] as $url) {
+                $template = $this->make_citation('{{cite web|title=Example article|url=' . $url . '}}');
+                clean_existing_urls($template, 'url');
+                $this->assertTrue(mb_check_encoding($template->parsed_text(), 'UTF-8'));
+                $this->assertStringContainsString('caf%E9', $template->get('url'));
+            }
+        } finally {
+            $this->assertTrue(uopz_unset_return('doi_works'));
+        }
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));

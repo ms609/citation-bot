@@ -14,6 +14,42 @@ require_once dirname(__DIR__, 2) . '/src/includes/GadgetApi.php';
 
 final class gadgetapiTest extends testBaseClass {
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testMalformedPercentEscapeDoesNotFailWholeGadgetRequest(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required for offline gadget expansion');
+        }
+        $this->assertTrue(uopz_set_return('request_rate_limit_consume_layered', null));
+        $this->assertTrue(uopz_set_return('bot_curl_exec', ''));
+        $this->assertTrue(uopz_set_return('bot_curl_exec_withFalse', false));
+        $this->assertTrue(uopz_set_return('doi_works', false));
+        $this->assertTrue(uopz_set_return('hdl_works', false));
+        $this->assertTrue(uopz_set_return('sleep', 0));
+        try {
+            foreach ([
+                '{{cite web|title=Example article|url=https://academic.oup.com/crawlprevention/governor?content=%2Fcaf%E9}}',
+                '{{cite journal|title=Example article|hdl=1234/caf%E9}}',
+                '{{cite journal|title=Example article|doi=10.1234/caf%E9}}',
+            ] as $citation) {
+                $response = $this->runGadgetEndpoint(
+                    ['text' => $citation, 'summary' => 'Encoding regression'],
+                    'https://en.wikipedia.org'
+                );
+                $this->assertSame(200, $response['status'], $citation);
+                $body = json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR);
+                $this->assertStringContainsString('caf%E9', $body['expandedtext']);
+            }
+        } finally {
+            $this->assertTrue(uopz_unset_return('sleep'));
+            $this->assertTrue(uopz_unset_return('hdl_works'));
+            $this->assertTrue(uopz_unset_return('doi_works'));
+            $this->assertTrue(uopz_unset_return('bot_curl_exec_withFalse'));
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+            $this->assertTrue(uopz_unset_return('request_rate_limit_consume_layered'));
+        }
+    }
+
     /**
      * Execute the real gadgetapi.php endpoint and return its status and body.
      *

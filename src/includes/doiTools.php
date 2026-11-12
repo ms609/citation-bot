@@ -441,7 +441,7 @@ function sanitize_doi(string $doi): string {
     $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
     $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
     $doi = str_replace("+", "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
-    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode($doi)));
+    $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, mb_trim(urldecode_valid_utf8($doi)));
     $pos = (int) mb_strrpos($doi, '.');
     if ($pos) {
         $extension = (string) mb_substr($doi, $pos);
