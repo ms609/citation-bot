@@ -2972,7 +2972,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank('doi') && preg_match('~10\.\d{4,9}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doi') && preg_match('~10\.[0-9]{4,9}/[^&\s\|\}\{]*~u', urldecode($this->parsed_text()), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
@@ -3614,10 +3614,10 @@ final class Template
                     case "lccn8": // Assume not normal template for a reason
                     case "google books": // Usually done for fancy formatting and because already has title-link/url
                     case "url": // Untrustable: used by bozos
-                    case "doi-inline": 
-                    case "lang": 
-                    case "muse": 
-                    case "newsbank text": 
+                    case "doi-inline":
+                    case "lang":
+                    case "muse":
+                    case "newsbank text":
                         break;
                     default:
                         report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name)); // @codeCoverageIgnore
