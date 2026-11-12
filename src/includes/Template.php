@@ -4274,7 +4274,7 @@ final class Template
             $new_name_mapped = $new_name;
             if (!in_array(WIKI_BASE, ENGLISH_WIKI, true)) {
                 foreach (ALL_TEMPLATES_MAP as $map_array) {
-                    if (isset($map_array[mb_strtolower($this->name)])) {
+                    if (isset($map_array[mb_strtolower(mb_trim($this->name))])) {
                         // Current name is foreign in this map: render the new name in the same language
                         foreach ($map_array as $map_in => $map_out) {
                             if ($new_name === $map_out) {
@@ -4291,7 +4291,7 @@ final class Template
             $new_name_mapped = str_replace('biorxiv', 'bioRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('medrxiv', 'medRxiv', $new_name_mapped); // Without the capital R is the alias
             $new_name_mapped = str_replace('ssrn', 'SSRN', $new_name_mapped); // Proper capitalization for SSRN
-            if (ctype_upper(mb_substr($this->name, 0, 1))) {
+            if (preg_match('~^\p{Lu}~u', mb_trim($this->name)) === 1) {
                 $new_name_mapped = mb_ucfirst($new_name_mapped);
             }
             if ($invoke !== '') {

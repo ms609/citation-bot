@@ -78,4 +78,21 @@ final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
         $this->assertStringStartsWith('{{наведено списание|', $template->parsed_text());
         $this->assertStringContainsString('doi=10.1080/03068374.2019.1636515', $template->parsed_text());
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testCyrillicCapitalizationAndWhitespaceSurviveRename(): void {
+        self::boot_mk_wiki();
+        $this->assertSame('mk', WIKI_BASE);
+        foreach ([
+            'Наведена мрежна страница' => 'Наведено списание',
+            'наведена мрежна страница' => 'наведено списание',
+            ' Наведена мрежна страница ' => ' Наведено списание ',
+        ] as $original => $renamed) {
+            $template = new Template();
+            $template->parse_text('{{' . $original . '|title=Example article|journal=Example Journal}}');
+            $template->change_name_to('cite journal');
+            $this->assertStringStartsWith('{{' . $renamed . '|', $template->parsed_text());
+        }
+    }
 }
