@@ -48,6 +48,24 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
     }
 
+    public function testTitleMatchingDoesNotEraseDifferentAccentedLetters(): void {
+        $this->assertFalse(titles_are_similar('Section Å', 'Section Ø'));
+        $this->assertFalse(titles_are_similar('Ø', 'Å'));
+        $this->assertTrue(titles_are_similar('Café culture', 'Cafe culture'));
+
+        $url = 'https://www.jstor.org/stable/1234567';
+        $template = $this->make_citation('{{cite journal|title=Section Å|url=' . $url . '}}');
+        $response = json_encode([[
+            'itemType' => 'journalArticle',
+            'url' => $url,
+            'title' => 'Section Ø',
+            'publicationTitle' => 'Journal of Other Research',
+            'volume' => '42',
+        ]], JSON_THROW_ON_ERROR);
+        Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
+        $this->assertSame('', $template->get('journal'));
+    }
+
     public function testDifferentInternationalTitleLabelsBlockEnrichment(): void {
         foreach ([
             ['Annual report ٢٠٢٤', 'Annual report ٢٠٢٥'],
@@ -81,6 +99,22 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
         $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');
         $this->assertFalse($template->add_if_new('pages', '10–20', 'crossref'));
+    }
+
+    public function testCitoidChecksScriptTitleBeforeEnriching(): void {
+        $url = 'https://www.jstor.org/stable/1234567';
+        foreach (['Different article', '東京大学の研究'] as $result_title) {
+            $template = $this->make_citation('{{cite journal|script-title=ja:東京大学の研究|url=' . $url . '}}');
+            $response = json_encode([[
+                'itemType' => 'journalArticle',
+                'url' => $url,
+                'title' => $result_title,
+                'publicationTitle' => 'Journal of Other Research',
+                'volume' => '42',
+            ]], JSON_THROW_ON_ERROR);
+            Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
+            $this->assertSame($result_title === '東京大学の研究' ? '42' : '', $template->get('volume'));
+        }
     }
 
     public function testMbStrrevHonorsExplicitEncoding(): void {
