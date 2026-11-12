@@ -698,6 +698,7 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 set_time_limit(120);
                 $raw_html = fetch_archive_page($ch, $archive_url);
                 $title_scan_html = archive_title_scan_window($raw_html);
+                sdaf
                 unset($raw_html);
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
