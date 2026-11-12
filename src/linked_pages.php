@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/setup.php';
 require_once __DIR__ . '/includes/request_security.php';
 send_configured_cors_header(is_string($_SERVER['HTTP_ORIGIN'] ?? null) ? $_SERVER['HTTP_ORIGIN'] : null);
 
-if (isset($_POST['linkpage']) && is_string($_POST['linkpage'])) {
+if (isset($_POST['linkpage']) && is_string($_POST['linkpage']) && mb_check_encoding($_POST['linkpage'], 'UTF-8')) {
     $page_name = $_POST['linkpage'];
 } else {
     bot_html_header();
@@ -37,10 +37,6 @@ if ($page_name === '') {
     report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
     bot_html_footer();
     exit(0);
-} elseif (mb_substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan', 'Redalert2fan'], true)) { // Do not let people run willy-nilly
-    report_warning('API only intended for User generated pages for fixing specific issues ');
-    bot_html_footer();
-    exit(0);
 }
 
 $dev_user_run = false;
@@ -56,6 +52,13 @@ if ($dev_user_run) {
 
 $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
 $discovery_entry_id = gate_big_run_probe('webform_linked', $api->get_the_user());
+if (!in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan', 'Redalert2fan'], true) && !WikipediaBot::title_is_in_user_namespace($page_name)) { // Do not let people run willy-nilly
+    report_warning('API only intended for User generated pages for fixing specific issues ');
+    release_big_run_lease($discovery_entry_id);
+    bot_html_footer();
+    bot_admission_buffer_flush();
+    exit(0);
+}
 $bulk_discovery_signaled = false;
 $pages_in_category = [];
 $seen_pages = [];
