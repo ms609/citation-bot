@@ -959,6 +959,28 @@ function not_an_archive_url_clean(Template $template, string $param): void {
     }
 }
 
+function is_wrapped_url_path(string $path): bool {
+    return preg_match('~^/(?![/\\\\])[^\x00-\x20\x7f]*$~D', $path) === 1;
+}
+
+/** Decode one wrapper layer and keep the wrapper payload on invalid UTF-8. */
+function decode_wrapped_citation_url(string $value): string {
+    $decoded = rawurldecode($value);
+    if (!mb_check_encoding($decoded, 'UTF-8') || preg_match('~[\x00-\x1f\x7f]~', $decoded) === 1) {
+        return $value;
+    }
+    return $decoded;
+}
+
+/** Ancestry also supplies already-unwrapped, literal URLs. */
+function ancestry_citation_destination(string $value, string $fallback): string {
+    if (preg_match('~^https?://~i', $value) === 1) {
+        return $value;
+    }
+    $decoded = decode_wrapped_citation_url($value);
+    return preg_match('~^https?://~i', $decoded) === 1 ? str_replace(' ', '+', $decoded) : $fallback;
+}
+
 function clean_existing_urls(Template $template, string $param): void {
     if ($template->blank($param)) {
         return;
@@ -1015,24 +1037,32 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         }
         return;
     } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9/\+]+=*)$~", $template->get($param), $matches)) {
-        if (base64_decode($matches[1])) {
+        $path = base64_decode($matches[1], true);
+        if (is_string($path) && mb_check_encoding($path, 'UTF-8') && is_wrapped_url_path($path)) {
             report_info("Decoding Bloomberg URL.");
-            $template->set($param, 'https://www.bloomberg.com' . base64_decode($matches[1]));
+            $template->set($param, 'https://www.bloomberg.com' . $path);
         }
     } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $template->get($param), $matches)) {
         $the_match = $matches[1];
-        $the_match = urldecode(urldecode($the_match));
-        if (preg_match("~^(https.+)/privacy\-?(?:gate|wall|confirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches)) {
+        for ($layer = 0; $layer < 2 && !str_starts_with($the_match, 'https://'); ++$layer) {
+            $the_match = decode_wrapped_citation_url($the_match);
+        }
+        if (preg_match("~^(https://[^?\x00-\x20]+?)/privacy\-?(?:gate|wall|confirm)(?:|/accept)(?:|\-tcf2)\?redirectUri=(/.+)$~", $the_match, $matches) &&
+                is_wrapped_url_path($matches[2])) {
             $template->set($param, $matches[1] . $matches[2]);
         }
     } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $template->get($param), $matches)) {
-        report_info("Decoding OUP URL.");
-        $template->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode_valid_utf8($matches[1])));
-        if ($template->get('title') === 'Validate User') {
-            $template->set('title', '');
-        }
-        if ($template->get('website') === 'academic.oup.com') {
-            $template->forget('website');
+        $path = str_starts_with($matches[1], '/') ? $matches[1] : decode_wrapped_citation_url($matches[1]);
+        if (is_wrapped_url_path($path)) {
+            report_info("Decoding OUP URL.");
+            $template->set($param, 'https://academic.oup.com' .
+                safe_preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', $path));
+            if ($template->get('title') === 'Validate User') {
+                $template->set('title', '');
+            }
+            if ($template->get('website') === 'academic.oup.com') {
+                $template->forget('website');
+            }
         }
     }
     if (preg_match("~^(https?://.+)#no-access-message$~", $template->get($param), $matches)) {
@@ -1129,20 +1159,22 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
                 }
             }
         } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?://)(.+)$~", $template->get($param), $matches)) {
-            if (mb_strpos($matches[2], '/') === false) {
-                $template->set($param, $matches[1] . urldecode_valid_utf8($matches[2]));
-            } else {
-                $template->set($param, $matches[1] . $matches[2]);
-            }
+            $destination = safe_preg_replace('~^([^/%?#]+)%2f~i', '$1/', $matches[2]);
+            $template->set($param, $matches[1] . $destination);
             report_info("Remove proxy from URL");
             if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
                 $template->forget('via');
             }
         } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?%3A%2F%2F.+)$~i", $template->get($param), $matches)) {
-            $template->set($param, urldecode_valid_utf8($matches[1]));
-            report_info("Remove proxy from URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
+            $destination = str_contains($matches[1], '/') || str_contains($matches[1], '?')
+                ? safe_preg_replace('~^(https?)%3a%2f%2f~i', '$1://', $matches[1])
+                : decode_wrapped_citation_url($matches[1]);
+            if ($destination !== $matches[1] && preg_match('~[\x00-\x20\x7f]~', $destination) === 0) {
+                $template->set($param, $destination);
+                report_info("Remove proxy from URL");
+                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                    $template->forget('via');
+                }
             }
         }
     }
@@ -1153,22 +1185,22 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         $template->set($param, $matches[1]);
     }
     if (preg_match("~ancestry\.com/cs/offers/join.*url=(http.*)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     if (preg_match("~ancestry\.com/account/create.*returnurl=(http.*)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $template->get($param), $matches)) {
-        $template->set($param, str_replace(' ', '+', urldecode_valid_utf8($matches[1])));
+        $template->set($param, ancestry_citation_destination($matches[1], $template->get($param)));
     }
     // idm.oclc.org Proxy
     if (mb_stripos($template->get($param), 'idm.oclc.org') !== false && mb_stripos($template->get($param), 'ancestryinstitution') === false) {
@@ -1189,8 +1221,11 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
             $template->set($param, $matches[1]);
             $oclc_found = true;
         } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/\%]+\.[^\.\-\/\%]+\.[^\.\-\/\%]+)(\%2f.*)$~i", $template->get($param), $matches)) {
-            $template->set($param, $matches[1] . urldecode_valid_utf8($matches[2]));
-            $oclc_found = true;
+            $path = decode_wrapped_citation_url($matches[2]);
+            if ($path !== $matches[2]) {
+                $template->set($param, $matches[1] . $path);
+                $oclc_found = true;
+            }
         }
         if ($oclc_found) {
             report_info("Remove OCLC proxy from URL");
@@ -1232,13 +1267,16 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
     }
     if (mb_stripos($template->get($param), 'galegroup') !== false) {
         if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~i", $template->get($param), $matches)) {
-            $template->set($param, 'https://go.galegroup.com' . urldecode_valid_utf8($matches[1]));
-            report_info("Remove proxy from Gale URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                $template->forget('via');
+            $path = decode_wrapped_citation_url($matches[1]);
+            if ($path !== $matches[1]) {
+                $template->set($param, 'https://go.galegroup.com' . $path);
+                report_info("Remove proxy from Gale URL");
+                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                    $template->forget('via');
+                }
+                if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                    $template->forget('via');
+                }
             }
         } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~i", $template->get($param), $matches)) {
             $template->set($param, 'https://go.galegroup.com/' . $matches[1]);
@@ -1250,13 +1288,16 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
                 $template->forget('via');
             }
         } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~i", $template->get($param), $matches)) {
-            $template->set($param, 'https://link.galegroup.com' . urldecode_valid_utf8($matches[1]));
-            report_info("Remove proxy from Gale URL");
-            if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
-                $template->forget('via');
-            }
-            if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
-                $template->forget('via');
+            $path = decode_wrapped_citation_url($matches[1]);
+            if ($path !== $matches[1]) {
+                $template->set($param, 'https://link.galegroup.com' . $path);
+                report_info("Remove proxy from Gale URL");
+                if ($template->has('via') && mb_stripos($template->get('via'), 'library') !== false) {
+                    $template->forget('via');
+                }
+                if ($template->has('via') && mb_stripos($template->get('via'), 'gale') === false) {
+                    $template->forget('via');
+                }
             }
         } elseif (preg_match("~^http.+url=https?://link\.galegroup\.com/(.+)$~", $template->get($param), $matches)) {
             $template->set($param, 'https://link.galegroup.com/' . $matches[1]);
