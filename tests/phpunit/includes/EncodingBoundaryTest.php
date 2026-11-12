@@ -117,6 +117,12 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
     }
 
+    public function testNumericMathmlEntitiesUseSameLatexAsLiteralSymbols(): void {
+        $expected = 'Measurements of <math>\\alpha\\leq\\beta</math>';
+        $this->assertSame($expected, wikify_external_text('Measurements of <math><mi>α</mi><mo>≤</mo><mi>β</mi></math>'));
+        $this->assertSame($expected, wikify_external_text('Measurements of <math><mi>&#x3b1;</mi><mo>&#x2264;</mo><mi>&#946;</mi></math>'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
