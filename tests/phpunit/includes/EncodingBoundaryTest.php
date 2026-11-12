@@ -151,6 +151,66 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
     }
 
+    public function testInternationalAuthorsAreNotMistakenForInitials(): void {
+        $this->assertSame('王小明', format_author('王小明'));
+        $this->assertSame('김민수', format_author('김민수'));
+        $this->assertFalse(is_initials('明'));
+        $this->assertSame('Élodie', format_surname("E\u{0301}lodie"));
+
+        $template = $this->make_citation('{{cite journal|title=Example article}}');
+        $template->validate_and_add('author1', "E\u{0301} Smith", '', '', false);
+        $this->assertSame('É.', $template->get('first1'));
+
+        $previous_style = Template::$name_list_style;
+        try {
+            $template = $this->make_citation('{{cite journal|title=Example article}}');
+            $template->set('last1', 'García');
+            $template->set('first1', "E\u{0301}lodie");
+            Template::$name_list_style = VancStyle::NAME_LIST_STYLE_VANC;
+            $this->assertStringContainsString('García É', $template->parsed_text());
+        } finally {
+            Template::$name_list_style = $previous_style;
+        }
+    }
+
+    public function testPubmedPreservesHyphenatedInitialAuthor(): void {
+        $this->assertSame(['Smith A-B', 'Smith', 'A-B'], pubmed_split_author_name('Smith A-B'));
+        $document = new SimpleXMLElement('<eSummaryResult><DocSum><Id>123</Id>' .
+            '<Item Name="AuthorList" Type="List"><Item Name="Author" Type="String">Smith A-B</Item>' .
+            '<Item Name="Author" Type="String">García M</Item></Item></DocSum></eSummaryResult>');
+        uopz_set_return('get_entrez_xml', $document);
+        uopz_set_return('get_doi_from_crossref', null);
+        try {
+            $template = $this->make_citation('{{cite journal|title=Example article|pmid=123}}');
+            $templates = [$template];
+            query_pmid_api(['123'], $templates);
+            $this->assertSame('Smith', $template->get('last1'));
+            $this->assertSame('García', $template->get('last2'));
+        } finally {
+            uopz_unset_return('get_doi_from_crossref');
+            uopz_unset_return('get_entrez_xml');
+        }
+    }
+
+    public function testCitoidDeduplicatesCanonicallyEquivalentCreators(): void {
+        $url = 'https://example.org/article';
+        $template = $this->make_citation('{{cite journal|title=Example article|url=' . $url . '}}');
+        $creators = [
+            ['firstName' => 'José', 'lastName' => 'García', 'creatorType' => 'author'],
+            ['firstName' => "Jose\u{0301}", 'lastName' => "Garci\u{0301}a", 'creatorType' => 'author'],
+            ['firstName' => 'Sofía', 'lastName' => 'Lopez', 'creatorType' => 'author'],
+        ];
+        Zotero::process_zotero_response(json_encode([[
+            'itemType' => 'journalArticle',
+            'title' => 'Example article',
+            'publicationTitle' => 'Example Journal',
+            'creators' => $creators,
+        ]], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
+        $this->assertSame('García', $template->get('last1'));
+        $this->assertSame('Lopez', $template->get('last2'));
+        $this->assertSame('', $template->get('last3'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));

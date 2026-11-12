@@ -29,7 +29,8 @@ function pubmed_item_name(SimpleXMLElement $item): string {
  * @return array{0: string, 1: string, 2: string}|null  [whole match, surname, initials]
  */
 function pubmed_split_author_name(string $name): ?array {
-    if (preg_match("~(.*) (\w+)$~u", $name, $names) !== 1) {
+    $name = normalize_unicode_nfc($name);
+    if (preg_match("~(.*) ([\w-]+)$~u", $name, $names) !== 1) {
         return null;
     }
     $first = mb_trim((string) preg_replace('~(?<=\p{Lu})(\p{Lu})~u', ". $1", $names[2]));
