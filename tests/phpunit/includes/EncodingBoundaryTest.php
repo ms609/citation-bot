@@ -241,6 +241,15 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('15 May 2020', $template->get('date'));
     }
 
+    public function testPageOutputFilenameDoesNotExceedByteLimit(): void {
+        $this->assertSame('Example_page.md', page_output_filename('Example page'));
+        $title = str_repeat('研', 85);
+        $filename = page_output_filename($title);
+        $this->assertLessThanOrEqual(255, mb_strlen($filename, '8bit'));
+        $this->assertTrue(mb_check_encoding($filename, 'UTF-8'));
+        $this->assertNotSame($filename, page_output_filename(str_repeat('究', 85)));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
