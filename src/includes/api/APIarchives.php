@@ -698,6 +698,19 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 set_time_limit(120);
                 $raw_html = fetch_archive_page($ch, $archive_url);
                 $title_scan_html = archive_title_scan_window($raw_html);
+                foreach (archive_candidate_encodings($raw_html) as $encoding) {
+                    $encoding_key = mb_strtolower($encoding, '8bit');
+                    if (!in_array($encoding_key, ['utf-16', 'utf-16le', 'utf-16be', 'iso-2022-jp'], true)) {
+                        continue;
+                    }
+                    // UTF-16 has no ASCII markup to search; ISO-2022-JP has
+                    // ASCII markup but valid UTF-8 escape bytes in its title.
+                    $decoded_body = smart_decode(archive_http_body($raw_html), $encoding, $archive_url);
+                    if ($decoded_body !== '' && mb_check_encoding($decoded_body, 'UTF-8')) {
+                        $title_scan_html = archive_title_scan_window($decoded_body);
+                        break;
+                    }
+                }
                 unset($raw_html);
                 foreach ([
                     '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',

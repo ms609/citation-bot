@@ -312,6 +312,31 @@ final class EncodingBoundaryTest extends testBaseClass {
         );
     }
 
+    public function testArchiveDecodesUtf16AndIso2022BeforeSearchingTitle(): void {
+        $archive_url = 'https://web.archive.org/web/20120101000000/https://example.org/a';
+        foreach (['UTF-16LE', 'UTF-16BE', 'ISO-2022-JP', 'SJIS-win'] as $encoding) {
+            $title = '日本語の研究';
+            $body = '<!doctype html><html><head><title>' .
+                mb_convert_encoding($title, $encoding, 'UTF-8') . '</title></head><body>Example</body></html>';
+            if ($encoding === 'UTF-16LE' || $encoding === 'UTF-16BE') {
+                $utf8_body = '<!doctype html><html><head><title>' . $title .
+                    '</title></head><body>Example</body></html>';
+                $body = ($encoding === 'UTF-16LE' ? "\xFF\xFE" : "\xFE\xFF") .
+                    mb_convert_encoding($utf8_body, $encoding, 'UTF-8');
+            }
+            $response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=" . $encoding . "\r\n\r\n" . $body;
+            $this->assertTrue(uopz_set_return('fetch_archive_page', $response));
+            try {
+                $template = $this->make_citation('{{cite web|archive-url=' . $archive_url . '|title=Archived copy}}');
+                $templates = [$template];
+                expand_templates_from_archives($templates);
+                $this->assertSame($title, $template->get('title'), $encoding);
+            } finally {
+                $this->assertTrue(uopz_unset_return('fetch_archive_page'));
+            }
+        }
+    }
+
     public function testArchiveTitleCandidateDecodesBeforeUnicodeOperations(): void {
         $this->assertSame(
             '“Café”',
