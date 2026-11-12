@@ -20,12 +20,12 @@ final class gadgetapiTest extends testBaseClass {
         if (!function_exists('uopz_set_return')) {
             $this->markTestSkipped('uopz is required for offline gadget expansion');
         }
-        uopz_set_return('request_rate_limit_consume_layered', null);
-        uopz_set_return('bot_curl_exec', '');
-        uopz_set_return('bot_curl_exec_withFalse', false);
-        uopz_set_return('doi_works', false);
-        uopz_set_return('hdl_works', false);
-        uopz_set_return('sleep', 0);
+        $this->assertTrue(uopz_set_return('request_rate_limit_consume_layered', null));
+        $this->assertTrue(uopz_set_return('bot_curl_exec', ''));
+        $this->assertTrue(uopz_set_return('bot_curl_exec_withFalse', false));
+        $this->assertTrue(uopz_set_return('doi_works', false));
+        $this->assertTrue(uopz_set_return('hdl_works', false));
+        $this->assertTrue(uopz_set_return('sleep', 0));
         try {
             foreach ([
                 '{{cite web|title=Example article|url=https://academic.oup.com/crawlprevention/governor?content=%2Fcaf%E9}}',
@@ -41,12 +41,12 @@ final class gadgetapiTest extends testBaseClass {
                 $this->assertStringContainsString('caf%E9', $body['expandedtext']);
             }
         } finally {
-            uopz_unset_return('sleep');
-            uopz_unset_return('hdl_works');
-            uopz_unset_return('doi_works');
-            uopz_unset_return('bot_curl_exec_withFalse');
-            uopz_unset_return('bot_curl_exec');
-            uopz_unset_return('request_rate_limit_consume_layered');
+            $this->assertTrue(uopz_unset_return('sleep'));
+            $this->assertTrue(uopz_unset_return('hdl_works'));
+            $this->assertTrue(uopz_unset_return('doi_works'));
+            $this->assertTrue(uopz_unset_return('bot_curl_exec_withFalse'));
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+            $this->assertTrue(uopz_unset_return('request_rate_limit_consume_layered'));
         }
     }
 

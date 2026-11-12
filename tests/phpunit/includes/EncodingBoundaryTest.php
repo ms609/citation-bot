@@ -26,7 +26,7 @@ final class EncodingBoundaryTest extends testBaseClass {
     }
 
     public function testPercentDecodedTemplateValuesStayValidUtf8(): void {
-        uopz_set_return('doi_works', false);
+        $this->assertTrue(uopz_set_return('doi_works', false));
         try {
             $this->assertSame('caf%E9', urldecode_valid_utf8('caf%E9'));
             $this->assertSame('café', urldecode_valid_utf8('caf%C3%A9'));
@@ -44,7 +44,7 @@ final class EncodingBoundaryTest extends testBaseClass {
                 $this->assertStringContainsString('caf%E9', $template->get('url'));
             }
         } finally {
-            uopz_unset_return('doi_works');
+            $this->assertTrue(uopz_unset_return('doi_works'));
         }
     }
 
