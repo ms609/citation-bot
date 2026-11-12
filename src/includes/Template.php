@@ -1908,8 +1908,7 @@ final class Template
                     } else {
                         $value = mb_trim($value);
                         $script_value = $this->get('script-title');
-                        if (preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $value) && mb_stripos($script_value, $value) === false && mb_stripos($value, $script_value) === false && !preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $script_value)) {
-                            // Neither one is part of the other and script is not all ascii and new title is all ascii
+                        if (citation_titles_use_romanization($value, $script_value)) {
                             return $this->add($param_name, wikify_external_text($value));
                         }
                     }

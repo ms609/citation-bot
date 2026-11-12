@@ -291,6 +291,23 @@ function is_annual_review_cell_biology(string $journal, string $doi = ''): bool 
         str_equivalent($journal, 'Annual Review of Cell and Developmental Biology');
 }
 
+/**
+ * Remove a CS1 language tag before comparing original script text.
+ */
+function citation_script_title_text(string $title): string {
+    $title = safe_preg_replace('~^[a-z]{2,3}(?:-[a-z0-9]{1,8})*:\s*~i', '', $title);
+    return normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+}
+
+/** A Latin title and a genuinely non-Latin original can coexist. */
+function citation_titles_use_romanization(string $title, string $native): bool {
+    $latin = normalize_unicode_nfc(mb_trim(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')));
+    $native = citation_script_title_text($native);
+    return preg_match('~\p{Latin}~u', $latin) === 1 &&
+        preg_match('~^[\p{Latin}\p{M}0-9\s.,;:!?\'’"()\-–—]+$~uD', $latin) === 1 &&
+        preg_match('~[^\p{Latin}\p{Common}\p{Inherited}]~u', $native) === 1;
+}
+
 /** See also str_equivalent() */
 function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
