@@ -282,7 +282,7 @@ final class EncodingBoundaryTest extends testBaseClass {
     }
 
     public function testPageOutputFilenameDoesNotExceedByteLimit(): void {
-        $this->assertSame('Example_page.md', page_output_filename('Example page'));
+        $this->assertMatchesRegularExpression('~^Example_page-[0-9a-f]{16}\.md$~D', page_output_filename('Example page'));
         $title = str_repeat('研', 85);
         $filename = page_output_filename($title);
         $this->assertLessThanOrEqual(255, mb_strlen($filename, '8bit'));
