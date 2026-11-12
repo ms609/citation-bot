@@ -48,6 +48,25 @@ final class EncodingBoundaryTest extends testBaseClass {
         }
     }
 
+    public function testTitleMatchingDoesNotEraseDifferentAccentedLetters(): void {
+        $this->assertFalse(titles_are_similar('Section Å', 'Section Ø'));
+        $this->assertFalse(titles_are_similar('Ø', 'Å'));
+        $this->assertTrue(titles_are_similar('Café culture', 'Cafe culture'));
+
+        $url = 'https://www.jstor.org/stable/1234567';
+        $template = $this->make_citation('{{cite journal|title=Section Å|url=' . $url . '}}');
+        $response = json_encode([[
+            'itemType' => 'journalArticle',
+            'url' => $url,
+            'title' => 'Section Ø',
+            'publicationTitle' => 'Journal of Other Research',
+            'volume' => '42',
+        ]], JSON_THROW_ON_ERROR);
+        Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
+        $this->assertSame('', $template->get('journal'));
+        $this->assertSame('', $template->get('volume'));
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
