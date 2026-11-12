@@ -101,6 +101,21 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertFalse($template->add_if_new('pages', '10–20', 'crossref'));
     }
 
+    public function testDistinctInternationalUrlPathsSurviveBookConversion(): void {
+        foreach ([
+            ['https://example.org/Straße', 'https://example.org/STRASSE'],
+            ['https://example.org/école', 'https://example.org/École'],
+        ] as [$url, $chapter_url]) {
+            $template = $this->make_citation('{{cite web|title=Example book|chapter=Chapter|publisher=Example|url=' .
+                $url . '|chapter-url=' . $chapter_url . '}}');
+            $template->change_name_to('cite book');
+            $this->assertSame($url, $template->get('url'));
+            $this->assertSame($chapter_url, $template->get('chapter-url'));
+        }
+        $this->assertTrue(citation_urls_equivalent('https://EXAMPLE.ORG/same', 'https://example.org/same'));
+        $this->assertFalse(citation_urls_equivalent('https://example.org/Part1', 'https://example.org/part1'));
+    }
+
     public function testCitoidChecksScriptTitleBeforeEnriching(): void {
         $url = 'https://www.jstor.org/stable/1234567';
         foreach (['Different article', '東京大学の研究'] as $result_title) {
