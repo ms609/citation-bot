@@ -55,6 +55,7 @@ function mathml_safe_preg_replace_callback(string $regex, callable $replace, str
  * Existing citations with MathML will retain their current values during tidying operations.
  */
 function convert_mathml_to_latex(string $mathml): string {
+    dafs
     // Remove mml: namespace prefix if present
     $mathml = str_replace(['<mml:', '</mml:'], ['<', '</'], $mathml);
 
