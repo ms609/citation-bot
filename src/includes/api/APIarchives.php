@@ -554,6 +554,16 @@ function archive_candidate_encodings(string $html): array {
     $headers = archive_http_header_block($html);
     $body = archive_http_body($html);
 
+    if (str_starts_with($body, "\xFF\xFE")) {
+        return ['UTF-16LE'];
+    }
+    if (str_starts_with($body, "\xFE\xFF")) {
+        return ['UTF-16BE'];
+    }
+    if (str_starts_with($body, "\xEF\xBB\xBF")) {
+        return ['UTF-8'];
+    }
+
     if ($headers !== '') {
         if (preg_match_all('~^content-type:\s*([^\r\n]*)\r?$~im', $headers, $header_matches)) {
             foreach ($header_matches[1] as $content_type) {
@@ -705,7 +715,11 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                     }
                     // UTF-16 has no ASCII markup to search; ISO-2022-JP has
                     // ASCII markup but valid UTF-8 escape bytes in its title.
-                    $decoded_body = smart_decode(archive_http_body($raw_html), $encoding, $archive_url);
+                    $body = archive_http_body($raw_html);
+                    $body_prefix = mb_strcut($body, 0, ARCHIVE_TITLE_SCAN_MAX_BYTES, $encoding);
+                    unset($body);
+                    $decoded_body = smart_decode($body_prefix, $encoding, $archive_url);
+                    unset($body_prefix);
                     if ($decoded_body !== '' && mb_check_encoding($decoded_body, 'UTF-8')) {
                         $title_scan_html = archive_title_scan_window($decoded_body);
                         break;
