@@ -323,16 +323,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
             }
         }
     }
-    // Strip diacritics before decode
-    $inTitle = strip_diacritics($inTitle);
-    $dbTitle = strip_diacritics($dbTitle);
-    // Decode entities before tokenizing numbers, including spaces such as &nbsp;.
-    $inSpaced = html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
-    $dbSpaced = html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    // Keep the original labels for identity checks before accent folding.
+    $inSpaced = normalize_unicode_nfc(html_entity_decode($inTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
+    $dbSpaced = normalize_unicode_nfc(html_entity_decode($dbTitle, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
     // always decode new data
     $dbTitle = titles_simple(htmlspecialchars($dbSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     // old data both decoded and not
-    $inTitle2 = titles_simple($inTitle);
+    $inTitle2 = titles_simple(strip_diacritics($inTitle));
     $inTitle = titles_simple(htmlspecialchars($inSpaced, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8"));
     $dbTitle = strip_diacritics($dbTitle);
     $inTitle = strip_diacritics($inTitle);
@@ -456,7 +453,7 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
 /** @return array{0: string, 1: array<string>} */
 function title_lettered_labels(string $title): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags(html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -467,10 +464,10 @@ function title_lettered_labels(string $title): array {
     $labels = [];
     $label_words = ['appendix', 'class', 'figure', 'group', 'hepatitis', 'panel',
         'part', 'phase', 'physica', 'region', 'section', 'series', 'stage',
-        'table', 'type', 'variant', 'vitamin', 'гепатит'];
+        'table', 'type', 'variant', 'vitamin', 'гепатит', 'μέρος', 'κεφάλαιο'];
     foreach ($parts as $index => $part) {
         if ($index > 0 && in_array($parts[$index - 1], $label_words, true) &&
-                (preg_match('~^\p{L}$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
+                (preg_match('~^\p{L}\p{M}*$~u', $part) === 1 || preg_match('~^\p{Nd}{1,9}$~u', $part) === 1 ||
                  // Multi-character Roman numerals may also be section labels.
                  // Limit to <=50 so ordinary words like 'mix' are not mistaken for 1009.
                  (mb_strlen($part) > 1 &&
@@ -494,7 +491,8 @@ function title_lettered_labels(string $title): array {
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
-    $parts = preg_split('~[^\p{L}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
+    $title = safe_preg_replace('~第([〇零一二三四五六七八九十百千]+)章~u', ' 第$1章 ', $title);
+    $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
     }
@@ -507,6 +505,9 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
+        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+章$~u', $part) === 1) {
+            $skeleton[] = '第#章';
+            $numbers[] = $part;
         } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
             // Keep the original digits as an identity token. Casting non-ASCII
             // numerals with intval() would collapse different years to zero.
