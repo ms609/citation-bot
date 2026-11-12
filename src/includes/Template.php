@@ -4925,13 +4925,23 @@ final class Template
                     $day = $this->get('day');
                     $month = $this->get('month');
                     $year = $this->get('year');
-                    if ($day === '' && preg_match('~^([a-zA-Z]+) 0*(\d+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^([\p{L}\p{M}]+) 0*([0-9]+)$~u', $month, $matches)) {
                         $day = $matches[2];
                         $month = $matches[1];
                     }
-                    if ($day === '' && preg_match('~^0*(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^0*([0-9]+) ([\p{L}\p{M}]+)$~u', $month, $matches)) {
                         $day = $matches[1];
                         $month = $matches[2];
+                    }
+                    if (WIKI_BASE === 'en') {
+                        $localized_date = localized_citation_date($day . ' ' . $month . ' ' . $year);
+                        if ($localized_date !== null) {
+                            if ($localized_date !== '') {
+                                $this->forget('day');
+                                $this->rename($param, 'date', $localized_date);
+                            }
+                            return;
+                        }
                     }
                     if (!preg_match('~^\d*$~', $day)) {
                         return;

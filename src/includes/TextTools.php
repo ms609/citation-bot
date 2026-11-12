@@ -1113,6 +1113,37 @@ function remove_brackets(string $string): string {
 // ============================================= Data processing functions ======================================
 
 /**
+ * Convert an unambiguous localized day–month–year date for English CS1.
+ * Return null for unfamiliar formats and an empty string for invalid dates.
+ */
+function localized_citation_date(string $date): ?string {
+    $date = mb_strtolower(normalize_unicode_nfc(mb_trim($date)));
+    if (preg_match('~^([0-9]{1,2})\.?\s+(\p{L}[\p{L}\p{M}]*)\s+([0-9]{4})$~uD', $date, $parts) !== 1) {
+        return null;
+    }
+    $months = [
+        'janvier' => 1, 'février' => 2, 'mars' => 3, 'avril' => 4, 'mai' => 5, 'juin' => 6,
+        'juillet' => 7, 'août' => 8, 'septembre' => 9, 'octobre' => 10, 'novembre' => 11, 'décembre' => 12,
+        'januar' => 1, 'februar' => 2, 'märz' => 3, 'april' => 4, 'juni' => 6,
+        'juli' => 7, 'august' => 8, 'september' => 9, 'oktober' => 10, 'dezember' => 12,
+        'enero' => 1, 'febrero' => 2, 'marzo' => 3, 'abril' => 4, 'mayo' => 5, 'junio' => 6,
+        'julio' => 7, 'agosto' => 8, 'septiembre' => 9, 'octubre' => 10, 'noviembre' => 11, 'diciembre' => 12,
+        'января' => 1, 'февраля' => 2, 'марта' => 3, 'апреля' => 4, 'мая' => 5, 'июня' => 6,
+        'июля' => 7, 'августа' => 8, 'сентября' => 9, 'октября' => 10, 'ноября' => 11, 'декабря' => 12,
+    ];
+    $month = $months[$parts[2]] ?? null;
+    if ($month === null) {
+        return null;
+    }
+    $day = (int) $parts[1];
+    $year = (int) $parts[3];
+    if (!checkdate($month, $day, $year)) {
+        return '';
+    }
+    return $day . ' ' . MONTH_SEASONS[$month - 1] . ' ' . $parts[3];
+}
+
+/**
  * Wrapper to change all pre-1900 dates to just years
  */
 function tidy_date(string $string): string {

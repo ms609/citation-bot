@@ -1834,7 +1834,8 @@ final class Zotero {
         }
         if (isset($result->date) && mb_strlen((string) $result->date) > 3) {
             $source_date = (string) $result->date;
-            $new_date = tidy_date($source_date);
+            $localized_date = WIKI_BASE === 'en' ? localized_citation_date($source_date) : null;
+            $new_date = tidy_date($localized_date ?? $source_date);
             if (preg_match('~^[0-9]{4}$~D', $new_date) === 1 &&
                 mb_trim($source_date) !== $new_date &&
                 (preg_match('~\p{L}~u', $source_date) === 1 ||

@@ -267,12 +267,18 @@ final class EncodingBoundaryTest extends testBaseClass {
 
     public function testCitoidDoesNotCollapseInternationalDatesOrRangesToYear(): void {
         $url = 'https://example.org/article';
-        foreach (['15 février 2020', '15 marzo 2020', '15 мая 2020', '2020–2021'] as $source_date) {
+        foreach ([
+            '15 février 2020' => '15 February 2020',
+            '15 marzo 2020' => '15 March 2020',
+            '15 мая 2020' => '15 May 2020',
+            '30 février 2020' => '',
+            '2020–2021' => '',
+        ] as $source_date => $expected) {
             $template = $this->make_citation('{{cite web|title=Example article|url=' . $url . '}}');
             Zotero::process_zotero_response(json_encode([[
                 'itemType' => 'webpage', 'title' => 'Example article', 'date' => $source_date,
             ]], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
-            $this->assertSame('', $template->get('date'), $source_date);
+            $this->assertSame($expected, $template->get('date'), $source_date);
         }
         $template = $this->make_citation('{{cite web|title=Example article|url=' . $url . '}}');
         Zotero::process_zotero_response(json_encode([[
