@@ -298,9 +298,10 @@ function titles_are_similar(string $title1, string $title2): bool {
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
     }
-    // Try again but with funky stuff mapped out of existence
-    $title1 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title1));
-    $title2 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title2));
+    // The first pass already transliterates diacritics. Removing their letters
+    // here makes different titles such as Section Å and Section Ø identical.
+    $title1 = str_replace('�', '', $title1);
+    $title2 = str_replace('�', '', $title2);
     if (!titles_are_dissimilar($title1, $title2)) {
         return true;
     }
