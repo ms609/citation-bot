@@ -101,6 +101,18 @@ function filter_runnable_page_titles(array $pages): array {
     return array_values(array_unique($filtered, SORT_STRING));
 }
 
+/** Keep the optional save-to-files basename within a 255-byte filename limit. */
+function page_output_filename(string $page_title): string {
+    $basename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title);
+    if (!is_string($basename)) {
+        $basename = $page_title; // Invalid UTF-8 titles are filtered before this call.
+    }
+    if (mb_strlen($basename, '8bit') > 252) {
+        $basename = mb_strcut($basename, 0, 240, 'UTF-8') . '-' . mb_substr(hash('sha256', $page_title), 0, 10, '8bit');
+    }
+    return $basename . '.md';
+}
+
 /**
  * Bound the raw page-list string before explode() duplicates its memory.
  * N titles of at most 255 bytes plus N-1 separators fit in N*256 bytes.
@@ -593,7 +605,7 @@ function edit_a_list_of_pages(
                     if (SAVETOFILES_MODE) {
                         // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
                         // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
-                        $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
+                        $filename = page_output_filename($page_title);
                         report_phase("Saving to file " . echoable($filename));
                         $body = $page->parsed_text();
                         $bodylen = mb_strlen($body, '8bit'); // byte count, not character count
