@@ -178,8 +178,8 @@ final class EncodingBoundaryTest extends testBaseClass {
         $document = new SimpleXMLElement('<eSummaryResult><DocSum><Id>123</Id>' .
             '<Item Name="AuthorList" Type="List"><Item Name="Author" Type="String">Smith A-B</Item>' .
             '<Item Name="Author" Type="String">García M</Item></Item></DocSum></eSummaryResult>');
-        uopz_set_return('get_entrez_xml', $document);
-        uopz_set_return('get_doi_from_crossref', null);
+        $this->assertTrue(uopz_set_return('get_entrez_xml', $document));
+        $this->assertTrue(uopz_set_return('get_doi_from_crossref', null));
         try {
             $template = $this->make_citation('{{cite journal|title=Example article|pmid=123}}');
             $templates = [$template];
@@ -187,8 +187,8 @@ final class EncodingBoundaryTest extends testBaseClass {
             $this->assertSame('Smith', $template->get('last1'));
             $this->assertSame('García', $template->get('last2'));
         } finally {
-            uopz_unset_return('get_doi_from_crossref');
-            uopz_unset_return('get_entrez_xml');
+            $this->assertTrue(uopz_unset_return('get_doi_from_crossref'));
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
         }
     }
 
