@@ -2107,7 +2107,7 @@ final class Template
                 }
                 $pages_value = $this->get('pages');
                 $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
-                $en_dash = ["\u{2013}", chr(150), chr(226), '-', '&ndash;'];
+                $en_dash = ["\u{2013}", "\u{2014}", "\u{2012}", '-', '&ndash;'];
                 $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
                 if (
                     mb_stripos($all_page_values, 'see ') !== false || // Someone is pointing to a specific part
@@ -2121,6 +2121,13 @@ final class Template
                     mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== false
                 ) {
                     // A comment or template will block the bot
+                    return false;
+                }
+                if (!$this->blank(PAGE_ALIASES) &&
+                    preg_match('~(?![0-9])\p{Nd}~u', $value . $all_page_values) === 1) {
+                    // The specific-page containment check below parses ASCII
+                    // digits only. Preserve the editor's page when either
+                    // locator uses a different decimal numeral script.
                     return false;
                 }
                 if (

@@ -91,6 +91,16 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('', $template->get('volume'));
     }
 
+    public function testInternationalPageRangeDoesNotDiscardSpecificPage(): void {
+        foreach (['١٠–٢٠', '１２–２０', '№9', 'Ⅻ'] as $candidate) {
+            $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');
+            $this->assertFalse($template->add_if_new('pages', $candidate, 'crossref'), $candidate);
+            $this->assertSame('12', $template->get('page'));
+        }
+        $template = $this->make_citation('{{cite journal|title=Example article|journal=Example Journal|page=12}}');
+        $this->assertFalse($template->add_if_new('pages', '10–20', 'crossref'));
+    }
+
     public function testCitoidChecksScriptTitleBeforeEnriching(): void {
         $url = 'https://www.jstor.org/stable/1234567';
         foreach (['Different article', '東京大学の研究'] as $result_title) {
@@ -105,6 +115,12 @@ final class EncodingBoundaryTest extends testBaseClass {
             Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
             $this->assertSame($result_title === '東京大学の研究' ? '42' : '', $template->get('volume'));
         }
+    }
+
+    public function testNumericMathmlEntitiesUseSameLatexAsLiteralSymbols(): void {
+        $expected = 'Measurements of <math>\\alpha\\leq\\beta</math>';
+        $this->assertSame($expected, wikify_external_text('Measurements of <math><mi>α</mi><mo>≤</mo><mi>β</mi></math>'));
+        $this->assertSame($expected, wikify_external_text('Measurements of <math><mi>&#x3b1;</mi><mo>&#x2264;</mo><mi>&#946;</mi></math>'));
     }
 
     public function testMbStrrevHonorsExplicitEncoding(): void {
