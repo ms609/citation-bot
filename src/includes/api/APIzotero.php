@@ -1071,6 +1071,17 @@ final class Zotero {
                 $original_title_matched = true;
             }
         }
+        if (!$original_title_matched && $template->has('script-title')) {
+            $script_title = safe_preg_replace(
+                '~^[a-z]{2,3}(?:-[a-z0-9]+)?:~i',
+                '',
+                $template->get('script-title')
+            );
+            if (!isset($result->title) || !titles_are_similar($script_title, (string) $result->title)) {
+                return false;
+            }
+            $original_title_matched = true;
+        }
         // A translated title need not match Citoid's original title. Preserve
         // the conservative comparison when it is the only available title.
         if (!$original_title_matched && $template->has('trans-title') &&

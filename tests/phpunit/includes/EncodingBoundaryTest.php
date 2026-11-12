@@ -91,6 +91,22 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame('', $template->get('volume'));
     }
 
+    public function testCitoidChecksScriptTitleBeforeEnriching(): void {
+        $url = 'https://www.jstor.org/stable/1234567';
+        foreach (['Different article', '東京大学の研究'] as $result_title) {
+            $template = $this->make_citation('{{cite journal|script-title=ja:東京大学の研究|url=' . $url . '}}');
+            $response = json_encode([[
+                'itemType' => 'journalArticle',
+                'url' => $url,
+                'title' => $result_title,
+                'publicationTitle' => 'Journal of Other Research',
+                'volume' => '42',
+            ]], JSON_THROW_ON_ERROR);
+            Zotero::process_zotero_response($response, $template, $url, 0, true, true, true);
+            $this->assertSame($result_title === '東京大学の研究' ? '42' : '', $template->get('volume'));
+        }
+    }
+
     public function testMbStrrevHonorsExplicitEncoding(): void {
         $this->assertSame('Aé', mb_strrev('éA', 'UTF-8'));
         $this->assertSame("A\xA9\xC3", mb_strrev('éA', '8bit'));
