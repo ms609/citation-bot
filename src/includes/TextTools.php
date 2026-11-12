@@ -896,9 +896,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     );
 
     // Lowercase each solitary A unless the preceding word makes it a label.
+    $has_non_latin_script = preg_match('~[^\p{Latin}\p{Common}\p{Inherited}]~u', $in) === 1;
     $new_case = safe_preg_replace_callback('~(\w+)(\s+)A(?=\s+\w)~u',
-        static function (array $matches): string {
-            if (in_array(mb_strtolower($matches[1]), ['class', 'section', 'part', 'series', 'physica'], true)) {
+        static function (array $matches) use ($has_non_latin_script): string {
+            if ($has_non_latin_script || in_array(mb_strtolower($matches[1]),
+                ['class', 'section', 'part', 'series', 'physica', 'vitamin', 'vitamine', 'vitamines'], true)) {
                 return $matches[0];
             }
             return $matches[1] . $matches[2] . 'a';
@@ -1065,6 +1067,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
         $new_case = 'netWorker';
     } elseif ($new_case === 'Melus') {
         $new_case = 'MELUS';
+    }
+    if (mb_strpos($in, 'İ') !== false) {
+        // Unicode lowercase İ is i plus combining dot; Turkish lowercase i
+        // already has its dot, so retaining both changes the visible spelling.
+        $new_case = str_replace("i\u{0307}", 'i', $new_case);
     }
     return $new_case;
 }
