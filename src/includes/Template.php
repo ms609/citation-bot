@@ -2980,7 +2980,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank('doi') && preg_match('~10\.[0-9]{4,9}/[^&\s\|\}\{]*~u', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doi') && preg_match('~10(?:\.|%2e)[0-9]{4,9}(?:/|%2f)[^&\s|{}]+~iu', $this->parsed_text(), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
@@ -2989,7 +2989,11 @@ final class Template
             } // generally bad, and not helpful
             // Search the entire citation text for anything in a DOI format.
             // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
-            $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
+            $candidate = rawurldecode($match[0]);
+            if (!mb_check_encoding($candidate, 'UTF-8')) {
+                return;
+            }
+            $doi = safe_preg_replace("~(\.x)/(?:\w+)~", "$1", $candidate);
             $doi = extract_doi($doi)[1];
             if ($doi === '') {
                 return;
