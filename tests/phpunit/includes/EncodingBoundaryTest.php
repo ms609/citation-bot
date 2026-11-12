@@ -4,6 +4,31 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
+    public function testCrossrefOpenUrlReceivesDecodedInternationalEntities(): void {
+        $queries = [];
+        $this->assertTrue(uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use (&$queries): string {
+            parse_str((string) parse_url((string) curl_getinfo($handle, CURLINFO_EFFECTIVE_URL), PHP_URL_QUERY), $query);
+            if (isset($query['atitle'])) {
+                $queries[] = [$query['atitle'], $query['title'] ?? ''];
+            }
+            return '';
+        }, true));
+        try {
+            foreach (['Caf&eacute; culture', 'Caf&#233; culture'] as $title) {
+                $template = $this->make_citation('{{cite journal|last=Smith|title=' . $title .
+                    '|journal=Revue de g&eacute;ographie|year=2020|pages=12–15}}');
+                $template->prepare();
+                get_doi_from_crossref($template);
+            }
+        } finally {
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+        }
+        $this->assertSame([
+            ['Café culture', 'Revue de géographie'],
+            ['Café culture', 'Revue de géographie'],
+        ], $queries);
+    }
+
     public function testDoiStopsAtUnicodeWhitespaceAndKeepsFollowingText(): void {
         $this->assertTrue(uopz_set_return('doi_works', static fn (string $doi): bool => $doi === '10.1038/nature12373', true));
         try {
