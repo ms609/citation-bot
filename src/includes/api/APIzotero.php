@@ -179,7 +179,7 @@ final class Zotero {
     private static function creator_is_site_name(string $name, string $url, object $result): bool {
         $name = mb_trim($name);
         foreach (['publicationTitle', 'bookTitle'] as $field) {
-            if (isset($result->{$field}) && str_i_same($name, (string) $result->{$field})) {
+            if (isset($result->{$field}) && str_i_same(normalize_unicode_nfc($name), normalize_unicode_nfc((string) $result->{$field}))) {
                 return true;
             }
         }
