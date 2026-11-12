@@ -631,12 +631,14 @@ final class TemplatePart3Test extends testBaseClass {
     }
 
     public function testChangeNameURL(): void {
-        $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
-        $template = $this->process_citation($text);
-        $this->assertSame('cite book', $template->wikiname());
-        $this->assertSame('Z', $template->get2('chapter'));
-        $this->assertSame('X', $template->get2('chapter-url'));
-        $this->assertNull($template->get2('url')); // Remove since identical to chapter
+        foreach (['X' => null, 'x' => 'x'] as $url => $expected_url) {
+            $text = "{{cite web|url={$url}|chapter-url=X|chapter=Z}}";
+            $template = $this->process_citation($text);
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame('Z', $template->get2('chapter'));
+            $this->assertSame('X', $template->get2('chapter-url'));
+            $this->assertSame($expected_url, $template->get2('url'));
+        }
     }
 
     public function testRenameToExisting(): void {
