@@ -14,6 +14,42 @@ require_once dirname(__DIR__, 2) . '/src/includes/GadgetApi.php';
 
 final class gadgetapiTest extends testBaseClass {
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testMalformedPercentEscapeDoesNotFailWholeGadgetRequest(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required for offline gadget expansion');
+        }
+        uopz_set_return('request_rate_limit_consume_layered', null);
+        uopz_set_return('bot_curl_exec', '');
+        uopz_set_return('bot_curl_exec_withFalse', false);
+        uopz_set_return('doi_works', false);
+        uopz_set_return('hdl_works', false);
+        uopz_set_return('sleep', 0);
+        try {
+            foreach ([
+                '{{cite web|title=Example article|url=https://academic.oup.com/crawlprevention/governor?content=%2Fcaf%E9}}',
+                '{{cite journal|title=Example article|hdl=1234/caf%E9}}',
+                '{{cite journal|title=Example article|doi=10.1234/caf%E9}}',
+            ] as $citation) {
+                $response = $this->runGadgetEndpoint(
+                    ['text' => $citation, 'summary' => 'Encoding regression'],
+                    'https://en.wikipedia.org'
+                );
+                $this->assertSame(200, $response['status'], $citation);
+                $body = json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR);
+                $this->assertStringContainsString('caf%E9', $body['expandedtext']);
+            }
+        } finally {
+            uopz_unset_return('sleep');
+            uopz_unset_return('hdl_works');
+            uopz_unset_return('doi_works');
+            uopz_unset_return('bot_curl_exec_withFalse');
+            uopz_unset_return('bot_curl_exec');
+            uopz_unset_return('request_rate_limit_consume_layered');
+        }
+    }
+
     /**
      * Execute the real gadgetapi.php endpoint and return its status and body.
      *
