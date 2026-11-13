@@ -7,8 +7,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 require_once dirname(__DIR__, 3) . '/src/includes/constants/translations.php';
 
 /**
- * Coverage for #6143 edit summaries without enabling unapproved wikis.
- * The setup.php allowlist must remain unchanged in this PR.
+ * Coverage for the #6143 edit-summary translations.
+ * Wikis are enabled one at a time by adding them to SUPPORTED_WIKIS in
+ * constants/translations.php, only after local approval.
  */
 final class AdditionalWikiEditSummaryTranslationTest extends PHPUnit\Framework\TestCase {
     /** @return array<string, array{string}> */
@@ -94,10 +95,11 @@ final class AdditionalWikiEditSummaryTranslationTest extends PHPUnit\Framework\T
         }
     }
 
-    public function test_new_translation_maps_do_not_enable_new_wikis(): void {
-        foreach (self::newLanguages() as $wiki) {
-            $this->assertNotContains($wiki, SUPPORTED_WIKIS);
-        }
+    public function test_enabled_new_languages_are_fully_wired(): void {
+        $enabled = array_values(array_intersect(self::newLanguages(), SUPPORTED_WIKIS));
+        $this->assertSame([], array_values(array_diff($enabled, array_keys(EDIT_SUMMARY_TRANSLATIONS))), 'missing edit-summary translations');
+        $this->assertSame([], array_values(array_diff($enabled, array_keys(TEMPLATE_PARSE_ERRORS))), 'missing parse-error text');
+        $this->assertSame([], array_values(array_intersect($enabled, ENGLISH_WIKI)), 'new languages are not English wikis');
     }
 
     /** @return array<string, array{string, string}> */
