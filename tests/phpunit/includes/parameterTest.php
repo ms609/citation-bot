@@ -48,6 +48,28 @@ final class parameterTest extends testBaseClass {
         $this->assertStringContainsString('Added 0.', $page->edit_summary());
     }
 
+    public function testNumericArgumentsUseTheLastEffectiveValue(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Example|0=earlier|0=|1=earlier|implicit|2=written}}');
+        $this->assertSame('', $template->get2('0'));
+        $this->assertTrue($template->blank('0'));
+        $this->assertTrue($template->blank_other_than_comments('0'));
+        $this->assertSame('implicit', $template->get('1'));
+        $this->assertSame('written', $template->get('2'));
+        $this->assertTrue($template->add_if_new('0', 'a|b'));
+        $this->assertSame('a&#124;b', $template->get('0'));
+        $this->assertFalse($template->blank_other_than_comments('0'));
+        $this->assertStringContainsString('|0=earlier|0=a&#124;b|1=earlier|implicit|2=written', $template->parsed_text());
+    }
+
+    public function testMixedNumericArgumentsDoNotRenumberWhenAValueLooksLikeAUrl(): void {
+        $input = '{{cite journal|title=Example|1=explicit|https://example.test/source|plain|3=final}}';
+        $template = $this->prepare_citation($input);
+        $this->assertSame($input, $template->parsed_text());
+        $this->assertSame('https://example.test/source', $template->get('1'));
+        $this->assertSame('plain', $template->get('2'));
+        $this->assertSame('final', $template->get('3'));
+    }
+
     public function testValueWithPipeAndTrailingNewline(): void {
         new TestPage(); // Fill page name with test name for debugging
         $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";

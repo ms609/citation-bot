@@ -858,8 +858,16 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name)) {
+                $key = $this->get_param_key($name, true);
+                if ($key !== null && mb_trim($this->param[$key]->val) !== '') {
+                    return false;
+                }
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
                 return false;
             }
         }
@@ -871,7 +879,7 @@ final class Template
      */
     public function blank_other_than_comments(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank_other_than_comments()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -880,8 +888,13 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name) && $this->get_without_comments_and_placeholders($name) !== '') {
+                return false;
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true)) {
                 $value = $p->val;
                 $value = mb_trim($value);
                 if (mb_stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
@@ -1087,6 +1100,11 @@ final class Template
         }
 
         if (ctype_digit($param_name)) {
+            $value = str_replace(
+                ['|', '{', '}', '[', ']', '<', '>'],
+                ['&#124;', '&#123;', '&#125;', '&#91;', '&#93;', '&#60;', '&#62;'],
+                $value
+            );
             return $this->blank($param_name) && $this->add($param_name, $value);
         }
         $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
@@ -3096,6 +3114,13 @@ final class Template
                         }
                     }
                 }
+            }
+        }
+        // Removing an unnamed argument would renumber subsequent arguments
+        // and could change which value wins against an explicit number.
+        foreach ($this->param as $p) {
+            if (ctype_digit($p->param)) {
+                return;
             }
         }
         $blank_count = 0;
@@ -8517,52 +8542,30 @@ final class Template
     }
 
     public function get(string $name): string {
-        // NOTE $this->param and $p->param are different and refer to different types!
-        // $this->param is an array of Parameter objects
-        // $parameter_i->param is the parameter name within the Parameter object
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
-        }
-        return '';
+        return $this->get2($name) ?? '';
     }
 
     /** This one is used in the test suite to distinguish there-but-blank vs not-there-at-all */
     public function get2(string $name): ?string {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
+        $key = $this->get_param_key($name, true);
+        if ($key === null) {
+            return null;
         }
-        return null;
+        $the_val = $this->param[$key]->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+            return mb_trim($matches[1]);
+        }
+        return $the_val;
     }
 
     public function get3(string $name): string {
-        // like get() only includes (( ))
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return $parameter_i->val;
-            }
-        }
-        return '';
+        // Like get(), but keeps (( )).
+        $key = $this->get_param_key($name, true);
+        return $key === null ? '' : $this->param[$key]->val;
     }
 
     public function has_but_maybe_blank(string $name): bool {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return true;
-            }
-        }
-        return false;
+        return $this->get_param_key($name, true) !== null;
     }
 
     private function has_multiple_params(): bool {
@@ -8608,9 +8611,17 @@ final class Template
         return mb_trim($ret);
     }
 
-    private function get_param_key(string $needle): ?int {
-        if (empty($this->param)) {
-            return null;
+    private function get_param_key(string $needle, bool $include_unnamed = false): ?int {
+        if (ctype_digit($needle)) {
+            $position = 0;
+            $key = null;
+            foreach ($this->param as $i => $p) {
+                $name = $include_unnamed && $p->param === '' && $p->eq === '' ? (string) ++$position : $p->param;
+                if ($name === $needle) {
+                    $key = $i;
+                }
+            }
+            return $key;
         }
         foreach ($this->param as $i => $p) {
             if ($p->param === $needle) {
@@ -8641,8 +8652,8 @@ final class Template
         if ($this->get($par) !== $this->get3($par)) {
             return false;
         }
-        $pos = $this->get_param_key($par);
-        if ($pos !== null) {
+        $pos = $this->get_param_key($par, true);
+        if ($pos !== null && $this->param[$pos]->param === $par) {
             $this->param[$pos]->val = $val;
             return true;
         }
@@ -8650,6 +8661,11 @@ final class Template
         $p->parse_text($this->example_param);
         $p->param = $par;
         $p->val = $val;
+        if ($pos !== null && ctype_digit($par)) {
+            // Add the explicit override after the effective unnamed argument.
+            $this->param[] = $p;
+            return true;
+        }
 
         $insert_after = prior_parameters($par);
         $prior_pos_best = -1;
