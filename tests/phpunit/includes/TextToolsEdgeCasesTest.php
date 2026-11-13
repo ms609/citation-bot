@@ -73,7 +73,7 @@ final class TextToolsEdgeCasesTest extends testBaseClass {
             'invalid marker' => ['Invalid Date', ''],
             'slash epoch' => ['1/1/0001', ''],
             'iso epoch' => ['0001-01-01T00:00', ''],
-            'unix epoch day' => ['1969-12-31', ''],
+            'day before the Unix epoch' => ['1969-12-31', '1969-12-31'],
             'zero date' => ['0000-00-00 00:00:00', ''],
             'no digits' => ['abc', ''],
             'single digit' => ['5', ''],

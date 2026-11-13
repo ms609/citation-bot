@@ -1549,16 +1549,30 @@ final class Template
 
             case "date":
                 if (!preg_match('~^\d{4}$~', $value)) {
-                    $time = strtotime($value);
+                    $date_input = safe_preg_replace('~^(\d{1,2})\.(?=\s+[A-Za-z])~', '$1', $value);
+                    $time = strtotime($date_input);
                     $almost_today = strtotime('-14 days');
                     $the_future = strtotime('+14 days');
                     if ((int) $time > $almost_today && (int) $time < $the_future) {
                         return false;  // Reject bad data
                     }
                     if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
-                        if ($time) {
+                        if ($time !== false) {
                             $day = date('d', $time);
-                            if ($day !== '01') { // Probably just got month and year if day=1
+                            $has_day = publication_date_has_explicit_day($value);
+                            if ($has_day) {
+                                $parsed = date_parse($date_input);
+                                if ($parsed['is_localtime'] && is_int($parsed['year']) && is_int($parsed['month']) &&
+                                    is_int($parsed['day']) && checkdate($parsed['month'], $parsed['day'], $parsed['year'])) {
+                                    // Format the date as written, even when the instant falls on a different UTC day.
+                                    $calendar_day = DateTimeImmutable::createFromFormat('!Y-m-d',
+                                        sprintf('%04d-%02d-%02d', $parsed['year'], $parsed['month'], $parsed['day']));
+                                    if ($calendar_day !== false) {
+                                        $time = $calendar_day->getTimestamp();
+                                    }
+                                }
+                            }
+                            if ($day !== '01' || $has_day) {
                                 $value = self::localize_dates($time);
                             }
                         }

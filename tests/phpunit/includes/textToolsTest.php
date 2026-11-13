@@ -229,7 +229,7 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
         $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
         $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
-        $this->assertSame('July 2014', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
+        $this->assertSame('2014-07-01', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
         $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
     }
 
@@ -262,14 +262,14 @@ final class textToolsTest extends testBaseClass {
         $this->assertSame('', tidy_date('Invalid'));
         $this->assertSame('', tidy_date('1/1/0001'));
         $this->assertSame('', tidy_date('0001-01-01'));
-        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('1969-12-31', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('19xx'));
     }
 
     public function testTidyDate6(): void {
         new TestPage(); // Fill page name with test name for debugging
         $this->assertSame('', tidy_date('2000 1999-1998'));
-        $this->assertSame('', tidy_date('1969-12-31'));
+        $this->assertSame('1969-12-31', tidy_date('1969-12-31'));
         $this->assertSame('', tidy_date('0011-10-07'));
         $this->assertSame('', tidy_date('4444-10-07'));
     }
