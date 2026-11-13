@@ -493,6 +493,49 @@ final class DoiTest extends testBaseClass {
         $this->assertSame("Kopera", $template->get2('editor-last1'));
     }
 
+    public function testSpieProceedingsSeriesFromCrossrefContainer(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub Crossref');
+        }
+        $doi = '10.1117/12.703370';
+        $title = 'Security, Steganography, and Watermarking of Multimedia Contents IX';
+        $chapter = 'Digital imaging sensor identification (Further study)';
+        $record = new SimpleXMLElement(
+            '<query><article_title>' . $chapter . '</article_title>' .
+            '<volume_title>' . $title . '</volume_title><volume>6505</volume><year>2007</year></query>'
+        );
+        $stubs = [
+            'doi_works' => true,
+            'doi_active' => true,
+            'query_crossref' => $record,
+            'query_crossref_newapi' => (object) [
+                'type' => 'proceedings-article',
+                'title' => [$chapter],
+                'container-title' => ['SPIE Proceedings', $title],
+            ],
+        ];
+        foreach ($stubs as $name => $value) {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_set_return($name, $value);
+        }
+        try {
+            $template = $this->make_citation('{{cite journal|doi=' . $doi . '}}');
+            expand_by_doi($template, true);
+            $template->final_tidy();
+            $this->assertSame('cite book', $template->wikiname());
+            $this->assertSame($title, $template->get('title'));
+            $this->assertSame($chapter, $template->get('chapter'));
+            $this->assertSame('Proceedings of SPIE', $template->get('series'));
+            $this->assertSame('6505', $template->get('volume'));
+            $this->assertNull($template->get2('editor-last1'));
+        } finally {
+            foreach (array_keys($stubs) as $name) {
+                /** @psalm-suppress UnusedFunctionCall */
+                uopz_unset_return($name);
+            }
+        }
+    }
+
     public function testBlankTypeFromDX1(): void {
         $text = "{{cite book| doi=10.14989/doctor.k19250 |pmid=<!-- -->|pmc=<!-- -->}}";
         $prepared = $this->process_citation($text);
