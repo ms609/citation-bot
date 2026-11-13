@@ -1134,6 +1134,28 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('{{cite book}}', $template->parsed_text());
     }
 
+    public function testInvalidCrossrefYearCannotReplaceExistingYear(): void {
+        $current_year = (int) date('Y');
+        foreach (['n.d.', 'in press', 'forthcoming', '2025x', '0000', (string) ($current_year + 4)] as $year) {
+            $template = $this->make_citation('{{cite journal|title=Example|year=2019}}');
+            $template->set('doi', '10.1000/example');
+            $this->assertFalse($template->add_if_new('year', $year, 'crossref'));
+            $this->assertSame('2019', $template->get('year'));
+        }
+
+        $template = $this->make_citation('{{cite journal|title=Example|year=2019}}');
+        $template->set('doi', '10.1000/example');
+        $this->assertTrue($template->add_if_new('year', (string) ($current_year - 1), 'crossref'));
+        $this->assertSame((string) ($current_year - 1), $template->get('year'));
+    }
+
+    public function testZeroYearIsRejectedThroughSiciPreparation(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Example|id=1234-5678(0000)1:2<42:AB>2.0.CO;2-A}}');
+        $this->assertFalse($template->add_if_new('date', '0000'));
+        $this->assertNull($template->get2('date'));
+        $this->assertSame('42', $template->get('page'));
+    }
+
     public function testUpdateYear1(): void {
         $text = '{{cite journal|date=2000}}';
         $template = $this->make_citation($text);

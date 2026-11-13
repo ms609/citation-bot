@@ -1566,6 +1566,19 @@ final class Template
                 }
                 // no break; we want to go straight in to year;
             case "year":
+                if (preg_match('~\A0+\z~', $value)) {
+                    return false;
+                }
+                $crossref_year = null;
+                if ($param_name === 'year' && $api === 'crossref') {
+                    if (preg_match('~\A[0-9]{4}\z~', $value) !== 1) {
+                        return false;
+                    }
+                    $crossref_year = (int) $value;
+                    if ($crossref_year < 1400 || $crossref_year > (int) date('Y') + 3) {
+                        return false;
+                    }
+                }
                 if ($this->has('publication-date')) {
                     return false;
                 } // No idea what to do with this
@@ -1584,7 +1597,7 @@ final class Template
                     }
                 }
                 // Update Year with CrossRef data in a few limited cases
-                if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && $this->year_int() < $value && (int) date('Y') - 3 < $value) {
+                if ($crossref_year !== null && $this->no_initial_doi && $this->year_int() < $crossref_year && (int) date('Y') - 3 < $crossref_year) {
                     if ($this->blank('year')) {
                         $this->forget('year');
                         $this->set('date', $value);
