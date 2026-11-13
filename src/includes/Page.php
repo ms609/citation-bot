@@ -716,6 +716,7 @@ class Page {
         $altered_list = $changeonly;
         /** @var array<string> $additions */
         $additions = $this->modifications["additions"];
+        $additions = array_filter($additions, static fn (string $name): bool => $name !== '');
         /** @var array<string> $deletions */
         $deletions = $this->modifications["deletions"];
         if (count($altered_list) !== 0) {
@@ -732,9 +733,7 @@ class Page {
             $auto_summary .= "URLs might have been anonymized. ";
         }
         if (count($additions) !== 0) {
-            /** @var array<string> $addns */
-            $addns = $this->modifications["additions"];
-            if (count($addns) === 1) {
+            if (count($additions) === 1) {
                 $op = "Added";
             } else {
                 $op = "Add:";
@@ -745,7 +744,7 @@ class Page {
             $max_au = 0;
             $min_ed = 9999;
             $max_ed = 0;
-            while ($add = array_pop($addns)) {
+            foreach (array_reverse($additions) as $add) {
                 if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
                     if ($match[1] < $min_ed) {
                         $min_ed = $match[1];

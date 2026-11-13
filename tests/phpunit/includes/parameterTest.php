@@ -9,6 +9,97 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class parameterTest extends testBaseClass {
+    public function testExplicitNumericParametersSurvivePreparation(): void {
+        foreach ([
+            '0=foo',
+            '0=foo|0=bar',
+            '0=https://example.com/source',
+            '1=a|b|1=c',
+            '01=leading zero',
+            '2=',
+        ] as $parameters) {
+            $text = '{{cite journal|title=Example|' . $parameters . '}}';
+            $template = $this->prepare_citation($text);
+            $this->assertSame($text, $template->parsed_text());
+            $this->assertNull($template->get2('url'));
+        }
+        $template = $this->prepare_citation('{{cite journal|title=Example|https://example.com/source}}');
+        $this->assertSame('https://example.com/source', $template->get('url'));
+    }
+
+    public function testNumericParametersCanBeAddedAndReported(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        $this->assertTrue($template->blank('0'));
+        $this->assertTrue($template->add_if_new('0', 'x'));
+        $this->assertTrue($template->add_if_new('1', 'y'));
+        $this->assertFalse($template->blank('0'));
+        $this->assertFalse($template->add_if_new('0', 'z'));
+        $this->assertSame('x', $template->get('0'));
+        $this->assertSame('y', $template->get('1'));
+
+        $modifications = $template->modifications();
+        $this->assertSame(['1', '0'], $modifications['additions']);
+        $page = new Page();
+        $summary_data = new ReflectionProperty(Page::class, 'modifications');
+        $summary_data->setValue($page, $modifications);
+        $this->assertStringContainsString('Add: 0, 1.', $page->edit_summary());
+        $modifications['additions'] = ['0'];
+        $summary_data->setValue($page, $modifications);
+        $this->assertStringContainsString('Added 0.', $page->edit_summary());
+    }
+
+    public function testNumericArgumentsUseTheLastEffectiveValue(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Example|0=earlier|0=|1=earlier|implicit|2=written}}');
+        $this->assertSame('', $template->get2('0'));
+        $this->assertTrue($template->blank('0'));
+        $this->assertTrue($template->blank_other_than_comments('0'));
+        $this->assertSame('implicit', $template->get('1'));
+        $this->assertSame('written', $template->get('2'));
+        $this->assertTrue($template->add_if_new('0', 'a|b'));
+        $this->assertSame('a&#124;b', $template->get('0'));
+        $this->assertFalse($template->blank_other_than_comments('0'));
+        $this->assertStringContainsString('|0=earlier|0=a&#124;b|1=earlier|implicit|2=written', $template->parsed_text());
+    }
+
+    public function testAppendUsesEffectiveNumericArgument(): void {
+        $input = '{{cite journal|title=Example|1=shadowed|implicit|next}}';
+        $template = $this->prepare_citation($input);
+        $template->append_to('1', ' suffix');
+        $this->assertSame('implicit suffix', $template->get('1'));
+        $this->assertSame('next', $template->get('2'));
+        $this->assertSame('{{cite journal|title=Example|1=shadowed|implicit suffix|next}}', $template->parsed_text());
+        $this->assertSame(['1'], $template->modifications()['changeonly']);
+        $this->assertSame([], $template->modifications()['additions']);
+    }
+
+    public function testEmptyImplicitArgumentCleanupIsOmittedFromDeletions(): void {
+        $template = $this->prepare_citation('{{cite book||quote=a quote}}');
+        $this->assertSame([], $template->modifications()['deletions']);
+        $this->assertSame('{{cite book|quote=a quote}}', $template->parsed_text());
+    }
+
+    public function testExplicitNumericDeletionIsReportedWhenItOverridesAnEmptyArgument(): void {
+        $template = $this->make_citation('{{cite book||1=|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame([], $template->modifications()['deletions']);
+
+        $template = $this->make_citation('{{cite book|1=|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame(['1'], array_values($template->modifications()['deletions']));
+
+        $template = $this->make_citation('{{cite book||1=written|quote=a quote}}');
+        $template->forget('1');
+        $this->assertSame(['1'], $template->modifications()['changeonly']);
+    }
+
+    public function testMixedNumericArgumentsDoNotRenumberWhenAValueLooksLikeAUrl(): void {
+        $input = '{{cite journal|title=Example|1=explicit|https://example.test/source|plain|3=final}}';
+        $template = $this->prepare_citation($input);
+        $this->assertSame($input, $template->parsed_text());
+        $this->assertSame('https://example.test/source', $template->get('1'));
+        $this->assertSame('plain', $template->get('2'));
+        $this->assertSame('final', $template->get('3'));
+    }
 
     public function testValueWithPipeAndTrailingNewline(): void {
         new TestPage(); // Fill page name with test name for debugging

@@ -40,10 +40,12 @@ final class Template
     public ?string $conflicting_journal_doi = null;
     private string $example_param = '';
     private string $name = '';
-    /** @var array<Parameter> */
+    /** @var array<int, Parameter> */
     private array $param = [];
     /** @var array<string> */
     private array $initial_param = [];
+    /** @var array<int|string, true> */
+    private array $initial_empty_implicit_params = [];
     /** @var array<string> */
     private array $initial_author_params = [];
     private string $initial_name = '';
@@ -72,7 +74,7 @@ final class Template
     ];
     /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
-    /** @var array<Parameter>|null */
+    /** @var array<int, Parameter>|null */
     private ?array $cookie_absent_original_parameters = null;
     private ?string $cookie_absent_original_name = null;
     /** @var array<string>|null */
@@ -188,10 +190,9 @@ final class Template
             }
         }
 
-        // extract initial parameters/values from Parameters in $this->param
+        $this->initial_empty_implicit_params = [];
+        $this->initial_param = $this->parameter_snapshot($this->initial_empty_implicit_params);
         foreach ($this->param as $p) {
-            $this->initial_param[$p->param] = $p->val;
-
             // Save author params for special handling
             if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS, true) && $p->val) {
                 $this->initial_author_params[$p->param] = $p->val;
@@ -849,7 +850,7 @@ final class Template
      */
     public function blank(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -858,8 +859,16 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name)) {
+                $key = $this->get_param_key($name, true);
+                if ($key !== null && mb_trim($this->param[$key]->val) !== '') {
+                    return false;
+                }
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true) && mb_trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) {
                 return false;
             }
         }
@@ -871,7 +880,7 @@ final class Template
      */
     public function blank_other_than_comments(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank_other_than_comments()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -880,8 +889,13 @@ final class Template
         if (!is_array($param)) {
             $param = [$param];
         }
+        foreach ($param as $name) {
+            if (ctype_digit($name) && $this->get_without_comments_and_placeholders($name) !== '') {
+                return false;
+            }
+        }
         foreach ($this->param as $p) {
-            if (in_array($p->param, $param, true)) {
+            if (!ctype_digit($p->param) && in_array($p->param, $param, true)) {
                 $value = $p->val;
                 $value = mb_trim($value);
                 if (mb_stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
@@ -1086,6 +1100,14 @@ final class Template
             }
         }
 
+        if (ctype_digit($param_name)) {
+            $value = str_replace(
+                ['|', '{', '}', '[', ']', '<', '>'],
+                ['&#124;', '&#123;', '&#125;', '&#91;', '&#93;', '&#60;', '&#62;'],
+                $value
+            );
+            return $this->blank($param_name) && $this->add($param_name, $value);
+        }
         $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
 
         switch ($param_name) {
@@ -3099,7 +3121,9 @@ final class Template
         $duplicate_identical = [];
 
         foreach ($this->param as $pointer => $par) {
-            if ($par->param && isset($param_occurrences[$par->param])) {
+            // Leave explicit numeric arguments in order. Unnamed arguments
+            // can refer to the same position and MediaWiki resolves precedence.
+            if ($par->param !== '' && !ctype_digit($par->param) && isset($param_occurrences[$par->param])) {
                 $duplicate_pos = $param_occurrences[$par->param];
                 if ($par->val === '') {
                     $par->val = $this->param[$duplicate_pos]->val;
@@ -3146,10 +3170,17 @@ final class Template
                 }
             }
         }
+        // Removing an unnamed argument would renumber subsequent arguments
+        // and could change which value wins against an explicit number.
+        foreach ($this->param as $p) {
+            if (ctype_digit($p->param)) {
+                return;
+            }
+        }
         $blank_count = 0;
         foreach ($this->param as &$p) {
             // Protect them from being overwritten
-            if (empty($p->param)) {
+            if ($p->param === '') {
                 $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count;
                 $blank_count++;
                 $p->eq = ' = ';
@@ -3759,7 +3790,7 @@ final class Template
 
         foreach ($this->param as $p) {
             if (
-                mb_strlen($p->param) > 0 &&
+                $p->param !== '' && !ctype_digit($p->param) &&
                 !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
                 mb_stripos($p->param, 'CITATION_BOT') === false
             ) {
@@ -4533,7 +4564,7 @@ final class Template
         // Note: Parameters are treated in alphabetical order, except where one
         // case necessarily continues from the previous (without a return).
 
-        if (!$param) {
+        if ($param === '' || ctype_digit($param)) {
             return;
         }
 
@@ -8571,52 +8602,30 @@ final class Template
     }
 
     public function get(string $name): string {
-        // NOTE $this->param and $p->param are different and refer to different types!
-        // $this->param is an array of Parameter objects
-        // $parameter_i->param is the parameter name within the Parameter object
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
-        }
-        return '';
+        return $this->get2($name) ?? '';
     }
 
     /** This one is used in the test suite to distinguish there-but-blank vs not-there-at-all */
     public function get2(string $name): ?string {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                $the_val = $parameter_i->val;
-                if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
-                    $the_val = mb_trim($matches[1]);
-                }
-                return $the_val;
-            }
+        $key = $this->get_param_key($name, true);
+        if ($key === null) {
+            return null;
         }
-        return null;
+        $the_val = $this->param[$key]->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+            return mb_trim($matches[1]);
+        }
+        return $the_val;
     }
 
     public function get3(string $name): string {
-        // like get() only includes (( ))
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return $parameter_i->val;
-            }
-        }
-        return '';
+        // Like get(), but keeps (( )).
+        $key = $this->get_param_key($name, true);
+        return $key === null ? '' : $this->param[$key]->val;
     }
 
     public function has_but_maybe_blank(string $name): bool {
-        foreach ($this->param as $parameter_i) {
-            if ($parameter_i->param === $name) {
-                return true;
-            }
-        }
-        return false;
+        return $this->get_param_key($name, true) !== null;
     }
 
     private function has_multiple_params(): bool {
@@ -8662,9 +8671,45 @@ final class Template
         return mb_trim($ret);
     }
 
-    private function get_param_key(string $needle): ?int {
-        if (empty($this->param)) {
-            return null;
+    private static function effective_parameter_name(Parameter $parameter, int &$position): string {
+        if ($parameter->param === '' && $parameter->eq === '') {
+            return (string) ++$position;
+        }
+        return $parameter->param;
+    }
+
+    /**
+     * @param array<int|string, true>|null &$empty_implicit_params
+     * @return array<string>
+     */
+    private function parameter_snapshot(?array &$empty_implicit_params = null): array {
+        $snapshot = [];
+        $position = 0;
+        foreach ($this->param as $parameter) {
+            $name = self::effective_parameter_name($parameter, $position);
+            $snapshot[$name] = $parameter->val;
+            if ($empty_implicit_params !== null) {
+                if ($parameter->param === '' && $parameter->eq === '' && mb_trim($parameter->val) === '') {
+                    $empty_implicit_params[$name] = true;
+                } else {
+                    unset($empty_implicit_params[$name]);
+                }
+            }
+        }
+        return $snapshot;
+    }
+
+    private function get_param_key(string $needle, bool $include_unnamed = false): ?int {
+        if (ctype_digit($needle)) {
+            $position = 0;
+            $key = null;
+            foreach ($this->param as $i => $p) {
+                $name = $include_unnamed ? self::effective_parameter_name($p, $position) : $p->param;
+                if ($name === $needle) {
+                    $key = $i;
+                }
+            }
+            return $key;
         }
         foreach ($this->param as $i => $p) {
             if ($p->param === $needle) {
@@ -8695,8 +8740,8 @@ final class Template
         if ($this->get($par) !== $this->get3($par)) {
             return false;
         }
-        $pos = $this->get_param_key($par);
-        if ($pos !== null) {
+        $pos = $this->get_param_key($par, true);
+        if ($pos !== null && $this->param[$pos]->param === $par) {
             $this->param[$pos]->val = $val;
             return true;
         }
@@ -8704,6 +8749,11 @@ final class Template
         $p->parse_text($this->example_param);
         $p->param = $par;
         $p->val = $val;
+        if ($pos !== null && ctype_digit($par)) {
+            // Add the explicit override after the effective unnamed argument.
+            $this->param[] = $p;
+            return true;
+        }
 
         $insert_after = prior_parameters($par);
         $prior_pos_best = -1;
@@ -8741,7 +8791,7 @@ final class Template
         if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
             return;
         }
-        $pos = $this->get_param_key($par);
+        $pos = $this->get_param_key($par, true);
         if ($pos !== null) {
             // Could be zero which is "false"
             $this->param[$pos]->val .= $val;
@@ -8902,11 +8952,8 @@ final class Template
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
             return [];
         }
-        $new = [];
+        $new = $this->parameter_snapshot();
         $ret = [];
-        foreach ($this->param as $p) {
-            $new[$p->param] = $p->val;
-        }
 
         $old = $this->initial_param ? $this->initial_param : [];
 
@@ -8938,14 +8985,16 @@ final class Template
             }
         }
 
-        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
-        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
+        // PHP coerces integer-shaped parameter keys into ints in the maps.
+        $ret['modifications'] = array_map('strval', array_keys(array_diff_assoc($new, $old)));
+        $ret['additions'] = array_map('strval', array_diff(array_keys($new), array_keys($old)));
+        $ret['deletions'] = array_map('strval', array_diff(array_keys($old), array_keys($new)));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
-        foreach ($ret['deletions'] as $inds => $vals) {
-            if ($vals === '') {
-                unset($ret['deletions'][$inds]);
-            } // If we get rid of double pipe that appears as a deletion, not misc.
+        foreach ($ret['deletions'] as $index => $name) {
+            // Cleaning up an extra pipe is miscellaneous tidying.
+            if ($name === '' || isset($this->initial_empty_implicit_params[$name])) {
+                unset($ret['deletions'][$index]);
+            }
         }
 
         $no_dash_to_start = true;
