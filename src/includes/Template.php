@@ -1908,8 +1908,7 @@ final class Template
                     } else {
                         $value = mb_trim($value);
                         $script_value = $this->get('script-title');
-                        if (preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $value) && mb_stripos($script_value, $value) === false && mb_stripos($value, $script_value) === false && !preg_match('~^[a-zA-Z0-9\.\,\-\; ]+$~u', $script_value)) {
-                            // Neither one is part of the other and script is not all ascii and new title is all ascii
+                        if (citation_titles_use_romanization($value, $script_value)) {
                             return $this->add($param_name, wikify_external_text($value));
                         }
                     }
@@ -2980,7 +2979,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank(xx'doi') && preg_match('~10\.[0-9]{4,9}/[^&\s\|\}\{]*~u', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doi') && preg_match('~10(?:\.|%2e)[0-9]{4,9}(?:/|%2f)[^&\s|{}]+~iu', $this->parsed_text(), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
@@ -2989,7 +2988,11 @@ final class Template
             } // generally bad, and not helpful
             // Search the entire citation text for anything in a DOI format.
             // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
-            $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
+            $candidate = rawurldecode($match[0]);
+            if (!mb_check_encoding($candidate, 'UTF-8')) {
+                return;
+            }
+            $doi = safe_preg_replace("~(\.x)/(?:\w+)~", "$1", $candidate);
             $doi = extract_doi($doi)[1];
             if ($doi === '') {
                 return;
@@ -4925,13 +4928,23 @@ final class Template
                     $day = $this->get('day');
                     $month = $this->get('month');
                     $year = $this->get('year');
-                    if ($day === '' && preg_match('~^([a-zA-Z]+) 0*(\d+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^([\p{L}\p{M}]+) 0*([0-9]+)$~u', $month, $matches)) {
                         $day = $matches[2];
                         $month = $matches[1];
                     }
-                    if ($day === '' && preg_match('~^0*(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
+                    if ($day === '' && preg_match('~^0*([0-9]+) ([\p{L}\p{M}]+)$~u', $month, $matches)) {
                         $day = $matches[1];
                         $month = $matches[2];
+                    }
+                    if (WIKI_BASE === 'en') {
+                        $localized_date = localized_citation_date($day . ' ' . $month . ' ' . $year);
+                        if ($localized_date !== null) {
+                            if ($localized_date !== '') {
+                                $this->forget('day');
+                                $this->rename($param, 'date', $localized_date);
+                            }
+                            return;
+                        }
                     }
                     if (!preg_match('~^\d*$~', $day)) {
                         return;
@@ -5699,7 +5712,7 @@ final class Template
                         mb_substr_count($periodical, '[[') !== 1 ||
                         mb_substr_count($periodical, ']]') !== 1) &&
                         !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical) &&
-                        !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
+                        !preg_match('~(magazin für |magazin fur |magazine for |section )~iu', $periodical)
                     ) {
                         $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
                         $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
@@ -6059,11 +6072,11 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('journal')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('journal'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('newspaper')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('newspaper'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
@@ -6878,7 +6891,7 @@ final class Template
                         return;
                     }
                     // Only strip a real prefix ("Vol. 3", "Volume 3", "No 5", "vol3"), not the start of a word such as "Volumes" or "Notes"
-                    $this->set($param, (string) preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
+                    $this->set($param, safe_preg_replace('~^(?i)(?:Vol(?:ume)?|no)(?:\.\s*|\s+|(?=\d))~u', '', $this->get($param)));
                     if (preg_match('~^\s*(?i)online\s*first\s*$~u', $this->get($param))) {
                         $this->forget($param);
                         return;
@@ -7070,7 +7083,7 @@ final class Template
                         return;
                     }
                     if (!preg_match('~^p\d+\s*:\s*\d~ui', $value)) { // P10:1–P10:42 is an article locator, not a "p" page prefix
-                        $value = preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
+                        $value = safe_preg_replace('~^(?i)pp?\.?(?:\s+|(?=\d))~u', '', $value);
                     }
                     $this->set($param, $value);
                     if (str_i_same('n.p', $value)) {
@@ -7150,7 +7163,7 @@ final class Template
                         // The volume is about to be stripped from the page range: keep it rather than lose it
                         $this->set('volume', $trailing_volume[2]);
                     }
-                    $value = (string) preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
+                    $value = safe_preg_replace('~\s*,?\s*(?i)vol(?:ume)?\.?\s*\d+\s*$~u', '', $this->get($param));
                     $this->set($param, $value);
                     if (mb_substr($this->get($param), -4) === ' etc') {
                         $this->set($param, $this->get($param) . '.');
@@ -7798,13 +7811,13 @@ final class Template
                     if ($this->blank($worky)) {
                         $this->forget($worky);
                     } // Discourage filling these in
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget($worky);
                     }
                 }
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget('publisher');
                     }
                 }
@@ -9155,7 +9168,7 @@ final class Template
             return true;
         }
         $journal = str_replace(['[[', ']]'], '', $this->get($param));
-        $journal = (string) preg_replace('~\s+~u', ' ', $journal);
+        $journal = safe_preg_replace('~\s+~u', ' ', $journal);
         $journal = mb_strtolower(mb_trim($journal));
         if ($journal !== 'antibiotics and chemotherapy') {
             return true;

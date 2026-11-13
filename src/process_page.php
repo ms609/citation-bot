@@ -41,6 +41,13 @@ if (isset($argv[1])) {
         bot_html_footer();
         exit(0);
     }
+    if (!mb_check_encoding($pages, 'UTF-8')) {
+        http_response_code(400);
+        bot_html_header();
+        report_warning('Page name is not valid UTF-8.');
+        bot_html_footer();
+        exit(0);
+    }
     if (mb_strpos($pages, '|', 0, '8bit') !== false) {
         bot_html_header();
         report_warning('Use the webform for multiple pages.');

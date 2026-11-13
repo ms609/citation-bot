@@ -95,4 +95,17 @@ final class templateRenameLanguageTest extends PHPUnit\Framework\TestCase {
             $this->assertStringStartsWith('{{' . $renamed . '|', $template->parsed_text());
         }
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testEditSummaryTranslationDoesNotRewriteNames(): void {
+        self::boot_mk_wiki();
+        $category = 'Added references';
+        $user = 'Suggested by Ана';
+        $summary = (new Page())->edit_summary(category_edit_summary_end($user, $category, true));
+        $this->assertStringContainsString('Предложено од ' . $user, $summary);
+        $this->assertStringContainsString('[[Категорија:' . $category . ']]', $summary);
+        $this->assertStringContainsString('#UCB_Category', $summary);
+        $this->assertStringContainsString('Категорија на белата листа', $summary);
+    }
 }
