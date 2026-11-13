@@ -367,23 +367,32 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
     // This will convert &delta into delta
-    // Long titles use a 98% similarity threshold rather than edit distance. It
-    // must not override a different section label or number: a 300-character
-    // title with Part A and Part B can be more than 98% identical.
+    // Long titles still require matching section labels and numbers.
     if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
             (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
              compare_title_numbering($inSpaced, $dbSpaced) === false)) {
         return true;
     }
     return ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254)
-                ? (mb_strlen($inTitle) !== mb_strlen($dbTitle)
-            || similar_text($inTitle, $dbTitle) / mb_strlen($inTitle, '8bit') < 0.98)
+                ? long_titles_are_dissimilar($inTitle, $dbTitle)
                 : short_titles_are_dissimilar($inTitle, $dbTitle, $inSpaced, $dbSpaced))
     &&
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
-                ? (mb_strlen($inTitle2) !== mb_strlen($dbTitle)
-            || similar_text($inTitle2, $dbTitle) / mb_strlen($inTitle2, '8bit') < 0.98)
+                ? long_titles_are_dissimilar($inTitle2, $dbTitle)
                 : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/** Compare long titles by characters with bounded fuzzy matching. */
+function long_titles_are_dissimilar(string $left, string $right): bool {
+    if ($left === $right) {
+        return false;
+    }
+    $length = mb_strlen($left);
+    if ($length > 4096 || $length !== mb_strlen($right)) {
+        return true;
+    }
+    $allowed = min(32, intdiv($length, 50));
+    return unicode_levenshtein($left, $right, $allowed) > $allowed;
 }
 
 /**
@@ -464,7 +473,7 @@ function compare_title_lettered_labels(string $title1, string $title2): ?bool {
     if ($labels1 === $labels2 && $skeleton1 === $skeleton2) {
         return true;
     }
-    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+    if ($skeleton1 === $skeleton2 || unicode_levenshtein($skeleton1, $skeleton2, 3) <= 3) {
         if ($labels1 !== $labels2) {
             return compare_title_numbering($title1, $title2) === true;
         }
@@ -594,7 +603,7 @@ function compare_title_numbering(string $title1, string $title2): ?bool {
     if ($skeleton1 === $skeleton2) {
         return $numbers1 === $numbers2;
     }
-    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2) <= 3) {
+    if ($numbers1 !== $numbers2 && unicode_levenshtein($skeleton1, $skeleton2, 3) <= 3) {
         return false; // Several typos do not erase a different part number.
     }
     return null;
@@ -655,9 +664,11 @@ function normalize_unicode_nfc(string $input): string {
     return is_string($normalized) ? $normalized : $input;
 }
 
-function unicode_levenshtein(string $left, string $right): int {
+/** With a cutoff, return cutoff + 1 for distances above the cutoff. */
+function unicode_levenshtein(string $left, string $right, ?int $cutoff = null): int {
     if (!mb_check_encoding($left, 'UTF-8') || !mb_check_encoding($right, 'UTF-8')) {
-        return levenshtein($left, $right);
+        $distance = levenshtein($left, $right);
+        return $cutoff === null ? $distance : min($distance, $cutoff + 1);
     }
 
     $left = normalize_unicode_nfc($left);
@@ -672,20 +683,34 @@ function unicode_levenshtein(string $left, string $right): int {
         return levenshtein($left, $right); // @codeCoverageIgnore
     }
 
-    $previous = range(0, count($right_chars));
+    $left_length = count($left_chars);
+    $right_length = count($right_chars);
+    $band = $cutoff ?? max($left_length, $right_length);
+    $outside = $band + 1;
+    if (abs($left_length - $right_length) > $band) {
+        return $outside;
+    }
+
+    $previous = range(0, min($right_length, $band));
     foreach ($left_chars as $left_pos => $left_char) {
-        $current = [$left_pos + 1];
-        foreach ($right_chars as $right_pos => $right_char) {
-            $current[] = min(
-                $previous[$right_pos + 1] + 1,
-                $current[$right_pos] + 1,
-                $previous[$right_pos] + ($left_char === $right_char ? 0 : 1)
+        $row = $left_pos + 1;
+        $current = $row <= $band ? [$row] : [];
+        $start = max(1, $row - $band);
+        $end = min($right_length, $row + $band);
+        for ($column = $start; $column <= $end; ++$column) {
+            $current[$column] = min(
+                ($previous[$column] ?? $outside) + 1,
+                ($current[$column - 1] ?? $outside) + 1,
+                ($previous[$column - 1] ?? $outside) + ($left_char === $right_chars[$column - 1] ? 0 : 1)
             );
+        }
+        if ($cutoff !== null && ($current === [] || min($current) > $band)) {
+            return $outside;
         }
         $previous = $current;
     }
 
-    return $previous[count($right_chars)];
+    return min($previous[$right_length], $outside);
 }
 
 function strip_diacritics (string $input): string {
