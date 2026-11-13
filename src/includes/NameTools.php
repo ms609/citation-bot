@@ -221,6 +221,7 @@ function author_is_human(string $author): bool {
         || mb_substr(mb_strtolower($author), 0, 4) === "the "
         || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
         || preg_match("~[A-Z]{3}~", $author)
+        || is_institutional_author_name($author)
         || is_generic_name($author) // CS1 "Cite uses generic name" triggers
         || mb_substr(mb_strtolower($author), -4) === " inc"
         || mb_substr(mb_strtolower($author), -5) === " inc."
@@ -236,13 +237,21 @@ function author_is_human(string $author): bool {
     return true;
 }
 
+/** Recognize organization names that start with a Cyrillic institutional label. */
+function is_institutional_author_name(string $name): bool {
+    return preg_match(
+        '~\A(?:министерство|міністерство|департамент|комитет|комітет|агентство|академия|академія|университет|університет)\s+\p{L}~iu',
+        mb_trim($name)
+    ) === 1;
+}
+
 /** Returns the author's name formatted as Surname, F.I. */
 function format_author(string $author): string {
     // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
     $surname = '';
     $author = html_entity_decode($author, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $author = mb_trim(normalize_unicode_nfc($author));
-    if (is_institutional_author_acronym($author)) {
+    if (is_institutional_author_acronym($author) || is_institutional_author_name($author)) {
         return $author;
     }
     // An unstructured name in a caseless script provides no signal for name order.
