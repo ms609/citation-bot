@@ -1059,7 +1059,12 @@ final class Zotero {
                 $candidate = $result->bookTitle;
             }
             if ($candidate === '' || !self::citoid_title_field_matches($template, 'title', $candidate)) {
-                return false;
+                $native = $template->get('script-title');
+                if ($candidate === '' || $result->itemType === 'bookSection' ||
+                        !citation_titles_use_romanization($template->get('title'), $native) ||
+                        normalize_unicode_nfc(mb_trim(html_entity_decode($candidate, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'))) !== citation_script_title_text($native)) {
+                    return false;
+                }
             }
             $original_title_matched = true;
         }
@@ -1072,11 +1077,7 @@ final class Zotero {
             }
         }
         if (!$original_title_matched && $template->has('script-title')) {
-            $script_title = safe_preg_replace(
-                '~^[a-z]{2,3}(?:-[a-z0-9]+)?:~i',
-                '',
-                $template->get('script-title')
-            );
+            $script_title = citation_script_title_text($template->get('script-title'));
             if (!isset($result->title) || !titles_are_similar($script_title, (string) $result->title)) {
                 return false;
             }
