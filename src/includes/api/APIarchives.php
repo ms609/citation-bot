@@ -651,7 +651,19 @@ function archive_candidate_encodings(string $html, bool $include_guesses = true)
  * @param string $archive_url
  */
 function archive_decode_title(string $title, array $encodings, string $archive_url, string $language = '', string $guess = ''): string {
-    if ($title === '' || mb_check_encoding($title, 'UTF-8')) {
+    if ($title === '') {
+        return '';
+    }
+    if (str_contains($title, "\x1B")) {
+        // ISO-2022-JP shift sequences are themselves valid UTF-8 bytes.
+        // Only use this decoding when the title contains a Japanese shift.
+        if (preg_match('~\x1B\$(?:[@B]|\(D)~', $title) !== 1) {
+            return '';
+        }
+        $decoded = smart_decode($title, 'ISO-2022-JP', $archive_url);
+        return str_contains($decoded, "\x1B") ? '' : $decoded;
+    }
+    if (mb_check_encoding($title, 'UTF-8')) {
         return $title;
     }
 
@@ -771,7 +783,16 @@ function expand_templates_from_archives(array &$templates): void { // This is do
                 $decoded_prefix_only = false;
                 $declared = archive_candidate_encodings($raw_html, false);
                 $guesses = array_values(array_diff(archive_candidate_encodings($raw_html), $declared));
-                foreach ($declared as $encoding) {
+                $prefix_encodings = $declared;
+                if (preg_match('~\x1B\$(?:[@B]|\(D)~', $title_scan_html) === 1) {
+                    foreach ($guesses as $guess) {
+                        if (in_array(mb_strtolower($guess, '8bit'), ['iso-2022-jp', 'csiso2022jp'], true)) {
+                            $prefix_encodings[] = 'ISO-2022-JP';
+                            break;
+                        }
+                    }
+                }
+                foreach ($prefix_encodings as $encoding) {
                     $encoding_key = mb_strtolower($encoding, '8bit');
                     if (!in_array($encoding_key, ['utf-16', 'utf-16le', 'utf-16be', 'iso-2022-jp'], true)) {
                         continue;

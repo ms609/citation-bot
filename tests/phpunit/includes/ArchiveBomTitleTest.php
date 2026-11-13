@@ -4,6 +4,11 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class ArchiveBomTitleTest extends testBaseClass {
+    public function testUnresolvedArchiveEscapeDoesNotBecomeTitleText(): void {
+        $archive = 'https://web.archive.org/web/20120101000000/https://example.org/a';
+        $this->assertSame('', archive_decode_title("Bad \x1B[31m title", [], $archive));
+    }
+
     public function testAmbiguousUndeclaredEucTitleKeepsExistingTitle(): void {
         $archive = 'https://web.archive.org/web/20120101000000/https://example.org/a';
         foreach ([
@@ -13,6 +18,8 @@ final class ArchiveBomTitleTest extends testBaseClass {
             ['; charset=GB2312', '', '', 'EUC-JP', '東京大学', '澎叠络池'],
             ['', '', ' lang="zh-CN"', 'EUC-CN', '中国历史研究', '中国历史研究'],
             ['', '', ' lang="ko"', 'EUC-KR', '한국역사연구', '한국역사연구'],
+            ['', "\r\nX-Archive-Guessed-Charset: ISO-2022-JP", ' lang="ja"', 'ISO-2022-JP', '貴重な資料', '貴重な資料'],
+            ['', '', ' lang="ja"', 'ISO-2022-JP', '貴重な資料', '貴重な資料'],
         ] as [$charset, $guess, $lang, $encoding, $title, $expected]) {
             $html = '<!doctype html><html' . $lang . '><head><title>' . $title . '</title></head><body>Example</body></html>';
             $response = "HTTP/1.1 200 OK\r\nContent-Type: text/html" . $charset . $guess . "\r\n\r\n" .
