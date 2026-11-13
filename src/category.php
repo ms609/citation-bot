@@ -35,16 +35,20 @@ const GET_IS_OKAY = [
 
 $category = '';
 $from_get = false;
-if (is_string(@$_POST["cat"])) {
-    $category = mb_trim($_POST["cat"]);
+$post_category = $_POST['cat'] ?? null;
+if (is_string($post_category) && mb_check_encoding($post_category, 'UTF-8')) {
+    $category = mb_trim($post_category);
 }
+$category_request = $category;
 if (mb_strtolower(mb_substr($category, 0, 9)) === 'category:') {
     $category = mb_trim(mb_substr($category, 9));
 }
-if ($category === '' && is_string(@$_GET["cat"])) {
-    $try = mb_trim(urldecode($_GET["cat"]));
+$get_category = $_GET['cat'] ?? null;
+if ($category === '' && is_string($get_category) && mb_check_encoding($get_category, 'UTF-8')) {
+    $try = mb_trim($get_category);
     if (in_array($try, GET_IS_OKAY, true)) {
         $category = $try;
+        $category_request = $try;
         $from_get = true;
     }
 }
@@ -107,6 +111,16 @@ $effective_max = defined('MAX_PAGES_OVERRIDE') ? MAX_PAGES_OVERRIDE : MAX_PAGES;
 $category_limit = intval($effective_max / 4);
 $default_web_limit = intval(MAX_PAGES / 4);
 $discovery_entry_id = gate_big_run_probe('category', $api->get_the_user());
+if (!in_array($category, GET_IS_OKAY, true)) {
+    $category = WikipediaBot::bare_category_name($category_request);
+    if ($category === '') {
+        release_big_run_lease($discovery_entry_id);
+        report_warning('Invalid category on the webform.');
+        bot_html_footer();
+        bot_admission_buffer_flush();
+        exit(0);
+    }
+}
 $bulk_discovery_signaled = false;
 // Only extended runs, whose discovery can range far past the large-run
 // threshold, reserve the large lease while discovery is still in progress.
@@ -125,7 +139,7 @@ if ($extended_run) {
     };
 }
 $pages_in_category = WikipediaBot::category_members_bounded(
-    $category,
+    $category_request,
     $category_limit + 1,
     static function () use (&$discovery_entry_id, &$bulk_discovery_signaled): void {
         if ($bulk_discovery_signaled) {

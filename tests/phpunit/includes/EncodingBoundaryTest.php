@@ -14,7 +14,7 @@ final class EncodingBoundaryTest extends testBaseClass {
             return '';
         }, true));
         try {
-            foreach (['Caf&eacute; culture', 'Caf&#233; culture'] as $title) {
+            foreach (['Caf&eacute; culture', 'Caf&#233; culture', "''Café'' p &lt; 0.05 et p &gt; 0.01"] as $title) {
                 $template = $this->make_citation('{{cite journal|last=Smith|title=' . $title .
                     '|journal=Revue de g&eacute;ographie|year=2020|pages=12–15}}');
                 $template->prepare();
@@ -26,6 +26,7 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame([
             ['Café culture', 'Revue de géographie'],
             ['Café culture', 'Revue de géographie'],
+            ["'Café' p < 0.05 et p > 0.01", 'Revue de géographie'],
         ], $queries);
     }
 
@@ -267,12 +268,18 @@ final class EncodingBoundaryTest extends testBaseClass {
 
     public function testCitoidDoesNotCollapseInternationalDatesOrRangesToYear(): void {
         $url = 'https://example.org/article';
-        foreach (['15 février 2020', '15 marzo 2020', '15 мая 2020', '2020–2021'] as $source_date) {
+        foreach ([
+            '15 février 2020' => '15 February 2020',
+            '15 marzo 2020' => '15 March 2020',
+            '15 мая 2020' => '15 May 2020',
+            '30 février 2020' => '',
+            '2020–2021' => '',
+        ] as $source_date => $expected) {
             $template = $this->make_citation('{{cite web|title=Example article|url=' . $url . '}}');
             Zotero::process_zotero_response(json_encode([[
                 'itemType' => 'webpage', 'title' => 'Example article', 'date' => $source_date,
             ]], JSON_THROW_ON_ERROR), $template, $url, 0, false, true, true);
-            $this->assertSame('', $template->get('date'), $source_date);
+            $this->assertSame($expected, $template->get('date'), $source_date);
         }
         $template = $this->make_citation('{{cite web|title=Example article|url=' . $url . '}}');
         Zotero::process_zotero_response(json_encode([[

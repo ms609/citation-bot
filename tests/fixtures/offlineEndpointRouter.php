@@ -78,6 +78,12 @@ switch ($endpoint) {
             return true;
         }, true);
         /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return(WikipediaBot::class, 'read_details', static function (string $title): stdClass {
+            return WikipediaBot::decode_object_response($title === 'User:Fixture/Example'
+                ? '{"query":{"pages":{"1":{"ns":2}}}}'
+                : '{}');
+        }, true);
+        /** @psalm-suppress UnusedFunctionCall */
         uopz_set_return(WikipediaBot::class, 'linked_pages_batch', static function (string $title, ?array $continuation): ?array {
             if ($continuation === null) {
                 return ['links' => [['ns' => 0, 'title' => 'Example']], 'continue' => ['continue' => 'next'], 'scanned' => 1];

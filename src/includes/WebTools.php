@@ -86,6 +86,7 @@ function filter_runnable_page_titles(array $pages): array {
             report_warning('Skipping page title with invalid UTF-8.');
             continue;
         }
+        $page_title = normalize_unicode_nfc($page_title);
         if (mb_trim($page_title) === '') {
             continue;
         }
@@ -122,6 +123,12 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
     return mb_strlen($pages, '8bit') <= $max_bytes;
 }
 
+function edit_summary_phrase(string $phrase): string {
+    /** @var array<string, array<string, string>> $translations */
+    $translations = EDIT_SUMMARY_TRANSLATIONS;
+    return $translations[WIKI_BASE][$phrase] ?? $phrase;
+}
+
 /**
  * Build the edit summary suffix for a category run.
  *
@@ -135,7 +142,8 @@ function page_batch_input_within_limit(string $pages, ?int $max_pages = null): b
  * linked-pages precedent.
  */
 function category_edit_summary_end(string $username, string $category, bool $has_override = false, bool $is_dev_run = false, ?string $edit = null): string {
-    $edit_summary_end = "| Suggested by " . $username . " | [[Category:{$category}]] ";
+    $edit_summary_end = '| ' . edit_summary_phrase('Suggested by') . ' ' . $username .
+        ' | ' . edit_summary_phrase('[[Category:') . $category . ']] ';
     if ($edit === 'template') {
         $edit_summary_end .= "| #UCB_template ";
     } elseif ($edit === 'automated_tools') {
@@ -147,7 +155,7 @@ function category_edit_summary_end(string $username, string $category, bool $has
         if ($is_dev_run) {
             $edit_summary_end .= "| Developer - max category limit override enabled ";
         } else {
-            $edit_summary_end .= "| Whitelisted category ";
+            $edit_summary_end .= '| ' . edit_summary_phrase('Whitelisted category ');
         }
     }
     return $edit_summary_end;
@@ -174,7 +182,7 @@ function linked_pages_should_override_limit(string $username): bool {
  */
 function process_page_edit_summary_end(string $username, bool $is_html_output, ?string $edit): string {
     if ($is_html_output) {
-        $edit_summary_end = "| Suggested by " . $username . " ";
+        $edit_summary_end = '| ' . edit_summary_phrase('Suggested by') . ' ' . $username . ' ';
     } else {
         $edit_summary_end = ""; // Command line edits as the person
     }

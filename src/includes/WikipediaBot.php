@@ -574,6 +574,10 @@ final class WikipediaBot {
 
     /** @return array<string> */
     public static function category_members(string $cat): array {
+        $cat = self::bare_category_name($cat);
+        if ($cat === '') {
+            return [];
+        }
         $list = [];
         $vars = [
             "cmtitle" => "Category:{$cat}", // Do not urlencode.
@@ -617,6 +621,10 @@ final class WikipediaBot {
         ?callable $on_large_discovered = null
     ): array {
         if ($max_titles < 1) {
+            return [];
+        }
+        $cat = self::bare_category_name($cat);
+        if ($cat === '') {
             return [];
         }
 
@@ -1063,6 +1071,68 @@ final class WikipediaBot {
             'inprop' => 'protection',
         ]);
         return self::decode_object_response($details);
+    }
+
+    public static function title_is_in_user_namespace(string $title): bool {
+        if (!mb_check_encoding($title, 'UTF-8') || str_contains($title, '|')) {
+            return false;
+        }
+        $response = self::read_details($title);
+        $pages = $response->query->pages ?? null;
+        if (!is_object($pages)) {
+            return false;
+        }
+        $pages = get_object_vars($pages);
+        if (count($pages) !== 1) {
+            return false;
+        }
+        $page = reset($pages);
+        return is_object($page) && ($page->ns ?? null) === 2 && !isset($page->invalid);
+    }
+
+    public static function bare_category_name(string $category): string {
+        $parts = explode(':', $category, 2);
+        if (!isset($parts[1])) {
+            return $category;
+        }
+        $prefix = mb_strtolower(normalize_unicode_nfc(mb_trim(str_replace('_', ' ', $parts[0]))));
+        if ($prefix === 'category') {
+            return mb_trim($parts[1]);
+        }
+        foreach (self::category_namespace_names() as $name) {
+            if ($prefix === $name) {
+                return mb_trim($parts[1]);
+            }
+        }
+        return $category;
+    }
+
+    /** @return list<string> */
+    private static function category_namespace_names(): array {
+        static $names = null;
+        if ($names !== null) {
+            return $names;
+        }
+        $response = self::decode_object_response(self::query_api([
+            'action' => 'query',
+            'meta' => 'siteinfo',
+            'siprop' => 'namespaces|namespacealiases',
+        ]));
+        $local = $response->query->namespaces->{'14'}->{'*'} ?? null;
+        $aliases = $response->query->namespacealiases ?? null;
+        if (!is_string($local)) {
+            return [];
+        }
+        $names = [$local];
+        if (is_array($aliases)) {
+            foreach ($aliases as $alias) {
+                if (is_object($alias) && ($alias->id ?? null) === 14 && is_string($alias->{'*'} ?? null)) {
+                    $names[] = $alias->{'*'};
+                }
+            }
+        }
+        $names = array_map(static fn (string $name): string => mb_strtolower(normalize_unicode_nfc(str_replace('_', ' ', $name))), $names);
+        return $names;
     }
 
     public static function get_links(string $title): string {
