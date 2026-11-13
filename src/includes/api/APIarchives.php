@@ -659,7 +659,22 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
         }
     }
 
-    return convert_to_utf8($title);
+    $fallback = convert_to_utf8($title);
+    if ($fallback === '') {
+        return '';
+    }
+
+    // The detector can agree with itself even when it left a valid encoding
+    // out of its candidate list. A different lossless decoding is ambiguous.
+    foreach (['EUC-JP', 'EUC-CN', 'EUC-KR', 'SJIS-win', 'BIG-5'] as $encoding) {
+        if (mb_check_encoding($title, $encoding)) {
+            $decoded = mb_convert_encoding($title, 'UTF-8', $encoding);
+            if ($decoded !== $fallback && mb_convert_encoding($decoded, $encoding, 'UTF-8') === $title) {
+                return '';
+            }
+        }
+    }
+    return $fallback;
 }
 
 /**
