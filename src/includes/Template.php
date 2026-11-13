@@ -1569,13 +1569,13 @@ final class Template
                 if (preg_match('~\A0+\z~', $value)) {
                     return false;
                 }
-                $crossref_year = null;
-                if ($param_name === 'year' && $api === 'crossref') {
+                $imported_year = null;
+                if ($param_name === 'year' && in_array($api, ['crossref', 'dx'], true)) {
                     if (preg_match('~\A[0-9]{4}\z~', $value) !== 1) {
                         return false;
                     }
-                    $crossref_year = (int) $value;
-                    if ($crossref_year < 1400 || $crossref_year > (int) date('Y') + 3) {
+                    $imported_year = (int) $value;
+                    if ($imported_year > (int) date('Y') + 3) {
                         return false;
                     }
                 }
@@ -1597,7 +1597,8 @@ final class Template
                     }
                 }
                 // Update Year with CrossRef data in a few limited cases
-                if ($crossref_year !== null && $this->no_initial_doi && $this->year_int() < $crossref_year && (int) date('Y') - 3 < $crossref_year) {
+                if ($api === 'crossref' && $imported_year !== null && $this->no_initial_doi &&
+                    $this->year_int() < $imported_year && (int) date('Y') - 3 < $imported_year) {
                     if ($this->blank('year')) {
                         $this->forget('year');
                         $this->set('date', $value);

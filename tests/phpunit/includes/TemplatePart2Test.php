@@ -1149,6 +1149,22 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame((string) ($current_year - 1), $template->get('year'));
     }
 
+    public function testHistoricalCrossrefYearIsAccepted(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        $this->assertTrue($template->add_if_new('year', '1200', 'crossref'));
+        $this->assertSame('1200', $template->get('date'));
+    }
+
+    public function testDoiJsonSkipsInvalidYearsAndUsesValidFallback(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        process_doi_json($template, '10.5555/example', [
+            'issued' => ['date-parts' => [['2025x']]],
+            'created' => ['date-parts' => [[0]]],
+            'published-print' => ['date-parts' => [[1200]]],
+        ]);
+        $this->assertSame('1200', $template->get('date'));
+    }
+
     public function testZeroYearIsRejectedThroughSiciPreparation(): void {
         $template = $this->prepare_citation('{{cite journal|title=Example|id=1234-5678(0000)1:2<42:AB>2.0.CO;2-A}}');
         $this->assertFalse($template->add_if_new('date', '0000'));
