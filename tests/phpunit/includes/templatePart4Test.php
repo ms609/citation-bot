@@ -320,11 +320,12 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('https://www.academia.edu/1234', $template->get2('archiveurl'));
     }
 
-    public function testTidy40(): void {
-        $text = "{{cite journal|archiveurl=https://zenodo.org/record/1234/files/dsafsd}}";
+    public function testZenodoArchiveFileIsPreserved(): void {
+        $url = 'https://zenodo.org/record/1234/files/Supplement%20A.pdf?download=1#page=2';
+        $text = '{{cite journal|archiveurl=' . $url . '}}';
         $template = $this->make_citation($text);
         $template->tidy_parameter('archiveurl');
-        $this->assertSame('https://zenodo.org/record/1234', $template->get2('archiveurl'));
+        $this->assertSame($url, $template->get2('archiveurl'));
     }
 
     public function testTidy42(): void {
@@ -363,11 +364,13 @@ final class templatePart4Test extends testBaseClass { // Lower case "t" to run l
         $this->assertSame('https://www.academia.edu/1234', $template->get2('url'));
     }
 
-    public function testTidy47(): void {
-        $text = "{{cite journal|url=https://zenodo.org/record/1234/files/dfasd}}";
-        $template = $this->make_citation($text);
-        $template->tidy_parameter('url');
-        $this->assertSame('https://zenodo.org/record/1234', $template->get2('url'));
+    public function testZenodoFileAndFragmentArePreserved(): void {
+        foreach (['record/1234/files/Supplement.pdf', 'records/1234/files/Supplement.pdf', 'record/1234#files'] as $path) {
+            $url = 'https://zenodo.org/' . $path;
+            $template = $this->make_citation('{{cite journal|url=' . $url . '}}');
+            $template->tidy_parameter('url');
+            $this->assertSame($url, $template->get2('url'));
+        }
     }
 
     public function testTidy48(): void {

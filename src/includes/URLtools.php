@@ -1008,8 +1008,6 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         $template->set($param, 'https://www.academia.edu/' . $matches[1]);
     } elseif (preg_match("~^https?://(?:www\.|)essopenarchive\.org/users/([0-9]+)/articles/([0-9]+)~i", $template->get($param), $matches)) {
         $template->set($param, 'https://essopenarchive.org/users/' . $matches[1] . '/articles/' . $matches[2]);
-    } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $template->get($param), $matches)) {
-        $template->set($param, 'https://zenodo.org/record/' . $matches[1]);
     } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $template->get($param))) {
         $template->set($param, simplify_google_search($template->get($param)));
     } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $template->get($param), $matches)) {
