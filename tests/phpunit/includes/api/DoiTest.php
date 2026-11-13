@@ -376,8 +376,32 @@ final class DoiTest extends testBaseClass {
     }
 
     public function testExpansion_doi_not_from_crossref_JaLC_Journal(): void {
+        if (!function_exists('uopz_set_return')) {
+            $this->markTestSkipped('uopz is required to stub DOI content negotiation');
+        }
         $expanded = $this->make_citation('{{Cite journal}}');
-        expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
+        $response = json_encode([
+            'type' => 'article-journal',
+            'title' => '大学におけるWebメールとターミナルサービスの研究',
+            'container-title' => 'Society for Standardization Studies',
+            'author' => [
+                ['family' => '竹本', 'given' => '賢太郎'],
+                ['family' => '川東', 'given' => '正美'],
+                ['family' => '久保', 'given' => '信行'],
+                ['family' => '左近', 'given' => '多喜男'],
+            ],
+            'issued' => ['date-parts' => [[2009]]],
+            'volume' => '7',
+            'page' => '11-20',
+        ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        /** @psalm-suppress UnusedFunctionCall */
+        uopz_set_return('bot_curl_exec', $response);
+        try {
+            expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
+        } finally {
+            /** @psalm-suppress UnusedFunctionCall */
+            uopz_unset_return('bot_curl_exec');
+        }
         $this->assertSame('{{Cite journal| last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies | date=2009 | volume=7 | pages=11–20 }}', $expanded->parsed_text());
     }
 
