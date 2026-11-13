@@ -167,6 +167,26 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertNull($template->get2('via'));
     }
 
+    public function testTidyViaRemovesRedundantBbcCredit(): void {
+        foreach (['publisher=BBC News Online', 'work=BBC News Online'] as $source) {
+            foreach (['BBC', 'The BBC', 'bbc.co.uk'] as $via) {
+                $template = $this->make_citation('{{cite web|' . $source . '|via=' . $via . '}}');
+                $template->tidy_parameter('via');
+                $this->assertNull($template->get2('via'), $source . '|via=' . $via);
+            }
+        }
+    }
+
+    public function testTidyViaKeepsDistinctBbcCredit(): void {
+        $template = $this->make_citation('{{cite web|publisher=Reuters|via=BBC}}');
+        $template->tidy_parameter('via');
+        $this->assertSame('BBC', $template->get2('via'));
+
+        $template = $this->make_citation('{{cite web|publisher=BBC News Online|via=Reuters}}');
+        $template->tidy_parameter('via');
+        $this->assertSame('Reuters', $template->get2('via'));
+    }
+
     public function testConversionOfURL1(): void {
         $text = "{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=0012343|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=0012343}}";
         $template = $this->make_citation($text);

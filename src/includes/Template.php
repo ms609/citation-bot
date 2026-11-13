@@ -6860,9 +6860,11 @@ final class Template
                     if ($this->blank('via')) {
                         return;
                     }
+                    $via = $this->get('via');
                     foreach (array_merge(['publisher'], WORK_ALIASES) as $others) {
                         if ($this->has($others)) {
-                            if (str_equivalent($this->get($others), $this->get('via')) || (mb_stripos($this->get($others), 'bbc') !== false && mb_stripos($this->get('via'), 'bbc')) !== false) {
+                            $source = $this->get($others);
+                            if (str_equivalent($source, $via) || (mb_stripos($source, 'bbc') !== false && mb_stripos($via, 'bbc') !== false)) {
                                 $this->forget('via');
                                 return;
                             }
