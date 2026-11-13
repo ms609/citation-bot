@@ -6059,11 +6059,11 @@ final class Template
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('journal')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('journal'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
-                    if (mb_strtolower($this->get('newspaper')) === $publisher) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('newspaper'))) === normalize_unicode_nfc($publisher)) {
                         $this->forget($param);
                         return;
                     }
@@ -7798,13 +7798,13 @@ final class Template
                     if ($this->blank($worky)) {
                         $this->forget($worky);
                     } // Discourage filling these in
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget($worky);
                     }
                 }
             } elseif ($this->has('publisher')) {
                 foreach (WORK_ALIASES as $worky) {
-                    if (mb_strtolower($this->get('publisher')) === mb_strtolower($this->get($worky))) {
+                    if (normalize_unicode_nfc(mb_strtolower($this->get('publisher'))) === normalize_unicode_nfc(mb_strtolower($this->get($worky)))) {
                         $this->forget('publisher');
                     }
                 }
