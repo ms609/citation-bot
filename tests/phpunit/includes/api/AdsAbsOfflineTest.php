@@ -40,12 +40,20 @@ final class AdsAbsOfflineTest extends testBaseClass {
         $this->assertTrue(uopz_set_return('time', $now));
         try {
             $this->assertSame(90, adsabs_retry_after("HTTP/1.1 100 Continue\r\nRetry-After: 1\r\n\r\nHTTP/1.1 429\r\nRetry-After: 90\r\n\r\n", null));
-            $this->assertSame(120, adsabs_retry_after('Retry-After: ' . gmdate(DATE_RFC7231, $now + 120), null));
+            $this->assertSame(120, adsabs_retry_after('Retry-After: ' . gmdate('D, d M Y H:i:s \G\M\T', $now + 120), null));
             $this->assertSame(45, adsabs_retry_after('Retry-After: invalid', $now + 45));
             $this->assertNull(adsabs_retry_after('Retry-After: invalid', $now - 45));
         } finally {
             $this->assertTrue(uopz_unset_return('time'));
         }
+    }
+
+    public function testInterimRateLimitResetDoesNotAffectFinalResponse(): void {
+        $header = "HTTP/1.1 100 Continue\r\nX-RateLimit-Reset: " . (time() + 600) .
+            "\r\n\r\nHTTP/1.1 429 Too Many Requests\r\n\r\n";
+        $limits = adsabs_rate_limit_headers($header);
+        $this->assertNull($limits['reset']);
+        $this->assertNull(adsabs_retry_after($header, $limits['reset']));
     }
 
     public function testNonJson429ArmsOnlyTheRequestedAdsBucket(): void {

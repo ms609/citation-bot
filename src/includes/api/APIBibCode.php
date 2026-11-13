@@ -545,6 +545,12 @@ function adsabs_valid_response(mixed $decoded): ?stdClass {
     return $response;
 }
 
+/** cURL can include proxy or interim headers before the final response. */
+function adsabs_final_headers(string $header): string {
+    $blocks = preg_split('~\r?\n\r?\n~', mb_rtrim($header, "\r\n", '8bit'));
+    return $blocks === false ? $header : (string) end($blocks);
+}
+
 /**
  * @return array{limit: ?int, remaining: ?int, reset: ?int}
  */
@@ -556,7 +562,7 @@ function adsabs_rate_limit_headers(string $header): array {
     ];
     if (!preg_match_all(
         '~^x-ratelimit-(limit|remaining|reset):[ \t]*(\d+)[ \t]*\r?$~im',
-        $header,
+        adsabs_final_headers($header),
         $matches,
         PREG_SET_ORDER
     )) {
@@ -582,16 +588,14 @@ function adsabs_rate_limit_headers(string $header): array {
 /** Read Retry-After from the final response, with an absolute ADS reset as fallback. */
 function adsabs_retry_after(string $header, ?int $reset): ?int {
     $now = time();
-    // cURL can include proxy or interim response headers before the final response.
-    $blocks = preg_split('~\r?\n\r?\n~', mb_rtrim($header, "\r\n", '8bit'));
-    $final_header = $blocks === false ? $header : (string) end($blocks);
-    if (preg_match('~^Retry-After:[ \t]*([^\r\n]+)~im', $final_header, $matches)) {
+    if (preg_match('~^Retry-After:[ \t]*([^\r\n]+)~im', adsabs_final_headers($header), $matches)) {
         $value = mb_trim($matches[1], " \t", '8bit');
         if (ctype_digit($value)) {
             return (int) $value;
         }
-        $date = DateTimeImmutable::createFromFormat(DATE_RFC7231, $value, new DateTimeZone('UTC'));
-        if ($date !== false && $date->format(DATE_RFC7231) === $value) {
+        $http_date_format = 'D, d M Y H:i:s \G\M\T';
+        $date = DateTimeImmutable::createFromFormat($http_date_format, $value, new DateTimeZone('UTC'));
+        if ($date !== false && $date->format($http_date_format) === $value) {
             return max(0, $date->getTimestamp() - $now);
         }
     }
@@ -674,7 +678,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
                 // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
                 // available actions are: sleep, exit, ignore (default).
                 $rai = $retry_after;
-                $retry_msg .= 'Need to retry after ' . strval($rai) . 's (' . date('H:i:s', $rai) . ').';
+                $retry_msg .= 'Need to retry after ' . strval($rai) . ' seconds.';
                 if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
                     $limit_action = mb_strtolower(PHP_ADSABSAPILIMITACTION);
                 }
@@ -690,7 +694,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             }
             if (is_int($rate_limits['reset'])) {
                 $rlr = $rate_limits['reset'];
-                $retry_msg .= ' Rate limit resets on ' . date('Y-m-d H:i:s', $rlr) . ' UTC.';
+                $retry_msg .= ' Rate limit resets on ' . gmdate('Y-m-d H:i:s', $rlr) . ' UTC.';
             }
             $retry_msg = mb_trim($retry_msg);
             if ($retry_msg !== '') {
