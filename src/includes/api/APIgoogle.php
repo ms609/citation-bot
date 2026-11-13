@@ -324,6 +324,15 @@ function apply_google_book_details(Template $template, string $data): void {
     return;
 }
 
+/** These lookup operators do not select a search within the cited book. */
+function google_books_query_is_redundant(string $query): bool {
+    $query = mb_strtolower(urldecode($query));
+    return ($query !== 'isbn' && str_starts_with($query, 'isbn')) ||
+        str_starts_with($query, 'subject:') ||
+        str_starts_with($query, 'inauthor:') ||
+        str_starts_with($query, 'inpublisher:');
+}
+
 /**
  * @param string &$url
  * @param int &$removed_redundant
@@ -376,7 +385,8 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             case "sitesec":
             case "article_id":
             case "bsq":
-                if (($part_start[1] ?? '') === '') {
+                if (($part_start[1] ?? '') === '' ||
+                    (in_array($part_start[0], ['q', 'dq', 'vq', 'bsq'], true) && google_books_query_is_redundant($part_start[1]))) {
                     $removed_redundant++;
                     $removed_parts .= $part;
                 } else {
@@ -474,6 +484,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
                     continue;
                 }
                 $key = 'pg';
+            } elseif (google_books_query_is_redundant($value)) {
+                $fragment_parts[] = $part;
+                continue;
             }
             $fragment_fields[$key] = $value;
         } elseif ($part !== '' && !in_array($part, ['f=false', 'f=true', 'v=onepage', 'q', 'q='], true)) {
@@ -561,22 +574,6 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         $hash = '';
     }
 
-    if (isset($book_array['q'])) {
-        if (((mb_stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !== 'ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
-                mb_stripos($book_array['q'], 'subject:') === 0 ||
-                mb_stripos($book_array['q'], 'inauthor:') === 0 ||
-                mb_stripos($book_array['q'], 'inpublisher:') === 0) {
-            unset($book_array['q']);
-        }
-    }
-    if (isset($book_array['dq'])) {
-        if (((mb_stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !== 'ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
-                mb_stripos($book_array['dq'], 'subject:') === 0 ||
-                mb_stripos($book_array['dq'], 'inauthor:') === 0 ||
-                mb_stripos($book_array['dq'], 'inpublisher:') === 0) {
-            unset($book_array['dq']);
-        }
-    }
     if (isset($book_array['sitesec'])) { // Overrides all other setting
         if (mb_strtolower($book_array['sitesec']) === 'reviews') {
             $url .= '&sitesec=reviews';

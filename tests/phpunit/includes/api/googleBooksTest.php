@@ -4,6 +4,16 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 final class googleBooksTest extends testBaseClass {
+    public function testRejectedFragmentSearchKeepsExistingBookTarget(): void {
+        $book = 'https://books.google.com/books?id=12345';
+        foreach (['#dq=ISBN123', '#q=inauthor%3AName', '#q=subject%3Achemistry'] as $fragment) {
+            $expected = $book . '&q=dogs&pg=PA12';
+            $template = $this->make_citation('{{cite book|url=' . $expected . $fragment . '}}');
+            clean_google_books($template);
+            $this->assertSame($expected, $template->get('url'));
+        }
+    }
+
     public function testGoogleBooksFragmentKeepsSearchAndDisplayedPage(): void {
         $book = 'https://books.google.com/books?id=12345';
         foreach ([
