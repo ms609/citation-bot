@@ -73,7 +73,11 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
                 (mb_strpos($doi, '10.1093/') === false) &&
                 $template->blank(DOI_BROKEN_ALIASES)) {
-                set_time_limit(120);
+            set_time_limit(120);
+            // A record DOI does not identify an individual file or an in-record target.
+            if (preg_match('~\Ahttps?://(?:www\.)?zenodo\.org(?::[0-9]+)?/records?/[0-9]+(?:/files?(?:/|[?#]|\z)|/?[?#])~i', $url) === 1) {
+                continue;
+            }
             if (str_ireplace(PROXY_HOSTS_TO_DROP, '', $url) !== $url && $template->get('doi-access') === 'free') {
                 report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
                 $template->forget($url_type);
@@ -1026,8 +1030,6 @@ function clean_existing_urls_INSIDE(Template $template, string $param): void {
         $template->set($param, 'https://www.academia.edu/' . $matches[1]);
     } elseif (preg_match("~^https?://(?:www\.|)essopenarchive\.org/users/([0-9]+)/articles/([0-9]+)~i", $template->get($param), $matches)) {
         $template->set($param, 'https://essopenarchive.org/users/' . $matches[1] . '/articles/' . $matches[2]);
-    } elseif (preg_match("~^https?://(?:www\.|)zenodo\.org/record/([0-9]+)(?:#|/files/)~i", $template->get($param), $matches)) {
-        $template->set($param, 'https://zenodo.org/record/' . $matches[1]);
     } elseif (preg_match("~^https?://(?:www\.|)google\.com/search~i", $template->get($param))) {
         $template->set($param, simplify_google_search($template->get($param)));
     } elseif (preg_match("~^(https?://(?:www\.|)sciencedirect\.com/\S+)\?via(?:%3d|=)\S*$~i", $template->get($param), $matches)) {
