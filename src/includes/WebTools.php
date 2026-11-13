@@ -102,16 +102,11 @@ function filter_runnable_page_titles(array $pages): array {
     return array_values(array_unique($filtered, SORT_STRING));
 }
 
-/** Keep the optional save-to-files basename within a 255-byte filename limit. */
+/** Keep saved-page filenames distinct and within the 255-byte basename limit. */
 function page_output_filename(string $page_title): string {
-    $basename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title);
-    if (!is_string($basename)) {
-        $basename = $page_title; // Invalid UTF-8 titles are filtered before this call.
-    }
-    if (mb_strlen($basename, '8bit') > 252) {
-        $basename = mb_strcut($basename, 0, 240, 'UTF-8') . '-' . mb_substr(hash('sha256', $page_title), 0, 10, '8bit');
-    }
-    return $basename . '.md';
+    $basename = safe_preg_replace('~[/\\\\:*?"<>|\s\x00-\x1f\x7f]~u', '_', $page_title);
+    $suffix = '-' . mb_substr(hash('sha256', $page_title), 0, 16, '8bit') . '.md';
+    return mb_strcut($basename, 0, 255 - mb_strlen($suffix, '8bit'), 'UTF-8') . $suffix;
 }
 
 /**

@@ -702,9 +702,12 @@ final class WebToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
             uopz_unset_return(Page::class, 'parsed_text');
             $this->unstubPages();
         }
-        $this->assertFileExists($this->base_directory . DIRECTORY_SEPARATOR . 'A_B__C_D_.md');
-        $this->assertSame('Expanded body', file_get_contents($this->base_directory . DIRECTORY_SEPARATOR . 'A_B__C_D_.md'));
-        $this->assertFileDoesNotExist($this->base_directory . DIRECTORY_SEPARATOR . 'No_changes.md');
+        $filename = page_output_filename('A/B: C*D?');
+        $this->assertMatchesRegularExpression('~^A_B__C_D_-[0-9a-f]{16}\.md$~D', $filename);
+        $path = $this->base_directory . DIRECTORY_SEPARATOR . $filename;
+        $this->assertFileExists($path);
+        $this->assertSame('Expanded body', file_get_contents($path));
+        $this->assertFileDoesNotExist($this->base_directory . DIRECTORY_SEPARATOR . page_output_filename('No changes'));
         $this->assertStringContainsString('Done all 2 pages: 1 changed, 1 unchanged, 0 failed.', $body);
         $this->assertNotContains('Save to file failed.', $this->warnings());
     }
