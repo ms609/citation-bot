@@ -152,7 +152,9 @@ function format_surname_2(string $surname): string {
                 return mb_strtolower($matches[1]);
             }
             $turkic = name_uses_turkic_casing($matches[0]);
-            return uppercase_name_initial($matches[1], $turkic) . lowercase_name($matches[2], $turkic);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $ret);
     if ($formatted !== null) {
@@ -174,7 +176,9 @@ function format_forename(string $forename): string {
     $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*){3,})~u",
         static function (array $matches): string {
             $turkic = name_uses_turkic_casing($matches[0]);
-            return uppercase_name_initial($matches[1], $turkic) . lowercase_name($matches[2], $turkic);
+            $lowercase = lowercase_name($matches[0], $turkic);
+            $initial_length = mb_strlen(lowercase_name($matches[1], $turkic));
+            return uppercase_name_initial($matches[1], $turkic) . mb_substr($lowercase, $initial_length);
         },
         $forename);
     if ($formatted !== null) {
