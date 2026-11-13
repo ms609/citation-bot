@@ -8,6 +8,19 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
+    public function testShortPublisherNamesCanBeAdded(): void {
+        foreach (['岩波書店', 'MIT', 'PLOS', 'P.U.F.', '北京大学'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertTrue($template->add_if_new('publisher', $name), $name);
+            $this->assertSame($name, $template->get('publisher'));
+        }
+        foreach (['[s.n.]', 'N/A', 'N. D.', 'unknown', '1234', '??', 'A', 'Inc'] as $name) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertFalse($template->add_if_new('publisher', $name), $name);
+            $this->assertNull($template->get2('publisher'));
+        }
+    }
+
     public function testND(): void {  // n.d. is special case that the template recognizes.  Must protect final period.
         $text = '{{Cite journal|date =n.d.}}';
         $expanded = $this->process_citation($text);
