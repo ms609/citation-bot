@@ -18,7 +18,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 /**
  * This function converts formatting from external sources into wiki style
  */
-function wikify_external_text(string $title): string {
+function wikify_external_text(string $title, bool $use_title_case = false): string {
     $title = str_replace(["\r\n", "\n", "\r"], ' ', $title);
     $replacement = [];
     $placeholder = [];
@@ -61,6 +61,9 @@ function wikify_external_text(string $title): string {
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    if ($use_title_case) {
+        $title = title_case($title);
+    }
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6); // @codeCoverageIgnore
@@ -131,6 +134,18 @@ function wikify_external_text(string $title): string {
     }
 
     $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
+    if ($use_title_case) {
+        // Imported journal text may contain encoded tags. Only allow bare formatting tags.
+        $title = safe_preg_replace_callback('~<!--.*?-->|<[^<>]*>|[<>]~s',
+            static function (array $match): string {
+                if (preg_match('~\A</?(?:b|i|em|strong|sup|sub|small|math)>\z~i', $match[0]) === 1) {
+                    return $match[0];
+                }
+                return strtr($match[0], ['<' => '&#60;', '>' => '&#62;']);
+            },
+            $title
+        );
+    }
 
     $title = str_ireplace(['        ', '     ', '    '], [' ', ' ', ' '], $title);
     $title = mb_trim($title, " \t\n\r\0\x0B\u{00A0}");

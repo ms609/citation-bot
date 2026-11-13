@@ -112,7 +112,24 @@ function is_institutional_author_acronym(string $name): bool {
     return in_array($name, ['ESA', 'NASA'], true);
 }
 
+/** Decode imported names as plain text while protecting wikitext delimiters. */
+function decode_name_entities(string $name): string {
+    for ($i = 0; $i < 3 && str_contains($name, '&'); ++$i) {
+        $decoded = html_entity_decode($name, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
+        if ($decoded === $name) {
+            break;
+        }
+        $name = $decoded;
+    }
+    return str_replace(
+        ['<', '>', '[', ']', '{', '}', '|', "''"],
+        ['&#60;', '&#62;', '&#91;', '&#93;', '&#123;', '&#125;', '&#124;', '&#0039;&#0039;'],
+        $name
+    );
+}
+
 function format_surname(string $surname): string {
+    $surname = decode_name_entities($surname);
     $surname = mb_trim(normalize_unicode_nfc($surname));
     if (is_institutional_author_acronym($surname)) {
         return $surname;
@@ -169,6 +186,7 @@ function format_surname_2(string $surname): string {
 }
 
 function format_forename(string $forename): string {
+    $forename = decode_name_entities($forename);
     $forename = mb_trim(normalize_unicode_nfc($forename));
     if ($forename === '-' || $forename === '') {
         return '';
