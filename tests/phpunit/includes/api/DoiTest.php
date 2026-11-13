@@ -10,8 +10,10 @@ final class DoiTest extends testBaseClass {
         $template = $this->make_citation('{{cite journal|title=Example|doi=10.5555/example}}');
         $record = new SimpleXMLElement(
             '<query><article_title>Example</article_title><journal_title>Example Journal</journal_title>' .
-            '<contributors><contributor contributor_role="author"><surname>M&amp;uuml;ller</surname>' .
-            '<given_name>Fran&amp;ccedil;ois</given_name></contributor></contributors></query>'
+            '<contributors><contributor contributor_role="author"><surname>M&amp;amp;uuml;ller</surname>' .
+            '<given_name>Fran&amp;amp;ccedil;ois</given_name></contributor>' .
+            '<contributor contributor_role="author"><surname>Smith&amp;#60;ref&amp;#62;Test&amp;#60;/ref&amp;#62;</surname>' .
+            '<given_name>Jane</given_name></contributor></contributors></query>'
         );
         $this->assertTrue(uopz_set_return('doi_works', true));
         $this->assertTrue(uopz_set_return('query_crossref', $record));
@@ -20,6 +22,9 @@ final class DoiTest extends testBaseClass {
             expand_by_doi($template, true);
             $this->assertSame('Müller', $template->get('last1'));
             $this->assertSame('François', $template->get('first1'));
+            $this->assertStringContainsString('&#60;', $template->get('last2'));
+            $this->assertStringNotContainsString('<', $template->get('last2'));
+            $this->assertStringNotContainsString('<Ref>', $template->parsed_text());
         } finally {
             $this->assertTrue(uopz_unset_return('query_crossref_newapi'));
             $this->assertTrue(uopz_unset_return('query_crossref'));
