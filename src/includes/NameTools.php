@@ -100,6 +100,7 @@ function is_institutional_author_acronym(string $name): bool {
 }
 
 function format_surname(string $surname): string {
+    $surname = html_entity_decode($surname, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $surname = mb_trim(normalize_unicode_nfc($surname));
     if (is_institutional_author_acronym($surname)) {
         return $surname;
@@ -152,6 +153,7 @@ function format_surname_2(string $surname): string {
 }
 
 function format_forename(string $forename): string {
+    $forename = html_entity_decode($forename, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
     $forename = mb_trim(normalize_unicode_nfc($forename));
     if ($forename === '-' || $forename === '') {
         return '';

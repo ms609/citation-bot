@@ -4,6 +4,27 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
+    public function testNewJournalDecodesEntitiesBeforeCapitalizing(): void {
+        foreach ([
+            ['Ci&ecirc;ncias', 'Ciências'],
+            ['Ci&amp;ecirc;ncias', 'Ciências'],
+            ['Example &ndash; Review', 'Example – Review'],
+        ] as [$source, $expected]) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            $this->assertTrue($template->add_if_new('journal', $source));
+            $this->assertSame($expected, $template->get('journal'));
+        }
+    }
+
+    public function testNewLocationKeepsTrailingHtmlEntityTerminators(): void {
+        foreach (['Bogot&aacute;', 'Bogot&#225;', 'Bogot&#xE1;'] as $location) {
+            $template = $this->make_citation('{{cite book|title=Example}}');
+            $this->assertTrue($template->add_if_new('location', $location . '.,'));
+            $this->assertSame($location, $template->get('location'));
+        }
+        $this->assertSame('Bogotá', sanitize_string('Bogotá;.,'));
+    }
+
     public function testCrossrefOpenUrlReceivesDecodedInternationalEntities(): void {
         $queries = [];
         $this->assertTrue(uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use (&$queries): string {

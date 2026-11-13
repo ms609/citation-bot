@@ -1673,7 +1673,7 @@ final class Template
                         $this->forget('issue');
                         $this->forget('number');
                     } // No issues, just volumes
-                    $value = wikify_external_text(title_case($value));
+                    $value = wikify_external_text($value, use_title_case: true);
                     if ($this->has('series') && (str_equivalent($this->get('series'), $value) || $this->memoirs_series_matches($value))) {
                         return false;
                     }

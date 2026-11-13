@@ -18,7 +18,7 @@ const DOI_BAD_ENDS2 = ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summa
 /**
  * This function converts formatting from external sources into wiki style
  */
-function wikify_external_text(string $title): string {
+function wikify_external_text(string $title, bool $use_title_case = false): string {
     $title = str_replace(["\r\n", "\n", "\r"], ' ', $title);
     $replacement = [];
     $placeholder = [];
@@ -61,6 +61,9 @@ function wikify_external_text(string $title): string {
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
     $title = html_entity_decode($title, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, "UTF-8");
+    if ($use_title_case) {
+        $title = title_case($title);
+    }
     $title = safe_preg_replace("~\s+~", " ", $title);    // Remove all white spaces before
     if (mb_substr($title, -6) === "&nbsp;") {
         $title = mb_substr($title, 0, -6); // @codeCoverageIgnore
@@ -217,7 +220,9 @@ function sanitize_string(string $str): string {
     }
     $dirty = ['[', ']', '|', '{', '}', " what�s "];
     $clean = ['&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's "];
-    $str = mb_trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
+    // Keep the semicolon that closes an entity, even before trailing punctuation.
+    $str = safe_preg_replace('~(&(?:[a-z][a-z0-9]*|#[0-9]+|#x[0-9a-f]+);)[;.,]*+\z|[;.,]++\z~i', '$1', $str);
+    $str = mb_trim(str_replace($dirty, $clean, $str));
     if ($math_templates_present) {
         $str = str_replace($placeholder, $replacement, $str);
     }
