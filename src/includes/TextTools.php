@@ -388,21 +388,29 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
                 : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
 }
 
-/** Decide differing East Asian text, or defer to ordinary matching when it agrees. */
+/** Compare East Asian titles with script-aware identity rules. */
 function citation_east_asian_title_match(string $left, string $right): ?bool {
-    $other_characters = '~[^\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]+~u';
-    $left_east_asian = safe_preg_replace($other_characters, '', $left);
-    $right_east_asian = safe_preg_replace($other_characters, '', $right);
-    if ($left_east_asian === $right_east_asian) {
+    $east_asian = '~[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]~u';
+    $left_has_east_asian = preg_match($east_asian, $left) === 1;
+    $right_has_east_asian = preg_match($east_asian, $right) === 1;
+    if (!$left_has_east_asian && !$right_has_east_asian) {
         return null;
     }
-    if ($left_east_asian === '' || $right_east_asian === '') {
+    if (!$left_has_east_asian || !$right_has_east_asian) {
         return false;
     }
+    if ($left === $right) {
+        return true;
+    }
+    // Accept the common terminal spelling variant of these Japanese loanwords.
+    // Keep the long vowel mark significant in other words.
+    $loanword_variants = ['コンピューター' => 'コンピュータ', 'プリンター' => 'プリンタ'];
+    $left = strtr($left, $loanword_variants);
+    $right = strtr($right, $loanword_variants);
     // Common Japanese spellings can differ from simplified Chinese and can
     // occur in titles written entirely in kanji.
     $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
-    if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left_east_asian . $right_east_asian) === 1) {
+    if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left . $right) === 1) {
         return strtr($left, $variants) === strtr($right, $variants);
     }
     if (strtr($left, $variants) === $right || strtr($right, $variants) === $left) {
