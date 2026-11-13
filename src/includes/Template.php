@@ -7013,20 +7013,14 @@ final class Template
                         }
                     }
                     // Remove leading zeroes
-                    if ($value && $this->get('journal') !== 'Insecta Mundi') {
+                    if ($value !== '0' && $this->get('journal') !== 'Insecta Mundi') {
                         $value = safe_preg_replace('~^0+~', '', $value);
-                        if ($value === '') {
-                            $this->forget($param); // Was all zeros
-                        }
                     }
-                    if ($value) {
-                        $this->set($param, $value);
-                    } else {
-                        if (!$this->blank($param)) {
-                            $this->forget($param);
-                        }
+                    if ($value === '') {
+                        $this->forget($param);
                         return;
                     }
+                    $this->set($param, $value);
                     if ($param === 'issue' || $param === 'number') {
                         $this->volume_issue_demix($this->get($param), $param);
                         if ($this->blank($param)) {

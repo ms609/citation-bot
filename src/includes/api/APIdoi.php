@@ -816,7 +816,7 @@ function get_doi_from_crossref(Template $template): void {
 
     $novel_data = false;
     foreach ($data as $key => $value) {
-        if ($value) {
+        if ($value !== null && $value !== '') {
             if (!$template->api_has_used('crossref', equivalent_parameters($key))) {
                 $novel_data = true;
             }
@@ -828,17 +828,17 @@ function get_doi_from_crossref(Template $template): void {
         return;
     }
     // They already allow some fuzziness in matches
-    if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
+    if (($data['journal'] || $data['issn']) && ($data['start_page'] !== '' || $data['author'])) {
         /** @psalm-taint-escape ssrf */
         $url =
         "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" .
         CROSSREFUSERNAME .
         ($data['title'] ? "&atitle=" . urlencode($data['title']) : '') .
         ($data['author'] ? "&aulast=" . urlencode($data['author']) : '') .
-        ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '') .
-        ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '') .
+        ($data['start_page'] !== '' ? "&spage=" . urlencode($data['start_page']) : '') .
+        ($data['end_page'] !== null && $data['end_page'] !== '' ? "&epage=" . urlencode($data['end_page']) : '') .
         ($data['year'] ? "&date=" . urlencode($data['year']) : '') .
-        ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '') .
+        ($data['volume'] !== '' ? "&volume=" . urlencode($data['volume']) : '') .
         ($data['issn'] ? "&issn=" . urlencode($data['issn']) : "&title=" . urlencode($data['journal'])) .
         "&mailto=" .
         CROSSREFUSERNAME; // do not encode crossref email

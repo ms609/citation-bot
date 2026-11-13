@@ -658,6 +658,22 @@ final class DoiTest extends testBaseClass {
         $this->assertNull($result);
     }
 
+    public function testCrossrefOpenUrlIncludesZeroLocatorsWithoutAnAuthor(): void {
+        $template = $this->make_citation('{{cite journal|title=Example article|journal=Example journal|volume=0|pages=0–2}}');
+        $queries = [];
+        $this->assertTrue(uopz_set_return('bot_curl_exec', static function (CurlHandle $handle) use (&$queries): string {
+            $queries[] = curl_getinfo($handle, CURLINFO_EFFECTIVE_URL);
+            return '<crossref_result><query_result><body><query status="unresolved"/></body></query_result></crossref_result>';
+        }, true));
+        try {
+            get_doi_from_crossref($template);
+        } finally {
+            $this->assertTrue(uopz_unset_return('bot_curl_exec'));
+        }
+        $this->assertCount(1, $queries);
+        $this->assertStringContainsString('&spage=0&epage=2&volume=0&', $queries[0]);
+    }
+
     public function testCrossrefXmlParserRejectsMalformedResponses(): void {
         $this->assertNull(parse_crossref_xml_response(''));
         $this->assertNull(parse_crossref_xml_response('not xml'));
