@@ -13,6 +13,7 @@ declare(strict_types=1);
 function drop_urls_that_match_dois(array &$templates): void {  // Pointer to save memory
     static $ch_dx;
     static $ch_doi;
+    static $ch_ieee;
     if ($ch_dx === null) {
         $time = (float) run_type_mods(1, 3, 3, 3, 3);
         $ch_dx = bot_curl_init($time, [], 2 * 1024 * 1024);
@@ -40,13 +41,30 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
             $url = '';
             $url_type = '';
         }
-        if ($doi && // IEEE code does not require "not incomplete"
-            $url &&
-            !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-            $template->blank(DOI_BROKEN_ALIASES) &&
-            preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && mb_strpos($doi, '10.1109') === 0) {
-            report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
-            $template->forget($url_type);
+        if (preg_match('~\Ahttps?://ieeexplore\.ieee\.org(?=[:/?#]|\z)~i', $url)) {
+            // The generic cleanup rules cannot verify an IEEE document number.
+            $document_url = '~\Ahttps?://ieeexplore\.ieee\.org/document/([0-9]+)/?\z~i';
+            if (!preg_match($document_url, $url, $cited) ||
+                !str_starts_with($doi, '10.1109/') ||
+                preg_match(REGEXP_DOI_ISSN_ONLY, $doi) ||
+                !$template->blank(DOI_BROKEN_ALIASES)) {
+                continue;
+            }
+            $ch_ieee ??= bot_curl_init(1.0, [CURLOPT_FOLLOWLOCATION => false], 64 * 1024);
+            // A direct HTTPS resolver redirect supplies the document number.
+            // A different target or an intermediate redirect leaves the link intact.
+            if (curl_setopt($ch_ieee, CURLOPT_URL, 'https://doi.org/' . doi_encode($doi)) &&
+                bot_curl_exec_withFalse($ch_ieee) !== false) {
+                $status = curl_getinfo($ch_ieee, CURLINFO_RESPONSE_CODE);
+                $destination = curl_getinfo($ch_ieee, CURLINFO_REDIRECT_URL);
+                if ($status >= 300 && $status < 400 && is_string($destination) &&
+                    str_starts_with(mb_strtolower($destination, '8bit'), 'https://') &&
+                    preg_match($document_url, $destination, $resolved) && $cited[1] === $resolved[1]) {
+                    report_forget("Existing IEEE URL matches the DOI destination; dropping URL");
+                    $template->forget($url_type);
+                }
+            }
+            continue;
         }
 
         if ($doi &&
