@@ -4,6 +4,21 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class EncodingBoundaryTest extends testBaseClass {
+    public function testEncodedJournalTagsStayPlainText(): void {
+        foreach ([
+            'Research &lt;ref name=&quot;note&quot;&gt;Source&lt;/ref&gt; Journal',
+            'Research &amp;lt;ref&amp;gt;Source&amp;lt;/ref&amp;gt; Journal',
+            'Research &#60;ref&#62;Source&#60;/ref&#62; Journal',
+        ] as $input) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            $this->assertTrue($template->add_if_new('journal', $input));
+            $this->assertStringNotContainsString('<', $template->get('journal'));
+            $this->assertStringContainsString('&#60;', $template->get('journal'));
+            $this->assertStringContainsString('Source', $template->get('journal'));
+        }
+        $this->assertSame("Science ''Today''", wikify_external_text('Science &lt;i&gt;Today&lt;/i&gt;', use_title_case: true));
+    }
+
     public function testNewJournalDecodesEntitiesBeforeCapitalizing(): void {
         foreach ([
             ['Ci&ecirc;ncias', 'Ciências'],
