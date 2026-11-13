@@ -13,6 +13,18 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class NameToolsEdgeCaseTest extends testBaseClass {
+    public function testTurkicCasingIsLocalToEachNameComponent(): void {
+        foreach ([
+            'SMITH-ÇAĞRI' => 'Smith-Çağrı',
+            'İSMAİL SMITH' => 'İsmail Smith',
+            'ŞTIRBU' => 'Ştirbu',
+            'IONIŞ' => 'Ioniş',
+        ] as $source => $expected) {
+            $this->assertSame($expected, format_surname($source));
+            $this->assertSame($expected, format_forename($source));
+        }
+    }
+
     public function testPersonalNameCasingPreservesSpelling(): void {
         $this->assertSame('Çağrı', format_forename('ÇAĞRI'));
         $this->assertSame('Çağrı', format_surname('ÇAĞRI'));

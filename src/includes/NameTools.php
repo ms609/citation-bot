@@ -96,7 +96,7 @@ const MAC_SURNAMES_WITHOUT_INNER_CAPITAL = [
 
 /** These letters give casing rules for dotted and dotless I in Turkic names. */
 function name_uses_turkic_casing(string $name): bool {
-    return preg_match('~[İıĞğŞş]~u', $name) === 1;
+    return preg_match('~[İıĞğ]~u', $name) === 1;
 }
 
 function lowercase_name(string $name, bool $turkic): string {
@@ -130,29 +130,29 @@ function format_surname(string $surname): string {
     if ($hyphenated !== null) {
         $surname = $hyphenated;
     }
-    $turkic = name_uses_turkic_casing($surname);
-    $surname = lowercase_name(mb_trim($surname), $turkic);
-    $prefix = mb_substr($surname, 0, 2);
+    $prefix = mb_strtolower(mb_substr($surname, 0, 2));
     if ($prefix === "o'" || $prefix === 'o’') {
-        return 'O' . mb_substr($prefix, 1) . format_surname_2(mb_substr($surname, 2), $turkic);
+        return 'O' . mb_substr($prefix, 1) . format_surname_2(mb_substr($surname, 2));
     }
     if (mb_substr($surname, 0, 2) === "mc") {
-        return "Mc" . format_surname_2(mb_substr($surname, 2), $turkic);
+        return "Mc" . format_surname_2(mb_substr($surname, 2));
     }
-    if (mb_substr($surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($surname, 3, 1) !== "h" && !in_array($surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
-        return "Mac" . format_surname_2(mb_substr($surname, 3), $turkic);
+    $lower_surname = mb_strtolower($surname);
+    if (mb_substr($lower_surname, 0, 3) === "mac" && mb_strlen($surname) > 5 && mb_strpos($surname, "-") === false && mb_substr($lower_surname, 3, 1) !== "h" && !in_array($lower_surname, MAC_SURNAMES_WITHOUT_INNER_CAPITAL, true)) {
+        return "Mac" . format_surname_2(mb_substr($surname, 3));
     }
-    if (mb_substr($surname, 0, 1) === "&") {
-        return "&" . format_surname_2(mb_substr($surname, 1), $turkic);
-    }
-    return format_surname_2($surname, $turkic); // Case of surname
+    return format_surname_2($surname); // Case of surname
 }
 
-function format_surname_2(string $surname, bool $turkic = false): string {
+function format_surname_2(string $surname): string {
     $ret = str_replace(" - ", "-", $surname);
-    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)+)~u",
-        static function (array $matches) use ($turkic): string {
-                return uppercase_name_initial($matches[1], $turkic) . lowercase_name($matches[2], $turkic);
+    $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*)*)~u",
+        static function (array $matches): string {
+            if ($matches[2] === '') {
+                return mb_strtolower($matches[1]);
+            }
+            $turkic = name_uses_turkic_casing($matches[0]);
+            return uppercase_name_initial($matches[1], $turkic) . lowercase_name($matches[2], $turkic);
         },
         $ret);
     if ($formatted !== null) {
@@ -171,9 +171,9 @@ function format_forename(string $forename): string {
     if ($forename === '-' || $forename === '') {
         return '';
     }
-    $turkic = name_uses_turkic_casing($forename);
     $formatted = preg_replace_callback("~(\p{L}\p{M}*)((?:\p{L}\p{M}*){3,})~u",
-        static function (array $matches) use ($turkic): string {
+        static function (array $matches): string {
+            $turkic = name_uses_turkic_casing($matches[0]);
             return uppercase_name_initial($matches[1], $turkic) . lowercase_name($matches[2], $turkic);
         },
         $forename);
