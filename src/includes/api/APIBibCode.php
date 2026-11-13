@@ -749,7 +749,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url): stdC
             }
             // @codeCoverageIgnoreEnd
         }
-        if (!is_object($decoded) && mb_stripos($body, 'down for maintenance', 0, '8bit') !== false) {
+        if ($http_response_code !== 429 && !is_object($decoded) && mb_stripos($body, 'down for maintenance', 0, '8bit') !== false) {
             AdsAbsControl::big_give_up(900);
             AdsAbsControl::small_give_up(900);
             throw new Exception("ADSABS is down for maintenance", 5000);

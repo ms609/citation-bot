@@ -64,7 +64,7 @@ final class AdsAbsOfflineTest extends testBaseClass {
         $this->assertTrue(uopz_set_return('hrtime', static function () use ($clock): int {
             return $clock->now;
         }, true));
-        $this->assertTrue(uopz_set_return('bot_curl_exec', $header . '<html>Rate limit</html>'));
+        $this->assertTrue(uopz_set_return('bot_curl_exec', $header . '<html>ADS is down for maintenance</html>'));
         $this->assertTrue(uopz_set_return('curl_getinfo', static fn (CurlHandle $handle, int $option): int => $option === CURLINFO_HTTP_CODE ? 429 : mb_strlen($header, '8bit'), true));
         try {
             $response = Bibcode_Response_Processing([], 'https://api.adsabs.harvard.edu/v1/search/bigquery');
