@@ -86,6 +86,7 @@ function filter_runnable_page_titles(array $pages): array {
             report_warning('Skipping page title with invalid UTF-8.');
             continue;
         }
+        $page_title = normalize_unicode_nfc($page_title);
         if (mb_trim($page_title) === '') {
             continue;
         }

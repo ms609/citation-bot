@@ -306,4 +306,12 @@ final class OfflineEndpointTest extends TestCase {
             fclose($gadget);
         }
     }
+
+    public function testMalformedUtf8PageNameIsRejectedBeforeConfirmation(): void {
+        $response = $this->request('/tools/process_page.php?page=caf%E9');
+        $this->assertSame(400, $response['status']);
+        $this->assertStringContainsString('Page name is not valid UTF-8.', $response['body']);
+        $this->assertStringNotContainsString('name="csrf_token"', $response['body']);
+        $this->assertArrayNotHasKey('location', $response['headers']);
+    }
 }
