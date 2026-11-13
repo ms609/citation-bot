@@ -1571,7 +1571,7 @@ final class Template
                 }
                 $imported_year = null;
                 if ($param_name === 'year' && in_array($api, ['crossref', 'dx'], true)) {
-                    if (preg_match('~\A[0-9]{4}\z~', $value) !== 1) {
+                    if (preg_match('~\A[1-9][0-9]{0,3}\z~', $value) !== 1) {
                         return false;
                     }
                     $imported_year = (int) $value;

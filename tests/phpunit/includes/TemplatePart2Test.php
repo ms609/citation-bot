@@ -9,6 +9,7 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart2Test extends testBaseClass {
 
+
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
         $template = $this->make_citation($text);
@@ -1147,6 +1148,14 @@ final class TemplatePart2Test extends testBaseClass {
         $template->set('doi', '10.1000/example');
         $this->assertTrue($template->add_if_new('year', (string) ($current_year - 1), 'crossref'));
         $this->assertSame((string) ($current_year - 1), $template->get('year'));
+    }
+
+    public function testDoiYearUsesUnpaddedCs1Year(): void {
+        foreach ([400, 999, '0999', '0001'] as $year) {
+            $template = $this->make_citation('{{cite journal|title=Example}}');
+            process_doi_json($template, '10.5555/example', ['issued' => ['date-parts' => [[$year]]]]);
+            $this->assertSame(is_int($year) ? (string) $year : null, $template->get2('date'));
+        }
     }
 
     public function testHistoricalCrossrefYearIsAccepted(): void {
