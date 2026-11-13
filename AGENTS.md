@@ -282,6 +282,8 @@ The project uses extensive automated testing:
 - **Zizmor** - Analyzes GitHub Actions workflows for security issues
 - **CITATION.cff validation** - Validates citation metadata using a hash-pinned cffconvert closure (`.github/cffconvert-requirements.txt`)
 - **CS1 Harness** - Runs `tools/cs1_harness.php` in fast + slow mode on changes to `src/**` or `tools/**` (`.github/workflows/cs1-harness.yml`), plus a weekly schedule; fails if any must-pass case would trigger a CS1 error, or if a known-gap case unexpectedly resolves (XPASS)
+- **Citation fuzz** - Runs `tools/fuzz_citations.php` offline with networking disabled (`fuzz-citations.yml`); 1,000 cases per target on PRs touching parsers, 800,000 weekly on `master`
+- **Patch artifacts** - Rejects tracked `*.patch`/`*.orig`/`*.rej` files (`patch-artifacts.yml`)
 
 The CS1 harness is the conformance regression gate: it drives the bot's real expansion on a matrix of citations and flags any output that would trigger a `Help:CS1 errors` message or an explicitly-tracked maintenance category (e.g. `CS1 maint: periodical has ISBN`, which emits no error message). Run it locally (`php tools/cs1_harness.php` and `--slow`) before and after any citation-expansion change; a new fix should flip one of its documented gap cases to `RESOLVED` and add a matrix case.
 
@@ -419,7 +421,7 @@ The gadget MUST:
 │           ├── regular_expressions.php  # Regular expression constants
 │           └── translations.php         # Translations
 ├── tests/                      # PHPUnit tests
-├── .github/workflows/          # CI/CD workflows (incl. browser-ui, docker-build, eslint, python-lint, secret-scan, etc.)
+├── .github/workflows/          # CI/CD workflows (incl. browser-ui, docker-build, eslint, python-lint, secret-scan, fuzz-citations, patch-artifacts, etc.)
 ├── .github/labeler.yml         # PR auto-labeling (update on new/renamed files)
 ├── .github/actions/, .github/scripts/  # Composite actions + CI helpers
 ├── .github/dependabot.yml      # Automated dependency update configuration
@@ -428,6 +430,7 @@ The gadget MUST:
 ├── tools/update_cffconvert_lock.sh      # Regenerates the hash-pinned cffconvert closure
 ├── tools/update_codespell_lock.sh       # Regenerates the hash-pinned codespell closure
 ├── tools/cs1_harness.php                # CS1 conformance regression gate
+├── tools/fuzz_citations.php              # Offline citation parser fuzz harness
 ├── tools/reset_big_run_state.php        # Operator recovery for shared big-run admission state
 ├── tools/cleanup-citoid-pending.php     # Offline cleanup of stale Citoid pending writes
 ├── tools/verify-citoid-shared-flock.php # Offline cross-host flock smoke check for the Citoid mutex
