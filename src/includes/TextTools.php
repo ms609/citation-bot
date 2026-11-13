@@ -366,7 +366,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     $inTitle = str_replace($drops, "", $inTitle);
     $inTitle2 = str_replace($drops, "", $inTitle2);
     $dbTitle = str_replace($drops, "", $dbTitle);
-    // This will convert &delta into delta
+    // Require East Asian words to match at every length. Handle script variants
+    // explicitly before allowing the ordinary typo tolerance elsewhere.
+    $east_asian_match = citation_east_asian_title_match($inTitle, $dbTitle);
+    if ($east_asian_match !== null) {
+        return !$east_asian_match || compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
+            compare_title_numbering($inSpaced, $dbSpaced) === false;
+    }
     // Long titles still require matching section labels and numbers.
     if ((mb_strlen($inTitle) > 254 || mb_strlen($dbTitle) > 254 || mb_strlen($inTitle2) > 254) &&
             (compare_title_lettered_labels($inSpaced, $dbSpaced) === false ||
@@ -380,6 +386,43 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
     ((mb_strlen($inTitle2) > 254 || mb_strlen($dbTitle) > 254)
                 ? long_titles_are_dissimilar($inTitle2, $dbTitle)
                 : short_titles_are_dissimilar($inTitle2, $dbTitle, $inSpaced, $dbSpaced));
+}
+
+/** Compare East Asian titles with script-aware identity rules. */
+function citation_east_asian_title_match(string $left, string $right): ?bool {
+    $east_asian = '~[\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]~u';
+    $left_has_east_asian = preg_match($east_asian, $left) === 1;
+    $right_has_east_asian = preg_match($east_asian, $right) === 1;
+    if (!$left_has_east_asian && !$right_has_east_asian) {
+        return null;
+    }
+    if (!$left_has_east_asian || !$right_has_east_asian) {
+        return false;
+    }
+    if ($left === $right) {
+        return true;
+    }
+    // Accept the common terminal spelling variant of these Japanese loanwords.
+    // Keep the long vowel mark significant in other words.
+    $loanword_variants = ['コンピューター' => 'コンピュータ', 'プリンター' => 'プリンタ'];
+    $left = strtr($left, $loanword_variants);
+    $right = strtr($right, $loanword_variants);
+    // Common Japanese spellings can differ from simplified Chinese and can
+    // occur in titles written entirely in kanji.
+    $variants = ['圖' => '図', '國' => '国', '學' => '学', '醫' => '医', '體' => '体', '會' => '会', '歷' => '歴', '實' => '実'];
+    if (preg_match('~[\p{Hiragana}\p{Katakana}]~u', $left . $right) === 1) {
+        return strtr($left, $variants) === strtr($right, $variants);
+    }
+    if (strtr($left, $variants) === $right || strtr($right, $variants) === $left) {
+        return true;
+    }
+    if (!function_exists('transliterator_transliterate')) {
+        return false;
+    }
+    // Require one spelling to convert into the other. A shared simplified
+    // form alone can conflate distinct traditional characters, e.g. 髮 and 發.
+    return transliterator_transliterate('Traditional-Simplified', $left) === $right ||
+        transliterator_transliterate('Traditional-Simplified', $right) === $left;
 }
 
 /** Compare long titles by characters with bounded fuzzy matching. */
@@ -410,7 +453,6 @@ function long_titles_are_dissimilar(string $left, string $right): bool {
  * decoded but with their words still separate.
  */
 function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
-    $distance = unicode_levenshtein($inTitle, $dbTitle);
     // Check original, spaced titles first. Normalization can erase chapter numbers,
     // so an edit distance of zero does not always mean the same work.
     if (compare_title_lettered_labels($inSpaced, $dbSpaced) === false) {
@@ -420,11 +462,12 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
     if ($numbering_matches === false) {
         return true;
     }
+    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
+    $distance = unicode_levenshtein($inTitle, $dbTitle);
     if ($distance === 0 || $numbering_matches === true ||
             titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
         return false;
     }
-    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
     if ($shorter <= 4) {
         $allowed = 0;
     } elseif ($shorter <= 9) {
@@ -522,7 +565,7 @@ function title_lettered_labels(string $title): array {
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
-    $title = safe_preg_replace('~第([〇零一二三四五六七八九十百千]+)章~u', ' 第$1章 ', $title);
+    $title = safe_preg_replace('~(第[〇零一二三四五六七八九十百千]+[章巻卷])~u', ' $1 ', $title);
     $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
@@ -536,8 +579,8 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
-        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+章$~u', $part) === 1) {
-            $skeleton[] = '第#章';
+        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+([章巻卷])$~u', $part, $ordinal) === 1) {
+            $skeleton[] = '第#' . $ordinal[1];
             $numbers[] = $part;
         } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
             // Keep the original digits as an identity token. Casting non-ASCII
