@@ -6857,9 +6857,15 @@ final class Template
                     if ($this->blank('via')) {
                         return;
                     }
+                    $via = $this->get('via');
                     foreach (array_merge(['publisher'], WORK_ALIASES) as $others) {
                         if ($this->has($others)) {
-                            if (str_equivalent($this->get($others), $this->get('via')) || (mb_stripos($this->get($others), 'bbc') !== false && mb_stripos($this->get('via'), 'bbc')) !== false) {
+                            $source = $this->get($others);
+                            $source_name = mb_trim(de_wikify($source, true));
+                            $via_name = mb_trim(de_wikify($via, true));
+                            if (str_equivalent($source, $via) ||
+                                (preg_match('~\A(?:the )?bbc(?: news(?: online)?|\.co\.uk)?\z~i', $source_name) === 1 &&
+                                preg_match('~\A(?:the )?(?:www\.)?bbc(?:\.co\.uk)?\z~i', $via_name) === 1)) {
                                 $this->forget('via');
                                 return;
                             }
