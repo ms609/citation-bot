@@ -187,6 +187,19 @@ final class TemplatePart2Test extends testBaseClass {
         $this->assertSame('Reuters', $template->get2('via'));
     }
 
+    public function testTidyViaKeepsUnrelatedOrSpecificBbcCredits(): void {
+        foreach ([
+            ['BBC News', 'BBC Monitoring'],
+            ['ABBC Press', 'BBC'],
+            ['BBC News', 'Example BBC Archives'],
+            ['BBC', 'BBC News'],
+        ] as [$publisher, $via]) {
+            $template = $this->make_citation('{{cite web|publisher=' . $publisher . '|via=' . $via . '}}');
+            $template->tidy_parameter('via');
+            $this->assertSame($via, $template->get2('via'));
+        }
+    }
+
     public function testConversionOfURL1(): void {
         $text = "{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=0012343|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=0012343}}";
         $template = $this->make_citation($text);
