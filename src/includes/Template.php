@@ -40,7 +40,7 @@ final class Template
     public ?string $conflicting_journal_doi = null;
     private string $example_param = '';
     private string $name = '';
-    /** @var array<Parameter> */
+    /** @var array<int, Parameter> */
     private array $param = [];
     /** @var array<string> */
     private array $initial_param = [];
@@ -72,7 +72,7 @@ final class Template
     ];
     /** @var array<Template> */
     private array $this_array = []; // Unset after using to avoid pointer loop that makes garbage collection harder
-    /** @var array<Parameter>|null */
+    /** @var array<int, Parameter>|null */
     private ?array $cookie_absent_original_parameters = null;
     private ?string $cookie_absent_original_name = null;
     /** @var array<string>|null */
@@ -8703,7 +8703,7 @@ final class Template
         if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== false) {
             return;
         }
-        $pos = $this->get_param_key($par);
+        $pos = $this->get_param_key($par, true);
         if ($pos !== null) {
             // Could be zero which is "false"
             $this->param[$pos]->val .= $val;

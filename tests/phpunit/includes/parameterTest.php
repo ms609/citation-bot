@@ -61,6 +61,15 @@ final class parameterTest extends testBaseClass {
         $this->assertStringContainsString('|0=earlier|0=a&#124;b|1=earlier|implicit|2=written', $template->parsed_text());
     }
 
+    public function testAppendUsesEffectiveNumericArgument(): void {
+        $input = '{{cite journal|title=Example|1=shadowed|implicit|next}}';
+        $template = $this->prepare_citation($input);
+        $template->append_to('1', ' suffix');
+        $this->assertSame('implicit suffix', $template->get('1'));
+        $this->assertSame('next', $template->get('2'));
+        $this->assertSame('{{cite journal|title=Example|1=shadowed|implicit suffix|next}}', $template->parsed_text());
+    }
+
     public function testMixedNumericArgumentsDoNotRenumberWhenAValueLooksLikeAUrl(): void {
         $input = '{{cite journal|title=Example|1=explicit|https://example.test/source|plain|3=final}}';
         $template = $this->prepare_citation($input);
