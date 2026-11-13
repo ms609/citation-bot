@@ -188,10 +188,8 @@ final class Template
             }
         }
 
-        // extract initial parameters/values from Parameters in $this->param
+        $this->initial_param = $this->parameter_snapshot();
         foreach ($this->param as $p) {
-            $this->initial_param[$p->param] = $p->val;
-
             // Save author params for special handling
             if (in_array($p->param, FLATTENED_AUTHOR_PARAMETERS, true) && $p->val) {
                 $this->initial_author_params[$p->param] = $p->val;
@@ -8611,12 +8609,30 @@ final class Template
         return mb_trim($ret);
     }
 
+    private static function effective_parameter_name(Parameter $parameter, int &$position): string {
+        if ($parameter->param === '' && $parameter->eq === '') {
+            return (string) ++$position;
+        }
+        return $parameter->param;
+    }
+
+    /** @return array<string> */
+    private function parameter_snapshot(): array {
+        $snapshot = [];
+        $position = 0;
+        foreach ($this->param as $parameter) {
+            $name = self::effective_parameter_name($parameter, $position);
+            $snapshot[$name] = $parameter->val;
+        }
+        return $snapshot;
+    }
+
     private function get_param_key(string $needle, bool $include_unnamed = false): ?int {
         if (ctype_digit($needle)) {
             $position = 0;
             $key = null;
             foreach ($this->param as $i => $p) {
-                $name = $include_unnamed && $p->param === '' && $p->eq === '' ? (string) ++$position : $p->param;
+                $name = $include_unnamed ? self::effective_parameter_name($p, $position) : $p->param;
                 if ($name === $needle) {
                     $key = $i;
                 }
@@ -8864,11 +8880,8 @@ final class Template
         if ($this->has(mb_strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
             return [];
         }
-        $new = [];
+        $new = $this->parameter_snapshot();
         $ret = [];
-        foreach ($this->param as $p) {
-            $new[$p->param] = $p->val;
-        }
 
         $old = $this->initial_param ? $this->initial_param : [];
 

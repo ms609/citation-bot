@@ -68,6 +68,8 @@ final class parameterTest extends testBaseClass {
         $this->assertSame('implicit suffix', $template->get('1'));
         $this->assertSame('next', $template->get('2'));
         $this->assertSame('{{cite journal|title=Example|1=shadowed|implicit suffix|next}}', $template->parsed_text());
+        $this->assertSame(['1'], $template->modifications()['changeonly']);
+        $this->assertSame([], $template->modifications()['additions']);
     }
 
     public function testMixedNumericArgumentsDoNotRenumberWhenAValueLooksLikeAUrl(): void {
