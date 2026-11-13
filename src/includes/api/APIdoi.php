@@ -789,8 +789,8 @@ function get_doi_from_crossref(Template $template): void {
         $year = parse_decimal_integer($year_match[1]);
     }
     $data = [
-        'title' => de_wikify(html_entity_decode($template->get('title'), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')),
-        'journal' => de_wikify(html_entity_decode($template->get('journal'), ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')),
+        'title' => de_wikify($template->get('title'), true),
+        'journal' => de_wikify($template->get('journal'), true),
         'author' => $template->first_surname(),
         'year' => $year,
         'volume' => $template->get('volume'),

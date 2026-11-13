@@ -102,19 +102,13 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                 $ch_return = bot_curl_exec($ch_dx);
                 if (mb_strlen($ch_return) > 50) { // Avoid bogus tiny pages
                     $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL); // Final URL
-                    if (mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
+                    if ($redirectedUrl_doi === '' || mb_stripos($redirectedUrl_doi, 'cookie') !== false) {
                         continue; // @codeCoverageIgnore
                     }
                     if (mb_stripos($redirectedUrl_doi, 'denied') !== false) {
                         continue; // @codeCoverageIgnore
                     }
-                    $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
-                    $url_short = url_simplify($url);
-                    if (preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
-                        $redirectedUrl_doi = $matches[1];  // @codeCoverageIgnore
-                    }
-                    if (mb_stripos($url_short, $redirectedUrl_doi) !== false ||
-                        mb_stripos($redirectedUrl_doi, $url_short) !== false) {
+                    if (citation_urls_equivalent($url, $redirectedUrl_doi)) {
                         report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                         $template->forget($url_type);
                     } else { // See if $url redirects
@@ -124,11 +118,7 @@ function drop_urls_that_match_dois(array &$templates): void {  // Pointer to sav
                         $ch_return = bot_curl_exec($ch_doi);
                         if (mb_strlen($ch_return) > 60) {
                             $redirectedUrl_url = curl_getinfo($ch_doi, CURLINFO_EFFECTIVE_URL);
-                            $redirectedUrl_url = url_simplify($redirectedUrl_url);
-                            if (
-                                mb_stripos($redirectedUrl_url, $redirectedUrl_doi) !== false ||
-                                mb_stripos($redirectedUrl_doi, $redirectedUrl_url) !== false
-                            ) {
+                            if ($redirectedUrl_url !== '' && citation_urls_equivalent($redirectedUrl_url, $redirectedUrl_doi)) {
                                 report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                                 $template->forget($url_type);
                             }

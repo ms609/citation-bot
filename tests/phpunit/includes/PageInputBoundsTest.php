@@ -103,7 +103,7 @@ final class PageInputBoundsTest extends testBaseClass {
 
         $this->assertTrue(mb_check_encoding($title, 'UTF-8'));
         $this->assertSame(255, mb_strlen($title, '8bit'));
-        $this->assertSame([$title], filter_runnable_page_titles([$title]));
+        $this->assertSame([normalize_unicode_nfc($title)], filter_runnable_page_titles([$title]));
     }
 
     public function testPageTitleFilterPreservesNonBlankWhitespaceAndCase(): void {
@@ -129,11 +129,12 @@ final class PageInputBoundsTest extends testBaseClass {
         $this->assertTrue(page_batch_input_within_limit('Example'));
     }
 
-    public function testPageTitleFilterPreservesValidDecomposedUnicode(): void {
-        $title = "Cafe\u{0301}";
+    public function testPageTitleFilterNormalizesBeforeMeasuringAndDeduplicating(): void {
+        $title = str_repeat('a', 253) . "e\u{0301}";
+        $composed = str_repeat('a', 253) . 'é';
 
-        $this->assertTrue(mb_check_encoding($title, 'UTF-8'));
-        $this->assertSame([$title], filter_runnable_page_titles([$title]));
+        $this->assertSame(256, mb_strlen($title, '8bit'));
+        $this->assertSame([$composed], filter_runnable_page_titles([$title, $composed]));
     }
 
     public function testPageTitleFilterRejectsInvalidUtf8AtByteBoundary(): void {
