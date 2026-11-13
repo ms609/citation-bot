@@ -667,8 +667,9 @@ function archive_decode_title(string $title, array $encodings, string $archive_u
     $candidates = [];
     foreach (['EUC-JP' => 'ja', 'SJIS-win' => 'ja', 'EUC-CN' => 'zh', 'BIG-5' => 'zh', 'EUC-KR' => 'ko'] as $encoding => $locale) {
         if (mb_check_encoding($title, $encoding)) {
-            $decoded = mb_convert_encoding($title, 'UTF-8', $encoding);
-            if (is_string($decoded) && mb_convert_encoding($decoded, $encoding, 'UTF-8') === $title) {
+            // Use the empty-string failure convention of the other archive decoders.
+            $decoded = (string) mb_convert_encoding($title, 'UTF-8', $encoding);
+            if ($decoded !== '' && mb_convert_encoding($decoded, $encoding, 'UTF-8') === $title) {
                 $candidates[$locale][] = $decoded;
             }
         }

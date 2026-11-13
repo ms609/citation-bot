@@ -29,6 +29,28 @@ final class ArchiveBomTitleTest extends testBaseClass {
         }
     }
 
+    public function testFailedLegacyConversionLeavesTitleUnresolved(): void {
+        $title = '한국역사연구';
+        $bytes = mb_convert_encoding($title, 'EUC-KR', 'UTF-8');
+        $archive = 'https://web.archive.org/web/20120101000000/https://example.org/a';
+        $this->assertSame($title, archive_decode_title($bytes, [], $archive, 'ko'));
+
+        $this->assertTrue(uopz_set_return('mb_convert_encoding',
+            static function (string $value, string $to, ?string $from = null) use ($bytes): string|false {
+                if ($value === $bytes && $to === 'UTF-8' && $from === 'EUC-KR') {
+                    return false;
+                }
+                return mb_convert_encoding($value, $to, $from);
+            },
+            true
+        ));
+        try {
+            $this->assertSame('', archive_decode_title($bytes, [], $archive, 'ko'));
+        } finally {
+            $this->assertTrue(uopz_unset_return('mb_convert_encoding'));
+        }
+    }
+
     public function testUtf16BomOverridesConflictingHttpCharset(): void {
         $title = '日本語の研究';
         $archive = 'https://web.archive.org/web/20120101000000/https://example.org/a';
