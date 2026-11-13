@@ -8,6 +8,15 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart3Test extends testBaseClass {
+
+    public function testPublisherKeepsFullNameWhenShortenedNameIsRejected(): void {
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertTrue($template->add_if_new('publisher', 'Page Publishing'));
+        $this->assertSame('Page Publishing', $template->get('publisher'));
+        $template = $this->make_citation('{{cite book|title=Example}}');
+        $this->assertFalse($template->add_if_new('publisher', 'NONE Publishing'));
+    }
+
     public function testShortPublisherNamesCanBeAdded(): void {
         foreach (['岩波書店', 'MIT', 'PLOS', 'P.U.F.', '北京大学'] as $name) {
             $template = $this->make_citation('{{cite book|title=Example}}');

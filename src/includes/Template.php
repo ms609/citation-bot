@@ -2646,20 +2646,26 @@ final class Template
                     return false;
                 } // Do not add if work is set, unless explicitly a book
 
-                $value = truncate_publisher($value);
-                $value = normalize_unicode_nfc($value);
+                $full_publisher = normalize_unicode_nfc($value);
+                $value = truncate_publisher($full_publisher);
                 $publisher_letters = safe_preg_replace('~[^\p{L}]+~u', '', $value);
                 $short_acronym = preg_match('~\A(?:[A-Z]\.?){2,4}\z~', $value) === 1;
                 $short_non_latin_name = preg_match('~\A(?:(?!\p{Latin})\p{L}\p{M}*){2,4}\z~u', $value) === 1;
-                if (mb_strlen($publisher_letters) < 5 && !$short_acronym && !$short_non_latin_name) {
-                    return false;
-                }
-                if (in_array(mb_strtolower($publisher_letters), [
+                $short_placeholder = in_array(mb_strtolower($publisher_letters), [
                     'na', 'nd', 'np', 'sn', 'sl', 'би', '不明', '未知',
                     'inc', 'ltd', 'llc', 'none', 'null', 'tbd', 'pdf',
-                ], true) ||
-                    in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
+                ], true);
+                if ($short_placeholder ||
+                    in_array(mb_trim(mb_strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true) ||
+                    in_array(mb_trim(mb_strtolower($full_publisher), " \.\,\[\]\:\;\t\n\r\0\x0B"), BAD_PUBLISHERS, true)) {
                     return false;
+                }
+                if (mb_strlen($publisher_letters) < 5 && !$short_acronym && !$short_non_latin_name) {
+                    if ($value === $full_publisher || mb_strlen(safe_preg_replace('~[^\p{L}]+~u', '', $full_publisher)) < 5 ||
+                        preg_match('~\p{L}~u', $value) !== 1) {
+                        return false;
+                    }
+                    $value = $full_publisher;
                 }
                 if ($this->has('via') && str_equivalent($this->get('via'), $value)) {
                     $this->rename('via', $param_name);
