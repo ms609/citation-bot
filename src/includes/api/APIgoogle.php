@@ -15,7 +15,7 @@ function clean_google_books(Template $template): void {
             if (mb_strpos($url, 'vid=') !== false) {
                 continue; // must be done by hand
             }
-            if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $url, $matches)) {
+            if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books[^?#]*)\?$~', $url, $matches)) {
                 $url = $matches[1]; // trailing ?
             }
             if (preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $url, $matches)) {
@@ -171,7 +171,6 @@ function expand_by_google_books_inner(Template $template, string $url_type, bool
         normalize_google_books($url, $removed_redundant, $removed_parts, $gid);
         if ($url !== $orig_book_url && $url_type && mb_strpos($url_type, 'url') !== false) {
             if ($removed_redundant > 1) {
-                // http:// is counted as 1 parameter
                 report_forget(echoable($removed_parts));
             } else {
                 report_forget('Standardized Google Books URL');
@@ -348,10 +347,13 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
     // And symbol in a search quote
     $url = str_replace("+&+", "+%26+", $url);
     $url = str_replace("+&,+", "+%26,+", $url);
-    $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
+    $url_parts = explode("&", explode("?", $url, 2)[1] ?? '');
     $url = "https://books.google.com/books?id=" . $gid[1];
     $book_array = [];
     foreach ($url_parts as $part) {
+        if ($part === '') {
+            continue;
+        }
         $part_start = explode("=", $part, 2);
         if ($part_start[0] === 'text') {
             $part_start[0] = 'dq';
@@ -374,7 +376,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             case "sitesec":
             case "article_id":
             case "bsq":
-                if (empty($part_start[1])) {
+                if (($part_start[1] ?? '') === '') {
                     $removed_redundant++;
                     $removed_parts .= $part;
                 } else {
@@ -454,42 +456,54 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
                 $removed_redundant++;
                 break;
             default:
-                if ($removed_redundant !== 0) {
-                    $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
-                    bot_debug_log("Unexpected dropping from Google Books " . $part);
-                }
+                $removed_parts .= $part;
+                bot_debug_log("Unexpected dropping from Google Books " . $part);
                 $removed_redundant++;
         }
     }
-    // Clean up hash first
-    $hash = '&' . mb_trim($hash) . '&';
-    $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['', '', ''], $hash); // onepage is default
-    $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&', '%20&%20'], ['&', '&', '&', '&', '&', '%20%26%20'], $hash);
-    if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
-        $hash = str_replace($matcher[1], '', $hash);
-        if (isset($book_array['q'])) {
-            $removed_parts .= '&q=' . $book_array['q'];
-            $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3))); // #q= wins over &q= before # sign
-        } elseif (isset($book_array['dq'])) {
-            $removed_parts .= '&dq=' . $book_array['dq'];
-            $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
-            $dum_q = str_replace('+', ' ', urldecode(mb_substr($matcher[1], 3)));
-            if ($dum_dq !== $dum_q) {
-                $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
-                unset($book_array['dq']);
-            } else {
-                $book_array['dq'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
-            }
-        } else {
-            $book_array['q'] = urlencode(urldecode(mb_substr($matcher[1], 3)));
+    // Split before decoding so a search value can contain encoded delimiters.
+    $fragment_fields = [];
+    $fragment_parts = [];
+    foreach (explode('&', mb_trim($hash)) as $part) {
+        [$key, $value] = array_pad(explode('=', $part, 2), 2, '');
+        if ($value !== '' && in_array($key, ['q', 'dq', 'pg', 'page'], true)) {
+            $fragment_fields[$key === 'page' ? 'pg' : $key] = $value;
+        } elseif ($part !== '' && !in_array($part, ['f=false', 'f=true', 'v=onepage', 'q', 'q='], true)) {
+            $fragment_parts[] = $part;
         }
     }
-    if (preg_match('~(&dq=[^&]+)&~', $hash, $matcher)) {
-        $hash = str_replace($matcher[1], '', $hash);
+    $hash = implode('&', $fragment_parts);
+    if (isset($fragment_fields['q'])) {
+        $fragment_query = urlencode(urldecode($fragment_fields['q']));
+        if (isset($book_array['q'])) {
+            $removed_parts .= '&q=' . $book_array['q'];
+            $book_array['q'] = $fragment_query;
+        } elseif (isset($book_array['dq']) &&
+            str_replace('+', ' ', urldecode($book_array['dq'])) === str_replace('+', ' ', urldecode($fragment_query))) {
+            $book_array['dq'] = $fragment_query;
+        } else {
+            if (isset($book_array['dq'])) {
+                $removed_parts .= '&dq=' . $book_array['dq'];
+                unset($book_array['dq']);
+            }
+            $book_array['q'] = $fragment_query;
+        }
+    }
+    if (isset($fragment_fields['dq'])) {
         if (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
         }
-        $book_array['dq'] = urlencode(urldecode(mb_substr($matcher[1], 3))); // #dq= wins over &dq= before # sign
+        if (!isset($fragment_fields['q']) && isset($book_array['q'])) {
+            $removed_parts .= '&q=' . $book_array['q'];
+            unset($book_array['q']);
+        }
+        $book_array['dq'] = urlencode(urldecode($fragment_fields['dq']));
+    }
+    if (isset($fragment_fields['pg'])) {
+        if (isset($book_array['pg'])) {
+            $removed_parts .= '&pg=' . $book_array['pg'];
+        }
+        $book_array['pg'] = $fragment_fields['pg'];
     }
     if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
         $book_array['q'] = $book_array['vq'];
@@ -526,25 +540,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
             $book_array['pg'] = $book_array['lpg'];
             unset($book_array['lpg']);
     }
-    if (preg_match('~^&(.*)$~', $hash, $matcher)) {
-        $hash = $matcher[1];
-    }
-    if (preg_match('~^(.*)&$~', $hash, $matcher)) {
-        $hash = $matcher[1];
-    }
-    if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)) {
-        $book_array['pg'] = $matcher[1];
-        $hash = '';
-    }
-    if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)) {
-        $book_array['pg'] = $matcher[1];
-        $hash = '';
-    }
-    if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)) {
-        $book_array['pg'] = $matcher[1];
-        $hash = '';
-    }
-    if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)) {
+    if (preg_match('~^P*(P[APTR]\d+),M1$~', $hash, $matcher)) {
         $book_array['pg'] = $matcher[1];
         $hash = '';
     }

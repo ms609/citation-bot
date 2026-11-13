@@ -152,18 +152,20 @@ function simplify_google_search(string $url): string {
         $hash = "#" . $url_parts[1];
     }
 
-    $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
-    array_shift($url_parts);
+    $url_parts = explode("&", explode("?", $url, 2)[1] ?? '');
     $url = "https://www.google.com/search?";
 
     foreach ($url_parts as $part) {
+        if ($part === '') {
+            continue;
+        }
         $part_start = explode("=", $part, 2);
         $part_start0 = $part_start[0];
         if (isset($part_start[1]) && $part_start[1] === '') {
             $part_start0 = "donotaddmeback"; // Do not add blank ones
             $part_start1 = '';
             $it_is_blank = true;
-        } elseif (empty($part_start[1])) {
+        } elseif (!isset($part_start[1])) {
             $part_start1 = '';
             $it_is_blank = true;
         } else {
@@ -184,7 +186,6 @@ function simplify_google_search(string $url): string {
             case "ots":
             case "sig":
             case "source":
-            case "lr":
             case "sa":
             case "oi":
             case "ct":
@@ -198,8 +199,6 @@ function simplify_google_search(string $url): string {
             case "gs_l":
             case "uact":
             case "tbo":
-            case "tbs":
-            case "num":
             case "redir_esc":
             case "gs_lcp":
             case "sxsrf":
@@ -218,12 +217,6 @@ function simplify_google_search(string $url): string {
             case "usg":
             case "fir":
             case "entrypoint":
-            case "as_qdr":
-            case "as_drrb":
-            case "as_minm":
-            case "as_mind":
-            case "as_maxm":
-            case "as_maxd":
             case "kgs":
             case "ictx":
             case "shem":
@@ -234,7 +227,6 @@ function simplify_google_search(string $url): string {
             case "noj":
             case "hs":
             case "es_sm":
-            case "site":
             case "btnmeta_news_search":
             case "channel":
             case "espv":
@@ -319,6 +311,16 @@ function simplify_google_search(string $url): string {
                 }
                 $url .= $part . "&";
                 break;
+            case "lr":
+            case "tbs":
+            case "as_qdr":
+            case "as_drrb":
+            case "as_minm":
+            case "as_mind":
+            case "as_maxm":
+            case "as_maxd":
+            case "num":
+            case "site":
             case "hl":
             case "safe":
             case "q":

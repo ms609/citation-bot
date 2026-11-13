@@ -4,6 +4,27 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 
 final class googleBooksTest extends testBaseClass {
+    public function testGoogleBooksFragmentKeepsSearchAndDisplayedPage(): void {
+        $book = 'https://books.google.com/books?id=12345';
+        foreach ([
+            ['#&dq=HUH&pg=213', '&dq=HUH&pg=213'],
+            ['&pg=PA12#dq=a%2Bb&pg=pa213', '&dq=a%2Bb&pg=PA213'],
+            ['#page=PA213', '&pg=PA213'],
+            ['&q=old#dq=new&pg=PA213', '&dq=new&pg=PA213'],
+            ['#pg=PA213&dq=0', '&dq=0&pg=PA213'],
+            ['#dq=part-v%3Donepage&pg=PA213', '&dq=part-v%3Donepage&pg=PA213'],
+            ['&q=0', '&q=0'],
+            ['#q=0', '&q=0'],
+            ['&q=what?', '&q=what?'],
+        ] as [$input, $expected]) {
+            $template = $this->make_citation('{{cite book|url=' . $book . $input . '}}');
+            clean_google_books($template);
+            $this->assertSame($book . $expected, $template->get('url'));
+            clean_google_books($template);
+            $this->assertSame($book . $expected, $template->get('url'));
+        }
+    }
+
     public function testGoogleBooksXmlParserRejectsMalformedResponses(): void {
         $this->assertNull(parse_google_books_xml_response(''));
         $this->assertNull(parse_google_books_xml_response('not xml'));
@@ -164,7 +185,7 @@ XML;
     public function testGoogleBooksExpansion6(): void {
         $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC#&dq=HUH&pg=213}}";
         $expanded = $this->process_citation($text);
-        $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&q=%3DHUH', $expanded->get2('url'));
+        $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH&pg=213', $expanded->get2('url'));
     }
 
     public function testGoogleBooksExpansion7(): void {
