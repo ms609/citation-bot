@@ -66,7 +66,7 @@ The Citation Bot has two main user-facing interfaces with different performance 
 - **Slow mode operations**: Searches for new bibcodes and expands URLs via external APIs
 - If Unpaywall finds no usable link, thorough mode can add an Archive.org PDF from the [public-domain pre-1909 collection](https://archive.org/details/crossref-pre-1909-scholarly-works). The PDF filename must match the citation DOI. The fallback runs for titled journal, general, and web citations with empty URL and archive fields. It skips known publication years after 1909 and shares a four-second limit across the lookup and PDF checks.
 - **Use case**: Users who want comprehensive citation expansion and can wait longer
-- **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 50 for web, 1,000,000 for CLI); thorough mode can use the full budget
+- **Timeout limit**: Request processing is bounded by `set_time_limit(120)` and internal size caps (`MAX_PAGES`: 200 for web, 1,000,000 for CLI); thorough mode can use the full budget
 
 ### Citation Expander Gadget (`src/gadgetapi.php`)
 
