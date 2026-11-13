@@ -1556,9 +1556,9 @@ final class Template
                         return false;  // Reject bad data
                     }
                     if (self::$date_style !== DateStyle::DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
-                        if ($time) {
+                        if ($time !== false) {
                             $day = date('d', $time);
-                            if ($day !== '01') { // Probably just got month and year if day=1
+                            if ($day !== '01' || publication_date_has_explicit_day($value)) {
                                 $value = self::localize_dates($time);
                             }
                         }

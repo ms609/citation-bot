@@ -9,6 +9,21 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
  * date and its metadata was thrown away.
  */
 final class ZoteroYearOnlyDateTest extends testBaseClass {
+    public function testExplicitFirstOfMonthAndEpochArePreserved(): void {
+        foreach ([
+            ['1970-01-01', '1 January 1970'],
+            ['1 January 1970', '1 January 1970'],
+            ['1969-12-31', '31 December 1969'],
+            ['2020-05-01', '1 May 2020'],
+            ['1 mai 2020', '1 May 2020'],
+            ['2020-05', 'May 2020'],
+            ['May 2020', 'May 2020'],
+            ['2020-05-00', 'May 2020'],
+        ] as [$source, $expected]) {
+            $template = $this->expand_with_date($source, '2024-06-01');
+            $this->assertSame($expected, $template->get('date'), $source);
+        }
+    }
 
     private function expand_with_date(string $result_date, string $access_date): Template {
         $template = $this->make_citation('{{cite web|url=https://example.test/page|access-date=' . $access_date . '}}');

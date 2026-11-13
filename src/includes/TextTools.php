@@ -1192,7 +1192,7 @@ function tidy_date(string $string): string {
         return $string;
     }
     $time = strtotime($string);
-    if (!$time) {
+    if ($time === false) {
         return $string;
     }
     // Check for future dates (more than 3 days ahead)
@@ -1210,6 +1210,17 @@ function tidy_date(string $string): string {
         return mb_ltrim($new, "0"); // Also cleans up 0000
     }
     return $string;
+}
+
+/** Recognize an explicit calendar day before localizing a publication date. */
+function publication_date_has_explicit_day(string $date): bool {
+    return preg_match(
+        '~(?:^|[^0-9])(?:[0-9]{4}[-/][0-9]{1,2}[-/][0-9]{1,2}|[0-9]{1,2}[-/.][0-9]{1,2}[-/.][0-9]{2,4})(?![0-9])~',
+        $date
+    ) === 1 || preg_match(
+        '~^(?:[A-Za-z]+,?\s+)?(?:[0-9]{1,2}(?:st|nd|rd|th)?[\s-]+[A-Za-z]+\.?|[A-Za-z]+\.?[\s-]+[0-9]{1,2}(?:st|nd|rd|th)?)[,\s-]+[0-9]{2,4}(?![0-9])~i',
+        $date
+    ) === 1;
 }
 
 function tidy_date_inside(string $string): string {
@@ -1269,9 +1280,6 @@ function tidy_date_inside(string $string): string {
     $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
     // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
     if (mb_strpos($string, '0001-11-30') !== false) {
-        return '';
-    }
-    if (mb_strpos($string, '1969-12-31') !== false) {
         return '';
     }
     if (str_i_same('19xx', $string)) {
@@ -1339,13 +1347,13 @@ function tidy_date_inside(string $string): string {
         return (string) $parsed_date['year']; // Do not know the day or month. just give year
     }
     $time = strtotime($string);
-    if ($time && !is_int($parsed_date['year'])) {
+    if ($time !== false && !is_int($parsed_date['year'])) {
         // No year was written ("12 hours ago", "May 15", "10:30", "March, 2020"), so strtotime()
         // has borrowed today's.  That is not a date we were given; let the fallbacks below decide.
         $time = false;
     }
-    if ($time && is_int($parsed_date['month']) && is_int($parsed_date['day']) &&
-        $parsed_date['year'] >= 1000 && checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
+    if ($time !== false && is_int($parsed_date['year']) && is_int($parsed_date['month']) &&
+        is_int($parsed_date['day']) && $parsed_date['year'] >= 1000 && checkdate($parsed_date['month'], $parsed_date['day'], $parsed_date['year'])) {
         // strtotime() interprets timezone-bearing timestamps as instants: formatting that
         // timestamp in the runner's timezone may change the written calendar day.
         // Use the date_parse() calendar fields, without making another timestamp.
@@ -1353,18 +1361,19 @@ function tidy_date_inside(string $string): string {
         if ($year > (int) date("Y") + 10) {
             return '';
         }
-        if ($parsed_date['day'] === 1) { // Preserve the existing first-of-month heuristic
-            return date('F Y', (int) strtotime(sprintf('%04d-%02d-01', $year, $parsed_date['month'])));
+        // PHP fills in day 1 for bare year/month forms. Keep that inferred day out.
+        if ($parsed_date['day'] === 1 && !publication_date_has_explicit_day($string)) {
+            return date('F Y', $time);
         }
         return sprintf('%04d-%02d-%02d', $year, $parsed_date['month'], $parsed_date['day']);
     }
-    if ($time) {
+    if ($time !== false) {
         $day = date('d', $time);
         $year = intval(date('Y', $time));
         if ($year < 100 || $year > (int) date("Y") + 10) {
             return ''; // We got an invalid year
         }
-        if ($day === '01') { // Probably just got month and year
+        if ($day === '01' && !publication_date_has_explicit_day($string)) {
             $string = date('F Y', $time);
         } else {
             $string = date('Y-m-d', $time);

@@ -79,7 +79,7 @@ final class TextToolsEdgeCaseTest extends PHPUnit\Framework\TestCase {
             'february 30th keeps the year' => ['2001-02-30', '2001'],
             'june 31st keeps the year' => ['2001-06-31', '2001'],
             'the year 0001 placeholder' => ['0001-01-01', ''],
-            'unix epoch placeholder' => ['1969-12-31', ''],
+            'day before the Unix epoch' => ['1969-12-31', '1969-12-31'],
             'invalid marker' => ['Invalid Date', ''],
         ];
     }
