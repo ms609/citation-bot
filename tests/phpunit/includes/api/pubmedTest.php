@@ -6,6 +6,41 @@ require_once dirname(__DIR__, 3) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class pubmedTest extends testBaseClass {
+    public function testTitleFallbackRejectsDifferentWorkWithShortChineseWords(): void {
+        $template = $this->make_citation('{{cite journal|title=肺癌 治疗 指南|last=Smith|year=2019}}');
+        $queries = [];
+        $this->assertTrue(uopz_set_return('get_doi_from_crossref', null));
+        $this->assertTrue(uopz_set_return('get_entrez_xml', static function (string $type, string $query) use (&$queries): SimpleXMLElement {
+            $queries[] = [$type, urldecode($query)];
+            return new SimpleXMLElement($type === 'esearch_pubmed'
+                ? '<eSearchResult><Count>1</Count><IdList><Id>12345</Id></IdList></eSearchResult>'
+                : '<eSummaryResult><DocSum><Id>12345</Id><Item Name="Title">胃癌 治疗 指南</Item></DocSum></eSummaryResult>');
+        }, true));
+        try {
+            find_pmid($template);
+        } finally {
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
+            $this->assertTrue(uopz_unset_return('get_doi_from_crossref'));
+        }
+        $this->assertSame([
+            ['esearch_pubmed', '("肺癌 治疗 指南"[Title]) AND (Smith[Author]) AND (2019[Publication Date])'],
+            ['pubmed', '12345'],
+        ], $queries);
+        $this->assertNull($template->get2('pmid'));
+    }
+
+    public function testTitleFallbackSkipsSearchWithoutUsefulTitleWords(): void {
+        $template = $this->make_citation('{{cite journal|title=The and ...|last=Smith|year=2019}}');
+        $this->assertTrue(uopz_set_return('get_entrez_xml', static function (): never {
+            throw new RuntimeException('A title search must include a title term');
+        }, true));
+        try {
+            $this->assertSame(['', 0, []], query_pubmed($template));
+        } finally {
+            $this->assertTrue(uopz_unset_return('get_entrez_xml'));
+        }
+    }
+
     #[DataProvider('pmidExpansionResponses')]
     public function testPmidExpansion(?string $response, string $expected_template, ?string $expected_journal): void {
         if (!function_exists('uopz_set_return')) {

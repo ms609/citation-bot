@@ -410,7 +410,6 @@ function long_titles_are_dissimilar(string $left, string $right): bool {
  * decoded but with their words still separate.
  */
 function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $inSpaced, string $dbSpaced): bool {
-    $distance = unicode_levenshtein($inTitle, $dbTitle);
     // Check original, spaced titles first. Normalization can erase chapter numbers,
     // so an edit distance of zero does not always mean the same work.
     if (compare_title_lettered_labels($inSpaced, $dbSpaced) === false) {
@@ -420,11 +419,20 @@ function short_titles_are_dissimilar(string $inTitle, string $dbTitle, string $i
     if ($numbering_matches === false) {
         return true;
     }
+    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
+    if ($shorter <= 19) {
+        // A single character can change a word in a short East Asian title.
+        // Compare those characters before allowing edits elsewhere in the title.
+        $other_characters = '~[^\p{Han}\p{Hiragana}\p{Katakana}\p{Hangul}]+~u';
+        if (safe_preg_replace($other_characters, '', $inTitle) !== safe_preg_replace($other_characters, '', $dbTitle)) {
+            return true;
+        }
+    }
+    $distance = unicode_levenshtein($inTitle, $dbTitle);
     if ($distance === 0 || $numbering_matches === true ||
             titles_have_equivalent_final_y_plural($inTitle, $dbTitle)) {
         return false;
     }
-    $shorter = min(mb_strlen($inTitle), mb_strlen($dbTitle));
     if ($shorter <= 4) {
         $allowed = 0;
     } elseif ($shorter <= 9) {
@@ -522,7 +530,7 @@ function title_lettered_labels(string $title): array {
  */
 function title_numbering(string $title, bool $require_roman_label = false): array {
     $title = mb_strtolower(normalize_title_numeral_letters(strip_tags($title)));
-    $title = safe_preg_replace('~第([〇零一二三四五六七八九十百千]+)章~u', ' 第$1章 ', $title);
+    $title = safe_preg_replace('~(第[〇零一二三四五六七八九十百千]+[章巻卷])~u', ' $1 ', $title);
     $parts = preg_split('~[^\p{L}\p{M}\p{N}]+|(?<=\d)(?=\p{L})|(?<=\p{L})(?=\d)~u', $title, -1, PREG_SPLIT_NO_EMPTY);
     if ($parts === false) {
         return ['', []];
@@ -536,8 +544,8 @@ function title_numbering(string $title, bool $require_roman_label = false): arra
         if (preg_match('~^[0-9]{1,9}$~', $part) === 1) {
             $skeleton[] = '#';
             $numbers[] = intval($part);
-        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+章$~u', $part) === 1) {
-            $skeleton[] = '第#章';
+        } elseif (preg_match('~^第[〇零一二三四五六七八九十百千]+([章巻卷])$~u', $part, $ordinal) === 1) {
+            $skeleton[] = '第#' . $ordinal[1];
             $numbers[] = $part;
         } elseif (preg_match('~^\p{Nd}{1,9}$~u', $part) === 1) {
             // Keep the original digits as an identity token. Casting non-ASCII
