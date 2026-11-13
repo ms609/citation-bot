@@ -14,7 +14,7 @@ final class EncodingBoundaryTest extends testBaseClass {
             return '';
         }, true));
         try {
-            foreach (['Caf&eacute; culture', 'Caf&#233; culture'] as $title) {
+            foreach (['Caf&eacute; culture', 'Caf&#233; culture', "''Café'' p &lt; 0.05 et p &gt; 0.01"] as $title) {
                 $template = $this->make_citation('{{cite journal|last=Smith|title=' . $title .
                     '|journal=Revue de g&eacute;ographie|year=2020|pages=12–15}}');
                 $template->prepare();
@@ -26,6 +26,7 @@ final class EncodingBoundaryTest extends testBaseClass {
         $this->assertSame([
             ['Café culture', 'Revue de géographie'],
             ['Café culture', 'Revue de géographie'],
+            ["'Café' p < 0.05 et p > 0.01", 'Revue de géographie'],
         ], $queries);
     }
 

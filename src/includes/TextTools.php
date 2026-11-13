@@ -306,8 +306,13 @@ function titles_are_similar(string $title1, string $title2): bool {
     return false;
 }
 
-function de_wikify(string $string): string {
-    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"], $string));
+function de_wikify(string $string, bool $decode_entities = false): string {
+    $string = safe_preg_replace('~<[^>]*>~', '', $string);
+    $string = safe_preg_replace('~\[\[[^\|\]]*\|([^\]]*)\]\]~', '$1', $string);
+    $string = $decode_entities
+        ? html_entity_decode($string, ENT_COMPAT | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8')
+        : safe_preg_replace('~\&[\w\d]{2,7};~', '', $string);
+    return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], $string);
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle): bool {
