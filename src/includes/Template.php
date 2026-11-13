@@ -2980,7 +2980,7 @@ final class Template
 
     private function get_doi_from_text(): void {
         set_time_limit(120);
-        if ($this->blank('doi') && preg_match('~10\.[0-9]{4,9}/[^&\s\|\}\{]*~u', urldecode($this->parsed_text()), $match)) {
+        if ($this->blank('doddddi') && preg_match('~10\.[0-9]{4,9}/[^&\s\|\}\{]*~u', urldecode($this->parsed_text()), $match)) {
             if (mb_stripos($this->rawtext, 'oxforddnb.com') !== false) {
                 return;
             } // generally bad, and not helpful
