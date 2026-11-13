@@ -9,11 +9,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 
 final class AdsAbsOfflineTest extends testBaseClass {
     public function testCooldownUsesElapsedTimeAndBucketsAreIndependent(): void {
-        $now = 100_000_000_000;
+        $clock = (object) ['now' => 100_000_000_000];
         AdsAbsControl::big_back_on();
         AdsAbsControl::small_back_on();
-        $this->assertTrue(uopz_set_return('hrtime', static function () use (&$now): int {
-            return $now;
+        $this->assertTrue(uopz_set_return('hrtime', static function () use ($clock): int {
+            return $clock->now;
         }, true));
         try {
             AdsAbsControl::big_give_up(60);
@@ -23,10 +23,10 @@ final class AdsAbsOfflineTest extends testBaseClass {
                     $this->fail('Polling consumed the cooldown');
                 }
             }
-            $now += 60_000_000_000;
+            $clock->now += 60_000_000_000;
             $this->assertFalse(AdsAbsControl::big_gave_up_yet());
             $this->assertTrue(AdsAbsControl::small_gave_up_yet());
-            $now += 60_000_000_000;
+            $clock->now += 60_000_000_000;
             $this->assertFalse(AdsAbsControl::small_gave_up_yet());
         } finally {
             $this->assertTrue(uopz_unset_return('hrtime'));
@@ -49,12 +49,12 @@ final class AdsAbsOfflineTest extends testBaseClass {
     }
 
     public function testNonJson429ArmsOnlyTheRequestedAdsBucket(): void {
-        $now = 100_000_000_000;
+        $clock = (object) ['now' => 100_000_000_000];
         $header = "HTTP/1.1 429 Too Many Requests\r\nRetry-After: 120\r\n\r\n";
         AdsAbsControl::big_back_on();
         AdsAbsControl::small_back_on();
-        $this->assertTrue(uopz_set_return('hrtime', static function () use (&$now): int {
-            return $now;
+        $this->assertTrue(uopz_set_return('hrtime', static function () use ($clock): int {
+            return $clock->now;
         }, true));
         $this->assertTrue(uopz_set_return('bot_curl_exec', $header . '<html>Rate limit</html>'));
         $this->assertTrue(uopz_set_return('curl_getinfo', static fn (CurlHandle $handle, int $option): int => $option === CURLINFO_HTTP_CODE ? 429 : mb_strlen($header, '8bit'), true));
@@ -63,9 +63,9 @@ final class AdsAbsOfflineTest extends testBaseClass {
             $this->assertSame(0, $response->numFound);
             $this->assertTrue(AdsAbsControl::big_gave_up_yet());
             $this->assertFalse(AdsAbsControl::small_gave_up_yet());
-            $now += 119_000_000_000;
+            $clock->now += 119_000_000_000;
             $this->assertTrue(AdsAbsControl::big_gave_up_yet());
-            $now += 1_000_000_000;
+            $clock->now += 1_000_000_000;
             $this->assertFalse(AdsAbsControl::big_gave_up_yet());
         } finally {
             $this->assertTrue(uopz_unset_return('curl_getinfo'));
