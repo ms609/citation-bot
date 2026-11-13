@@ -120,7 +120,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->requireUopz();
         $this->withStub('is_link', true, function (): void {
             $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('must not be a symlink');
+            $this->expectExceptionMessageIsOrContains('must not be a symlink');
             big_jobs_state_directory();
         });
     }
@@ -133,7 +133,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         uopz_set_return('mkdir', false);
         try {
             $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Unable to create private large-job state directory.');
+            $this->expectExceptionMessageIsOrContains('Unable to create private large-job state directory.');
             big_jobs_state_directory();
         } finally {
             /** @psalm-suppress UnusedFunctionCall */
@@ -147,7 +147,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $this->requireUopz();
         $this->withStub('lstat', false, function (): void {
             $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Large-job state directory is unsafe.');
+            $this->expectExceptionMessageIsOrContains('Large-job state directory is unsafe.');
             big_jobs_state_directory();
         });
     }
@@ -169,7 +169,7 @@ final class BigJobsEdgeCaseTest extends PHPUnit\Framework\TestCase {
         $owner = $offset === 0 ? false : posix_geteuid() + $offset;
         $this->withStub('fileowner', $owner, function (): void {
             $this->expectException(RuntimeException::class);
-            $this->expectExceptionMessage('Large-job state directory has an unexpected owner.');
+            $this->expectExceptionMessageIsOrContains('Large-job state directory has an unexpected owner.');
             big_jobs_state_directory();
         });
     }
