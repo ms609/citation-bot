@@ -849,7 +849,7 @@ final class Template
      */
     public function blank(array|string $param): bool {
         // Accepts arrays of strings and string
-        if (!$param) {
+        if ($param === '' || $param === []) {
             report_error('null passed to blank()'); // @codeCoverageIgnore
         }
         if (empty($this->param)) {
@@ -1086,6 +1086,9 @@ final class Template
             }
         }
 
+        if (ctype_digit($param_name)) {
+            return $this->blank($param_name) && $this->add($param_name, $value);
+        }
         $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
 
         switch ($param_name) {
@@ -3046,7 +3049,9 @@ final class Template
         $duplicate_identical = [];
 
         foreach ($this->param as $pointer => $par) {
-            if ($par->param && isset($param_occurrences[$par->param])) {
+            // Leave explicit numeric arguments in order. Unnamed arguments
+            // can refer to the same position and MediaWiki resolves precedence.
+            if ($par->param !== '' && !ctype_digit($par->param) && isset($param_occurrences[$par->param])) {
                 $duplicate_pos = $param_occurrences[$par->param];
                 if ($par->val === '') {
                     $par->val = $this->param[$duplicate_pos]->val;
@@ -3096,7 +3101,7 @@ final class Template
         $blank_count = 0;
         foreach ($this->param as &$p) {
             // Protect them from being overwritten
-            if (empty($p->param)) {
+            if ($p->param === '') {
                 $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count;
                 $blank_count++;
                 $p->eq = ' = ';
@@ -3706,7 +3711,7 @@ final class Template
 
         foreach ($this->param as $p) {
             if (
-                mb_strlen($p->param) > 0 &&
+                $p->param !== '' && !ctype_digit($p->param) &&
                 !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list, true) || in_array($p->param, $parameter_list, true)) && // Some parameters have actual numbers in them
                 mb_stripos($p->param, 'CITATION_BOT') === false
             ) {
@@ -4480,7 +4485,7 @@ final class Template
         // Note: Parameters are treated in alphabetical order, except where one
         // case necessarily continues from the previous (without a return).
 
-        if (!$param) {
+        if ($param === '' || ctype_digit($param)) {
             return;
         }
 
@@ -8879,9 +8884,10 @@ final class Template
             }
         }
 
-        $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
-        $ret['additions'] = array_diff(array_keys($new), array_keys($old));
-        $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
+        // PHP coerces integer-shaped parameter keys into ints in the maps.
+        $ret['modifications'] = array_map('strval', array_keys(array_diff_assoc($new, $old)));
+        $ret['additions'] = array_map('strval', array_diff(array_keys($new), array_keys($old)));
+        $ret['deletions'] = array_map('strval', array_diff(array_keys($old), array_keys($new)));
         $ret['changeonly'] = array_diff($ret['modifications'], $ret['additions']);
         foreach ($ret['deletions'] as $inds => $vals) {
             if ($vals === '') {

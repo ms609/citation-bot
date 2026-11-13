@@ -9,6 +9,44 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class parameterTest extends testBaseClass {
+    public function testExplicitNumericParametersSurvivePreparation(): void {
+        foreach ([
+            '0=foo',
+            '0=foo|0=bar',
+            '0=https://example.com/source',
+            '1=a|b|1=c',
+            '01=leading zero',
+            '2=',
+        ] as $parameters) {
+            $text = '{{cite journal|title=Example|' . $parameters . '}}';
+            $template = $this->prepare_citation($text);
+            $this->assertSame($text, $template->parsed_text());
+            $this->assertNull($template->get2('url'));
+        }
+        $template = $this->prepare_citation('{{cite journal|title=Example|https://example.com/source}}');
+        $this->assertSame('https://example.com/source', $template->get('url'));
+    }
+
+    public function testNumericParametersCanBeAddedAndReported(): void {
+        $template = $this->make_citation('{{cite journal|title=Example}}');
+        $this->assertTrue($template->blank('0'));
+        $this->assertTrue($template->add_if_new('0', 'x'));
+        $this->assertTrue($template->add_if_new('1', 'y'));
+        $this->assertFalse($template->blank('0'));
+        $this->assertFalse($template->add_if_new('0', 'z'));
+        $this->assertSame('x', $template->get('0'));
+        $this->assertSame('y', $template->get('1'));
+
+        $modifications = $template->modifications();
+        $this->assertSame(['1', '0'], $modifications['additions']);
+        $page = new Page();
+        $summary_data = new ReflectionProperty(Page::class, 'modifications');
+        $summary_data->setValue($page, $modifications);
+        $this->assertStringContainsString('Add: 0, 1.', $page->edit_summary());
+        $modifications['additions'] = ['0'];
+        $summary_data->setValue($page, $modifications);
+        $this->assertStringContainsString('Added 0.', $page->edit_summary());
+    }
 
     public function testValueWithPipeAndTrailingNewline(): void {
         new TestPage(); // Fill page name with test name for debugging
