@@ -8,6 +8,22 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart2Test extends testBaseClass {
+    public function testExplicitZeroLocatorsSurviveCleanup(): void {
+        foreach (['issue=0', 'number=0', 'issue=|issue=0', 'number=No. 0', 'issue=00'] as $params) {
+            $template = $this->prepare_citation('{{cite journal|title=Editorial|journal=OUSL Journal|volume=1|' . $params . '}}');
+            $template->tidy();
+            $name = str_starts_with($params, 'number') ? 'number' : 'issue';
+            $this->assertSame($params === 'issue=00' ? null : '0', $template->get2($name));
+        }
+    }
+
+    public function testZeroYearAndCombinedZeroIssueAreHandledIndependently(): void {
+        $template = $this->prepare_citation('{{cite journal|title=Editorial|journal=OUSL Journal|year=0|volume=1(0)}}');
+        $template->tidy();
+        $this->assertNull($template->get2('year'));
+        $this->assertSame('1', $template->get('volume'));
+        $this->assertSame('0', $template->get('issue'));
+    }
 
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
