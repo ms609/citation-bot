@@ -1464,26 +1464,35 @@ function find_identifiers_in_urls_INSIDE(Template $template, string $url, string
         return false;
     }
     // IEEE
-    if (mb_stripos($url, 'ieeexplore') !== false) {
-        // A direct PDF or stamp link is a separate destination from the DOI's landing page.
-        if (preg_match('~\Ahttps?://ieeexplore\.ieee\.org(?::[0-9]+)?/(?:iel[0-9]+/|stamp/|document/[0-9]+/pdf(?:[/?#]|\z))~i', $url) === 1) {
-            return false;
-        }
-        if (preg_match('~\Ahttps?://ieeexplore\.ieee\.org(?::80)?/(?:arnumber=|[^?#]*\?arnumber=)([0-9]+)/?\z~i', $url, $matches)) {
-            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            $update_url($url_type, $url);
-        }
-        if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
-            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            $update_url($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
-        }
-        if (preg_match('~^https?://ieeexplore\.ieee\.org[.][^/]+/iel5/\d+/\d+/(\d+)\.pdf(?:\?.*)?$~', $url, $matches)) {
-            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-            $update_url($url_type, $url);
-        }
-        if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
-            $url = 'https://ieeexplore.ieee.org/document/' . $matches[1]; // Remove leading zeros
-            $update_url($url_type, $url);
+    if (mb_stripos($url, 'ieeexplore.ieee.org') !== false) {
+        $ieee = parse_url($url);
+        if (is_array($ieee) && str_i_same($ieee['host'] ?? '', 'ieeexplore.ieee.org') &&
+            in_array(mb_strtolower($ieee['scheme'] ?? ''), ['http', 'https'], true) &&
+            !isset($ieee['user']) && !isset($ieee['pass'])) {
+            $path = $ieee['path'] ?? '';
+            // A download, stamp wrapper or fragment is a distinct destination.
+            if (isset($ieee['fragment']) ||
+                preg_match('~\A/(?:iel[0-9]+/|stamp/|stamppdf/|stamp\.jsp\z|document/[0-9]+/pdf(?:/|\z))~i', $path) === 1) {
+                return false;
+            }
+            if (!isset($ieee['port']) || $ieee['port'] === 80) {
+                $query = $ieee['query'] ?? '';
+                $document_id = '';
+                if ($query === '' && preg_match('~\A/arnumber=([0-9]+)/?\z~i', $path, $matches) === 1) {
+                    $document_id = $matches[1];
+                } elseif (($query === '' || $query === 'reload=true') &&
+                    preg_match('~\A/(?:abstract/)?document/([0-9]+)/?\z~i', $path, $matches) === 1) {
+                    $document_id = $matches[1];
+                } elseif (preg_match('~\A/xpl/articleDetails\.jsp\z~i', $path) === 1 &&
+                    preg_match_all('~(?:\A|&)arnumber=([0-9]+)(?=&|\z)~i', $query, $matches) === 1) {
+                    $document_id = $matches[1][0];
+                }
+                if ($document_id !== '') {
+                    $document_id = ltrim($document_id, '0') ?: '0';
+                    $url = 'https://ieeexplore.ieee.org/document/' . $document_id;
+                    $update_url($url_type, $url);
+                }
+            }
         }
     }
 

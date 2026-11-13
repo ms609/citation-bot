@@ -4,10 +4,33 @@ declare(strict_types=1);
 require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class DoiRedirectDestinationTest extends testBaseClass {
+    public function testIeeeLegacyLandingPagesUseTheDocumentNumber(): void {
+        $ieee = 'https://ieeexplore.ieee.org';
+        foreach ([
+            '/xpl/articleDetails.jsp?tp=&arnumber=5170033',
+            '/xpl/articleDetails.jsp?arnumber=5170033&isnumber=5170032',
+            '/arnumber=5170033',
+        ] as $path) {
+            $template = $this->make_citation('{{cite journal|title=Example|url=' . $ieee . $path . '}}');
+            $template->get_identifiers_from_url();
+            $this->assertSame($ieee . '/document/5170033', $template->get('url'));
+        }
+        foreach ([
+            $ieee . '/xpl/articleDetails.jsp?arnumber=5170033#references',
+            $ieee . '/xpl/articleDetails.jsp?arnumber=5170033&arnumber=5170032',
+            $ieee . '.example.test/iel5/12/34/5170033.pdf',
+        ] as $url) {
+            $template = $this->make_citation('{{cite journal|title=Example|url=' . $url . '}}');
+            $template->get_identifiers_from_url();
+            $this->assertSame($url, $template->get('url'));
+        }
+    }
+
     public function testIeeeDownloadUrlsSurviveExtractionAndDoiCleanup(): void {
         foreach ([
             'https://ieeexplore.ieee.org/iel5/12/34/1234567.pdf?download=1',
             'https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1234567',
+            'https://ieeexplore.ieee.org/stampPDF/getPDF.jsp?arnumber=1234567',
             'https://ieeexplore.ieee.org/document/1234567/pdf',
         ] as $url) {
             $archive = 'https://web.archive.org/web/20240201000000/' . $url;
