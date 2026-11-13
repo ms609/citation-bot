@@ -671,7 +671,7 @@ final class DoiTest extends testBaseClass {
             $this->assertTrue(uopz_unset_return('bot_curl_exec'));
         }
         $this->assertCount(1, $queries);
-        $this->assertStringContainsString('&spage=0&epage=2&volume=0&', $queries[0]);
+        $this->assertStringContainsString('&spage=0&epage=2&volume=0&', implode('', $queries));
     }
 
     public function testCrossrefXmlParserRejectsMalformedResponses(): void {
