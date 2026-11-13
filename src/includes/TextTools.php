@@ -983,7 +983,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation): string 
     // Series has historically promoted series letters, even when lowercase in the input.
     if (mb_substr($new_case, -2, 1) === ' ' &&
             preg_match('~\b(?i:class|section|part|physica)\s+a$~u', mb_trim($in)) !== 1) {
-        $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
+        $last = mb_substr($new_case, -1);
+        $new_case = mb_substr($new_case, 0, -1) . ($last === 'ß' ? 'ẞ' : mb_ucfirst($last));
     }
 
     if ($new_case === 'Now and then') {
@@ -1123,7 +1124,7 @@ function mb_strrev(string $string, string $encode = ''): string {
 function mb_ucwords(string $string): string {
     return preg_replace_callback('~(\S)(\S*\s*)|(\s+)~u',
         static function (array $match): string {
-            return $match[3] ?? mb_strtoupper($match[1]) . $match[2];
+            return $match[3] ?? mb_ucfirst($match[1]) . $match[2];
         },
         $string) ?? $string;
 }
