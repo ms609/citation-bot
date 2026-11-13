@@ -9,7 +9,6 @@ require_once dirname(__DIR__, 2) . '/testBaseClass.php';
 
 final class TemplatePart2Test extends testBaseClass {
 
-
     public function testTidyWork1a(): void {
         $text = "{{citation|work=|website=X}}";
         $template = $this->make_citation($text);
